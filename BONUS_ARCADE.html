@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GUARDIAN pHARe - CYBER DEFENSE PROTOCOL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
+
+        body { 
+            margin: 0; overflow: hidden; background: #000; 
+            font-family: 'Share Tech Mono', monospace; 
+            user-select: none;
+        }
+
+        /* IMAGE DE FOND */
+        #bg-image {
+            position: fixed; 
+            inset: 0;
+            z-index: 0;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        
+        /* Overlay sombre pour ambiance */
+        #bg-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 5, 15, 0.4);
+            pointer-events: none;
+        }
+
+        /* EFFET CRT (ÉCRAN CATHODIQUE) */
+        #crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none; 
+            z-index: 10;
+            animation: crtFlicker 0.15s infinite;
+        }
+
+        @keyframes crtFlicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 5; padding: 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        h1 { 
+            font-family: 'Orbitron', sans-serif; color: #00d4ff; 
+            text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; 
+            margin: 0; font-size: 24px; letter-spacing: 2px;
+        }
+
+        .hud-top { display: flex; justify-content: space-between; width: 100%; }
+        .hud-box { 
+            background: rgba(0, 20, 40, 0.85); 
+            border: 1px solid #00d4ff; 
+            padding: 12px 15px; 
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .bar-container { 
+            width: 220px; height: 12px; 
+            background: #111; 
+            border: 1px solid #00d4ff; 
+            margin-top: 5px; 
+            position: relative; 
+            overflow: hidden;
+        }
+        
+        .bar-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #00ff88, #00d4ff); 
+            width: 100%; 
+            transition: width 0.2s; 
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .bar-fill.low { 
+            background: linear-gradient(90deg, #ff0044, #ff4444); 
+            box-shadow: 0 0 15px #ff0044;
+            animation: barPulse 0.5s infinite;
+        }
+
+        @keyframes barPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        #score-display { 
+            font-family: 'Orbitron'; 
+            font-size: 2.8em; 
+            color: #ffd700; 
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+        }
+
+        .hud-bottom-right {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            pointer-events: none;
+        }
+
+        .regen-indicator {
+            display: inline-block;
+            color: #00ff88;
+            font-size: 0.9em;
+            margin-left: 10px;
+            text-shadow: 0 0 5px #00ff88;
+        }
+
+        /* ÉCRANS OVERLAY */
+        .screen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 20;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hidden { display: none !important; }
+
+        .mission-brief { 
+            max-width: 650px; 
+            line-height: 1.7; 
+            color: #aaa; 
+            margin-bottom: 30px; 
+            border-left: 3px solid #00d4ff; 
+            padding-left: 20px; 
+            text-align: left; 
+        }
+        
+        .highlight { color: #00d4ff; font-weight: bold; }
+        .enemy-highlight { color: #ff0044; font-weight: bold; text-shadow: 0 0 5px #ff0044; }
+
+        .hangar-table {
+            background: rgba(0, 40, 80, 0.4); 
+            border: 2px solid rgba(0,212,255,0.6);
+            padding: 20px; 
+            margin: 20px 0; 
+            width: 80%; 
+            max-width: 650px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .hangar-row {
+            display: flex; 
+            justify-content: space-between; 
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .hangar-label {
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .hangar-value {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        /* SLIDER OPACITÉ */
+        .opacity-control {
+            background: rgba(20, 20, 30, 0.7);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            pointer-events: auto;
+        }
+
+        .opacity-control label {
+            color: #00d4ff;
+            font-size: 0.9em;
+            margin-right: 15px;
+            letter-spacing: 1px;
+        }
+
+        .opacity-control input[type="range"] {
+            width: 200px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .opacity-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #00d4ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00d4ff;
+        }
+
+        .opacity-control input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #00d4ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00d4ff;
+            border: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d4ff, #0088ff); 
+            color: #000; 
+            border: none; 
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2em; 
+            font-weight: 700;
+            cursor: pointer;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            transition: 0.2s; 
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+            pointer-events: auto;
+        }
+        
+        button:hover { 
+            background: linear-gradient(135deg, #fff, #00d4ff); 
+            transform: scale(1.05); 
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.8);
+        }
+
+        .difficulty-btn {
+            background: rgba(40, 40, 40, 0.6);
+            color: #888;
+            margin: 5px;
+            padding: 12px 30px;
+            font-size: 1em;
+            border: 1px solid #444;
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #00d4ff, #0088ff);
+            color: #000;
+            border: 1px solid #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        canvas { 
+            display: block; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* BOSS WARNING */
+        #boss-warning {
+            position: fixed; 
+            top: 30%; 
+            width: 100%; 
+            text-align: center;
+            font-family: 'Orbitron'; 
+            font-size: 5em; 
+            font-weight: 900;
+            color: #ff0044;
+            text-shadow: 0 0 30px #ff0044, 0 0 60px #ff0044;
+            display: none; 
+            z-index: 15;
+            animation: bossWarningBlink 0.5s infinite;
+        }
+        
+        @keyframes bossWarningBlink { 
+            0%, 100% {opacity:1; transform: scale(1);} 
+            50% {opacity:0.3; transform: scale(1.05);} 
+        }
+
+        .victory-bonus {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .controls-hint {
+            text-align: center; 
+            font-size: 0.85em; 
+            opacity: 0.6;
+            color: #00d4ff;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="bg-image"></div>
+<audio id="bg-music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div id="crt-overlay"></div>
+
+<div id="ui-layer">
+    <div class="hud-top">
+        <div class="hud-box">
+            <div style="font-size: 0.8em; letter-spacing: 2px; color: #aaa;">CLIMAT SCOLAIRE</div>
+            <div class="bar-container"><div id="climat-bar" class="bar-fill"></div></div>
+        </div>
+        <div id="score-display">0000</div>
+        <div class="hud-box" style="text-align:right">
+            <div style="color:#ffd700; font-weight: bold; font-size: 1.1em;">
+                SHIELD: <span id="shield-count">0</span>
+            </div>
+            <div style="color: #00d4ff; margin-top: 5px;">
+                DRONES: <span id="drone-count">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hud-bottom-right">
+        <div class="hud-box">
+            <div style="font-size: 0.75em; letter-spacing: 1px; color: #aaa;">HP HÉROS</div>
+            <div class="bar-container" style="width: 180px;">
+                <div id="hero-hp-bar" class="bar-fill"></div>
+            </div>
+            <span id="regen-icon" class="regen-indicator" style="display:none;">+<span id="regen-rate">0</span>/s</span>
+        </div>
+    </div>
+
+    <div class="controls-hint">
+        FLÈCHES ou ZQSD : Mouvement | ESPACE : Tir Photonique
+    </div>
+</div>
+
+<div id="boss-warning">⚠️ BOSS DÉTECTÉ ⚠️</div>
+
+<!-- ÉCRAN DÉMARRAGE -->
+<div id="start-screen" class="screen-overlay">
+    <h1 style="font-size: 3.2em; margin-bottom: 15px; text-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff;">
+        GUARDIAN pHARe
+    </h1>
+    <div style="font-size: 0.9em; color: #888; margin-bottom: 30px; letter-spacing: 3px;">
+        CYBER DEFENSE PROTOCOL v2.0
+    </div>
+    
+    <div class="mission-brief">
+        <p><span class="highlight">AGENT</span>, le réseau éducatif est sous attaque.</p>
+        <p>Des <span class="enemy-highlight">cyber-violences</span> massives compromettent l'intégrité numérique de l'établissement.</p>
+        <p>Votre mission : Intercepter les <span class="enemy-highlight">TROLLS</span>, neutraliser les <span class="enemy-highlight">DOXXING</span>, bloquer les <span class="enemy-highlight">DEEPFAKES</span> et éradiquer le <span class="enemy-highlight">STALKING</span>.</p>
+        <p>Le <span class="highlight">Climat Scolaire</span> ne doit pas tomber sous le seuil critique.</p>
+        <p style="margin-top:20px; font-style: italic; color: #00d4ff;">
+            "La protection numérique, c'est l'action collective."
+        </p>
+    </div>
+
+    <div class="hangar-table">
+        <div style="color: #ffd700; margin-bottom: 15px; font-size: 1.3em; text-align: center; text-shadow: 0 0 10px #ffd700;">
+            ⚙️ CONFIGURATION CHASSEUR ⚙️
+        </div>
+        <div id="hangar-content"></div>
+    </div>
+
+    <div class="opacity-control">
+        <label>OPACITÉ IMAGE DE FOND :</label>
+        <input type="range" min="0" max="100" value="50" 
+               oninput="document.getElementById('bg-image').style.opacity = this.value / 100">
+        <span id="opacity-value" style="color: #00d4ff; margin-left: 10px;">50%</span>
+    </div>
+
+    <div style="margin: 20px 0;">
+        <div style="color: #aaa; margin-bottom: 10px; font-size: 0.9em;">NIVEAU DE MENACE</div>
+        <button class="difficulty-btn active" onclick="setDifficulty('apprenti', this)">APPRENTI</button>
+        <button class="difficulty-btn" onclick="setDifficulty('gardien', this)">GARDIEN</button>
+        <button class="difficulty-btn" onclick="setDifficulty('maitre', this)">MAÎTRE HD</button>
+    </div>
+
+    <button onclick="startGame()" style="font-size: 1.4em; margin-top: 30px;">
+        INITIALISER PROTOCOLE
+    </button>
+</div>
+
+<!-- ÉCRAN GAME OVER -->
+<div id="gameover-screen" class="screen-overlay hidden">
+    <h1 style="color: #ff0044; font-size: 4em; text-shadow: 0 0 30px #ff0044;">SYSTÈME COMPROMIS</h1>
+    <p style="font-size: 1.2em; margin: 20px 0;">Le Climat Scolaire est devenu toxique.</p>
+    <p style="font-size: 1.5em; color: #ffd700;">SCORE FINAL : <span id="final-score"></span></p>
+    <button onclick="location.reload()" style="margin-top: 30px;">RÉINITIALISER</button>
+</div>
+
+<!-- ÉCRAN VICTOIRE -->
+<div id="victory-screen" class="screen-overlay hidden">
+    <h1 style="color: #ffd700; font-size: 4em; text-shadow: 0 0 30px #ffd700;">MISSION ACCOMPLIE</h1>
+    <p style="font-size: 1.3em; margin: 20px 0;">La menace cyber a été neutralisée.</p>
+    <p style="font-size: 1.2em;">Le dialogue numérique peut reprendre en sécurité.</p>
+    <p style="font-size: 1.8em; color: #00d4ff; margin-top: 20px;">
+        SCORE FINAL : <span id="victory-score"></span>
+    </p>
+    <div class="victory-bonus">
+        <div style="font-size: 1.2em; color: #ffd700; margin-bottom: 10px;">✨ BONUS XP DÉBLOQUÉ ✨</div>
+        <div style="color: #aaa;">Progression enregistrée dans le système central</div>
+    </div>
+    <button onclick="window.close()" style="margin-top: 30px; background: linear-gradient(135deg, #ffd700, #ff8800);">
+        RETOUR AU QG
+    </button>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    // ================= CONFIGURATION =================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Update slider value display
+    const opacitySlider = document.querySelector('.opacity-control input');
+    opacitySlider.addEventListener('input', function(e) {
+        document.getElementById('opacity-value').innerText = e.target.value + '%';
+        document.getElementById('bg-image').style.opacity = e.target.value / 100;
+    });
+
+    // --- SYSTÈME DE BONUS (5 PILIERS) ---
+    function getLvl(pillar) { 
+        let lvl = 0; 
+        for(let i = 1; i <= 5; i++) {
+            if(localStorage.getItem(`CERT_${pillar}_${i}`)) lvl = i;
+        }
+        return lvl; 
+    }
+
+    const BONUSES = {
+        NUM: getLvl('NUM'),    // Lasers multiples (pas encore de modules)
+        JUR: getLvl('JUR'),    // Bouclier (pas encore de modules)
+        GRO: getLvl('GRP'),    // Drones (CERT_GRP_X dans localStorage)
+        HIS: getLvl('HIS'),    // Blindage (HP max)
+        NEURO: getLvl('NEU')   // Régénération (CERT_NEU_X dans localStorage)
+    };
+
+    // UI Hangar
+    const hangar = document.getElementById('hangar-content');
+    const pillarLabels = {
+        NUM: '🔫 LASERS PHOTONIQUES',
+        JUR: '🛡️ BOUCLIER JURIDIQUE',
+        GRO: '🤖 DRONES SENTINELLES',
+        HIS: '💎 BLINDAGE RENFORCÉ',
+        NEURO: '❤️ RÉGÉNÉRATION NEURONALE'
+    };
+    
+    Object.keys(pillarLabels).forEach(key => {
+        const row = document.createElement('div');
+        row.className = 'hangar-row';
+        row.innerHTML = `
+            <span class="hangar-label">${pillarLabels[key]}</span>
+            <span class="hangar-value">NIV ${BONUSES[key]}/5</span>
+        `;
+        hangar.appendChild(row);
+    });
+
+    // --- DIFFICULTÉ ---
+    let DIFFICULTY_CONFIG = {
+        name: 'apprenti',
+        multiplier: 1.0,
+        spawnRate: 60,
+        bossThreshold: 2000,
+        gameDuration: 180 // secondes (× 3 par rapport à base 60s)
+    };
+
+    function setDifficulty(level, btn) {
+        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        switch(level) {
+            case 'apprenti':
+                DIFFICULTY_CONFIG = {
+                    name: 'apprenti',
+                    multiplier: 1.0,
+                    spawnRate: 60,
+                    bossThreshold: 2000,
+                    gameDuration: 180
+                };
+                break;
+            case 'gardien':
+                DIFFICULTY_CONFIG = {
+                    name: 'gardien',
+                    multiplier: 1.6,
+                    spawnRate: 45,
+                    bossThreshold: 3000,
+                    gameDuration: 240
+                };
+                break;
+            case 'maitre':
+                DIFFICULTY_CONFIG = {
+                    name: 'maitre',
+                    multiplier: 2.5,
+                    spawnRate: 35,
+                    bossThreshold: 4000,
+                    gameDuration: 300
+                };
+                break;
+        }
+    }
+
+    // ================= MOTEUR & ÉTATS =================
+    const GAME = {
+        active: false,
+        score: 0,
+        frame: 0,
+        climat: 100,
+        bossMode: false,
+        startTime: 0
+    };
+
+    const INPUT = { left: false, right: false, up: false, down: false, fire: false };
+
+    // ================= CLASSES =================
+
+    // --- FOND TRON SCROLLING ---
+    class Background {
+        constructor() {
+            this.offsetY = 0;
+            this.speed = 2;
+        }
+        
+        update() {
+            this.offsetY += this.speed;
+            if(this.offsetY > 40) this.offsetY = 0;
+        }
+        
+        draw() {
+            // Efface le canvas (transparent) pour éviter la persistance
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Grille Tron perspective
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            // Lignes verticales
+            const centerX = canvas.width / 2;
+            for(let i = -10; i <= 10; i++) {
+                const x = centerX + (i * 100);
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
+            
+            // Lignes horizontales scrolling
+            for(let y = this.offsetY; y < canvas.height; y += 40) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+
+            // Murs latéraux bio-mécaniques (semi-transparents)
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.6)';
+            ctx.fillRect(0, 0, 50, canvas.height);
+            ctx.fillRect(canvas.width - 50, 0, 50, canvas.height);
+            
+            // Bordures cyan
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(50, 0, canvas.width - 100, canvas.height);
+        }
+    }
+
+    // --- JOUEUR ---
+    class Player {
+        constructor() {
+            this.x = canvas.width / 2;
+            this.y = canvas.height - 120;
+            this.hpMax = 100 + (BONUSES.HIS * 20);
+            this.hp = this.hpMax;
+            this.shield = BONUSES.JUR;
+            this.invincible = 0;
+            this.fireDelay = 0;
+            this.regenRate = BONUSES.NEURO * 0.5; // HP/s
+            this.regenAccumulator = 0;
+        }
+        
+        update() {
+            // Mouvement
+            const speed = 7;
+            if(INPUT.left && this.x > 70) this.x -= speed;
+            if(INPUT.right && this.x < canvas.width - 70) this.x += speed;
+            if(INPUT.up && this.y > 70) this.y -= speed;
+            if(INPUT.down && this.y < canvas.height - 70) this.y += speed;  // CORRIGÉ : += au lieu de -=
+
+            // Tir
+            if(INPUT.fire && this.fireDelay <= 0) {
+                this.shoot();
+                this.fireDelay = 8;
+            }
+            if(this.fireDelay > 0) this.fireDelay--;
+
+            // Invincibilité
+            if(this.invincible > 0) this.invincible--;
+
+            // Régénération (NEURO)
+            if(this.regenRate > 0 && this.hp < this.hpMax) {
+                this.regenAccumulator += this.regenRate / 60; // Par frame (60 fps)
+                if(this.regenAccumulator >= 1) {
+                    this.hp = Math.min(this.hpMax, this.hp + Math.floor(this.regenAccumulator));
+                    this.regenAccumulator -= Math.floor(this.regenAccumulator);
+                }
+            }
+
+            // Update drones
+            drones.forEach(d => d.update(this.x, this.y));
+        }
+        
+        shoot() {
+            const laserCount = 1 + BONUSES.NUM;
+            for(let i = 0; i < laserCount; i++) {
+                const offset = (i - (laserCount - 1) / 2) * 18;
+                bullets.push(new Bullet(this.x + offset, this.y - 20, 0, -15, 'PLAYER'));
+            }
+        }
+        
+        draw() {
+            // Clignotement si invincible
+            if(this.invincible > 0 && this.invincible % 4 < 2) return;
+
+            ctx.save();
+            ctx.translate(this.x, this.y);
+
+            // Bouclier visuel
+            if(this.shield > 0) {
+                ctx.strokeStyle = 'rgba(0, 212, 255, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#00d4ff';
+                ctx.beginPath();
+                ctx.arc(0, 0, 50, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+
+            // Vaisseau
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00ffff';
+            ctx.beginPath();
+            ctx.moveTo(0, -28);
+            ctx.lineTo(22, 18);
+            ctx.lineTo(0, 10);
+            ctx.lineTo(-22, 18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Réacteurs
+            ctx.fillStyle = '#00d4ff';
+            ctx.fillRect(-15, 15, 8, 15);
+            ctx.fillRect(7, 15, 8, 15);
+
+            ctx.restore();
+
+            // Dessiner drones
+            drones.forEach(d => d.draw());
+        }
+        
+        hit() {
+            if(this.invincible > 0) return;
+
+            if(this.shield > 0) {
+                this.shield--;
+                this.invincible = 60;
+                for(let i = 0; i < 30; i++) {
+                    particles.push(new Explosion(this.x, this.y, '#00d4ff', 1));
+                }
+            } else {
+                this.hp -= 15;
+                damageClimat(10);
+                this.invincible = 60;
+                screenShake = 8;
+                for(let i = 0; i < 20; i++) {
+                    particles.push(new Explosion(this.x, this.y, '#ff0044', 1));
+                }
+                
+                if(this.hp <= 0) {
+                    GAME.active = false;
+                    document.getElementById('gameover-screen').classList.remove('hidden');
+                    document.getElementById('final-score').innerText = GAME.score;
+                }
+            }
+        }
+    }
+
+    // --- DRONES ---
+    class Drone {
+        constructor(id) {
+            this.id = id;
+            this.angle = (Math.PI * 2 / BONUSES.GRO) * id;
+            this.radius = 80;
+        }
+        
+        update(px, py) {
+            this.angle += 0.03;
+            this.x = px + Math.cos(this.angle) * this.radius;
+            this.y = py + Math.sin(this.angle) * this.radius;
+
+            // Tir automatique (contre ennemis normaux OU boss)
+            if(GAME.frame % 35 === this.id * 7 && (enemies.length > 0 || boss)) {
+                bullets.push(new Bullet(this.x, this.y, 0, -12, 'PLAYER'));
+            }
+        }
+        
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            
+            // Corps drone
+            ctx.fillStyle = '#00ff88';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00ff88';
+            ctx.beginPath();
+            ctx.arc(0, 0, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Ailes
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-10, 0);
+            ctx.lineTo(-15, -5);
+            ctx.moveTo(10, 0);
+            ctx.lineTo(15, -5);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+
+    // --- ENNEMIS (CYBER-VIOLENCES) ---
+    class Enemy {
+        constructor(type) {
+            this.type = type;
+            this.active = true;
+            this.frame = 0;
+            this.x = Math.random() * (canvas.width - 200) + 100;
+            this.y = -50;
+            
+            const configs = {
+                'TROLL': {
+                    hp: 25,
+                    speed: 4,
+                    color: '#ff4444',
+                    size: 28,
+                    points: 50,
+                    damage: 5
+                },
+                'RUMEUR': {
+                    hp: 20,
+                    speed: 3.5,
+                    color: '#ff8844',
+                    size: 25,
+                    points: 40,
+                    damage: 5
+                },
+                'DOXXING': {
+                    hp: 35,
+                    speed: 2.5,
+                    color: '#ff00ff',
+                    size: 30,
+                    points: 80,
+                    damage: 8,
+                    shooter: true
+                },
+                'REVENGE PORN': {
+                    hp: 120,
+                    speed: 1.5,
+                    color: '#ffaa00',
+                    size: 55,
+                    points: 200,
+                    damage: 20,
+                    tank: true
+                },
+                'DEEPFAKE': {
+                    hp: 40,
+                    speed: 2,
+                    color: '#00ffcc',
+                    size: 32,
+                    points: 100,
+                    damage: 10,
+                    sniper: true
+                },
+                'STALKING': {
+                    hp: 30,
+                    speed: 3.8,
+                    color: '#cc44ff',
+                    size: 26,
+                    points: 70,
+                    damage: 7,
+                    tracker: true
+                }
+            };
+
+            Object.assign(this, configs[type]);
+            
+            // Scaling difficulté
+            this.hp *= DIFFICULTY_CONFIG.multiplier;
+            this.speed *= DIFFICULTY_CONFIG.multiplier;
+            this.shotCooldown = 0;
+        }
+        
+        update() {
+            this.frame++;
+
+            // Comportements spécifiques
+            if(this.tracker) {
+                this.x += Math.sin(this.frame * 0.05) * 5;
+            }
+
+            if(this.sniper && this.y > 120 && this.y < 180) {
+                // Tir ciblé vers joueur
+                if(this.shotCooldown <= 0) {
+                    const angle = Math.atan2(player.y - this.y, player.x - this.x);
+                    bullets.push(new Bullet(
+                        this.x, 
+                        this.y, 
+                        Math.cos(angle) * 7, 
+                        Math.sin(angle) * 7, 
+                        'ENEMY'
+                    ));
+                    this.shotCooldown = 90;
+                }
+            }
+
+            if(this.shooter && this.y > 100) {
+                if(this.shotCooldown <= 0) {
+                    bullets.push(new Bullet(this.x, this.y + 20, 0, 5, 'ENEMY'));
+                    this.shotCooldown = 60;
+                }
+            }
+
+            if(this.shotCooldown > 0) this.shotCooldown--;
+
+            // Mouvement vertical
+            this.y += this.speed;
+
+            // Sortie écran = dégâts climat
+            if(this.y > canvas.height + 50) {
+                this.active = false;
+                damageClimat(this.damage);
+            }
+        }
+        
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+
+            // Glow
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = this.color;
+            ctx.fillStyle = this.color;
+
+            // Forme selon type
+            if(this.tank) {
+                ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+            } else {
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size/2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Label
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px Share Tech Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.type.substring(0, 4), 0, 5);
+
+            ctx.restore();
+        }
+        
+        takeDamage(dmg) {
+            this.hp -= dmg;
+            if(this.hp <= 0) {
+                this.active = false;
+                GAME.score += this.points;
+                
+                // Explosion
+                for(let i = 0; i < 15; i++) {
+                    particles.push(new Explosion(this.x, this.y, this.color, 1));
+                }
+            }
+        }
+    }
+
+    // --- BOSS ---
+    class Boss {
+        constructor() {
+            this.x = canvas.width / 2;
+            this.y = -100;
+            this.hp = 500 * DIFFICULTY_CONFIG.multiplier;
+            this.hpMax = this.hp;
+            this.phase = 'ENTRY';
+            this.frame = 0;
+            this.shotPattern = 0;
+        }
+        
+        update() {
+            this.frame++;
+
+            switch(this.phase) {
+                case 'ENTRY':
+                    this.y += 2;
+                    if(this.y >= 150) {
+                        this.phase = 'DIALOGUE';
+                        this.dialogueStart = GAME.frame;
+                    }
+                    break;
+
+                case 'DIALOGUE':
+                    // Mouvement ondulant
+                    this.x = canvas.width/2 + Math.sin(this.frame * 0.02) * 100;
+                    
+                    if(GAME.frame - this.dialogueStart > 180) { // 3 secondes
+                        this.phase = 'FIGHT';
+                    }
+                    break;
+
+                case 'FIGHT':
+                    // Pattern de mouvement
+                    this.x = canvas.width/2 + Math.sin(this.frame * 0.03) * 200;
+                    
+                    // Pattern de tir
+                    if(this.frame % 30 === 0) {
+                        this.shotPattern++;
+                        
+                        if(this.shotPattern % 3 === 0) {
+                            // Tir radial
+                            for(let i = 0; i < 8; i++) {
+                                const angle = (Math.PI * 2 / 8) * i;
+                                bullets.push(new Bullet(
+                                    this.x,
+                                    this.y,
+                                    Math.cos(angle) * 5,
+                                    Math.sin(angle) * 5,
+                                    'ENEMY'
+                                ));
+                            }
+                        } else {
+                            // Tir ciblé
+                            const angle = Math.atan2(player.y - this.y, player.x - this.x);
+                            for(let i = -1; i <= 1; i++) {
+                                bullets.push(new Bullet(
+                                    this.x,
+                                    this.y,
+                                    Math.cos(angle + i * 0.3) * 6,
+                                    Math.sin(angle + i * 0.3) * 6,
+                                    'ENEMY'
+                                ));
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+        
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+
+            // Corps boss
+            ctx.shadowBlur = 30;
+            ctx.shadowColor = '#ff0044';
+            ctx.fillStyle = '#ff0044';
+            
+            // Forme hexagonale
+            ctx.beginPath();
+            for(let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i;
+                const px = Math.cos(angle) * 60;
+                const py = Math.sin(angle) * 60;
+                if(i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Noyau
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+
+            // Barre HP
+            if(this.phase === 'FIGHT') {
+                const barWidth = 200;
+                const barHeight = 8;
+                const hpPercent = this.hp / this.hpMax;
+                
+                ctx.fillStyle = '#333';
+                ctx.fillRect(-barWidth/2, 80, barWidth, barHeight);
+                
+                ctx.fillStyle = '#ff0044';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#ff0044';
+                ctx.fillRect(-barWidth/2, 80, barWidth * hpPercent, barHeight);
+                ctx.shadowBlur = 0;
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px Orbitron';
+                ctx.textAlign = 'center';
+                ctx.fillText('HARCELEUR SYSTÉMIQUE', 0, -80);
+            }
+
+            // Dialogue
+            if(this.phase === 'DIALOGUE') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(-150, -120, 300, 60);
+                ctx.strokeStyle = '#ff0044';
+                ctx.strokeRect(-150, -120, 300, 60);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px Share Tech Mono';
+                ctx.textAlign = 'center';
+                ctx.fillText('Le silence est mon allié.', 0, -95);
+                ctx.fillText('Mais vous avez parlé.', 0, -75);
+            }
+
+            ctx.restore();
+        }
+        
+        takeDamage(dmg) {
+            if(this.phase !== 'FIGHT') return;
+            
+            this.hp -= dmg;
+            screenShake = 3;
+            
+            if(this.hp <= 0) {
+                GAME.active = false;
+                
+                // Explosion massive
+                for(let i = 0; i < 100; i++) {
+                    particles.push(new Explosion(this.x, this.y, '#ff0044', 1));
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('victory-screen').classList.remove('hidden');
+                    document.getElementById('victory-score').innerText = GAME.score + 5000;
+                }, 2000);
+            }
+        }
+    }
+
+    // --- PROJECTILES ---
+    class Bullet {
+        constructor(x, y, dx, dy, source) {
+            this.x = x;
+            this.y = y;
+            this.dx = dx;
+            this.dy = dy;
+            this.source = source;
+            this.active = true;
+        }
+        
+        update() {
+            this.x += this.dx;
+            this.y += this.dy;
+            
+            if(this.y < -10 || this.y > canvas.height + 10 || 
+               this.x < -10 || this.x > canvas.width + 10) {
+                this.active = false;
+            }
+        }
+        
+        draw() {
+            ctx.fillStyle = this.source === 'PLAYER' ? '#00ffff' : '#ff00ff';
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = ctx.fillStyle;
+            ctx.fillRect(this.x - 3, this.y - 6, 6, 12);
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    // --- PARTICULES EXPLOSION ---
+    class Explosion {
+        constructor(x, y, color, speedMult = 1) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.vx = (Math.random() - 0.5) * 10 * speedMult;
+            this.vy = (Math.random() - 0.5) * 10 * speedMult;
+            this.life = 1.0;
+            this.size = Math.random() * 4 + 2;
+        }
+        
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vx *= 0.95;
+            this.vy *= 0.95;
+            this.life -= 0.02;
+        }
+        
+        draw() {
+            ctx.globalAlpha = this.life;
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+            ctx.globalAlpha = 1;
+        }
+    }
+
+    // ================= VARIABLES GLOBALES =================
+    const bg = new Background();
+    const player = new Player();
+    let bullets = [];
+    let enemies = [];
+    let particles = [];
+    let drones = [];
+    let boss = null;
+    let screenShake = 0;
+
+    // ================= LOGIQUE JEU =================
+
+    function startGame() {
+        document.getElementById('start-screen').classList.add('hidden');
+        
+        // Lancer musique
+        const music = document.getElementById('bg-music');
+        music.play().catch(e => console.log('Autoplay bloqué:', e));
+        
+        GAME.active = true;
+        GAME.score = 0;
+        GAME.frame = 0;
+        GAME.climat = 100;
+        GAME.bossMode = false;
+        GAME.startTime = Date.now();
+
+        // Initialiser drones
+        drones = [];
+        for(let i = 0; i < BONUSES.GRO; i++) {
+            drones.push(new Drone(i));
+        }
+
+        // Afficher icône regen si NEURO > 0
+        if(BONUSES.NEURO > 0) {
+            document.getElementById('regen-icon').style.display = 'inline';
+            document.getElementById('regen-rate').innerText = player.regenRate.toFixed(1);
+        }
+
+        loop();
+    }
+
+    function damageClimat(amount) {
+        GAME.climat = Math.max(0, GAME.climat - amount);
+        screenShake = 6;
+        
+        if(GAME.climat <= 0) {
+            GAME.active = false;
+            document.getElementById('gameover-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = GAME.score;
+        }
+    }
+
+    function updateUI() {
+        // Score
+        document.getElementById('score-display').innerText = GAME.score.toString().padStart(4, '0');
+        
+        // Climat
+        const climatBar = document.getElementById('climat-bar');
+        climatBar.style.width = GAME.climat + '%';
+        if(GAME.climat < 30) {
+            climatBar.classList.add('low');
+        } else {
+            climatBar.classList.remove('low');
+        }
+
+        // HP Héros
+        const heroBar = document.getElementById('hero-hp-bar');
+        const hpPercent = (player.hp / player.hpMax) * 100;
+        heroBar.style.width = hpPercent + '%';
+        if(hpPercent < 30) {
+            heroBar.classList.add('low');
+        } else {
+            heroBar.classList.remove('low');
+        }
+
+        // Shield & Drones
+        document.getElementById('shield-count').innerText = player.shield.toString().padStart(2, '0');
+        document.getElementById('drone-count').innerText = BONUSES.GRO;
+    }
+
+    function spawnManager() {
+        if(boss) return; // Pas d'ennemis pendant boss
+
+        // Déclenchement Boss
+        if(GAME.score >= DIFFICULTY_CONFIG.bossThreshold && !GAME.bossMode) {
+            GAME.bossMode = true;
+            enemies = []; // Clear ennemis existants
+            
+            document.getElementById('boss-warning').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('boss-warning').style.display = 'none';
+                boss = new Boss();
+            }, 3000);
+            return;
+        }
+
+        // Spawn ennemis normaux
+        if(GAME.frame % DIFFICULTY_CONFIG.spawnRate === 0) {
+            const rand = Math.random();
+            let type = 'RUMEUR';
+            
+            if(rand > 0.85) type = 'REVENGE PORN';
+            else if(rand > 0.7) type = 'DOXXING';
+            else if(rand > 0.55) type = 'STALKING';
+            else if(rand > 0.4) type = 'DEEPFAKE';
+            else if(rand > 0.25) type = 'TROLL';
+            
+            enemies.push(new Enemy(type));
+        }
+    }
+
+    function loop() {
+        if(!GAME.active) return;
+
+        // Screen Shake
+        let dx = 0, dy = 0;
+        if(screenShake > 0) {
+            dx = (Math.random() - 0.5) * screenShake;
+            dy = (Math.random() - 0.5) * screenShake;
+            screenShake *= 0.9;
+            if(screenShake < 0.5) screenShake = 0;
+        }
+
+        ctx.save();
+        ctx.translate(dx, dy);
+
+        // Render
+        bg.update();
+        bg.draw();
+
+        if(boss) {
+            boss.update();
+            boss.draw();
+        }
+
+        player.update();
+        player.draw();
+
+        GAME.frame++;
+        spawnManager();
+
+        // Gestion Balles
+        bullets = bullets.filter(b => {
+            b.update();
+            b.draw();
+
+            if(b.source === 'PLAYER') {
+                // Collisions avec boss
+                if(boss && Math.hypot(b.x - boss.x, b.y - boss.y) < 60) {
+                    boss.takeDamage(10);
+                    b.active = false;
+                    particles.push(new Explosion(b.x, b.y, '#fff', 0.5));
+                }
+
+                // Collisions avec ennemis
+                enemies.forEach(e => {
+                    if(e.active && Math.hypot(b.x - e.x, b.y - e.y) < e.size) {
+                        e.takeDamage(15);
+                        b.active = false;
+                    }
+                });
+            } else {
+                // Balles ennemies vs joueur
+                if(Math.hypot(b.x - player.x, b.y - player.y) < 25) {
+                    player.hit();
+                    b.active = false;
+                }
+            }
+
+            return b.active;
+        });
+
+        // Gestion Ennemis
+        enemies = enemies.filter(e => {
+            e.update();
+            e.draw();
+            return e.active;
+        });
+
+        // Gestion Particules
+        particles = particles.filter(p => {
+            p.update();
+            p.draw();
+            return p.life > 0;
+        });
+
+        ctx.restore();
+
+        updateUI();
+        requestAnimationFrame(loop);
+    }
+
+    // ================= CONTRÔLES =================
+    window.addEventListener('keydown', e => {
+        if(e.key === 'ArrowLeft' || e.key === 'q') INPUT.left = true;
+        if(e.key === 'ArrowRight' || e.key === 'd') INPUT.right = true;
+        if(e.key === 'ArrowUp' || e.key === 'z') INPUT.up = true;
+        if(e.key === 'ArrowDown' || e.key === 's') INPUT.down = true;
+        if(e.key === ' ') { INPUT.fire = true; e.preventDefault(); }
+    });
+
+    window.addEventListener('keyup', e => {
+        if(e.key === 'ArrowLeft' || e.key === 'q') INPUT.left = false;
+        if(e.key === 'ArrowRight' || e.key === 'd') INPUT.right = false;
+        if(e.key === 'ArrowUp' || e.key === 'z') INPUT.up = false;
+        if(e.key === 'ArrowDown' || e.key === 's') INPUT.down = false;
+        if(e.key === ' ') INPUT.fire = false;
+    });
+
+    // REDIMENSIONNEMENT AUTOMATIQUE
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+</script>
+</body>
+</html>

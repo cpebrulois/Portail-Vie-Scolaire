@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Module NEURO 02 - Le Cerveau Ado en Chantier</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neuro-primary: #6b8e23;
+            --neuro-accent: #9acd32;
+            --neuro-warning: #ff6b6b;
+            --neuro-success: #4ecdc4;
+            --void-dark: #0d0d1a;
+            --deep-dark: #080812;
+            --panel-bg: rgba(13, 13, 26, 0.95);
+            --text-primary: #f5f5ff;
+            --text-secondary: #9999bb;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Brain pattern background */
+        .brain-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(107, 142, 35, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(154, 205, 50, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Animated synapses */
+        .synapse-lines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+        
+        .synapse-lines::before,
+        .synapse-lines::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--neuro-accent), transparent);
+            height: 1px;
+            width: 200px;
+            animation: synapseMove 10s linear infinite;
+        }
+        
+        .synapse-lines::before { top: 25%; left: -200px; }
+        .synapse-lines::after { top: 75%; right: -200px; animation-delay: -5s; animation-direction: reverse; }
+        
+        @keyframes synapseMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100vw + 400px)); }
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .pillar-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(107, 142, 35, 0.6));
+        }
+        
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent), var(--neuro-success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: var(--neuro-accent);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .module-badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, rgba(107, 142, 35, 0.2), rgba(154, 205, 50, 0.2));
+            border: 2px solid var(--neuro-accent);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neuro-accent);
+            clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .progress-node {
+            width: 60px; height: 60px;
+            border: 3px solid var(--text-secondary);
+            background: var(--deep-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+        
+        .progress-node.active {
+            border-color: var(--neuro-accent);
+            color: var(--neuro-accent);
+            box-shadow: 0 0 25px rgba(154, 205, 50, 0.5);
+        }
+        
+        .progress-node.completed {
+            border-color: var(--neuro-success);
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--neuro-success);
+        }
+        
+        .xp-display {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .xp-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--neuro-accent);
+            padding: 15px 25px;
+            text-align: center;
+            clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+        }
+        
+        .xp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .xp-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neuro-accent);
+        }
+        
+        .content-panel {
+            background: var(--panel-bg);
+            border: 2px solid rgba(107, 142, 35, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neuro-primary), var(--neuro-accent), var(--neuro-success));
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, rgba(107, 142, 35, 0.15), rgba(154, 205, 50, 0.1));
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(107, 142, 35, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .panel-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border-radius: 50%;
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neuro-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .panel-body { padding: 25px; }
+        
+        /* Intro specific styles */
+        .intro-screen { text-align: center; padding: 30px 20px; }
+        
+        .brain-diagram {
+            margin: 30px auto;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .brain-svg {
+            width: 100%;
+            height: auto;
+        }
+        
+        .brain-part {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            border: 2px solid;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        
+        .part-limbique { border-color: var(--neuro-warning); color: var(--neuro-warning); background: rgba(255, 107, 107, 0.1); }
+        .part-prefrontal { border-color: var(--neuro-success); color: var(--neuro-success); background: rgba(78, 205, 196, 0.1); }
+        
+        /* Name input */
+        .name-input-group {
+            margin: 30px auto;
+            max-width: 400px;
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 15px;
+            background: var(--deep-dark);
+            border: 2px solid var(--neuro-accent);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: var(--neuro-success);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+        }
+        
+        .name-input::placeholder { color: var(--text-secondary); }
+        
+        /* Flashcards */
+        .flashcard-container { perspective: 1200px; margin-bottom: 20px; }
+        
+        .flashcard {
+            position: relative;
+            width: 100%;
+            min-height: 240px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .flashcard.flipped { transform: rotateY(180deg); }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            min-height: 240px;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border: 2px solid var(--neuro-accent);
+            background: var(--panel-bg);
+        }
+        
+        .card-back { transform: rotateY(180deg); }
+        
+        .card-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .card-answer {
+            font-size: 1.1rem;
+            color: var(--neuro-accent);
+            text-align: center;
+            line-height: 1.7;
+        }
+        
+        .card-source {
+            margin-top: 15px;
+            padding: 8px 15px;
+            background: rgba(107, 142, 35, 0.2);
+            border-left: 3px solid var(--neuro-primary);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Quiz styles */
+        .quiz-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .quiz-option {
+            padding: 18px;
+            background: var(--deep-dark);
+            border: 2px solid var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .quiz-option:hover { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.1); }
+        .quiz-option.selected { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.2); }
+        .quiz-option.correct { border-color: var(--neuro-success); background: rgba(78, 205, 196, 0.2); }
+        .quiz-option.incorrect { border-color: var(--neuro-warning); background: rgba(255, 107, 107, 0.2); }
+        
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--panel-bg);
+            border-left: 4px solid var(--neuro-accent);
+            line-height: 1.7;
+        }
+        
+        /* Scenario styles */
+        .scenario-context {
+            background: rgba(107, 142, 35, 0.1);
+            padding: 20px;
+            border-left: 4px solid var(--neuro-primary);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .scenario-intro {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            color: var(--text-secondary);
+        }
+        
+        .scenario-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .scenario-choice {
+            padding: 20px;
+            background: var(--deep-dark);
+            border: 2px solid var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+        
+        .scenario-choice:hover { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.1); }
+        .scenario-choice.selected { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.2); }
+        
+        .scenario-result {
+            margin-top: 20px;
+            padding: 25px;
+            background: var(--panel-bg);
+            border-left: 4px solid var(--neuro-success);
+            line-height: 1.8;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 15px 35px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--neuro-accent);
+            color: var(--deep-dark);
+        }
+        
+        .btn:hover {
+            background: var(--neuro-success);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--neuro-accent);
+            color: var(--neuro-accent);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--neuro-accent);
+            color: var(--deep-dark);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        /* Final screen */
+        .final-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .mastery-badge {
+            display: inline-block;
+            padding: 20px 40px;
+            margin: 30px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            border: 3px solid;
+            clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+        }
+        
+        .mastery-expert { border-color: var(--neuro-success); color: var(--neuro-success); background: rgba(78, 205, 196, 0.2); }
+        .mastery-confirmed { border-color: var(--neuro-accent); color: var(--neuro-accent); background: rgba(154, 205, 50, 0.2); }
+        .mastery-training { border-color: var(--neuro-primary); color: var(--neuro-primary); background: rgba(107, 142, 35, 0.2); }
+        
+        .save-code-box {
+            background: var(--deep-dark);
+            border: 2px solid var(--neuro-success);
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 600px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            color: var(--neuro-success);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .save-code-box:hover {
+            background: rgba(78, 205, 196, 0.1);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+        
+        /* Utilities */
+        .info { color: var(--neuro-accent); font-weight: 600; }
+        .warning { color: var(--neuro-warning); font-weight: 600; }
+        .success { color: var(--neuro-success); font-weight: 600; }
+        
+        @media (max-width: 768px) {
+            .app-container { padding: 15px; }
+            .glitch-title { font-size: 1.5rem; }
+            .flashcard, .card-face { min-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="brain-bg"></div>
+    <div class="synapse-lines"></div>
+    
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const MODULE_DATA = {
+            id: "NEURO_02",
+            version: "1.0.0",
+            titre: "LE CERVEAU ADO EN CHANTIER",
+            sous_titre: "Pourquoi on réagit si fort",
+            description: "Comprendre pourquoi les émotions sont plus intenses à l'adolescence et pourquoi le contrôle est plus difficile.",
+            auteur: "Programme pHARe",
+            niveau1: {
+                titre: "Ferrari sans freins",
+                type: "flashcards",
+                xp_reward: 50,
+                cartes: [
+                    {
+                        recto: "Le cerveau ado est-il fini ?",
+                        verso: "Non. Il est en pleine construction et continuera à mûrir jusqu'à environ 25 ans.",
+                        source: "Neurosciences du développement"
+                    },
+                    {
+                        recto: "Quelle zone mûrit en premier ?",
+                        verso: "Le système émotionnel, très sensible aux récompenses sociales.",
+                        source: "Système limbique"
+                    },
+                    {
+                        recto: "Quelle zone mûrit plus tard ?",
+                        verso: "Le cortex préfrontal, responsable du contrôle et de la réflexion.",
+                        source: "Fonctions exécutives"
+                    },
+                    {
+                        recto: "Pourquoi les émotions sont-elles plus intenses ?",
+                        verso: "Le système limbique (émotions) est en surchauffe pendant que le cortex préfrontal (régulation) finit de se développer.",
+                        source: "Déséquilibre développemental"
+                    },
+                    {
+                        recto: "Qu'est-ce que le 'dual-systems model' ?",
+                        verso: "Modèle qui explique l'adolescence comme un déséquilibre temporaire : système émotionnel à fond, système de contrôle en construction.",
+                        source: "Psychologie développementale"
+                    },
+                    {
+                        recto: "Les ados prennent-ils plus de risques ?",
+                        verso: "Oui, surtout en présence de pairs. Le cerveau social influence fortement les décisions, parfois plus que la raison.",
+                        source: "Influence sociale et prise de risque"
+                    },
+                    {
+                        recto: "Peut-on 'réparer' ce déséquilibre ?",
+                        verso: "On ne répare pas : c'est normal. Mais on peut entraîner le contrôle avec des stratégies (pause, respiration, anticipation).",
+                        source: "Neuroplasticité et entraînement"
+                    }
+                ]
+            },
+            niveau2: {
+                titre: "Réagir ou réfléchir",
+                type: "quiz",
+                xp_reward: 100,
+                questions: [
+                    {
+                        texte: "Un élève réagit violemment sous le regard des autres.",
+                        question: "Quelle explication est la plus juste ?",
+                        choix: [
+                            {
+                                txt: "La recherche de reconnaissance sociale",
+                                correct: true,
+                                feedback: "Exact. Le cerveau social est hypersensible à l'adolescence. Le regard des pairs active intensément les zones de récompense, ce qui peut pousser à des réactions extrêmes pour impressionner ou se protéger socialement."
+                            },
+                            {
+                                txt: "Un manque total de règles",
+                                correct: false,
+                                feedback: "Non. Même avec des règles, le cerveau ado privilégie l'émotion immédiate et la validation sociale. Ce n'est pas qu'il ignore les règles, c'est que le système émotionnel court-circuite temporairement le raisonnement."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Léa explose après une remarque pourtant anodine en apparence.",
+                        question: "Pourquoi cette réaction disproportionnée ?",
+                        choix: [
+                            {
+                                txt: "Son cortex préfrontal n'a pas eu le temps de modérer la réaction émotionnelle",
+                                correct: true,
+                                feedback: "Exact. Le système limbique réagit en quelques millisecondes, le cortex préfrontal a besoin de secondes pour intervenir. Chez l'ado, ce délai est encore plus long car cette zone est en construction."
+                            },
+                            {
+                                txt: "Elle fait exprès pour attirer l'attention",
+                                correct: false,
+                                feedback: "Faux. La plupart du temps, la réaction est authentique et incontrôlée. Blâmer l'intention ignore le fonctionnement neurologique réel de l'adolescence."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Tom dit souvent 'Je sais pas ce qui m'a pris' après avoir réagi fort.",
+                        question: "Que se passe-t-il neurologiquement ?",
+                        choix: [
+                            {
+                                txt: "Il ment pour éviter la responsabilité",
+                                correct: false,
+                                feedback: "Pas nécessairement. Cette phrase traduit souvent une réalité : l'action a précédé la réflexion. Le cerveau émotionnel a agi avant que le cerveau rationnel ne prenne le relais."
+                            },
+                            {
+                                txt: "Son système limbique a pris le contrôle avant que le cortex préfrontal n'intervienne",
+                                correct: true,
+                                feedback: "Exact. C'est le 'détournement émotionnel' (emotional hijack). Le système émotionnel déclenche une action réflexe avant même que la conscience rationnelle ne soit consultée."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Un groupe d'ados fait quelque chose qu'aucun ne ferait seul.",
+                        question: "Pourquoi ce phénomène ?",
+                        choix: [
+                            {
+                                txt: "Effet de dilution de responsabilité + hypersensibilité au regard des pairs",
+                                correct: true,
+                                feedback: "Exact. Double mécanisme : 1) 'Ce n'est pas que moi' (dilution). 2) Le cerveau ado valorise énormément l'approbation sociale, ce qui amplifie les comportements en groupe."
+                            },
+                            {
+                                txt: "Ils sont tous naturellement déviants",
+                                correct: false,
+                                feedback: "Faux. C'est un biais neurologique universel à l'adolescence, pas un trait de personnalité. La même personne agira très différemment seule vs en groupe."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Une stratégie pour aider le cerveau ado à mieux réguler :",
+                        question: "Laquelle est la plus efficace neurologiquement ?",
+                        choix: [
+                            {
+                                txt: "Punir systématiquement toute réaction émotionnelle",
+                                correct: false,
+                                feedback: "Inefficace et contre-productif. Ça ne change pas le fonctionnement cérébral, ça ajoute juste de la honte qui peut aggraver les réactions futures."
+                            },
+                            {
+                                txt: "Entraîner le 'temps de pause' entre déclencheur et réaction",
+                                correct: true,
+                                feedback: "Exact. La neuroplasticité permet d'entraîner ce délai. Techniques : respiration profonde, compter jusqu'à 5, verbaliser l'émotion ('je sens que je vais exploser'). Le cortex préfrontal se muscle avec la pratique."
+                            }
+                        ]
+                    }
+                ]
+            },
+            niveau3: {
+                titre: "Installer des freins",
+                type: "dojo",
+                xp_reward: 150,
+                scenarios: [
+                    {
+                        contexte: "Une provocation déclenche une montée de colère instantanée.",
+                        question: "Que peut-on entraîner ?",
+                        choix: [
+                            {
+                                txt: "Ignorer l'émotion et faire comme si de rien n'était",
+                                impact: -10,
+                                level: "inefficace",
+                                feedback: "Mauvaise stratégie. Réprimer l'émotion ne la fait pas disparaître et peut créer une explosion différée encore plus forte. Le cerveau a besoin de reconnaissance de l'émotion, pas de déni."
+                            },
+                            {
+                                txt: "Exploser immédiatement pour 'libérer la pression'",
+                                impact: -20,
+                                level: "contre-productif",
+                                feedback: "Contre-productif. Agir sur l'impulsion renforce le circuit neuronal de la réaction immédiate. Chaque explosion rend la suivante plus probable."
+                            },
+                            {
+                                txt: "Le temps de pause avant l'action",
+                                impact: 100,
+                                level: "optimal",
+                                feedback: "Exact. Le contrôle se travaille. Stratégie : RECONNAÎTRE l'émotion ('Je sens la colère'), NOMMER ('Je suis énervé par cette provocation'), PAUSE (respirer 3 fois profondément), CHOISIR (agir ou pas). Ce processus crée un nouvel automatisme avec la pratique."
+                            },
+                            {
+                                txt: "Demander à quelqu'un d'intervenir à votre place",
+                                impact: 20,
+                                level: "partiel",
+                                feedback: "Stratégie utile en urgence mais ne développe pas le contrôle interne. Mieux que rien, mais l'objectif est d'entraîner son propre cortex préfrontal à prendre le relais."
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "En cours, une remarque blesse profondément. L'envie de pleurer ou de crier monte.",
+                        question: "Comment utiliser la connaissance du cerveau ado ?",
+                        choix: [
+                            {
+                                txt: "Se dire 'Je suis trop sensible, je devrais être plus fort·e'",
+                                impact: -15,
+                                level: "contre-productif",
+                                feedback: "Auto-blâme inutile. La sensibilité émotionnelle accrue est NORMALE à l'adolescence. Se culpabiliser ajoute de la souffrance sans résoudre le problème."
+                            },
+                            {
+                                txt: "Verbaliser intérieurement : 'C'est mon système limbique qui réagit fort, c'est normal'",
+                                impact: 80,
+                                level: "très efficace",
+                                feedback: "Excellent. La métacognition (penser sur sa pensée) active le cortex préfrontal. Comprendre que c'est neurologique et temporaire réduit l'intensité émotionnelle. Puis : respiration, sortir si besoin, en parler après."
+                            },
+                            {
+                                txt: "Attendre que ça passe sans rien faire",
+                                impact: 10,
+                                level: "insuffisant",
+                                feedback: "Passif. L'émotion passera mais on n'entraîne pas le contrôle. Mieux : observer l'émotion activement en se disant 'je regarde ma colère/tristesse monter, je la reconnais, elle va redescendre'."
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Devant un groupe, quelqu'un vous défie. L'envie de réagir violemment pour 'ne pas perdre la face' est intense.",
+                        question: "Comment gérer l'influence du cerveau social ?",
+                        choix: [
+                            {
+                                txt: "Réagir fort pour montrer qu'on ne se laisse pas faire",
+                                impact: -25,
+                                level: "piège social",
+                                feedback: "Vous tombez dans le piège du cerveau social ado. La validation du groupe devient plus importante que votre sécurité ou vos valeurs. Résultat : escalade, regrets, possibles conséquences graves."
+                            },
+                            {
+                                txt: "Se rappeler : 'Mon cerveau survalorise le regard des autres en ce moment'",
+                                impact: 90,
+                                level: "optimal",
+                                feedback: "Excellent recul métacognitif. Reconnaître que l'urgence sociale est amplifiée par le cerveau ado permet de relativiser. Stratégie : 'Cette pression va passer, mais les conséquences de mes actes restent'. Puis : sortir de la scène, ou répondre calmement."
+                            },
+                            {
+                                txt: "Ignorer totalement en faisant semblant de ne rien entendre",
+                                impact: 30,
+                                level: "partiel",
+                                feedback: "Peut marcher parfois mais ne résout pas la pression interne. Le cerveau continue de réagir même si on n'agit pas. Mieux : reconnaître intérieurement la pression, puis choisir consciemment de ne pas y céder."
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Après une dispute, vous réalisez que vous avez réagi de manière disproportionnée.",
+                        question: "Comment transformer cette prise de conscience en apprentissage ?",
+                        choix: [
+                            {
+                                txt: "Se dire 'je suis nul·le, je ne changerai jamais'",
+                                impact: -20,
+                                level: "destructeur",
+                                feedback: "Auto-sabotage. Cette pensée renforce l'impuissance et empêche l'apprentissage. Le cerveau ado est en construction : les erreurs sont des opportunités d'entraînement, pas des preuves d'échec."
+                            },
+                            {
+                                txt: "Analyser : 'Quel a été le déclencheur ? Qu'est-ce que j'aurais pu faire différemment ?'",
+                                impact: 100,
+                                level: "optimal",
+                                feedback: "Parfait. Analyse post-action = entraînement du cortex préfrontal. Identifier le pattern (déclencheur → émotion → réaction) permet de créer un nouveau circuit. Prochaine fois : 'Je connais ce pattern, je peux choisir une autre réponse'."
+                            },
+                            {
+                                txt: "Oublier et passer à autre chose",
+                                impact: 5,
+                                level: "occasion manquée",
+                                feedback: "Dommage. Chaque situation est une chance d'entraîner le cerveau. Sans analyse, le même schéma se répétera. La neuroplasticité fonctionne par répétition consciente."
+                            },
+                            {
+                                txt: "S'excuser et proposer une stratégie pour la prochaine fois",
+                                impact: 95,
+                                level: "excellent",
+                                feedback: "Très mature. Vous prenez responsabilité (bon pour le cortex préfrontal) ET vous créez un plan d'action futur. Exemple : 'La prochaine fois que je sens ça monter, je te dis que j'ai besoin de 5 minutes'. Le cerveau apprend par l'action planifiée."
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const flashcardsData = MODULE_DATA.niveau1.cartes.map(c => ({
+            question: c.recto,
+            answer: c.verso,
+            source: c.source
+        }));
+
+        const quizData = MODULE_DATA.niveau2.questions.map(q => ({
+            question: q.texte + " " + q.question,
+            options: q.choix.map(ch => ch.txt),
+            correct: q.choix.findIndex(ch => ch.correct),
+            feedback: q.choix.find(ch => ch.correct).feedback
+        }));
+
+        const scenarioData = MODULE_DATA.niveau3.scenarios.map(s => ({
+            title: s.contexte,
+            context: s.contexte,
+            intro: s.question,
+            choices: s.choix.map(ch => ({
+                text: ch.txt,
+                result: ch.feedback,
+                impact: { regulation: ch.impact }
+            }))
+        }));
+
+        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+        function decodeSaveCode(code) { try { return JSON.parse(atob(code)); } catch { return null; } }
+        function getMasteryLevel(score) {
+            if (score >= 450) return { level: "Expert", class: "mastery-expert" };
+            if (score >= 280) return { level: "Confirmé", class: "mastery-confirmed" };
+            return { level: "En formation", class: "mastery-training" };
+        }
+
+        function App() {
+            const [gameState, setGameState] = useState("intro");
+            const [playerData, setPlayerData] = useState({ 
+                name: "", 
+                class: "", 
+                level: 1, 
+                score: 0, 
+                xp: 0, 
+                quizScore: 0, 
+                scenarioScore: 0, 
+                flashcardsViewed: 0, 
+                finished: false 
+            });
+            const [currentFlashcard, setCurrentFlashcard] = useState(0);
+            const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+            const [currentQuiz, setCurrentQuiz] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showQuizFeedback, setShowQuizFeedback] = useState(false);
+            const [currentScenario, setCurrentScenario] = useState(0);
+            const [scenarioChoice, setScenarioChoice] = useState(null);
+            const [showScenarioResult, setShowScenarioResult] = useState(false);
+
+            function startGame() {
+                if (playerData.name.trim()) setGameState("flashcards");
+            }
+
+            function nextFlashcard() {
+                if (currentFlashcard < flashcardsData.length - 1) {
+                    setCurrentFlashcard(prev => prev + 1);
+                    setFlashcardFlipped(false);
+                    setPlayerData(prev => ({ 
+                        ...prev, 
+                        flashcardsViewed: Math.max(prev.flashcardsViewed, currentFlashcard + 2), 
+                        xp: prev.xp + 12 
+                    }));
+                } else {
+                    setGameState("quiz");
+                    setPlayerData(prev => ({ 
+                        ...prev, 
+                        level: 2, 
+                        flashcardsViewed: flashcardsData.length, 
+                        xp: prev.xp + 50 
+                    }));
+                }
+            }
+
+            function prevFlashcard() { 
+                if (currentFlashcard > 0) { 
+                    setCurrentFlashcard(prev => prev - 1); 
+                    setFlashcardFlipped(false); 
+                } 
+            }
+
+            function selectQuizAnswer(index) { 
+                if (!showQuizFeedback) setSelectedAnswer(index); 
+            }
+
+            function validateQuizAnswer() {
+                setShowQuizFeedback(true);
+                if (selectedAnswer === quizData[currentQuiz].correct) {
+                    setPlayerData(prev => ({ 
+                        ...prev, 
+                        score: prev.score + 30, 
+                        quizScore: prev.quizScore + 30, 
+                        xp: prev.xp + 30 
+                    }));
+                }
+            }
+
+            function nextQuizQuestion() {
+                if (currentQuiz < quizData.length - 1) {
+                    setCurrentQuiz(prev => prev + 1);
+                    setSelectedAnswer(null);
+                    setShowQuizFeedback(false);
+                } else {
+                    setGameState("scenarios");
+                    setPlayerData(prev => ({ ...prev, level: 3, xp: prev.xp + 60 }));
+                }
+            }
+
+            function makeScenarioChoice(index) {
+                setScenarioChoice(index);
+                setShowScenarioResult(true);
+                const choice = scenarioData[currentScenario].choices[index];
+                const values = Object.values(choice.impact);
+                const totalChange = Math.max(0, values.reduce((a, b) => a + b, 0));
+                setPlayerData(prev => ({ 
+                    ...prev, 
+                    score: prev.score + totalChange, 
+                    scenarioScore: prev.scenarioScore + totalChange, 
+                    xp: prev.xp + 25 
+                }));
+            }
+
+            function nextScenario() {
+                if (currentScenario < scenarioData.length - 1) {
+                    setCurrentScenario(prev => prev + 1);
+                    setScenarioChoice(null);
+                    setShowScenarioResult(false);
+                } else {
+                    finishModule();
+                }
+            }
+
+            function finishModule() {
+                setPlayerData(prev => ({ 
+                    ...prev, 
+                    finished: true, 
+                    xp: prev.xp + 100 
+                }));
+                setGameState("final");
+            }
+
+            function generateSaveCode() {
+                const saveData = {
+                    v: MODULE_DATA.version,
+                    d: new Date().toISOString(),
+                    m: MODULE_DATA.id,
+                    n: playerData.name,
+                    c: playerData.class,
+                    s: playerData.score,
+                    x: playerData.xp,
+                    f: playerData.finished
+                };
+                return encodeSaveCode(saveData);
+            }
+
+            function copySaveCode() {
+                const code = generateSaveCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    alert("✅ Code copié dans le presse-papier !");
+                });
+            }
+
+            // Render functions
+            function renderIntro() {
+                return (
+                    <div className="intro-screen">
+                        <div className="content-panel">
+                            <div className="panel-body">
+                                <h2 style={{fontSize: "1.8rem", marginBottom: "20px", color: "var(--neuro-accent)"}}>
+                                    🧠 {MODULE_DATA.titre}
+                                </h2>
+                                <p style={{fontSize: "1.1rem", lineHeight: "1.8", marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    {MODULE_DATA.description}
+                                </p>
+                                
+                                <div className="brain-diagram">
+                                    <div className="brain-part part-limbique">
+                                        ⚡ Système Limbique<br/>
+                                        <span style={{fontSize: "0.75rem"}}>(Émotions à fond)</span>
+                                    </div>
+                                    <div className="brain-part part-prefrontal">
+                                        🎯 Cortex Préfrontal<br/>
+                                        <span style={{fontSize: "0.75rem"}}>(Contrôle en construction)</span>
+                                    </div>
+                                </div>
+
+                                <p style={{fontSize: "1rem", lineHeight: "1.6", marginTop: "30px", color: "var(--text-primary)"}}>
+                                    <strong>Ce que tu vas apprendre :</strong><br/>
+                                    • Pourquoi les émotions sont plus intenses<br/>
+                                    • Comment le cerveau ado fonctionne différemment<br/>
+                                    • Des stratégies concrètes pour mieux réguler
+                                </p>
+
+                                <div className="name-input-group">
+                                    <input 
+                                        type="text" 
+                                        className="name-input"
+                                        placeholder="Ton prénom"
+                                        value={playerData.name}
+                                        onChange={(e) => setPlayerData(prev => ({...prev, name: e.target.value}))}
+                                    />
+                                    <input 
+                                        type="text" 
+                                        className="name-input"
+                                        placeholder="Ta classe (optionnel)"
+                                        value={playerData.class}
+                                        onChange={(e) => setPlayerData(prev => ({...prev, class: e.target.value}))}
+                                    />
+                                    <button 
+                                        className="btn" 
+                                        onClick={startGame}
+                                        disabled={!playerData.name.trim()}
+                                    >
+                                        Commencer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcardsData[currentFlashcard];
+                return (
+                    <div>
+                        <div className="content-panel">
+                            <div className="panel-header">
+                                <div className="panel-icon">🧠</div>
+                                <div className="panel-title">Niveau 1 : {MODULE_DATA.niveau1.titre}</div>
+                            </div>
+                            <div className="panel-body">
+                                <p style={{marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    Carte {currentFlashcard + 1} / {flashcardsData.length}
+                                </p>
+                                
+                                <div className="flashcard-container">
+                                    <div 
+                                        className={`flashcard ${flashcardFlipped ? 'flipped' : ''}`}
+                                        onClick={() => setFlashcardFlipped(!flashcardFlipped)}
+                                    >
+                                        <div className="card-face">
+                                            <div className="card-question">{card.question}</div>
+                                            <p style={{marginTop: "20px", fontSize: "0.85rem", color: "var(--text-secondary)"}}>
+                                                Clique pour retourner
+                                            </p>
+                                        </div>
+                                        <div className="card-face card-back">
+                                            <div className="card-answer">{card.answer}</div>
+                                            {card.source && <div className="card-source">Source : {card.source}</div>}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="btn-group">
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        onClick={prevFlashcard}
+                                        disabled={currentFlashcard === 0}
+                                    >
+                                        ← Précédent
+                                    </button>
+                                    <button 
+                                        className="btn" 
+                                        onClick={nextFlashcard}
+                                    >
+                                        {currentFlashcard === flashcardsData.length - 1 ? "Passer au Quiz →" : "Suivant →"}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderQuiz() {
+                const quiz = quizData[currentQuiz];
+                return (
+                    <div>
+                        <div className="content-panel">
+                            <div className="panel-header">
+                                <div className="panel-icon">⚡</div>
+                                <div className="panel-title">Niveau 2 : {MODULE_DATA.niveau2.titre}</div>
+                            </div>
+                            <div className="panel-body">
+                                <p style={{marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    Question {currentQuiz + 1} / {quizData.length}
+                                </p>
+                                
+                                <div className="quiz-question">{quiz.question}</div>
+                                
+                                <div className="quiz-options">
+                                    {quiz.options.map((option, index) => (
+                                        <div
+                                            key={index}
+                                            className={`quiz-option ${
+                                                selectedAnswer === index ? 'selected' : ''
+                                            } ${
+                                                showQuizFeedback && index === quiz.correct ? 'correct' : ''
+                                            } ${
+                                                showQuizFeedback && selectedAnswer === index && index !== quiz.correct ? 'incorrect' : ''
+                                            }`}
+                                            onClick={() => selectQuizAnswer(index)}
+                                        >
+                                            {option}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {showQuizFeedback && (
+                                    <div className="quiz-feedback">
+                                        <strong>
+                                            {selectedAnswer === quiz.correct ? "✅ Correct !" : "❌ Pas tout à fait..."}
+                                        </strong>
+                                        <p style={{marginTop: "10px"}}>{quiz.feedback}</p>
+                                    </div>
+                                )}
+
+                                <div className="btn-group">
+                                    {!showQuizFeedback ? (
+                                        <button 
+                                            className="btn" 
+                                            onClick={validateQuizAnswer}
+                                            disabled={selectedAnswer === null}
+                                        >
+                                            Valider
+                                        </button>
+                                    ) : (
+                                        <button className="btn" onClick={nextQuizQuestion}>
+                                            {currentQuiz === quizData.length - 1 ? "Passer aux Scénarios →" : "Question suivante →"}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderScenarios() {
+                const scenario = scenarioData[currentScenario];
+                return (
+                    <div>
+                        <div className="content-panel">
+                            <div className="panel-header">
+                                <div className="panel-icon">🎯</div>
+                                <div className="panel-title">Niveau 3 : {MODULE_DATA.niveau3.titre}</div>
+                            </div>
+                            <div className="panel-body">
+                                <p style={{marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    Scénario {currentScenario + 1} / {scenarioData.length}
+                                </p>
+                                
+                                <div className="scenario-context">
+                                    <strong>Situation :</strong> {scenario.context}
+                                </div>
+                                
+                                <div className="scenario-intro">{scenario.intro}</div>
+                                
+                                <div className="scenario-choices">
+                                    {scenario.choices.map((choice, index) => (
+                                        <div
+                                            key={index}
+                                            className={`scenario-choice ${scenarioChoice === index ? 'selected' : ''}`}
+                                            onClick={() => !showScenarioResult && makeScenarioChoice(index)}
+                                        >
+                                            {choice.text}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {showScenarioResult && scenarioChoice !== null && (
+                                    <div className="scenario-result">
+                                        <strong>Analyse :</strong>
+                                        <p style={{marginTop: "10px"}}>
+                                            {scenario.choices[scenarioChoice].result}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {showScenarioResult && (
+                                    <div className="btn-group">
+                                        <button className="btn" onClick={nextScenario}>
+                                            {currentScenario === scenarioData.length - 1 ? "Terminer le module →" : "Scénario suivant →"}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderFinal() {
+                const mastery = getMasteryLevel(playerData.score);
+                return (
+                    <div className="final-screen">
+                        <div className="content-panel">
+                            <div className="panel-body">
+                                <h2 style={{fontSize: "2rem", marginBottom: "20px", color: "var(--neuro-accent)"}}>
+                                    🎓 Module Complété !
+                                </h2>
+                                
+                                <p style={{fontSize: "1.2rem", marginBottom: "30px"}}>
+                                    Bravo <strong>{playerData.name}</strong> !
+                                </p>
+
+                                <div className={`mastery-badge ${mastery.class}`}>
+                                    {mastery.level}
+                                </div>
+
+                                <div className="xp-display">
+                                    <div className="xp-box">
+                                        <div className="xp-label">Score Total</div>
+                                        <div className="xp-value">{playerData.score}</div>
+                                    </div>
+                                    <div className="xp-box">
+                                        <div className="xp-label">XP Gagné</div>
+                                        <div className="xp-value">{playerData.xp}</div>
+                                    </div>
+                                </div>
+
+                                <p style={{margin: "30px 0", lineHeight: "1.8", color: "var(--text-secondary)"}}>
+                                    Tu as maintenant les clés pour comprendre comment ton cerveau fonctionne à l'adolescence.
+                                    <br/>
+                                    <strong style={{color: "var(--neuro-accent)"}}>
+                                        Le contrôle émotionnel, ça s'entraîne !
+                                    </strong>
+                                </p>
+
+                                <div className="save-code-box" onClick={copySaveCode}>
+                                    <div style={{fontSize: "0.85rem", marginBottom: "10px", color: "var(--text-secondary)"}}>
+                                        📋 CODE DE VALIDATION (clique pour copier)
+                                    </div>
+                                    <div style={{fontSize: "0.9rem", wordBreak: "break-all"}}>
+                                        {generateSaveCode()}
+                                    </div>
+                                </div>
+
+                                <p style={{fontSize: "0.9rem", color: "var(--text-secondary)"}}>
+                                    Copie ce code et valide-le sur le hub PIXHARe pour débloquer le niveau suivant.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Main render
+            return (
+                <div className="app-container">
+                    <div className="header">
+                        <div className="pillar-icon">🧠</div>
+                        <h1 className="glitch-title">{MODULE_DATA.titre}</h1>
+                        <div className="subtitle">{MODULE_DATA.sous_titre}</div>
+                        <div className="module-badge">PILIER NEURO & EMPATHIE</div>
+                    </div>
+
+                    {gameState !== "intro" && (
+                        <>
+                            <div className="progress-bar">
+                                <div className={`progress-node ${playerData.level >= 1 ? 'completed' : ''} ${playerData.level === 1 && gameState === 'flashcards' ? 'active' : ''}`}>
+                                    1
+                                </div>
+                                <div className={`progress-node ${playerData.level >= 2 ? 'completed' : ''} ${playerData.level === 2 && gameState === 'quiz' ? 'active' : ''}`}>
+                                    2
+                                </div>
+                                <div className={`progress-node ${playerData.level >= 3 ? 'completed' : ''} ${playerData.level === 3 && gameState === 'scenarios' ? 'active' : ''}`}>
+                                    3
+                                </div>
+                            </div>
+
+                            <div className="xp-display">
+                                <div className="xp-box">
+                                    <div className="xp-label">Score</div>
+                                    <div className="xp-value">{playerData.score}</div>
+                                </div>
+                                <div className="xp-box">
+                                    <div className="xp-label">XP</div>
+                                    <div className="xp-value">{playerData.xp}</div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {gameState === "intro" && renderIntro()}
+                    {gameState === "flashcards" && renderFlashcards()}
+                    {gameState === "quiz" && renderQuiz()}
+                    {gameState === "scenarios" && renderScenarios()}
+                    {gameState === "final" && renderFinal()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

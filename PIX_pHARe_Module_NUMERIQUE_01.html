@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Module NUMÉRIQUE 01 - La Machine à Attention</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-magenta: #ff00ff;
+            --neon-green: #00ff88;
+            --neon-orange: #ff6600;
+            --dark-bg: #0a0a12;
+            --darker-bg: #050508;
+            --panel-bg: rgba(10, 10, 18, 0.95);
+            --text-primary: #e0e0ff;
+            --text-secondary: #8888aa;
+            --glow-cyan: 0 0 20px rgba(0, 255, 255, 0.5);
+            --glow-magenta: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated grid background */
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+        
+        /* Scanline effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-shadow: 
+                0 0 10px var(--neon-cyan),
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan),
+                2px 2px 0 var(--neon-magenta),
+                -2px -2px 0 var(--neon-green);
+            letter-spacing: 4px;
+            animation: glitchText 3s infinite;
+        }
+        
+        @keyframes glitchText {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 1px); }
+            94% { transform: translate(2px, -1px); }
+            96% { transform: translate(-1px, 2px); }
+            98% { transform: translate(1px, -2px); }
+        }
+        
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--neon-magenta);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .module-badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 24px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            border: 1px solid var(--neon-cyan);
+            border-radius: 0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+        
+        /* Progress indicator */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .progress-node {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--text-secondary);
+            background: var(--darker-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .progress-node.active {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: var(--glow-cyan);
+            animation: nodePulse 2s infinite;
+        }
+        
+        .progress-node.completed {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--neon-green);
+        }
+        
+        @keyframes nodePulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.8); }
+        }
+        
+        /* XP Display */
+        .xp-display {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .xp-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-cyan);
+            padding: 15px 25px;
+            text-align: center;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+        }
+        
+        .xp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .xp-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+        
+        /* Content panels */
+        .content-panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta), var(--neon-green));
+        }
+        
+        .panel-header {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .panel-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .panel-body {
+            padding: 25px;
+        }
+        
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+        
+        .flashcard {
+            position: relative;
+            width: 100%;
+            min-height: 200px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            min-height: 200px;
+            backface-visibility: hidden;
+            border: 2px solid var(--neon-cyan);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 25px;
+            background: var(--darker-bg);
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 255, 255, 0.1));
+            border-color: var(--neon-green);
+        }
+        
+        .flashcard-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .flashcard-hint {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--neon-magenta);
+            text-align: center;
+        }
+        
+        .flashcard-answer {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+        
+        .flashcard-answer strong {
+            color: var(--neon-green);
+        }
+        
+        .flashcard-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 25px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: var(--glow-cyan);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* Quiz styles */
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 3px solid var(--neon-magenta);
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .quiz-option {
+            background: var(--darker-bg);
+            border: 1px solid var(--text-secondary);
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .quiz-option:hover:not(.selected):not(.correct):not(.incorrect) {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 255, 255, 0.1);
+        }
+        
+        .quiz-option.selected {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 255, 255, 0.15);
+        }
+        
+        .quiz-option.correct {
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        .quiz-option.incorrect {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.2);
+        }
+        
+        .option-marker {
+            width: 30px;
+            height: 30px;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .feedback-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-left: 4px solid var(--neon-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .feedback-box.incorrect-feedback {
+            border-color: var(--neon-orange);
+            background: rgba(255, 102, 0, 0.1);
+        }
+        
+        .feedback-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+        
+        .feedback-box.incorrect-feedback .feedback-title {
+            color: var(--neon-orange);
+        }
+        
+        /* Scenario styles */
+        .scenario-intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 0, 255, 0.1);
+            border-left: 3px solid var(--neon-magenta);
+        }
+        
+        .scenario-context {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-orange);
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px dashed var(--neon-orange);
+        }
+        
+        .choice-btn {
+            display: block;
+            width: 100%;
+            background: var(--darker-bg);
+            border: 1px solid var(--text-secondary);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .choice-btn:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .choice-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--darker-bg);
+            border: 1px solid var(--neon-cyan);
+        }
+        
+        .impact-score {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .impact-item {
+            padding: 8px 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .impact-item.positive {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+        
+        .impact-item.negative {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+        
+        /* Primary action button */
+        .action-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            color: var(--darker-bg);
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Completion screen */
+        .completion-screen {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .completion-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .completion-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-green);
+            text-shadow: var(--glow-cyan);
+            margin-bottom: 15px;
+        }
+        
+        .completion-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-cyan);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+        }
+        
+        .stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .save-code-box {
+            background: var(--darker-bg);
+            border: 2px solid var(--neon-green);
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .save-code-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+        
+        .save-code {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--neon-cyan);
+            word-break: break-all;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px;
+            border: 1px dashed var(--neon-cyan);
+        }
+        
+        .copy-btn {
+            margin-top: 15px;
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 10px 25px;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        /* Mastery badge */
+        .mastery-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid;
+            margin-top: 15px;
+        }
+        
+        .mastery-expert {
+            color: var(--neon-green);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+        
+        .mastery-confirmed {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        
+        .mastery-training {
+            color: var(--neon-orange);
+            border-color: var(--neon-orange);
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            .glitch-title {
+                font-size: 1.6rem;
+                letter-spacing: 2px;
+            }
+            
+            .progress-node {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .xp-display {
+                gap: 15px;
+            }
+            
+            .xp-box {
+                padding: 10px 15px;
+            }
+            
+            .panel-body {
+                padding: 15px;
+            }
+            
+            .flashcard-face {
+                padding: 20px 15px;
+            }
+        }
+        
+        /* Data stream decoration */
+        .data-stream {
+            position: fixed;
+            top: 0;
+            right: 20px;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                transparent,
+                var(--neon-cyan),
+                var(--neon-magenta),
+                var(--neon-cyan),
+                transparent
+            );
+            opacity: 0.3;
+            animation: streamFlow 8s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes streamFlow {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-grid"></div>
+    <div class="scanlines"></div>
+    <div class="data-stream"></div>
+    <div class="data-stream" style="right: auto; left: 20px; animation-delay: -4s;"></div>
+    
+    <div id="root"></div>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script>
+        const { useState, useEffect, useCallback } = React;
+        const e = React.createElement;
+
+        // Module data
+        const MODULE_ID = "NUMERIQUE_01";
+        const MODULE_VERSION = "1.0";
+        const MODULE_TITLE = "La Machine à Attention";
+        const PREREQUISITE_MODULE = null; // Premier module du pilier, pas de prérequis
+        
+        // Flashcards data
+        const flashcardsData = [
+            {
+                question: "Qu'est-ce que l'économie de l'attention ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Un modèle économique où les entreprises tech monétisent notre <strong>temps de cerveau disponible</strong>. Chaque seconde passée sur une app = revenus publicitaires. Notre attention est devenue la ressource la plus précieuse et la plus disputée du 21ème siècle."
+            },
+            {
+                question: "Comment la dopamine est-elle exploitée par les réseaux sociaux ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Les notifications, likes et commentaires déclenchent des <strong>micro-doses de dopamine</strong> (neurotransmetteur du plaisir). Le cerveau associe l'app à une récompense et crée une boucle d'addiction : anticipation → action → récompense → recommencer. C'est le même circuit que les machines à sous."
+            },
+            {
+                question: "Qu'est-ce que le scroll infini et pourquoi est-il si efficace ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Interface sans fin qui élimine les <strong>points d'arrêt naturels</strong>. Sans pagination ni limite visible, le cerveau ne reçoit jamais le signal 'c'est fini'. Résultat : on scrolle en moyenne <strong>90 mètres de contenu par jour</strong>, soit la hauteur de la Statue de la Liberté."
+            },
+            {
+                question: "Pourquoi les notifications sont-elles rouges ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Le rouge active notre <strong>système d'alerte primitif</strong> (danger, sang, urgence). C'est un détournement de notre câblage neurologique de survie. Une notification rouge crée un sentiment d'urgence impossible à ignorer, même si le contenu est trivial."
+            },
+            {
+                question: "Qu'est-ce que le 'Variable Ratio Reinforcement' ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Technique où les récompenses arrivent de façon <strong>imprévisible</strong>. Comme une machine à sous, on ne sait jamais quand viendra le prochain like ou message intéressant. Cette incertitude est plus addictive qu'une récompense prévisible - on tire le levier (refresh) encore et encore."
+            },
+            {
+                question: "Combien de fois par jour consultons-nous notre téléphone en moyenne ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "En moyenne <strong>150-200 fois par jour</strong>, soit une fois toutes les 6 minutes éveillées. Les 'power users' atteignent 300+ consultations. Chaque consultation = interruption du flux de pensée = <strong>23 minutes</strong> pour retrouver sa concentration initiale."
+            },
+            {
+                question: "Qu'est-ce que le FOMO et comment les apps l'exploitent ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "<strong>Fear Of Missing Out</strong> : peur de rater quelque chose d'important. Les stories éphémères (24h), les 'vus' en temps réel, les indicateurs de qui est en ligne créent une pression sociale permanente. Déconnexion = isolation sociale perçue."
+            },
+            {
+                question: "Comment l'algorithme crée-t-il des 'bulles de filtre' ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "L'IA analyse nos interactions et nous montre <strong>uniquement ce qui confirme nos opinions</strong>. Résultat : vision du monde de plus en plus étroite, polarisation des opinions, difficulté à comprendre ceux qui pensent différemment. Chacun vit dans sa propre 'réalité' algorithmique."
+            }
+        ];
+
+        // Quiz data
+        const quizData = [
+            {
+                question: "Quelle partie du cerveau est principalement ciblée par les mécanismes d'addiction des réseaux sociaux ?",
+                options: [
+                    "Le cortex préfrontal (raisonnement)",
+                    "Le système limbique et le circuit de la récompense",
+                    "Le cervelet (coordination)",
+                    "L'hippocampe (mémoire)"
+                ],
+                correct: 1,
+                feedback: "Le système limbique, et particulièrement le noyau accumbens, gère nos réponses émotionnelles et le circuit de la récompense. Les likes et notifications déclenchent une libération de dopamine dans ce circuit, créant une association plaisir-app qui contourne notre raisonnement conscient."
+            },
+            {
+                question: "Pourquoi le 'pull-to-refresh' (tirer pour actualiser) est-il comparé à une machine à sous ?",
+                options: [
+                    "Parce que c'est un geste de la main similaire",
+                    "Parce que l'incertitude du résultat crée une addiction",
+                    "Parce que ça fait un bruit similaire",
+                    "Parce que c'est un mécanisme inventé à Las Vegas"
+                ],
+                correct: 1,
+                feedback: "Le 'variable ratio reinforcement' : on ne sait jamais si le prochain refresh apportera quelque chose d'intéressant. Cette incertitude est psychologiquement plus addictive qu'une récompense garantie. Tristan Harris, ex-Google, compare explicitement les smartphones à des 'machines à sous dans nos poches'."
+            },
+            {
+                question: "Qu'est-ce que le 'temps de cerveau disponible' selon Patrick Le Lay (ex-PDG TF1) ?",
+                options: [
+                    "Le temps de sommeil réparateur",
+                    "Le temps de concentration en classe",
+                    "L'attention humaine vendue aux annonceurs",
+                    "Le temps de lecture quotidien"
+                ],
+                correct: 2,
+                feedback: "Citation célèbre de 2004 : 'Ce que nous vendons à Coca-Cola, c'est du temps de cerveau humain disponible.' Cette phrase résume l'économie de l'attention : nous ne sommes pas les clients des plateformes gratuites, nous sommes le produit vendu aux annonceurs."
+            },
+            {
+                question: "Quel est l'effet du 'dark mode' tardif sur le sommeil ?",
+                options: [
+                    "Il améliore la qualité du sommeil",
+                    "Il n'a aucun effet prouvé",
+                    "La lumière bleue supprime la mélatonine même en dark mode",
+                    "Il fatigue les yeux uniquement"
+                ],
+                correct: 2,
+                feedback: "Même en mode sombre, les écrans émettent de la lumière bleue qui supprime la mélatonine (hormone du sommeil). L'effet est réduit mais pas éliminé. De plus, l'engagement cognitif (stress, excitation) maintient le cerveau en état d'alerte, retardant l'endormissement de 30-60 minutes en moyenne."
+            },
+            {
+                question: "Pourquoi les stories disparaissent-elles après 24h ?",
+                options: [
+                    "Pour économiser de l'espace serveur",
+                    "Pour créer un sentiment d'urgence et de FOMO",
+                    "Pour protéger la vie privée des utilisateurs",
+                    "Parce que le contenu devient obsolète"
+                ],
+                correct: 1,
+                feedback: "L'éphémérité est un design délibéré pour créer l'urgence : 'Regarde maintenant ou tu rateras pour toujours.' Cette technique exploite le FOMO (Fear Of Missing Out) et oblige à des connexions fréquentes. Le 'coût' de rater une story crée une anxiété qui pousse à la consultation compulsive."
+            }
+        ];
+
+        // Scenario data
+        const scenarioData = [
+            {
+                title: "Le Piège du Premier Like",
+                context: "23h47. Tu scrolles depuis 2 heures. Ton cerveau est épuisé mais tu continues.",
+                intro: "Tu viens de poster une photo. Ton cerveau attend la première notification. Chaque seconde sans like augmente ton anxiété. Tu refresh. Rien. Tu refresh encore. Toujours rien. Que fais-tu ?",
+                choices: [
+                    {
+                        text: "Tu supprimes la photo et tu la reposts demain à une 'meilleure heure'",
+                        result: "Tu viens de céder à l'algorithme. En cherchant le 'moment optimal', tu intègres la logique de la plateforme. Ton contenu devient une performance calculée, pas une expression authentique.",
+                        impact: { conscience: -10, dependance: +15 }
+                    },
+                    {
+                        text: "Tu poses le téléphone et tu attends demain pour regarder",
+                        result: "Bravo. Tu as résisté à la boucle d'anxiété. Le like viendra ou non - mais tu as repris le contrôle sur ton temps et tes émotions. C'est le début de la liberté numérique.",
+                        impact: { conscience: +20, dependance: -10 }
+                    },
+                    {
+                        text: "Tu envoies le lien à des amis pour qu'ils likent",
+                        result: "Tu transformes ton réseau social en système de validation artificielle. À court terme, tu obtiens des likes. À long terme, tu conditionnes tes relations à un échange de clics.",
+                        impact: { conscience: -5, dependance: +10 }
+                    },
+                    {
+                        text: "Tu analyses pourquoi tu as BESOIN de ce like",
+                        result: "Excellent réflexe métacognitif. En observant ton propre comportement, tu prends conscience du mécanisme. Cette prise de recul est la première étape vers l'autonomie numérique.",
+                        impact: { conscience: +25, dependance: -15 }
+                    }
+                ]
+            },
+            {
+                title: "L'Avalanche de Notifications",
+                context: "Tu travailles sur un devoir important. Ton téléphone vibre sans arrêt.",
+                intro: "En 30 minutes : 12 notifications Snap, 8 Insta, 5 TikTok, 3 messages. Chaque vibration crée une micro-interruption. Tu sens ta concentration s'effriter. Tu as du mal à finir une phrase. Que décides-tu ?",
+                choices: [
+                    {
+                        text: "Tu mets le téléphone en mode avion jusqu'à la fin du travail",
+                        result: "Solution radicale et efficace. Sans stimulus, ton cerveau peut enfin se concentrer. Les études montrent qu'il faut 23 minutes pour retrouver sa concentration après une interruption.",
+                        impact: { conscience: +20, dependance: -15 }
+                    },
+                    {
+                        text: "Tu vérifies 'juste une seconde' puis tu reprends",
+                        result: "Le piège classique. 'Une seconde' devient 15 minutes. Et même si tu reviens vite, ton cerveau a basculé de mode - la concentration profonde est perdue.",
+                        impact: { conscience: -10, dependance: +15 }
+                    },
+                    {
+                        text: "Tu actives le mode 'Ne pas déranger' avec exceptions pour les urgences",
+                        result: "Bon compromis. Tu filtres le bruit tout en restant joignable pour le vraiment important. C'est une stratégie de gestion plutôt que de fuite.",
+                        impact: { conscience: +15, dependance: -5 }
+                    },
+                    {
+                        text: "Tu désactives les notifications des apps non-essentielles définitivement",
+                        result: "La vraie solution de fond. Tu reprends le contrôle sur ce qui mérite ton attention. Les apps peuvent toujours être consultées - mais TU décides quand.",
+                        impact: { conscience: +25, dependance: -20 }
+                    }
+                ]
+            },
+            {
+                title: "Le Terrier de l'Algorithme",
+                context: "Tu cherchais une recette de cuisine. 2 heures plus tard, tu regardes des vidéos de théories du complot.",
+                intro: "L'algorithme a détecté que les vidéos 'choquantes' te gardaient plus longtemps. Il t'a guidé progressivement vers du contenu de plus en plus extrême. Tu réalises que tu ne sais plus comment tu es arrivé là. Comment réagis-tu ?",
+                choices: [
+                    {
+                        text: "Tu fermes l'app immédiatement et tu fais autre chose",
+                        result: "Bonne réaction d'urgence. Tu coupes le flux avant d'aller plus loin. Mais sans comprendre le mécanisme, tu risques de retomber dans le même piège demain.",
+                        impact: { conscience: +10, dependance: -5 }
+                    },
+                    {
+                        text: "Tu continues 'pour voir jusqu'où ça va'",
+                        result: "Danger. Tu rationalises ta curiosité malsaine. L'algorithme va interpréter ton visionnage comme un intérêt et t'en montrer encore plus. Tu nourris la machine.",
+                        impact: { conscience: -15, dependance: +20 }
+                    },
+                    {
+                        text: "Tu cliques sur 'Pas intéressé' et tu purges ton historique",
+                        result: "Action concrète pour 'réinitialiser' l'algorithme. En signalant explicitement ce que tu ne veux pas, tu reprends un peu de contrôle sur tes recommandations.",
+                        impact: { conscience: +15, dependance: -10 }
+                    },
+                    {
+                        text: "Tu documentes le parcours et tu analyses comment l'algo t'a manipulé",
+                        result: "Approche de chercheur. En comprenant les mécanismes (engagement émotionnel, escalade progressive, absence de friction), tu développes une immunité cognitive. Tu passes de victime à analyste.",
+                        impact: { conscience: +30, dependance: -15 }
+                    }
+                ]
+            }
+        ];
+
+        // Utility functions
+        function encodeSaveCode(data) {
+            return btoa(JSON.stringify(data));
+        }
+
+        function decodeSaveCode(code) {
+            try {
+                return JSON.parse(atob(code));
+            } catch {
+                return null;
+            }
+        }
+
+        function getMasteryLevel(score) {
+            if (score >= 450) return { level: "Expert", class: "mastery-expert" };
+            if (score >= 280) return { level: "Confirmé", class: "mastery-confirmed" };
+            return { level: "En formation", class: "mastery-training" };
+        }
+
+        // Main App Component
+        function App() {
+            const [gameState, setGameState] = useState("intro");
+            const [playerData, setPlayerData] = useState({
+                name: "",
+                class: "",
+                level: 1,
+                score: 0,
+                xp: 0,
+                quizScore: 0,
+                scenarioScore: 0,
+                flashcardsViewed: 0,
+                finished: false
+            });
+            
+            const [currentFlashcard, setCurrentFlashcard] = useState(0);
+            const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+            
+            const [currentQuiz, setCurrentQuiz] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showQuizFeedback, setShowQuizFeedback] = useState(false);
+            
+            const [currentScenario, setCurrentScenario] = useState(0);
+            const [scenarioChoice, setScenarioChoice] = useState(null);
+            const [showScenarioResult, setShowScenarioResult] = useState(false);
+
+            // Start game
+            function startGame() {
+                if (playerData.name.trim() && playerData.class.trim()) {
+                    setGameState("flashcards");
+                }
+            }
+
+            // Flashcard navigation
+            function nextFlashcard() {
+                if (currentFlashcard < flashcardsData.length - 1) {
+                    setCurrentFlashcard(prev => prev + 1);
+                    setFlashcardFlipped(false);
+                    setPlayerData(prev => ({
+                        ...prev,
+                        flashcardsViewed: Math.max(prev.flashcardsViewed, currentFlashcard + 2),
+                        xp: prev.xp + 10
+                    }));
+                } else {
+                    setGameState("quiz");
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 2,
+                        flashcardsViewed: flashcardsData.length,
+                        xp: prev.xp + 30
+                    }));
+                }
+            }
+
+            function prevFlashcard() {
+                if (currentFlashcard > 0) {
+                    setCurrentFlashcard(prev => prev - 1);
+                    setFlashcardFlipped(false);
+                }
+            }
+
+            // Quiz logic
+            function selectQuizAnswer(index) {
+                if (showQuizFeedback) return;
+                setSelectedAnswer(index);
+            }
+
+            function validateQuizAnswer() {
+                setShowQuizFeedback(true);
+                const isCorrect = selectedAnswer === quizData[currentQuiz].correct;
+                if (isCorrect) {
+                    setPlayerData(prev => ({
+                        ...prev,
+                        score: prev.score + 25,
+                        quizScore: prev.quizScore + 25,
+                        xp: prev.xp + 25
+                    }));
+                }
+            }
+
+            function nextQuizQuestion() {
+                if (currentQuiz < quizData.length - 1) {
+                    setCurrentQuiz(prev => prev + 1);
+                    setSelectedAnswer(null);
+                    setShowQuizFeedback(false);
+                } else {
+                    setGameState("scenarios");
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 3,
+                        xp: prev.xp + 50
+                    }));
+                }
+            }
+
+            // Scenario logic
+            function makeScenarioChoice(index) {
+                setScenarioChoice(index);
+                setShowScenarioResult(true);
+                
+                const choice = scenarioData[currentScenario].choices[index];
+                const conscienceChange = choice.impact.conscience || 0;
+                
+                setPlayerData(prev => ({
+                    ...prev,
+                    score: prev.score + Math.max(0, conscienceChange),
+                    scenarioScore: prev.scenarioScore + Math.max(0, conscienceChange),
+                    xp: prev.xp + 20
+                }));
+            }
+
+            function nextScenario() {
+                if (currentScenario < scenarioData.length - 1) {
+                    setCurrentScenario(prev => prev + 1);
+                    setScenarioChoice(null);
+                    setShowScenarioResult(false);
+                } else {
+                    completeModule();
+                }
+            }
+
+            function completeModule() {
+                setPlayerData(prev => ({
+                    ...prev,
+                    finished: true,
+                    xp: prev.xp + 75
+                }));
+                setGameState("complete");
+            }
+
+            // Generate save code
+            function generateSaveCode() {
+                const saveData = {
+                    v: 1,
+                    d: new Date().toISOString(),
+                    m: MODULE_ID,
+                    mv: MODULE_VERSION,
+                    n: playerData.name,
+                    c: playerData.class,
+                    l: 3,
+                    s: playerData.score,
+                    x: playerData.xp,
+                    q: playerData.quizScore,
+                    sc: playerData.scenarioScore,
+                    f: true
+                };
+                return encodeSaveCode(saveData);
+            }
+
+            // Copy to clipboard
+            function copyCode() {
+                const code = generateSaveCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    alert("Code copié !");
+                });
+            }
+
+            // Render functions
+            function renderIntro() {
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, "PIX-pHARe"),
+                        e("div", { className: "subtitle" }, "Pilier Numérique"),
+                        e("div", { className: "module-badge" }, "MODULE 01")
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🔮"),
+                            e("div", { className: "panel-title" }, MODULE_TITLE)
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "scenario-intro" },
+                                e("p", null, "Bienvenue dans le premier module du pilier ", e("strong", null, "Architectes du Numérique"), "."),
+                                e("p", { style: { marginTop: "15px" } }, "Tu vas découvrir comment les plateformes numériques capturent ton attention, exploitent ta dopamine, et te transforment en produit. Pas pour te faire peur - mais pour te donner les clés de ta liberté numérique."),
+                                e("p", { style: { marginTop: "15px" } }, "Prêt·e à ouvrir les yeux ?")
+                            ),
+                            e("div", { style: { marginTop: "25px" } },
+                                e("label", { style: { display: "block", marginBottom: "8px", color: "var(--neon-cyan)", fontFamily: "'Share Tech Mono', monospace" } }, "TON PSEUDO :"),
+                                e("input", {
+                                    type: "text",
+                                    value: playerData.name,
+                                    onChange: (ev) => setPlayerData(prev => ({ ...prev, name: ev.target.value })),
+                                    placeholder: "Entre ton prénom ou pseudo",
+                                    style: {
+                                        width: "100%",
+                                        padding: "12px 15px",
+                                        background: "var(--darker-bg)",
+                                        border: "1px solid var(--neon-cyan)",
+                                        color: "var(--text-primary)",
+                                        fontFamily: "'Rajdhani', sans-serif",
+                                        fontSize: "1rem"
+                                    }
+                                })
+                            ),
+                            e("div", { style: { marginTop: "20px" } },
+                                e("label", { style: { display: "block", marginBottom: "8px", color: "var(--neon-cyan)", fontFamily: "'Share Tech Mono', monospace" } }, "TA CLASSE :"),
+                                e("input", {
+                                    type: "text",
+                                    value: playerData.class,
+                                    onChange: (ev) => setPlayerData(prev => ({ ...prev, class: ev.target.value })),
+                                    placeholder: "Ex: 4ème B",
+                                    style: {
+                                        width: "100%",
+                                        padding: "12px 15px",
+                                        background: "var(--darker-bg)",
+                                        border: "1px solid var(--neon-cyan)",
+                                        color: "var(--text-primary)",
+                                        fontFamily: "'Rajdhani', sans-serif",
+                                        fontSize: "1rem"
+                                    }
+                                })
+                            ),
+                            e("div", { style: { textAlign: "center", marginTop: "30px" } },
+                                e("button", {
+                                    className: "action-btn",
+                                    onClick: startGame,
+                                    disabled: !playerData.name.trim() || !playerData.class.trim()
+                                }, "[ INITIALISER ]")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcardsData[currentFlashcard];
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 1 : Théorie")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node active" }, "1"),
+                        e("div", { className: "progress-node" }, "2"),
+                        e("div", { className: "progress-node" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Carte"),
+                            e("div", { className: "xp-value" }, `${currentFlashcard + 1}/${flashcardsData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "📡"),
+                            e("div", { className: "panel-title" }, "Data Cards")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "flashcard-container" },
+                                e("div", { 
+                                    className: `flashcard ${flashcardFlipped ? "flipped" : ""}`,
+                                    onClick: () => setFlashcardFlipped(!flashcardFlipped)
+                                },
+                                    e("div", { className: "flashcard-face flashcard-front" },
+                                        e("div", { className: "flashcard-question" }, card.question),
+                                        e("div", { className: "flashcard-hint" }, card.hint)
+                                    ),
+                                    e("div", { className: "flashcard-face flashcard-back" },
+                                        e("div", { 
+                                            className: "flashcard-answer",
+                                            dangerouslySetInnerHTML: { __html: card.answer }
+                                        })
+                                    )
+                                )
+                            ),
+                            e("div", { className: "flashcard-nav" },
+                                e("button", {
+                                    className: "nav-btn",
+                                    onClick: prevFlashcard,
+                                    disabled: currentFlashcard === 0
+                                }, "◄ PRÉC"),
+                                e("button", {
+                                    className: "nav-btn",
+                                    onClick: nextFlashcard
+                                }, currentFlashcard < flashcardsData.length - 1 ? "SUIV ►" : "NIVEAU 2 ►")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderQuiz() {
+                const question = quizData[currentQuiz];
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 2 : Analyse")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node active" }, "2"),
+                        e("div", { className: "progress-node" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Score Quiz"),
+                            e("div", { className: "xp-value" }, playerData.quizScore)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Question"),
+                            e("div", { className: "xp-value" }, `${currentQuiz + 1}/${quizData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🔍"),
+                            e("div", { className: "panel-title" }, "Diagnostic System")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "quiz-question" }, question.question),
+                            e("div", { className: "quiz-options" },
+                                question.options.map((opt, idx) => {
+                                    let optClass = "quiz-option";
+                                    if (showQuizFeedback) {
+                                        if (idx === question.correct) optClass += " correct";
+                                        else if (idx === selectedAnswer) optClass += " incorrect";
+                                    } else if (idx === selectedAnswer) {
+                                        optClass += " selected";
+                                    }
+                                    
+                                    return e("div", {
+                                        key: idx,
+                                        className: optClass,
+                                        onClick: () => selectQuizAnswer(idx)
+                                    },
+                                        e("div", { className: "option-marker" }, String.fromCharCode(65 + idx)),
+                                        e("div", { className: "option-text" }, opt)
+                                    );
+                                })
+                            ),
+                            showQuizFeedback && e("div", { 
+                                className: `feedback-box ${selectedAnswer !== question.correct ? "incorrect-feedback" : ""}`
+                            },
+                                e("div", { className: "feedback-title" }, 
+                                    selectedAnswer === question.correct ? "✓ CORRECT" : "✗ INCORRECT"
+                                ),
+                                e("p", null, question.feedback)
+                            ),
+                            e("div", { style: { textAlign: "center", marginTop: "25px" } },
+                                !showQuizFeedback ? 
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: validateQuizAnswer,
+                                        disabled: selectedAnswer === null
+                                    }, "[ VALIDER ]") :
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: nextQuizQuestion
+                                    }, currentQuiz < quizData.length - 1 ? "[ SUIVANT ]" : "[ NIVEAU 3 ]")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                const scenario = scenarioData[currentScenario];
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 3 : Simulation")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node active" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP Total"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Score"),
+                            e("div", { className: "xp-value" }, playerData.score)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Scénario"),
+                            e("div", { className: "xp-value" }, `${currentScenario + 1}/${scenarioData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🎮"),
+                            e("div", { className: "panel-title" }, scenario.title)
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "scenario-context" }, scenario.context),
+                            e("div", { className: "scenario-intro" }, scenario.intro),
+                            !showScenarioResult ? 
+                                e("div", { className: "choices" },
+                                    scenario.choices.map((choice, idx) => 
+                                        e("button", {
+                                            key: idx,
+                                            className: "choice-btn",
+                                            onClick: () => makeScenarioChoice(idx)
+                                        }, choice.text)
+                                    )
+                                ) :
+                                e("div", { className: "choice-result" },
+                                    e("p", { style: { marginBottom: "15px" } }, scenario.choices[scenarioChoice].result),
+                                    e("div", { className: "impact-score" },
+                                        Object.entries(scenario.choices[scenarioChoice].impact).map(([key, val]) =>
+                                            e("div", { 
+                                                key: key,
+                                                className: `impact-item ${val > 0 ? "positive" : "negative"}`
+                                            }, `${key}: ${val > 0 ? "+" : ""}${val}`)
+                                        )
+                                    ),
+                                    e("div", { style: { textAlign: "center", marginTop: "25px" } },
+                                        e("button", {
+                                            className: "action-btn",
+                                            onClick: nextScenario
+                                        }, currentScenario < scenarioData.length - 1 ? "[ SUIVANT ]" : "[ TERMINER ]")
+                                    )
+                                )
+                        )
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const mastery = getMasteryLevel(playerData.score);
+                const saveCode = generateSaveCode();
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "completion-screen" },
+                        e("div", { className: "completion-icon" }, "🔓"),
+                        e("h1", { className: "completion-title" }, "MODULE DÉVERROUILLÉ"),
+                        e("p", { className: "completion-subtitle" }, 
+                            `Félicitations ${playerData.name} ! Tu as terminé "La Machine à Attention"`
+                        ),
+                        e("div", { className: `mastery-badge ${mastery.class}` }, mastery.level),
+                        e("div", { className: "stats-grid" },
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.score),
+                                e("div", { className: "stat-label" }, "Score Total")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.xp),
+                                e("div", { className: "stat-label" }, "XP Gagnés")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.quizScore),
+                                e("div", { className: "stat-label" }, "Score Quiz")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.scenarioScore),
+                                e("div", { className: "stat-label" }, "Score Scénarios")
+                            )
+                        ),
+                        e("div", { className: "save-code-box" },
+                            e("div", { className: "save-code-label" }, "📋 TON CODE DE SAUVEGARDE (pour le Module 02) :"),
+                            e("div", { className: "save-code" }, saveCode),
+                            e("button", { 
+                                className: "copy-btn",
+                                onClick: copyCode
+                            }, "Copier le code")
+                        ),
+                        e("div", { className: "content-panel", style: { marginTop: "30px", textAlign: "left" } },
+                            e("div", { className: "panel-header" },
+                                e("div", { className: "panel-icon" }, "💡"),
+                                e("div", { className: "panel-title" }, "Ce que tu as appris")
+                            ),
+                            e("div", { className: "panel-body" },
+                                e("p", null, "Tu comprends maintenant que les plateformes numériques ne sont pas neutres. Elles sont conçues par des ", e("strong", null, "ingénieurs de la persuasion"), " qui exploitent les failles de ton cerveau."),
+                                e("p", { style: { marginTop: "15px" } }, "La dopamine, le FOMO, le scroll infini, les notifications rouges... Ce ne sont pas des bugs, ce sont des ", e("strong", null, "features"), " - des fonctionnalités délibérément conçues pour capturer ton attention."),
+                                e("p", { style: { marginTop: "15px" } }, "Dans le prochain module, tu découvriras les ", e("strong", null, "Dark Patterns"), " : ces interfaces truquées qui te manipulent sans que tu t'en rendes compte.")
+                            )
+                        )
+                    )
+                );
+            }
+
+            // Main render
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        // Mount app
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

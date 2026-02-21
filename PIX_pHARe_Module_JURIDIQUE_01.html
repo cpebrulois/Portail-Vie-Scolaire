@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | L'Armure Juridique</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --card: #0f3460;
+            --light: #e8e8e8;
+            --gold: #ffd700;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
+        }
+        
+        /* HEADER */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 {
+            font-size: 2.2em;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+        .header .subtitle {
+            color: var(--warning);
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .header .badge {
+            display: inline-block;
+            background: var(--darker);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            border: 1px solid var(--primary);
+        }
+        
+        /* PROGRESS BAR */
+        .progress-container {
+            background: var(--darker);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+        }
+        .progress-bar-outer {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+        }
+        .xp-badge {
+            background: var(--gold);
+            color: #000;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+        
+        /* BUTTONS */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
+        }
+        .btn:active { transform: translateY(0); }
+        .btn-secondary {
+            background: linear-gradient(135deg, #7f8c8d, #636e72);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #1e8449);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #e67e22);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent), #c0392b);
+        }
+        .btn-block { width: 100%; justify-content: center; }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        /* CARDS */
+        .card {
+            background: linear-gradient(145deg, #fff, #f0f0f0);
+            color: var(--dark);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .card-dark {
+            background: var(--darker);
+            color: var(--light);
+        }
+        
+        /* FLASHCARD */
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 25px 0;
+        }
+        .flashcard {
+            background: linear-gradient(145deg, #fff, #f8f9fa);
+            color: var(--dark);
+            padding: 40px 30px;
+            border-radius: 15px;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.6s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .flashcard:hover {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard .front, .flashcard .back {
+            backface-visibility: hidden;
+            position: absolute;
+            width: calc(100% - 60px);
+        }
+        .flashcard .back {
+            transform: rotateY(180deg);
+        }
+        .flashcard .question {
+            font-size: 1.3em;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .flashcard .answer {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .flashcard .answer-label {
+            color: var(--success);
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .flashcard .source {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+        }
+        .flashcard .tap-hint {
+            position: absolute;
+            bottom: 15px;
+            font-size: 0.8em;
+            color: #999;
+        }
+        .card-counter {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            color: var(--light);
+            opacity: 0.8;
+        }
+        
+        /* QUIZ */
+        .quiz-question {
+            background: var(--darker);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--warning);
+        }
+        .quiz-question .label {
+            color: var(--warning);
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .quiz-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .quiz-choice {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: var(--light);
+            padding: 18px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1rem;
+        }
+        .quiz-choice:hover {
+            background: rgba(52, 152, 219, 0.2);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        .quiz-choice.correct {
+            background: rgba(39, 174, 96, 0.3);
+            border-color: var(--success);
+        }
+        .quiz-choice.incorrect {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: var(--accent);
+        }
+        .quiz-choice.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        /* FEEDBACK */
+        .feedback {
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .feedback.correct {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--success);
+        }
+        .feedback.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--accent);
+        }
+        .feedback .title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .feedback.correct .title { color: var(--success); }
+        .feedback.incorrect .title { color: var(--accent); }
+        
+        /* DOJO */
+        .dojo-scenario {
+            background: linear-gradient(135deg, var(--darker), #1a1a3a);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        .dojo-scenario .context-label {
+            color: var(--accent);
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .dojo-scenario .context {
+            font-size: 1.05em;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .dojo-scenario .question {
+            background: rgba(243, 156, 18, 0.15);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--warning);
+        }
+        .impact-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .impact-positive { background: var(--success); color: #fff; }
+        .impact-negative { background: var(--accent); color: #fff; }
+        .impact-neutral { background: var(--warning); color: #000; }
+        
+        /* SAVE CODE */
+        .save-code-section {
+            background: #0a0a0a;
+            border: 2px dashed #0f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .save-code-box {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', Consolas, monospace;
+            padding: 20px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 0.85em;
+            line-height: 1.5;
+            user-select: all;
+            cursor: text;
+            margin: 15px 0;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .save-instructions {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .save-instructions h4 {
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        .save-instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        /* REPORT */
+        .report {
+            background: linear-gradient(145deg, #fff, #f5f5f5);
+            color: var(--dark);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .report-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        .report-body {
+            padding: 30px;
+        }
+        .report-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .report-stat:last-child { border-bottom: none; }
+        .report-stat .label { color: #666; }
+        .report-stat .value { font-weight: bold; color: var(--dark); }
+        .mastery-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .mastery-expert { background: linear-gradient(135deg, var(--gold), #f39c12); color: #000; }
+        .mastery-confirmed { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+        .mastery-learning { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; }
+        
+        /* LOAD SCREEN */
+        .load-section textarea {
+            width: 100%;
+            min-height: 120px;
+            background: #000;
+            color: #0f0;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+        }
+        .load-section textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* UTILITIES */
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+        .emoji-big { font-size: 3em; display: block; margin-bottom: 15px; }
+        
+        /* LEVEL INDICATOR */
+        .level-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .level-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            background: var(--darker);
+            border: 3px solid #444;
+            transition: all 0.3s;
+        }
+        .level-dot.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+        }
+        .level-dot.completed {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .app-container { padding: 20px; }
+            .header h1 { font-size: 1.6em; }
+            .flashcard { padding: 25px 20px; min-height: 220px; }
+            .btn { padding: 12px 20px; font-size: 0.9rem; }
+        }
+    </style>
+    <!-- React 18 CDN - DOIT être chargé AVANT le script principal -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // ============================================================
+        // DONNÉES DU MODULE (PLUG'N PLAY - Modifiable facilement)
+        // ============================================================
+        const MODULE_DATA = {
+            id: "JURIDIQUE_01",
+            version: "1.0.0",
+            titre: "L'ARMURE JURIDIQUE",
+            sous_titre: "Pilier 1 : Le Code et la Loi",
+            description: "Maîtriser l'article 222-33-2-3 du Code Pénal pour distinguer le conflit du harcèlement.",
+            auteur: "Programme pHARe",
+            
+            // NIVEAU 1 : THÉORIE (Flashcards)
+            niveau1: {
+                titre: "Les Fondations de la Loi",
+                type: "flashcards",
+                xp_reward: 50,
+                cartes: [
+                    {
+                        recto: "Quelle est la définition légale du Harcèlement Scolaire ?",
+                        verso: "C'est une violence répétée (verbale, physique ou psychologique) qui dégrade les conditions de vie et altère la santé physique ou mentale de la victime.",
+                        source: "Art. 222-33-2-3 Code Pénal"
+                    },
+                    {
+                        recto: "Quels sont les 3 critères obligatoires du harcèlement ?\n(Le Triangle du Délit)",
+                        verso: "1. L'ACTE (violence, moquerie, exclusion)\n\n2. La RÉPÉTITION (dans le temps OU par le nombre d'auteurs)\n\n3. La CONSÉQUENCE (isolement, anxiété, chute des notes, souffrance...)",
+                        source: "Loi du 2 mars 2022"
+                    },
+                    {
+                        recto: "Qu'est-ce que \"l'Effet de Meute\" ?\n(Nouveauté importante depuis 2022)",
+                        verso: "Si plusieurs personnes commettent CHACUNE un seul acte contre la même victime, c'est considéré comme une RÉPÉTITION.\n\nExemple : 10 élèves envoient chacun 1 insulte = Tous coupables de harcèlement.",
+                        source: "Jurisprudence & Loi 2022"
+                    },
+                    {
+                        recto: "Quelles sont les peines encourues pour harcèlement scolaire ?",
+                        verso: "• Jusqu'à 10 ans de prison si la victime se suicide ou tente de se suicider\n\n• Jusqu'à 3 ans de prison et 45 000€ d'amende dans les autres cas graves\n\n• Les mineurs peuvent être jugés.",
+                        source: "Art. 222-33-2-3 Code Pénal"
+                    },
+                    {
+                        recto: "Qu'est-ce que l'usurpation d'identité numérique ?",
+                        verso: "Utiliser l'identité d'une personne (nom, photo, pseudo connu) pour troubler sa tranquillité ou porter atteinte à son honneur.\n\nPeine : 1 an de prison + 15 000€ d'amende.\n\nATTENTION : Créer un faux compte au nom de quelqu'un EST un délit, même sans rien publier.",
+                        source: "Art. 226-4-1 Code Pénal"
+                    }
+                ]
+            },
+            
+            // NIVEAU 2 : ANALYSE (Quiz Situationnel)
+            niveau2: {
+                titre: "Le Juge d'Instruction",
+                type: "quiz",
+                xp_reward: 100,
+                questions: [
+                    {
+                        texte: "Karim bouscule Léo violemment dans le couloir. Léo tombe et se fait mal. C'est la première fois que ça arrive entre eux.",
+                        question: "Est-ce du harcèlement scolaire au sens de la loi ?",
+                        choix: [
+                            { 
+                                txt: "OUI, c'est de la violence physique donc c'est du harcèlement.", 
+                                correct: false, 
+                                feedback: "C'est bien une violence physique (punissable !), mais ce n'est PAS du harcèlement car il manque le critère de RÉPÉTITION. Un acte isolé = agression, pas harcèlement." 
+                            },
+                            { 
+                                txt: "NON, c'est une agression isolée, pas du harcèlement.", 
+                                correct: true, 
+                                feedback: "Exact ! C'est une agression qui peut être sanctionnée, mais juridiquement ce n'est pas du harcèlement sans répétition. Attention : si ça se répète, ça le devient !" 
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Chloé reçoit des messages haineux de 5 élèves différents sur WhatsApp. Chaque élève n'a écrit qu'UN SEUL message.",
+                        question: "Est-ce du harcèlement ?",
+                        choix: [
+                            { 
+                                txt: "NON, car chaque élève n'a commis qu'un seul acte (pas de répétition individuelle).", 
+                                correct: false, 
+                                feedback: "FAUX ! Depuis la loi de 2022, c'est l'EFFET DE MEUTE : la victime subit bien une répétition (5 messages). Tous les auteurs sont donc coupables de harcèlement, même s'ils n'ont agi qu'une fois." 
+                            },
+                            { 
+                                txt: "OUI, c'est du harcèlement de groupe (Effet de Meute).", 
+                                correct: true, 
+                                feedback: "Correct ! L'effet de meute reconnaît que la victime subit une répétition même si chaque auteur n'agit qu'une fois. Les 5 élèves sont tous responsables de harcèlement." 
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Deux élèves se disputent et s'insultent mutuellement dans la cour. C'est violent mais réciproque, et ça n'arrive qu'une fois.",
+                        question: "Comment qualifier cette situation ?",
+                        choix: [
+                            { 
+                                txt: "C'est du harcèlement mutuel.", 
+                                correct: false, 
+                                feedback: "Non ! Le harcèlement implique une victime et un(des) auteur(s). Une dispute ponctuelle et réciproque est un CONFLIT, pas du harcèlement. Les deux élèves sont sur un pied d'égalité." 
+                            },
+                            { 
+                                txt: "C'est un conflit, pas du harcèlement.", 
+                                correct: true, 
+                                feedback: "Exact ! Un conflit est une opposition entre égaux. Le harcèlement crée un déséquilibre de pouvoir avec une victime qui subit. Important de distinguer les deux pour bien réagir !" 
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Emma est mise à l'écart systématiquement par son groupe d'amies depuis 3 semaines. Elles ne lui parlent plus, l'ignorent, et font des messes basses quand elle passe.",
+                        question: "Est-ce du harcèlement ?",
+                        choix: [
+                            { 
+                                txt: "NON, il n'y a pas de violence physique ni d'insultes.", 
+                                correct: false, 
+                                feedback: "FAUX ! Le harcèlement peut être PSYCHOLOGIQUE. L'exclusion systématique, l'isolement forcé, les regards et messes basses répétés constituent bien des actes de harcèlement." 
+                            },
+                            { 
+                                txt: "OUI, l'exclusion répétée est une forme de harcèlement.", 
+                                correct: true, 
+                                feedback: "Correct ! Le harcèlement n'est pas que physique. L'exclusion sociale systématique, le fait d'ignorer quelqu'un volontairement en groupe, de façon répétée, est bien du harcèlement psychologique." 
+                            }
+                        ]
+                    }
+                ]
+            },
+            
+            // NIVEAU 3 : SIMULATION (Dojo Décisionnel)
+            niveau3: {
+                titre: "Le Dojo Décisionnel",
+                type: "dojo",
+                xp_reward: 150,
+                scenarios: [
+                    {
+                        contexte: "Tu es ambassadeur pHARe. Un groupe d'élèves a créé un compte Instagram appelé \"Les secrets de Sarah\" avec sa photo de profil. Ils n'ont encore rien publié.",
+                        question: "Quelle est l'infraction principale À CE STADE ?",
+                        choix: [
+                            { 
+                                txt: "Atteinte au droit à l'image", 
+                                impact: 20, 
+                                level: "partial",
+                                feedback: "Tu identifies bien un problème, mais il y a une infraction PLUS GRAVE qui est déjà constituée..." 
+                            },
+                            { 
+                                txt: "Usurpation d'identité numérique (Art. 226-4-1)", 
+                                impact: 100, 
+                                level: "optimal",
+                                feedback: "EXCELLENT ! L'usurpation d'identité est constituée dès la création du faux compte. C'est 1 an de prison et 15 000€ d'amende. Pas besoin d'attendre qu'ils publient pour agir !" 
+                            },
+                            { 
+                                txt: "Rien pour l'instant, il faut attendre qu'ils publient", 
+                                impact: -30, 
+                                level: "error",
+                                feedback: "ERREUR GRAVE ! L'usurpation d'identité est DÉJÀ un délit. Attendre = laisser la situation empirer. Un ambassadeur doit signaler immédiatement." 
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Un élève te montre des captures d'écran : depuis une semaine, il reçoit chaque soir des messages anonymes qui se moquent de son physique sur différentes applis.",
+                        question: "Quelle est ta priorité en tant qu'ambassadeur ?",
+                        choix: [
+                            { 
+                                txt: "Lui conseiller de bloquer les comptes et de ne pas répondre", 
+                                impact: 30, 
+                                level: "partial",
+                                feedback: "C'est un bon réflexe de protection immédiate, mais ça ne suffit pas ! Les preuves risquent de disparaître et l'auteur peut continuer autrement." 
+                            },
+                            { 
+                                txt: "L'accompagner pour signaler à un adulte référent avec les captures comme preuves", 
+                                impact: 100, 
+                                level: "optimal",
+                                feedback: "PARFAIT ! Tu sécurises les preuves, tu ne restes pas seul face à la situation, et tu actives le protocole adulte. C'est exactement le rôle d'un ambassadeur." 
+                            },
+                            { 
+                                txt: "Chercher qui est l'auteur en menant ton enquête", 
+                                impact: -20, 
+                                level: "error",
+                                feedback: "ATTENTION ! Ce n'est pas ton rôle de mener l'enquête. Tu risques d'alerter l'auteur, de compromettre les preuves, ou de te mettre en difficulté. Laisse ça aux adultes." 
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Pendant la récré, tu vois un attroupement. Un élève est au centre, plusieurs autres se moquent de lui. Certains filment avec leur téléphone.",
+                        question: "Que fais-tu ?",
+                        choix: [
+                            { 
+                                txt: "Tu interviens directement pour dire d'arrêter", 
+                                impact: 40, 
+                                level: "partial",
+                                feedback: "Courageux, mais risqué ! Face à un groupe, tu peux te retrouver ciblé à ton tour. Mieux vaut chercher rapidement un adulte tout en restant visible pour rassurer la victime." 
+                            },
+                            { 
+                                txt: "Tu vas chercher un adulte immédiatement", 
+                                impact: 80, 
+                                level: "good",
+                                feedback: "Bonne réaction ! C'est la procédure sûre. Mais si possible, en y allant, fais signe à la victime que tu vas chercher de l'aide." 
+                            },
+                            { 
+                                txt: "Tu t'approches de la victime et l'éloignes calmement du groupe, puis tu cherches un adulte", 
+                                impact: 100, 
+                                level: "optimal",
+                                feedback: "EXCELLENT ! Tu combines protection immédiate de la victime ET signalement adulte. Tu brises l'effet de groupe sans confrontation directe. Technique d'ambassadeur au top !" 
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // ============================================================
+        // UTILITAIRES DE SAUVEGARDE
+        // ============================================================
+        const generateSaveCode = (progress) => {
+            const payload = {
+                v: 1, // version du format
+                d: new Date().toISOString(),
+                m: MODULE_DATA.id,
+                mv: MODULE_DATA.version,
+                n: progress.nom || "Anonyme",
+                c: progress.classe || "",
+                l: progress.currentLevel,
+                s: progress.score,
+                x: progress.xp,
+                q: progress.quizScore,
+                dj: progress.dojoScore,
+                f: progress.finished
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        };
+
+        const decodeSaveCode = (code) => {
+            try {
+                const data = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+                if (data.m !== MODULE_DATA.id) return { valid: false, error: "Ce code est pour un autre module." };
+                return { valid: true, data };
+            } catch (e) {
+                return { valid: false, error: "Code invalide ou corrompu." };
+            }
+        };
+
+        const formatDate = (isoString) => {
+            return new Date(isoString).toLocaleDateString('fr-FR', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        };
+
+        // ============================================================
+        // COMPOSANTS REACT (sans JSX - compatible navigateur)
+        // ============================================================
+        const e = React.createElement;
+        const { useState, useEffect } = React;
+
+        // --- Header Component ---
+        function Header({ showProgress, xp, currentLevel }) {
+            return e('div', { className: 'header' },
+                e('h1', null, MODULE_DATA.titre),
+                e('div', { className: 'subtitle' }, MODULE_DATA.sous_titre),
+                showProgress && e('div', { className: 'badge' }, `⚡ ${xp} XP`)
+            );
+        }
+
+        // --- Progress Bar Component ---
+        function ProgressBar({ currentLevel, xp }) {
+            const totalLevels = 3;
+            const percent = Math.min(100, (currentLevel / totalLevels) * 100);
+            
+            return e('div', { className: 'progress-container' },
+                e('div', { className: 'progress-stats' },
+                    e('span', null, `Niveau ${currentLevel}/3`),
+                    e('span', { className: 'xp-badge' }, `${xp} XP`)
+                ),
+                e('div', { className: 'progress-bar-outer' },
+                    e('div', { className: 'progress-bar-inner', style: { width: `${percent}%` } })
+                )
+            );
+        }
+
+        // --- Level Indicator Component ---
+        function LevelIndicator({ current }) {
+            const levels = ['📚', '🔍', '⚔️'];
+            return e('div', { className: 'level-indicator' },
+                levels.map((emoji, i) => 
+                    e('div', { 
+                        key: i,
+                        className: `level-dot ${i + 1 === current ? 'active' : ''} ${i + 1 < current ? 'completed' : ''}`
+                    }, i + 1 < current ? '✓' : emoji)
+                )
+            );
+        }
+
+        // --- Flashcard Component ---
+        function Flashcard({ card, onNext, isLast, onComplete }) {
+            const [flipped, setFlipped] = useState(false);
+            
+            return e('div', { className: 'flashcard-container' },
+                e('div', { 
+                    className: `flashcard ${flipped ? 'flipped' : ''}`,
+                    onClick: () => setFlipped(!flipped)
+                },
+                    e('div', { className: 'front' },
+                        e('div', { className: 'question' }, card.recto),
+                        e('div', { className: 'tap-hint' }, '👆 Clique pour retourner')
+                    ),
+                    e('div', { className: 'back' },
+                        e('div', { className: 'answer-label' }, '✓ Réponse'),
+                        e('div', { className: 'answer', style: { whiteSpace: 'pre-line' } }, card.verso),
+                        e('div', { className: 'source' }, `📖 ${card.source}`)
+                    )
+                ),
+                e('div', { className: 'text-center mt-20' },
+                    flipped && (
+                        isLast 
+                            ? e('button', { className: 'btn btn-success', onClick: onComplete }, '✓ VALIDER LE NIVEAU 1')
+                            : e('button', { className: 'btn', onClick: () => { onNext(); setFlipped(false); } }, 'CARTE SUIVANTE →')
+                    )
+                )
+            );
+        }
+
+        // --- Quiz Component ---
+        function QuizQuestion({ question, onAnswer }) {
+            const [answered, setAnswered] = useState(false);
+            const [selectedIdx, setSelectedIdx] = useState(null);
+            const [feedback, setFeedback] = useState(null);
+
+            const handleChoice = (choice, idx) => {
+                if (answered) return;
+                setAnswered(true);
+                setSelectedIdx(idx);
+                setFeedback({ correct: choice.correct, text: choice.feedback });
+            };
+
+            const handleNext = () => {
+                onAnswer(feedback.correct);
+            };
+
+            return e('div', null,
+                e('div', { className: 'quiz-question' },
+                    e('div', { className: 'label' }, '📋 SITUATION'),
+                    e('p', { style: { marginBottom: '15px', lineHeight: '1.6' } }, question.texte),
+                    question.question && e('p', { style: { fontWeight: 'bold', color: '#f39c12' } }, `❓ ${question.question}`)
+                ),
+                e('div', { className: 'quiz-choices' },
+                    question.choix.map((choice, idx) => 
+                        e('button', {
+                            key: idx,
+                            className: `quiz-choice ${answered ? (idx === selectedIdx ? (choice.correct ? 'correct' : 'incorrect') : 'disabled') : ''}`,
+                            onClick: () => handleChoice(choice, idx),
+                            disabled: answered
+                        }, choice.txt)
+                    )
+                ),
+                feedback && e('div', { className: `feedback ${feedback.correct ? 'correct' : 'incorrect'}` },
+                    e('div', { className: 'title' }, feedback.correct ? '✓ CORRECT !' : '✗ ERREUR D\'ANALYSE'),
+                    e('p', null, feedback.text),
+                    e('button', { className: 'btn mt-20', onClick: handleNext }, 'CONTINUER →')
+                )
+            );
+        }
+
+        // --- Dojo Component ---
+        function DojoScenario({ scenario, onAnswer }) {
+            const [answered, setAnswered] = useState(false);
+            const [selectedChoice, setSelectedChoice] = useState(null);
+
+            const handleChoice = (choice) => {
+                if (answered) return;
+                setAnswered(true);
+                setSelectedChoice(choice);
+            };
+
+            const getImpactClass = (impact) => {
+                if (impact >= 80) return 'impact-positive';
+                if (impact > 0) return 'impact-neutral';
+                return 'impact-negative';
+            };
+
+            const getImpactLabel = (impact) => {
+                if (impact >= 80) return `+${impact} pts`;
+                if (impact > 0) return `+${impact} pts`;
+                return `${impact} pts`;
+            };
+
+            return e('div', null,
+                e('div', { className: 'dojo-scenario' },
+                    e('div', { className: 'context-label' }, '🎬 SCÉNARIO'),
+                    e('p', { className: 'context' }, scenario.contexte),
+                    e('div', { className: 'question' },
+                        e('strong', null, '❓ ', scenario.question)
+                    )
+                ),
+                e('div', { className: 'quiz-choices' },
+                    scenario.choix.map((choice, idx) => 
+                        e('button', {
+                            key: idx,
+                            className: `quiz-choice ${answered ? (choice === selectedChoice ? (choice.level === 'optimal' ? 'correct' : choice.level === 'error' ? 'incorrect' : '') : 'disabled') : ''}`,
+                            onClick: () => handleChoice(choice),
+                            disabled: answered
+                        }, 
+                            choice.txt,
+                            answered && e('span', { className: `impact-badge ${getImpactClass(choice.impact)}` }, getImpactLabel(choice.impact))
+                        )
+                    )
+                ),
+                selectedChoice && e('div', { className: `feedback ${selectedChoice.level === 'optimal' ? 'correct' : selectedChoice.level === 'error' ? 'incorrect' : 'correct'}` },
+                    e('div', { className: 'title' }, 
+                        selectedChoice.level === 'optimal' ? '🏆 DÉCISION OPTIMALE !' : 
+                        selectedChoice.level === 'error' ? '⚠️ DÉCISION RISQUÉE' : '👍 BONNE PISTE'
+                    ),
+                    e('p', null, selectedChoice.feedback),
+                    e('button', { className: 'btn mt-20', onClick: () => onAnswer(selectedChoice.impact) }, 'CONTINUER →')
+                )
+            );
+        }
+
+        // --- Report Component ---
+        function Report({ progress, onRestart, onMenu }) {
+            const saveCode = generateSaveCode(progress);
+            const [copied, setCopied] = useState(false);
+
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(saveCode).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                });
+            };
+
+            const getMasteryLevel = () => {
+                const total = progress.quizScore + progress.dojoScore;
+                if (total >= 500) return { label: 'EXPERT', class: 'mastery-expert' };
+                if (total >= 300) return { label: 'CONFIRMÉ', class: 'mastery-confirmed' };
+                return { label: 'EN FORMATION', class: 'mastery-learning' };
+            };
+
+            const mastery = getMasteryLevel();
+
+            return e('div', null,
+                e('div', { className: 'report' },
+                    e('div', { className: 'report-header' },
+                        e('span', { className: 'emoji-big' }, '🏅'),
+                        e('h2', null, 'MISSION ACCOMPLIE'),
+                        e('p', null, MODULE_DATA.titre)
+                    ),
+                    e('div', { className: 'report-body' },
+                        e('div', { className: 'report-stat' },
+                            e('span', { className: 'label' }, 'Agent'),
+                            e('span', { className: 'value' }, progress.nom || 'Anonyme')
+                        ),
+                        progress.classe && e('div', { className: 'report-stat' },
+                            e('span', { className: 'label' }, 'Classe'),
+                            e('span', { className: 'value' }, progress.classe)
+                        ),
+                        e('div', { className: 'report-stat' },
+                            e('span', { className: 'label' }, 'XP Total'),
+                            e('span', { className: 'value' }, `${progress.xp} XP`)
+                        ),
+                        e('div', { className: 'report-stat' },
+                            e('span', { className: 'label' }, 'Score Quiz'),
+                            e('span', { className: 'value' }, `${progress.quizScore} pts`)
+                        ),
+                        e('div', { className: 'report-stat' },
+                            e('span', { className: 'label' }, 'Score Dojo'),
+                            e('span', { className: 'value' }, `${progress.dojoScore} pts`)
+                        ),
+                        e('div', { className: 'report-stat' },
+                            e('span', { className: 'label' }, 'Niveau de Maîtrise'),
+                            e('span', { className: `mastery-badge ${mastery.class}` }, mastery.label)
+                        )
+                    )
+                ),
+                e('div', { className: 'save-code-section' },
+                    e('h3', { style: { color: '#0f0', marginBottom: '15px' } }, '💾 CODE DE SAUVEGARDE'),
+                    e('p', { style: { opacity: 0.8, marginBottom: '10px' } }, 
+                        'Ce code contient ta progression. Conserve-le précieusement !'
+                    ),
+                    e('div', { className: 'save-code-box' }, saveCode),
+                    e('button', { 
+                        className: `btn ${copied ? 'btn-success' : ''}`,
+                        onClick: copyToClipboard 
+                    }, copied ? '✓ COPIÉ !' : '📋 COPIER LE CODE'),
+                    e('div', { className: 'save-instructions' },
+                        e('h4', null, '📌 Que faire avec ce code ?'),
+                        e('ul', null,
+                            e('li', null, '1. GARDE-LE pour reprendre plus tard au même niveau'),
+                            e('li', null, '2. ENVOIE-LE AU CPE pour valider ton badge pHARe'),
+                            e('li', null, '3. Tu peux le coller dans un mail ou un message')
+                        )
+                    )
+                ),
+                e('div', { className: 'btn-group' },
+                    e('button', { className: 'btn btn-secondary', onClick: onMenu }, '🏠 RETOUR AU MENU'),
+                    e('button', { className: 'btn btn-warning', onClick: onRestart }, '🔄 RECOMMENCER LE MODULE')
+                )
+            );
+        }
+
+        // --- Main App Component ---
+        function App() {
+            const [mode, setMode] = useState('menu'); // menu, register, game, report, load
+            const [currentLevel, setCurrentLevel] = useState(1);
+            const [cardIdx, setCardIdx] = useState(0);
+            const [questionIdx, setQuestionIdx] = useState(0);
+            const [scenarioIdx, setScenarioIdx] = useState(0);
+            const [xp, setXp] = useState(0);
+            const [quizScore, setQuizScore] = useState(0);
+            const [dojoScore, setDojoScore] = useState(0);
+            const [nom, setNom] = useState('');
+            const [classe, setClasse] = useState('');
+            const [inputCode, setInputCode] = useState('');
+            const [loadError, setLoadError] = useState('');
+
+            const resetProgress = () => {
+                setCurrentLevel(1);
+                setCardIdx(0);
+                setQuestionIdx(0);
+                setScenarioIdx(0);
+                setXp(0);
+                setQuizScore(0);
+                setDojoScore(0);
+            };
+
+            const progress = {
+                nom, classe, currentLevel, xp, quizScore, dojoScore,
+                score: quizScore + dojoScore,
+                finished: mode === 'report'
+            };
+
+            // --- MENU ---
+            if (mode === 'menu') {
+                return e('div', { className: 'app-container' },
+                    e(Header, { showProgress: false }),
+                    e('div', { className: 'card', style: { marginTop: '20px' } },
+                        e('strong', null, '🎯 MISSION : '),
+                        MODULE_DATA.description
+                    ),
+                    e('div', { className: 'btn-group' },
+                        e('button', { className: 'btn btn-block', onClick: () => setMode('register') }, 
+                            '▶️ COMMENCER LA MISSION'
+                        ),
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('load') }, 
+                            '📂 CHARGER UNE SAUVEGARDE'
+                        )
+                    ),
+                    e('div', { style: { marginTop: '30px', textAlign: 'center', opacity: 0.6, fontSize: '0.85em' } },
+                        `Module ${MODULE_DATA.id} v${MODULE_DATA.version} — ${MODULE_DATA.auteur}`
+                    )
+                );
+            }
+
+            // --- REGISTER ---
+            if (mode === 'register') {
+                const startGame = () => {
+                    if (!nom.trim()) {
+                        alert('Merci d\'entrer ton prénom ou pseudo !');
+                        return;
+                    }
+                    setMode('game');
+                };
+
+                return e('div', { className: 'app-container' },
+                    e(Header, { showProgress: false }),
+                    e('div', { className: 'card' },
+                        e('h3', { style: { marginBottom: '20px' } }, '👤 Identification de l\'Agent'),
+                        e('div', { style: { marginBottom: '15px' } },
+                            e('label', { style: { display: 'block', marginBottom: '5px', fontWeight: 'bold' } }, 'Prénom ou Pseudo *'),
+                            e('input', {
+                                type: 'text',
+                                value: nom,
+                                onChange: (ev) => setNom(ev.target.value),
+                                placeholder: 'Ex: Alex',
+                                style: { width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '1rem' }
+                            })
+                        ),
+                        e('div', { style: { marginBottom: '15px' } },
+                            e('label', { style: { display: 'block', marginBottom: '5px', fontWeight: 'bold' } }, 'Classe (optionnel)'),
+                            e('input', {
+                                type: 'text',
+                                value: classe,
+                                onChange: (ev) => setClasse(ev.target.value),
+                                placeholder: 'Ex: 4ème B',
+                                style: { width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '1rem' }
+                            })
+                        )
+                    ),
+                    e('div', { className: 'btn-group' },
+                        e('button', { className: 'btn btn-success btn-block', onClick: startGame }, '🚀 DÉMARRER'),
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('menu') }, '← RETOUR')
+                    )
+                );
+            }
+
+            // --- LOAD ---
+            if (mode === 'load') {
+                const handleLoad = () => {
+                    const result = decodeSaveCode(inputCode);
+                    if (!result.valid) {
+                        setLoadError(result.error);
+                        return;
+                    }
+                    const d = result.data;
+                    setNom(d.n || 'Anonyme');
+                    setClasse(d.c || '');
+                    setCurrentLevel(d.l || 1);
+                    setXp(d.x || 0);
+                    setQuizScore(d.q || 0);
+                    setDojoScore(d.dj || 0);
+                    setCardIdx(0);
+                    setQuestionIdx(0);
+                    setScenarioIdx(0);
+                    
+                    if (d.f) {
+                        setMode('report');
+                    } else {
+                        setMode('game');
+                    }
+                    setLoadError('');
+                };
+
+                return e('div', { className: 'app-container' },
+                    e(Header, { showProgress: false }),
+                    e('div', { className: 'card load-section' },
+                        e('h3', { style: { marginBottom: '20px' } }, '📂 Charger une Progression'),
+                        e('p', { style: { marginBottom: '15px', opacity: 0.8 } }, 
+                            'Colle ici le code de sauvegarde que tu as gardé :'
+                        ),
+                        e('textarea', {
+                            value: inputCode,
+                            onChange: (ev) => { setInputCode(ev.target.value); setLoadError(''); },
+                            placeholder: 'Colle ton code ici...'
+                        }),
+                        loadError && e('div', { style: { color: '#e74c3c', marginTop: '10px', fontWeight: 'bold' } }, 
+                            `⚠️ ${loadError}`
+                        )
+                    ),
+                    e('div', { className: 'btn-group' },
+                        e('button', { className: 'btn btn-success btn-block', onClick: handleLoad }, '✓ CHARGER'),
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('menu') }, '← RETOUR')
+                    )
+                );
+            }
+
+            // --- GAME ---
+            if (mode === 'game') {
+                // NIVEAU 1 : FLASHCARDS
+                if (currentLevel === 1) {
+                    const cards = MODULE_DATA.niveau1.cartes;
+                    
+                    return e('div', { className: 'app-container' },
+                        e(Header, { showProgress: true, xp }),
+                        e(ProgressBar, { currentLevel, xp }),
+                        e(LevelIndicator, { current: currentLevel }),
+                        e('h2', { style: { textAlign: 'center' } }, '📚 NIVEAU 1 : THÉORIE'),
+                        e('div', { className: 'card-counter' }, `Carte ${cardIdx + 1} / ${cards.length}`),
+                        e(Flashcard, {
+                            card: cards[cardIdx],
+                            isLast: cardIdx === cards.length - 1,
+                            onNext: () => setCardIdx(cardIdx + 1),
+                            onComplete: () => {
+                                setXp(xp + MODULE_DATA.niveau1.xp_reward);
+                                setCurrentLevel(2);
+                                setCardIdx(0);
+                            }
+                        })
+                    );
+                }
+
+                // NIVEAU 2 : QUIZ
+                if (currentLevel === 2) {
+                    const questions = MODULE_DATA.niveau2.questions;
+                    
+                    const handleQuizAnswer = (correct) => {
+                        if (correct) setQuizScore(quizScore + 25);
+                        
+                        if (questionIdx < questions.length - 1) {
+                            setQuestionIdx(questionIdx + 1);
+                        } else {
+                            setXp(xp + MODULE_DATA.niveau2.xp_reward);
+                            setCurrentLevel(3);
+                            setQuestionIdx(0);
+                        }
+                    };
+
+                    return e('div', { className: 'app-container' },
+                        e(Header, { showProgress: true, xp }),
+                        e(ProgressBar, { currentLevel, xp }),
+                        e(LevelIndicator, { current: currentLevel }),
+                        e('h2', { style: { textAlign: 'center' } }, '🔍 NIVEAU 2 : ANALYSE'),
+                        e('div', { className: 'card-counter' }, `Question ${questionIdx + 1} / ${questions.length}`),
+                        e(QuizQuestion, {
+                            key: questionIdx, // Force re-render on new question
+                            question: questions[questionIdx],
+                            onAnswer: handleQuizAnswer
+                        })
+                    );
+                }
+
+                // NIVEAU 3 : DOJO
+                if (currentLevel === 3) {
+                    const scenarios = MODULE_DATA.niveau3.scenarios;
+                    
+                    const handleDojoAnswer = (impact) => {
+                        setDojoScore(dojoScore + Math.max(0, impact));
+                        
+                        if (scenarioIdx < scenarios.length - 1) {
+                            setScenarioIdx(scenarioIdx + 1);
+                        } else {
+                            setXp(xp + MODULE_DATA.niveau3.xp_reward);
+                            setMode('report');
+                        }
+                    };
+
+                    return e('div', { className: 'app-container' },
+                        e(Header, { showProgress: true, xp }),
+                        e(ProgressBar, { currentLevel, xp }),
+                        e(LevelIndicator, { current: currentLevel }),
+                        e('h2', { style: { textAlign: 'center' } }, '⚔️ NIVEAU 3 : DOJO'),
+                        e('div', { className: 'card-counter' }, `Scénario ${scenarioIdx + 1} / ${scenarios.length}`),
+                        e(DojoScenario, {
+                            key: scenarioIdx,
+                            scenario: scenarios[scenarioIdx],
+                            onAnswer: handleDojoAnswer
+                        })
+                    );
+                }
+            }
+
+            // --- REPORT ---
+            if (mode === 'report') {
+                return e('div', { className: 'app-container' },
+                    e(Report, {
+                        progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) },
+                        onRestart: () => { resetProgress(); setMode('register'); },
+                        onMenu: () => { resetProgress(); setMode('menu'); }
+                    })
+                );
+            }
+
+            return e('div', { className: 'app-container' }, 'Chargement...');
+        }
+
+        // --- RENDER ---
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(e(App));
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Agora : Mission Climat Scolaire</title>
+    <style>
+        body { background: #111; color: #fff; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        #game-container { position: relative; width: 800px; height: 600px; margin: 20px auto; border: 4px solid #444; }
+        canvas { display: block; background: #000; }
+        #ui { position: absolute; bottom: 0; width: 100%; height: 120px; background: rgba(0,0,0,0.8); border-top: 2px solid #555; display: flex; justify-content: space-around; align-items: center; }
+        .stat { text-align: center; }
+        .stat-val { font-size: 24px; font-weight: bold; color: #0f0; }
+        #card { position: absolute; bottom: 120px; right: 50px; width: 200px; transform: translateY(20px); transition: transform 0.1s; }
+        #msg { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 18px; color: #ffeb3b; text-shadow: 2px 2px #000; }
+        #map-overlay { position: absolute; top: 10px; left: 10px; border: 2px solid white; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="msg">UTILISE ZQSD POUR BOUGER - CLIC POUR SALUER (CARTE 3018)</div>
+    <canvas id="view" width="800" height="480"></canvas>
+    <canvas id="map-overlay" width="120" height="120"></canvas>
+    
+    <div id="card">
+        <svg viewBox="0 0 200 120">
+            <rect width="200" height="120" rx="10" fill="#2196F3" stroke="white" stroke-width="3"/>
+            <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="16" font-weight="bold">AMBASSADEUR pHARe</text>
+            <text x="50%" y="70%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="24" font-weight="bold">3018</text>
+        </svg>
+    </div>
+
+    <div id="ui">
+        <div class="stat">SANG-FROID<br><span id="hp" class="stat-val">100%</span></div>
+        <div class="stat">CRÉDIBILITÉ<br><span id="rep" class="stat-val">0</span></div>
+        <div class="stat">TÉMOINS<br><span id="witness" class="stat-val">0</span></div>
+        <div class="stat">MISSION<br><span id="timer" class="stat-val">---</span></div>
+    </div>
+</div>
+
+<script>
+/**
+ * MOTEUR AGORA-DOOM v1.0
+ * Logique de Raycasting mathématique : 
+ * Distance $d = \sqrt{\Delta x^2 + \Delta y^2}$
+ */
+
+const canvas = document.getElementById('view');
+const ctx = canvas.getContext('2d');
+const mapCanvas = document.getElementById('map-overlay');
+const mctx = mapCanvas.getContext('2d');
+
+// --- CONFIGURATION ---
+const TILE_SIZE = 64;
+const FOV = Math.PI / 3;
+const MAP = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,1,0,2,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1],
+    [1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1],
+    [1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1],
+    [1,0,4,0,0,0,0,0,1,0,0,0,5,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+// Legend: 1: Wall, 2: Infirmerie, 3: CPE, 4: Prof Principal, 5: AED
+
+const player = { x: 100, y: 100, dir: 0, hp: 100, rep: 0, witnesses: 0 };
+const entities = [
+    { x: 400, y: 150, type: 'raleur', emoji: '😤', active: true },
+    { x: 600, y: 300, type: 'colerique', emoji: '😡', active: true },
+    { x: 200, y: 350, type: 'raleur', emoji: '😤', active: true }
+];
+
+let cpeTimer = -1;
+
+// --- INPUTS ---
+const keys = {};
+window.onkeydown = e => keys[e.code] = true;
+window.onkeyup = e => keys[e.code] = false;
+
+window.onclick = () => {
+    // Animation de la carte
+    document.getElementById('card').style.transform = 'translateY(-20px) rotate(-5deg)';
+    setTimeout(() => document.getElementById('card').style.transform = 'translateY(20px)', 100);
+    
+    // Check interaction
+    entities.forEach(en => {
+        let dist = Math.sqrt((en.x - player.x)**2 + (en.y - player.y)**2);
+        if (dist < 80 && en.type === 'raleur') {
+            en.type = 'temoin';
+            en.emoji = '😊';
+            player.witnesses++;
+            player.rep += 10;
+            updateUI();
+        }
+    });
+};
+
+function updateUI() {
+    document.getElementById('hp').innerText = player.hp + "%";
+    document.getElementById('rep').innerText = player.rep;
+    document.getElementById('witness').innerText = player.witnesses;
+}
+
+// --- LOGIQUE ---
+function update() {
+    let moveSpeed = 3;
+    let rotSpeed = 0.05;
+
+    if (keys['KeyW']) {
+        let nx = player.x + Math.cos(player.dir) * moveSpeed;
+        let ny = player.y + Math.sin(player.dir) * moveSpeed;
+        if (MAP[Math.floor(ny/TILE_SIZE)][Math.floor(nx/TILE_SIZE)] === 0) {
+            player.x = nx; player.y = ny;
+        }
+    }
+    if (keys['KeyS']) {
+        let nx = player.x - Math.cos(player.dir) * moveSpeed;
+        let ny = player.y - Math.sin(player.dir) * moveSpeed;
+        if (MAP[Math.floor(ny/TILE_SIZE)][Math.floor(nx/TILE_SIZE)] === 0) {
+            player.x = nx; player.y = ny;
+        }
+    }
+    if (keys['KeyA']) player.dir -= rotSpeed;
+    if (keys['KeyD']) player.dir += rotSpeed;
+
+    // Entités
+    entities.forEach(en => {
+        if (en.type === 'temoin') {
+            let d = Math.sqrt((en.x - player.x)**2 + (en.y - player.y)**2);
+            if (d > 60) {
+                en.x += (player.x - en.x) * 0.02;
+                en.y += (player.y - en.y) * 0.02;
+            }
+        }
+        if (en.type === 'colerique') {
+            en.x += Math.sin(Date.now()/500) * 2; // Il patrouille
+            let d = Math.sqrt((en.x - player.x)**2 + (en.y - player.y)**2);
+            if (d < 30) {
+                player.hp -= 0.1;
+                player.hp = Math.max(0, player.hp);
+                updateUI();
+            }
+        }
+    });
+}
+
+// --- RENDU ---
+function draw() {
+    ctx.clearRect(0,0,800,480);
+    
+    // Fond (Sol et Plafond)
+    ctx.fillStyle = "#333"; ctx.fillRect(0, 240, 800, 240);
+    ctx.fillStyle = "#222"; ctx.fillRect(0, 0, 800, 240);
+
+    // Raycasting des murs
+    const numRays = 400;
+    const rayStep = FOV / numRays;
+
+    for (let i = 0; i < numRays; i++) {
+        let rayAngle = (player.dir - FOV/2) + (i * rayStep);
+        let rx = player.x, ry = player.y;
+        let dist = 0;
+        let hit = 0;
+
+        while (dist < 600) {
+            rx += Math.cos(rayAngle) * 2;
+            ry += Math.sin(rayAngle) * 2;
+            dist += 2;
+            let mx = Math.floor(rx/TILE_SIZE);
+            let my = Math.floor(ry/TILE_SIZE);
+            if (MAP[my] && MAP[my][mx] > 0) {
+                hit = MAP[my][mx];
+                break;
+            }
+        }
+
+        // Correction effet fisheye
+        dist *= Math.cos(rayAngle - player.dir);
+        let h = (TILE_SIZE * 400) / dist;
+        
+        // Couleur selon le type de mur et climat
+        let colorScale = Math.min(255, player.rep * 2);
+        if (hit === 1) ctx.fillStyle = `rgb(${100-colorScale/4}, ${100+colorScale/2}, ${100+colorScale})`;
+        else if (hit === 2) ctx.fillStyle = "white"; // Infirmerie
+        else if (hit === 3) ctx.fillStyle = "red";   // CPE
+        else ctx.fillStyle = "gold"; // AED
+        
+        ctx.fillRect(i * 2, 240 - h/2, 2, h);
+    }
+
+    // Rendu des Pancartes (Sprites)
+    entities.sort((a,b) => {
+        let da = (a.x - player.x)**2 + (a.y - player.y)**2;
+        let db = (b.x - player.x)**2 + (b.y - player.y)**2;
+        return db - da;
+    });
+
+    entities.forEach(en => {
+        let dx = en.x - player.x;
+        let dy = en.y - player.y;
+        let angle = Math.atan2(dy, dx) - player.dir;
+        if (angle < -Math.PI) angle += 2*Math.PI;
+        if (angle > Math.PI) angle -= 2*Math.PI;
+
+        if (Math.abs(angle) < FOV) {
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let s = 15000 / dist;
+            let x = (angle / FOV) * 800 + 400 - s/2;
+            let y = 240 - s/2;
+            
+            // Dessin de la pancarte
+            ctx.fillStyle = "white";
+            ctx.fillRect(x, y, s, s);
+            ctx.strokeStyle = "black"; ctx.strokeRect(x,y,s,s);
+            ctx.fillStyle = "black";
+            ctx.font = `${s/2}px serif`;
+            ctx.fillText(en.emoji, x + s/4, y + s/1.5);
+        }
+    });
+
+    drawMinimap();
+}
+
+function drawMinimap() {
+    mctx.clearRect(0,0,120,120);
+    let s = 120 / 16;
+    for(let y=0; y<8; y++) {
+        for(let x=0; x<16; x++) {
+            if(MAP[y][x] > 0) {
+                mctx.fillStyle = "white";
+                mctx.fillRect(x*s, y*s, s, s);
+            }
+        }
+    }
+    mctx.fillStyle = "red";
+    mctx.fillRect((player.x/TILE_SIZE)*s, (player.y/TILE_SIZE)*s, 4, 4);
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>

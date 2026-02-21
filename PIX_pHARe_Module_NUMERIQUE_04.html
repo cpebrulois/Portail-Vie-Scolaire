@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Module NUMÉRIQUE 04 - Tes Droits, Ton Armure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --shield-gold: #fbbf24;
+            --shield-bronze: #cd7f32;
+            --legal-blue: #3b82f6;
+            --justice-purple: #7c3aed;
+            --protection-green: #10b981;
+            --dark-bg: #0f0f1a;
+            --deeper-dark: #080810;
+            --panel-bg: rgba(15, 15, 26, 0.95);
+            --text-primary: #f5f5ff;
+            --text-secondary: #9999bb;
+            --glow-gold: 0 0 30px rgba(251, 191, 36, 0.4);
+            --glow-blue: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Shield pattern background */
+        .shield-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Legal grid overlay */
+        .legal-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, rgba(251, 191, 36, 0.02) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        .header-shield {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.1), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            color: var(--shield-gold);
+            text-shadow: 
+                0 0 20px rgba(251, 191, 36, 0.5),
+                0 2px 0 var(--shield-bronze);
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: var(--legal-blue);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .module-badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(59, 130, 246, 0.2));
+            border: 2px solid var(--shield-gold);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--shield-gold);
+            position: relative;
+            clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+        }
+        
+        /* Progress indicator */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .progress-node {
+            width: 55px;
+            height: 55px;
+            border: 3px solid var(--text-secondary);
+            background: var(--deeper-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transition: all 0.4s ease;
+        }
+        
+        .progress-node.active {
+            border-color: var(--shield-gold);
+            color: var(--shield-gold);
+            box-shadow: var(--glow-gold);
+        }
+        
+        .progress-node.completed {
+            border-color: var(--protection-green);
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--protection-green);
+        }
+        
+        /* XP Display */
+        .xp-display {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .xp-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--shield-gold);
+            padding: 15px 25px;
+            text-align: center;
+            position: relative;
+            clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0% calc(100% - 10px), 0% 10px);
+        }
+        
+        .xp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .xp-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--shield-gold);
+            text-shadow: var(--glow-gold);
+        }
+        
+        /* Content panels */
+        .content-panel {
+            background: var(--panel-bg);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--shield-gold), var(--legal-blue), var(--protection-green));
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(59, 130, 246, 0.1));
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .panel-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--shield-gold), var(--shield-bronze));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            box-shadow: var(--glow-gold);
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--shield-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .panel-body {
+            padding: 25px;
+        }
+        
+        /* Unlock screen */
+        .unlock-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.5));
+        }
+        
+        .unlock-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--shield-gold);
+            margin-bottom: 15px;
+        }
+        
+        .code-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            background: var(--deeper-dark);
+            border: 2px solid var(--legal-blue);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .code-input:focus {
+            outline: none;
+            border-color: var(--shield-gold);
+            box-shadow: var(--glow-gold);
+        }
+        
+        .error-msg {
+            color: #ef4444;
+            font-family: 'Share Tech Mono', monospace;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1200px;
+            margin-bottom: 20px;
+        }
+        
+        .flashcard {
+            position: relative;
+            width: 100%;
+            min-height: 230px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            min-height: 230px;
+            backface-visibility: hidden;
+            border: 2px solid var(--shield-gold);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 25px;
+            background: var(--deeper-dark);
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(59, 130, 246, 0.1));
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(251, 191, 36, 0.1));
+            border-color: var(--protection-green);
+        }
+        
+        .flashcard-law {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 15px;
+            background: var(--shield-gold);
+            color: var(--deeper-dark);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .flashcard-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--shield-gold);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .flashcard-hint {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--legal-blue);
+            text-align: center;
+        }
+        
+        .flashcard-answer {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        
+        .flashcard-answer strong {
+            color: var(--protection-green);
+        }
+        
+        .flashcard-answer code {
+            background: rgba(251, 191, 36, 0.2);
+            padding: 2px 8px;
+            color: var(--shield-gold);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .flashcard-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            background: transparent;
+            border: 2px solid var(--legal-blue);
+            color: var(--legal-blue);
+            padding: 12px 30px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            box-shadow: var(--glow-blue);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        /* Quiz styles */
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(59, 130, 246, 0.05));
+            border-left: 4px solid var(--shield-gold);
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .quiz-option {
+            background: var(--deeper-dark);
+            border: 2px solid var(--text-secondary);
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .quiz-option:hover:not(.selected):not(.correct):not(.incorrect) {
+            border-color: var(--shield-gold);
+            background: rgba(251, 191, 36, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .quiz-option.selected {
+            border-color: var(--legal-blue);
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .quiz-option.correct {
+            border-color: var(--protection-green);
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .quiz-option.incorrect {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        .option-marker {
+            width: 35px;
+            height: 35px;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .feedback-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-left: 4px solid var(--protection-green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .feedback-box.incorrect-feedback {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .feedback-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            color: var(--protection-green);
+            margin-bottom: 10px;
+        }
+        
+        .feedback-box.incorrect-feedback .feedback-title {
+            color: #ef4444;
+        }
+        
+        /* Scenario styles */
+        .scenario-intro {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(251, 191, 36, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .scenario-context {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--shield-gold);
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px dashed var(--shield-gold);
+        }
+        
+        .law-box {
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--deeper-dark);
+            border: 2px solid var(--legal-blue);
+            position: relative;
+        }
+        
+        .law-box::before {
+            content: '⚖️ ARTICLE DE LOI';
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: var(--legal-blue);
+            color: white;
+            padding: 3px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .law-box-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+        
+        .choice-btn {
+            display: block;
+            width: 100%;
+            background: var(--deeper-dark);
+            border: 2px solid var(--text-secondary);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .choice-btn:hover {
+            border-color: var(--shield-gold);
+            background: rgba(251, 191, 36, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .choice-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--deeper-dark);
+            border: 2px solid var(--protection-green);
+        }
+        
+        .impact-score {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .impact-item {
+            padding: 8px 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--legal-blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .impact-item.positive {
+            border-color: var(--protection-green);
+            color: var(--protection-green);
+        }
+        
+        .impact-item.negative {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        /* Primary action button */
+        .action-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--shield-gold), var(--shield-bronze));
+            color: var(--deeper-dark);
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Completion screen */
+        .completion-screen {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .completion-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: shieldPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes shieldPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.5)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 40px rgba(251, 191, 36, 0.8)); }
+        }
+        
+        .completion-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--shield-gold);
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+            margin-bottom: 15px;
+        }
+        
+        .completion-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: var(--panel-bg);
+            border: 2px solid var(--shield-gold);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--shield-gold);
+        }
+        
+        .stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .save-code-box {
+            background: var(--deeper-dark);
+            border: 2px solid var(--protection-green);
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .save-code-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--protection-green);
+            margin-bottom: 10px;
+        }
+        
+        .save-code {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--legal-blue);
+            word-break: break-all;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 15px;
+            border: 1px dashed var(--legal-blue);
+        }
+        
+        .copy-btn {
+            margin-top: 15px;
+            background: transparent;
+            border: 2px solid var(--protection-green);
+            color: var(--protection-green);
+            padding: 10px 25px;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Mastery badge */
+        .mastery-badge {
+            display: inline-block;
+            padding: 10px 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid;
+            margin-top: 15px;
+        }
+        
+        .mastery-expert {
+            color: var(--shield-gold);
+            border-color: var(--shield-gold);
+            box-shadow: var(--glow-gold);
+        }
+        
+        .mastery-confirmed {
+            color: var(--legal-blue);
+            border-color: var(--legal-blue);
+        }
+        
+        .mastery-training {
+            color: var(--protection-green);
+            border-color: var(--protection-green);
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            .glitch-title {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            
+            .progress-node {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .xp-display {
+                gap: 12px;
+            }
+            
+            .xp-box {
+                padding: 10px 15px;
+            }
+            
+            .panel-body {
+                padding: 15px;
+            }
+            
+            .flashcard-face {
+                padding: 20px 15px;
+                min-height: 260px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shield-pattern"></div>
+    <div class="legal-grid"></div>
+    
+    <div id="root"></div>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script>
+        const { useState, useEffect } = React;
+        const e = React.createElement;
+
+        // Module data
+        const MODULE_ID = "NUMERIQUE_04";
+        const MODULE_VERSION = "1.0";
+        const MODULE_TITLE = "Tes Droits, Ton Armure";
+        const PREREQUISITE_MODULE = "NUMERIQUE_03";
+        
+        // Flashcards data - Digital Rights & RGPD
+        const flashcardsData = [
+            {
+                law: "RGPD ART. 15",
+                question: "Qu'est-ce que le droit d'accès ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Tu peux demander à <strong>n'importe quelle entreprise</strong> quelles données elle détient sur toi. Elle a <strong>1 mois</strong> pour répondre. Gratuit. Format lisible obligatoire. Si elle refuse ou ne répond pas : plainte CNIL possible."
+            },
+            {
+                law: "RGPD ART. 17",
+                question: "Qu'est-ce que le droit à l'effacement ('droit à l'oubli') ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Tu peux exiger la <strong>suppression de tes données</strong> si : elles ne sont plus nécessaires, tu retires ton consentement, ou elles ont été collectées illégalement. Exception : obligations légales (impôts, etc.). Délai : <strong>1 mois</strong>."
+            },
+            {
+                law: "RGPD ART. 20",
+                question: "Qu'est-ce que le droit à la portabilité ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Tu peux récupérer tes données dans un <strong>format standard</strong> (JSON, CSV) pour les transférer vers un autre service. Exemple : quitter Facebook et emporter tes photos vers un concurrent. C'est TOI qui possèdes tes données."
+            },
+            {
+                law: "RGPD ART. 21",
+                question: "Qu'est-ce que le droit d'opposition ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Tu peux <strong>refuser le traitement</strong> de tes données pour le marketing direct (pub ciblée). L'entreprise DOIT cesser immédiatement. Pas de justification nécessaire. Bouton 'Se désabonner' = exercice de ce droit."
+            },
+            {
+                law: "LOI INFORMATIQUE",
+                question: "Qu'est-ce que la CNIL ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "<strong>Commission Nationale de l'Informatique et des Libertés</strong>. Autorité française qui protège tes données. Pouvoirs : enquêter, sanctionner (amendes jusqu'à <strong>20M€ ou 4% du CA mondial</strong>), recevoir tes plaintes. Site : cnil.fr"
+            },
+            {
+                law: "CODE PÉNAL",
+                question: "Que risque quelqu'un qui diffuse une photo intime sans consentement ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "Article 226-2-1 : <strong>2 ans de prison + 60 000€ d'amende</strong>. C'est un DÉLIT. Même si tu as partagé la photo volontairement au départ, la diffuser sans ton accord actuel est illégal. Tu peux porter plainte."
+            },
+            {
+                law: "SIGNALEMENT",
+                question: "Comment signaler un contenu illégal en ligne ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "1) <strong>Signaler sur la plateforme</strong> (bouton dédié). 2) <strong>PHAROS</strong> : internet-signalement.gouv.fr (contenus illicites). 3) <strong>e-Enfance</strong> : 3018 (cyberharcèlement mineurs). 4) Police/Gendarmerie : pré-plainte en ligne possible."
+            },
+            {
+                law: "PARAMÉTRAGE",
+                question: "Quels sont les paramètres de confidentialité essentiels à vérifier ?",
+                hint: "[ Cliquez pour révéler ]",
+                answer: "1) <strong>Qui peut voir mes publications</strong> (public/amis/moi). 2) <strong>Qui peut me taguer</strong>. 3) <strong>Indexation moteurs de recherche</strong>. 4) <strong>Géolocalisation</strong>. 5) <strong>Accès micro/caméra</strong>. 6) <strong>Publicité personnalisée</strong>. À vérifier tous les 3 mois !"
+            }
+        ];
+
+        // Quiz data
+        const quizData = [
+            {
+                question: "Tu découvres qu'une application a collecté ta géolocalisation sans ton accord explicite. Que peux-tu faire ?",
+                options: [
+                    "Rien, c'est normal pour une app gratuite",
+                    "Exercer ton droit d'accès, puis droit d'effacement, et potentiellement plainte CNIL",
+                    "Uniquement désinstaller l'application",
+                    "Envoyer un email de protestation sans suite"
+                ],
+                correct: 1,
+                feedback: "Le RGPD te donne des droits concrets : 1) Demander quelles données ont été collectées (droit d'accès). 2) Exiger leur suppression (droit d'effacement). 3) Si l'entreprise refuse, déposer une plainte sur cnil.fr. Le RGPD a du mordant : amendes possibles jusqu'à 4% du CA mondial."
+            },
+            {
+                question: "Une photo gênante de toi circule sur les réseaux. Tu l'avais envoyée à un ami il y a 2 ans. Que dit la loi ?",
+                options: [
+                    "C'est ta faute, tu n'aurais pas dû l'envoyer",
+                    "C'est légal car tu l'avais partagée toi-même",
+                    "C'est illégal : diffuser sans consentement actuel est un délit",
+                    "C'est une zone grise juridique"
+                ],
+                correct: 2,
+                feedback: "Article 226-2-1 du Code Pénal : la diffusion d'images intimes sans consentement est punie de 2 ans de prison et 60 000€ d'amende. Le consentement passé (envoi initial) ne vaut pas consentement pour diffusion. Tu peux porter plainte même si tu avais envoyé la photo volontairement."
+            },
+            {
+                question: "Une entreprise refuse de te communiquer les données qu'elle détient sur toi. Quel est le délai légal de réponse ?",
+                options: [
+                    "48 heures",
+                    "1 semaine",
+                    "1 mois (prolongeable de 2 mois si complexe)",
+                    "3 mois"
+                ],
+                correct: 2,
+                feedback: "Le RGPD impose un délai de réponse de 1 mois maximum. Ce délai peut être prolongé de 2 mois supplémentaires pour les demandes complexes, mais l'entreprise doit t'en informer dans le premier mois. Si elle ne répond pas : plainte CNIL."
+            },
+            {
+                question: "Le numéro 3018 sert à :",
+                options: [
+                    "Commander des pizzas",
+                    "Signaler des arnaques fiscales",
+                    "Obtenir de l'aide en cas de cyberharcèlement (e-Enfance)",
+                    "Contacter la police judiciaire"
+                ],
+                correct: 2,
+                feedback: "Le 3018 est le numéro national contre le cyberharcèlement, géré par l'association e-Enfance. Gratuit, confidentiel, disponible 7j/7. Les conseillers peuvent t'aider à signaler, supprimer des contenus, et t'accompagner psychologiquement. À connaître absolument."
+            },
+            {
+                question: "Quel est le montant maximum des amendes RGPD pour une entreprise ?",
+                options: [
+                    "10 000€",
+                    "1 million d'euros",
+                    "20 millions d'euros OU 4% du chiffre d'affaires mondial",
+                    "Il n'y a pas de maximum"
+                ],
+                correct: 2,
+                feedback: "Le RGPD prévoit des amendes dissuasives : jusqu'à 20M€ ou 4% du CA mondial (le montant le plus élevé). Amazon a été condamnée à 746M€, Google à 150M€ en France. Ce n'est pas symbolique. Tes droits sont protégés par de vraies sanctions."
+            }
+        ];
+
+        // Scenario data
+        const scenarioData = [
+            {
+                title: "La Photo Qui Circule",
+                context: "Une photo embarrassante de toi à une fête circule dans les groupes WhatsApp du collège.",
+                intro: "Tu découvres que quelqu'un a pris une photo de toi sans ton accord et la partage. Des camarades se moquent. Tu te sens humilié·e. La photo est déjà sur plusieurs téléphones. Que fais-tu ?",
+                choices: [
+                    {
+                        text: "Tu ne fais rien par peur que ça empire si tu réagis.",
+                        result: "Compréhensible mais risqué. Sans action, la diffusion peut continuer et s'amplifier. Le silence n'est pas une protection. Tu as des droits, et les exercer n'empire généralement pas la situation - au contraire.",
+                        impact: { protection: -15, confiance: -10 }
+                    },
+                    {
+                        text: "Tu demandes à l'auteur de supprimer, puis tu signales sur WhatsApp, puis tu en parles à un adulte de confiance.",
+                        result: "Stratégie optimale. Tu épuises les voies amiables d'abord (demande directe), puis techniques (signalement plateforme), puis tu impliques un adulte qui peut t'aider juridiquement. C'est la méthode pHARe recommandée.",
+                        impact: { protection: +25, confiance: +20 }
+                    },
+                    {
+                        text: "Tu menaces publiquement l'auteur de représailles.",
+                        result: "Attention : même si tu es victime, des menaces peuvent te mettre en tort légalement. Tu risques de passer de victime à co-responsable. La colère est légitime, mais canalise-la vers des actions légales.",
+                        impact: { protection: -10, confiance: -15 }
+                    },
+                    {
+                        text: "Tu collectes les preuves (screenshots avec dates) et tu déposes une main courante.",
+                        result: "Excellent réflexe juridique. Les screenshots avec dates sont des preuves recevables. La main courante crée une trace officielle. Si ça continue, tu peux passer à la plainte avec un dossier solide. Tu connais tes droits.",
+                        impact: { protection: +30, confiance: +25 }
+                    }
+                ]
+            },
+            {
+                title: "Le Compte Usurpé",
+                context: "Quelqu'un a créé un faux profil Instagram avec ton nom et ta photo.",
+                intro: "Le faux compte publie des contenus qui te mettent en difficulté. Des gens croient que c'est vraiment toi. Tu reçois des messages d'insultes. Ton image est utilisée sans ton consentement. Comment réagis-tu ?",
+                choices: [
+                    {
+                        text: "Tu crées un autre faux compte pour te défendre anonymement.",
+                        result: "Contre-productif. Tu ajoutes de la confusion et tu pourrais violer toi-même les CGU. La meilleure défense est la transparence : prouver que TU es le vrai compte, pas de jouer au même jeu que l'usurpateur.",
+                        impact: { protection: -10, confiance: -15 }
+                    },
+                    {
+                        text: "Tu utilises la procédure de signalement d'usurpation d'identité d'Instagram.",
+                        result: "Bonne démarche. Instagram a une procédure spécifique pour l'usurpation d'identité. Tu devras prouver ton identité (photo avec pièce d'identité). Le compte peut être supprimé en quelques jours. C'est la voie officielle.",
+                        impact: { protection: +20, confiance: +15 }
+                    },
+                    {
+                        text: "Tu signales sur Instagram ET tu déposes plainte pour usurpation d'identité (Art. 226-4-1).",
+                        result: "Réponse la plus complète. L'usurpation d'identité numérique est un délit puni d'1 an de prison et 15 000€ d'amende. En combinant signalement plateforme ET plainte, tu maximises tes chances et tu crées une trace légale.",
+                        impact: { protection: +30, confiance: +25 }
+                    },
+                    {
+                        text: "Tu publies sur ton vrai compte que ce n'est pas toi, sans autre action.",
+                        result: "Utile mais insuffisant. Tes abonnés proches comprendront, mais le faux compte continue d'exister et de nuire. Tu informes mais tu ne résous pas. Il faut agir sur les deux fronts : communication ET suppression.",
+                        impact: { protection: +5, confiance: +5 }
+                    }
+                ]
+            },
+            {
+                title: "L'Exercice des Droits RGPD",
+                context: "Tu veux savoir ce que TikTok sait sur toi et supprimer tes données.",
+                intro: "Tu as décidé de reprendre le contrôle de tes données. Tu veux exercer ton droit d'accès (savoir ce qu'ils ont) puis ton droit d'effacement (tout supprimer). Comment procèdes-tu ?",
+                choices: [
+                    {
+                        text: "Tu supprimes l'app de ton téléphone et tu considères que c'est réglé.",
+                        result: "Erreur fréquente. Supprimer l'app ne supprime PAS tes données de leurs serveurs. Ils conservent tout : vidéos vues, temps passé, géolocalisation, contacts... La suppression locale n'est pas la suppression serveur.",
+                        impact: { protection: -10, confiance: -5 }
+                    },
+                    {
+                        text: "Tu envoies un email à privacy@tiktok.com en citant les articles 15 et 17 du RGPD.",
+                        result: "Procédure correcte. En citant explicitement le RGPD, tu signales que tu connais tes droits. Ils ont 1 mois pour répondre. Garde une copie de l'email avec la date. Si pas de réponse : plainte CNIL.",
+                        impact: { protection: +25, confiance: +20 }
+                    },
+                    {
+                        text: "Tu utilises la fonctionnalité 'Télécharger mes données' dans les paramètres, puis 'Supprimer mon compte'.",
+                        result: "Méthode la plus simple et efficace. TikTok (comme la plupart des grandes plateformes) a intégré ces options dans les paramètres pour se conformer au RGPD. Tu récupères tes données (portabilité) puis tu supprimes (effacement).",
+                        impact: { protection: +30, confiance: +25 }
+                    },
+                    {
+                        text: "Tu postes une vidéo pour demander à TikTok de supprimer tes données.",
+                        result: "Inefficace juridiquement. Une vidéo publique n'est pas une demande RGPD valide. Tu dois passer par les canaux officiels (paramètres ou email DPO). La visibilité ne remplace pas la procédure.",
+                        impact: { protection: -5, confiance: 0 }
+                    }
+                ]
+            }
+        ];
+
+        // Utility functions
+        function encodeSaveCode(data) {
+            return btoa(JSON.stringify(data));
+        }
+
+        function decodeSaveCode(code) {
+            try {
+                return JSON.parse(atob(code));
+            } catch {
+                return null;
+            }
+        }
+
+        function getMasteryLevel(score) {
+            if (score >= 550) return { level: "Expert", class: "mastery-expert" };
+            if (score >= 340) return { level: "Confirmé", class: "mastery-confirmed" };
+            return { level: "En formation", class: "mastery-training" };
+        }
+
+        // Main App Component
+        function App() {
+            const [gameState, setGameState] = useState("unlock");
+            const [playerData, setPlayerData] = useState({
+                name: "",
+                class: "",
+                level: 1,
+                score: 0,
+                xp: 0,
+                quizScore: 0,
+                scenarioScore: 0,
+                flashcardsViewed: 0,
+                finished: false
+            });
+            
+            const [unlockCode, setUnlockCode] = useState("");
+            const [unlockError, setUnlockError] = useState("");
+            
+            const [currentFlashcard, setCurrentFlashcard] = useState(0);
+            const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+            
+            const [currentQuiz, setCurrentQuiz] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showQuizFeedback, setShowQuizFeedback] = useState(false);
+            
+            const [currentScenario, setCurrentScenario] = useState(0);
+            const [scenarioChoice, setScenarioChoice] = useState(null);
+            const [showScenarioResult, setShowScenarioResult] = useState(false);
+
+            function verifyUnlockCode() {
+                const decoded = decodeSaveCode(unlockCode);
+                
+                if (!decoded) {
+                    setUnlockError("Code invalide. Vérifie que tu as copié le code complet.");
+                    return;
+                }
+                
+                if (decoded.m !== PREREQUISITE_MODULE) {
+                    setUnlockError(`Ce code provient du module ${decoded.m}. Tu as besoin du code de ${PREREQUISITE_MODULE}.`);
+                    return;
+                }
+                
+                if (!decoded.f) {
+                    setUnlockError("Tu n'as pas terminé le module précédent. Retourne le compléter !");
+                    return;
+                }
+                
+                setPlayerData(prev => ({
+                    ...prev,
+                    name: decoded.n || "",
+                    class: decoded.c || ""
+                }));
+                setGameState("intro");
+            }
+
+            function startGame() {
+                setGameState("flashcards");
+            }
+
+            function nextFlashcard() {
+                if (currentFlashcard < flashcardsData.length - 1) {
+                    setCurrentFlashcard(prev => prev + 1);
+                    setFlashcardFlipped(false);
+                    setPlayerData(prev => ({
+                        ...prev,
+                        flashcardsViewed: Math.max(prev.flashcardsViewed, currentFlashcard + 2),
+                        xp: prev.xp + 15
+                    }));
+                } else {
+                    setGameState("quiz");
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 2,
+                        flashcardsViewed: flashcardsData.length,
+                        xp: prev.xp + 60
+                    }));
+                }
+            }
+
+            function prevFlashcard() {
+                if (currentFlashcard > 0) {
+                    setCurrentFlashcard(prev => prev - 1);
+                    setFlashcardFlipped(false);
+                }
+            }
+
+            function selectQuizAnswer(index) {
+                if (showQuizFeedback) return;
+                setSelectedAnswer(index);
+            }
+
+            function validateQuizAnswer() {
+                setShowQuizFeedback(true);
+                const isCorrect = selectedAnswer === quizData[currentQuiz].correct;
+                if (isCorrect) {
+                    setPlayerData(prev => ({
+                        ...prev,
+                        score: prev.score + 40,
+                        quizScore: prev.quizScore + 40,
+                        xp: prev.xp + 40
+                    }));
+                }
+            }
+
+            function nextQuizQuestion() {
+                if (currentQuiz < quizData.length - 1) {
+                    setCurrentQuiz(prev => prev + 1);
+                    setSelectedAnswer(null);
+                    setShowQuizFeedback(false);
+                } else {
+                    setGameState("scenarios");
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 3,
+                        xp: prev.xp + 80
+                    }));
+                }
+            }
+
+            function makeScenarioChoice(index) {
+                setScenarioChoice(index);
+                setShowScenarioResult(true);
+                
+                const choice = scenarioData[currentScenario].choices[index];
+                const protectionChange = choice.impact.protection || 0;
+                const confianceChange = choice.impact.confiance || 0;
+                const totalChange = Math.max(0, protectionChange + confianceChange);
+                
+                setPlayerData(prev => ({
+                    ...prev,
+                    score: prev.score + totalChange,
+                    scenarioScore: prev.scenarioScore + totalChange,
+                    xp: prev.xp + 35
+                }));
+            }
+
+            function nextScenario() {
+                if (currentScenario < scenarioData.length - 1) {
+                    setCurrentScenario(prev => prev + 1);
+                    setScenarioChoice(null);
+                    setShowScenarioResult(false);
+                } else {
+                    completeModule();
+                }
+            }
+
+            function completeModule() {
+                setPlayerData(prev => ({
+                    ...prev,
+                    finished: true,
+                    xp: prev.xp + 150
+                }));
+                setGameState("complete");
+            }
+
+            function generateSaveCode() {
+                const saveData = {
+                    v: 1,
+                    d: new Date().toISOString(),
+                    m: MODULE_ID,
+                    mv: MODULE_VERSION,
+                    n: playerData.name,
+                    c: playerData.class,
+                    l: 3,
+                    s: playerData.score,
+                    x: playerData.xp,
+                    q: playerData.quizScore,
+                    sc: playerData.scenarioScore,
+                    f: true
+                };
+                return encodeSaveCode(saveData);
+            }
+
+            function copyCode() {
+                const code = generateSaveCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    alert("Code copié !");
+                });
+            }
+
+            // Render functions
+            function renderUnlock() {
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("div", { className: "header-shield" }),
+                        e("h1", { className: "glitch-title" }, "PIX-pHARe"),
+                        e("div", { className: "subtitle" }, "Pilier Numérique"),
+                        e("div", { className: "module-badge" }, "MODULE 04 - VERROUILLÉ")
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🛡️"),
+                            e("div", { className: "panel-title" }, "Authentification")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "unlock-screen" },
+                                e("div", { className: "lock-icon" }, "⚔️"),
+                                e("h2", { className: "unlock-title" }, MODULE_TITLE),
+                                e("p", { style: { color: "var(--text-secondary)", marginBottom: "20px" } }, 
+                                    "Ce module nécessite d'avoir complété le Module 03 'Bulles & Miroirs'."
+                                ),
+                                e("input", {
+                                    type: "text",
+                                    className: "code-input",
+                                    value: unlockCode,
+                                    onChange: (ev) => setUnlockCode(ev.target.value),
+                                    placeholder: "Colle ton code ici..."
+                                }),
+                                unlockError && e("div", { className: "error-msg" }, unlockError),
+                                e("div", { style: { marginTop: "25px" } },
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: verifyUnlockCode,
+                                        disabled: !unlockCode.trim()
+                                    }, "[ DÉVERROUILLER ]")
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderIntro() {
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("div", { className: "header-shield" }),
+                        e("h1", { className: "glitch-title" }, "PIX-pHARe"),
+                        e("div", { className: "subtitle" }, "Pilier Numérique"),
+                        e("div", { className: "module-badge" }, "MODULE 04")
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🛡️"),
+                            e("div", { className: "panel-title" }, MODULE_TITLE)
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "scenario-intro" },
+                                e("p", null, "Bienvenue ", e("strong", null, playerData.name), " dans le Module 04."),
+                                e("p", { style: { marginTop: "15px" } }, 
+                                    "Tu comprends maintenant les mécanismes de manipulation. Il est temps de passer à l'action : ", 
+                                    e("strong", { style: { color: "var(--shield-gold)" } }, "tu as des DROITS"), 
+                                    ", et ce module va t'apprendre à les exercer."
+                                ),
+                                e("p", { style: { marginTop: "15px" } }, 
+                                    "RGPD, droit à l'oubli, signalement, plainte... Ton armure juridique est prête. Il ne reste plus qu'à l'enfiler."
+                                )
+                            ),
+                            e("div", { className: "law-box" },
+                                e("div", { className: "law-box-text" }, 
+                                    "« Toute personne physique a le droit de ne pas faire l'objet d'une décision fondée exclusivement sur un traitement automatisé. »",
+                                    e("br"),
+                                    e("span", { style: { color: "var(--shield-gold)", fontStyle: "normal" } }, "— RGPD, Article 22")
+                                )
+                            ),
+                            e("div", { style: { textAlign: "center", marginTop: "30px" } },
+                                e("button", {
+                                    className: "action-btn",
+                                    onClick: startGame
+                                }, "[ REVÊTIR L'ARMURE ]")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcardsData[currentFlashcard];
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 1 : Code Juridique")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node active" }, "1"),
+                        e("div", { className: "progress-node" }, "2"),
+                        e("div", { className: "progress-node" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Droit"),
+                            e("div", { className: "xp-value" }, `${currentFlashcard + 1}/${flashcardsData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "📜"),
+                            e("div", { className: "panel-title" }, "Arsenal Juridique")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "flashcard-container" },
+                                e("div", { 
+                                    className: `flashcard ${flashcardFlipped ? "flipped" : ""}`,
+                                    onClick: () => setFlashcardFlipped(!flashcardFlipped)
+                                },
+                                    e("div", { className: "flashcard-face flashcard-front" },
+                                        e("div", { className: "flashcard-law" }, card.law),
+                                        e("div", { className: "flashcard-question" }, card.question),
+                                        e("div", { className: "flashcard-hint" }, card.hint)
+                                    ),
+                                    e("div", { className: "flashcard-face flashcard-back" },
+                                        e("div", { className: "flashcard-law", style: { background: "var(--protection-green)" } }, "DÉCODÉ"),
+                                        e("div", { 
+                                            className: "flashcard-answer",
+                                            dangerouslySetInnerHTML: { __html: card.answer }
+                                        })
+                                    )
+                                )
+                            ),
+                            e("div", { className: "flashcard-nav" },
+                                e("button", {
+                                    className: "nav-btn",
+                                    onClick: prevFlashcard,
+                                    disabled: currentFlashcard === 0
+                                }, "◄ PRÉC"),
+                                e("button", {
+                                    className: "nav-btn",
+                                    onClick: nextFlashcard
+                                }, currentFlashcard < flashcardsData.length - 1 ? "SUIV ►" : "NIVEAU 2 ►")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderQuiz() {
+                const question = quizData[currentQuiz];
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 2 : Application")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node active" }, "2"),
+                        e("div", { className: "progress-node" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Score"),
+                            e("div", { className: "xp-value" }, playerData.quizScore)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Question"),
+                            e("div", { className: "xp-value" }, `${currentQuiz + 1}/${quizData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "⚖️"),
+                            e("div", { className: "panel-title" }, "Tribunal des Droits")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "quiz-question" }, question.question),
+                            e("div", { className: "quiz-options" },
+                                question.options.map((opt, idx) => {
+                                    let optClass = "quiz-option";
+                                    if (showQuizFeedback) {
+                                        if (idx === question.correct) optClass += " correct";
+                                        else if (idx === selectedAnswer) optClass += " incorrect";
+                                    } else if (idx === selectedAnswer) {
+                                        optClass += " selected";
+                                    }
+                                    
+                                    return e("div", {
+                                        key: idx,
+                                        className: optClass,
+                                        onClick: () => selectQuizAnswer(idx)
+                                    },
+                                        e("div", { className: "option-marker" }, String.fromCharCode(65 + idx)),
+                                        e("div", { className: "option-text" }, opt)
+                                    );
+                                })
+                            ),
+                            showQuizFeedback && e("div", { 
+                                className: `feedback-box ${selectedAnswer !== question.correct ? "incorrect-feedback" : ""}`
+                            },
+                                e("div", { className: "feedback-title" }, 
+                                    selectedAnswer === question.correct ? "✓ DROIT MAÎTRISÉ" : "✗ À REVOIR"
+                                ),
+                                e("p", null, question.feedback)
+                            ),
+                            e("div", { style: { textAlign: "center", marginTop: "25px" } },
+                                !showQuizFeedback ? 
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: validateQuizAnswer,
+                                        disabled: selectedAnswer === null
+                                    }, "[ VALIDER ]") :
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: nextQuizQuestion
+                                    }, currentQuiz < quizData.length - 1 ? "[ SUIVANT ]" : "[ NIVEAU 3 ]")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                const scenario = scenarioData[currentScenario];
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 3 : Combat")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node active" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP Total"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Score"),
+                            e("div", { className: "xp-value" }, playerData.score)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Affaire"),
+                            e("div", { className: "xp-value" }, `${currentScenario + 1}/${scenarioData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "⚔️"),
+                            e("div", { className: "panel-title" }, scenario.title)
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "scenario-context" }, scenario.context),
+                            e("div", { className: "scenario-intro" }, scenario.intro),
+                            !showScenarioResult ? 
+                                e("div", { className: "choices" },
+                                    scenario.choices.map((choice, idx) => 
+                                        e("button", {
+                                            key: idx,
+                                            className: "choice-btn",
+                                            onClick: () => makeScenarioChoice(idx)
+                                        }, choice.text)
+                                    )
+                                ) :
+                                e("div", { className: "choice-result" },
+                                    e("p", { style: { marginBottom: "15px" } }, scenario.choices[scenarioChoice].result),
+                                    e("div", { className: "impact-score" },
+                                        Object.entries(scenario.choices[scenarioChoice].impact).map(([key, val]) =>
+                                            e("div", { 
+                                                key: key,
+                                                className: `impact-item ${val > 0 ? "positive" : "negative"}`
+                                            }, `${key}: ${val > 0 ? "+" : ""}${val}`)
+                                        )
+                                    ),
+                                    e("div", { style: { textAlign: "center", marginTop: "25px" } },
+                                        e("button", {
+                                            className: "action-btn",
+                                            onClick: nextScenario
+                                        }, currentScenario < scenarioData.length - 1 ? "[ SUIVANT ]" : "[ TERMINER ]")
+                                    )
+                                )
+                        )
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const mastery = getMasteryLevel(playerData.score);
+                const saveCode = generateSaveCode();
+                
+                return e("div", { className: "app-container" },
+                    e("div", { className: "completion-screen" },
+                        e("div", { className: "completion-icon" }, "🛡️"),
+                        e("h1", { className: "completion-title" }, "ARMURE FORGÉE"),
+                        e("p", { className: "completion-subtitle" }, 
+                            `Bravo ${playerData.name} ! Tu maîtrises "${MODULE_TITLE}"`
+                        ),
+                        e("div", { className: `mastery-badge ${mastery.class}` }, mastery.level),
+                        e("div", { className: "stats-grid" },
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.score),
+                                e("div", { className: "stat-label" }, "Score Total")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.xp),
+                                e("div", { className: "stat-label" }, "XP Gagnés")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.quizScore),
+                                e("div", { className: "stat-label" }, "Application")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.scenarioScore),
+                                e("div", { className: "stat-label" }, "Combat")
+                            )
+                        ),
+                        e("div", { className: "save-code-box" },
+                            e("div", { className: "save-code-label" }, "📋 TON CODE DE SAUVEGARDE (pour le Module 05) :"),
+                            e("div", { className: "save-code" }, saveCode),
+                            e("button", { 
+                                className: "copy-btn",
+                                onClick: copyCode
+                            }, "Copier le code")
+                        ),
+                        e("div", { className: "content-panel", style: { marginTop: "30px", textAlign: "left" } },
+                            e("div", { className: "panel-header" },
+                                e("div", { className: "panel-icon" }, "🎓"),
+                                e("div", { className: "panel-title" }, "Arsenal débloqué")
+                            ),
+                            e("div", { className: "panel-body" },
+                                e("p", null, "Tu connais maintenant tes ", e("strong", { style: { color: "var(--shield-gold)" } }, "droits RGPD"), " : accès, effacement, portabilité, opposition. Tu sais comment les exercer."),
+                                e("p", { style: { marginTop: "15px" } }, "Tu maîtrises les ", e("strong", null, "procédures de signalement"), " : plateformes, PHAROS, 3018, pré-plainte en ligne."),
+                                e("p", { style: { marginTop: "15px" } }, "Dans le Module 05 final, tu apprendras à ", e("strong", { style: { color: "var(--protection-green)" } }, "reprendre le contrôle actif"), " de ta présence numérique et à devenir un véritable ", e("strong", { style: { color: "var(--protection-green)" } }, "Maître de ton Feed"), ".")
+                            )
+                        )
+                    )
+                );
+            }
+
+            // Main render
+            switch (gameState) {
+                case "unlock": return renderUnlock();
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderUnlock();
+            }
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

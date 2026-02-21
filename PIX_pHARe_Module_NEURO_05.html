@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Module NEURO 05 - S'auto-réguler [CERTIFICATION]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neuro-primary: #8b5cf6;
+            --neuro-accent: #ec4899;
+            --neuro-success: #10b981;
+            --neuro-mind: #06b6d4;
+            --neuro-deep: #6d28d9;
+            --void-dark: #0a0a14;
+            --deep-dark: #050508;
+            --panel-bg: rgba(10, 10, 20, 0.95);
+            --text-primary: #fffbf0;
+            --text-secondary: #a0a0b0;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .leader-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 50% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 70%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: neuroGlow 8s ease-in-out infinite;
+        }
+        
+        @keyframes neuroGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        .stars-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(139, 92, 246, 0.8), transparent),
+                radial-gradient(2px 2px at 40% 70%, rgba(236, 72, 153, 0.6), transparent),
+                radial-gradient(2px 2px at 70% 20%, rgba(6, 182, 212, 0.6), transparent),
+                radial-gradient(1px 1px at 90% 50%, rgba(139, 92, 246, 0.5), transparent),
+                radial-gradient(1px 1px at 10% 90%, rgba(16, 185, 129, 0.5), transparent);
+            background-size: 200px 200px;
+            animation: starsTwinkle 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes starsTwinkle {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header { text-align: center; padding: 40px 20px; }
+        
+        .pillar-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8));
+            animation: brainPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes brainPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8)); }
+            50% { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 35px rgba(139, 92, 246, 1)); }
+        }
+        
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent), var(--neuro-success), var(--neuro-mind));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            animation: gradientShift 4s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--neuro-accent);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .module-badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+            border: 2px solid var(--neuro-primary);
+            border-radius: 0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neuro-primary);
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .progress-node {
+            width: 55px;
+            height: 55px;
+            border: 3px solid var(--text-secondary);
+            background: var(--deep-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transition: all 0.4s ease;
+        }
+        
+        .progress-node.active {
+            border-color: var(--neuro-primary);
+            color: var(--neuro-primary);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+            animation: nodePulse 2s infinite;
+        }
+        
+        .progress-node.completed {
+            border-color: var(--neuro-success);
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--neuro-success);
+        }
+        
+        @keyframes nodePulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.9); }
+        }
+        
+        .xp-display {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .xp-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--neuro-primary);
+            padding: 12px 20px;
+            text-align: center;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+        }
+        
+        .xp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .xp-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--neuro-primary);
+            margin-top: 5px;
+        }
+        
+        .content-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--neuro-primary);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .panel-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.6));
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neuro-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .panel-body {
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        
+        .intro-screen p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .name-input-group {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-wrapper label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--neuro-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--deep-dark);
+            border: 1px solid var(--neuro-primary);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--neuro-accent);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-deep));
+            color: var(--text-primary);
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 30px 0;
+        }
+        
+        .flashcard {
+            width: 100%;
+            min-height: 320px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-face {
+            width: 100%;
+            min-height: 320px;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border: 2px solid var(--neuro-primary);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.15));
+        }
+        
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(16, 185, 129, 0.15));
+        }
+        
+        .flashcard-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--neuro-primary);
+            margin-bottom: 15px;
+        }
+        
+        .flashcard-hint {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--neuro-accent);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .flashcard-answer {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: center;
+            color: var(--text-primary);
+        }
+        
+        .flashcard-answer strong {
+            color: var(--neuro-accent);
+        }
+        
+        .flashcard-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 12px 25px;
+            background: transparent;
+            border: 2px solid var(--neuro-primary);
+            color: var(--neuro-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            background: var(--neuro-primary);
+            color: var(--void-dark);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .quiz-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neuro-primary);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(139, 92, 246, 0.05);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--neuro-primary);
+            transform: translateX(5px);
+        }
+        
+        .quiz-option.selected {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--neuro-primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--neuro-success);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .option-marker {
+            width: 35px;
+            height: 35px;
+            background: var(--neuro-primary);
+            color: var(--void-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .feedback-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+            border: 2px solid var(--neuro-success);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .feedback-box.incorrect-feedback {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(236, 72, 153, 0.15));
+            border-color: #ef4444;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
+        }
+        
+        .feedback-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neuro-success);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .incorrect-feedback .feedback-title {
+            color: #ef4444;
+        }
+        
+        .scenario-context {
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid var(--neuro-primary);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+        
+        .scenario-intro {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .choice-btn {
+            padding: 18px 25px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            line-height: 1.5;
+        }
+        
+        .choice-btn:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+            border-color: var(--neuro-primary);
+            transform: translateX(8px);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+        }
+        
+        .choice-result {
+            background: rgba(6, 182, 212, 0.1);
+            border: 2px solid var(--neuro-mind);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .choice-result p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .impact-score {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .impact-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .impact-item.positive {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--neuro-success);
+            color: var(--neuro-success);
+        }
+        
+        .impact-item.negative {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+        
+        .completion-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .completion-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8));
+            animation: completionFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes completionFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .completion-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent), var(--neuro-success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .completion-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        
+        .mastery-badge {
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 25px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+        }
+        
+        .mastery-expert {
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent));
+            color: var(--text-primary);
+            border: 3px solid var(--neuro-success);
+        }
+        
+        .mastery-confirmed {
+            background: linear-gradient(135deg, var(--neuro-mind), var(--neuro-primary));
+            color: var(--text-primary);
+            border: 3px solid var(--neuro-accent);
+        }
+        
+        .mastery-training {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+            color: var(--text-primary);
+            border: 3px solid var(--neuro-primary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: var(--panel-bg);
+            border: 2px solid var(--neuro-primary);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--neuro-primary);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .save-code-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--neuro-accent);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .save-code-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neuro-accent);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .save-code {
+            background: var(--deep-dark);
+            border: 1px solid var(--neuro-primary);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--neuro-primary);
+            word-break: break-all;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--neuro-accent), var(--neuro-primary));
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(236, 72, 153, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="leader-bg"></div>
+    <div class="stars-overlay"></div>
+    <div class="scanlines"></div>
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script>
+        const { useState } = React;
+        const e = React.createElement;
+
+        const MODULE_ID = "NEURO_05";
+        const MODULE_TITLE = "S'auto-réguler";
+        const MODULE_VERSION = "1.0";
+        const PREREQUISITE_MODULE = "NEURO_04";
+        const PILLAR_ID = "NUM";
+
+        const flashcardsData = [
+            {
+                question: "Qu'est-ce que la régulation émotionnelle ?",
+                hint: "[ Clique pour révéler ]",
+                answer: "C'est la capacité de <strong>moduler l'intensité, la durée et l'expression de ses émotions</strong>. Pas de les supprimer, mais de les gérer pour qu'elles restent <strong>utiles</strong> sans devenir <strong>envahissantes</strong>."
+            },
+            {
+                question: "Quelle est la technique la plus rapide pour calmer le cerveau émotionnel ?",
+                hint: "[ Clique pour révéler ]",
+                answer: "La <strong>respiration contrôlée</strong> (cohérence cardiaque : 5 sec inspiration / 5 sec expiration). Elle ralentit le rythme cardiaque et active le système parasympathique, calmant l'amygdale en moins de 3 minutes."
+            },
+            {
+                question: "Qu'est-ce que le recadrage cognitif ?",
+                hint: "[ Clique pour révéler ]",
+                answer: "C'est <strong>changer l'interprétation d'une situation</strong> pour modifier l'émotion qu'elle provoque. Exemple : 'Il m'ignore' → 'Il est peut-être préoccupé'. Le cortex préfrontal peut ainsi moduler la réaction de l'amygdale."
+            },
+            {
+                question: "Pourquoi la métacognition est-elle une compétence clé ?",
+                hint: "[ Clique pour révéler ]",
+                answer: "Parce qu'elle permet de <strong>'penser sur sa propre pensée'</strong>. Observer ses émotions sans s'y noyer ('Je sens de la colère' vs 'Je SUIS en colère') crée une distance qui facilite la régulation."
+            }
+        ];
+
+        const quizData = [
+            {
+                question: "Ton ami te dit quelque chose de blessant. Tu sens la colère monter. Quelle stratégie de régulation est la plus efficace ?",
+                options: [
+                    "Exploser immédiatement pour libérer la tension",
+                    "Respirer profondément 3 fois, puis demander calmement : 'Qu'est-ce que tu voulais dire par là ?'",
+                    "Ignorer complètement tes émotions et faire comme si de rien n'était",
+                    "Ruminer toute la journée sans rien dire"
+                ],
+                correct: 1,
+                feedback: "Exact. La respiration active le parasympathique (calme physiologique), puis le recadrage cognitif (question clarifiante) permet de vérifier l'intention avant de réagir. L'empathie cognitive complète l'empathie affective."
+            },
+            {
+                question: "Avant un contrôle important, tu sens ton cœur battre fort et tes mains trembler. Comment ton cerveau interprète-t-il ces signaux ?",
+                options: [
+                    "C'est toujours un signe de panique à éviter",
+                    "Ton cerveau peut les interpréter comme du stress (négatif) OU de l'excitation (positif) selon ton recadrage mental",
+                    "Ces signaux prouvent que tu n'es pas préparé",
+                    "C'est une maladie physique qui nécessite un médecin"
+                ],
+                correct: 1,
+                feedback: "Parfait. Les signaux physiologiques sont neutres. C'est ton cortex préfrontal qui leur donne un sens. 'Mon corps me prépare à performer' (recadrage positif) change radicalement l'expérience par rapport à 'Je suis en train de paniquer'."
+            },
+            {
+                question: "Un camarade te raconte une situation injuste qu'il a vécue. Tu ressens de la tristesse pour lui (empathie affective). Que devrait faire ton empathie cognitive ?",
+                options: [
+                    "Amplifier ton émotion pour montrer que tu partages sa douleur",
+                    "Te demander : 'De quoi a-t-il besoin maintenant ? Écoute ? Conseil ? Distraction ?'",
+                    "Minimiser ses émotions pour le rassurer rapidement",
+                    "Changer de sujet pour ne pas t'impliquer émotionnellement"
+                ],
+                correct: 1,
+                feedback: "Excellent. L'empathie affective crée la connexion émotionnelle. L'empathie cognitive permet d'ajuster ta réponse aux besoins réels de l'autre. C'est la combinaison qui rend l'aide efficace."
+            },
+            {
+                question: "Tu te surprends à ruminer une dispute de la veille. Quelle technique métacognitive est la plus adaptée ?",
+                options: [
+                    "Continuer à y penser jusqu'à trouver la solution parfaite",
+                    "Observer ta pensée : 'Tiens, je rumine. Mon cerveau cherche à résoudre. Mais là, maintenant, je choisis de me concentrer sur [autre chose]'",
+                    "Te forcer à ne plus y penser du tout",
+                    "Appeler immédiatement la personne pour régler ça"
+                ],
+                correct: 1,
+                feedback: "Exactement. La métacognition crée une distance ('Je rumine' vs 'Mes pensées ruminent'). Reconnaître le pattern sans jugement, puis rediriger volontairement l'attention : c'est la flexibilité cognitive en action."
+            }
+        ];
+
+        const scenarioData = [
+            {
+                title: "Le Piège du Groupe",
+                context: "Pendant la récré, ton groupe se moque d'un élève absent. Tout le monde rit. Tu ressens un mélange : gêne (empathie affective), mais aussi peur d'être exclu si tu interviens.",
+                intro: "Ton cerveau est en conflit : l'amygdale pousse à rire pour rester dans le groupe (survie sociale), mais ton cortex préfrontal détecte l'injustice. Comment vas-tu t'auto-réguler dans cette situation complexe ?",
+                choices: [
+                    {
+                        text: "Tu ris avec les autres pour éviter le conflit (suppression de ton inconfort)",
+                        result: "Court terme : soulagement immédiat. Long terme : dissonance cognitive (tes actes contredisent tes valeurs). Ton cerveau enregistre que tu as sacrifié ton intégrité par peur. La prochaine fois, ce sera plus facile de recommencer.",
+                        impact: { regulation: -25, integrite: -30 }
+                    },
+                    {
+                        text: "Tu cries sur le groupe : 'Vous êtes tous méchants !' (explosion émotionnelle)",
+                        result: "Tu exprimes ton malaise, mais sans régulation. L'agression verbale crée un rejet du groupe ET ne protège pas la victime absente. L'émotion juste (indignation) mal régulée devient contre-productive.",
+                        impact: { regulation: -15, integrite: +10 }
+                    },
+                    {
+                        text: "Tu te retires silencieusement du groupe sans rien dire",
+                        result: "Tu protèges ton intégrité (pas de participation active), mais tu laisses la dynamique toxique continuer. Pas d'opposition = consentement implicite. La victime reste vulnérable.",
+                        impact: { regulation: +10, integrite: +5 }
+                    },
+                    {
+                        text: "Tu respires 3 secondes, puis tu dis calmement : 'Moi ça me met mal à l'aise. On parle d'autre chose ?'",
+                        result: "Régulation émotionnelle (respiration) + affirmation de soi (expression du malaise) + recadrage social (proposition alternative). Tu poses une limite sans agression. Certains suivront, d'autres pas, mais tu as agi selon tes valeurs.",
+                        impact: { regulation: +35, integrite: +35 }
+                    }
+                ]
+            },
+            {
+                title: "La Rumination Nocturne",
+                context: "22h. Tu es au lit. Depuis 1h, tu rejoues en boucle une situation embarrassante de la journée. Ton cerveau refuse de lâcher prise.",
+                intro: "Ton système limbique (émotionnel) tourne en boucle. Ton cortex préfrontal (rationnel) sait que c'est inutile, mais il est fatigué (fin de journée = réserves cognitives basses). Comment sortir de ce cycle ?",
+                choices: [
+                    {
+                        text: "Tu continues à ruminer en te disant 'Je DOIS trouver une solution maintenant'",
+                        result: "La rumination s'amplifie. Ton cerveau fatigue davantage, le cortex préfrontal perd en efficacité, l'amygdale prend le contrôle. Spirale descendante : anxiété montante, sommeil perturbé, performance du lendemain réduite.",
+                        impact: { regulation: -30, repos: -25 }
+                    },
+                    {
+                        text: "Tu te forces à 'ne plus y penser' par effort de volonté pure",
+                        result: "Effet rebond. Plus tu luttes contre une pensée ('Ne pense pas à un éléphant rose'), plus elle revient. Tu épuises tes ressources attentionnelles sans résultat. La fatigue cognitive s'accumule.",
+                        impact: { regulation: -20, repos: -15 }
+                    },
+                    {
+                        text: "Tu ouvres ton téléphone pour te distraire avec TikTok/Instagram",
+                        result: "Distraction temporaire, mais lumière bleue + dopamine des notifications = sommeil retardé. Le problème initial n'est pas traité, juste masqué. Réveil difficile demain + problème toujours présent.",
+                        impact: { regulation: -10, repos: -20 }
+                    },
+                    {
+                        text: "Tu pratiques la métacognition : 'Mon cerveau rumine. C'est normal, il cherche à me protéger. Mais là, je choisis de reporter ça à demain. Respiration 4-7-8, focus sur les sensations corporelles.'",
+                        result: "Tu reconnais la rumination sans la combattre (acceptation). Tu utilises la physiologie (respiration 4-7-8 active le parasympathique) + redirection attentionnelle (sensations corporelles). Le cerveau se calme progressivement. Compétence transférable.",
+                        impact: { regulation: +40, repos: +30 }
+                    }
+                ]
+            }
+        ];
+
+        function encodeSaveCode(data) {
+            return btoa(JSON.stringify(data));
+        }
+
+        function getMasteryLevel(score) {
+            if (score >= 450) return { level: "Maître de la Régulation", class: "mastery-expert" };
+            if (score >= 280) return { level: "Régulateur Confirmé", class: "mastery-confirmed" };
+            return { level: "En Apprentissage", class: "mastery-training" };
+        }
+
+        function App() {
+            const [gameState, setGameState] = useState("intro");
+            const [playerData, setPlayerData] = useState({
+                name: "",
+                class: "",
+                level: 1,
+                score: 0,
+                xp: 0,
+                quizScore: 0,
+                scenarioScore: 0,
+                flashcardsViewed: 0,
+                finished: false
+            });
+
+            const [currentFlashcard, setCurrentFlashcard] = useState(0);
+            const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+
+            const [currentQuiz, setCurrentQuiz] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showQuizFeedback, setShowQuizFeedback] = useState(false);
+
+            const [currentScenario, setCurrentScenario] = useState(0);
+            const [scenarioChoice, setScenarioChoice] = useState(null);
+            const [showScenarioResult, setShowScenarioResult] = useState(false);
+
+            function startGame() {
+                if (playerData.name.trim() && playerData.class.trim()) {
+                    setGameState("flashcards");
+                }
+            }
+
+            function nextFlashcard() {
+                if (currentFlashcard < flashcardsData.length - 1) {
+                    setCurrentFlashcard(prev => prev + 1);
+                    setFlashcardFlipped(false);
+                    setPlayerData(prev => ({
+                        ...prev,
+                        flashcardsViewed: Math.max(prev.flashcardsViewed, currentFlashcard + 2),
+                        xp: prev.xp + 15
+                    }));
+                } else {
+                    setGameState("quiz");
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 2,
+                        flashcardsViewed: flashcardsData.length,
+                        xp: prev.xp + 50
+                    }));
+                }
+            }
+
+            function prevFlashcard() {
+                if (currentFlashcard > 0) {
+                    setCurrentFlashcard(prev => prev - 1);
+                    setFlashcardFlipped(false);
+                }
+            }
+
+            function selectQuizAnswer(index) {
+                if (showQuizFeedback) return;
+                setSelectedAnswer(index);
+            }
+
+            function validateQuizAnswer() {
+                setShowQuizFeedback(true);
+                const isCorrect = selectedAnswer === quizData[currentQuiz].correct;
+                if (isCorrect) {
+                    setPlayerData(prev => ({
+                        ...prev,
+                        score: prev.score + 30,
+                        quizScore: prev.quizScore + 30,
+                        xp: prev.xp + 30
+                    }));
+                }
+            }
+
+            function nextQuizQuestion() {
+                if (currentQuiz < quizData.length - 1) {
+                    setCurrentQuiz(prev => prev + 1);
+                    setSelectedAnswer(null);
+                    setShowQuizFeedback(false);
+                } else {
+                    setGameState("scenarios");
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 3,
+                        xp: prev.xp + 60
+                    }));
+                }
+            }
+
+            function makeScenarioChoice(index) {
+                setScenarioChoice(index);
+                setShowScenarioResult(true);
+
+                const choice = scenarioData[currentScenario].choices[index];
+                const values = Object.values(choice.impact);
+                const totalChange = Math.max(0, values.reduce((a, b) => a + b, 0));
+
+                setPlayerData(prev => ({
+                    ...prev,
+                    score: prev.score + totalChange,
+                    scenarioScore: prev.scenarioScore + totalChange,
+                    xp: prev.xp + 25
+                }));
+            }
+
+            function nextScenario() {
+                if (currentScenario < scenarioData.length - 1) {
+                    setCurrentScenario(prev => prev + 1);
+                    setScenarioChoice(null);
+                    setShowScenarioResult(false);
+                } else {
+                    completeModule();
+                }
+            }
+
+            function completeModule() {
+                setPlayerData(prev => ({
+                    ...prev,
+                    finished: true,
+                    xp: prev.xp + 100
+                }));
+                setGameState("complete");
+            }
+
+            function generateSaveCode() {
+                const saveData = {
+                    v: 1,
+                    d: new Date().toISOString(),
+                    m: MODULE_ID,
+                    mv: MODULE_VERSION,
+                    n: playerData.name,
+                    c: playerData.class,
+                    l: 3,
+                    s: playerData.score,
+                    x: playerData.xp,
+                    q: playerData.quizScore,
+                    sc: playerData.scenarioScore,
+                    f: true
+                };
+                return encodeSaveCode(saveData);
+            }
+
+            function copyCode() {
+                const code = generateSaveCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    alert("Code copié dans le presse-papier !");
+                });
+            }
+
+            function renderIntro() {
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("div", { className: "pillar-icon" }, "🧠"),
+                        e("h1", { className: "glitch-title" }, "PIX-pHARe"),
+                        e("div", { className: "subtitle" }, "Pilier Neurosciences & Psychologie"),
+                        e("div", { className: "module-badge" }, "MODULE 05 - CERTIFICATION")
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "⚡"),
+                            e("div", { className: "panel-title" }, MODULE_TITLE)
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "intro-screen" },
+                                e("p", null, 
+                                    "Tu as compris l'empathie, exploré les réactions émotionnelles, enrichi ton vocabulaire des émotions, et découvert comment ton cerveau traite la douleur sociale."
+                                ),
+                                e("p", null,
+                                    "Il te reste une compétence décisive : ", e("strong", { style: { color: "var(--neuro-accent)" } }, "t'auto-réguler"), 
+                                    ". Moduler tes émotions pour qu'elles restent utiles sans devenir envahissantes."
+                                ),
+                                e("p", null,
+                                    "Ce module final te donnera des ", e("strong", { style: { color: "var(--neuro-primary)" } }, "outils concrets validés par les neurosciences"), 
+                                    " : respiration, recadrage cognitif, métacognition. Prêt·e à devenir maître de ton cerveau émotionnel ?"
+                                )
+                            ),
+                            e("div", { className: "name-input-group" },
+                                e("div", { className: "input-wrapper" },
+                                    e("label", null, "Ton Pseudo :"),
+                                    e("input", {
+                                        type: "text",
+                                        value: playerData.name,
+                                        onChange: (ev) => setPlayerData(prev => ({ ...prev, name: ev.target.value })),
+                                        placeholder: "Entre ton prénom ou pseudo"
+                                    })
+                                ),
+                                e("div", { className: "input-wrapper" },
+                                    e("label", null, "Ta Classe :"),
+                                    e("input", {
+                                        type: "text",
+                                        value: playerData.class,
+                                        onChange: (ev) => setPlayerData(prev => ({ ...prev, class: ev.target.value })),
+                                        placeholder: "Ex: 4ème B"
+                                    })
+                                ),
+                                e("div", { style: { textAlign: "center", marginTop: "30px" } },
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: startGame,
+                                        disabled: !playerData.name.trim() || !playerData.class.trim()
+                                    }, "[ INITIALISER ]")
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcardsData[currentFlashcard];
+
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("div", { className: "pillar-icon" }, "🧠"),
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 1 : Fondements")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node active" }, "1"),
+                        e("div", { className: "progress-node" }, "2"),
+                        e("div", { className: "progress-node" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Carte"),
+                            e("div", { className: "xp-value" }, `${currentFlashcard + 1}/${flashcardsData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🎴"),
+                            e("div", { className: "panel-title" }, "Techniques de Régulation")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "flashcard-container" },
+                                e("div", {
+                                    className: `flashcard ${flashcardFlipped ? "flipped" : ""}`,
+                                    onClick: () => setFlashcardFlipped(!flashcardFlipped)
+                                },
+                                    e("div", { className: "flashcard-face flashcard-front" },
+                                        e("div", { className: "flashcard-question" }, card.question),
+                                        e("div", { className: "flashcard-hint" }, card.hint)
+                                    ),
+                                    e("div", { className: "flashcard-face flashcard-back" },
+                                        e("div", {
+                                            className: "flashcard-answer",
+                                            dangerouslySetInnerHTML: { __html: card.answer }
+                                        })
+                                    )
+                                )
+                            ),
+                            e("div", { className: "flashcard-nav" },
+                                e("button", {
+                                    className: "nav-btn",
+                                    onClick: prevFlashcard,
+                                    disabled: currentFlashcard === 0
+                                }, "◄ PRÉC"),
+                                e("button", {
+                                    className: "nav-btn",
+                                    onClick: nextFlashcard
+                                }, currentFlashcard < flashcardsData.length - 1 ? "SUIV ►" : "NIVEAU 2 ►")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderQuiz() {
+                const question = quizData[currentQuiz];
+
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("div", { className: "pillar-icon" }, "🧠"),
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 2 : Application")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node active" }, "2"),
+                        e("div", { className: "progress-node" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Score Quiz"),
+                            e("div", { className: "xp-value" }, playerData.quizScore)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Question"),
+                            e("div", { className: "xp-value" }, `${currentQuiz + 1}/${quizData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "🎯"),
+                            e("div", { className: "panel-title" }, "Test de Compétences")
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "quiz-question" }, question.question),
+                            e("div", { className: "quiz-options" },
+                                question.options.map((opt, idx) => {
+                                    let optClass = "quiz-option";
+                                    if (showQuizFeedback) {
+                                        if (idx === question.correct) optClass += " correct";
+                                        else if (idx === selectedAnswer) optClass += " incorrect";
+                                    } else if (idx === selectedAnswer) {
+                                        optClass += " selected";
+                                    }
+
+                                    return e("div", {
+                                        key: idx,
+                                        className: optClass,
+                                        onClick: () => selectQuizAnswer(idx)
+                                    },
+                                        e("div", { className: "option-marker" }, String.fromCharCode(65 + idx)),
+                                        e("div", { className: "option-text" }, opt)
+                                    );
+                                })
+                            ),
+                            showQuizFeedback && e("div", {
+                                className: `feedback-box ${selectedAnswer !== question.correct ? "incorrect-feedback" : ""}`
+                            },
+                                e("div", { className: "feedback-title" },
+                                    selectedAnswer === question.correct ? "✓ EXCELLENT" : "✗ PAS TOUT À FAIT"
+                                ),
+                                e("p", null, question.feedback)
+                            ),
+                            e("div", { style: { textAlign: "center", marginTop: "25px" } },
+                                !showQuizFeedback ?
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: validateQuizAnswer,
+                                        disabled: selectedAnswer === null
+                                    }, "[ VALIDER ]") :
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: nextQuizQuestion
+                                    }, currentQuiz < quizData.length - 1 ? "[ SUIVANT ]" : "[ NIVEAU 3 ]")
+                            )
+                        )
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                const scenario = scenarioData[currentScenario];
+
+                return e("div", { className: "app-container" },
+                    e("div", { className: "header" },
+                        e("div", { className: "pillar-icon" }, "🧠"),
+                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
+                        e("div", { className: "subtitle" }, "Niveau 3 : Situations Complexes")
+                    ),
+                    e("div", { className: "progress-bar" },
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node completed" }, "✓"),
+                        e("div", { className: "progress-node active" }, "3")
+                    ),
+                    e("div", { className: "xp-display" },
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "XP Total"),
+                            e("div", { className: "xp-value" }, playerData.xp)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Score"),
+                            e("div", { className: "xp-value" }, playerData.score)
+                        ),
+                        e("div", { className: "xp-box" },
+                            e("div", { className: "xp-label" }, "Scénario"),
+                            e("div", { className: "xp-value" }, `${currentScenario + 1}/${scenarioData.length}`)
+                        )
+                    ),
+                    e("div", { className: "content-panel" },
+                        e("div", { className: "panel-header" },
+                            e("div", { className: "panel-icon" }, "⚖️"),
+                            e("div", { className: "panel-title" }, scenario.title)
+                        ),
+                        e("div", { className: "panel-body" },
+                            e("div", { className: "scenario-context" }, scenario.context),
+                            e("div", { className: "scenario-intro" }, scenario.intro),
+                            !showScenarioResult ?
+                                e("div", { className: "choices" },
+                                    scenario.choices.map((choice, idx) =>
+                                        e("button", {
+                                            key: idx,
+                                            className: "choice-btn",
+                                            onClick: () => makeScenarioChoice(idx)
+                                        }, choice.text)
+                                    )
+                                ) :
+                                e("div", { className: "choice-result" },
+                                    e("p", { style: { marginBottom: "15px" } }, scenario.choices[scenarioChoice].result),
+                                    e("div", { className: "impact-score" },
+                                        Object.entries(scenario.choices[scenarioChoice].impact).map(([key, val]) =>
+                                            e("div", {
+                                                key: key,
+                                                className: `impact-item ${val > 0 ? "positive" : "negative"}`
+                                            }, `${key}: ${val > 0 ? "+" : ""}${val}`)
+                                        )
+                                    ),
+                                    e("div", { style: { textAlign: "center", marginTop: "25px" } },
+                                        e("button", {
+                                            className: "action-btn",
+                                            onClick: nextScenario
+                                        }, currentScenario < scenarioData.length - 1 ? "[ SUIVANT ]" : "[ TERMINER ]")
+                                    )
+                                )
+                        )
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const mastery = getMasteryLevel(playerData.score);
+                const saveCode = generateSaveCode();
+
+                return e("div", { className: "app-container" },
+                    e("div", { className: "completion-screen" },
+                        e("div", { className: "completion-icon" }, "🏆"),
+                        e("h1", { className: "completion-title" }, "CERTIFICATION VALIDÉE"),
+                        e("p", { className: "completion-subtitle" },
+                            `Bravo ${playerData.name} ! Tu maîtrises l'autorégulation émotionnelle.`
+                        ),
+                        e("div", { className: `mastery-badge ${mastery.class}` }, mastery.level),
+                        e("div", { className: "stats-grid" },
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.score),
+                                e("div", { className: "stat-label" }, "Score Total")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.xp),
+                                e("div", { className: "stat-label" }, "XP Gagnés")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.quizScore),
+                                e("div", { className: "stat-label" }, "Score Quiz")
+                            ),
+                            e("div", { className: "stat-card" },
+                                e("div", { className: "stat-value" }, playerData.scenarioScore),
+                                e("div", { className: "stat-label" }, "Score Scénarios")
+                            )
+                        ),
+                        e("div", { className: "save-code-box" },
+                            e("div", { className: "save-code-label" }, "📋 Code de Validation (à remettre au CPE) :"),
+                            e("div", { className: "save-code" }, saveCode),
+                            e("button", {
+                                className: "copy-btn",
+                                onClick: copyCode
+                            }, "Copier le Code")
+                        ),
+                        e("div", { className: "content-panel", style: { marginTop: "30px", textAlign: "left" } },
+                            e("div", { className: "panel-header" },
+                                e("div", { className: "panel-icon" }, "✨"),
+                                e("div", { className: "panel-title" }, "Ce Que Tu As Acquis")
+                            ),
+                            e("div", { className: "panel-body" },
+                                e("p", null,
+                                    "Tu sais maintenant que tes émotions ne te contrôlent pas : c'est ", e("strong", null, "ton cerveau préfrontal"), " qui peut moduler ton ", e("strong", null, "système limbique"), "."
+                                ),
+                                e("p", { style: { marginTop: "15px" } },
+                                    "La respiration, le recadrage cognitif, la métacognition : ce ne sont pas des théories abstraites. Ce sont des ", e("strong", null, "outils validés par les neurosciences"), " que tu peux utiliser chaque jour."
+                                ),
+                                e("p", { style: { marginTop: "15px" } },
+                                    "Tu as complété les 5 modules du Pilier Neurosciences. Tu comprends l'empathie, les émotions, la douleur sociale, et l'autorégulation. Tu es désormais ", e("strong", { style: { color: "var(--neuro-accent)" } }, "un·e ambassadeur·rice pHARe certifié·e"), "."
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

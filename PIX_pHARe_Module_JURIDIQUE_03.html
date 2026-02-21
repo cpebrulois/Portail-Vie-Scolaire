@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Le Spectre Numérique</title>
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --accent: #ff006e;
+            --success: #00ff88;
+            --warning: #ffbe0b;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --card: #12122a;
+            --light: #e8e8e8;
+            --gold: #ffd700;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #1a0a2e 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,212,255,0.2), 0 0 0 1px rgba(0,212,255,0.1);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #ff006e, #00ff88);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 {
+            font-size: 2.2em;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+        .header .subtitle { color: var(--accent); font-size: 1.1em; }
+        .header .level-badge {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .progress-container { background: var(--darker); border-radius: 10px; padding: 15px 20px; margin-bottom: 25px; }
+        .progress-bar-outer { background: rgba(255,255,255,0.1); border-radius: 10px; height: 12px; overflow: hidden; margin-top: 10px; }
+        .progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 10px; transition: width 0.5s ease; }
+        .progress-stats { display: flex; justify-content: space-between; font-size: 0.9em; }
+        .xp-badge { background: var(--gold); color: #000; padding: 3px 12px; border-radius: 15px; font-weight: bold; }
+        .btn {
+            background: linear-gradient(135deg, var(--primary), #0099cc);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,212,255,0.4); }
+        .btn-secondary { background: linear-gradient(135deg, #444, #333); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, var(--success), #00cc6a); color: #000; }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #cc9900); color: #000; }
+        .btn-danger { background: linear-gradient(135deg, var(--accent), #cc0055); color: #fff; }
+        .btn-block { width: 100%; justify-content: center; }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .card { background: linear-gradient(145deg, #1a1a3a, #12122a); color: var(--light); padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(0,212,255,0.2); }
+        .flashcard-container { perspective: 1000px; margin: 25px 0; }
+        .flashcard {
+            background: linear-gradient(145deg, #1a1a3a, #0a0a1a);
+            color: var(--light);
+            padding: 40px 30px;
+            border-radius: 15px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.6s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 40px rgba(0,212,255,0.2);
+            position: relative;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+        .flashcard:hover { box-shadow: 0 20px 50px rgba(0,212,255,0.4); }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard .front, .flashcard .back { backface-visibility: hidden; position: absolute; width: calc(100% - 60px); }
+        .flashcard .back { transform: rotateY(180deg); }
+        .flashcard .question { font-size: 1.3em; font-weight: 600; line-height: 1.5; }
+        .flashcard .answer { font-size: 1.1em; line-height: 1.6; }
+        .flashcard .answer-label { color: var(--primary); font-weight: bold; font-size: 0.9em; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .flashcard .source { margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.85em; color: #888; font-style: italic; }
+        .flashcard .tap-hint { position: absolute; bottom: 15px; font-size: 0.8em; color: #666; }
+        .card-counter { text-align: center; margin-bottom: 15px; font-size: 0.95em; opacity: 0.8; }
+        .quiz-question { background: var(--darker); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--accent); }
+        .quiz-question .label { color: var(--accent); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .quiz-choices { display: flex; flex-direction: column; gap: 12px; }
+        .quiz-choice {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: var(--light);
+            padding: 18px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1rem;
+        }
+        .quiz-choice:hover { background: rgba(0,212,255,0.15); border-color: var(--primary); transform: translateX(5px); }
+        .quiz-choice.correct { background: rgba(0,255,136,0.2); border-color: var(--success); }
+        .quiz-choice.incorrect { background: rgba(255,0,110,0.2); border-color: var(--accent); }
+        .quiz-choice.disabled { pointer-events: none; opacity: 0.6; }
+        .feedback { padding: 20px; border-radius: 12px; margin-top: 20px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .feedback.correct { background: rgba(0,255,136,0.15); border: 1px solid var(--success); }
+        .feedback.incorrect { background: rgba(255,0,110,0.15); border: 1px solid var(--accent); }
+        .feedback .title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
+        .feedback.correct .title { color: var(--success); }
+        .feedback.incorrect .title { color: var(--accent); }
+        .dojo-scenario { background: linear-gradient(135deg, var(--darker), #1a0a2e); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,0,110,0.3); margin-bottom: 20px; }
+        .dojo-scenario .context-label { color: var(--accent); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .dojo-scenario .context { font-size: 1.05em; line-height: 1.7; margin-bottom: 20px; }
+        .dojo-scenario .question { background: rgba(255,190,11,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--warning); }
+        .impact-badge { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; margin-left: 10px; }
+        .impact-positive { background: var(--success); color: #000; }
+        .impact-negative { background: var(--accent); color: #fff; }
+        .impact-neutral { background: var(--warning); color: #000; }
+        .save-code-section { background: #050510; border: 2px dashed var(--primary); border-radius: 12px; padding: 25px; margin: 25px 0; }
+        .save-code-box { background: #000; color: var(--primary); font-family: 'Courier New', monospace; padding: 20px; border-radius: 8px; word-break: break-all; font-size: 0.85em; line-height: 1.5; user-select: all; margin: 15px 0; max-height: 120px; overflow-y: auto; }
+        .save-instructions { background: rgba(0,212,255,0.1); border: 1px solid var(--primary); padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .save-instructions h4 { color: var(--primary); margin-bottom: 10px; }
+        .save-instructions ul { margin-left: 20px; line-height: 1.8; }
+        .report { background: linear-gradient(145deg, #1a1a3a, #0a0a1a); border-radius: 15px; overflow: hidden; border: 1px solid rgba(0,212,255,0.3); }
+        .report-header { background: linear-gradient(135deg, var(--primary), #0099cc); color: #000; padding: 30px; text-align: center; }
+        .report-header h2 { font-size: 1.8em; margin-bottom: 5px; }
+        .report-body { padding: 30px; }
+        .report-stat { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .report-stat:last-child { border-bottom: none; }
+        .report-stat .label { color: #888; }
+        .report-stat .value { font-weight: bold; }
+        .mastery-badge { display: inline-block; padding: 8px 20px; border-radius: 25px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .mastery-expert { background: linear-gradient(135deg, var(--gold), #cc9900); color: #000; }
+        .mastery-confirmed { background: linear-gradient(135deg, var(--primary), #0099cc); color: #000; }
+        .mastery-learning { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; }
+        .unlock-section { background: linear-gradient(135deg, #1a0a2e, #0a0a1a); border: 2px solid var(--warning); border-radius: 15px; padding: 30px; text-align: center; margin: 20px 0; }
+        .unlock-section h3 { color: var(--warning); margin-bottom: 15px; }
+        .unlock-section input { width: 100%; padding: 15px; border: 2px solid #333; border-radius: 8px; background: #050510; color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.9em; margin: 15px 0; }
+        .unlock-section input:focus { outline: none; border-color: var(--primary); }
+        .error-msg { color: var(--accent); font-weight: bold; margin-top: 10px; }
+        .level-indicator { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .level-dot { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; background: var(--darker); border: 3px solid #333; transition: all 0.3s; }
+        .level-dot.active { border-color: var(--primary); box-shadow: 0 0 20px rgba(0,212,255,0.5); }
+        .level-dot.completed { background: var(--success); border-color: var(--success); color: #000; }
+        @media (max-width: 600px) { body { padding: 10px; } .app-container { padding: 20px; } .header h1 { font-size: 1.6em; } .flashcard { padding: 25px 20px; min-height: 250px; } .btn { padding: 12px 20px; font-size: 0.9rem; } }
+    </style>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const MODULE_DATA = {
+            id: "JURIDIQUE_03",
+            version: "1.0.0",
+            titre: "LE SPECTRE NUMÉRIQUE",
+            sous_titre: "Pilier 3 : Cyberharcèlement",
+            description: "Maîtriser les spécificités du harcèlement en ligne : preuves, infractions, et stratégies de défense numérique.",
+            auteur: "Programme pHARe",
+            prerequis: "JURIDIQUE_02",
+            niveau_difficulte: 3,
+            
+            niveau1: {
+                titre: "Le Terrain Numérique",
+                type: "flashcards",
+                xp_reward: 100,
+                cartes: [
+                    {
+                        recto: "Quelle est la SPÉCIFICITÉ majeure du cyberharcèlement par rapport au harcèlement \"classique\" ?",
+                        verso: "3 différences cruciales :\n\n1. ASYNCHRONE : L'attaque continue même quand l'agresseur dort\n\n2. INVISIBLE : Pas de feedback visuel de la souffrance (écran = mur)\n\n3. PERMANENT : Les traces restent (screenshots, archives)",
+                        source: "Recherches sur le cyberharcèlement"
+                    },
+                    {
+                        recto: "Quel est le MEILLEUR PRÉDICTEUR du cyberharcèlement ?",
+                        verso: "Le harcèlement \"hors ligne\" (traditionnel).\n\nLes études montrent que ceux qui harcèlent en ligne harcèlent généralement aussi en présentiel.\n\nLe cyber n'est pas un monde à part : c'est une EXTENSION du réel.",
+                        source: "Méta-analyses cyberharcèlement"
+                    },
+                    {
+                        recto: "Qu'est-ce que le RAID NUMÉRIQUE (ou effet de meute en ligne) ?",
+                        verso: "Attaque coordonnée où de nombreuses personnes ciblent la même victime simultanément.\n\nSur internet, l'anonymat + les algorithmes AMPLIFIENT la polarisation de groupe.\n\nChaque participant peut minimiser son rôle : \"J'ai juste envoyé UN message.\"",
+                        source: "Loi 2022 - Effet de meute"
+                    },
+                    {
+                        recto: "Quelles INFRACTIONS NUMÉRIQUES spécifiques peut-on signaler immédiatement ?",
+                        verso: "• USURPATION D'IDENTITÉ (Art. 226-4-1) : Faux compte = 1 an + 15 000€\n\n• REVENGE PORN (Art. 226-2-1) : Diffusion d'images intimes = 2 ans + 60 000€\n\n• HAPPY SLAPPING : Filmer + diffuser une agression = circonstance aggravante\n\n• DROIT À L'IMAGE : Publier sans consentement",
+                        source: "Code Pénal"
+                    },
+                    {
+                        recto: "Pourquoi le désengagement moral est-il AMPLIFIÉ en ligne ?",
+                        verso: "L'écran crée une DISTANCE ÉMOTIONNELLE :\n\n• Pas de larmes visibles\n• Pas de voix tremblante\n• Pas de langage corporel\n\n→ Le cerveau ne \"connecte\" pas à la souffrance de l'autre\n→ La DISTORSION DES CONSÉQUENCES est automatique",
+                        source: "Psychologie du cyberharcèlement"
+                    },
+                    {
+                        recto: "Comment SÉCURISER des preuves numériques ?",
+                        verso: "La RÈGLE D'OR : Screenshot AVANT signalement\n\n1. Capture d'écran avec DATE/HEURE visible\n2. URL complète si possible\n3. Profil de l'auteur (avant qu'il ne le supprime)\n4. Contexte (conversation complète)\n\nNe JAMAIS supprimer ou répondre d'abord !",
+                        source: "Protocole pHARe numérique"
+                    }
+                ]
+            },
+            
+            niveau2: {
+                titre: "Forensique Numérique",
+                type: "quiz",
+                xp_reward: 150,
+                questions: [
+                    {
+                        texte: "Une élève te montre des messages Instagram humiliants reçus d'un compte anonyme. Elle veut supprimer la conversation pour \"ne plus y penser\".",
+                        question: "Que lui conseilles-tu ?",
+                        choix: [
+                            { txt: "Oui, supprime tout, ça te fera du bien", correct: false, feedback: "ERREUR CRITIQUE ! En supprimant, elle détruit les PREUVES. Sans preuves, impossible de poursuivre ou de faire agir l'établissement." },
+                            { txt: "Non ! Screenshot TOUT d'abord, puis on avise", correct: true, feedback: "PARFAIT ! La règle d'or : capturer AVANT toute action. Date, heure, profil, messages, URL. Ces preuves sont essentielles pour le signalement." },
+                            { txt: "Bloque juste le compte, c'est suffisant", correct: false, feedback: "Insuffisant ! Bloquer stoppe les messages mais ne constitue pas une preuve. L'auteur peut aussi créer un nouveau compte. Il faut capturer ET signaler." }
+                        ]
+                    },
+                    {
+                        texte: "Un groupe Snapchat a été créé spécifiquement pour partager des \"memes\" moqueurs sur un élève. Les messages s'auto-détruisent.",
+                        question: "Quel est le principal défi juridique ?",
+                        choix: [
+                            { txt: "Snapchat est basé aux USA donc la loi française ne s'applique pas", correct: false, feedback: "FAUX ! La loi française s'applique si victime OU auteur est en France. Snapchat coopère avec les autorités sur demande judiciaire." },
+                            { txt: "L'auto-destruction complique la preuve mais ne l'empêche pas", correct: true, feedback: "EXACT ! Snapchat conserve des logs. Les screenshots restent possibles. Et les témoins peuvent témoigner. L'éphémère n'est pas l'impunité." },
+                            { txt: "C'est légal car les messages disparaissent", correct: false, feedback: "ABSURDE ! Le caractère éphémère ne change RIEN à l'infraction. Le harcèlement est constitué au moment de l'envoi, pas de la conservation." }
+                        ]
+                    },
+                    {
+                        texte: "Plusieurs élèves ont chacun posté UN SEUL commentaire négatif sous la photo d'un camarade. Individuellement, rien de grave. Mais il y en a 47.",
+                        question: "Comment qualifier juridiquement cette situation ?",
+                        choix: [
+                            { txt: "Pas de harcèlement car chacun n'a agi qu'une fois", correct: false, feedback: "FAUX ! C'est l'EFFET DE MEUTE (Loi 2022). La victime subit 47 attaques = répétition. Tous les auteurs sont co-responsables de harcèlement." },
+                            { txt: "Harcèlement par effet de meute - tous co-responsables", correct: true, feedback: "CORRECT ! Depuis 2022, la répétition peut venir de la multiplicité des auteurs. 47 personnes × 1 acte = harcèlement collectif. Responsabilité partagée." },
+                            { txt: "Seul l'initiateur (le premier commentaire) est responsable", correct: false, feedback: "NON ! Chaque participant a CHOISI de commenter. Pas d'excuse du type \"j'ai suivi\". La loi ne distingue pas premier et dernier." }
+                        ]
+                    },
+                    {
+                        texte: "Un élève découvre qu'un compte TikTok parodique existe à son nom avec des vidéos humiliantes. Le compte a 3 abonnés et n'a rien posté de \"grave\".",
+                        question: "Y a-t-il infraction ?",
+                        choix: [
+                            { txt: "Non, c'est juste une parodie avec peu d'audience", correct: false, feedback: "ERREUR ! L'USURPATION D'IDENTITÉ est constituée dès la création du compte. Peu importe l'audience ou la \"gravité\" du contenu. C'est 1 an + 15 000€." },
+                            { txt: "Oui, usurpation d'identité numérique immédiate", correct: true, feedback: "EXACT ! Article 226-4-1 : utiliser l'identité d'autrui pour troubler sa tranquillité est un DÉLIT. Pas besoin d'attendre du contenu grave. Le compte lui-même est l'infraction." },
+                            { txt: "Il faut attendre qu'il y ait du contenu vraiment blessant", correct: false, feedback: "DANGEREUX ! Attendre = laisser l'infraction s'aggraver. L'usurpation est déjà constituée. Agir MAINTENANT permet de stopper avant l'escalade." }
+                        ]
+                    }
+                ]
+            },
+            
+            niveau3: {
+                titre: "Cyber-Opérations",
+                type: "dojo",
+                xp_reward: 200,
+                scenarios: [
+                    {
+                        contexte: "Un élève de 4ème te confie qu'il reçoit des photos intimes d'une camarade, envoyées par un tiers sans le consentement de la fille. Il ne les a pas demandées mais les a reçues.",
+                        question: "Quelle est sa situation juridique ET que doit-il faire ?",
+                        choix: [
+                            { txt: "Il n'est pas responsable puisqu'il n'a rien demandé", impact: 20, level: "partial", feedback: "ATTENTION ! S'il conserve ou transfère ces images, il devient CO-AUTEUR de la diffusion. Sa responsabilité dépend de ce qu'il fait MAINTENANT." },
+                            { txt: "Il doit supprimer immédiatement et signaler à un adulte", impact: 100, level: "optimal", feedback: "PARFAIT ! Ne pas conserver (évite la complicité), signaler (protège la victime), ne pas transférer (stoppe la diffusion). C'est la seule réponse éthique ET légale." },
+                            { txt: "Il doit les montrer à la victime pour qu'elle sache", impact: -30, level: "error", feedback: "CATASTROPHIQUE ! Montrer à la victime = nouvelle diffusion = infraction. Il doit prévenir un adulte qui gérera avec tact." }
+                        ]
+                    },
+                    {
+                        contexte: "Une story Instagram montre une bagarre dans la cour avec commentaire moqueur sur la victime. La story a déjà 200 vues et va expirer dans 2 heures. Tu la vois par hasard.",
+                        question: "Priorisation : que fais-tu EN PREMIER ?",
+                        choix: [
+                            { txt: "Je signale à Instagram pour qu'ils suppriment", impact: 30, level: "partial", feedback: "Utile mais PAS prioritaire. Instagram mettra des heures/jours à traiter. Pendant ce temps, la story continue de circuler ET la preuve risque de disparaître." },
+                            { txt: "Je screenshot d'abord, puis je signale à un adulte référent", impact: 100, level: "optimal", feedback: "OPTIMAL ! 1) Capturer la preuve AVANT expiration 2) Signaler à l'adulte qui actionnera les leviers institutionnels. Tu sécurises ET tu agis." },
+                            { txt: "J'attends qu'elle expire, ça évitera de faire des vagues", impact: -40, level: "error", feedback: "COMPLICITÉ PASSIVE ! Ne rien faire = permettre la diffusion. De plus, la preuve disparaît et l'impunité encourage la récidive." }
+                        ]
+                    },
+                    {
+                        contexte: "Tu découvres un serveur Discord \"privé\" où des élèves de ton collège classent leurs camarades par \"beauté\" avec des photos volées. Tu n'en fais pas partie mais un ami t'en a parlé.",
+                        question: "Quelle chaîne d'action recommandes-tu ?",
+                        choix: [
+                            { txt: "Demander à mon ami de screenshot puis confronter directement les créateurs", impact: 10, level: "partial", feedback: "RISQUÉ ! Confronter directement peut : 1) Les alerter (suppression des preuves) 2) Te cibler comme \"balance\". Passe par les adultes." },
+                            { txt: "Signaler au CPE avec le maximum d'infos (nom du serveur, participants connus)", impact: 100, level: "optimal", feedback: "EXCELLENT ! Tu donnes les éléments pour une enquête interne. Le CPE peut saisir les autorités si nécessaire. Tu ne t'exposes pas et tu agis efficacement." },
+                            { txt: "Ne rien faire car je n'en fais pas partie", impact: -50, level: "error", feedback: "NON-ASSISTANCE ! Tu as connaissance d'infractions multiples (droit à l'image, potentiel harcèlement). Le silence = complicité morale. Agir protège les victimes." }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const generateSaveCode = (progress) => {
+            const payload = { v: 1, d: new Date().toISOString(), m: MODULE_DATA.id, mv: MODULE_DATA.version, n: progress.nom || "Anonyme", c: progress.classe || "", l: progress.currentLevel, s: progress.score, x: progress.xp, q: progress.quizScore, dj: progress.dojoScore, f: progress.finished };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        };
+
+        const decodeSaveCode = (code) => {
+            try { return { valid: true, data: JSON.parse(decodeURIComponent(escape(atob(code.trim())))) }; }
+            catch (e) { return { valid: false, error: "Code invalide." }; }
+        };
+
+        const verifyPrerequisite = (code) => {
+            const result = decodeSaveCode(code);
+            if (!result.valid) return { valid: false, error: "Code invalide." };
+            if (result.data.m !== MODULE_DATA.prerequis) return { valid: false, error: `Ce code provient du module ${result.data.m}, pas du module ${MODULE_DATA.prerequis}.` };
+            if (!result.data.f) return { valid: false, error: "Ce module n'a pas été terminé." };
+            return { valid: true, data: result.data };
+        };
+
+        const e = React.createElement;
+        const { useState } = React;
+
+        function Header({ showProgress, xp }) {
+            return e('div', { className: 'header' },
+                e('div', { className: 'level-badge' }, `NIVEAU ${MODULE_DATA.niveau_difficulte}`),
+                e('h1', null, MODULE_DATA.titre),
+                e('div', { className: 'subtitle' }, MODULE_DATA.sous_titre),
+                showProgress && e('div', { style: { marginTop: '10px' } }, e('span', { className: 'xp-badge' }, `⚡ ${xp} XP`))
+            );
+        }
+
+        function ProgressBar({ currentLevel, xp }) {
+            const percent = Math.min(100, (currentLevel / 3) * 100);
+            return e('div', { className: 'progress-container' },
+                e('div', { className: 'progress-stats' }, e('span', null, `Niveau ${currentLevel}/3`), e('span', { className: 'xp-badge' }, `${xp} XP`)),
+                e('div', { className: 'progress-bar-outer' }, e('div', { className: 'progress-bar-inner', style: { width: `${percent}%` } }))
+            );
+        }
+
+        function LevelIndicator({ current }) {
+            const levels = ['📡', '🔍', '🎯'];
+            return e('div', { className: 'level-indicator' }, levels.map((emoji, i) => e('div', { key: i, className: `level-dot ${i + 1 === current ? 'active' : ''} ${i + 1 < current ? 'completed' : ''}` }, i + 1 < current ? '✓' : emoji)));
+        }
+
+        function Flashcard({ card, onNext, isLast, onComplete }) {
+            const [flipped, setFlipped] = useState(false);
+            return e('div', { className: 'flashcard-container' },
+                e('div', { className: `flashcard ${flipped ? 'flipped' : ''}`, onClick: () => setFlipped(!flipped) },
+                    e('div', { className: 'front' }, e('div', { className: 'question', style: { whiteSpace: 'pre-line' } }, card.recto), e('div', { className: 'tap-hint' }, '👆 Clique pour retourner')),
+                    e('div', { className: 'back' }, e('div', { className: 'answer-label' }, '✓ Réponse'), e('div', { className: 'answer', style: { whiteSpace: 'pre-line' } }, card.verso), e('div', { className: 'source' }, `📖 ${card.source}`))
+                ),
+                e('div', { className: 'text-center', style: { marginTop: '20px' } },
+                    flipped && (isLast ? e('button', { className: 'btn btn-success', onClick: onComplete }, '✓ VALIDER') : e('button', { className: 'btn', onClick: () => { onNext(); setFlipped(false); } }, 'SUIVANT →'))
+                )
+            );
+        }
+
+        function QuizQuestion({ question, onAnswer }) {
+            const [answered, setAnswered] = useState(false);
+            const [selectedIdx, setSelectedIdx] = useState(null);
+            const [feedback, setFeedback] = useState(null);
+            const handleChoice = (choice, idx) => { if (answered) return; setAnswered(true); setSelectedIdx(idx); setFeedback({ correct: choice.correct, text: choice.feedback }); };
+            return e('div', null,
+                e('div', { className: 'quiz-question' }, e('div', { className: 'label' }, '💻 SITUATION'), e('p', { style: { marginBottom: '15px', lineHeight: '1.6' } }, question.texte), question.question && e('p', { style: { fontWeight: 'bold', color: '#ff006e' } }, `❓ ${question.question}`)),
+                e('div', { className: 'quiz-choices' }, question.choix.map((choice, idx) => e('button', { key: idx, className: `quiz-choice ${answered ? (idx === selectedIdx ? (choice.correct ? 'correct' : 'incorrect') : 'disabled') : ''}`, onClick: () => handleChoice(choice, idx), disabled: answered }, choice.txt))),
+                feedback && e('div', { className: `feedback ${feedback.correct ? 'correct' : 'incorrect'}` }, e('div', { className: 'title' }, feedback.correct ? '✓ CORRECT !' : '✗ ERREUR DE PROTOCOLE'), e('p', null, feedback.text), e('button', { className: 'btn', style: { marginTop: '20px' }, onClick: () => onAnswer(feedback.correct) }, 'CONTINUER →'))
+            );
+        }
+
+        function DojoScenario({ scenario, onAnswer }) {
+            const [answered, setAnswered] = useState(false);
+            const [selectedChoice, setSelectedChoice] = useState(null);
+            const handleChoice = (choice) => { if (answered) return; setAnswered(true); setSelectedChoice(choice); };
+            const getImpactClass = (impact) => impact >= 80 ? 'impact-positive' : impact > 0 ? 'impact-neutral' : 'impact-negative';
+            const getImpactLabel = (impact) => impact >= 0 ? `+${impact}` : `${impact}`;
+            return e('div', null,
+                e('div', { className: 'dojo-scenario' }, e('div', { className: 'context-label' }, '🎮 CYBER-OPÉRATION'), e('p', { className: 'context' }, scenario.contexte), e('div', { className: 'question' }, e('strong', null, '❓ ', scenario.question))),
+                e('div', { className: 'quiz-choices' }, scenario.choix.map((choice, idx) => e('button', { key: idx, className: `quiz-choice ${answered ? (choice === selectedChoice ? (choice.level === 'optimal' ? 'correct' : choice.level === 'error' ? 'incorrect' : '') : 'disabled') : ''}`, onClick: () => handleChoice(choice), disabled: answered }, choice.txt, answered && e('span', { className: `impact-badge ${getImpactClass(choice.impact)}` }, getImpactLabel(choice.impact))))),
+                selectedChoice && e('div', { className: `feedback ${selectedChoice.level === 'optimal' ? 'correct' : selectedChoice.level === 'error' ? 'incorrect' : 'correct'}` }, e('div', { className: 'title' }, selectedChoice.level === 'optimal' ? '🎯 OPÉRATION RÉUSSIE !' : selectedChoice.level === 'error' ? '⚠️ FAILLE DE SÉCURITÉ' : '👍 ACCEPTABLE'), e('p', null, selectedChoice.feedback), e('button', { className: 'btn', style: { marginTop: '20px' }, onClick: () => onAnswer(selectedChoice.impact) }, 'CONTINUER →'))
+            );
+        }
+
+        function Report({ progress, onRestart, onMenu }) {
+            const saveCode = generateSaveCode(progress);
+            const [copied, setCopied] = useState(false);
+            const copyToClipboard = () => { navigator.clipboard.writeText(saveCode).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
+            const getMasteryLevel = () => { const total = progress.quizScore + progress.dojoScore; if (total >= 450) return { label: 'EXPERT', class: 'mastery-expert' }; if (total >= 280) return { label: 'CONFIRMÉ', class: 'mastery-confirmed' }; return { label: 'EN FORMATION', class: 'mastery-learning' }; };
+            const mastery = getMasteryLevel();
+            return e('div', null,
+                e('div', { className: 'report' },
+                    e('div', { className: 'report-header' }, e('span', { style: { fontSize: '3em', display: 'block', marginBottom: '15px' } }, '📡'), e('h2', null, 'MODULE 3 COMPLÉTÉ'), e('p', null, MODULE_DATA.titre)),
+                    e('div', { className: 'report-body' },
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Agent'), e('span', { className: 'value' }, progress.nom || 'Anonyme')),
+                        progress.classe && e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Classe'), e('span', { className: 'value' }, progress.classe)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'XP Total'), e('span', { className: 'value' }, `${progress.xp} XP`)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Score Quiz'), e('span', { className: 'value' }, `${progress.quizScore} pts`)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Score Cyber-Ops'), e('span', { className: 'value' }, `${progress.dojoScore} pts`)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Maîtrise'), e('span', { className: `mastery-badge ${mastery.class}` }, mastery.label))
+                    )
+                ),
+                e('div', { className: 'save-code-section' },
+                    e('h3', { style: { color: '#00d4ff', marginBottom: '15px' } }, '💾 CODE DE SAUVEGARDE'),
+                    e('p', { style: { opacity: 0.8 } }, 'Ce code débloque le MODULE 4 !'),
+                    e('div', { className: 'save-code-box' }, saveCode),
+                    e('button', { className: `btn ${copied ? 'btn-success' : ''}`, onClick: copyToClipboard }, copied ? '✓ COPIÉ !' : '📋 COPIER'),
+                    e('div', { className: 'save-instructions' }, e('h4', null, '🔓 Prochaine étape'), e('ul', null, e('li', null, 'Ce code débloque le Module 4 : "Le Protocole pHARe"'), e('li', null, 'Envoie-le aussi au CPE pour valider ta progression')))
+                ),
+                e('div', { className: 'btn-group' }, e('button', { className: 'btn btn-secondary', onClick: onMenu }, '🏠 MENU'), e('button', { className: 'btn btn-warning', onClick: onRestart }, '🔄 RECOMMENCER'))
+            );
+        }
+
+        function App() {
+            const [mode, setMode] = useState('menu');
+            const [unlocked, setUnlocked] = useState(false);
+            const [currentLevel, setCurrentLevel] = useState(1);
+            const [cardIdx, setCardIdx] = useState(0);
+            const [questionIdx, setQuestionIdx] = useState(0);
+            const [scenarioIdx, setScenarioIdx] = useState(0);
+            const [xp, setXp] = useState(0);
+            const [quizScore, setQuizScore] = useState(0);
+            const [dojoScore, setDojoScore] = useState(0);
+            const [nom, setNom] = useState('');
+            const [classe, setClasse] = useState('');
+            const [unlockCode, setUnlockCode] = useState('');
+            const [unlockError, setUnlockError] = useState('');
+
+            const resetProgress = () => { setCurrentLevel(1); setCardIdx(0); setQuestionIdx(0); setScenarioIdx(0); setXp(0); setQuizScore(0); setDojoScore(0); };
+            const progress = { nom, classe, currentLevel, xp, quizScore, dojoScore, score: quizScore + dojoScore, finished: mode === 'report' };
+
+            const handleUnlock = () => {
+                const result = verifyPrerequisite(unlockCode);
+                if (result.valid) { setNom(result.data.n || ''); setClasse(result.data.c || ''); setUnlocked(true); setUnlockError(''); }
+                else { setUnlockError(result.error); }
+            };
+
+            if (mode === 'menu') {
+                return e('div', { className: 'app-container' },
+                    e(Header, { showProgress: false }),
+                    e('div', { className: 'card' }, e('strong', null, '🎯 MISSION : '), MODULE_DATA.description),
+                    !unlocked ? e('div', { className: 'unlock-section' },
+                        e('h3', null, '🔐 MODULE VERROUILLÉ'),
+                        e('p', null, `Prérequis : Compléter "${MODULE_DATA.prerequis}"`),
+                        e('input', { type: 'text', placeholder: 'Code du Module 2...', value: unlockCode, onChange: (ev) => { setUnlockCode(ev.target.value); setUnlockError(''); } }),
+                        unlockError && e('div', { className: 'error-msg' }, `⚠️ ${unlockError}`),
+                        e('button', { className: 'btn', onClick: handleUnlock }, '🔓 DÉBLOQUER')
+                    ) : e('div', { className: 'btn-group' },
+                        e('div', { style: { textAlign: 'center', color: '#00ff88', marginBottom: '10px' } }, `✓ Bienvenue ${nom} !`),
+                        e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, '▶️ COMMENCER')
+                    ),
+                    e('div', { style: { marginTop: '30px', textAlign: 'center', opacity: 0.5, fontSize: '0.85em' } }, `Module ${MODULE_DATA.id} v${MODULE_DATA.version}`)
+                );
+            }
+
+            if (mode === 'game') {
+                if (currentLevel === 1) {
+                    const cards = MODULE_DATA.niveau1.cartes;
+                    return e('div', { className: 'app-container' },
+                        e(Header, { showProgress: true, xp }),
+                        e(ProgressBar, { currentLevel, xp }),
+                        e(LevelIndicator, { current: currentLevel }),
+                        e('h2', { style: { textAlign: 'center' } }, '📡 NIVEAU 1 : THÉORIE'),
+                        e('div', { className: 'card-counter' }, `Carte ${cardIdx + 1} / ${cards.length}`),
+                        e(Flashcard, { card: cards[cardIdx], isLast: cardIdx === cards.length - 1, onNext: () => setCardIdx(cardIdx + 1), onComplete: () => { setXp(xp + MODULE_DATA.niveau1.xp_reward); setCurrentLevel(2); setCardIdx(0); } })
+                    );
+                }
+                if (currentLevel === 2) {
+                    const questions = MODULE_DATA.niveau2.questions;
+                    const handleQuizAnswer = (correct) => { if (correct) setQuizScore(quizScore + 35); if (questionIdx < questions.length - 1) setQuestionIdx(questionIdx + 1); else { setXp(xp + MODULE_DATA.niveau2.xp_reward); setCurrentLevel(3); setQuestionIdx(0); } };
+                    return e('div', { className: 'app-container' },
+                        e(Header, { showProgress: true, xp }),
+                        e(ProgressBar, { currentLevel, xp }),
+                        e(LevelIndicator, { current: currentLevel }),
+                        e('h2', { style: { textAlign: 'center' } }, '🔍 NIVEAU 2 : FORENSIQUE'),
+                        e('div', { className: 'card-counter' }, `Question ${questionIdx + 1} / ${questions.length}`),
+                        e(QuizQuestion, { key: questionIdx, question: questions[questionIdx], onAnswer: handleQuizAnswer })
+                    );
+                }
+                if (currentLevel === 3) {
+                    const scenarios = MODULE_DATA.niveau3.scenarios;
+                    const handleDojoAnswer = (impact) => { setDojoScore(dojoScore + Math.max(0, impact)); if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1); else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); } };
+                    return e('div', { className: 'app-container' },
+                        e(Header, { showProgress: true, xp }),
+                        e(ProgressBar, { currentLevel, xp }),
+                        e(LevelIndicator, { current: currentLevel }),
+                        e('h2', { style: { textAlign: 'center' } }, '🎯 NIVEAU 3 : CYBER-OPS'),
+                        e('div', { className: 'card-counter' }, `Mission ${scenarioIdx + 1} / ${scenarios.length}`),
+                        e(DojoScenario, { key: scenarioIdx, scenario: scenarios[scenarioIdx], onAnswer: handleDojoAnswer })
+                    );
+                }
+            }
+
+            if (mode === 'report') {
+                return e('div', { className: 'app-container' },
+                    e(Report, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onRestart: () => { resetProgress(); setMode('game'); }, onMenu: () => { resetProgress(); setUnlocked(false); setUnlockCode(''); setMode('menu'); } })
+                );
+            }
+            return e('div', { className: 'app-container' }, 'Chargement...');
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+    </script>
+</body>
+</html>

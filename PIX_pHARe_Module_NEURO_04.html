@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Module NEURO 04 - La Douleur Sociale</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neuro-primary: #6b8e23;
+            --neuro-accent: #9acd32;
+            --neuro-warning: #ff6b6b;
+            --neuro-success: #4ecdc4;
+            --void-dark: #0d0d1a;
+            --deep-dark: #080812;
+            --panel-bg: rgba(13, 13, 26, 0.95);
+            --text-primary: #f5f5ff;
+            --text-secondary: #9999bb;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Brain pattern background */
+        .brain-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(107, 142, 35, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(154, 205, 50, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Animated synapses */
+        .synapse-lines {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+        
+        .synapse-lines::before,
+        .synapse-lines::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--neuro-accent), transparent);
+            height: 1px;
+            width: 200px;
+            animation: synapseMove 10s linear infinite;
+        }
+        
+        .synapse-lines::before { top: 25%; left: -200px; }
+        .synapse-lines::after { top: 75%; right: -200px; animation-delay: -5s; animation-direction: reverse; }
+        
+        @keyframes synapseMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100vw + 400px)); }
+        }
+        
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .pillar-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(107, 142, 35, 0.6));
+        }
+        
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent), var(--neuro-success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: var(--neuro-accent);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .module-badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, rgba(107, 142, 35, 0.2), rgba(154, 205, 50, 0.2));
+            border: 2px solid var(--neuro-accent);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--neuro-accent);
+            clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .progress-node {
+            width: 60px; height: 60px;
+            border: 3px solid var(--text-secondary);
+            background: var(--deep-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+        
+        .progress-node.active {
+            border-color: var(--neuro-accent);
+            color: var(--neuro-accent);
+            box-shadow: 0 0 25px rgba(154, 205, 50, 0.5);
+        }
+        
+        .progress-node.completed {
+            border-color: var(--neuro-success);
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--neuro-success);
+        }
+        
+        .xp-display {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .xp-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--neuro-accent);
+            padding: 15px 25px;
+            text-align: center;
+            clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+        }
+        
+        .xp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .xp-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neuro-accent);
+        }
+        
+        .content-panel {
+            background: var(--panel-bg);
+            border: 2px solid rgba(107, 142, 35, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neuro-primary), var(--neuro-accent), var(--neuro-success));
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, rgba(107, 142, 35, 0.15), rgba(154, 205, 50, 0.1));
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(107, 142, 35, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .panel-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border-radius: 50%;
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neuro-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .panel-body { padding: 25px; }
+        
+        /* Intro specific styles */
+        .intro-screen { text-align: center; padding: 30px 20px; }
+        
+        .emotion-wheel {
+            margin: 30px auto;
+            max-width: 400px;
+            padding: 20px;
+            background: rgba(107, 142, 35, 0.05);
+            border: 2px dashed var(--neuro-accent);
+            border-radius: 10px;
+        }
+        
+        /* Name input */
+        .name-input-group {
+            margin: 30px auto;
+            max-width: 400px;
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 15px;
+            background: var(--deep-dark);
+            border: 2px solid var(--neuro-accent);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: var(--neuro-success);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+        }
+        
+        .name-input::placeholder { color: var(--text-secondary); }
+        
+        /* Flashcards */
+        .flashcard-container { perspective: 1200px; margin-bottom: 20px; }
+        
+        .flashcard {
+            position: relative;
+            width: 100%;
+            min-height: 240px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .flashcard.flipped { transform: rotateY(180deg); }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            min-height: 240px;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border: 2px solid var(--neuro-accent);
+            background: var(--panel-bg);
+        }
+        
+        .card-back { transform: rotateY(180deg); }
+        
+        .card-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .card-answer {
+            font-size: 1.1rem;
+            color: var(--neuro-accent);
+            text-align: center;
+            line-height: 1.7;
+        }
+        
+        .card-source {
+            margin-top: 15px;
+            padding: 8px 15px;
+            background: rgba(107, 142, 35, 0.2);
+            border-left: 3px solid var(--neuro-primary);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        /* Quiz styles */
+        .quiz-question {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .quiz-option {
+            padding: 18px;
+            background: var(--deep-dark);
+            border: 2px solid var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .quiz-option:hover { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.1); }
+        .quiz-option.selected { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.2); }
+        .quiz-option.correct { border-color: var(--neuro-success); background: rgba(78, 205, 196, 0.2); }
+        .quiz-option.incorrect { border-color: var(--neuro-warning); background: rgba(255, 107, 107, 0.2); }
+        
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--panel-bg);
+            border-left: 4px solid var(--neuro-accent);
+            line-height: 1.7;
+        }
+        
+        /* Scenario styles */
+        .scenario-context {
+            background: rgba(107, 142, 35, 0.1);
+            padding: 20px;
+            border-left: 4px solid var(--neuro-primary);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .scenario-intro {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            color: var(--text-secondary);
+        }
+        
+        .scenario-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .scenario-choice {
+            padding: 20px;
+            background: var(--deep-dark);
+            border: 2px solid var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+        
+        .scenario-choice:hover { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.1); }
+        .scenario-choice.selected { border-color: var(--neuro-accent); background: rgba(107, 142, 35, 0.2); }
+        
+        .scenario-result {
+            margin-top: 20px;
+            padding: 25px;
+            background: var(--panel-bg);
+            border-left: 4px solid var(--neuro-success);
+            line-height: 1.8;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 15px 35px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--neuro-accent);
+            color: var(--deep-dark);
+        }
+        
+        .btn:hover {
+            background: var(--neuro-success);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--neuro-accent);
+            color: var(--neuro-accent);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--neuro-accent);
+            color: var(--deep-dark);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        /* Final screen */
+        .final-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .mastery-badge {
+            display: inline-block;
+            padding: 20px 40px;
+            margin: 30px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            border: 3px solid;
+            clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+        }
+        
+        .mastery-expert { border-color: var(--neuro-success); color: var(--neuro-success); background: rgba(78, 205, 196, 0.2); }
+        .mastery-confirmed { border-color: var(--neuro-accent); color: var(--neuro-accent); background: rgba(154, 205, 50, 0.2); }
+        .mastery-training { border-color: var(--neuro-primary); color: var(--neuro-primary); background: rgba(107, 142, 35, 0.2); }
+        
+        .save-code-box {
+            background: var(--deep-dark);
+            border: 2px solid var(--neuro-success);
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 600px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            color: var(--neuro-success);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .save-code-box:hover {
+            background: rgba(78, 205, 196, 0.1);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+        
+        /* Utilities */
+        .info { color: var(--neuro-accent); font-weight: 600; }
+        .warning { color: var(--neuro-warning); font-weight: 600; }
+        .success { color: var(--neuro-success); font-weight: 600; }
+        
+        @media (max-width: 768px) {
+            .app-container { padding: 15px; }
+            .glitch-title { font-size: 1.5rem; }
+            .flashcard, .card-face { min-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="brain-bg"></div>
+    <div class="synapse-lines"></div>
+    
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const MODULE_DATA = {
+            id: "NEURO_04",
+            version: "1.0.0",
+            titre: "LA DOULEUR SOCIALE",
+            sous_titre: "Quand l'exclusion fait mal pour de vrai",
+            description: "Comprendre pourquoi le rejet et les moqueries activent les mêmes zones que la douleur physique.",
+            auteur: "Programme pHARe",
+            niveau1: {
+                titre: "Le cerveau ne fait pas la différence",
+                type: "flashcards",
+                xp_reward: 50,
+                cartes: [
+                    {
+                        recto: "Le cerveau distingue-t-il douleur physique et sociale ?",
+                        verso: "Non. Les mêmes zones s'activent (cortex cingulaire antérieur et insula). C'est prouvé par IRM fonctionnelle.",
+                        source: "IRM fonctionnelle - Eisenberger, 2003"
+                    },
+                    {
+                        recto: "Pourquoi l'exclusion fait-elle 'mal' ?",
+                        verso: "Parce que notre cerveau ancestral assimilait rejet social = danger mortel (survie du groupe). Ce circuit est resté.",
+                        source: "Psychologie évolutionniste"
+                    },
+                    {
+                        recto: "Le paracétamol peut-il réduire la douleur sociale ?",
+                        verso: "Études suggèrent que oui, partiellement. Car le circuit neuronal est le même que pour la douleur physique.",
+                        source: "DeWall et al., 2010"
+                    },
+                    {
+                        recto: "Qu'est-ce que l'ostracisme ?",
+                        verso: "L'exclusion délibérée d'un individu d'un groupe social. C'est l'une des formes de harcèlement les plus destructrices.",
+                        source: "Recherche sur l'exclusion sociale"
+                    },
+                    {
+                        recto: "Les ados sont-ils plus sensibles au rejet ?",
+                        verso: "Oui. Le cerveau social est hypersensible à l'adolescence. Le besoin d'appartenance est maximal.",
+                        source: "Neurosciences du développement"
+                    },
+                    {
+                        recto: "Peut-on 's'habituer' à l'exclusion ?",
+                        verso: "Non. Contrairement à la douleur physique, la douleur sociale ne s'habitue pas. Chaque rejet réactive le circuit.",
+                        source: "Études longitudinales sur l'ostracisme"
+                    },
+                    {
+                        recto: "Pourquoi dire 'c'est juste pour rire' est problématique ?",
+                        verso: "Parce que ça nie la réalité neurologique de la victime. Son cerveau souffre réellement, peu importe l'intention.",
+                        source: "Validation de la douleur sociale"
+                    }
+                ]
+            },
+            niveau2: {
+                titre: "Ce n'est pas 'juste pour rire'",
+                type: "quiz",
+                xp_reward: 100,
+                questions: [
+                    {
+                        texte: "Un élève est exclu du groupe de manière répétée.",
+                        question: "Quelle est la réalité biologique ?",
+                        choix: [
+                            {
+                                txt: "Son cerveau souffre réellement",
+                                correct: true,
+                                feedback: "Exact. La douleur est réelle, mesurable, et active les mêmes circuits que si on lui donnait un coup. Le 'c'est pas grave' nie une réalité scientifique."
+                            },
+                            {
+                                txt: "Il/elle est trop sensible, c'est psychologique",
+                                correct: false,
+                                feedback: "Faux. C'est neurologique, pas 'psychologique' au sens de 'imaginaire'. Son cerveau traite l'exclusion comme une douleur physique."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Dans un jeu, un élève est systématiquement ignoré quand il lève la main pour participer.",
+                        question: "Qu'est-ce que cela déclenche dans son cerveau ?",
+                        choix: [
+                            {
+                                txt: "Activation des zones de la douleur sociale",
+                                correct: true,
+                                feedback: "Exact. L'ostracisme silencieux (être ignoré) active les mêmes zones que le rejet actif. C'est l'une des formes les plus destructrices."
+                            },
+                            {
+                                txt: "Rien, puisque personne ne lui a rien dit",
+                                correct: false,
+                                feedback: "Faux. Le silence et l'ignorance sont des formes puissantes d'exclusion. Le cerveau les détecte et y réagit fortement."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Tom dit : 'Mais on rigolait, c'était pas méchant !'",
+                        question: "Pourquoi cet argument ne change rien ?",
+                        choix: [
+                            {
+                                txt: "L'intention de l'auteur ne modifie pas l'impact neurologique sur la victime",
+                                correct: true,
+                                feedback: "Exact. Le cerveau de la victime réagit à l'exclusion/moquerie, pas à l'intention. 'Pour rire' ne désactive pas le circuit de la douleur."
+                            },
+                            {
+                                txt: "Si c'était pour rire, alors c'est acceptable",
+                                correct: false,
+                                feedback: "Faux. C'est du désengagement moral. L'humour peut être une arme. L'impact reste destructeur même si 'c'était pour rire'."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Après plusieurs semaines d'exclusion, Léa commence à se renfermer et éviter les interactions.",
+                        question: "Que se passe-t-il ?",
+                        choix: [
+                            {
+                                txt: "Son cerveau développe une hypersensibilité au rejet",
+                                correct: true,
+                                feedback: "Exact. L'exposition répétée sensibilise le circuit. Elle anticipe maintenant le rejet, ce qui crée anxiété sociale et retrait. Cercle vicieux."
+                            },
+                            {
+                                txt: "Elle exagère et devrait juste 's'imposer'",
+                                correct: false,
+                                feedback: "Victime-blaming. Son cerveau a été conditionné par l'exclusion répétée. Ce n'est pas un choix conscient, c'est une réponse de protection."
+                            }
+                        ]
+                    },
+                    {
+                        texte: "Un groupe de classe crée un chat privé sans Yasmina.",
+                        question: "Pourquoi est-ce particulièrement douloureux ?",
+                        choix: [
+                            {
+                                txt: "L'exclusion numérique est visible et permanente",
+                                correct: true,
+                                feedback: "Exact. En ligne, l'exclusion laisse une trace concrète (on voit qu'on n'est pas dans le groupe). Et elle est continue : chaque notification des autres = rappel du rejet."
+                            },
+                            {
+                                txt: "Ce n'est qu'en ligne, donc pas grave",
+                                correct: false,
+                                feedback: "Faux. Le cerveau ne fait pas la différence entre exclusion physique et numérique. La douleur est la même."
+                            }
+                        ]
+                    }
+                ]
+            },
+            niveau3: {
+                titre: "Mesurer l'impact",
+                type: "dojo",
+                xp_reward: 150,
+                scenarios: [
+                    {
+                        contexte: "Un témoin hésite à réagir face à une exclusion.",
+                        question: "Que change son action ?",
+                        choix: [
+                            {
+                                txt: "Rien, ce n'est pas son problème",
+                                impact: -15,
+                                level: "complice passif",
+                                feedback: "Erreur. Ton silence valide l'exclusion aux yeux de l'auteur ET renforce la douleur de la victime ('personne ne m'aide'). Tu es complice."
+                            },
+                            {
+                                txt: "Elle peut stopper la récompense sociale de l'auteur",
+                                impact: 100,
+                                level: "optimal",
+                                feedback: "Exact. Le groupe est clé. L'auteur exclut pour dominer ou impressionner. Si les témoins désapprouvent, le 'bénéfice' disparaît. Un seul témoin actif peut tout changer."
+                            },
+                            {
+                                txt: "Elle montre à la victime qu'elle n'est pas seule",
+                                impact: 95,
+                                level: "très efficace",
+                                feedback: "Très important. Savoir qu'au moins une personne voit et refuse l'exclusion réduit la douleur sociale de la victime. L'isolement total est le pire."
+                            },
+                            {
+                                txt: "Attendre qu'un adulte intervienne",
+                                impact: 30,
+                                level: "insuffisant",
+                                feedback: "Utile mais insuffisant. L'exclusion se passe maintenant, entre pairs. L'intervention des pairs est plus puissante car elle modifie la dynamique sociale immédiate."
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Tu vois quelqu'un manger seul à la cantine tous les jours.",
+                        question: "Quelle compréhension neurologique guide ton action ?",
+                        choix: [
+                            {
+                                txt: "Il/elle préfère peut-être être seul·e",
+                                impact: 10,
+                                level: "hypothèse risquée",
+                                feedback: "Possible mais rare. L'isolation répétée active le circuit de douleur sociale. Mieux vaut proposer une place et le/la laisser refuser que de supposer."
+                            },
+                            {
+                                txt: "Son cerveau subit probablement une douleur quotidienne",
+                                impact: 100,
+                                level: "optimal",
+                                feedback: "Exact. L'exclusion répétée = souffrance neurologique quotidienne. Ta simple invitation ('tu veux t'asseoir avec nous ?') peut désactiver ce circuit. Coût : zéro. Bénéfice : immense."
+                            },
+                            {
+                                txt: "Ce n'est pas mon problème si personne ne l'aime",
+                                impact: -20,
+                                level: "désengagement moral",
+                                feedback: "Désengagement moral. Tu supposes que c'est 'mérité' pour éviter d'agir. L'exclusion n'est jamais méritée. Et ton action peut tout changer."
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Un groupe se moque d'une erreur que quelqu'un a faite en cours.",
+                        question: "Pourquoi est-ce plus grave que ça n'en a l'air ?",
+                        choix: [
+                            {
+                                txt: "L'humiliation publique active intensément la douleur sociale",
+                                impact: 100,
+                                level: "optimal",
+                                feedback: "Exact. Humiliation + témoins = double activation : douleur du rejet + honte publique. Le cerveau enregistre ça comme danger social majeur. Cicatrices longue durée."
+                            },
+                            {
+                                txt: "Ce n'est qu'une blague, ça va passer",
+                                impact: -15,
+                                level: "minimisation",
+                                feedback: "Minimisation. La honte publique laisse des traces neuronales durables. Certaines personnes se souviennent de ces moments des décennies après."
+                            },
+                            {
+                                txt: "Dire 'ça arrive à tout le monde' pour relativiser",
+                                impact: 25,
+                                level: "insuffisant",
+                                feedback: "Intention bonne mais insuffisant. Mieux : intervenir activement ('hey, on arrête') + soutien privé après. Relativiser peut être perçu comme minimiser la douleur."
+                            }
+                        ]
+                    },
+                    {
+                        contexte: "Tu es tenté·e de partager une photo gênante de quelqu'un.",
+                        question: "Comment la science éclaire ta décision ?",
+                        choix: [
+                            {
+                                txt: "Cette photo va activer la douleur sociale à chaque vue/partage",
+                                impact: 100,
+                                level: "optimal",
+                                feedback: "Exact. En ligne, l'humiliation ne s'arrête jamais. Chaque vue = réactivation du circuit de douleur. C'est comme frapper quelqu'un en boucle. Ne partage jamais."
+                            },
+                            {
+                                txt: "C'est drôle et tout le monde le fait",
+                                impact: -25,
+                                level: "cyberharcèlement",
+                                feedback: "Banalisation dangereuse. 'Tout le monde' ne justifie rien. Tu infliges une douleur réelle et durable. C'est du cyberharcèlement."
+                            },
+                            {
+                                txt: "Je ne partage pas mais je like si quelqu'un d'autre le fait",
+                                impact: -10,
+                                level: "complice",
+                                feedback: "Tu es complice. Ton like valide et amplifie. Le cerveau de la victime ne distingue pas qui a partagé vs liké : tout contribue à sa douleur."
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const flashcardsData = MODULE_DATA.niveau1.cartes.map(c => ({
+            question: c.recto,
+            answer: c.verso,
+            source: c.source
+        }));
+
+        const quizData = MODULE_DATA.niveau2.questions.map(q => ({
+            question: q.texte + " " + q.question,
+            options: q.choix.map(ch => ch.txt),
+            correct: q.choix.findIndex(ch => ch.correct),
+            feedback: q.choix.find(ch => ch.correct).feedback
+        }));
+
+        const scenarioData = MODULE_DATA.niveau3.scenarios.map(s => ({
+            title: s.contexte,
+            context: s.contexte,
+            intro: s.question,
+            choices: s.choix.map(ch => ({
+                text: ch.txt,
+                result: ch.feedback,
+                impact: { regulation: ch.impact }
+            }))
+        }));
+
+        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+        function getMasteryLevel(score) {
+            if (score >= 450) return { level: "Expert", class: "mastery-expert" };
+            if (score >= 280) return { level: "Confirmé", class: "mastery-confirmed" };
+            return { level: "En formation", class: "mastery-training" };
+        }
+
+        function App() {
+            const [gameState, setGameState] = useState("intro");
+            const [playerData, setPlayerData] = useState({ 
+                name: "", 
+                class: "", 
+                level: 1, 
+                score: 0, 
+                xp: 0, 
+                quizScore: 0, 
+                scenarioScore: 0, 
+                flashcardsViewed: 0, 
+                finished: false 
+            });
+            const [currentFlashcard, setCurrentFlashcard] = useState(0);
+            const [flashcardFlipped, setFlashcardFlipped] = useState(false);
+            const [currentQuiz, setCurrentQuiz] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showQuizFeedback, setShowQuizFeedback] = useState(false);
+            const [currentScenario, setCurrentScenario] = useState(0);
+            const [scenarioChoice, setScenarioChoice] = useState(null);
+            const [showScenarioResult, setShowScenarioResult] = useState(false);
+
+            function startGame() {
+                if (playerData.name.trim()) setGameState("flashcards");
+            }
+
+            function nextFlashcard() {
+                if (currentFlashcard < flashcardsData.length - 1) {
+                    setCurrentFlashcard(prev => prev + 1);
+                    setFlashcardFlipped(false);
+                    setPlayerData(prev => ({ 
+                        ...prev, 
+                        flashcardsViewed: Math.max(prev.flashcardsViewed, currentFlashcard + 2), 
+                        xp: prev.xp + 12 
+                    }));
+                } else {
+                    setGameState("quiz");
+                    setPlayerData(prev => ({ 
+                        ...prev, 
+                        level: 2, 
+                        flashcardsViewed: flashcardsData.length, 
+                        xp: prev.xp + 50 
+                    }));
+                }
+            }
+
+            function prevFlashcard() { 
+                if (currentFlashcard > 0) { 
+                    setCurrentFlashcard(prev => prev - 1); 
+                    setFlashcardFlipped(false); 
+                } 
+            }
+
+            function selectQuizAnswer(index) { 
+                if (!showQuizFeedback) setSelectedAnswer(index); 
+            }
+
+            function validateQuizAnswer() {
+                setShowQuizFeedback(true);
+                if (selectedAnswer === quizData[currentQuiz].correct) {
+                    setPlayerData(prev => ({ 
+                        ...prev, 
+                        score: prev.score + 30, 
+                        quizScore: prev.quizScore + 30, 
+                        xp: prev.xp + 30 
+                    }));
+                }
+            }
+
+            function nextQuizQuestion() {
+                if (currentQuiz < quizData.length - 1) {
+                    setCurrentQuiz(prev => prev + 1);
+                    setSelectedAnswer(null);
+                    setShowQuizFeedback(false);
+                } else {
+                    setGameState("scenarios");
+                    setPlayerData(prev => ({ ...prev, level: 3, xp: prev.xp + 60 }));
+                }
+            }
+
+            function makeScenarioChoice(index) {
+                setScenarioChoice(index);
+                setShowScenarioResult(true);
+                const choice = scenarioData[currentScenario].choices[index];
+                const values = Object.values(choice.impact);
+                const totalChange = Math.max(0, values.reduce((a, b) => a + b, 0));
+                setPlayerData(prev => ({ 
+                    ...prev, 
+                    score: prev.score + totalChange, 
+                    scenarioScore: prev.scenarioScore + totalChange, 
+                    xp: prev.xp + 25 
+                }));
+            }
+
+            function nextScenario() {
+                if (currentScenario < scenarioData.length - 1) {
+                    setCurrentScenario(prev => prev + 1);
+                    setScenarioChoice(null);
+                    setShowScenarioResult(false);
+                } else {
+                    finishModule();
+                }
+            }
+
+            function finishModule() {
+                setPlayerData(prev => ({ 
+                    ...prev, 
+                    finished: true, 
+                    xp: prev.xp + 100 
+                }));
+                setGameState("final");
+            }
+
+            function generateSaveCode() {
+                const saveData = {
+                    v: MODULE_DATA.version,
+                    d: new Date().toISOString(),
+                    m: MODULE_DATA.id,
+                    n: playerData.name,
+                    c: playerData.class,
+                    s: playerData.score,
+                    x: playerData.xp,
+                    f: playerData.finished
+                };
+                return encodeSaveCode(saveData);
+            }
+
+            function copySaveCode() {
+                const code = generateSaveCode();
+                navigator.clipboard.writeText(code).then(() => {
+                    alert("✅ Code copié dans le presse-papier !");
+                });
+            }
+
+            // Render functions (IntroFlashcards, Quiz, Scenarios, Final)
+            // [Le code des fonctions render est identique à NEURO_02, je le réutilise]
+
+            function renderIntro() {
+                return (
+                    <div className="intro-screen">
+                        <div className="content-panel">
+                            <div className="panel-body">
+                                <h2 style={{fontSize: "1.8rem", marginBottom: "20px", color: "var(--neuro-accent)"}}>
+                                    💔 {MODULE_DATA.titre}
+                                </h2>
+                                <p style={{fontSize: "1.1rem", lineHeight: "1.8", marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    {MODULE_DATA.description}
+                                </p>
+                                
+                                <div className="emotion-wheel">
+                                    <p style={{fontSize: "0.95rem", lineHeight: "1.6", color: "var(--text-primary)"}}>
+                                        <strong>Découverte scientifique majeure :</strong><br/>
+                                        En IRM, le cerveau d'une personne exclue montre les MÊMES zones activées que lors d'une douleur physique.
+                                        <br/><br/>
+                                        L'exclusion sociale fait mal. Pour de vrai.
+                                    </p>
+                                </div>
+
+                                <p style={{fontSize: "1rem", lineHeight: "1.6", marginTop: "30px", color: "var(--text-primary)"}}>
+                                    <strong>Ce que tu vas comprendre :</strong><br/>
+                                    • Pourquoi le rejet active la douleur<br/>
+                                    • Le rôle du groupe dans l'exclusion<br/>
+                                    • Comment agir en tant que témoin
+                                </p>
+
+                                <div className="name-input-group">
+                                    <input 
+                                        type="text" 
+                                        className="name-input"
+                                        placeholder="Ton prénom"
+                                        value={playerData.name}
+                                        onChange={(e) => setPlayerData(prev => ({...prev, name: e.target.value}))}
+                                    />
+                                    <input 
+                                        type="text" 
+                                        className="name-input"
+                                        placeholder="Ta classe (optionnel)"
+                                        value={playerData.class}
+                                        onChange={(e) => setPlayerData(prev => ({...prev, class: e.target.value}))}
+                                    />
+                                    <button 
+                                        className="btn" 
+                                        onClick={startGame}
+                                        disabled={!playerData.name.trim()}
+                                    >
+                                        Commencer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcardsData[currentFlashcard];
+                return (
+                    <div>
+                        <div className="content-panel">
+                            <div className="panel-header">
+                                <div className="panel-icon">💔</div>
+                                <div className="panel-title">Niveau 1 : {MODULE_DATA.niveau1.titre}</div>
+                            </div>
+                            <div className="panel-body">
+                                <p style={{marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    Carte {currentFlashcard + 1} / {flashcardsData.length}
+                                </p>
+                                
+                                <div className="flashcard-container">
+                                    <div 
+                                        className={`flashcard ${flashcardFlipped ? 'flipped' : ''}`}
+                                        onClick={() => setFlashcardFlipped(!flashcardFlipped)}
+                                    >
+                                        <div className="card-face">
+                                            <div className="card-question">{card.question}</div>
+                                            <p style={{marginTop: "20px", fontSize: "0.85rem", color: "var(--text-secondary)"}}>
+                                                Clique pour retourner
+                                            </p>
+                                        </div>
+                                        <div className="card-face card-back">
+                                            <div className="card-answer">{card.answer}</div>
+                                            {card.source && <div className="card-source">Source : {card.source}</div>}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="btn-group">
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        onClick={prevFlashcard}
+                                        disabled={currentFlashcard === 0}
+                                    >
+                                        ← Précédent
+                                    </button>
+                                    <button 
+                                        className="btn" 
+                                        onClick={nextFlashcard}
+                                    >
+                                        {currentFlashcard === flashcardsData.length - 1 ? "Passer au Quiz →" : "Suivant →"}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderQuiz() {
+                const quiz = quizData[currentQuiz];
+                return (
+                    <div>
+                        <div className="content-panel">
+                            <div className="panel-header">
+                                <div className="panel-icon">🎯</div>
+                                <div className="panel-title">Niveau 2 : {MODULE_DATA.niveau2.titre}</div>
+                            </div>
+                            <div className="panel-body">
+                                <p style={{marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    Question {currentQuiz + 1} / {quizData.length}
+                                </p>
+                                
+                                <div className="quiz-question">{quiz.question}</div>
+                                
+                                <div className="quiz-options">
+                                    {quiz.options.map((option, index) => (
+                                        <div
+                                            key={index}
+                                            className={`quiz-option ${
+                                                selectedAnswer === index ? 'selected' : ''
+                                            } ${
+                                                showQuizFeedback && index === quiz.correct ? 'correct' : ''
+                                            } ${
+                                                showQuizFeedback && selectedAnswer === index && index !== quiz.correct ? 'incorrect' : ''
+                                            }`}
+                                            onClick={() => selectQuizAnswer(index)}
+                                        >
+                                            {option}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {showQuizFeedback && (
+                                    <div className="quiz-feedback">
+                                        <strong>
+                                            {selectedAnswer === quiz.correct ? "✅ Correct !" : "❌ Pas tout à fait..."}
+                                        </strong>
+                                        <p style={{marginTop: "10px"}}>{quiz.feedback}</p>
+                                    </div>
+                                )}
+
+                                <div className="btn-group">
+                                    {!showQuizFeedback ? (
+                                        <button 
+                                            className="btn" 
+                                            onClick={validateQuizAnswer}
+                                            disabled={selectedAnswer === null}
+                                        >
+                                            Valider
+                                        </button>
+                                    ) : (
+                                        <button className="btn" onClick={nextQuizQuestion}>
+                                            {currentQuiz === quizData.length - 1 ? "Passer aux Scénarios →" : "Question suivante →"}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderScenarios() {
+                const scenario = scenarioData[currentScenario];
+                return (
+                    <div>
+                        <div className="content-panel">
+                            <div className="panel-header">
+                                <div className="panel-icon">⚡</div>
+                                <div className="panel-title">Niveau 3 : {MODULE_DATA.niveau3.titre}</div>
+                            </div>
+                            <div className="panel-body">
+                                <p style={{marginBottom: "20px", color: "var(--text-secondary)"}}>
+                                    Scénario {currentScenario + 1} / {scenarioData.length}
+                                </p>
+                                
+                                <div className="scenario-context">
+                                    <strong>Situation :</strong> {scenario.context}
+                                </div>
+                                
+                                <div className="scenario-intro">{scenario.intro}</div>
+                                
+                                <div className="scenario-choices">
+                                    {scenario.choices.map((choice, index) => (
+                                        <div
+                                            key={index}
+                                            className={`scenario-choice ${scenarioChoice === index ? 'selected' : ''}`}
+                                            onClick={() => !showScenarioResult && makeScenarioChoice(index)}
+                                        >
+                                            {choice.text}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {showScenarioResult && scenarioChoice !== null && (
+                                    <div className="scenario-result">
+                                        <strong>Analyse :</strong>
+                                        <p style={{marginTop: "10px"}}>
+                                            {scenario.choices[scenarioChoice].result}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {showScenarioResult && (
+                                    <div className="btn-group">
+                                        <button className="btn" onClick={nextScenario}>
+                                            {currentScenario === scenarioData.length - 1 ? "Terminer le module →" : "Scénario suivant →"}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            function renderFinal() {
+                const mastery = getMasteryLevel(playerData.score);
+                return (
+                    <div className="final-screen">
+                        <div className="content-panel">
+                            <div className="panel-body">
+                                <h2 style={{fontSize: "2rem", marginBottom: "20px", color: "var(--neuro-accent)"}}>
+                                    🎓 Module Complété !
+                                </h2>
+                                
+                                <p style={{fontSize: "1.2rem", marginBottom: "30px"}}>
+                                    Bravo <strong>{playerData.name}</strong> !
+                                </p>
+
+                                <div className={`mastery-badge ${mastery.class}`}>
+                                    {mastery.level}
+                                </div>
+
+                                <div className="xp-display">
+                                    <div className="xp-box">
+                                        <div className="xp-label">Score Total</div>
+                                        <div className="xp-value">{playerData.score}</div>
+                                    </div>
+                                    <div className="xp-box">
+                                        <div className="xp-label">XP Gagné</div>
+                                        <div className="xp-value">{playerData.xp}</div>
+                                    </div>
+                                </div>
+
+                                <p style={{margin: "30px 0", lineHeight: "1.8", color: "var(--text-secondary)"}}>
+                                    Tu comprends maintenant pourquoi l'exclusion fait vraiment mal.
+                                    <br/>
+                                    <strong style={{color: "var(--neuro-accent)"}}>
+                                        En tant que témoin, tu as le pouvoir de stopper cette douleur !
+                                    </strong>
+                                </p>
+
+                                <div className="save-code-box" onClick={copySaveCode}>
+                                    <div style={{fontSize: "0.85rem", marginBottom: "10px", color: "var(--text-secondary)"}}>
+                                        📋 CODE DE VALIDATION (clique pour copier)
+                                    </div>
+                                    <div style={{fontSize: "0.9rem", wordBreak: "break-all"}}>
+                                        {generateSaveCode()}
+                                    </div>
+                                </div>
+
+                                <p style={{fontSize: "0.9rem", color: "var(--text-secondary)"}}>
+                                    Copie ce code et valide-le sur le hub PIXHARe pour débloquer le niveau suivant.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Main render
+            return (
+                <div className="app-container">
+                    <div className="header">
+                        <div className="pillar-icon">💔</div>
+                        <h1 className="glitch-title">{MODULE_DATA.titre}</h1>
+                        <div className="subtitle">{MODULE_DATA.sous_titre}</div>
+                        <div className="module-badge">PILIER NEURO & EMPATHIE</div>
+                    </div>
+
+                    {gameState !== "intro" && (
+                        <>
+                            <div className="progress-bar">
+                                <div className={`progress-node ${playerData.level >= 1 ? 'completed' : ''} ${playerData.level === 1 && gameState === 'flashcards' ? 'active' : ''}`}>
+                                    1
+                                </div>
+                                <div className={`progress-node ${playerData.level >= 2 ? 'completed' : ''} ${playerData.level === 2 && gameState === 'quiz' ? 'active' : ''}`}>
+                                    2
+                                </div>
+                                <div className={`progress-node ${playerData.level >= 3 ? 'completed' : ''} ${playerData.level === 3 && gameState === 'scenarios' ? 'active' : ''}`}>
+                                    3
+                                </div>
+                            </div>
+
+                            <div className="xp-display">
+                                <div className="xp-box">
+                                    <div className="xp-label">Score</div>
+                                    <div className="xp-value">{playerData.score}</div>
+                                </div>
+                                <div className="xp-box">
+                                    <div className="xp-label">XP</div>
+                                    <div className="xp-value">{playerData.xp}</div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {gameState === "intro" && renderIntro()}
+                    {gameState === "flashcards" && renderFlashcards()}
+                    {gameState === "quiz" && renderQuiz()}
+                    {gameState === "scenarios" && renderScenarios()}
+                    {gameState === "final" && renderFinal()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

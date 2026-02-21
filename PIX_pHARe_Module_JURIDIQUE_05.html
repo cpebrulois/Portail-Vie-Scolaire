@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Maître de l'Harmonie</title>
+    <style>
+        :root {
+            --primary: #ffd700;
+            --accent: #ff6b6b;
+            --success: #4ecdc4;
+            --warning: #ffe66d;
+            --dark: #1a1a2e;
+            --darker: #0f0f1a;
+            --card: #16213e;
+            --light: #f5f5f5;
+            --gold: #ffd700;
+            --gradient: linear-gradient(135deg, #ffd700, #ff6b6b, #4ecdc4, #ffd700);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #2a1a4a 50%, var(--darker) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255,215,0,0.2), 0 0 100px rgba(255,215,0,0.1);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: var(--gradient);
+            background-size: 300% 100%;
+            animation: shimmer 3s ease infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 {
+            font-size: 2.4em;
+            background: var(--gradient);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease infinite;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+        .header .subtitle { color: var(--gold); font-size: 1.2em; text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .header .level-badge {
+            background: var(--gradient);
+            background-size: 200% 100%;
+            animation: shimmer 2s ease infinite;
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        .crown { font-size: 2em; display: block; margin-bottom: 10px; animation: float 2s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .progress-container { background: var(--darker); border-radius: 10px; padding: 15px 20px; margin-bottom: 25px; border: 1px solid rgba(255,215,0,0.2); }
+        .progress-bar-outer { background: rgba(255,255,255,0.1); border-radius: 10px; height: 14px; overflow: hidden; margin-top: 10px; }
+        .progress-bar-inner { height: 100%; background: var(--gradient); background-size: 200% 100%; animation: shimmer 2s ease infinite; border-radius: 10px; transition: width 0.5s ease; }
+        .progress-stats { display: flex; justify-content: space-between; font-size: 0.9em; }
+        .xp-badge { background: var(--gold); color: #000; padding: 5px 15px; border-radius: 15px; font-weight: bold; font-size: 1.05em; }
+        .btn {
+            background: var(--gradient);
+            background-size: 200% 100%;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(255,215,0,0.5); animation: shimmer 1s ease infinite; }
+        .btn-secondary { background: linear-gradient(135deg, #555, #333); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, var(--success), #3db8ab); }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #e6cc00); }
+        .btn-block { width: 100%; justify-content: center; }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .card { background: linear-gradient(145deg, #1e2a4a, var(--card)); color: var(--light); padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255,215,0,0.2); }
+        .flashcard-container { perspective: 1000px; margin: 25px 0; }
+        .flashcard {
+            background: linear-gradient(145deg, #ffd700, #ffed4a);
+            color: #1a1a2e;
+            padding: 40px 30px;
+            border-radius: 15px;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.6s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 50px rgba(255,215,0,0.4);
+            position: relative;
+        }
+        .flashcard:hover { box-shadow: 0 20px 60px rgba(255,215,0,0.6); }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard .front, .flashcard .back { backface-visibility: hidden; position: absolute; width: calc(100% - 60px); }
+        .flashcard .back { transform: rotateY(180deg); }
+        .flashcard .question { font-size: 1.3em; font-weight: 700; line-height: 1.5; }
+        .flashcard .answer { font-size: 1.1em; line-height: 1.6; }
+        .flashcard .answer-label { color: #c0392b; font-weight: bold; font-size: 0.9em; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .flashcard .source { margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.2); font-size: 0.85em; color: #555; font-style: italic; }
+        .flashcard .tap-hint { position: absolute; bottom: 15px; font-size: 0.8em; color: #666; }
+        .card-counter { text-align: center; margin-bottom: 15px; font-size: 0.95em; opacity: 0.8; }
+        .quiz-question { background: var(--darker); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--gold); }
+        .quiz-question .label { color: var(--gold); font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .quiz-choices { display: flex; flex-direction: column; gap: 12px; }
+        .quiz-choice {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.2);
+            color: var(--light);
+            padding: 18px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1rem;
+        }
+        .quiz-choice:hover { background: rgba(255,215,0,0.1); border-color: var(--gold); transform: translateX(5px); }
+        .quiz-choice.correct { background: rgba(78,205,196,0.3); border-color: var(--success); }
+        .quiz-choice.incorrect { background: rgba(255,107,107,0.3); border-color: var(--accent); }
+        .quiz-choice.disabled { pointer-events: none; opacity: 0.6; }
+        .feedback { padding: 20px; border-radius: 12px; margin-top: 20px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .feedback.correct { background: rgba(78,205,196,0.2); border: 1px solid var(--success); }
+        .feedback.incorrect { background: rgba(255,107,107,0.2); border: 1px solid var(--accent); }
+        .feedback .title { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
+        .feedback.correct .title { color: var(--success); }
+        .feedback.incorrect .title { color: var(--accent); }
+        .dojo-scenario { background: linear-gradient(135deg, var(--darker), #1a0a3e); padding: 25px; border-radius: 12px; border: 2px solid rgba(255,215,0,0.3); margin-bottom: 20px; }
+        .dojo-scenario .context-label { color: var(--gold); font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .dojo-scenario .context { font-size: 1.05em; line-height: 1.7; margin-bottom: 20px; }
+        .dojo-scenario .question { background: rgba(255,215,0,0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--gold); }
+        .impact-badge { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; margin-left: 10px; }
+        .impact-positive { background: var(--success); color: #000; }
+        .impact-negative { background: var(--accent); color: #fff; }
+        .impact-neutral { background: var(--warning); color: #000; }
+        .save-code-section { background: var(--darker); border: 3px solid var(--gold); border-radius: 12px; padding: 25px; margin: 25px 0; box-shadow: 0 0 30px rgba(255,215,0,0.3); }
+        .save-code-box { background: #000; color: var(--gold); font-family: 'Courier New', monospace; padding: 20px; border-radius: 8px; word-break: break-all; font-size: 0.85em; line-height: 1.5; user-select: all; margin: 15px 0; max-height: 120px; overflow-y: auto; border: 1px solid var(--gold); }
+        .save-instructions { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .save-instructions h4 { color: var(--gold); margin-bottom: 10px; }
+        .save-instructions ul { margin-left: 20px; line-height: 1.8; }
+        .report { background: linear-gradient(145deg, #1e2a4a, #0f0f2a); border-radius: 15px; overflow: hidden; border: 2px solid var(--gold); box-shadow: 0 0 50px rgba(255,215,0,0.3); }
+        .report-header { background: var(--gradient); background-size: 200% 100%; animation: shimmer 3s ease infinite; color: #000; padding: 40px; text-align: center; }
+        .report-header h2 { font-size: 2em; margin-bottom: 5px; }
+        .report-body { padding: 30px; }
+        .report-stat { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,215,0,0.2); }
+        .report-stat:last-child { border-bottom: none; }
+        .report-stat .label { color: #aaa; }
+        .report-stat .value { font-weight: bold; color: var(--gold); }
+        .mastery-badge { display: inline-block; padding: 10px 25px; border-radius: 25px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 1.1em; }
+        .mastery-expert { background: var(--gradient); background-size: 200% 100%; animation: shimmer 2s ease infinite; color: #000; }
+        .mastery-confirmed { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; }
+        .mastery-learning { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+        .unlock-section { background: linear-gradient(135deg, #1a0a3e, var(--darker)); border: 2px solid var(--warning); border-radius: 15px; padding: 30px; text-align: center; margin: 20px 0; }
+        .unlock-section h3 { color: var(--warning); margin-bottom: 15px; }
+        .unlock-section input { width: 100%; padding: 15px; border: 2px solid #444; border-radius: 8px; background: var(--darker); color: var(--gold); font-family: 'Courier New', monospace; font-size: 0.9em; margin: 15px 0; }
+        .unlock-section input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        .error-msg { color: var(--accent); font-weight: bold; margin-top: 10px; }
+        .level-indicator { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .level-dot { width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3em; background: var(--darker); border: 3px solid #444; transition: all 0.3s; }
+        .level-dot.active { border-color: var(--gold); box-shadow: 0 0 25px rgba(255,215,0,0.6); }
+        .level-dot.completed { background: var(--success); border-color: var(--success); color: #000; }
+        .certification-badge { text-align: center; padding: 30px; margin: 20px 0; background: radial-gradient(circle, rgba(255,215,0,0.2) 0%, transparent 70%); }
+        .certification-badge .seal { font-size: 5em; animation: float 2s ease-in-out infinite; }
+        .certification-badge h3 { color: var(--gold); font-size: 1.5em; margin: 15px 0; letter-spacing: 3px; }
+        .certification-badge p { color: #aaa; }
+        @media (max-width: 600px) { body { padding: 10px; } .app-container { padding: 20px; } .header h1 { font-size: 1.8em; } .flashcard { padding: 25px 20px; min-height: 270px; } .btn { padding: 12px 20px; font-size: 0.9rem; } }
+    </style>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const MODULE_DATA = {
+            id: "JURIDIQUE_05",
+            version: "1.0.0",
+            titre: "MAÎTRE DE L'HARMONIE",
+            sous_titre: "Module Final : Expertise Intégrative",
+            description: "Le module ultime qui synthétise tous les apprentissages : cas complexes multi-dimensionnels, leadership éthique et vision systémique.",
+            auteur: "Programme pHARe",
+            prerequis: "JURIDIQUE_04",
+            niveau_difficulte: 5,
+            
+            niveau1: {
+                titre: "Vision Systémique",
+                type: "flashcards",
+                xp_reward: 150,
+                cartes: [
+                    {
+                        recto: "Qu'est-ce que la VISION SYSTÉMIQUE du harcèlement ?",
+                        verso: "Le harcèlement n'est JAMAIS un problème isolé entre 2 personnes.\n\nC'est un SYSTÈME impliquant :\n• La victime\n• L'auteur (souvent plusieurs)\n• Les témoins (actifs et passifs)\n• L'environnement (culture de classe, normes)\n• Les adultes (présence, réactivité)\n\nAGIR SUR UN SEUL ÉLÉMENT = INSUFFISANT",
+                        source: "Approche écologique du harcèlement"
+                    },
+                    {
+                        recto: "Pourquoi la SANCTION SEULE ne suffit-elle jamais ?",
+                        verso: "La sanction traite le SYMPTÔME, pas la CAUSE.\n\nSans travail sur :\n• Les normes de groupe\n• Les mécanismes de désengagement moral\n• Le rôle des témoins\n• L'empathie collective\n\n→ Le harcèlement se DÉPLACE vers une autre victime ou une autre forme.",
+                        source: "Recherches sur l'efficacité des interventions"
+                    },
+                    {
+                        recto: "Qu'est-ce que le concept de DÉFENSEUR (Defender) dans la dynamique de groupe ?",
+                        verso: "Le DÉFENSEUR est le game-changer !\n\n• Élève qui intervient activement pour la victime\n• Son action stoppe l'agression dans 50% des cas\n• Il bénéficie généralement d'un statut social positif\n\nOBJECTIF pHARe : Transformer les témoins passifs en défenseurs actifs.",
+                        source: "Salmivalli - Rôles dans le harcèlement"
+                    },
+                    {
+                        recto: "Quelle est la différence entre RÉSILIENCE et FRAGILISATION de la victime ?",
+                        verso: "ATTENTION au mythe du \"ce qui ne tue pas rend plus fort\" !\n\nLes victimes peuvent rester FRAGILISÉES des ANNÉES après :\n• Anxiété sociale\n• Difficultés de confiance\n• Hypervigilance\n• Impact sur parcours scolaire/professionnel\n\nLe SUIVI À LONG TERME est essentiel, même après résolution.",
+                        source: "Études longitudinales sur les victimes"
+                    },
+                    {
+                        recto: "Qu'est-ce que l'HARMONIE DYNAMIQUE dans le contexte anti-harcèlement ?",
+                        verso: "L'objectif n'est pas l'absence de conflit (utopie) mais un ÉQUILIBRE VIVANT où :\n\n• Les tensions sont exprimées sainement\n• Les différences sont respectées\n• Les mécanismes de régulation fonctionnent\n• Chacun se sent en sécurité pour être lui-même\n\nL'HARMONIE est dynamique car elle se construit en permanence.",
+                        source: "Philosophie du programme pHARe"
+                    },
+                    {
+                        recto: "Quel est le RÔLE ULTIME de l'ambassadeur pHARe ?",
+                        verso: "Tu n'es pas un POLICIER ni un DÉLATEUR.\n\nTu es un CATALYSEUR DE CHANGEMENT :\n• Tu incarnes les valeurs de respect\n• Tu interviens avec tact et humanité\n• Tu fais le pont entre élèves et adultes\n• Tu transformes les normes de ta classe\n\nTon pouvoir : L'EXEMPLE + LA VIGILANCE BIENVEILLANTE.",
+                        source: "Mission pHARe ambassadeurs"
+                    }
+                ]
+            },
+            
+            niveau2: {
+                titre: "Cas Complexes Intégrés",
+                type: "quiz",
+                xp_reward: 200,
+                questions: [
+                    {
+                        texte: "Situation multi-dimensionnelle : Un élève est victime de cyberharcèlement. L'auteur principal est son ex-meilleur ami. D'autres élèves ont relayé. La victime refuse de parler aux adultes. Les parents de l'auteur nient en bloc.",
+                        question: "Par quoi commences-tu ?",
+                        choix: [
+                            { txt: "Confronter l'auteur avec les preuves numériques", correct: false, feedback: "Trop tôt ! Sans avoir sécurisé le soutien à la victime et préparé le terrain avec les adultes, tu risques l'escalade et la fermeture de l'auteur." },
+                            { txt: "Accompagner la victime et identifier un adulte de confiance qu'elle accepte", correct: true, feedback: "PARFAIT ! Priorité 1 = Victime. Trouve un adulte qu'elle peut accepter (pas forcément le CPE si elle refuse). Une fois ce lien créé, le reste peut se déployer. Le refus initial de parler aux adultes n'est pas définitif." },
+                            { txt: "Lancer la procédure Article 40 immédiatement", correct: false, feedback: "Prématuré. Le signalement viendra, mais si tu court-circuites la victime sans son consentement éclairé, tu risques de la retraumatiser et de perdre sa confiance." }
+                        ]
+                    },
+                    {
+                        texte: "Un élève auteur de harcèlement a été sanctionné (3 jours d'exclusion). À son retour, tu observes que : 1) La victime a peur de représailles. 2) L'auteur semble en colère et isolé. 3) La classe est divisée.",
+                        question: "Quelle est la faille systémique évidente ?",
+                        choix: [
+                            { txt: "La sanction était trop légère", correct: false, feedback: "La durée de la sanction n'est pas le problème. Le problème est l'ABSENCE DE TRAVAIL DE FOND autour de la sanction." },
+                            { txt: "Il manque le travail de réintégration, de réconciliation et de transformation des normes de classe", correct: true, feedback: "EXACT ! La sanction sans accompagnement = bombe à retardement. Il faut : 1) Suivi victime (peur = signal d'alerte) 2) Entretiens avec l'auteur (colère = non-traité) 3) Travail collectif sur les normes." },
+                            { txt: "Il aurait fallu un conseil de discipline avec exclusion définitive", correct: false, feedback: "L'exclusion définitive déplace le problème, elle ne le résout pas. Et elle ne répare rien pour la victime ni pour le groupe." }
+                        ]
+                    },
+                    {
+                        texte: "Paradoxe éthique : Tu découvres qu'un élève que tu pensais victime a en fait ORCHESTRÉ une fausse accusation de harcèlement contre un camarade. Les adultes ont sanctionné un innocent.",
+                        question: "Comment gères-tu cette révélation ?",
+                        choix: [
+                            { txt: "Minimiser pour protéger le système (\"ce qui est fait est fait\")", correct: false, feedback: "GRAVE ! L'injustice envers l'innocent ne peut pas être balayée. C'est aussi une forme de violence institutionnelle. La vérité doit être rétablie." },
+                            { txt: "Signaler aux adultes avec preuves. L'innocent doit être réhabilité, le manipulateur accompagné.", correct: true, feedback: "EXACT ! L'intégrité du système passe par la reconnaissance des erreurs. 1) Réhabiliter l'innocent (excuses, annulation sanction) 2) Comprendre pourquoi le \"manipulateur\" a agi ainsi (souffrance cachée ?) 3) Tirer des leçons institutionnelles." },
+                            { txt: "Punir sévèrement le faux accusateur pour l'exemple", correct: false, feedback: "La punition seule répète l'erreur. Un élève qui manipule ainsi a probablement lui-même des problèmes. Punir sans comprendre = reproduire la violence." }
+                        ]
+                    },
+                    {
+                        texte: "Un enseignant utilise régulièrement des remarques humiliantes envers certains élèves (\"Tu es nul\", \"Tu n'arriveras jamais à rien\"). Plusieurs élèves t'en parlent.",
+                        question: "Comment positionnes-tu cette situation ?",
+                        choix: [
+                            { txt: "Ce n'est pas du harcèlement car c'est un adulte, pas un élève", correct: false, feedback: "ERREUR ! La violence verbale existe aussi de l'adulte vers l'élève. Ce sont des violences institutionnelles qui peuvent constituer du harcèlement moral." },
+                            { txt: "C'est de la violence institutionnelle qui doit être signalée, même si c'est délicat", correct: true, feedback: "EXACT ! Les élèves méritent le respect de TOUS les adultes. La hiérarchie doit être informée. C'est délicat mais nécessaire. Un ambassadeur pHARe agit aussi face aux dysfonctionnements adultes." },
+                            { txt: "C'est une question de pédagogie, pas de harcèlement", correct: false, feedback: "Humilier n'est JAMAIS de la pédagogie. Les remarques répétées qui dégradent l'estime de soi constituent de la violence psychologique caractérisée." }
+                        ]
+                    }
+                ]
+            },
+            
+            niveau3: {
+                titre: "Épreuve du Maître",
+                type: "dojo",
+                xp_reward: 275,
+                scenarios: [
+                    {
+                        contexte: "SITUATION CULMINANTE : Tu es sollicité pour présenter le bilan pHARe de ton établissement devant le Conseil d'Administration. Tu dois expliquer pourquoi, malgré 3 cas de harcèlement cette année, le programme est un SUCCÈS.",
+                        question: "Quel argument déploies-tu ?",
+                        choix: [
+                            { txt: "\"3 cas c'est peu comparé aux moyennes nationales\"", impact: 30, level: "partial", feedback: "Argument faible. Comparer aux stats peut sembler minimiser chaque cas. Le succès ne se mesure pas qu'en volume." },
+                            { txt: "\"Le succès est dans la DÉTECTION et la PRISE EN CHARGE : 3 cas identifiés et traités, vs combien de cas invisibles avant ?\"", impact: 100, level: "optimal", feedback: "MAGISTRAL ! Tu retournes la logique : avoir des cas détectés = preuve que le système fonctionne. L'absence de cas détectés serait inquiétante (omerta, pas détection). Le vrai indicateur = vitesse de détection + qualité de résolution." },
+                            { txt: "\"On fera mieux l'année prochaine, on va renforcer la surveillance\"", impact: 10, level: "partial", feedback: "Réponse défensive qui suggère un échec. La surveillance seule ne résout rien. Tu dois montrer la valeur du travail fait, pas promettre un futur hypothétique." }
+                        ]
+                    },
+                    {
+                        contexte: "DILEMME ÉTHIQUE : Tu apprends qu'un élève harceleur a été lui-même victime d'agressions sexuelles dans sa famille. Il a 14 ans. Cette information t'a été confiée en secret.",
+                        question: "Comment navigues-tu entre secret, protection et responsabilité ?",
+                        choix: [
+                            { txt: "Je garde le secret car on me l'a confié", impact: -50, level: "error", feedback: "DANGER ! Les agressions sexuelles sur mineur constituent un CRIME. Tu as une OBLIGATION de signalement. Le secret ne peut pas couvrir un crime. L'intérêt de l'enfant prime sur la promesse." },
+                            { txt: "Je signale les agressions tout en maintenant l'accompagnement du jeune comme auteur ET victime", impact: 100, level: "optimal", feedback: "EXACT ! Double obligation : 1) Signalement des agressions (protection de l'enfance) 2) Prise en charge de son comportement de harceleur. Il n'est pas excusé mais il est AUSSI victime. Complexité assumée." },
+                            { txt: "Je l'excuse du harcèlement vu son vécu traumatique", impact: -30, level: "error", feedback: "Comprendre n'est pas excuser. SA victime de harcèlement mérite protection indépendamment de son histoire. Les deux souffrances coexistent sans s'annuler." }
+                        ]
+                    },
+                    {
+                        contexte: "VISION FINALE : On te demande de définir en une phrase ce qu'est un \"établissement scolaire en harmonie\" selon ta compréhension globale du programme pHARe.",
+                        question: "Quelle définition proposes-tu ?",
+                        choix: [
+                            { txt: "Un établissement où il n'y a aucun conflit entre élèves", impact: 20, level: "partial", feedback: "Utopique et même pas souhaitable ! Le conflit fait partie de la vie. L'objectif n'est pas l'absence de friction mais sa gestion saine." },
+                            { txt: "Un écosystème où chacun peut être pleinement soi-même car les mécanismes de régulation collective transforment les tensions en opportunités de croissance", impact: 100, level: "optimal", feedback: "🏆 MAGNIFIQUE ! Tu as intégré l'HARMONIE DYNAMIQUE : pas l'absence de tensions, mais leur métabolisation positive. L'établissement devient un organisme vivant qui apprend et s'améliore continuellement." },
+                            { txt: "Un lieu où les règles sont strictement appliquées et les sanctions immédiates", impact: 10, level: "partial", feedback: "Vision purement répressive. La règle sans l'éducation, la sanction sans la réparation, la surveillance sans la confiance = école-prison, pas école-harmonie." }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const generateSaveCode = (progress) => {
+            const payload = { v: 1, d: new Date().toISOString(), m: MODULE_DATA.id, mv: MODULE_DATA.version, n: progress.nom || "Anonyme", c: progress.classe || "", l: progress.currentLevel, s: progress.score, x: progress.xp, q: progress.quizScore, dj: progress.dojoScore, f: progress.finished, cert: progress.finished };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        };
+
+        const decodeSaveCode = (code) => { try { return { valid: true, data: JSON.parse(decodeURIComponent(escape(atob(code.trim())))) }; } catch (e) { return { valid: false, error: "Code invalide." }; } };
+
+        const verifyPrerequisite = (code) => {
+            const result = decodeSaveCode(code);
+            if (!result.valid) return { valid: false, error: "Code invalide." };
+            if (result.data.m !== MODULE_DATA.prerequis) return { valid: false, error: `Ce code provient du module ${result.data.m}, pas du module ${MODULE_DATA.prerequis}.` };
+            if (!result.data.f) return { valid: false, error: "Ce module n'a pas été terminé." };
+            return { valid: true, data: result.data };
+        };
+
+        const e = React.createElement;
+        const { useState } = React;
+
+        function Header({ showProgress, xp }) {
+            return e('div', { className: 'header' },
+                e('span', { className: 'crown' }, '👑'),
+                e('div', { className: 'level-badge' }, `NIVEAU ${MODULE_DATA.niveau_difficulte} - FINAL`),
+                e('h1', null, MODULE_DATA.titre),
+                e('div', { className: 'subtitle' }, MODULE_DATA.sous_titre),
+                showProgress && e('div', { style: { marginTop: '15px' } }, e('span', { className: 'xp-badge' }, `⚡ ${xp} XP`))
+            );
+        }
+
+        function ProgressBar({ currentLevel, xp }) {
+            const percent = Math.min(100, (currentLevel / 3) * 100);
+            return e('div', { className: 'progress-container' }, e('div', { className: 'progress-stats' }, e('span', null, `Épreuve ${currentLevel}/3`), e('span', { className: 'xp-badge' }, `${xp} XP`)), e('div', { className: 'progress-bar-outer' }, e('div', { className: 'progress-bar-inner', style: { width: `${percent}%` } })));
+        }
+
+        function LevelIndicator({ current }) {
+            const levels = ['🌟', '⚔️', '👑'];
+            return e('div', { className: 'level-indicator' }, levels.map((emoji, i) => e('div', { key: i, className: `level-dot ${i + 1 === current ? 'active' : ''} ${i + 1 < current ? 'completed' : ''}` }, i + 1 < current ? '✓' : emoji)));
+        }
+
+        function Flashcard({ card, onNext, isLast, onComplete }) {
+            const [flipped, setFlipped] = useState(false);
+            return e('div', { className: 'flashcard-container' },
+                e('div', { className: `flashcard ${flipped ? 'flipped' : ''}`, onClick: () => setFlipped(!flipped) },
+                    e('div', { className: 'front' }, e('div', { className: 'question', style: { whiteSpace: 'pre-line' } }, card.recto), e('div', { className: 'tap-hint' }, '👆 Clique pour retourner')),
+                    e('div', { className: 'back' }, e('div', { className: 'answer-label' }, '✓ Réponse'), e('div', { className: 'answer', style: { whiteSpace: 'pre-line' } }, card.verso), e('div', { className: 'source' }, `📖 ${card.source}`))
+                ),
+                e('div', { className: 'text-center', style: { marginTop: '20px' } }, flipped && (isLast ? e('button', { className: 'btn btn-success', onClick: onComplete }, '✓ VALIDER') : e('button', { className: 'btn', onClick: () => { onNext(); setFlipped(false); } }, 'SUIVANT →')))
+            );
+        }
+
+        function QuizQuestion({ question, onAnswer }) {
+            const [answered, setAnswered] = useState(false);
+            const [selectedIdx, setSelectedIdx] = useState(null);
+            const [feedback, setFeedback] = useState(null);
+            const handleChoice = (choice, idx) => { if (answered) return; setAnswered(true); setSelectedIdx(idx); setFeedback({ correct: choice.correct, text: choice.feedback }); };
+            return e('div', null,
+                e('div', { className: 'quiz-question' }, e('div', { className: 'label' }, '⚔️ CAS COMPLEXE'), e('p', { style: { marginBottom: '15px', lineHeight: '1.6' } }, question.texte), question.question && e('p', { style: { fontWeight: 'bold', color: '#ffd700' } }, `❓ ${question.question}`)),
+                e('div', { className: 'quiz-choices' }, question.choix.map((choice, idx) => e('button', { key: idx, className: `quiz-choice ${answered ? (idx === selectedIdx ? (choice.correct ? 'correct' : 'incorrect') : 'disabled') : ''}`, onClick: () => handleChoice(choice, idx), disabled: answered }, choice.txt))),
+                feedback && e('div', { className: `feedback ${feedback.correct ? 'correct' : 'incorrect'}` }, e('div', { className: 'title' }, feedback.correct ? '🏆 MAÎTRISE DÉMONTRÉE !' : '⚠️ RÉFLEXION INCOMPLÈTE'), e('p', null, feedback.text), e('button', { className: 'btn', style: { marginTop: '20px' }, onClick: () => onAnswer(feedback.correct) }, 'CONTINUER →'))
+            );
+        }
+
+        function DojoScenario({ scenario, onAnswer }) {
+            const [answered, setAnswered] = useState(false);
+            const [selectedChoice, setSelectedChoice] = useState(null);
+            const handleChoice = (choice) => { if (answered) return; setAnswered(true); setSelectedChoice(choice); };
+            const getImpactClass = (impact) => impact >= 80 ? 'impact-positive' : impact > 0 ? 'impact-neutral' : 'impact-negative';
+            const getImpactLabel = (impact) => impact >= 0 ? `+${impact}` : `${impact}`;
+            return e('div', null,
+                e('div', { className: 'dojo-scenario' }, e('div', { className: 'context-label' }, '👑 ÉPREUVE DU MAÎTRE'), e('p', { className: 'context' }, scenario.contexte), e('div', { className: 'question' }, e('strong', null, '❓ ', scenario.question))),
+                e('div', { className: 'quiz-choices' }, scenario.choix.map((choice, idx) => e('button', { key: idx, className: `quiz-choice ${answered ? (choice === selectedChoice ? (choice.level === 'optimal' ? 'correct' : choice.level === 'error' ? 'incorrect' : '') : 'disabled') : ''}`, onClick: () => handleChoice(choice), disabled: answered }, choice.txt, answered && e('span', { className: `impact-badge ${getImpactClass(choice.impact)}` }, getImpactLabel(choice.impact))))),
+                selectedChoice && e('div', { className: `feedback ${selectedChoice.level === 'optimal' ? 'correct' : selectedChoice.level === 'error' ? 'incorrect' : 'correct'}` }, e('div', { className: 'title' }, selectedChoice.level === 'optimal' ? '👑 SAGESSE DU MAÎTRE !' : selectedChoice.level === 'error' ? '⚠️ LEÇON À MÉDITER' : '👍 VOIE ACCEPTABLE'), e('p', null, selectedChoice.feedback), e('button', { className: 'btn', style: { marginTop: '20px' }, onClick: () => onAnswer(selectedChoice.impact) }, 'CONTINUER →'))
+            );
+        }
+
+        function CertificationReport({ progress, onMenu }) {
+            const saveCode = generateSaveCode(progress);
+            const [copied, setCopied] = useState(false);
+            const copyToClipboard = () => { navigator.clipboard.writeText(saveCode).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
+            const totalScore = progress.quizScore + progress.dojoScore;
+            const getMasteryLevel = () => { if (totalScore >= 550) return { label: 'MAÎTRE', class: 'mastery-expert', emoji: '👑' }; if (totalScore >= 350) return { label: 'EXPERT', class: 'mastery-confirmed', emoji: '⭐' }; return { label: 'CERTIFIÉ', class: 'mastery-learning', emoji: '✓' }; };
+            const mastery = getMasteryLevel();
+            
+            return e('div', null,
+                e('div', { className: 'certification-badge' },
+                    e('div', { className: 'seal' }, '🏆'),
+                    e('h3', null, 'CERTIFICATION COMPLÈTE'),
+                    e('p', null, 'Ambassadeur pHARe - Parcours Juridique')
+                ),
+                e('div', { className: 'report' },
+                    e('div', { className: 'report-header' },
+                        e('span', { style: { fontSize: '3em', display: 'block', marginBottom: '15px' } }, mastery.emoji),
+                        e('h2', null, 'PARCOURS ACCOMPLI'),
+                        e('p', null, `Félicitations ${progress.nom || 'Ambassadeur'} !`)
+                    ),
+                    e('div', { className: 'report-body' },
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Certification'), e('span', { className: 'value' }, 'Ambassadeur pHARe - Juridique')),
+                        progress.classe && e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Classe'), e('span', { className: 'value' }, progress.classe)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Modules complétés'), e('span', { className: 'value' }, '5/5')),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'XP Total'), e('span', { className: 'value' }, `${progress.xp} XP`)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Score Final'), e('span', { className: 'value' }, `${totalScore} pts`)),
+                        e('div', { className: 'report-stat' }, e('span', { className: 'label' }, 'Grade'), e('span', { className: `mastery-badge ${mastery.class}` }, mastery.label))
+                    )
+                ),
+                e('div', { className: 'save-code-section' },
+                    e('h3', { style: { color: '#ffd700', marginBottom: '15px', textAlign: 'center' } }, '🏆 CODE DE CERTIFICATION FINALE'),
+                    e('p', { style: { opacity: 0.8, textAlign: 'center' } }, 'Ce code prouve que tu as complété le parcours complet !'),
+                    e('div', { className: 'save-code-box' }, saveCode),
+                    e('button', { className: `btn btn-block ${copied ? 'btn-success' : ''}`, onClick: copyToClipboard }, copied ? '✓ COPIÉ !' : '📋 COPIER LE CODE DE CERTIFICATION'),
+                    e('div', { className: 'save-instructions' },
+                        e('h4', null, '📜 Ta certification'),
+                        e('ul', null,
+                            e('li', null, 'Envoie ce code au CPE pour validation officielle'),
+                            e('li', null, 'Tu peux maintenant former d\'autres ambassadeurs !'),
+                            e('li', null, 'Ton expertise : Cadre légal + Psychologie + Cyber + Protocoles + Vision systémique')
+                        )
+                    )
+                ),
+                e('div', { className: 'btn-group', style: { marginTop: '30px' } },
+                    e('button', { className: 'btn btn-block', onClick: onMenu }, '🏠 RETOUR À L\'ACCUEIL')
+                )
+            );
+        }
+
+        function App() {
+            const [mode, setMode] = useState('menu');
+            const [unlocked, setUnlocked] = useState(false);
+            const [currentLevel, setCurrentLevel] = useState(1);
+            const [cardIdx, setCardIdx] = useState(0);
+            const [questionIdx, setQuestionIdx] = useState(0);
+            const [scenarioIdx, setScenarioIdx] = useState(0);
+            const [xp, setXp] = useState(0);
+            const [quizScore, setQuizScore] = useState(0);
+            const [dojoScore, setDojoScore] = useState(0);
+            const [nom, setNom] = useState('');
+            const [classe, setClasse] = useState('');
+            const [unlockCode, setUnlockCode] = useState('');
+            const [unlockError, setUnlockError] = useState('');
+
+            const resetProgress = () => { setCurrentLevel(1); setCardIdx(0); setQuestionIdx(0); setScenarioIdx(0); setXp(0); setQuizScore(0); setDojoScore(0); };
+            const progress = { nom, classe, currentLevel, xp, quizScore, dojoScore, score: quizScore + dojoScore, finished: mode === 'report' };
+
+            const handleUnlock = () => { const result = verifyPrerequisite(unlockCode); if (result.valid) { setNom(result.data.n || ''); setClasse(result.data.c || ''); setUnlocked(true); setUnlockError(''); } else { setUnlockError(result.error); } };
+
+            if (mode === 'menu') {
+                return e('div', { className: 'app-container' },
+                    e(Header, { showProgress: false }),
+                    e('div', { className: 'card' }, e('strong', null, '🎯 MISSION FINALE : '), MODULE_DATA.description),
+                    !unlocked ? e('div', { className: 'unlock-section' },
+                        e('h3', null, '🔐 MODULE FINAL VERROUILLÉ'),
+                        e('p', null, `Prérequis : Compléter les 4 modules précédents`),
+                        e('input', { type: 'text', placeholder: 'Code du Module 4...', value: unlockCode, onChange: (ev) => { setUnlockCode(ev.target.value); setUnlockError(''); } }),
+                        unlockError && e('div', { className: 'error-msg' }, `⚠️ ${unlockError}`),
+                        e('button', { className: 'btn', onClick: handleUnlock }, '🔓 DÉBLOQUER LE MODULE FINAL')
+                    ) : e('div', { className: 'btn-group' },
+                        e('div', { style: { textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '1.1em' } }, `👑 ${nom}, tu es prêt(e) pour l'épreuve finale !`),
+                        e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, '⚔️ COMMENCER L\'ÉPREUVE')
+                    ),
+                    e('div', { style: { marginTop: '30px', textAlign: 'center', opacity: 0.5, fontSize: '0.85em' } }, `Module ${MODULE_DATA.id} v${MODULE_DATA.version}`)
+                );
+            }
+
+            if (mode === 'game') {
+                if (currentLevel === 1) {
+                    const cards = MODULE_DATA.niveau1.cartes;
+                    return e('div', { className: 'app-container' }, e(Header, { showProgress: true, xp }), e(ProgressBar, { currentLevel, xp }), e(LevelIndicator, { current: currentLevel }), e('h2', { style: { textAlign: 'center' } }, '🌟 ÉPREUVE 1 : VISION'), e('div', { className: 'card-counter' }, `Carte ${cardIdx + 1} / ${cards.length}`), e(Flashcard, { card: cards[cardIdx], isLast: cardIdx === cards.length - 1, onNext: () => setCardIdx(cardIdx + 1), onComplete: () => { setXp(xp + MODULE_DATA.niveau1.xp_reward); setCurrentLevel(2); setCardIdx(0); } }));
+                }
+                if (currentLevel === 2) {
+                    const questions = MODULE_DATA.niveau2.questions;
+                    const handleQuizAnswer = (correct) => { if (correct) setQuizScore(quizScore + 50); if (questionIdx < questions.length - 1) setQuestionIdx(questionIdx + 1); else { setXp(xp + MODULE_DATA.niveau2.xp_reward); setCurrentLevel(3); setQuestionIdx(0); } };
+                    return e('div', { className: 'app-container' }, e(Header, { showProgress: true, xp }), e(ProgressBar, { currentLevel, xp }), e(LevelIndicator, { current: currentLevel }), e('h2', { style: { textAlign: 'center' } }, '⚔️ ÉPREUVE 2 : INTÉGRATION'), e('div', { className: 'card-counter' }, `Défi ${questionIdx + 1} / ${questions.length}`), e(QuizQuestion, { key: questionIdx, question: questions[questionIdx], onAnswer: handleQuizAnswer }));
+                }
+                if (currentLevel === 3) {
+                    const scenarios = MODULE_DATA.niveau3.scenarios;
+                    const handleDojoAnswer = (impact) => { setDojoScore(dojoScore + Math.max(0, impact)); if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1); else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); } };
+                    return e('div', { className: 'app-container' }, e(Header, { showProgress: true, xp }), e(ProgressBar, { currentLevel, xp }), e(LevelIndicator, { current: currentLevel }), e('h2', { style: { textAlign: 'center' } }, '👑 ÉPREUVE 3 : SAGESSE'), e('div', { className: 'card-counter' }, `Épreuve finale ${scenarioIdx + 1} / ${scenarios.length}`), e(DojoScenario, { key: scenarioIdx, scenario: scenarios[scenarioIdx], onAnswer: handleDojoAnswer }));
+                }
+            }
+
+            if (mode === 'report') {
+                return e('div', { className: 'app-container' }, e(CertificationReport, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onMenu: () => { resetProgress(); setUnlocked(false); setUnlockCode(''); setMode('menu'); } }));
+            }
+            return e('div', { className: 'app-container' }, 'Chargement...');
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+    </script>
+</body>
+</html>

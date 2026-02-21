@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXHARe - Hub de Formation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&family=Courier+New:wght@700&family=Orbitron:wght@700&display=swap');
+
+        :root { 
+            --neon: #00d4ff; 
+            --neon-red: #ff0044;
+            --neon-green: #00ff88;
+            --neon-gold: #ffd700;
+            --dark: #0a0a12; 
+            --panel: #16213e; 
+            --locked: #2a2a35;
+        }
+        
+        body { background: var(--dark); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; text-align: center; }
+        
+        h1 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 5px; color: var(--neon); margin-bottom: 5px; font-weight: 800; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+        h1 span { color: #fff; }
+        .subtitle { color: #888; margin-bottom: 40px; font-style: italic; font-size: 0.9em; }
+
+        .arcade-btn {
+            display: none; margin: 0 auto 30px auto;
+            background: transparent; border: 2px solid var(--neon-gold); color: var(--neon-gold);
+            padding: 10px 30px; font-family: 'Courier New', monospace; font-weight: bold;
+            cursor: pointer; text-decoration: none; width: fit-content;
+            text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s;
+            animation: pulse-gold 2s infinite;
+        }
+        .arcade-btn:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 25px var(--neon-gold); }
+        @keyframes pulse-gold { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        .decoder-zone {
+            background: #000; border: 1px solid var(--neon); padding: 25px;
+            max-width: 600px; margin: 0 auto 50px auto; border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1); position: relative;
+        }
+        .decoder-zone::before { content: "MODULE DE VALIDATION"; position: absolute; top: -10px; left: 20px; background: var(--dark); padding: 0 10px; color: var(--neon); font-size: 0.8em; font-weight: bold; }
+        
+        input[type="text"] {
+            width: 70%; padding: 12px; background: #1a1a1a; border: 1px solid #444; 
+            color: #fff; font-family: 'Courier New', monospace; font-size: 1.1em; text-align: center; outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--neon); }
+        
+        button.action-btn {
+            padding: 12px 25px; background: var(--neon); color: #000; border: none; 
+            font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        button.action-btn:hover { background: #fff; box-shadow: 0 0 15px var(--neon); }
+
+        .matrix-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+        
+        .pillar-column {
+            background: rgba(22, 33, 62, 0.5); border-radius: 12px; padding: 15px;
+            width: 300px; border-top: 4px solid #555; display: flex; flex-direction: column; gap: 15px;
+        }
+        .pillar-title { font-size: 1.3em; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .module-card {
+            background: var(--locked); padding: 15px; border-radius: 6px;
+            border-left: 4px solid #444; text-align: left; position: relative;
+            transition: all 0.3s ease;
+        }
+        .module-card.locked { opacity: 0.6; pointer-events: none; filter: grayscale(1); }
+        .module-card.open { background: var(--panel); border-left-color: var(--neon); cursor: default; }
+        .module-card.done { background: #0f2e20; border-left-color: var(--neon-green); }
+
+        .module-card h4 { margin: 0 0 5px 0; font-size: 1.1em; }
+        .status-txt { font-size: 0.7em; font-weight: bold; text-transform: uppercase; float: right; margin-top: 3px; }
+        
+        .btn-launch { 
+            display: block; width: 100%; padding: 10px; margin-top: 10px; 
+            background: transparent; border: 1px solid var(--neon); color: var(--neon);
+            text-decoration: none; text-align: center; font-size: 0.9em; font-weight: bold;
+            transition: 0.3s; box-sizing: border-box;
+        }
+        .btn-launch:hover { background: var(--neon); color: #000; }
+
+        .btn-diploma {
+            display: block; width: 100%; padding: 8px; margin-top: 5px;
+            background: #d4af37; color: #000; border: none; cursor: pointer;
+            font-size: 0.8em; font-weight: bold;
+        }
+
+        .forge-toggle { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; cursor: pointer; font-size: 2em; }
+        .forge-toggle:hover { opacity: 1; }
+
+        .forge-container {
+            display: none; background: #111; border: 2px dashed var(--neon-red); 
+            margin: 40px auto; max-width: 800px; padding: 25px;
+            border-radius: 10px; text-align: left; position: relative;
+            box-shadow: 0 0 50px rgba(255, 0, 68, 0.2);
+        }
+        .forge-container::before {
+            content: "/// MODE ADMINISTRATEUR : GÉNÉRATEUR DE SÉSAMES ///";
+            position: absolute; top: -12px; left: 20px; background: #111; 
+            color: var(--neon-red); font-weight: bold; padding: 0 10px;
+        }
+        
+        .forge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .forge-full { grid-column: 1 / -1; }
+        
+        .forge-label { color: #888; font-size: 0.8em; display: block; margin-bottom: 5px; }
+        .forge-input { 
+            width: 100%; background: #000; color: #fff; border: 1px solid #555; 
+            padding: 10px; box-sizing: border-box; font-family: monospace;
+        }
+        
+        .forge-btn {
+            background: var(--neon-red); color: #fff; border: none; padding: 15px;
+            width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase;
+        }
+        .forge-btn:hover { background: #fff; color: #000; }
+
+        .reset-btn {
+            background: transparent; border: 1px solid #555; color: #555; 
+            padding: 10px; margin-top: 20px; width: 100%; cursor: pointer; font-size: 0.8em;
+        }
+        .reset-btn:hover { border-color: red; color: red; }
+
+        .forge-output {
+            margin-top: 20px; padding: 15px; background: #000; border: 1px solid var(--neon-green);
+            color: var(--neon-green); font-family: 'Courier New', monospace; word-break: break-all;
+            cursor: pointer; position: relative; display: none;
+        }
+        .forge-output:hover::after {
+            content: "COPIER LE CODE"; position: absolute; top: 0; right: 0;
+            background: var(--neon-green); color: #000; font-size: 0.7em; padding: 2px 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>PIXHARe <span>///</span> HUB DE PRÉVENTION</h1>
+    <p class="subtitle">Plateforme Unifiée de Formation et de Sensibilisation</p>
+    <button class="action-btn" onclick="goSuperHub()" style="margin-bottom:16px;">PORTAIL VIE SCOLAIRE</button>
+
+    <a href="#" id="arcadeLink" class="arcade-btn" onclick="launchArcade()" target="_blank">
+        👾 ZONE DÉTENTE (Lvl.<span id="arcadeLvl">1</span>)
+    </a>
+
+    <div class="decoder-zone">
+        <input type="text" id="inputToken" placeholder="Coller le code ici (ou code maître)..." autocomplete="off">
+        <button class="action-btn" onclick="processInput()">VALIDER</button>
+        <div id="feedback" style="height:20px; margin-top:10px; font-weight:bold; font-size: 0.9em;"></div>
+    </div>
+
+    <div class="matrix-container" id="matrixRoot"></div>
+
+    <div class="forge-toggle" onclick="toggleForge()">🛠️</div>
+    <div id="forgePanel" class="forge-container">
+        <p style="color:#aaa; font-size:0.9em; margin-top:0">
+            Génère un sésame pour dépanner les élèves. Le code simule la réussite du module précédent.
+        </p>
+
+        <div class="forge-grid">
+            <div>
+                <label class="forge-label">1. PILIER CONCERNÉ</label>
+                <select id="forgePillar" class="forge-input" onchange="updateForgeLevels()"></select>
+            </div>
+            <div>
+                <label class="forge-label">2. NIVEAU À DÉBLOQUER (CIBLE)</label>
+                <select id="forgeLevel" class="forge-input"></select>
+            </div>
+            <div>
+                <label class="forge-label">NOM ÉLÈVE</label>
+                <input type="text" id="forgeName" class="forge-input" placeholder="Ex: DUPONT Thomas">
+            </div>
+            <div>
+                <label class="forge-label">CLASSE</label>
+                <input type="text" id="forgeClass" class="forge-input" placeholder="Ex: 4ème B">
+            </div>
+            <div class="forge-full">
+                <button class="forge-btn" onclick="forgeToken()">FORGER LE SÉSAME</button>
+            </div>
+        </div>
+
+        <div id="forgeResult" class="forge-output" onclick="copyToClipboard(this.innerText)"></div>
+        <button class="reset-btn" onclick="hardReset()">⚠️ EFFACER TOUTE LA PROGRESSION (RAZ)</button>
+    </div>
+
+    <script>
+        const CONFIG = {
+            pillars: {
+                "NUM": {
+                    title: "PILIER NUMÉRIQUE",
+                    color: "#00d4ff",
+                    modules: [
+                        { id: "NUMERIQUE_01", file: "PIX_pHARe_Module_NUMERIQUE_01.html", name: "La Machine à Attention" },
+                        { id: "NUMERIQUE_02", file: "PIX_pHARe_Module_NUMERIQUE_02.html", name: "Les Architectes de l'Ombre" },
+                        { id: "NUMERIQUE_03", file: "PIX_pHARe_Module_NUMERIQUE_03.html", name: "Bulles & Miroirs" },
+                        { id: "NUMERIQUE_04", file: "PIX_pHARe_Module_NUMERIQUE_04.html", name: "Tes Droits, Ton Armure" },
+                        { id: "NUMERIQUE_05", file: "PIX_pHARe_Module_NUMERIQUE_05.html", name: "Maître de ton Feed" }
+                    ]
+                },
+                "JUR": {
+                    title: "PILIER JURIDIQUE",
+                    color: "#ff0044",
+                    modules: [
+                        { id: "JURIDIQUE_01", file: "PIX_pHARe_Module_Juridique_01.html", name: "L'Armure Juridique" },
+                        { id: "JURIDIQUE_02", file: "PIX_pHARe_Module_JURIDIQUE_02.html", name: "La Mécanique des Ombres" },
+                        { id: "JURIDIQUE_03", file: "PIX_pHARe_Module_JURIDIQUE_03.html", name: "Le Spectre Numérique" },
+                        { id: "JURIDIQUE_04", file: "PIX_pHARe_Module_JURIDIQUE_04.html", name: "Le Protocole pHARe" },
+                        { id: "JURIDIQUE_05", file: "PIX_pHARe_Module_JURIDIQUE_05.html", name: "Maître de l'Harmonie" }
+                    ]
+                },
+                "GRO": {
+                    title: "PILIER DYNAMIQUE DE GROUPE",
+                    color: "#a855f7",
+                    modules: [
+                        { id: "GROUPE_01", file: "PIX_pHARe_Module_GROUPE_01.html", name: "Le Triangle Infernal" },
+                        { id: "GROUPE_02", file: "PIX_pHARe_Module_GROUPE_02.html", name: "Le Pouvoir des Témoins" },
+                        { id: "GROUPE_03", file: "PIX_pHARe_Module_GROUPE_03.html", name: "Les Pièges de l'Esprit" },
+                        { id: "GROUPE_04", file: "PIX_pHARe_Module_GROUPE_04.html", name: "Briser le Cycle" },
+                        { id: "GROUPE_05", file: "PIX_pHARe_Module_GROUPE_05.html", name: "Leader Positif [CERTIF]" }
+                    ]
+                },
+                "HIS": {
+                    title: "PILIER HISTORIQUE & SOCIÉTAL",
+                    color: "#b08968",
+                    modules: [
+                        { id: "HISTOIRE_01", file: "PIX_pHARe_Module_HISTOIRE_01.html", name: "Avant le mot : quand la violence ne se voyait pas" },
+                        { id: "HISTOIRE_02", file: "PIX_pHARe_Module_HISTOIRE_02.html", name: "Rites, bizutages et violences normalisées" },
+                        { id: "HISTOIRE_03", file: "PIX_pHARe_Module_HISTOIRE_03.html", name: "Nommer pour comprendre : naissance d’un concept" },
+                        { id: "HISTOIRE_04", file: "PIX_pHARe_Module_HISTOIRE_04.html", name: "De la tolérance à la loi : quand la société réagit" },
+                        { id: "HISTOIRE_05", file: "PIX_pHARe_Module_HISTOIRE_05.html", name: "Mémoire, luttes et vigilance collective" }
+                    ]
+                }
+
+            },
+            adminKey: "AGORA-ADMIN"
+        };
+
+        const SUPERHUB_ACTIVE_PLAYER_KEY = "pvs_current_player";
+        const SUPERHUB_BRIDGE_KEY = "pvs_bridge_events";
+
+        function getActivePlayerCode() {
+            const params = new URLSearchParams(window.location.search);
+            const fromQuery = (params.get("player") || "").trim().toUpperCase();
+            if (fromQuery) {
+                localStorage.setItem(SUPERHUB_ACTIVE_PLAYER_KEY, fromQuery);
+                return fromQuery;
+            }
+            return (localStorage.getItem(SUPERHUB_ACTIVE_PLAYER_KEY) || "").trim().toUpperCase();
+        }
+
+        function goSuperHub() {
+            const player = getActivePlayerCode();
+            const suffix = player ? `?player=${encodeURIComponent(player)}` : "";
+            window.location.href = `../index.html${suffix}`;
+        }
+
+        function pushSuperHubBridgeEvent(payload) {
+            try {
+                const raw = localStorage.getItem(SUPERHUB_BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                const safe = Array.isArray(list) ? list : [];
+                safe.push(payload);
+                if (safe.length > 500) safe.splice(0, safe.length - 500);
+                localStorage.setItem(SUPERHUB_BRIDGE_KEY, JSON.stringify(safe));
+            } catch (e) {
+                // Fallback silencieux: le hub local continue de fonctionner.
+            }
+        }
+
+        function bridgePixhareProgress(pillarKey, level, certData) {
+            const player = getActivePlayerCode();
+            if (!player) return;
+
+            let cpTotal = 0;
+            for (const key of Object.keys(CONFIG.pillars)) {
+                cpTotal += parseInt(localStorage.getItem(`PROG_${key}`) || "0");
+            }
+
+            pushSuperHubBridgeEvent({
+                id: `PIX-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                type: "PIXHARE_PROGRESS",
+                player: player,
+                module: (certData && certData.m) ? certData.m : `${pillarKey}_${level}`,
+                cpTotal: cpTotal,
+                d: new Date().toISOString()
+            });
+        }
+
+        function renderMatrix() {
+            const root = document.getElementById('matrixRoot');
+            root.innerHTML = "";
+            for (const [pillarKey, data] of Object.entries(CONFIG.pillars)) {
+                const col = document.createElement('div');
+                col.className = 'pillar-column';
+                col.style.borderTopColor = data.color;
+                col.innerHTML = `<div class="pillar-title" style="color:${data.color}">${data.title}</div>`;
+                const savedLevel = parseInt(localStorage.getItem(`PROG_${pillarKey}`) || "0");
+                data.modules.forEach((mod, index) => {
+                    const levelNum = index + 1;
+                    const isDone = savedLevel >= levelNum;
+                    const isOpen = (levelNum === 1) || (savedLevel >= levelNum - 1);
+                    let statusClass = isDone ? "done" : (isOpen ? "open" : "locked");
+                    let statusText = isDone ? "✅ VALIDÉ" : (isOpen ? "🟢 DISPONIBLE" : "🔒 VERROUILLÉ");
+                    col.innerHTML += `
+                        <div class="module-card ${statusClass}">
+                            <span class="status-txt" style="color:${isDone ? '#00ff88' : (isOpen ? '#fff' : '#555')}">${statusText}</span>
+                            <h4>NIVEAU ${levelNum}</h4>
+                            <div style="font-size:0.9em; margin-bottom:5px; color:#aaa">${mod.name}</div>
+                            ${isOpen ? `<a href="${mod.file}" target="_blank" class="btn-launch">LANCER MISSION</a>` : ''}
+                            ${isDone ? `<button onclick="downloadDiploma('${pillarKey}', ${levelNum})" class="btn-diploma">CERTIFICAT</button>` : ''}
+                        </div>`;
+                });
+                root.appendChild(col);
+            }
+            updateArcadeButton();
+        }
+
+        function updateArcadeButton() {
+            let total = 0;
+            for (const key of Object.keys(CONFIG.pillars)) total += parseInt(localStorage.getItem(`PROG_${key}`) || "0");
+            const btn = document.getElementById('arcadeLink');
+            if (total > 0) {
+                btn.style.display = 'block'; 
+                document.getElementById('arcadeLvl').innerText = total;
+            } else btn.style.display = 'none';
+        }
+
+        function launchArcade() {
+            let total = 0;
+            for (const key of Object.keys(CONFIG.pillars)) total += parseInt(localStorage.getItem(`PROG_${key}`) || "0");
+            window.open(`BONUS_ARCADE.html?power=${total}`, '_blank');
+        }
+
+        function processInput() {
+            let input = document.getElementById('inputToken').value.trim();
+            const feedback = document.getElementById('feedback');
+            if (input === CONFIG.adminKey) { toggleForge(); return; }
+            let data = null;
+            try { data = JSON.parse(decodeURIComponent(escape(atob(input)))); }
+            catch (e) { try { data = JSON.parse(atob(input)); } catch (e2) { alert("Code illisible."); return; } }
+            
+            let foundPillar = null, foundLevel = 0;
+            const codeID = data.m || data.mod || data.id || "";
+            for (const [pKey, pData] of Object.entries(CONFIG.pillars)) {
+                pData.modules.forEach((mod, idx) => {
+                    if (mod.id === codeID) { foundPillar = pKey; foundLevel = idx + 1; }
+                    else if ((mod.id.includes("JUR") && codeID.includes("JUR")) || (mod.id.includes("NUM") && codeID.includes("NUM")) || (mod.id.includes("GRO") && codeID.includes("GRO"))) {
+                        const n1 = parseInt(mod.id.match(/\d+/)?.[0] || "99"), n2 = parseInt(codeID.match(/\d+/)?.[0] || "0");
+                        if (n1 === n2) { foundPillar = pKey; foundLevel = idx + 1; }
+                    }
+                });
+            }
+            if (foundPillar && (data.f === true || data.finished === true)) {
+                saveProgress(foundPillar, foundLevel, data);
+                feedback.innerText = "✅ VALIDÉ !";
+                setTimeout(() => location.reload(), 800);
+            } else alert("Code non reconnu ou module non fini.");
+        }
+
+        function saveProgress(pk, lv, d) {
+            const cur = parseInt(localStorage.getItem(`PROG_${pk}`) || "0");
+            if (lv > cur) localStorage.setItem(`PROG_${pk}`, lv);
+            localStorage.setItem(`CERT_${pk}_${lv}`, JSON.stringify(d));
+            bridgePixhareProgress(pk, lv, d);
+            renderMatrix();
+        }
+
+        function toggleForge() { const f = document.getElementById('forgePanel'); f.style.display = (f.style.display === 'block' ? 'none' : 'block'); if(f.style.display === 'block') initForge(); }
+        function initForge() { const ps = document.getElementById('forgePillar'); ps.innerHTML = ""; Object.entries(CONFIG.pillars).forEach(([k,v]) => ps.innerHTML += `<option value="${k}">${v.title}</option>`); updateForgeLevels(); }
+        function updateForgeLevels() { const pk = document.getElementById('forgePillar').value; const ls = document.getElementById('forgeLevel'); ls.innerHTML = ""; CONFIG.pillars[pk].modules.forEach((m,i) => { if(i > 0) ls.innerHTML += `<option value="${i}">Débloquer NIVEAU ${i+1}</option>`; }); }
+        function forgeToken() {
+            const pk = document.getElementById('forgePillar').value, ti = parseInt(document.getElementById('forgeLevel').value);
+            const prev = CONFIG.pillars[pk].modules[ti-1];
+            const p = { v: 1, d: new Date().toISOString(), m: prev.id, n: document.getElementById('forgeName').value || "ADMIN", c: document.getElementById('forgeClass').value || "STAFF", f: true };
+            const t = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+            const o = document.getElementById('forgeResult'); o.style.display = 'block'; o.innerText = t;
+        }
+        function copyToClipboard(t) { navigator.clipboard.writeText(t).then(() => alert("Copié !")); }
+        function hardReset() { if(confirm("Reset total ?")) { localStorage.clear(); location.reload(); } }
+        function downloadDiploma(pk, lv) {
+            const d = JSON.parse(localStorage.getItem(`CERT_${pk}_${lv}`));
+            const n = CONFIG.pillars[pk].modules[lv-1].name;
+            const c = `PIXHARe - CERTIFICAT\n\nÉLÈVE: ${d.n}\nCLASSE: ${d.c}\nDATE: ${new Date(d.d).toLocaleDateString()}\nMODULE: ${n}\n\nSIGNATURE: ${btoa(d.m+d.n)}`;
+            const b = new Blob([c], {type: 'text/plain'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `PIXHARe_${d.n}_NIV${lv}.txt`; a.click();
+        }
+        renderMatrix();
+    </script>
+</body>
+</html>

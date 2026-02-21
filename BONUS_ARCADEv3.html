@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GUARDIAN pHARe - ULTRA DEFENSE HD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Share+Tech+Mono&display=swap');
+
+        body { 
+            margin: 0; padding: 0; background: #000;
+            color: #e0e0e0; font-family: 'Share Tech Mono', monospace; 
+            overflow: hidden; user-select: none;
+        }
+
+        #bg-image {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('Earth Command.jpg') no-repeat center center fixed;
+            background-size: cover; z-index: -1; opacity: 0.5; transition: opacity 0.5s;
+        }
+
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 5; padding: 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .hud-box { 
+            background: rgba(0, 20, 40, 0.8); border: 1px solid #00d4ff; 
+            padding: 15px; border-radius: 5px; backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .bar-container { width: 250px; height: 12px; background: #111; border: 1px solid #00d4ff; margin-top: 5px; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #00ff88, #00d4ff); width: 100%; transition: width 0.3s; }
+        
+        #score-display { 
+            font-family: 'Orbitron'; font-size: 2.8em; 
+            background: linear-gradient(#ffd700, #ff8800);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+
+        .screen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,5,15,0.95); z-index: 20;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; backdrop-filter: blur(15px);
+        }
+        
+        .hidden { display: none !important; }
+
+        .hangar-table {
+            background: rgba(0, 40, 80, 0.3); border: 1px solid rgba(0,212,255,0.5);
+            padding: 20px; margin: 20px 0; width: 80%; max-width: 600px;
+            border-radius: 10px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #00d4ff, #0055ff); color: white; border: none; 
+            padding: 15px 40px; font-family: 'Orbitron'; font-size: 1.1em; cursor: pointer;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            transition: 0.3s; margin: 10px;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 20px #00d4ff; filter: brightness(1.2); }
+        
+        .difficulty-btn { background: #222; opacity: 0.6; }
+        .difficulty-btn.active { opacity: 1; border: 1px solid #00ff88; color: #00ff88; }
+
+        canvas { display: block; filter: saturate(1.2) contrast(1.1); }
+    </style>
+</head>
+<body>
+
+<div id="bg-image"></div>
+<audio id="hubMusic" loop src="Steel Procession.mp3"></audio>
+
+<div id="ui-layer">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div class="hud-box">
+            <div style="font-size: 0.8em; letter-spacing: 2px;">CLIMAT SCOLAIRE</div>
+            <div class="bar-container"><div id="climat-bar" class="bar-fill"></div></div>
+        </div>
+        <div id="score-display">0000</div>
+        <div class="hud-box" style="text-align:right">
+            <div id="shield-status" style="color:#ffd700; font-weight: bold;">SHIELD: 00</div>
+            <div style="color: #00d4ff;">DRONES: <span id="drone-count">0</span></div>
+        </div>
+    </div>
+</div>
+
+<div id="start-screen" class="screen-overlay">
+    <h1 style="font-family: 'Orbitron'; font-size: 3em; color: #00d4ff; text-shadow: 0 0 20px #00d4ff;">GUARDIAN pHARe V2</h1>
+    
+    <div class="hangar-table">
+        <div style="color: #ffd700; margin-bottom: 15px; font-size: 1.2em;">CONFIGURATION DU CHASSEUR</div>
+        <div id="hangar-content"></div>
+    </div>
+
+    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <label>OPACITÉ DÉCOR : </label>
+        <input type="range" min="0" max="100" value="50" oninput="document.getElementById('bg-image').style.opacity = this.value/100">
+    </div>
+
+    <div>
+        <button class="difficulty-btn active" onclick="setDiff(1, this)">APPRENTI</button>
+        <button class="difficulty-btn" onclick="setDiff(1.6, this)">GARDIEN</button>
+        <button class="difficulty-btn" onclick="setDiff(2.5, this)">MAÎTRE HD</button>
+    </div>
+
+    <button onclick="startGame()" style="font-size: 1.4em; margin-top: 20px;">INITIALISER LE PROTOCOLE</button>
+</div>
+
+<div id="gameover-screen" class="screen-overlay hidden">
+    <h1 style="color: #ff0044; font-size: 4em;">ÉCHEC HARMONIQUE</h1>
+    <button onclick="location.reload()">RE-ESSAYER</button>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // --- SYSTÈME DE BONUS ---
+    function getLvl(p) { 
+        let l=0; for(let i=1; i<=5; i++) if(localStorage.getItem(`CERT_${p}_${i}`)) l=i; return l; 
+    }
+    const BONUSES = { NUM: getLvl('NUM'), JUR: getLvl('JUR'), GRO: getLvl('GRO'), HIS: getLvl('HIS') };
+
+    // UI Hangar
+    const h = document.getElementById('hangar-content');
+    const labels = {NUM:'LASERS', JUR:'BOUCLIER', GRO:'DRONES', HIS:'BLINDAGE'};
+    Object.keys(labels).forEach(k => {
+        h.innerHTML += `<div style="display:flex; justify-content:space-between; margin: 5px 0;">
+            <span>${labels[k]}</span><span style="color:#00d4ff">${BONUSES[k]}/5</span>
+        </div>`;
+    });
+
+    let DIFFICULTY = 1;
+    function setDiff(v, b) { 
+        DIFFICULTY = v; 
+        document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+        b.classList.add('active');
+    }
+
+    // --- CLASSES ---
+
+    class Particle {
+        constructor(x,y,color) {
+            this.x=x; this.y=y; this.color=color;
+            this.vx=(Math.random()-0.5)*8; this.vy=(Math.random()-0.5)*8;
+            this.life=1.0;
+        }
+        update() { this.x+=this.vx; this.y+=this.vy; this.life-=0.02; }
+        draw() { 
+            ctx.globalAlpha=this.life; ctx.fillStyle=this.color; 
+            ctx.fillRect(this.x, this.y, 3, 3); ctx.globalAlpha=1;
+        }
+    }
+
+    class Bullet {
+        constructor(x,y,vx,vy,type) { this.x=x; this.y=y; this.vx=vx; this.vy=vy; this.type=type; this.active=true; }
+        update() { 
+            this.x+=this.vx; this.y+=this.vy; 
+            if(this.y<0 || this.y>canvas.height || this.x<0 || this.x>canvas.width) this.active=false;
+        }
+        draw() {
+            ctx.shadowBlur = 10; ctx.shadowColor = this.type==='P'?'#00ffff':'#ff00ff';
+            ctx.fillStyle = this.type==='P'?'#00ffff':'#ff00ff';
+            ctx.fillRect(this.x-2, this.y-2, 4, 10);
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    class Drone {
+        constructor(id) { this.id=id; this.angle=0; this.lastShot=0; }
+        update(px, py) {
+            this.angle += 0.04;
+            this.x = px + Math.cos(this.angle + this.id) * 70;
+            this.y = py + Math.sin(this.angle + this.id) * 70;
+            if(GAME.frame % 40 === 0 && enemies.length > 0) this.shoot();
+        }
+        shoot() {
+            bullets.push(new Bullet(this.x, this.y, 0, -12, 'P'));
+        }
+        draw() {
+            ctx.fillStyle='#00ff88'; ctx.beginPath();
+            ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill();
+        }
+    }
+
+    class Enemy {
+        constructor(type) {
+            this.type = type; this.active=true; this.frame=0;
+            this.x = Math.random()*(canvas.width-100)+50; this.y=-50;
+            const config = {
+                'BASIC': {hp:20, speed:3, color:'#ff4444', size:30},
+                'TRACKER': {hp:15, speed:4.5, color:'#00ffcc', size:20},
+                'TANK': {hp:120, speed:1.2, color:'#ffaa00', size:50},
+                'SNIPER': {hp:40, speed:2, color:'#ff00ff', size:25}
+            };
+            Object.assign(this, config[type]);
+            this.hp *= DIFFICULTY; this.speed *= DIFFICULTY;
+        }
+        update() {
+            this.frame++;
+            if(this.type==='TRACKER') this.x += Math.sin(this.frame*0.05)*6;
+            if(this.type==='SNIPER' && this.y > 150) {
+                if(this.frame % 80 === 0) {
+                    const a = Math.atan2(player.y-this.y, player.x-this.x);
+                    bullets.push(new Bullet(this.x, this.y, Math.cos(a)*6, Math.sin(a)*6, 'E'));
+                }
+            } else { this.y += this.speed; }
+            if(this.y > canvas.height) { this.active=false; damageClimat(this.type==='TANK'?20:5); }
+        }
+        draw() {
+            ctx.save(); ctx.translate(this.x, this.y);
+            ctx.shadowBlur=15; ctx.shadowColor=this.color; ctx.fillStyle=this.color;
+            if(this.type==='TANK') ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+            else { ctx.beginPath(); ctx.arc(0,0,this.size/2,0,Math.PI*2); ctx.fill(); }
+            ctx.restore();
+        }
+    }
+
+    // --- GAME ENGINE ---
+    const GAME = { active:false, score:0, frame:0, climat:100 };
+    const INPUT = { left:false, right:false, up:false, down:false, fire:false };
+    let bullets=[], enemies=[], particles=[], drones=[];
+    
+    const player = {
+        x: canvas.width/2, y: canvas.height-100,
+        hpMax: 100 + BONUSES.HIS*20,
+        shield: BONUSES.JUR + 1,
+        invinc: 0,
+        update() {
+            if(INPUT.left && this.x > 50) this.x-=8; if(INPUT.right && this.x < canvas.width-50) this.x+=8;
+            if(INPUT.up && this.y > 50) this.y-=8; if(INPUT.down && this.y < canvas.height-50) this.y+=8;
+            if(INPUT.fire && GAME.frame % 8 === 0) this.shoot();
+            if(this.invinc > 0) this.invinc--;
+            drones.forEach(d => d.update(this.x, this.y));
+        },
+        shoot() {
+            const count = 1 + BONUSES.NUM;
+            for(let i=0; i<count; i++) {
+                const off = (i - (count-1)/2) * 15;
+                bullets.push(new Bullet(this.x+off, this.y-20, 0, -15, 'P'));
+            }
+        },
+        draw() {
+            if(this.invinc % 4 > 1) return;
+            ctx.save(); ctx.translate(this.x, this.y);
+            if(this.shield > 0) {
+                ctx.strokeStyle='#00d4ff'; ctx.lineWidth=2; ctx.beginPath();
+                ctx.arc(0,0,45,0,Math.PI*2); ctx.stroke();
+            }
+            ctx.fillStyle='#fff'; ctx.beginPath();
+            ctx.moveTo(0,-25); ctx.lineTo(20,15); ctx.lineTo(-20,15); ctx.fill();
+            ctx.restore();
+            drones.forEach(d => d.draw());
+        },
+        hit() {
+            if(this.invinc > 0) return;
+            if(this.shield > 0) this.shield--;
+            else damageClimat(15);
+            this.invinc = 60;
+            for(let i=0; i<20; i++) particles.push(new Particle(this.x, this.y, '#fff'));
+        }
+    };
+
+    function damageClimat(v) { 
+        GAME.climat -= v; 
+        if(GAME.climat <= 0) { GAME.active=false; document.getElementById('gameover-screen').classList.remove('hidden'); }
+    }
+
+    function spawn() {
+        if(GAME.frame % Math.floor(50/DIFFICULTY) === 0) {
+            let t = 'BASIC';
+            const r = Math.random();
+            if(r > 0.9) t = 'TANK';
+            else if(r > 0.7) t = 'TRACKER';
+            else if(r > 0.5 && DIFFICULTY > 1.2) t = 'SNIPER';
+            enemies.push(new Enemy(t));
+        }
+    }
+
+    function startGame() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('hubMusic').play();
+        GAME.climat = player.hpMax;
+        for(let i=0; i<BONUSES.GRO; i++) drones.push(new Drone(i));
+        GAME.active = true; loop();
+    }
+
+    function loop() {
+        if(!GAME.active) return;
+        ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        GAME.frame++;
+        
+        spawn();
+        player.update(); player.draw();
+
+        bullets = bullets.filter(b => {
+            b.update(); b.draw();
+            if(b.type==='P') {
+                enemies.forEach(e => {
+                    if(e.active && Math.hypot(b.x-e.x, b.y-e.y) < e.size) {
+                        e.hp -= 15; b.active=false;
+                        if(e.hp <= 0) { e.active=false; GAME.score+=100; for(let i=0; i<10; i++) particles.push(new Particle(e.x, e.y, e.color)); }
+                    }
+                });
+            } else {
+                if(Math.hypot(b.x-player.x, b.y-player.y) < 30) { b.active=false; player.hit(); }
+            }
+            return b.active;
+        });
+
+        enemies = enemies.filter(e => { e.update(); e.draw(); return e.active; });
+        particles = particles.filter(p => { p.update(); p.draw(); return p.life > 0; });
+
+        document.getElementById('score-display').innerText = GAME.score.toString().padStart(4,'0');
+        document.getElementById('climat-bar').style.width = (GAME.climat/player.hpMax*100)+'%';
+        document.getElementById('shield-status').innerText = `SHIELD: ${player.shield}`;
+        document.getElementById('drone-count').innerText = BONUSES.GRO;
+
+        requestAnimationFrame(loop);
+    }
+
+    window.onkeydown = e => { 
+        if(e.key==='ArrowLeft'||e.key==='q') INPUT.left=true; 
+        if(e.key==='ArrowRight'||e.key==='d') INPUT.right=true;
+        if(e.key==='ArrowUp'||e.key==='z') INPUT.up=true;
+        if(e.key==='ArrowDown'||e.key==='s') INPUT.down=true;
+        if(e.key===' ') INPUT.fire=true;
+    };
+    window.onkeyup = e => { 
+        if(e.key==='ArrowLeft'||e.key==='q') INPUT.left=false; 
+        if(e.key==='ArrowRight'||e.key==='d') INPUT.right=false;
+        if(e.key==='ArrowUp'||e.key==='z') INPUT.up=false;
+        if(e.key==='ArrowDown'||e.key==='s') INPUT.down=false;
+        if(e.key===' ') INPUT.fire=false;
+    };
+</script>
+</body>
+</html>
