@@ -1,0 +1,426 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portail Vie Scolaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Rajdhani,sans-serif;color:#fff;background:radial-gradient(circle at 10% 10%,#00d4ff22,transparent 30%),radial-gradient(circle at 90% 90%,#ffd70022,transparent 35%),linear-gradient(135deg,#070b17,#172444);min-height:100vh;padding:14px}.wrap{max-width:1250px;margin:auto}.card{background:#ffffff0d;border:1px solid #ffffff26;border-radius:12px;padding:12px}.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px}.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}h1{font-family:Orbitron,monospace;background:linear-gradient(135deg,#00d4ff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:6px 0}h2,h3{font-family:Orbitron,monospace;font-size:1rem;color:#00d4ff;margin:0 0 8px}.tag{display:inline-block;background:linear-gradient(135deg,#00d4ff,#ffd700);color:#000;padding:5px 10px;border-radius:999px;font-weight:700}.sub{color:#a9bbd6}.alert{background:linear-gradient(90deg,#ff7d00,#3f6de1);padding:8px;border-radius:9px;font-weight:700;margin:8px 0 12px}.row{display:grid;gap:6px;margin:7px 0}input,select,textarea{width:100%;padding:9px;border-radius:8px;border:1px solid #ffffff3a;background:#0000005e;color:#fff;font-family:inherit}textarea{min-height:80px}button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00d4ff,#ffd700);color:#000}.btn2{background:#ffffff17;color:#fff;border:1px solid #ffffff37}.btnBad{background:linear-gradient(135deg,#ff6b6b,#ff2250);color:#fff}.btnNuclear{background:linear-gradient(135deg,#ff2a2a,#8a0016);border:1px solid #ff9a9a66;color:#fff;text-transform:uppercase;letter-spacing:.4px;box-shadow:0 0 0 0 #ff2a2a55;animation:pulseDanger 1.2s infinite}.rw{display:flex;flex-wrap:wrap;gap:8px}.msg{display:none;margin-top:8px;padding:7px 9px;border-radius:8px;font-weight:700}.ok{display:block;background:#16d28422;border:1px solid #16d28466}.bad{display:block;background:#ff557722;border:1px solid #ff557766}.hint{color:#a9bbd6}.profile{display:none;border:1px solid #ffffff32;border-radius:8px;background:#00000035;padding:8px;margin-top:8px}.profile.on{display:block}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:8px}.stat{border:1px solid #ffffff2a;border-radius:8px;padding:6px;background:#ffffff08}.k{font-size:.8rem;color:#a9bbd6}.v{font-family:Orbitron,monospace}table{width:100%;border-collapse:collapse;border:1px solid #ffffff32;border-radius:10px;overflow:hidden}th,td{padding:7px;border-bottom:1px solid #ffffff20;text-align:left}th{font-family:Orbitron,monospace;color:#00d4ff;background:#00000048;font-size:.82rem}tr:nth-child(odd){background:#ffffff08}.tabs{display:flex;gap:8px}.tab{padding:5px 9px;border-radius:999px;border:1px solid #ffffff36;background:#00000047;color:#fff;cursor:pointer;font-weight:700}.tab.on{background:linear-gradient(135deg,#00d4ff,#ffd700);color:#000;border:0}.mini{max-height:170px;overflow:auto;border:1px solid #ffffff26;border-radius:8px}.mini td,.mini th{font-size:.86rem;padding:6px}.tutoFocus{outline:2px solid #ffd700;outline-offset:2px;box-shadow:0 0 0 6px #ffd70033;border-radius:10px}.audioDock{position:fixed;left:12px;bottom:12px;z-index:1400;max-width:360px;padding:10px;background:#ffffff12;border:1px solid #ffffff33;border-radius:12px;backdrop-filter:blur(4px)}@keyframes pulseDanger{0%{box-shadow:0 0 0 0 #ff2a2a66}70%{box-shadow:0 0 0 12px #ff2a2a00}100%{box-shadow:0 0 0 0 #ff2a2a00}}
+</style>
+<style>
+#authGate{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 15% 15%,#00d4ff22,transparent 35%),radial-gradient(circle at 85% 85%,#ffd70022,transparent 40%),linear-gradient(135deg,#02060f,#101f3f)}
+#authCard{max-width:560px;width:min(92vw,560px)}
+#authTitle{font-family:Orbitron,monospace;background:linear-gradient(135deg,#00d4ff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 8px}
+#hubScreen{display:none}
+</style>
+</head>
+<body>
+<div id="authGate">
+  <article id="authCard" class="card">
+    <div class="tag">AUTHENTIFICATION</div>
+    <h2 id="authTitle">Portail Vie Scolaire</h2>
+    <p class="hint">Identifie-toi pour acceder au hub et relier toutes les actions a ton compte.</p>
+    <div class="row"><label for="authCode">Identifiant joueur</label><input id="authCode" placeholder="Code joueur"></div>
+    <div class="row"><label for="authAdmin">Acces admin (CPE)</label><input id="authAdmin" type="password" placeholder="Identifiant admin"></div>
+    <div class="hint">Code visiteur demonstration: Visiteur-Viescolaire-ChateauRance</div>
+    <div class="rw" style="margin-top:8px">
+      <button onclick="loginPlayer()">Entrer dans le Hub</button>
+      <button class="btn2" onclick="loginAdmin()">Entrer en mode admin</button>
+      <button class="btn2" onclick="fillVisitorCode()">Acces visiteur</button>
+    </div>
+    <div class="msg" id="authMsg"></div>
+  </article>
+</div>
+
+<div id="hubScreen">
+<div class="wrap">
+<header>
+<div class="tag">GAME DESIGN SOCIAL</div>
+<h1>Portail Vie Scolaire</h1>
+<div class="sub">SuperHub central: PIXHARe + PSC1 + Videos + missions citoyennes.</div>
+<div class="alert">Liaison stricte par ligne: Code Joueur (col.3) <-> Code Temoin (col.4).</div>
+</header>
+
+<section class="grid2">
+<article class="card">
+<h2>Session Joueur</h2>
+<div class="hint" id="loginHint">Session verrouillee. Authentification requise.</div>
+<div class="rw">
+  <button class="btn2" onclick="openAuthGate()">Changer d'identifiant</button>
+  <button class="btn2" onclick="logoutPlayer()">Verrouiller session</button>
+</div>
+<div class="msg" id="loginMsg"></div>
+<div class="row"><label for="playerBackupFile">Importer ma sauvegarde (.csv)</label><input id="playerBackupFile" type="file" accept=".csv,text/csv"></div>
+<div class="rw"><button class="btn2" onclick="downloadPlayerBackup()">Telecharger ma sauvegarde</button><button class="btn2" onclick="importPlayerBackup()">Importer ma sauvegarde</button></div>
+<div class="hint">Portable: conserve ton profil joueur pour changer de poste.</div>
+<div class="msg" id="pbMsg"></div>
+<div class="profile" id="profile">
+<div>Profil actif: <b id="pCode"></b></div>
+<div class="hint">Statut: <span id="pRole"></span></div>
+<div class="stats">
+<div class="stat"><div class="k">XP Global</div><div class="v" id="pXg">0</div></div>
+<div class="stat"><div class="k">XP Hebdo</div><div class="v" id="pXw">0</div></div>
+<div class="stat"><div class="k">Citoyen</div><div class="v" id="pCit">0</div></div>
+<div class="stat"><div class="k">Academie</div><div class="v" id="pAca">0</div></div>
+<div class="stat"><div class="k">Videos</div><div class="v" id="pVid">0</div></div>
+<div class="stat"><div class="k">Social attente</div><div class="v" id="pPend">0</div></div>
+<div class="stat"><div class="k">CP Total</div><div class="v" id="pCp">0</div></div>
+</div>
+</div>
+</article>
+
+<article class="card">
+<h2>Action Temoin</h2>
+<div class="row"><label for="wCode">Code temoin (col.4)</label><input id="wCode" placeholder="Code temoin officiel"></div>
+<div class="row"><label for="tCode">Code public cible (col.5 ou code public)</label><input id="tCode" placeholder="Code public du camarade"></div>
+<div class="row"><label for="aType">Action</label><select id="aType"></select></div>
+<button id="btnWitnessSend" onclick="witnessAction()">Envoyer XP</button>
+<div class="hint">Bonus temoin = 10% des points envoyes, si le temoin a deja ete reconnu au moins 1 fois.</div>
+<div class="hint">Les XP sociaux ne sont valides que si l'eleve temoigne aussi au moins 1 fois.</div>
+<div class="msg" id="wMsg"></div>
+<div class="rw" style="margin-top:10px"><button id="btnNegHub" class="btnNuclear" onclick="openNegativeHub()">Lancement alerte rouge: temoignages de faits negatifs</button></div>
+</article>
+</section>
+
+<section class="card" style="margin-top:10px">
+<div class="rw" style="justify-content:space-between;align-items:center">
+<h2>Hall des Heros - Top 10</h2>
+<div class="tabs"><button class="tab on" id="tg" onclick="switchHall('global')">Global</button><button class="tab" id="tw" onclick="switchHall('week')">Hebdo</button></div>
+</div>
+<table>
+<thead><tr><th>#</th><th>Code</th><th>Statut</th><th>CP</th><th id="scoreHead">XP Global</th></tr></thead>
+<tbody id="hall"></tbody>
+</table>
+<div class="hint" id="hallMeta"></div>
+</section>
+
+<section class="grid3" style="margin-top:10px">
+<article class="card">
+<h3>Academie</h3>
+<div class="rw"><button id="btnPixhare" onclick="openTracked('academy','PIXHARE_HUB','Projet%20PIX_Like%20pHARe/index.html')">PIXHARe pHARe</button><button id="btnPsc1" onclick="openTracked('academy','PSC1_HUB','Projet%20PIX_Like%20PSC1/index_PSC1.html')">PIX_Like PSC1</button></div>
+<div class="rw" style="margin-top:8px"><button id="btnVideos" onclick="openTracked('academy','VIDEO_HUB','hub_videos.html')">Hub Videos</button><button id="btnNeocities" onclick="openTracked('external','NEOCITIES_HUB','https://cpebru.neocities.org/cpebru_hub_index%20%283%29')">Neocities</button></div>
+<div class="rw" style="margin-top:8px"><button class="btn2" onclick="syncPixhare()">Importer CP PIXHARe</button><button class="btn2" onclick="syncPsc1()">Importer CP PSC1</button></div>
+<div class="msg" id="sMsg"></div><div class="msg" id="vMsg"></div>
+</article>
+<article class="card"><h3>Regles</h3><p class="hint">1) Couple joueur/temoin fixe par referentiel.</p><p class="hint">2) Bonus temoin conditionnel.</p><p class="hint">3) Grades citoyens = admin only.</p></article>
+<article class="card"><h3>Referentiel</h3><p class="hint" id="codesInfo">Referentiel codes: non charge.</p><p class="hint" id="syncInfo">Sync serveur: verification...</p></article>
+</section>
+
+<section class="grid2" style="margin-top:10px">
+<article class="card"><h3>Journal</h3><div class="mini"><table><thead><tr><th>Date</th><th>Joueur</th><th>Type</th><th>Cible</th><th>XP</th></tr></thead><tbody id="logBody"></tbody></table></div></article>
+<article class="card"><h3>Popularite</h3><table><thead><tr><th>Cible</th><th>Ouvertures</th><th>Validations</th></tr></thead><tbody id="popBody"></tbody></table></article>
+</section>
+
+<section class="card" id="adminConsole" style="margin-top:10px;display:none">
+<h2>Console Admin</h2>
+<div class="hint" id="adminHint">Mode admin actif.</div>
+<div id="adminBlock" style="display:block">
+<div class="row"><label for="codesFile">Importer referentiel TSV/CSV</label><input id="codesFile" type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv"></div>
+<div class="rw"><button class="btn2" onclick="importCodesFile()">Importer fichier codes</button><button class="btn2" onclick="loadDefaultCodes(true)">Charger students.csv</button></div>
+<div class="row"><label for="adultFile">Importer temoins adultes (TSV/CSV)</label><input id="adultFile" type="file" accept=".tsv,.csv,text/tab-separated-values,text/csv"></div>
+<div class="rw"><button class="btn2" onclick="importAdultFile()">Importer temoins adultes</button><button class="btn2" onclick="loadDefaultAdults(true)">Charger adults.csv</button></div>
+<div class="grid3" style="margin-top:8px">
+<div class="card"><h3>CP / Academie</h3><div class="row"><label for="adCode">Code eleve</label><input id="adCode"></div><div class="row"><label for="adHub">Hub CP</label><select id="adHub"><option value="pixhare">PIXHARe</option><option value="psc1">PSC1</option><option value="sanctuaire">Sanctuaire</option><option value="loge">Loge</option><option value="autres">Autres</option></select></div><div class="row"><label for="adCp">Valeur</label><input id="adCp" type="number" min="0" step="1" value="1"></div><div class="rw"><button onclick="setCp()">Definir CP</button><button class="btn2" onclick="addCp()">Ajouter CP</button></div></div>
+<div class="card"><h3>Malus</h3><div class="row"><label for="malType">Regulation</label><select id="malType"></select></div><button class="btnBad" onclick="applyMalus()">Appliquer malus</button></div>
+<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
+</div>
+<h3 style="margin-top:10px">Missions Citoyennes (admin)</h3>
+<div id="missionAdmin" class="grid3"></div>
+<h3 style="margin-top:10px">Pre-signalements Negatifs</h3>
+<div class="mini"><table><thead><tr><th>Date</th><th>Temoin</th><th>Cible</th><th>Fait</th><th>Statut</th><th>Action</th></tr></thead><tbody id="negBody"></tbody></table></div>
+<div class="msg" id="aMsg"></div>
+</div>
+</section>
+
+<div id="quickTabs" style="position:fixed;right:12px;bottom:12px;z-index:1400;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:680px">
+  <button id="tutorialTab" class="btn2" onclick="openTutorial()">Guide didacticiel</button>
+  <button id="visitorArticleTab" class="btn2" style="display:none" onclick="openVisitorArticle()">Article visiteur</button>
+  <button id="rulesTab" class="btn2" onclick="openRules()">Regles et bareme</button>
+</div>
+<div id="audioDock" class="audioDock">
+  <div class="rw" style="justify-content:space-between;align-items:center">
+    <b style="font-family:Orbitron,monospace;color:#ffd700">Ambiance</b>
+    <button id="audioToggle" class="btn2" onclick="toggleAudio()">Lancer</button>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <label for="audioVol">Volume</label>
+    <input id="audioVol" type="range" min="0" max="100" step="1" value="35">
+  </div>
+  <div class="hint" id="audioInfo">Piste: Tous Ensemble Aujourd'hui.mp3</div>
+  <audio id="bgAudio" preload="none" loop></audio>
+</div>
+<div id="rulesModal" style="display:none;position:fixed;inset:0;z-index:1500;background:#000000bb;padding:16px;overflow:auto">
+  <div class="card" style="max-width:860px;margin:auto">
+    <h2>Regles du Jeu - Portail Vie Scolaire</h2>
+    <p class="hint">1) Chaque eleve est identifie par sa ligne officielle: Code Joueur (secret), Code Temoin (secret) et Code Public.</p>
+    <p class="hint">2) Les temoignages eleves donnent les points complets.</p>
+    <p class="hint">3) Les temoignages adultes donnent 2x moins de points.</p>
+    <p class="hint">4) Le bonus temoin eleve = 10% de l'action, seulement s'il a deja ete reconnu au moins 1 fois.</p>
+    <p class="hint">5) Les XP sociaux d'un eleve ne sont valides que s'il a temoigne au moins 1 fois.</p>
+    <p class="hint">6) Faux temoignage: sanction possible de -500 XP et convocation CPE.</p>
+    <h3 style="margin-top:8px">Bareme principal</h3>
+    <p class="hint">Tutorat +100 | Mediation +150 | Ramassage +40 | Soutien +120 | Creation +200</p>
+    <p class="hint">Grades citoyens admin: CA +500 | Cadet +450 | Ambassadeur +400 | Delegue +350 | Eco-delegue +300</p>
+    <p class="hint">Malus: Incivilite -50 | Agressivite -150 | Degradation -300 | Reset total</p>
+    <div class="rw" style="margin-top:10px"><button onclick="closeRules()">Fermer</button></div>
+  </div>
+</div>
+<div id="visitorModal" style="display:none;position:fixed;inset:0;z-index:1510;background:#000000d1;padding:16px;overflow:auto">
+  <div class="card" style="max-width:980px;margin:auto">
+    <div class="rw" style="justify-content:space-between;align-items:center">
+      <h2>Demonstrateur Visiteur - Ingenierie de la Bienveillance</h2>
+      <button class="btn2" onclick="closeVisitorArticle()">X</button>
+    </div>
+    <div class="hint">Cette fenetre est reservee au mode visiteur.</div>
+    <div style="margin-top:10px;max-height:72vh;overflow:auto;padding-right:4px">
+      <p class="hint"><b>L'Ingenierie de la Bienveillance en Milieu Scolaire : Ecosysteme, Autorite Reparatrice et Motivation Prosociale</b></p>
+      <p class="hint"><b>Resume :</b> Face a la montee de l'agressivite reactive, la simple injonction morale montre ses limites. Cet article presente la modelisation d'un "ecosysteme prosocial auto-entretenu" (le Super-Hub). En croisant la neurobiologie fonctionnelle (Favre), l'ethique de la sanction (Prairat), l'approche systemique du climat scolaire (Condette) et le game design, ce dispositif transforme le college en un espace ou la bienveillance devient une norme structurellement gratifiante.</p>
+      <p class="hint"><b>1. L'etablissement comme ecosysteme vivant et l'ingenierie du climat scolaire</b><br>Historiquement, la gestion du climat scolaire repose sur une approche bureaucratique. Or, les travaux de Sylvie Condette montrent qu'un etablissement doit etre pense comme un systeme vivant d'interactions multiples ou chaque acteur contribue a une dynamique d'ensemble. Dans cette perspective, le role du CPE n'est plus celui d'un simple regulateur disciplinaire, mais celui d'un architecte des interdependances. Le Super-Hub rend visibles et interconnectes les engagements de chacun.</p>
+      <p class="hint"><b>2. Neurobiologie de la motivation : du renforcement extrinseque a la joie intrinseque</b><br>L'usage de la gamification (XP, niveaux) peut faire craindre une derive purement behavioriste. Les travaux de Daniel Favre rappellent la limite des recompenses externes lorsqu'elles ecrasent la motivation intrinseque. Ici, l'XP sert d'etayage transitionnel : elle attire d'abord, puis l'experience sociale positive (entraide, reconnaissance) devient la vraie source de motivation durable.</p>
+      <p class="hint"><b>3. Autorite educative et quetes de redemption</b><br>Pour Eirick Prairat, une autorite juste est une autorite qui autorise a grandir. Dans le Super-Hub, les comportements negatifs ne sont pas exposes publiquement; ils sont arbitres par le CPE. La sanction peut s'accompagner d'une quete de redemption afin de reintegrer l'eleve dans la communaute.</p>
+      <p class="hint"><b>4. Preuve sociale et mediation par les pairs</b><br>La valorisation passe par un tiers: l'eleve ne s'auto-attribue pas des points. Un temoin (eleve ou adulte) reconnait l'action. Ce mecanisme favorise la vigilance prosociale, la mediation horizontale et la diffusion d'une norme collective positive.</p>
+      <p class="hint"><b>5. Briser le cycle frustration-agression</b><br>L'agressivite reactive nait souvent du sentiment d'impuissance. Le projet integre aussi des leviers environnementaux (musique, creations eleves, rituels de progression) pour diminuer le stress et faciliter les comportements cooperatifs.</p>
+      <p class="hint"><b>6. Conclusion</b><br>Le Super-Hub structure un cadre ou cooperation, mediation et bienveillance deviennent les strategies les plus logiques, les plus gratifiantes et les plus valorisantes.</p>
+    </div>
+  </div>
+</div>
+<div id="tutorialBubble" style="display:none;position:fixed;z-index:1520;max-width:360px;background:#101a35f2;border:1px solid #5ac8ff66;border-radius:12px;padding:10px;box-shadow:0 10px 30px #00000080">
+  <div style="position:absolute;width:14px;height:14px;background:#101a35f2;border-left:1px solid #5ac8ff66;border-top:1px solid #5ac8ff66;transform:rotate(45deg);left:-8px;top:22px" id="tutorialArrow"></div>
+  <div class="rw" style="justify-content:space-between;align-items:center">
+    <h3 id="tutorialTitle" style="margin:0;color:#ffd700">Guide</h3>
+    <button class="btn2" style="padding:4px 8px" onclick="closeTutorial()">X</button>
+  </div>
+  <div class="hint" id="tutorialText" style="margin-top:6px"></div>
+  <div class="hint" id="tutorialTarget" style="margin-top:4px;font-size:.88rem"></div>
+  <div class="rw" style="margin-top:10px;justify-content:space-between;align-items:center">
+    <button class="btn2" onclick="prevTutorial()">Precedent</button>
+    <span class="hint" id="tutorialPage">1/10</span>
+    <button onclick="nextTutorial()">Suivant</button>
+  </div>
+</div>
+</div>
+</div>
+<script src="videos_catalog.js"></script>
+<script>
+const KEY='pvs_hof_v2',ACTIVE_PLAYER_KEY='pvs_current_player',BRIDGE_KEY='pvs_bridge_events',DEFAULT_CODES_FILE='students.csv',ADULT_DEFAULT_FILE='adults.csv',ADMIN_PASS='CPE59!-Chateau-70+',RULES_SEEN_KEY='pvs_rules_seen_v1',TUTORIAL_SEEN_KEY='pvs_tutorial_seen_v1',VISITOR_ARTICLE_SEEN_KEY='pvs_visitor_article_seen_v1',VISITOR_CODE='VISITEUR-VIESCOLAIRE-CHATEAURANCE',SESSION_AUTH_KEY='pvs_session_auth_v1',ADMIN_SESSION_KEY='pvs_admin_session_v1',SYNC_URL_KEY='pvs_sync_url',SYNC_REV_KEY='pvs_sync_rev',DEFAULT_SYNC_URL='http://127.0.0.1:8765',AUDIO_PREF_KEY='pvs_audio_pref_v1',AUDIO_VOL_KEY='pvs_audio_vol_v1',AUDIO_SOURCE_KEY='pvs_audio_source_v1';
+const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+const CIT={representant_ca:{title:'Representant CA',label:'Grand Stratege',xp:500},cadet:{title:'Cadet securite',label:'Gardien de la Cite',xp:450},ambassadeur:{title:'Ambassadeur pHARe',label:'Sentinelle de la Paix',xp:400},delegue:{title:'Delegue classe',label:'Porte-Voix',xp:350},eco_delegue:{title:'Eco-delegue',label:'Protecteur Nature',xp:300}};
+const ACT={tutorat:{l:'Tutorat / aide aux devoirs',x:100},mediation:{l:'Mediation de conflit',x:150},ramassage:{l:'Ramassage d ordures spontane',x:40},soutien:{l:'Soutien a un eleve isole',x:120},creation:{l:'Creation chanson / video NAH',x:200}};
+const MAL={incivilite:{l:'Incivilite (-50)',x:-50},agressivite:{l:'Agressivite verbale (-150)',x:-150},degradation:{l:'Degradation materiel (-300)',x:-300},faux_temoignage:{l:'Faux temoignage (-500)',x:-500},reset_total:{l:'RESET total',x:0}};
+const VIDEOS=(Array.isArray(window.PVS_VIDEOS)&&window.PVS_VIDEOS.length)?window.PVS_VIDEOS:[{id:'YT_01',title:'Video 01',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'pHARe-SOLO',offer:20,reward:80},{id:'YT_02',title:'Video 02',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'EMPREINTE-2022',offer:20,reward:80}];
+const AUDIO_FILES=['Tous Ensemble Aujourd\u2019hui.mp3',"Tous Ensemble Aujourd'hui.mp3",'Tous_Ensemble_Aujourd_hui.mp3'];
+let S={week:'',players:{},logs:[],seen:{},registry:[],registry_source:'',adults:[],adults_source:'',neg_reports:[],citizen_lists:{}},REG={j:{},t:{},p:{}},ADW={},cur='',mode='global',adminOn=false,isVisitor=false,tutoIdx=0,tutoFocusEl=null,syncRev=Number(localStorage.getItem(SYNC_REV_KEY)||0),syncOnline=false,syncMutePush=false,syncPushTimer=null,audioIdx=0,audioTryRaw=false,audioRetries=0;
+const TUTO_STEPS=[
+  {sel:'#profile',title:'1/10 Profil joueur',text:'Ici tu suis ton XP global, hebdo, citoyen, academie et videos.'},
+  {sel:'#wCode',title:'2/10 Temoignage',text:'Saisis ton code temoin puis le code public cible pour reconnaitre un acte positif.'},
+  {sel:'#btnWitnessSend',title:'3/10 Validation sociale',text:'Ce bouton enregistre l action positive et declenche le calcul de bonus temoin.'},
+  {sel:'#btnNegHub',title:'4/10 Faits negatifs',text:'Acces au hub separe avec avertissement legal et pre-signalement CPE.'},
+  {sel:'#hall',title:'5/10 Hall of Fame',text:'Le classement Top 10 affiche progression globale ou hebdomadaire.'},
+  {sel:'#btnPixhare',title:'6/10 Academie PIXHARe',text:'Acces au hub pHARe; les validations de modules remontent vers le super-hub.'},
+  {sel:'#btnPsc1',title:'7/10 Academie PSC1',text:'Acces au hub PSC1 avec suivi consolide dans le portail central.'},
+  {sel:'#btnVideos',title:'8/10 Hub Videos',text:'Ouverture des missions video + validation par code secret.'},
+  {sel:'#rulesTab',title:'9/10 Regles',text:'Acces rapide aux regles du jeu et au bareme officiel.'},
+  {sel:'#tutorialTab',title:'10/10 Reouvrir le guide',text:'Ce bouton permet de relancer ce didacticiel a tout moment.'}
+];
+function stripAcc(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')}function nCode(v){return stripAcc(String(v||'')).trim().replace(/\s+/g,'').toUpperCase()}function nHead(v){return stripAcc(String(v||'').trim().toLowerCase()).replace(/[^a-z0-9]+/g,'_')}function demojibake(v){const s=String(v||'');if(!/[ÃÂâ]/.test(s))return s;try{return decodeURIComponent(escape(s))}catch(e){return s}}
+function defaultPublicCode(cj){const c=nCode(cj||'');if(!c)return'';const m=c.match(/(\d{1,4})$/);if(m)return `PUB-${String(m[1]).padStart(3,'0')}`;return `PUB-${c.slice(-4)}`}
+function splitLine(line,delim){const out=[];let curS='';let q=false;for(let i=0;i<line.length;i+=1){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){curS+='"';i+=1}else{q=!q}}else if(ch===delim&&!q){out.push(curS);curS=''}else{curS+=ch}}out.push(curS);return out}
+function idxAny(heads,list){for(const k of list){const i=heads.indexOf(k);if(i>=0)return i}return -1}
+function rowObjFromText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(raw.length<2)return null;const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const vals=splitLine(raw[1],delim);const obj={};heads.forEach((h,i)=>{obj[h]=String(vals[i]??'')});return obj}
+function numOr(v,d){const n=Number(v);return Number.isFinite(n)?n:Number(d||0)}
+function parseCodesText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iJ=idxAny(heads,['code_joueur','joueur','player_code']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);const iP=idxAny(heads,['code_public','public_code','code_public_joueur','code_public_eleve']);if(iJ<0||iT<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const cj=nCode(demojibake(cols[iJ]||''));const ct=nCode(demojibake(cols[iT]||''));const cp=nCode(demojibake((iP>=0?cols[iP]:'')||''));if(!cj&&!ct)continue;rows.push({nom,prenom,code_joueur:cj,code_temoin:ct,code_public:cp||defaultPublicCode(cj)})}return rows}
+function parseAdultsText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);if(iT<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const ct=nCode(demojibake(cols[iT]||''));if(!ct)continue;rows.push({nom,prenom,code_temoin:ct})}return rows}
+function ensureCitizenLists(){if(!S.citizen_lists||typeof S.citizen_lists!=='object')S.citizen_lists={};Object.keys(CIT).forEach(k=>{if(!Array.isArray(S.citizen_lists[k]))S.citizen_lists[k]=[];S.citizen_lists[k]=S.citizen_lists[k].map(nCode).filter(Boolean)})}
+function mkP(code){return{code,witness:'',cp:{pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0},obj:{},socialG:0,socialW:0,wBonusG:0,wBonusW:0,videoG:0,videoW:0,malusG:0,malusW:0,witnessGiven:0,recognizedReceived:0,up:new Date().toISOString(),_v2:1}}
+function wk(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=(x.getUTCDay()+6)%7;x.setUTCDate(x.getUTCDate()-day+3);const f=new Date(Date.UTC(x.getUTCFullYear(),0,4));const w=1+Math.round((x-f)/604800000);return `${x.getUTCFullYear()}-W${String(w).padStart(2,'0')}`}
+function buildRegistry(){REG={j:{},t:{},p:{}};(S.registry||[]).forEach(r=>{const cj=nCode(r.code_joueur||'');const ct=nCode(r.code_temoin||'');const cp=nCode(r.code_public||'')||cj;if(!cj)return;REG.j[cj]={nom:r.nom||'',prenom:r.prenom||'',code_joueur:cj,code_temoin:ct,code_public:cp};if(ct)REG.t[ct]=cj;if(cp)REG.p[cp]=cj})}
+function buildAdultMap(){ADW={};(S.adults||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');if(ct)ADW[ct]=1})}
+function norm(){ensureCitizenLists();Object.keys(S.players).forEach(code=>{const p=S.players[code]||{};if(!p.cp||typeof p.cp!=='object')p.cp={pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0};Object.keys(W).forEach(k=>p.cp[k]=Number(p.cp[k]||0));if(!p.obj||typeof p.obj!=='object')p.obj={};if(!p._v2){p.socialG=Number(p.socialG||0)+Number(p.sg||0);p.socialW=Number(p.socialW||0)+Number(p.sw||0);p.malusG=Number(p.malusG||0)+Number(p.mg||0);p.malusW=Number(p.malusW||0)+Number(p.mw||0);p._v2=1}else{p.socialG=Number(p.socialG||0);p.socialW=Number(p.socialW||0);p.malusG=Number(p.malusG||0);p.malusW=Number(p.malusW||0)}p.wBonusG=Number(p.wBonusG||0);p.wBonusW=Number(p.wBonusW||0);p.videoG=Number(p.videoG||0);p.videoW=Number(p.videoW||0);p.witnessGiven=Math.max(0,Number(p.witnessGiven||0));p.recognizedReceived=Math.max(0,Number(p.recognizedReceived||0));p.witness=String(p.witness||'');if(REG.j[code]&&REG.j[code].code_temoin)p.witness=REG.j[code].code_temoin;S.players[code]=p});if(!Array.isArray(S.logs))S.logs=[];if(!S.seen||typeof S.seen!=='object')S.seen={};if(!Array.isArray(S.registry))S.registry=[];S.registry=S.registry.map(r=>({nom:demojibake(String(r.nom||'').trim()),prenom:demojibake(String(r.prenom||'').trim()),code_joueur:nCode(r.code_joueur||''),code_temoin:nCode(r.code_temoin||''),code_public:nCode(r.code_public||'')||defaultPublicCode(r.code_joueur||'')})).filter(r=>r.code_joueur);if(!Array.isArray(S.adults))S.adults=[];S.adults=S.adults.map(a=>({nom:demojibake(String(a.nom||'').trim()),prenom:demojibake(String(a.prenom||'').trim()),code_temoin:nCode(a.code_temoin||'')})).filter(a=>a.code_temoin);if(!Array.isArray(S.neg_reports))S.neg_reports=[]}
+function resetWeek(){const cw=wk(new Date());if(S.week!==cw){Object.values(S.players).forEach(p=>{p.socialW=0;p.wBonusW=0;p.videoW=0;p.malusW=0});S.week=cw}}
+function load(){try{const j=localStorage.getItem(KEY);if(j){const p=JSON.parse(j);if(p&&typeof p==='object'){S={week:p.week||'',players:p.players||{},logs:Array.isArray(p.logs)?p.logs:[],seen:p.seen||{},registry:Array.isArray(p.registry)?p.registry:[],registry_source:String(p.registry_source||''),adults:Array.isArray(p.adults)?p.adults:[],adults_source:String(p.adults_source||''),neg_reports:Array.isArray(p.neg_reports)?p.neg_reports:[],citizen_lists:p.citizen_lists||{}}}}}catch(e){S={week:'',players:{},logs:[],seen:{},registry:[],registry_source:'',adults:[],adults_source:'',neg_reports:[],citizen_lists:{}}}buildRegistry();norm();buildAdultMap();resetWeek();save(false)}
+function save(push=true){localStorage.setItem(KEY,JSON.stringify(S));if(push&&sessionStorage.getItem(SESSION_AUTH_KEY)==='1')scheduleSyncPush()}
+function gp(code){const c=nCode(code);if(!c)return null;if(!S.players[c])S.players[c]=mkP(c);if(REG.j[c]&&REG.j[c].code_temoin)S.players[c].witness=REG.j[c].code_temoin;return S.players[c]}
+function missionList(k){ensureCitizenLists();return S.citizen_lists[k]}
+function hasMission(code,k){return missionList(k).includes(code)}
+function missionXp(code){let n=0;Object.keys(CIT).forEach(k=>{if(hasMission(code,k))n+=CIT[k].xp});return n}
+function cpTotal(p){return Object.keys(W).reduce((a,k)=>a+Number(p.cp[k]||0),0)}
+function academyXp(p){return Object.keys(W).reduce((a,k)=>a+Number(p.cp[k]||0)*W[k],0)}
+function videoXp(p){return Number(p.videoG||0)}
+function socialRawG(p){return Number(p.socialG||0)+Number(p.wBonusG||0)}
+function socialRawW(p){return Number(p.socialW||0)+Number(p.wBonusW||0)}
+function socialValidG(p){return Number(p.witnessGiven||0)>0?socialRawG(p):0}
+function socialValidW(p){return Number(p.witnessGiven||0)>0?socialRawW(p):0}
+function socialPendingG(p){return Number(p.witnessGiven||0)>0?0:socialRawG(p)}
+function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
+function xg(p){return citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0)}
+function xw(p){return socialValidW(p)+Number(p.videoW||0)+Number(p.malusW||0)}
+function roleLabel(code){const ks=Object.keys(CIT).filter(k=>hasMission(code,k));if(!ks.length)return 'Citoyen';ks.sort((a,b)=>CIT[b].xp-CIT[a].xp);const m=CIT[ks[0]].label;return ks.length>1?`${m} +${ks.length-1}`:m}
+function rank(m){const rows=Object.values(S.players).filter(p=>!isVisitorCode(p.code)).map(p=>({c:p.code,rl:roleLabel(p.code),cp:cpTotal(p),s:m==='global'?xg(p):xw(p)}));rows.sort((a,b)=>b.s-a.s||a.c.localeCompare(b.c));return rows}
+function sm(id,txt,ok){const e=document.getElementById(id);if(!e)return;e.className=`msg ${ok?'ok':'bad'}`;e.textContent=txt}
+function cm(id){const e=document.getElementById(id);if(!e)return;e.className='msg';e.textContent=''}
+function clampN(v,min,max){return Math.max(min,Math.min(max,v))}
+function getAudioEl(){return document.getElementById('bgAudio')}
+function setAudioSource(idx,raw){const a=getAudioEl();if(!a)return;audioIdx=clampN(Number(idx)||0,0,AUDIO_FILES.length-1);audioTryRaw=Boolean(raw);const file=AUDIO_FILES[audioIdx];a.src=audioTryRaw?file:encodeURI(file);const info=document.getElementById('audioInfo');if(info)info.textContent=`Piste: ${file}${audioTryRaw?' (mode brut)':''}`;localStorage.setItem(AUDIO_SOURCE_KEY,String(audioIdx))}
+function updateAudioUi(){const a=getAudioEl(),b=document.getElementById('audioToggle');if(!a||!b)return;b.textContent=a.paused?'Lancer':'Pause'}
+async function playAudio(){const a=getAudioEl();if(!a)return false;try{await a.play();localStorage.setItem(AUDIO_PREF_KEY,'1');updateAudioUi();return true}catch(e){updateAudioUi();const info=document.getElementById('audioInfo');if(info)info.textContent='Lecture bloquee par le navigateur. Clique encore sur Lancer.';return false}}
+function pauseAudio(){const a=getAudioEl();if(!a)return;a.pause();localStorage.setItem(AUDIO_PREF_KEY,'0');updateAudioUi()}
+function toggleAudio(){const a=getAudioEl();if(!a)return;if(a.paused)playAudio();else pauseAudio()}
+function onAudioError(){
+  audioRetries+=1;
+  if(!audioTryRaw){setAudioSource(audioIdx,true);playAudio();return}
+  if(audioIdx<AUDIO_FILES.length-1){setAudioSource(audioIdx+1,false);playAudio();return}
+  if(audioRetries<6){setAudioSource(0,false);playAudio();return}
+  const info=document.getElementById('audioInfo');if(info)info.textContent='MP3 introuvable. Verifie le nom et l emplacement du fichier.';
+  pauseAudio();
+}
+function initAudio(){const a=getAudioEl(),vol=document.getElementById('audioVol');if(!a||!vol)return;const vv=clampN(Number(localStorage.getItem(AUDIO_VOL_KEY)||35),0,100);vol.value=String(vv);a.volume=vv/100;vol.addEventListener('input',()=>{const v=clampN(Number(vol.value||35),0,100);a.volume=v/100;localStorage.setItem(AUDIO_VOL_KEY,String(v))});a.addEventListener('play',updateAudioUi);a.addEventListener('pause',updateAudioUi);a.addEventListener('error',onAudioError);audioRetries=0;setAudioSource(Number(localStorage.getItem(AUDIO_SOURCE_KEY)||0),false);updateAudioUi();if(localStorage.getItem(AUDIO_PREF_KEY)==='1')playAudio()}
+function getSyncUrl(){return String(localStorage.getItem(SYNC_URL_KEY)||DEFAULT_SYNC_URL).trim().replace(/\/+$/,'')}
+function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)return;if(msg){e.textContent=msg;return}e.textContent=`Sync serveur: ${syncOnline?'connecte':'hors ligne'} | rev: ${Number(syncRev||0)} | URL: ${getSyncUrl()}`}
+async function syncFetch(path,options){const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),2200);try{const res=await fetch(`${getSyncUrl()}${path}`,Object.assign({mode:'cors',cache:'no-store',signal:ctrl.signal},options||{}));clearTimeout(t);return res}catch(e){clearTimeout(t);throw e}}
+function scheduleSyncPush(){if(syncMutePush)return;clearTimeout(syncPushTimer);syncPushTimer=setTimeout(()=>{syncPush(false)},550)}
+async function syncPing(){try{const res=await syncFetch('/api/ping');if(!res.ok)throw new Error('http');const j=await res.json();if(j&&j.ok){syncOnline=true;if(Number(j.rev||0)>syncRev){syncRev=Number(j.rev||0);localStorage.setItem(SYNC_REV_KEY,String(syncRev))}updateSyncInfo();return true}}catch(e){syncOnline=false;updateSyncInfo();return false}return false}
+async function syncPull(showMsg){try{const res=await syncFetch('/api/state');if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok&&j.state&&typeof j.state==='object'))throw new Error('bad');syncOnline=true;const rev=Number(j.rev||0);if(rev>Number(syncRev||0)){syncRev=rev;localStorage.setItem(SYNC_REV_KEY,String(syncRev));syncMutePush=true;try{S=j.state;buildRegistry();norm();buildAdultMap();resetWeek();localStorage.setItem(KEY,JSON.stringify(S));refresh()}finally{syncMutePush=false}}updateSyncInfo(showMsg?`Sync pull OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync pull impossible (serveur hors ligne).':'');return false}}
+async function syncPush(showMsg){if(syncMutePush)return false;try{const payload={state:S,client:cur||'ANON',source:'index.html',sent_at:new Date().toISOString(),base_rev:Number(syncRev||0)};const res=await syncFetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok))throw new Error('bad');syncOnline=true;syncRev=Number(j.rev||syncRev||0);localStorage.setItem(SYNC_REV_KEY,String(syncRev));updateSyncInfo(showMsg?`Sync push OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync push impossible (serveur hors ligne).':'');return false}}
+function isVisitorCode(code){return nCode(code)===VISITOR_CODE}
+function showHub(show){const a=document.getElementById('authGate'),h=document.getElementById('hubScreen');if(a)a.style.display=show?'none':'flex';if(h)h.style.display=show?'block':'none'}
+function renderAdminMode(){const c=document.getElementById('adminConsole'),h=document.getElementById('adminHint');if(c)c.style.display=adminOn?'block':'none';if(h)h.textContent=adminOn?'Mode admin actif.':'Mode admin inactif.'}
+function openAuthGate(msg){adminOn=false;sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);showHub(false);closeVisitorArticle();closeTutorial();renderAdminMode();if(msg)sm('authMsg',msg,false);else cm('authMsg')}
+function closeAuthGate(){showHub(true);cm('authMsg')}
+function fillVisitorCode(){const e=document.getElementById('authCode'),a=document.getElementById('authAdmin');if(e)e.value='Visiteur-Viescolaire-ChateauRance';if(a)a.value='';cm('authMsg')}
+function updateVisitorUi(){const tab=document.getElementById('visitorArticleTab');if(tab)tab.style.display=isVisitor?'inline-block':'none';if(!isVisitor){closeVisitorArticle()}}
+function openVisitorArticle(){if(!isVisitor)return;const m=document.getElementById('visitorModal');if(m)m.style.display='block'}
+function closeVisitorArticle(){const m=document.getElementById('visitorModal');if(m)m.style.display='none'}
+function clearTutorialFocus(){if(tutoFocusEl&&tutoFocusEl.classList)tutoFocusEl.classList.remove('tutoFocus');tutoFocusEl=null}
+function closeTutorial(){const b=document.getElementById('tutorialBubble');if(b)b.style.display='none';clearTutorialFocus()}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function placeTutorialBubble(el){const b=document.getElementById('tutorialBubble'),arr=document.getElementById('tutorialArrow');if(!b||!el)return;const r=el.getBoundingClientRect();const w=Math.min(360,window.innerWidth-24);b.style.width=`${w}px`;const prefRight=r.right+16;const prefLeft=r.left-w-16;let left=prefRight;if(left+w>window.innerWidth-8)left=prefLeft;if(left<8)left=8;let top=r.top+Math.max(6,Math.min(40,r.height*0.2));const maxTop=window.innerHeight-b.offsetHeight-8;if(top>maxTop)top=maxTop;if(top<8)top=8;b.style.left=`${left}px`;b.style.top=`${top}px`;if(arr){if(left>=r.right){arr.style.left='-8px';arr.style.right='';arr.style.transform='rotate(45deg)'}else{arr.style.left='';arr.style.right='-8px';arr.style.transform='rotate(225deg)'}}}
+function renderTutorial(){const b=document.getElementById('tutorialBubble');if(!b||b.style.display==='none')return;const s=TUTO_STEPS[clamp(tutoIdx,0,TUTO_STEPS.length-1)];const t=document.getElementById('tutorialTitle'),x=document.getElementById('tutorialText'),p=document.getElementById('tutorialPage'),tg=document.getElementById('tutorialTarget');if(t)t.textContent=s.title;if(x)x.textContent=s.text;if(p)p.textContent=`${tutoIdx+1}/${TUTO_STEPS.length}`;const el=document.querySelector(s.sel);clearTutorialFocus();if(el){tutoFocusEl=el;el.classList.add('tutoFocus');if(tg)tg.textContent=`Zone: ${s.sel}`;placeTutorialBubble(el)}else{if(tg)tg.textContent='Zone temporairement indisponible';b.style.left='12px';b.style.top='80px'}}
+function openTutorial(step){const b=document.getElementById('tutorialBubble');if(!b)return;tutoIdx=clamp(Number(step??tutoIdx)||0,0,TUTO_STEPS.length-1);b.style.display='block';renderTutorial()}
+function nextTutorial(){openTutorial(tutoIdx+1)}
+function prevTutorial(){openTutorial(tutoIdx-1)}
+function logEv(player,type,target,xp){S.logs.unshift({d:new Date().toISOString(),p:player||'',t:type||'',target:target||'',xp:Number(xp||0)});if(S.logs.length>700)S.logs.length=700}
+function renderHall(){const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount}`}
+function renderProfile(){const c=document.getElementById('profile'),h=document.getElementById('loginHint');if(!cur||!S.players[cur]){c.classList.remove('on');h.textContent=adminOn?'Session admin active.':'Session verrouillee. Authentification requise.';return}const p=S.players[cur];c.classList.add('on');h.textContent=`Joueur connecte: ${cur}`;document.getElementById('pCode').textContent=p.code;document.getElementById('pRole').textContent=roleLabel(p.code);document.getElementById('pXg').textContent=xg(p);document.getElementById('pXw').textContent=xw(p);document.getElementById('pCit').textContent=citizenXp(p);document.getElementById('pAca').textContent=academyXp(p);document.getElementById('pVid').textContent=videoXp(p);document.getElementById('pPend').textContent=socialPendingG(p);document.getElementById('pCp').textContent=cpTotal(p)}
+function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
+function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
+function updateCodesInfo(){const n=Object.keys(REG.j).length,na=Object.keys(ADW).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'';document.getElementById('codesInfo').textContent=(n||na)?`Referentiel charge: ${n} eleves + ${na} temoins adultes${src}${srcA}`:'Referentiel codes: non charge.';updateSyncInfo()}
+function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();updateCodesInfo();updateVisitorUi();renderTutorial()}
+function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
+function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
+function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
+function loginPlayer(){cm('loginMsg');const c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
+adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
+if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save();refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle()}
+else{if(Object.keys(REG.j).length&&!REG.j[c]){sm('authMsg','Code joueur absent du referentiel officiel.',false);return}gp(c);cur=c;isVisitor=false;localStorage.setItem(ACTIVE_PLAYER_KEY,c);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(c,'LOGIN','SUPERHUB',0);closeAuthGate();save();refresh();sm('loginMsg',`Connexion active: ${c}`,true)}
+syncPull(false);
+if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
+else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
+if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
+}
+function loginAdmin(){cm('loginMsg');const a=document.getElementById('authAdmin');const pass=String((a||{}).value||'');if(pass!==ADMIN_PASS){sm('authMsg','Identifiant admin invalide.',false);return}cur='';isVisitor=false;adminOn=true;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.setItem(SESSION_AUTH_KEY,'1');sessionStorage.setItem(ADMIN_SESSION_KEY,'1');if(a)a.value='';closeAuthGate();save();refresh();sm('loginMsg','Mode admin actif.',true);syncPull(false)}
+function logoutPlayer(){cur='';isVisitor=false;adminOn=false;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);cm('loginMsg');closeVisitorArticle();closeTutorial();renderProfile();updateVisitorUi();openAuthGate('Session verrouillee. Identifie-toi pour continuer.')}
+function guardPlayerBackup(){if(!cur||!S.players[cur]||isVisitor){sm('pbMsg','Connexion joueur requise (mode visiteur exclu).',false);return false}cm('pbMsg');return true}
+function getPlayerRef(code){const c=nCode(code||'');if(!c)return null;return ((S.registry||[]).find(r=>nCode(r.code_joueur||'')===c)||null)}
+function downloadPlayerBackup(){if(!guardPlayerBackup())return;const p=S.players[cur]||gp(cur);if(!p){sm('pbMsg','Profil joueur introuvable.',false);return}const r=getPlayerRef(cur)||{nom:'',prenom:'',code_joueur:cur,code_temoin:p.witness||'',code_public:defaultPublicCode(cur)};const head=['Nom','Prenom','Code_Joueur','Code_Temoin','Code_Public','CP_PIXHARE','CP_PSC1','CP_SANCTUAIRE','CP_LOGE','CP_AUTRES','SocialG','SocialW','WBonusG','WBonusW','VideoG','VideoW','MalusG','MalusW','WitnessGiven','RecognizedReceived','Obj_JSON','Saved_At'];const row=[esc(r.nom||''),esc(r.prenom||''),esc(cur),esc(r.code_temoin||p.witness||''),esc(r.code_public||defaultPublicCode(cur)),Math.floor(numOr(p.cp.pixhare,0)),Math.floor(numOr(p.cp.psc1,0)),Math.floor(numOr(p.cp.sanctuaire,0)),Math.floor(numOr(p.cp.loge,0)),Math.floor(numOr(p.cp.autres,0)),numOr(p.socialG,0),numOr(p.socialW,0),numOr(p.wBonusG,0),numOr(p.wBonusW,0),numOr(p.videoG,0),numOr(p.videoW,0),numOr(p.malusG,0),numOr(p.malusW,0),Math.max(0,Math.floor(numOr(p.witnessGiven,0))),Math.max(0,Math.floor(numOr(p.recognizedReceived,0))),esc(JSON.stringify(p.obj||{})),esc(new Date().toISOString())];const csv='\uFEFF'+head.join(',')+'\n'+row.join(',');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date();a.download=`backup_${cur}_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href);logEv(cur,'BACKUP_EXPORT','LOCAL',0);save();refresh();sm('pbMsg','Sauvegarde joueur telechargee.',true)}
+function importPlayerBackup(){if(!guardPlayerBackup())return;const el=document.getElementById('playerBackupFile');if(!el||!el.files||!el.files[0]){sm('pbMsg','Choisir un fichier .csv.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{try{const row=rowObjFromText(rd.result||'');if(!row)throw new Error('row');const code=nCode(row.code_joueur||row.joueur||row.player_code||'');if(!code||code!==cur){sm('pbMsg','Le fichier ne correspond pas au joueur connecte.',false);return}const p=gp(cur);p.cp.pixhare=Math.max(0,Math.floor(numOr(row.cp_pixhare,p.cp.pixhare)));p.cp.psc1=Math.max(0,Math.floor(numOr(row.cp_psc1,p.cp.psc1)));p.cp.sanctuaire=Math.max(0,Math.floor(numOr(row.cp_sanctuaire,p.cp.sanctuaire)));p.cp.loge=Math.max(0,Math.floor(numOr(row.cp_loge,p.cp.loge)));p.cp.autres=Math.max(0,Math.floor(numOr(row.cp_autres,p.cp.autres)));p.socialG=numOr(row.socialg,p.socialG);p.socialW=numOr(row.socialw,p.socialW);p.wBonusG=numOr(row.wbonusg,p.wBonusG);p.wBonusW=numOr(row.wbonusw,p.wBonusW);p.videoG=numOr(row.videog,p.videoG);p.videoW=numOr(row.videow,p.videoW);p.malusG=numOr(row.malusg,p.malusG);p.malusW=numOr(row.malusw,p.malusW);p.witnessGiven=Math.max(0,Math.floor(numOr(row.witnessgiven,p.witnessGiven)));p.recognizedReceived=Math.max(0,Math.floor(numOr(row.recognizedreceived,p.recognizedReceived)));const witnessRaw=nCode(row.code_temoin||'');if(witnessRaw)p.witness=witnessRaw;const objRaw=String(row.obj_json||row.obj||'').trim();if(objRaw){try{const o=JSON.parse(objRaw);if(o&&typeof o==='object')p.obj=o}catch(e){}}p.up=new Date().toISOString();logEv(cur,'BACKUP_IMPORT','LOCAL',0);save();refresh();sm('pbMsg','Sauvegarde joueur importee.',true)}catch(e){sm('pbMsg','Fichier de sauvegarde invalide.',false)}};rd.onerror=()=>sm('pbMsg','Lecture du fichier impossible.',false);rd.readAsText(f)}
+function resolveWitness(wc){const c=nCode(wc);if(!c)return null;if(REG.t[c])return {kind:'student',player:REG.t[c],code:c};if(ADW[c])return {kind:'adult',code:c};if(Object.keys(REG.j).length)return null;for(const k of Object.keys(S.players)){if(nCode(S.players[k].witness)===c)return {kind:'student',player:k,code:c}}return null}
+function resolvePublicTarget(v){const c=nCode(v);if(!c)return '';if(REG.p[c])return REG.p[c];if(Object.keys(REG.j).length)return '';return c}
+function witnessAction(){cm('wMsg');if(isVisitor){const targetDemo=nCode(document.getElementById('tCode').value),kDemo=document.getElementById('aType').value,aDemo=ACT[kDemo];if(!targetDemo||!aDemo){sm('wMsg','Mode visiteur: renseigner une cible et une action pour la simulation.',false);return}sm('wMsg',`Mode visiteur: simulation envoyee (+${aDemo.x} XP pour ${targetDemo}), sans impact reel.`,true);return}const w=resolveWitness(document.getElementById('wCode').value),targetPublic=nCode(document.getElementById('tCode').value),t=resolvePublicTarget(targetPublic),k=document.getElementById('aType').value;if(!w||!t){sm('wMsg','Codes temoin/cible invalides.',false);return}if(Object.keys(REG.j).length&&(!REG.j[t])){sm('wMsg','Code public cible absent du referentiel officiel.',false);return}if(w.kind==='student'&&Object.keys(REG.j).length&&(!REG.j[w.player])){sm('wMsg','Code temoin eleve absent du referentiel officiel.',false);return}if(w.kind==='student'&&w.player===t){sm('wMsg','Temoin et cible doivent etre differents.',false);return}const a=ACT[k];if(!a){sm('wMsg','Action invalide.',false);return}const tp=gp(t);if(w.kind==='adult'){const gain=Math.max(1,Math.round(a.x/2));tp.socialG+=gain;tp.socialW+=gain;tp.recognizedReceived+=1;logEv(w.code,'WITNESS_ADULT',targetPublic||t,gain);save();refresh();sm('wMsg',`Temoignage adulte: +${gain} XP pour ${t} (2x moins qu'un eleve).`,true);return}const wp=gp(w.player);tp.socialG+=a.x;tp.socialW+=a.x;tp.recognizedReceived+=1;wp.witnessGiven+=1;let bonus=0;if(Number(wp.recognizedReceived||0)>0){bonus=Math.max(1,Math.round(a.x*0.10));wp.wBonusG+=bonus;wp.wBonusW+=bonus}logEv(w.player,'WITNESS',targetPublic||t,a.x);if(bonus>0)logEv(w.player,'WITNESS_BONUS',w.player,bonus);save();refresh();sm('wMsg',bonus>0?`+${a.x} XP pour ${t} | +${bonus} XP pour ${w.player}`:`+${a.x} XP pour ${t}. Bonus temoin non actif (pas encore reconnu).`,true)}
+function needCur(){if(!cur||!S.players[cur]){sm('sMsg','Connecter un joueur avant cette action.',false);return null}cm('sMsg');return S.players[cur]}
+function syncPixhare(){const p=needCur();if(!p)return;const v=['NUM','JUR','GRO','HIS'].map(k=>Number(localStorage.getItem(`PROG_${k}`)||0)).reduce((a,b)=>a+b,0);p.cp.pixhare=v;logEv(cur,'SYNC_PIXHARE','LOCAL',v*W.pixhare);save();refresh();sm('sMsg',`CP PIXHARe importes: ${v}`,true)}
+function syncPsc1(){const p=needCur();if(!p)return;let v=0;try{const d=JSON.parse(localStorage.getItem('psc1_progression')||'{}');v+=(Array.isArray(d.p1)?d.p1.length:0)+(Array.isArray(d.p2)?d.p2.length:0)+(Array.isArray(d.p3)?d.p3.length:0)+(Array.isArray(d.p4)?d.p4.length:0)+(Array.isArray(d.p5)?d.p5.length:0)}catch(e){v=0}p.cp.psc1=v;logEv(cur,'SYNC_PSC1','LOCAL',v*W.psc1);save();refresh();sm('sMsg',`CP PSC1 importes: ${v}`,true)}
+function openTracked(scope,target,url){cm('vMsg');if(!cur){sm('vMsg','Connecter un joueur avant ouverture.',false);return}logEv(cur,`OPEN_${scope.toUpperCase()}`,target,0);save();refresh();window.open(withPlayer(url),'_blank','noopener')}
+function openNegativeHub(){const url=withPlayer('hub_temoignages_negatifs.html');if(cur){logEv(cur,'OPEN_NEGATIVE','NEGATIVE_HUB',0);save();refresh()}window.open(url,'_blank','noopener')}
+function guardAdmin(){if(!adminOn){sm('aMsg','Connexion admin requise.',false);return false}return true}
+function adCode(){return nCode(document.getElementById('adCode').value)}
+function setCp(){if(!guardAdmin())return;const c=adCode(),h=document.getElementById('adHub').value,v=Number(document.getElementById('adCp').value||0);if(!c||!(h in W)||v<0){sm('aMsg','Parametres CP invalides.',false);return}if(Object.keys(REG.j).length&&!REG.j[c]){sm('aMsg','Code absent du referentiel.',false);return}const p=gp(c);p.cp[h]=Math.floor(v);logEv(c,'CP_SET',h,p.cp[h]*W[h]);save();refresh();sm('aMsg',`CP ${h} definis a ${p.cp[h]} pour ${c}.`,true)}
+function addCp(){if(!guardAdmin())return;const c=adCode(),h=document.getElementById('adHub').value,v=Number(document.getElementById('adCp').value||0);if(!c||!(h in W)||v<0){sm('aMsg','Parametres CP invalides.',false);return}if(Object.keys(REG.j).length&&!REG.j[c]){sm('aMsg','Code absent du referentiel.',false);return}const p=gp(c);p.cp[h]=Math.max(0,Number(p.cp[h]||0)+Math.floor(v));logEv(c,'CP_ADD',h,Math.floor(v)*W[h]);save();refresh();sm('aMsg',`CP ${h} augmentes a ${p.cp[h]} pour ${c}.`,true)}
+function applyMalus(){if(!guardAdmin())return;const c=adCode(),k=document.getElementById('malType').value;if(!c||!MAL[k]){sm('aMsg','Code ou malus invalide.',false);return}if(Object.keys(REG.j).length&&!REG.j[c]){sm('aMsg','Code absent du referentiel.',false);return}const p=gp(c);if(k==='reset_total'){p.cp={pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0};p.socialG=0;p.socialW=0;p.wBonusG=0;p.wBonusW=0;p.videoG=0;p.videoW=0;p.malusG=0;p.malusW=0;p.witnessGiven=0;p.recognizedReceived=0;p.obj={}}else{p.malusG+=MAL[k].x;p.malusW+=MAL[k].x}logEv(c,'MALUS',k,MAL[k].x);save();refresh();sm('aMsg',`Malus applique a ${c}.`,true)}
+function parseMultiCodes(raw){return String(raw||'').split(/[\s,;|]+/).map(nCode).filter(Boolean)}
+function addMissionPlayers(key){if(!guardAdmin())return;if(!CIT[key])return;const input=document.getElementById(`mIn_${key}`);const codes=parseMultiCodes(input?input.value:'');if(!codes.length){sm('aMsg','Entrer au moins un code joueur.',false);return}let add=0,skip=0;const list=missionList(key);codes.forEach(c=>{if(Object.keys(REG.j).length&&!REG.j[c]){skip+=1;return}if(!list.includes(c)){list.push(c);gp(c);add+=1;logEv(c,'MISSION_ADD',key,CIT[key].xp)}});if(input)input.value='';save();refresh();sm('aMsg',`${add} ajout(s) dans ${CIT[key].title}${skip?` | ${skip} ignore(s)`:''}.`,add>0)}
+function removeMissionPlayer(key,code){if(!guardAdmin())return;const c=nCode(code),list=missionList(key),i=list.indexOf(c);if(i<0){sm('aMsg','Code non trouve.',false);return}list.splice(i,1);logEv(c,'MISSION_REMOVE',key,0);save();refresh();sm('aMsg',`${c} retire de ${CIT[key].title}.`,true)}
+function removeMissionSelected(key){if(!guardAdmin())return;const sel=document.getElementById(`mSel_${key}`),code=nCode(sel&&sel.value||'');if(!code){sm('aMsg','Choisir un inscrit a desinscrire.',false);return}removeMissionPlayer(key,code)}
+function renderMissionAdmin(){const root=document.getElementById('missionAdmin');if(!root)return;root.innerHTML='';if(!adminOn){root.innerHTML='<article class=\"card\"><div class=\"hint\">Connecte-toi en mode admin pour gerer les categories.</div></article>';return}Object.keys(CIT).forEach(k=>{const m=CIT[k],list=missionList(k).slice().sort();const box=document.createElement('article');box.className='card';const opts=list.length?list.map(code=>{const ref=REG.j[code];const who=ref?`${ref.nom||''} ${ref.prenom||''}`.trim():'-';return `<option value=\"${code}\">${code} - ${who||'-'}</option>`}).join(''):'<option value=\"\">Aucun eleve</option>';box.innerHTML=`<h3>${m.title} (+${m.xp})</h3><div class=\"row\"><label for=\"mIn_${k}\">Ajouter des codes joueurs</label><input id=\"mIn_${k}\" placeholder=\"CODE1 CODE2 ...\"></div><div class=\"rw\"><button class=\"btn2\" onclick=\"addMissionPlayers('${k}')\">Enregistrer</button></div><div class=\"row\"><label for=\"mSel_${k}\">Inscrits (${list.length})</label><select id=\"mSel_${k}\" size=\"6\">${opts}</select></div><div class=\"rw\"><button class=\"btn2\" onclick=\"removeMissionSelected('${k}')\">Desinscrire selection</button></div>`;root.appendChild(box)})}
+function renderNegReports(){const b=document.getElementById('negBody');if(!b)return;b.innerHTML='';const rows=(S.neg_reports||[]).slice(0,120);if(!rows.length){b.innerHTML='<tr><td colspan=\"6\">Aucun pre-signalement.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');const d=new Date(r.d||Date.now()).toLocaleString('fr-FR');const tw=r.witness_kind==='adult'?`ADULTE:${r.witness_code}`:`ELEVE:${r.witness_player||r.witness_code}`;const tg=r.target_player||r.target_public||'-';const st=r.status||'pending';const acts=st==='pending'?`<button class=\"btn2\" onclick=\"applyNegToTarget('${r.id}')\">Appliquer</button> <button class=\"btn2\" onclick=\"flagFalseReport('${r.id}')\">Faux -500</button>`:'-';tr.innerHTML=`<td>${d}</td><td>${tw}</td><td>${tg}</td><td>${r.incident||'-'}</td><td>${st}</td><td>${acts}</td>`;b.appendChild(tr)})}
+function findNeg(id){return (S.neg_reports||[]).find(r=>r.id===id)}
+function applyNegToTarget(id){if(!guardAdmin())return;const r=findNeg(id);if(!r){sm('aMsg','Signalement introuvable.',false);return}if(r.status&&r.status!=='pending'){sm('aMsg','Signalement deja traite.',false);return}const t=nCode(r.target_player||'');if(!t){sm('aMsg','Cible non resolue.',false);return}const p=gp(t),k=(r.incident in MAL)?r.incident:'incivilite';if(k==='reset_total'){p.cp={pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0};p.socialG=0;p.socialW=0;p.wBonusG=0;p.wBonusW=0;p.videoG=0;p.videoW=0;p.malusG=0;p.malusW=0;p.witnessGiven=0;p.recognizedReceived=0;p.obj={}}else{p.malusG+=MAL[k].x;p.malusW+=MAL[k].x}r.status='applique';r.processed_at=new Date().toISOString();logEv(t,'NEG_MALUS',k,MAL[k].x);save();refresh();sm('aMsg',`Malus negatif applique a ${t}.`,true)}
+function flagFalseReport(id){if(!guardAdmin())return;const r=findNeg(id);if(!r){sm('aMsg','Signalement introuvable.',false);return}if(r.status&&r.status!=='pending'){sm('aMsg','Signalement deja traite.',false);return}if(r.witness_kind!=='student'||!r.witness_player){r.status='faux_non_sanctionne';r.processed_at=new Date().toISOString();save();refresh();sm('aMsg','Temoin adulte: aucun -500 applique.',true);return}const p=gp(r.witness_player);p.malusG+=MAL.faux_temoignage.x;p.malusW+=MAL.faux_temoignage.x;r.status='faux';r.processed_at=new Date().toISOString();logEv(r.witness_player,'FALSE_REPORT','NEGATIVE',MAL.faux_temoignage.x);save();refresh();sm('aMsg',`-500 XP applique a ${r.witness_player}.`,true)}
+function setRegistry(rows,source){S.registry=(rows||[]).filter(r=>nCode(r.code_joueur||'')).map(r=>({nom:demojibake(String(r.nom||'').trim()),prenom:demojibake(String(r.prenom||'').trim()),code_joueur:nCode(r.code_joueur),code_temoin:nCode(r.code_temoin||''),code_public:nCode(r.code_public||'')||defaultPublicCode(r.code_joueur)}));S.registry_source=String(source||'').trim();buildRegistry();Object.keys(REG.j).forEach(code=>{const p=gp(code);p.witness=REG.j[code].code_temoin||p.witness});norm();save();refresh()}
+async function loadDefaultCodes(showMsg){try{const res=await fetch(DEFAULT_CODES_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseCodesText(txt);if(!rows.length)throw new Error('empty');setRegistry(rows,DEFAULT_CODES_FILE);if(showMsg)sm('aMsg',`Referentiel charge: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement auto impossible. Importer manuellement en admin.',false)}}
+function importCodesFile(){if(!guardAdmin())return;const el=document.getElementById('codesFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseCodesText(rd.result||'');if(!rows.length){sm('aMsg','Aucune ligne code detectee.',false);return}setRegistry(rows,f.name);sm('aMsg',`Referentiel importe: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture impossible.',false);rd.readAsText(f)}
+function setAdults(rows,source){S.adults=(rows||[]).map(a=>({nom:demojibake(String(a.nom||'').trim()),prenom:demojibake(String(a.prenom||'').trim()),code_temoin:nCode(a.code_temoin||'')})).filter(a=>a.code_temoin);S.adults_source=String(source||'').trim();buildAdultMap();save();refresh()}
+async function loadDefaultAdults(showMsg){try{const res=await fetch(ADULT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseAdultsText(txt);if(!rows.length)throw new Error('empty');setAdults(rows,ADULT_DEFAULT_FILE);if(showMsg)sm('aMsg',`Temoins adultes charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement adultes impossible. Importer manuellement.',false)}}
+function importAdultFile(){if(!guardAdmin())return;const el=document.getElementById('adultFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier adultes TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseAdultsText(rd.result||'');if(!rows.length){sm('aMsg','Aucun temoin adulte detecte.',false);return}setAdults(rows,f.name);sm('aMsg',`Temoins adultes importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture adultes impossible.',false);rd.readAsText(f)}
+function openRules(){const m=document.getElementById('rulesModal');if(m)m.style.display='block'}
+function closeRules(){const m=document.getElementById('rulesModal');if(m)m.style.display='none'}
+function exportData(){if(!guardAdmin())return;document.getElementById('jsonBox').value=JSON.stringify(S,null,2);sm('aMsg','Export JSON genere.',true)}
+function importData(){if(!guardAdmin())return;try{const p=JSON.parse(document.getElementById('jsonBox').value);if(!p||typeof p!=='object'||typeof p.players!=='object')throw new Error('bad');S={week:String(p.week||''),players:p.players||{},logs:Array.isArray(p.logs)?p.logs:[],seen:p.seen||{},registry:Array.isArray(p.registry)?p.registry:[],registry_source:String(p.registry_source||''),adults:Array.isArray(p.adults)?p.adults:[],adults_source:String(p.adults_source||''),neg_reports:Array.isArray(p.neg_reports)?p.neg_reports:[],citizen_lists:p.citizen_lists||{}};buildRegistry();norm();buildAdultMap();resetWeek();save();refresh();sm('aMsg','Import JSON applique.',true)}catch(e){sm('aMsg','Import JSON invalide.',false)}}
+function downloadStateFile(){if(!guardAdmin())return;const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date();a.download=`superhub_snapshot_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;a.click();URL.revokeObjectURL(a.href);sm('aMsg','Snapshot global telecharge.',true)}
+function importStateFile(){if(!guardAdmin())return;const el=document.getElementById('stateFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un snapshot .json.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{try{const p=JSON.parse(String(rd.result||''));if(!p||typeof p!=='object'||typeof p.players!=='object')throw new Error('bad');S={week:String(p.week||''),players:p.players||{},logs:Array.isArray(p.logs)?p.logs:[],seen:p.seen||{},registry:Array.isArray(p.registry)?p.registry:[],registry_source:String(p.registry_source||''),adults:Array.isArray(p.adults)?p.adults:[],adults_source:String(p.adults_source||''),neg_reports:Array.isArray(p.neg_reports)?p.neg_reports:[],citizen_lists:p.citizen_lists||{}};buildRegistry();norm();buildAdultMap();resetWeek();save();refresh();sm('aMsg','Snapshot global importe.',true)}catch(e){sm('aMsg','Snapshot invalide.',false)}};rd.onerror=()=>sm('aMsg','Lecture snapshot impossible.',false);rd.readAsText(f)}
+function esc(v){return `\"${String(v??'').replace(/\"/g,'\"\"')}\"`}
+function downloadCsv(){if(!guardAdmin())return;const head=['Nom','Prenom','Code_Joueur','Code_Temoin','Code_Public','Points_Citoyen_Investi','Points_Academie','Points_Videos_Validees','XP_Global','XP_Hebdo','Temoignages_Donnes','Reconnaissances_Recues','Social_En_Attente','CP_PIXHARE','CP_PSC1','CP_Sanctuaire','CP_Loge','CP_Autres','Videos_Validees_Count'];const rows=[head.join(',')];const base=(S.registry&&S.registry.length)?S.registry.map(r=>({nom:r.nom||'',prenom:r.prenom||'',code_joueur:nCode(r.code_joueur||''),code_temoin:nCode(r.code_temoin||''),code_public:nCode(r.code_public||'')||nCode(r.code_joueur||'')})):Object.keys(S.players).map(k=>({nom:'',prenom:'',code_joueur:k,code_temoin:S.players[k].witness||'',code_public:k}));base.forEach(r=>{const code=nCode(r.code_joueur||''),p=S.players[code]||mkP(code),vCount=Object.values(p.obj||{}).filter(x=>x&&x.valid).length;rows.push([esc(r.nom||''),esc(r.prenom||''),esc(code),esc(r.code_temoin||p.witness||''),esc(r.code_public||code),citizenXp(p),academyXp(p),videoXp(p),xg(p),xw(p),Number(p.witnessGiven||0),Number(p.recognizedReceived||0),socialPendingG(p),p.cp.pixhare||0,p.cp.psc1||0,p.cp.sanctuaire||0,p.cp.loge||0,p.cp.autres||0,vCount].join(','))});const blob=new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date();a.download=`superhub_points_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href);sm('aMsg','CSV telecharge (UTF-8 BOM).',true)}
+function downloadLogsCsv(){if(!guardAdmin())return;const rows=['date,joueur,type,cible,xp'];S.logs.forEach(r=>rows.push([esc(r.d),esc(r.p),esc(r.t),esc(r.target),r.xp||0].join(',')));const blob=new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date();a.download=`superhub_logs_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href);sm('aMsg','Logs CSV telecharges.',true)}
+function getVideo(id){const k=nCode(id||'');return VIDEOS.find(v=>nCode(v.id||'')===k)||null}
+function bridgeApply(ev){
+if(!ev||!ev.id||S.seen[ev.id])return false;
+S.seen[ev.id]=1;
+if(ev.type==='NEGATIVE_REPORT'){
+  const wCode=nCode(ev.witness_code||'');
+  const targetPublic=nCode(ev.target_public||'');
+  const targetPlayer=resolvePublicTarget(targetPublic);
+  const wRes=resolveWitness(wCode);
+  const item={id:String(ev.id),d:ev.d||new Date().toISOString(),witness_code:wCode,witness_kind:wRes?(wRes.kind||'unknown'):'unknown',witness_player:wRes&&wRes.player?wRes.player:'',target_public:targetPublic,target_player:targetPlayer,incident:String(ev.incident||'incivilite'),details:String(ev.details||''),status:'pending'};
+  if(!Array.isArray(S.neg_reports))S.neg_reports=[];
+  S.neg_reports.unshift(item);
+  if(S.neg_reports.length>400)S.neg_reports.length=400;
+  logEv(wCode||'REPORT','NEGATIVE_REPORT',targetPublic||'-',0);
+  return true;
+}
+const code=nCode(ev.player||'');
+if(!code)return false;
+if(Object.keys(REG.j).length&&!REG.j[code]&&!isVisitorCode(code))return false;
+const p=gp(code);
+if(!p)return false;
+if(ev.type==='PIXHARE_PROGRESS'){const b=Number(p.cp.pixhare||0),a=Math.max(b,Number(ev.cpTotal||b));if(a!==b){p.cp.pixhare=a;logEv(code,'PIXHARE_CODE',String(ev.module||'MODULE'),(a-b)*W.pixhare);return true}return false}
+if(ev.type==='PSC1_PROGRESS'){const b=Number(p.cp.psc1||0),a=Math.max(b,Number(ev.cpTotal||b));if(a!==b){p.cp.psc1=a;logEv(code,'PSC1_CODE',String(ev.module||'MODULE'),(a-b)*W.psc1);return true}return false}
+if(ev.type==='VIDEO_OPEN'){const v=getVideo(ev.module||'')||{id:String(ev.module||'VIDEO'),offer:Number(ev.offer||0)},k=nCode(v.id);if(!p.obj[k])p.obj[k]={open:false,valid:false};let xp=0;if(!p.obj[k].open){p.obj[k].open=true;xp=Number((ev.offer ?? v.offer) || 0);p.videoG+=xp;p.videoW+=xp}logEv(code,'OPEN_VIDEO',k,xp);return true}
+if(ev.type==='VIDEO_VALID'){const v=getVideo(ev.module||'')||{id:String(ev.module||'VIDEO'),reward:Number(ev.reward||0)},k=nCode(v.id);if(!p.obj[k])p.obj[k]={open:false,valid:false};if(p.obj[k].valid)return false;p.obj[k].valid=true;p.obj[k].open=true;const xp=Number((ev.reward ?? v.reward) || 0);p.videoG+=xp;p.videoW+=xp;logEv(code,'VALID_VIDEO',k,xp);return true}
+return false}
+function processBridge(){try{const arr=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]');if(!Array.isArray(arr))return;let changed=false;arr.forEach(ev=>{if(bridgeApply(ev))changed=true});if(changed){save();refresh()}}catch(e){}}
+document.addEventListener('DOMContentLoaded',async()=>{
+fill();load();
+initAudio();
+if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm();updateCodesInfo()}
+if(!S.adults||!S.adults.length){await loadDefaultAdults(false)}else{buildAdultMap()}
+await syncPing();
+await syncPull(false);
+const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
+const remembered=nCode(localStorage.getItem(ACTIVE_PLAYER_KEY)||'');
+const authInput=document.getElementById('authCode');
+const authAdmin=document.getElementById('authAdmin');
+if(authInput&&remembered)authInput.value=isVisitorCode(remembered)?'Visiteur-Viescolaire-ChateauRance':remembered;
+const hasSession=sessionStorage.getItem(SESSION_AUTH_KEY)==='1';
+const hasAdminSession=sessionStorage.getItem(ADMIN_SESSION_KEY)==='1';
+if(hasSession&&hasAdminSession){
+  cur='';isVisitor=false;adminOn=true;closeAuthGate();refresh();
+}
+else if(hasSession&&remembered){
+  adminOn=false;
+  cur=remembered;isVisitor=isVisitorCode(cur);
+  if(cur&&Object.keys(REG.j).length&&!REG.j[cur]&&!isVisitor){cur='';isVisitor=false;refresh();openAuthGate('Session expiree ou identifiant invalide.');}
+  else{if(cur&&!S.players[cur])gp(cur);closeAuthGate();refresh()}
+}else{
+  cur='';isVisitor=false;adminOn=false;refresh();openAuthGate()
+}
+processBridge();
+if(authInput)authInput.addEventListener('keypress',e=>{if(e.key==='Enter')loginPlayer()});
+if(authAdmin)authAdmin.addEventListener('keypress',e=>{if(e.key==='Enter')loginAdmin()});
+window.addEventListener('resize',()=>renderTutorial());
+window.addEventListener('scroll',()=>renderTutorial(),{passive:true});
+});
+window.addEventListener('storage',e=>{if(e.key===BRIDGE_KEY)processBridge()});
+window.addEventListener('focus',()=>{processBridge();syncPull(false)});
+</script>
+</body>
+</html>

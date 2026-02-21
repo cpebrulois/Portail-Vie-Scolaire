@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hub Videos - Portail Vie Scolaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Rajdhani,sans-serif;color:#fff;background:radial-gradient(circle at 10% 10%,#00d4ff22,transparent 30%),radial-gradient(circle at 90% 90%,#ffd70022,transparent 35%),linear-gradient(135deg,#070b17,#172444);min-height:100vh;padding:14px}.wrap{max-width:1150px;margin:auto}.card{background:#ffffff0d;border:1px solid #ffffff26;border-radius:12px;padding:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}h1{font-family:Orbitron,monospace;background:linear-gradient(135deg,#00d4ff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:6px 0}h2{font-family:Orbitron,monospace;font-size:1rem;color:#00d4ff;margin:0 0 8px}.hint{color:#a9bbd6}input{width:100%;padding:9px;border-radius:8px;border:1px solid #ffffff3a;background:#0000005e;color:#fff;font-family:inherit}button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#00d4ff,#ffd700);color:#000}.btn2{background:#ffffff17;color:#fff;border:1px solid #ffffff37}.rw{display:flex;gap:8px;flex-wrap:wrap}.msg{display:none;margin-top:10px;padding:8px;border-radius:8px;font-weight:700}.ok{display:block;background:#16d28422;border:1px solid #16d28466}.bad{display:block;background:#ff557722;border:1px solid #ff557766}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>Hub Videos</h1>
+<div class="hint">Joueur actif: <b id="playerInfo">Aucun</b></div>
+<div class="rw" style="margin-top:8px">
+<button onclick="goPortal()">Retour Portail Vie Scolaire</button>
+</div>
+<div class="msg" id="vMsg"></div>
+</div>
+
+<section class="grid" id="videoRoot" style="margin-top:10px"></section>
+</div>
+
+<script src="videos_catalog.js"></script>
+<script>
+const ACTIVE_PLAYER_KEY='pvs_current_player';
+const BRIDGE_KEY='pvs_bridge_events';
+const VIDEOS=(Array.isArray(window.PVS_VIDEOS)&&window.PVS_VIDEOS.length)?window.PVS_VIDEOS:[];
+let cur='';
+let localState={open:{},valid:{}};
+
+function stripAcc(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function nCode(v){return stripAcc(String(v||'')).trim().replace(/\s+/g,'').toUpperCase()}
+function sm(id,txt,ok){const e=document.getElementById(id);e.className=`msg ${ok?'ok':'bad'}`;e.textContent=txt}
+function cm(id){const e=document.getElementById(id);e.className='msg';e.textContent=''}
+function stateKey(){return `pvs_video_local_${cur||'ANON'}`}
+function loadLocalState(){try{const raw=localStorage.getItem(stateKey());const p=raw?JSON.parse(raw):{};localState={open:p.open||{},valid:p.valid||{}}}catch(e){localState={open:{},valid:{}}}}
+function saveLocalState(){localStorage.setItem(stateKey(),JSON.stringify(localState))}
+function getPlayer(){const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q){localStorage.setItem(ACTIVE_PLAYER_KEY,q);return q}return nCode(localStorage.getItem(ACTIVE_PLAYER_KEY)||'')}
+function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
+function goPortal(){const suffix=cur?`?player=${encodeURIComponent(cur)}`:'';window.location.href=`index.html${suffix}`}
+function pushBridge(payload){try{const raw=localStorage.getItem(BRIDGE_KEY);const arr=raw?JSON.parse(raw):[];const list=Array.isArray(arr)?arr:[];list.push(payload);if(list.length>700)list.splice(0,list.length-700);localStorage.setItem(BRIDGE_KEY,JSON.stringify(list))}catch(e){}}
+function eventId(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`}
+
+function openVideo(id){
+  cm('vMsg');
+  if(!cur){sm('vMsg','Aucun joueur actif. Retourner au portail puis se connecter.',false);return}
+  const v=VIDEOS.find(x=>nCode(x.id)===nCode(id)); if(!v){sm('vMsg','Video introuvable.',false);return}
+  localState.open[v.id]=1; saveLocalState();
+  pushBridge({id:eventId('VIDOPEN'),type:'VIDEO_OPEN',player:cur,module:v.id,offer:Number(v.offer||0),d:new Date().toISOString()});
+  window.open(v.url,'_blank','noopener');
+  render();
+  sm('vMsg',`Mission ouverte: ${v.title} (+${Number(v.offer||0)} XP)`,true);
+}
+
+function validateVideo(id){
+  cm('vMsg');
+  if(!cur){sm('vMsg','Aucun joueur actif.',false);return}
+  const v=VIDEOS.find(x=>nCode(x.id)===nCode(id)); if(!v){sm('vMsg','Video introuvable.',false);return}
+  const sec=nCode((document.getElementById(`sec_${v.id}`)||{}).value||'');
+  if(sec!==nCode(v.secret)){sm('vMsg','Code secret invalide.',false);return}
+  if(localState.valid[v.id]){sm('vMsg','Objectif deja valide localement pour ce joueur.',false);return}
+  localState.valid[v.id]=1; saveLocalState();
+  pushBridge({id:eventId('VIDVALID'),type:'VIDEO_VALID',player:cur,module:v.id,reward:Number(v.reward||0),d:new Date().toISOString()});
+  render();
+  sm('vMsg',`Objectif valide: ${v.title} (+${Number(v.reward||0)} XP)`,true);
+}
+
+function render(){
+  const root=document.getElementById('videoRoot');
+  root.innerHTML='';
+  VIDEOS.forEach(v=>{
+    const done=localState.valid[v.id]?'Oui':'Non';
+    const card=document.createElement('article');
+    card.className='card';
+    card.innerHTML=`<h2>${v.title}</h2>
+      <div class="hint">Rubrique: ${v.rubrique||'General'}</div>
+      <div class="hint">Bonus entree: +${Number(v.offer||0)} XP | Validation: +${Number(v.reward||0)} XP</div>
+      <div class="hint">Validee (local joueur): ${done}</div>
+      <div style="margin-top:8px"><input id="sec_${v.id}" placeholder="Code secret de validation"></div>
+      <div class="rw" style="margin-top:8px"><button onclick="openVideo('${v.id}')">Ouvrir mission YouTube</button><button class="btn2" onclick="validateVideo('${v.id}')">Valider visionnage</button></div>`;
+    root.appendChild(card);
+  });
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  cur=getPlayer();
+  document.getElementById('playerInfo').textContent=cur||'Aucun';
+  loadLocalState();
+  render();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signalements Negatifs - Portail Vie Scolaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Rajdhani,sans-serif;color:#fff;background:radial-gradient(circle at 10% 10%,#ff2a2a33,transparent 30%),radial-gradient(circle at 90% 90%,#ffd70022,transparent 35%),linear-gradient(135deg,#120304,#2a1113);min-height:100vh;padding:14px}.wrap{max-width:980px;margin:auto}.card{background:#ffffff10;border:1px solid #ffffff2d;border-radius:12px;padding:12px}.hint{color:#d8c6c6}.row{display:grid;gap:6px;margin:8px 0}input,select,textarea{width:100%;padding:9px;border-radius:8px;border:1px solid #ffffff3a;background:#0000005e;color:#fff;font-family:inherit}textarea{min-height:90px}button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}.btnRed{background:linear-gradient(135deg,#ff4d4d,#9c001e);color:#fff}.btn2{background:#ffffff17;color:#fff;border:1px solid #ffffff37}.rw{display:flex;flex-wrap:wrap;gap:8px}.msg{display:none;margin-top:10px;padding:8px;border-radius:8px;font-weight:700}.ok{display:block;background:#16d28422;border:1px solid #16d28466}.bad{display:block;background:#ff557722;border:1px solid #ff557766}h1{font-family:Orbitron,monospace;color:#ff8f8f;margin:6px 0}.warn{display:flex;gap:12px;align-items:flex-start;background:#ff000020;border:1px solid #ff7f7f7a;border-radius:10px;padding:12px}.tri{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:50px solid #ff3d3d;position:relative;animation:blink 1s steps(1,end) infinite}.tri::after{content:'!';position:absolute;left:-4px;top:20px;font-family:Orbitron,monospace;font-size:28px;color:#000}@keyframes blink{50%{filter:brightness(0.3)}}#mainForm{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>Temoignages de Faits Negatifs</h1>
+<div class="rw"><button class="btn2" onclick="goPortal()">Retour Portail Vie Scolaire</button></div>
+</div>
+
+<div class="card" id="warningBox" style="margin-top:10px">
+  <div class="warn">
+    <div class="tri"></div>
+    <div>
+      <h2 style="margin:0 0 8px 0;color:#ffb3b3;font-family:Orbitron,monospace">Attention !</h2>
+      <p class="hint">Attention ! Tu t'appretes a denoncer un comportement malveillant. Sache que tout faux temoignage est un delit decrit a l'article 434-16 du code penal, puni de cinq ans d'emprisonnement et de 75 000 euros d'amende. Ces peines peuvent etre aggravees et aller jusqu'a 7 ans d'emprisonnement et 100 000 euros d'amende: quand le faux temoignage a ete monnaye contre un don ou une recompense; quand il est emis sur un fait passible d'une peine criminelle.</p>
+      <p class="hint">Dans le cadre de cette declaration, tu seras convoque par le CPE pour expliquer ce qu'il s'est passe. Et dans le cadre de ce jeu citoyen, tout faux temoignage sera passible d'une sanction de 500 XP et d'une punition.</p>
+      <div class="rw" style="margin-top:10px">
+        <button class="btnRed" onclick="acceptWarning()">Je comprends et je continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="mainForm" style="margin-top:10px">
+  <div class="hint">Joueur actif session: <b id="sessionPlayer">Aucun</b></div>
+  <div class="row"><label for="negWitness">Code temoin personnel (secret)</label><input id="negWitness" placeholder="Votre code temoin"></div>
+  <div class="row"><label for="negTarget">Code public de l'eleve concerne</label><input id="negTarget" placeholder="Code public cible"></div>
+  <div class="row"><label for="negIncident">Type de fait negatif</label><select id="negIncident">
+    <option value="incivilite">Incivilite / jet d'ordure</option>
+    <option value="agressivite">Agressivite verbale</option>
+    <option value="degradation">Degradation materiel</option>
+    <option value="reset_total">Harcelement / vol / racket (niveau critique)</option>
+  </select></div>
+  <div class="row"><label for="negDetail">Description</label><textarea id="negDetail" placeholder="Faits observes, lieu, date, personnes presentes..."></textarea></div>
+  <div class="rw"><button class="btnRed" onclick="sendNegativeReport()">Envoyer pre-signalement au CPE</button></div>
+  <div class="msg" id="nMsg"></div>
+</div>
+</div>
+
+<script>
+const ACTIVE_PLAYER_KEY='pvs_current_player';
+const BRIDGE_KEY='pvs_bridge_events';
+let cur='';
+function nCode(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,'').toUpperCase()}
+function sm(id,txt,ok){const e=document.getElementById(id);e.className=`msg ${ok?'ok':'bad'}`;e.textContent=txt}
+function cm(id){const e=document.getElementById(id);e.className='msg';e.textContent=''}
+function getPlayer(){const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q){localStorage.setItem(ACTIVE_PLAYER_KEY,q);return q}return nCode(localStorage.getItem(ACTIVE_PLAYER_KEY)||'')}
+function goPortal(){const suffix=cur?`?player=${encodeURIComponent(cur)}`:'';window.location.href=`index.html${suffix}`}
+function pushBridge(payload){try{const raw=localStorage.getItem(BRIDGE_KEY);const arr=raw?JSON.parse(raw):[];const list=Array.isArray(arr)?arr:[];list.push(payload);if(list.length>700)list.splice(0,list.length-700);localStorage.setItem(BRIDGE_KEY,JSON.stringify(list))}catch(e){}}
+function acceptWarning(){document.getElementById('warningBox').style.display='none';document.getElementById('mainForm').style.display='block'}
+function sendNegativeReport(){cm('nMsg');const w=nCode(document.getElementById('negWitness').value);const t=nCode(document.getElementById('negTarget').value);const incident=String(document.getElementById('negIncident').value||'incivilite');const details=String(document.getElementById('negDetail').value||'').trim();if(!w||!t){sm('nMsg','Codes temoin et cible obligatoires.',false);return}pushBridge({id:`NEG-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,type:'NEGATIVE_REPORT',player:cur||'',witness_code:w,target_public:t,incident:incident,details:details,d:new Date().toISOString()});sm('nMsg','Pre-signalement envoye. Tu seras convoque par le CPE.',true)}
+document.addEventListener('DOMContentLoaded',()=>{cur=getPlayer();document.getElementById('sessionPlayer').textContent=cur||'Aucun';});
+</script>
+</body>
+</html>
