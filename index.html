@@ -330,7 +330,7 @@ function witnessAction(){cm('wMsg');if(isVisitor){const targetDemo=nCode(documen
 function needCur(){if(!cur||!S.players[cur]){sm('sMsg','Connecter un joueur avant cette action.',false);return null}cm('sMsg');return S.players[cur]}
 function syncPixhare(){const p=needCur();if(!p)return;const v=['NUM','JUR','GRO','HIS'].map(k=>Number(localStorage.getItem(`PROG_${k}`)||0)).reduce((a,b)=>a+b,0);p.cp.pixhare=v;logEv(cur,'SYNC_PIXHARE','LOCAL',v*W.pixhare);save();refresh();sm('sMsg',`CP PIXHARe importes: ${v}`,true)}
 function syncPsc1(){const p=needCur();if(!p)return;let v=0;try{const d=JSON.parse(localStorage.getItem('psc1_progression')||'{}');v+=(Array.isArray(d.p1)?d.p1.length:0)+(Array.isArray(d.p2)?d.p2.length:0)+(Array.isArray(d.p3)?d.p3.length:0)+(Array.isArray(d.p4)?d.p4.length:0)+(Array.isArray(d.p5)?d.p5.length:0)}catch(e){v=0}p.cp.psc1=v;logEv(cur,'SYNC_PSC1','LOCAL',v*W.psc1);save();refresh();sm('sMsg',`CP PSC1 importes: ${v}`,true)}
-function openTracked(scope,target,url){cm('vMsg');if(!cur){sm('vMsg','Connecter un joueur avant ouverture.',false);return}logEv(cur,`OPEN_${scope.toUpperCase()}`,target,0);save();refresh();window.open(withPlayer(url),'_blank','noopener')}
+function openTracked(scope,target,url){cm('vMsg');const actor=cur||(adminOn?'ADMIN':(isVisitor?VISITOR_CODE:''));if(!actor){sm('vMsg','Connecter un joueur, visiteur ou admin avant ouverture.',false);return}const linkCode=cur||(isVisitor?VISITOR_CODE:'');const sep=url.includes('?')?'&':'?';const openUrl=linkCode?(url+sep+'player='+encodeURIComponent(linkCode)):url;logEv(actor,'OPEN_'+scope.toUpperCase(),target,0);save();refresh();window.open(openUrl,'_blank','noopener')}
 function openNegativeHub(){const url=withPlayer('hub_temoignages_negatifs.html');if(cur){logEv(cur,'OPEN_NEGATIVE','NEGATIVE_HUB',0);save();refresh()}window.open(url,'_blank','noopener')}
 function guardAdmin(){if(!adminOn){sm('aMsg','Connexion admin requise.',false);return false}return true}
 function adCode(){return nCode(document.getElementById('adCode').value)}
@@ -424,4 +424,5 @@ window.addEventListener('focus',()=>{processBridge();syncPull(false)});
 </script>
 </body>
 </html>
+
 
