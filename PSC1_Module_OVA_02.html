@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC1 - Module P2.02 : OVA Nourrisson</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #dc143c;
+            --accent: #ff4444;
+            --dark: #1a0d0d;
+            --darker: #0d0606;
+            --glow: rgba(220, 20, 60, 0.4);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .music-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            z-index: 1000;
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px solid rgba(220, 20, 60, 0.3);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8em;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px var(--glow);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #aabbcc;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theory-content {
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .theory-content h3 {
+            color: var(--accent);
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .theory-content p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: rgba(220, 20, 60, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .important-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .important-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+        }
+
+        .important-list li::before {
+            content: '👶';
+            position: absolute;
+            left: 0;
+        }
+
+        .technique-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            border: 2px solid var(--accent);
+        }
+
+        .warning-box {
+            background: rgba(255, 165, 0, 0.1);
+            border-left: 3px solid #ffa500;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .question-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(220, 20, 60, 0.3);
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            background: rgba(220, 20, 60, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: rgba(220, 20, 60, 0.2);
+            border-color: var(--accent);
+        }
+
+        .option.correct {
+            background: rgba(50, 205, 50, 0.2);
+            border-color: #32cd32;
+        }
+
+        .option.incorrect {
+            background: rgba(220, 20, 60, 0.2);
+            border-color: #dc143c;
+        }
+
+        .scenario-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--primary);
+        }
+
+        .scenario-title {
+            font-size: 1.5em;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .scenario-text {
+            font-size: 1.1em;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--glow);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .results-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            color: var(--accent);
+            margin: 20px 0;
+        }
+
+        .code-display {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+        }
+
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(220, 20, 60, 0.8);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .section-title { font-size: 1.5em; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="music_ova.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="music-controls">
+        <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔇</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" oninput="changeVolume(this.value)">
+    </div>
+
+    <div class="container">
+        
+        <header>
+            <div class="module-badge">MODULE P2.02</div>
+            <h1>👶 OVA NOURRISSON</h1>
+            <div class="subtitle">Obstruction des Voies Aériennes - Claques dans le dos & Compressions thoraciques</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </header>
+
+        <!-- Section 1 : Théorie -->
+        <div class="section active" id="section-theory">
+            <div class="section-title">
+                <span>📚</span>
+                <span>PARTIE THÉORIQUE</span>
+            </div>
+            
+            <div class="theory-content">
+                
+                <div class="highlight-box">
+                    <strong>🎯 OBJECTIF DU MODULE :</strong><br>
+                    Maîtriser les techniques spécifiques de désobstruction des voies aériennes pour le NOURRISSON (moins de 1 an).
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ ATTENTION - DIFFÉRENCE MAJEURE :</strong><br>
+                    Chez le NOURRISSON, on NE fait JAMAIS de compressions abdominales (risque de lésion des organes internes). On utilise des <strong>COMPRESSIONS THORACIQUES</strong> à la place.
+                </div>
+
+                <h3>👶 Définition du nourrisson</h3>
+                <p>
+                    Un nourrisson est un enfant de <strong>moins de 1 an</strong>. Cette tranche d'âge nécessite des techniques adaptées en raison de la fragilité anatomique (abdomen non protégé, organes vulnérables).
+                </p>
+
+                <h3>🔍 Reconnaître l'obstruction chez le nourrisson</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent); margin-bottom: 15px;">OBSTRUCTION PARTIELLE</h4>
+                    <ul class="important-list">
+                        <li>Le nourrisson <strong>PEUT PLEURER ou CRIER</strong></li>
+                        <li>La toux est présente et efficace</li>
+                        <li>La respiration est bruyante mais présente</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>👉 CONDUITE À TENIR :</strong> Installer dans la position où il respire le mieux, encourager à tousser, NE PAS taper dans le dos, alerter les secours, surveiller.</p>
+                </div>
+
+                <div class="technique-box">
+                    <h4 style="color: var(--accent); margin-bottom: 15px;">OBSTRUCTION TOTALE (COMPLÈTE)</h4>
+                    <ul class="important-list">
+                        <li>Le nourrisson <strong>NE PEUT PLUS PLEURER, NI CRIER, NI TOUSSER</strong></li>
+                        <li>Absence totale de son</li>
+                        <li>Impossibilité de respirer</li>
+                        <li>Le visage devient rouge puis bleu (cyanose)</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>👉 CONDUITE À TENIR :</strong> AGIR IMMÉDIATEMENT avec les techniques spécifiques nourrisson !</p>
+                </div>
+
+                <h3>✋ Technique 1 : Claques dans le dos (1 à 5)</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent);">POSITION DU NOURRISSON</h4>
+                    <ul class="important-list">
+                        <li>Placer le nourrisson <strong>À PLAT VENTRE</strong> sur votre avant-bras</li>
+                        <li>Sa tête doit être <strong>PLUS BASSE que le thorax</strong></li>
+                        <li>Maintenir fermement sa tête avec votre main (sous la mâchoire)</li>
+                        <li>Appuyer votre avant-bras sur votre cuisse pour la stabilité</li>
+                    </ul>
+                    
+                    <h4 style="color: var(--accent); margin-top: 15px;">TECHNIQUE</h4>
+                    <ul class="important-list">
+                        <li>Donner <strong>1 à 5 claques vigoureuses</strong> entre les omoplates</li>
+                        <li>Avec le <strong>talon de la main</strong></li>
+                        <li>Vérifier après CHAQUE claque si l'objet est expulsé</li>
+                        <li>Si inefficace → passer aux compressions thoraciques</li>
+                    </ul>
+                </div>
+
+                <h3>✊ Technique 2 : Compressions thoraciques (1 à 5)</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent);">RETOURNEMENT DU NOURRISSON</h4>
+                    <ul class="important-list">
+                        <li>Retourner le nourrisson en le <strong>maintenant en sandwich</strong> entre vos deux avant-bras</li>
+                        <li>Une main soutient toujours fermement la tête</li>
+                        <li>Placer le nourrisson <strong>SUR LE DOS</strong> sur votre avant-bras</li>
+                        <li>Sa tête doit rester <strong>PLUS BASSE que le thorax</strong></li>
+                        <li>Appuyer votre avant-bras sur votre cuisse</li>
+                    </ul>
+                    
+                    <h4 style="color: var(--accent); margin-top: 15px;">TECHNIQUE</h4>
+                    <ul class="important-list">
+                        <li>Repérer le milieu du sternum, <strong>un travers de doigt AU-DESSOUS</strong> de la ligne inter-mamelons</li>
+                        <li>Placer la <strong>pulpe de 2 doigts</strong> (index et majeur) à cet endroit</li>
+                        <li>Enfoncer le sternum d'environ <strong>4 cm</strong> (1/3 de l'épaisseur du thorax)</li>
+                        <li>Réaliser <strong>1 à 5 compressions vigoureuses</strong></li>
+                        <li>Vérifier après CHAQUE compression si l'objet est expulsé</li>
+                    </ul>
+                </div>
+
+                <h3>🔄 Alternance Claques / Compressions thoraciques</h3>
+                <div class="highlight-box">
+                    <strong>PROTOCOLE COMPLET NOURRISSON :</strong><br><br>
+                    <strong>1.</strong> Placer à PLAT VENTRE sur avant-bras (tête basse)<br>
+                    <strong>2.</strong> Donner 1 à 5 claques dans le dos<br>
+                    <strong>3.</strong> Vérifier si obstruction levée<br>
+                    <strong>4.</strong> Retourner sur le DOS (tête basse)<br>
+                    <strong>5.</strong> Donner 1 à 5 compressions THORACIQUES<br>
+                    <strong>6.</strong> Vérifier si obstruction levée<br>
+                    <strong>7.</strong> Recommencer l'alternance jusqu'à :<br>
+                    &nbsp;&nbsp;&nbsp;✅ Désobstruction réussie<br>
+                    &nbsp;&nbsp;&nbsp;❌ Le nourrisson perd connaissance → RCP adaptée
+                </div>
+
+                <h3>⚠️ Si le nourrisson perd connaissance</h3>
+                <ul class="important-list">
+                    <li>Allonger le nourrisson sur un plan dur</li>
+                    <li><strong>ALERTER les secours immédiatement</strong> (ou faire alerter)</li>
+                    <li>Commencer la RCP adaptée nourrisson : <strong>5 insufflations PUIS 15 compressions : 2 insufflations</strong></li>
+                    <li>Avant chaque insufflation, regarder dans la bouche si l'objet est visible → le retirer avec l'auriculaire</li>
+                    <li>Ne JAMAIS faire d'exploration à l'aveugle</li>
+                </ul>
+
+                <div class="warning-box">
+                    <strong>⚠️ DIFFÉRENCE IMPORTANTE :</strong><br>
+                    Pour le nourrisson en arrêt cardiaque suite à OVA, on débute la RCP par <strong>5 INSUFFLATIONS</strong> (et non 30 compressions). Ensuite, on fait des cycles de <strong>15 compressions : 2 insufflations</strong>.
+                </div>
+
+                <h3>🚫 Erreurs à éviter</h3>
+                <ul class="important-list">
+                    <li><strong>JAMAIS</strong> de compressions abdominales chez le nourrisson</li>
+                    <li><strong>JAMAIS</strong> secouer le nourrisson</li>
+                    <li><strong>JAMAIS</strong> mettre les doigts dans la bouche sans voir l'objet</li>
+                    <li><strong>JAMAIS</strong> positionner le nourrisson à l'horizontale (toujours tête plus basse)</li>
+                </ul>
+
+                <h3>💡 Points de vigilance</h3>
+                <ul class="important-list">
+                    <li>Maintenir FERMEMENT la tête du nourrisson à chaque manipulation</li>
+                    <li>La tête doit TOUJOURS être plus basse que le thorax</li>
+                    <li>Les gestes doivent être vigoureux mais adaptés à la taille du nourrisson</li>
+                    <li>Retournements en "sandwich" pour éviter les chutes</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>🔑 POINTS CLÉS À RETENIR :</strong><br>
+                    ✅ Nourrisson = moins de 1 an<br>
+                    ✅ PAS de compressions abdominales → Compressions THORACIQUES<br>
+                    ✅ Tête TOUJOURS plus basse que le thorax<br>
+                    ✅ Alternance : 1-5 claques dos PUIS 1-5 compressions thoraciques<br>
+                    ✅ Perte connaissance → RCP : 5 insufflations PUIS 15:2
+                </div>
+
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="nextSection()">PASSER AU QUIZ ➡️</button>
+            </div>
+        </div>
+
+        <!-- Section 2 : Quiz -->
+        <div class="section" id="section-quiz">
+            <div class="section-title">
+                <span>❓</span>
+                <span>QUIZ DE CONNAISSANCES</span>
+            </div>
+
+            <div id="quizContainer"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️ RETOUR</button>
+                <button class="btn" id="btnValidateQuiz" onclick="validateQuiz()" disabled>VALIDER LE QUIZ</button>
+            </div>
+        </div>
+
+        <!-- Section 3 : Scénarios -->
+        <div class="section" id="section-scenarios">
+            <div class="section-title">
+                <span>🎬</span>
+                <span>SCÉNARIOS PRATIQUES</span>
+            </div>
+
+            <div id="scenariosContainer"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️ RETOUR</button>
+                <button class="btn" id="btnValidateScenarios" onclick="validateScenarios()" disabled>VALIDER LES SCÉNARIOS</button>
+            </div>
+        </div>
+
+        <!-- Section 4 : Résultats -->
+        <div class="section" id="section-results">
+            <div class="section-title">
+                <span>🏆</span>
+                <span>RÉSULTATS & CERTIFICATION</span>
+            </div>
+
+            <div class="results-panel">
+                <h2>📊 VOTRE SCORE FINAL</h2>
+                <div class="score-display" id="finalScore">0/200</div>
+                
+                <div style="margin: 30px 0;">
+                    <p style="font-size: 1.2em; margin-bottom: 10px;">Quiz : <span id="quizScoreDisplay">0/100</span></p>
+                    <p style="font-size: 1.2em;">Scénarios : <span id="scenariosScoreDisplay">0/100</span></p>
+                </div>
+
+                <div id="certificationMessage"></div>
+
+                <div class="code-display" id="codeDisplay" style="display: none;">
+                    <strong>🔑 CODE DE CERTIFICATION :</strong><br>
+                    <span id="certificationCode" style="font-size: 1.1em; color: #00d4ff;"></span><br><br>
+                    <button class="btn" onclick="copyCode()">📋 COPIER LE CODE</button>
+                </div>
+
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="restartModule()">🔄 RECOMMENCER</button>
+                    <button class="btn" onclick="returnToHub()">🏠 RETOUR HUB</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-buttons">
+        <div class="nav-btn" onclick="returnToHub()">🏠 HUB</div>
+    </div>
+
+    <script>
+        let currentSection = 0;
+        let quizAnswers = [];
+        let scenarioAnswers = [];
+        let quizScore = 0;
+        let scenariosScore = 0;
+
+        const music = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                music.pause();
+                musicToggle.textContent = '🔇';
+                isMusicPlaying = false;
+            } else {
+                music.play();
+                musicToggle.textContent = '🔊';
+                isMusicPlaying = true;
+            }
+        }
+
+        function changeVolume(value) {
+            music.volume = value / 100;
+        }
+
+        document.body.addEventListener('click', () => {
+            if (!isMusicPlaying && music.paused) {
+                music.play();
+                musicToggle.textContent = '🔊';
+                isMusicPlaying = true;
+            }
+        }, { once: true });
+
+        const quizQuestions = [
+            {
+                q: "Un nourrisson est un enfant de moins de 1 an.",
+                options: ["Vrai", "Faux"],
+                correct: 0,
+                explanation: "VRAI ! Un nourrisson = moins de 1 an."
+            },
+            {
+                q: "Chez le nourrisson, on peut faire des compressions abdominales comme chez l'adulte.",
+                options: ["Vrai", "Faux"],
+                correct: 1,
+                explanation: "FAUX ! JAMAIS de compressions abdominales chez le nourrisson (risque lésion organes). On fait des compressions THORACIQUES."
+            },
+            {
+                q: "Pour les claques dans le dos du nourrisson, sa tête doit être :",
+                options: [
+                    "Plus haute que le thorax",
+                    "À la même hauteur que le thorax",
+                    "Plus basse que le thorax",
+                    "Peu importe"
+                ],
+                correct: 2,
+                explanation: "Plus BASSE que le thorax ! C'est essentiel pour que l'objet puisse tomber par gravité."
+            },
+            {
+                q: "Pour les claques dans le dos, le nourrisson est placé :",
+                options: [
+                    "Sur le dos sur mon avant-bras",
+                    "À plat ventre sur mon avant-bras",
+                    "Debout",
+                    "Assis"
+                ],
+                correct: 1,
+                explanation: "À PLAT VENTRE sur votre avant-bras, tête fermement maintenue, tête plus basse que le thorax."
+            },
+            {
+                q: "Les compressions thoraciques chez le nourrisson se font avec :",
+                options: [
+                    "La paume de la main",
+                    "Le poing",
+                    "La pulpe de 2 doigts",
+                    "Les deux mains"
+                ],
+                correct: 2,
+                explanation: "Avec la PULPE de 2 doigts (index et majeur), un travers de doigt sous la ligne inter-mamelons."
+            },
+            {
+                q: "La profondeur des compressions thoraciques nourrisson est d'environ :",
+                options: [
+                    "2 cm",
+                    "4 cm",
+                    "6 cm",
+                    "8 cm"
+                ],
+                correct: 1,
+                explanation: "Environ 4 cm (soit 1/3 de l'épaisseur du thorax du nourrisson)."
+            },
+            {
+                q: "Combien de compressions thoraciques dois-je faire avant de vérifier ?",
+                options: [
+                    "1 seule",
+                    "1 à 5",
+                    "10",
+                    "30"
+                ],
+                correct: 1,
+                explanation: "1 à 5 compressions, en vérifiant après CHAQUE compression si l'obstruction est levée."
+            },
+            {
+                q: "Si le nourrisson perd connaissance suite à une OVA, je débute la RCP par :",
+                options: [
+                    "30 compressions thoraciques",
+                    "5 insufflations",
+                    "2 insufflations",
+                    "15 compressions thoraciques"
+                ],
+                correct: 1,
+                explanation: "On débute par 5 INSUFFLATIONS (particularité nourrisson/enfant en arrêt sur OVA), puis cycles 15:2."
+            },
+            {
+                q: "Le cycle de RCP nourrisson après les 5 insufflations initiales est :",
+                options: [
+                    "30 compressions : 2 insufflations",
+                    "15 compressions : 2 insufflations",
+                    "5 compressions : 1 insufflation",
+                    "10 compressions : 2 insufflations"
+                ],
+                correct: 1,
+                explanation: "15 compressions : 2 insufflations (ratio spécifique nourrisson/enfant)."
+            },
+            {
+                q: "Pour retourner le nourrisson entre claques et compressions thoraciques, je le maintiens :",
+                options: [
+                    "Par les pieds",
+                    "En sandwich entre mes deux avant-bras",
+                    "Par le ventre",
+                    "Je le pose au sol"
+                ],
+                correct: 1,
+                explanation: "En SANDWICH entre les deux avant-bras pour éviter toute chute et maintenir fermement la tête."
+            }
+        ];
+
+        const scenarios = [
+            {
+                title: "Scénario 1 : Bébé de 6 mois",
+                text: "Un bébé de 6 mois joue avec un petit jouet. Soudain, il ne pleure plus, ne peut plus respirer, son visage devient rouge. Que faites-vous EN PREMIER ?",
+                options: [
+                    "Je le place sur le dos et fais des compressions thoraciques",
+                    "Je le place à plat ventre sur mon avant-bras (tête basse) et donne 1-5 claques dans le dos",
+                    "Je fais des compressions abdominales",
+                    "J'appelle les secours et j'attends"
+                ],
+                correct: 1,
+                explanation: "COMMENCER par les claques dans le dos ! Nourrisson à plat ventre sur avant-bras, tête PLUS BASSE que thorax."
+            },
+            {
+                title: "Scénario 2 : Après 5 claques",
+                text: "Vous avez donné 5 claques dans le dos à un nourrisson en OVA, sans succès. Que faites-vous ?",
+                options: [
+                    "Je continue les claques",
+                    "Je le retourne sur le dos et fais 1-5 compressions thoraciques",
+                    "J'attends les secours",
+                    "Je fais des compressions abdominales"
+                ],
+                correct: 1,
+                explanation: "Le RETOURNER en sandwich sur le DOS (tête basse) et faire 1-5 compressions THORACIQUES."
+            },
+            {
+                title: "Scénario 3 : Bébé inconscient",
+                text: "Un nourrisson en OVA perd soudainement connaissance. Quelle est votre action immédiate ?",
+                options: [
+                    "Continuer claques/compressions",
+                    "Allonger, alerter, débuter RCP par 5 insufflations puis 15:2",
+                    "Mettre en PLS",
+                    "Attendre qu'il reprenne connaissance"
+                ],
+                correct: 1,
+                explanation: "Allonger sur plan dur, ALERTER, débuter RCP : 5 insufflations PUIS cycles 15 compressions : 2 insufflations."
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            generateQuiz();
+            generateScenarios();
+            updateProgress();
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function generateQuiz() {
+            const container = document.getElementById('quizContainer');
+            quizQuestions.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <div class="question-text">${index + 1}. ${item.q}</div>
+                    <div class="options" id="options-${index}">
+                        ${item.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${index}, ${i})">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="explanation-${index}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,212,255,0.1); border-radius: 5px;"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectOption(questionIndex, optionIndex) {
+            const optionsDiv = document.getElementById(`options-${questionIndex}`);
+            const options = optionsDiv.querySelectorAll('.option');
+            
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            quizAnswers[questionIndex] = optionIndex;
+            
+            if (quizAnswers.filter(a => a !== undefined).length === quizQuestions.length) {
+                document.getElementById('btnValidateQuiz').disabled = false;
+            }
+        }
+
+        function validateQuiz() {
+            let score = 0;
+            quizQuestions.forEach((item, index) => {
+                const optionsDiv = document.getElementById(`options-${index}`);
+                const options = optionsDiv.querySelectorAll('.option');
+                const explanationDiv = document.getElementById(`explanation-${index}`);
+                
+                if (quizAnswers[index] === item.correct) {
+                    score += 10;
+                    options[quizAnswers[index]].classList.add('correct');
+                } else {
+                    options[quizAnswers[index]].classList.add('incorrect');
+                    options[item.correct].classList.add('correct');
+                }
+                
+                explanationDiv.innerHTML = `<strong>Explication :</strong> ${item.explanation}`;
+                explanationDiv.style.display = 'block';
+                
+                options.forEach(opt => opt.style.pointerEvents = 'none');
+            });
+            
+            quizScore = score;
+            document.getElementById('btnValidateQuiz').disabled = true;
+            
+            setTimeout(() => {
+                nextSection();
+            }, 3000);
+        }
+
+        function generateScenarios() {
+            const container = document.getElementById('scenariosContainer');
+            scenarios.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+                card.innerHTML = `
+                    <div class="scenario-title">${item.title}</div>
+                    <div class="scenario-text">"${item.text}"</div>
+                    <div class="options" id="scenario-options-${index}">
+                        ${item.options.map((opt, i) => `
+                            <div class="option" onclick="selectScenario(${index}, ${i})">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="scenario-explanation-${index}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,212,255,0.1); border-radius: 5px;"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectScenario(scenarioIndex, optionIndex) {
+            const optionsDiv = document.getElementById(`scenario-options-${scenarioIndex}`);
+            const options = optionsDiv.querySelectorAll('.option');
+            
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            scenarioAnswers[scenarioIndex] = optionIndex;
+            
+            if (scenarioAnswers.filter(a => a !== undefined).length === scenarios.length) {
+                document.getElementById('btnValidateScenarios').disabled = false;
+            }
+        }
+
+        function validateScenarios() {
+            let score = 0;
+            scenarios.forEach((item, index) => {
+                const optionsDiv = document.getElementById(`scenario-options-${index}`);
+                const options = optionsDiv.querySelectorAll('.option');
+                const explanationDiv = document.getElementById(`scenario-explanation-${index}`);
+                
+                if (scenarioAnswers[index] === item.correct) {
+                    score += 33.33;
+                    options[scenarioAnswers[index]].classList.add('correct');
+                } else {
+                    options[scenarioAnswers[index]].classList.add('incorrect');
+                    options[item.correct].classList.add('correct');
+                }
+                
+                explanationDiv.innerHTML = `<strong>✅ Bonne réponse :</strong> ${item.explanation}`;
+                explanationDiv.style.display = 'block';
+                
+                options.forEach(opt => opt.style.pointerEvents = 'none');
+            });
+            
+            scenariosScore = Math.round(score);
+            document.getElementById('btnValidateScenarios').disabled = true;
+            
+            setTimeout(() => {
+                showResults();
+            }, 3000);
+        }
+
+        function showResults() {
+            nextSection();
+            
+            const totalScore = quizScore + scenariosScore;
+            document.getElementById('finalScore').textContent = totalScore + '/200';
+            document.getElementById('quizScoreDisplay').textContent = quizScore + '/100';
+            document.getElementById('scenariosScoreDisplay').textContent = scenariosScore + '/100';
+            
+            const messageDiv = document.getElementById('certificationMessage');
+            const codeDiv = document.getElementById('codeDisplay');
+            
+            if (totalScore >= 140) {
+                messageDiv.innerHTML = `
+                    <h3 style="color: #32cd32;">🎉 FÉLICITATIONS !</h3>
+                    <p style="font-size: 1.2em; margin: 15px 0;">Vous avez validé le module avec succès !</p>
+                `;
+                
+                const code = generateCertificationCode(totalScore);
+                document.getElementById('certificationCode').textContent = code;
+                codeDiv.style.display = 'block';
+            } else {
+                messageDiv.innerHTML = `
+                    <h3 style="color: #ffa500;">⚠️ SCORE INSUFFISANT</h3>
+                    <p style="font-size: 1.1em; margin: 15px 0;">
+                        Score minimum requis : 140/200<br>
+                        Votre score : ${totalScore}/200
+                    </p>
+                    <p>Veuillez recommencer le module pour obtenir la certification.</p>
+                `;
+            }
+        }
+
+        function generateCertificationCode(totalScore) {
+            const data = {
+                v: 1,
+                d: new Date().toISOString().split('T')[0],
+                m: 'OVA_02',
+                n: 'Apprenant',
+                s: totalScore,
+                q: Math.round((quizScore / 100) * 100),
+                sc: Math.round((scenariosScore / 100) * 100),
+                f: true
+            };
+            return btoa(JSON.stringify(data));
+        }
+
+        function copyCode() {
+            const code = document.getElementById('certificationCode').textContent;
+            navigator.clipboard.writeText(code);
+            alert('✅ Code copié dans le presse-papier !');
+        }
+
+        function nextSection() {
+            const sections = document.querySelectorAll('.section');
+            sections[currentSection].classList.remove('active');
+            currentSection++;
+            sections[currentSection].classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function previousSection() {
+            const sections = document.querySelectorAll('.section');
+            sections[currentSection].classList.remove('active');
+            currentSection--;
+            sections[currentSection].classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            const progress = ((currentSection + 1) / 4) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function restartModule() {
+            location.reload();
+        }
+
+        function returnToHub() {
+            window.location.href = 'index_PSC1.html';
+        }
+    </script>
+
+</body>
+</html>

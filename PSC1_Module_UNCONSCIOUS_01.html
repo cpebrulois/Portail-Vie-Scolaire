@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC1 - Module P3.03 : Perte de Connaissance + PLS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #8b0000;
+            --accent: #c41e3a;
+            --dark: #150808;
+            --darker: #0a0404;
+            --glow: rgba(139, 0, 0, 0.4);
+        }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.3; }
+        .particle { position: absolute; width: 3px; height: 3px; background: var(--primary); border-radius: 50%; animation: float 8s infinite ease-in-out; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+        .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .music-controls { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 10px 15px; border-radius: 50px; backdrop-filter: blur(10px); border: 1px solid rgba(139, 0, 0, 0.3); z-index: 1000; }
+        .music-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: transform 0.2s ease; }
+        .music-btn:hover { transform: scale(1.2); }
+        .volume-slider { width: 80px; height: 5px; background: rgba(255, 255, 255, 0.2); border-radius: 5px; outline: none; -webkit-appearance: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--primary); border-radius: 50%; cursor: pointer; }
+        header { text-align: center; margin-bottom: 40px; padding: 30px; background: rgba(255, 255, 255, 0.02); border-radius: 15px; border: 1px solid rgba(139, 0, 0, 0.3); }
+        .module-badge { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 700; margin-bottom: 15px; }
+        h1 { font-family: 'Orbitron', monospace; font-size: 2.8em; font-weight: 900; margin-bottom: 15px; text-shadow: 0 0 20px var(--glow); }
+        .subtitle { font-size: 1.3em; color: #aabbcc; margin-bottom: 20px; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: hidden; margin-top: 20px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: width 0.5s ease; }
+        .section { background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 30px; margin-bottom: 30px; border-left: 4px solid var(--primary); display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-title { font-family: 'Orbitron', monospace; font-size: 2em; margin-bottom: 20px; color: var(--primary); display: flex; align-items: center; gap: 15px; }
+        .theory-content { line-height: 1.8; font-size: 1.1em; }
+        .theory-content h3 { color: var(--accent); margin: 25px 0 15px 0; font-size: 1.4em; }
+        .theory-content p { margin-bottom: 15px; text-align: justify; }
+        .highlight-box { background: rgba(139, 0, 0, 0.1); border-left: 3px solid var(--primary); padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .important-list { list-style: none; padding: 0; }
+        .important-list li { padding: 10px 0 10px 30px; position: relative; }
+        .important-list li::before { content: '💤'; position: absolute; left: 0; }
+        .technique-box { background: rgba(0, 0, 0, 0.4); border-radius: 10px; padding: 20px; margin: 25px 0; border: 2px solid var(--accent); }
+        .question-card { background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(139, 0, 0, 0.3); }
+        .question-text { font-size: 1.3em; margin-bottom: 20px; font-weight: 600; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+        .option:hover { background: rgba(139, 0, 0, 0.1); border-color: var(--primary); transform: translateX(5px); }
+        .option.selected { background: rgba(139, 0, 0, 0.2); border-color: var(--accent); }
+        .option.correct { background: rgba(50, 205, 50, 0.2); border-color: #32cd32; }
+        .option.incorrect { background: rgba(220, 20, 60, 0.2); border-color: #dc143c; }
+        .scenario-card { background: rgba(0, 0, 0, 0.4); border-radius: 10px; padding: 25px; margin-bottom: 25px; border: 1px solid var(--primary); }
+        .scenario-title { font-size: 1.5em; color: var(--accent); margin-bottom: 15px; font-weight: 700; }
+        .scenario-text { font-size: 1.1em; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+        .btn { padding: 15px 30px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Orbitron', monospace; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--glow); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .results-panel { background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 30px; text-align: center; border: 2px solid var(--primary); }
+        .score-display { font-size: 4em; font-family: 'Orbitron', monospace; font-weight: 900; color: var(--accent); margin: 20px 0; }
+        .code-display { background: rgba(0, 212, 255, 0.1); border: 2px solid #00d4ff; border-radius: 10px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace; word-break: break-all; font-size: 0.9em; }
+        .nav-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+        .nav-btn { background: rgba(139, 0, 0, 0.8); padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: 700; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .nav-btn:hover { background: var(--primary); transform: scale(1.05); }
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .section-title { font-size: 1.5em; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <audio id="bgMusic" loop><source src="emergency_1.mp3" type="audio/mpeg"></audio>
+    <div class="particles" id="particles"></div>
+    <div class="music-controls">
+        <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔇</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" oninput="changeVolume(this.value)">
+    </div>
+    <div class="container">
+        <header>
+            <div class="module-badge">MODULE P3.03</div>
+            <h1>💤 PERTE DE CONNAISSANCE + PLS</h1>
+            <div class="subtitle">Reconnaître, Libérer Voies Aériennes, Position Latérale de Sécurité</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </header>
+
+        <div class="section active" id="section-theory">
+            <div class="section-title"><span>📚</span><span>PARTIE THÉORIQUE</span></div>
+            <div class="theory-content">
+                <div class="highlight-box"><strong>🎯 OBJECTIF :</strong> Reconnaître une perte de connaissance et mettre la victime en Position Latérale de Sécurité (PLS).</div>
+
+                <h3>💤 Qu'est-ce qu'une perte de connaissance ?</h3>
+                <p>Une personne perd connaissance lorsqu'elle est <strong>inconsciente</strong> (ne répond pas) mais <strong>respire normalement</strong>. Le danger principal est l'<strong>obstruction des voies aériennes</strong> par la langue qui bascule en arrière ou par vomissements.</p>
+
+                <h3>🔍 Reconnaître une perte de connaissance</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent);">2 SIGNES OBLIGATOIRES</h4>
+                    <ul class="important-list">
+                        <li><strong>Absence de réponse :</strong> La victime ne répond pas aux questions, ne réagit pas aux ordres simples</li>
+                        <li><strong>Respiration NORMALE :</strong> La victime respire (ventre/poitrine se soulève régulièrement)</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>⚠️ SI PAS DE RESPIRATION → ARRÊT CARDIAQUE → RCP !</strong></p>
+                </div>
+
+                <h3>🫁 Libération des Voies Aériennes (LVA)</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent);">TECHNIQUE</h4>
+                    <ul class="important-list">
+                        <li>Placer une main sur le front de la victime</li>
+                        <li>Placer 2 doigts sous le menton (pointe osseuse)</li>
+                        <li>Basculer <strong>DOUCEMENT</strong> la tête en arrière en soulevant le menton</li>
+                        <li>Cela dégage la langue qui obstrue les voies aériennes</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>Adulte/Enfant :</strong> Bascule tête arrière<br><strong>Nourrisson :</strong> Position NEUTRE (pas de bascule)</p>
+                </div>
+
+                <h3>🔄 Position Latérale de Sécurité (PLS)</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent);">LES 3 TEMPS DE LA PLS</h4>
+                    
+                    <p><strong>TEMPS 1 : Préparer le retournement</strong></p>
+                    <ul class="important-list">
+                        <li>Placer le bras le plus proche <strong>à angle droit</strong>, paume vers le haut</li>
+                        <li>Saisir la main opposée, la placer <strong>sous l'oreille</strong> côté sauveteur (dos de la main contre la joue)</li>
+                        <li>Saisir la jambe opposée, relever le genou en gardant le pied au sol</li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><strong>TEMPS 2 : Retourner</strong></p>
+                    <ul class="important-list">
+                        <li>Tirer sur la jambe pour faire rouler la victime vers vous</li>
+                        <li>Accompagner le mouvement</li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><strong>TEMPS 3 : Stabiliser</strong></p>
+                    <ul class="important-list">
+                        <li>Ajuster la jambe du dessus <strong>à angle droit</strong> (hanche ET genou)</li>
+                        <li>Ouvrir légèrement la bouche (liquides s'écoulent)</li>
+                        <li>Vérifier que la respiration reste normale</li>
+                    </ul>
+                </div>
+
+                <h3>⚠️ Cas particuliers</h3>
+                <div class="technique-box">
+                    <p><strong>Suspicion de traumatisme :</strong> NE PAS mettre en PLS. Maintenir la tête dans l'axe du corps, surveiller la respiration.</p>
+                    <p><strong>Vomissements :</strong> Si la victime vomit sur le dos, la tourner IMMÉDIATEMENT sur le côté (même si traumatisme).</p>
+                    <p><strong>Femme enceinte :</strong> PLS sur le côté GAUCHE de préférence.</p>
+                </div>
+
+                <h3>📞 Alerte et surveillance</h3>
+                <ul class="important-list">
+                    <li>Faire alerter ou alerter les secours (15 ou 18)</li>
+                    <li><strong>Surveiller CONTINUELLEMENT la respiration</strong> jusqu'à l'arrivée des secours</li>
+                    <li>Si la respiration s'arrête → Remettre sur le dos et débuter RCP</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>🔑 POINTS CLÉS :</strong><br>
+                    ✅ Perte connaissance = Inconscient + Respire normalement<br>
+                    ✅ LVA : Bascule tête arrière (dégage langue)<br>
+                    ✅ PLS en 3 temps : Préparer → Retourner → Stabiliser<br>
+                    ✅ Traumatisme → PAS de PLS (sauf vomissements)<br>
+                    ✅ Surveiller CONTINUELLEMENT la respiration
+                </div>
+            </div>
+            <div class="btn-group"><button class="btn" onclick="nextSection()">PASSER AU QUIZ ➡️</button></div>
+        </div>
+
+        <div class="section" id="section-quiz">
+            <div class="section-title"><span>❓</span><span>QUIZ</span></div>
+            <div id="quizContainer"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️ RETOUR</button>
+                <button class="btn" id="btnValidateQuiz" onclick="validateQuiz()" disabled>VALIDER</button>
+            </div>
+        </div>
+
+        <div class="section" id="section-scenarios">
+            <div class="section-title"><span>🎬</span><span>SCÉNARIOS</span></div>
+            <div id="scenariosContainer"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️ RETOUR</button>
+                <button class="btn" id="btnValidateScenarios" onclick="validateScenarios()" disabled>VALIDER</button>
+            </div>
+        </div>
+
+        <div class="section" id="section-results">
+            <div class="section-title"><span>🏆</span><span>RÉSULTATS</span></div>
+            <div class="results-panel">
+                <h2>📊 SCORE FINAL</h2>
+                <div class="score-display" id="finalScore">0/200</div>
+                <div style="margin: 30px 0;">
+                    <p style="font-size: 1.2em; margin-bottom: 10px;">Quiz : <span id="quizScoreDisplay">0/100</span></p>
+                    <p style="font-size: 1.2em;">Scénarios : <span id="scenariosScoreDisplay">0/100</span></p>
+                </div>
+                <div id="certificationMessage"></div>
+                <div class="code-display" id="codeDisplay" style="display: none;">
+                    <strong>🔑 CODE :</strong><br>
+                    <span id="certificationCode" style="font-size: 1.1em; color: #00d4ff;"></span><br><br>
+                    <button class="btn" onclick="copyCode()">📋 COPIER</button>
+                </div>
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="restartModule()">🔄 RECOMMENCER</button>
+                    <button class="btn" onclick="returnToHub()">🏠 HUB</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-buttons"><div class="nav-btn" onclick="returnToHub()">🏠 HUB</div></div>
+
+    <script>
+        let currentSection = 0, quizAnswers = [], scenarioAnswers = [], quizScore = 0, scenariosScore = 0;
+        const music = document.getElementById('bgMusic'), musicToggle = document.getElementById('musicToggle');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            if (isMusicPlaying) { music.pause(); musicToggle.textContent = '🔇'; isMusicPlaying = false; }
+            else { music.play(); musicToggle.textContent = '🔊'; isMusicPlaying = true; }
+        }
+        function changeVolume(v) { music.volume = v / 100; }
+        document.body.addEventListener('click', () => {
+            if (!isMusicPlaying && music.paused) { music.play(); musicToggle.textContent = '🔊'; isMusicPlaying = true; }
+        }, { once: true });
+
+        const quizQuestions = [
+            { q: "Une perte de connaissance se caractérise par une absence de réponse ET une respiration normale.", options: ["Vrai", "Faux"], correct: 0, explanation: "VRAI ! Les 2 critères obligatoires : inconscient + respire." },
+            { q: "Si la victime inconsciente ne respire pas, je mets en PLS.", options: ["Vrai", "Faux"], correct: 1, explanation: "FAUX ! Si pas de respiration = ARRÊT CARDIAQUE → RCP immédiate !" },
+            { q: "La libération des voies aériennes (LVA) consiste à :", options: ["Basculer la tête en arrière", "Mettre en PLS", "Donner à boire", "Asseoir la victime"], correct: 0, explanation: "Basculer la tête en arrière pour dégager la langue." },
+            { q: "En cas de suspicion de traumatisme, je dois :", options: ["Mettre en PLS quand même", "NE PAS mettre en PLS, maintenir tête dans l'axe", "Secouer la victime", "La déplacer"], correct: 1, explanation: "Traumatisme = PAS de PLS (risque lésion rachis). Maintenir tête dans l'axe." },
+            { q: "Si une victime en PLS vomit :", options: ["Je la remets sur le dos", "C'est normal, je ne fais rien", "La PLS permet l'écoulement des liquides", "J'appelle les secours"], correct: 2, explanation: "La PLS permet justement l'écoulement des liquides (bouche ouverte, tête basse)." },
+            { q: "La jambe du dessus en PLS doit être :", options: ["Tendue", "À angle droit (hanche et genou)", "Légèrement fléchie", "N'importe"], correct: 1, explanation: "Angle droit à la hanche ET au genou pour stabiliser." },
+            { q: "Après avoir mis en PLS, je dois :", options: ["Partir alerter", "Surveiller continuellement la respiration", "Couvrir la victime et partir", "Attendre sans rien faire"], correct: 1, explanation: "Surveiller CONTINUELLEMENT la respiration jusqu'à l'arrivée des secours !" },
+            { q: "Si la respiration s'arrête pendant que la victime est en PLS :", options: ["Je continue à surveiller", "Je la remets sur le dos et débute RCP", "Je la secoue", "J'attends"], correct: 1, explanation: "Remettre sur le dos IMMÉDIATEMENT et débuter RCP !" },
+            { q: "Le bras le plus proche du sauveteur est placé :", options: ["Le long du corps", "À angle droit, paume vers le haut", "Sous la tête", "Croisé sur la poitrine"], correct: 1, explanation: "Angle droit, paume vers le haut (évite d'être écrasé lors du retournement)." },
+            { q: "La main opposée est placée :", options: ["Le long du corps", "Sous l'oreille côté sauveteur", "Sur le ventre", "En l'air"], correct: 1, explanation: "Sous l'oreille côté sauveteur (dos main contre joue) pour protéger la tête." }
+        ];
+
+        const scenarios = [
+            { title: "Scénario 1 : Malaise au bureau", text: "Un collègue s'effondre. Il ne répond pas mais vous voyez sa poitrine se soulever régulièrement. Que faites-vous ?", options: ["Je le secoue pour le réveiller", "Je fais la LVA puis la PLS", "Je le laisse sur le dos", "Je lui donne de l'eau"], correct: 1, explanation: "Inconscient + Respire = LVA puis PLS !" },
+            { title: "Scénario 2 : Accident de vélo", text: "Un cycliste a chuté violemment. Il est inconscient mais respire. Vous suspectez un traumatisme crânien. Que faites-vous ?", options: ["PLS immédiate", "Maintenir tête dans l'axe, NE PAS mettre en PLS", "Le déplacer", "Le secouer"], correct: 1, explanation: "Traumatisme = PAS de PLS ! Maintenir tête dans l'axe, surveiller respiration." },
+            { title: "Scénario 3 : Victime qui vomit", text: "Une personne inconsciente en PLS vomit. Les liquides s'écoulent par la bouche. Que faites-vous ?", options: ["Je panique", "C'est normal, la PLS permet l'écoulement", "Je la remets sur le dos", "J'essuie la bouche"], correct: 1, explanation: "C'est NORMAL ! La PLS permet justement l'écoulement des vomissements." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles(); generateQuiz(); generateScenarios(); updateProgress();
+        });
+
+        function createParticles() {
+            const c = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 8 + 's';
+                p.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                c.appendChild(p);
+            }
+        }
+
+        function generateQuiz() {
+            const c = document.getElementById('quizContainer');
+            quizQuestions.forEach((item, i) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <div class="question-text">${i + 1}. ${item.q}</div>
+                    <div class="options" id="options-${i}">
+                        ${item.options.map((opt, j) => `<div class="option" onclick="selectOption(${i}, ${j})">${opt}</div>`).join('')}
+                    </div>
+                    <div id="explanation-${i}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,212,255,0.1); border-radius: 5px;"></div>
+                `;
+                c.appendChild(card);
+            });
+        }
+
+        function selectOption(qi, oi) {
+            const opts = document.getElementById(`options-${qi}`).querySelectorAll('.option');
+            opts.forEach(o => o.classList.remove('selected'));
+            opts[oi].classList.add('selected');
+            quizAnswers[qi] = oi;
+            if (quizAnswers.filter(a => a !== undefined).length === quizQuestions.length) {
+                document.getElementById('btnValidateQuiz').disabled = false;
+            }
+        }
+
+        function validateQuiz() {
+            let score = 0;
+            quizQuestions.forEach((item, i) => {
+                const opts = document.getElementById(`options-${i}`).querySelectorAll('.option');
+                const exp = document.getElementById(`explanation-${i}`);
+                if (quizAnswers[i] === item.correct) {
+                    score += 10;
+                    opts[quizAnswers[i]].classList.add('correct');
+                } else {
+                    opts[quizAnswers[i]].classList.add('incorrect');
+                    opts[item.correct].classList.add('correct');
+                }
+                exp.innerHTML = `<strong>Explication :</strong> ${item.explanation}`;
+                exp.style.display = 'block';
+                opts.forEach(o => o.style.pointerEvents = 'none');
+            });
+            quizScore = score;
+            document.getElementById('btnValidateQuiz').disabled = true;
+            setTimeout(() => nextSection(), 3000);
+        }
+
+        function generateScenarios() {
+            const c = document.getElementById('scenariosContainer');
+            scenarios.forEach((item, i) => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+                card.innerHTML = `
+                    <div class="scenario-title">${item.title}</div>
+                    <div class="scenario-text">"${item.text}"</div>
+                    <div class="options" id="scenario-options-${i}">
+                        ${item.options.map((opt, j) => `<div class="option" onclick="selectScenario(${i}, ${j})">${opt}</div>`).join('')}
+                    </div>
+                    <div id="scenario-explanation-${i}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,212,255,0.1); border-radius: 5px;"></div>
+                `;
+                c.appendChild(card);
+            });
+        }
+
+        function selectScenario(si, oi) {
+            const opts = document.getElementById(`scenario-options-${si}`).querySelectorAll('.option');
+            opts.forEach(o => o.classList.remove('selected'));
+            opts[oi].classList.add('selected');
+            scenarioAnswers[si] = oi;
+            if (scenarioAnswers.filter(a => a !== undefined).length === scenarios.length) {
+                document.getElementById('btnValidateScenarios').disabled = false;
+            }
+        }
+
+        function validateScenarios() {
+            let score = 0;
+            scenarios.forEach((item, i) => {
+                const opts = document.getElementById(`scenario-options-${i}`).querySelectorAll('.option');
+                const exp = document.getElementById(`scenario-explanation-${i}`);
+                if (scenarioAnswers[i] === item.correct) {
+                    score += 33.33;
+                    opts[scenarioAnswers[i]].classList.add('correct');
+                } else {
+                    opts[scenarioAnswers[i]].classList.add('incorrect');
+                    opts[item.correct].classList.add('correct');
+                }
+                exp.innerHTML = `<strong>✅ Bonne réponse :</strong> ${item.explanation}`;
+                exp.style.display = 'block';
+                opts.forEach(o => o.style.pointerEvents = 'none');
+            });
+            scenariosScore = Math.round(score);
+            document.getElementById('btnValidateScenarios').disabled = true;
+            setTimeout(() => showResults(), 3000);
+        }
+
+        function showResults() {
+            nextSection();
+            const total = quizScore + scenariosScore;
+            document.getElementById('finalScore').textContent = total + '/200';
+            document.getElementById('quizScoreDisplay').textContent = quizScore + '/100';
+            document.getElementById('scenariosScoreDisplay').textContent = scenariosScore + '/100';
+            const msg = document.getElementById('certificationMessage');
+            const codeDiv = document.getElementById('codeDisplay');
+            if (total >= 140) {
+                msg.innerHTML = `<h3 style="color: #32cd32;">🎉 FÉLICITATIONS !</h3><p style="font-size: 1.2em; margin: 15px 0;">Module validé !</p>`;
+                const code = btoa(JSON.stringify({v:1,d:new Date().toISOString().split('T')[0],m:'UNCONSCIOUS_01',n:'Apprenant',s:total,q:Math.round((quizScore/100)*100),sc:Math.round((scenariosScore/100)*100),f:true}));
+                document.getElementById('certificationCode').textContent = code;
+                codeDiv.style.display = 'block';
+            } else {
+                msg.innerHTML = `<h3 style="color: #ffa500;">⚠️ SCORE INSUFFISANT</h3><p style="font-size: 1.1em; margin: 15px 0;">Requis : 140/200<br>Votre score : ${total}/200</p>`;
+            }
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText(document.getElementById('certificationCode').textContent);
+            alert('✅ Code copié !');
+        }
+
+        function nextSection() {
+            const s = document.querySelectorAll('.section');
+            s[currentSection].classList.remove('active');
+            currentSection++;
+            s[currentSection].classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function previousSection() {
+            const s = document.querySelectorAll('.section');
+            s[currentSection].classList.remove('active');
+            currentSection--;
+            s[currentSection].classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            document.getElementById('progressFill').style.width = ((currentSection + 1) / 4) * 100 + '%';
+        }
+
+        function restartModule() { location.reload(); }
+        function returnToHub() { window.location.href = 'index_PSC1.html'; }
+    </script>
+</body>
+</html>

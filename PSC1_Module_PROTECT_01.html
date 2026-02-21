@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC1 - Module P1.01 : Le Citoyen Sauveteur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b00;
+            --accent: #ffa500;
+            --dark: #2a1510;
+            --darker: #1a0d08;
+            --glow: rgba(255, 107, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Particules de fond */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8em;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px var(--glow);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #aabbcc;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Sections */
+        .section {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Théorie */
+        .theory-content {
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .theory-content h3 {
+            color: var(--accent);
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .theory-content p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: rgba(255, 107, 0, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .important-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .important-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+        }
+
+        .important-list li::before {
+            content: '🔥';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Quiz */
+        .question-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            background: rgba(255, 107, 0, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: rgba(255, 107, 0, 0.2);
+            border-color: var(--accent);
+        }
+
+        .option.correct {
+            background: rgba(50, 205, 50, 0.2);
+            border-color: #32cd32;
+        }
+
+        .option.incorrect {
+            background: rgba(220, 20, 60, 0.2);
+            border-color: #dc143c;
+        }
+
+        /* Scénarios */
+        .scenario-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--primary);
+        }
+
+        .scenario-title {
+            font-size: 1.5em;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .scenario-text {
+            font-size: 1.1em;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--glow);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        /* Résultats */
+        .results-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            color: var(--accent);
+            margin: 20px 0;
+        }
+
+        .code-display {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 0.9em;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 107, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .section-title { font-size: 1.5em; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particules animées -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <div class="module-badge">MODULE P1.01</div>
+            <h1>🛡️ LE CITOYEN SAUVETEUR</h1>
+            <div class="subtitle">Rôle, responsabilités et engagement du citoyen formé</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </header>
+
+        <!-- Section 1 : Théorie -->
+        <div class="section active" id="section-theory">
+            <div class="section-title">
+                <span>📚</span>
+                <span>PARTIE THÉORIQUE</span>
+            </div>
+            
+            <div class="theory-content">
+                
+                <div class="highlight-box">
+                    <strong>🎯 OBJECTIF DU MODULE :</strong><br>
+                    Comprendre le rôle essentiel du citoyen dans la chaîne de secours et ses responsabilités légales et morales en tant que sauveteur.
+                </div>
+
+                <h3>🏛️ Le citoyen, acteur majeur de la Sécurité Civile</h3>
+                <p>
+                    La loi de modernisation de la sécurité civile de 2004, reprise dans l'article L721-1 du code de la Sécurité Intérieure, affirme que <strong>"Toute personne concourt par son comportement à la sécurité civile"</strong>. Concrètement, cela signifie qu'en fonction des situations auxquelles vous êtes confronté et dans la mesure de vos possibilités, vous devez :
+                </p>
+                <ul class="important-list">
+                    <li>Veiller à prévenir les services de secours</li>
+                    <li>Prendre les premières dispositions nécessaires</li>
+                    <li>Assurer une action citoyenne d'assistance à personne</li>
+                </ul>
+
+                <h3>⚖️ Protection juridique du citoyen sauveteur</h3>
+                <p>
+                    Cette même loi vous protège dans toutes vos actions entreprises : <strong>"Quiconque porte assistance de manière bénévole à une personne en situation apparente de péril grave et imminent est un citoyen sauveteur et bénéficie de la qualité de collaborateur occasionnel du service public"</strong> (LOI n° 2020-840 du 3 juillet 2020).
+                </p>
+                <p>
+                    En clair : <strong>vous êtes protégé légalement lorsque vous portez secours</strong>, même si vos gestes ne sont pas parfaits, tant que vous agissez de bonne foi et dans les limites de vos compétences.
+                </p>
+
+                <h3>🔗 Premier maillon de la chaîne de secours</h3>
+                <p>
+                    En tant que secouriste formé, vous êtes <strong>la première personne qualifiée</strong> à prendre en charge une victime d'accident, malaise, aggravation brutale de maladie ou toute autre situation d'urgence. Votre intervention précoce peut faire la différence entre la vie et la mort.
+                </p>
+
+                <div class="highlight-box">
+                    <strong>🚨 CHAÎNE DE SURVIE :</strong><br>
+                    Témoin → Alerte précoce → Gestes immédiats → Arrivée secours → Hôpital
+                </div>
+
+                <h3>🛡️ Prévenir les accidents de la vie courante</h3>
+                <p>
+                    Les services de secours sont souvent sollicités pour des accidents de la vie courante qui touchent particulièrement les enfants de moins de 15 ans et les personnes âgées. En tant que citoyen formé, vous pouvez :
+                </p>
+                <ul class="important-list">
+                    <li>Supprimer ou réduire les dangers pour vous-même et votre entourage</li>
+                    <li>Réduire la sollicitation des secours et du système de santé</li>
+                    <li>Respecter les consignes de sécurité édictées par les autorités</li>
+                    <li>Anticiper les aggravations de situations (personnes fragiles en période de canicule, etc.)</li>
+                </ul>
+
+                <h3>🎓 Entretenir et développer vos compétences</h3>
+                <p>
+                    Bien qu'il n'existe pas d'obligation légale de formation continue pour le PSC1, il est <strong>fortement recommandé</strong> d'actualiser régulièrement vos compétences. Les techniques évoluent, votre mémoire s'estompe avec le temps, et seule la pratique régulière permet de maintenir des gestes efficaces.
+                </p>
+
+                <h3>💪 S'engager pour sauver des vies</h3>
+                <p>
+                    Chaque citoyen peut s'engager sur la base du volontariat ou du bénévolat pour contribuer à la sécurité du pays :
+                </p>
+                <ul class="important-list">
+                    <li><strong>Pompier volontaire</strong> : engagez-vous auprès de votre SDIS</li>
+                    <li><strong>Bénévole de Sécurité Civile</strong> : rejoignez une association agréée</li>
+                    <li><strong>Réserviste</strong> : soutenez les forces de sécurité</li>
+                    <li><strong>Gestes simples</strong> : donner son sang, installer une app comme "Staying Alive"</li>
+                </ul>
+
+                <h3>📢 Être un ambassadeur de Sécurité Civile</h3>
+                <p>
+                    Être ambassadeur, c'est :
+                </p>
+                <ul class="important-list">
+                    <li>Partager votre expérience et inciter à se former</li>
+                    <li>Véhiculer les communications relatives à la Sécurité Civile</li>
+                    <li>Partager vos compétences lors de crises</li>
+                </ul>
+
+                <h3>🧠 Impact psychologique d'une intervention</h3>
+                <p>
+                    Toute situation de crise peut avoir un impact psychologique sur les victimes, témoins ou intervenants. Pour réduire cet impact :
+                </p>
+                <ul class="important-list">
+                    <li><strong>Préparez-vous</strong> en vous formant régulièrement</li>
+                    <li><strong>Adoptez une posture empathique</strong> : mettez-vous à hauteur de la victime, écoutez-la, rassurez-la</li>
+                    <li><strong>Échangez avec les secours</strong> une fois la victime prise en charge</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>🔑 POINTS CLÉS À RETENIR :</strong><br>
+                    ✅ Vous êtes protégé légalement en portant secours<br>
+                    ✅ Vous êtes le premier maillon de la chaîne de survie<br>
+                    ✅ La prévention sauve autant de vies que les gestes<br>
+                    ✅ Formez-vous régulièrement, engagez-vous, partagez
+                </div>
+
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="nextSection()">PASSER AU QUIZ ➡️</button>
+            </div>
+        </div>
+
+        <!-- Section 2 : Quiz -->
+        <div class="section" id="section-quiz">
+            <div class="section-title">
+                <span>❓</span>
+                <span>QUIZ DE CONNAISSANCES</span>
+            </div>
+
+            <div id="quizContainer"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️ RETOUR</button>
+                <button class="btn" id="btnValidateQuiz" onclick="validateQuiz()" disabled>VALIDER LE QUIZ</button>
+            </div>
+        </div>
+
+        <!-- Section 3 : Scénarios -->
+        <div class="section" id="section-scenarios">
+            <div class="section-title">
+                <span>🎬</span>
+                <span>SCÉNARIOS PRATIQUES</span>
+            </div>
+
+            <div id="scenariosContainer"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️ RETOUR</button>
+                <button class="btn" id="btnValidateScenarios" onclick="validateScenarios()" disabled>VALIDER LES SCÉNARIOS</button>
+            </div>
+        </div>
+
+        <!-- Section 4 : Résultats -->
+        <div class="section" id="section-results">
+            <div class="section-title">
+                <span>🏆</span>
+                <span>RÉSULTATS & CERTIFICATION</span>
+            </div>
+
+            <div class="results-panel">
+                <h2>📊 VOTRE SCORE FINAL</h2>
+                <div class="score-display" id="finalScore">0/200</div>
+                
+                <div style="margin: 30px 0;">
+                    <p style="font-size: 1.2em; margin-bottom: 10px;">Quiz : <span id="quizScoreDisplay">0/100</span></p>
+                    <p style="font-size: 1.2em;">Scénarios : <span id="scenariosScoreDisplay">0/100</span></p>
+                </div>
+
+                <div id="certificationMessage"></div>
+
+                <div class="code-display" id="codeDisplay" style="display: none;">
+                    <strong>🔑 CODE DE CERTIFICATION :</strong><br>
+                    <span id="certificationCode" style="font-size: 1.1em; color: #00d4ff;"></span><br><br>
+                    <button class="btn" onclick="copyCode()">📋 COPIER LE CODE</button>
+                </div>
+
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="restartModule()">🔄 RECOMMENCER</button>
+                    <button class="btn" onclick="returnToHub()">🏠 RETOUR HUB</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation flottante -->
+    <div class="nav-buttons">
+        <div class="nav-btn" onclick="returnToHub()">🏠 HUB</div>
+    </div>
+
+    <script>
+        // État du module
+        let currentSection = 0;
+        let quizAnswers = [];
+        let scenarioAnswers = [];
+        let quizScore = 0;
+        let scenariosScore = 0;
+
+        // Questions du quiz
+        const quizQuestions = [
+            {
+                q: "Selon la loi de 2004, toute personne concourt par son comportement à la sécurité civile.",
+                options: ["Vrai", "Faux"],
+                correct: 0,
+                explanation: "C'est exact ! L'article L721-1 du code de la Sécurité Intérieure affirme ce principe."
+            },
+            {
+                q: "Si je porte secours à une personne et que mes gestes ne sont pas parfaits, je peux être poursuivi en justice.",
+                options: ["Vrai", "Faux"],
+                correct: 1,
+                explanation: "Faux ! Vous bénéficiez de la qualité de 'collaborateur occasionnel du service public' et êtes protégé légalement si vous agissez de bonne foi."
+            },
+            {
+                q: "Quel est le statut juridique du citoyen qui porte assistance de manière bénévole ?",
+                options: [
+                    "Simple témoin",
+                    "Collaborateur occasionnel du service public",
+                    "Agent de sécurité civile",
+                    "Bénévole non protégé"
+                ],
+                correct: 1,
+                explanation: "Le citoyen sauveteur bénéficie de la qualité de collaborateur occasionnel du service public (LOI n° 2020-840 du 3 juillet 2020)."
+            },
+            {
+                q: "Les accidents de la vie courante touchent particulièrement :",
+                options: [
+                    "Les adultes de 30-50 ans",
+                    "Les enfants de moins de 15 ans et les personnes âgées",
+                    "Uniquement les travailleurs",
+                    "Uniquement les sportifs"
+                ],
+                correct: 1,
+                explanation: "Les enfants de moins de 15 ans et les personnes âgées sont les plus exposés aux accidents de la vie courante."
+            },
+            {
+                q: "Y a-t-il une obligation légale de formation continue PSC1 ?",
+                options: ["Oui", "Non"],
+                correct: 1,
+                explanation: "Non, mais il est FORTEMENT RECOMMANDÉ d'actualiser régulièrement ses compétences car les techniques évoluent."
+            },
+            {
+                q: "Quelle application mobile permet d'être alerté en cas d'arrêt cardiaque à proximité ?",
+                options: [
+                    "Waze",
+                    "Staying Alive",
+                    "Google Maps",
+                    "Aucune"
+                ],
+                correct: 1,
+                explanation: "Staying Alive (ainsi que SAUV Life, Permis de Sauver, etc.) permet d'être mobilisé par les secours en cas d'arrêt cardiaque à proximité."
+            },
+            {
+                q: "En tant que citoyen formé, votre rôle est :",
+                options: [
+                    "Remplacer les pompiers",
+                    "Être le premier maillon de la chaîne de secours",
+                    "Intervenir uniquement si vous êtes sûr de vous",
+                    "Attendre l'arrivée des secours"
+                ],
+                correct: 1,
+                explanation: "Vous êtes le PREMIER maillon de la chaîne de secours, votre intervention précoce sauve des vies."
+            },
+            {
+                q: "Pour réduire l'impact psychologique d'une intervention, il faut :",
+                options: [
+                    "Ne jamais parler de ce qu'on a vu",
+                    "Se former régulièrement et adopter une posture empathique",
+                    "Éviter de regarder la victime",
+                    "Rester distant émotionnellement"
+                ],
+                correct: 1,
+                explanation: "La préparation par la formation et l'empathie envers la victime réduisent l'impact psychologique."
+            },
+            {
+                q: "Être un 'ambassadeur de Sécurité Civile' signifie :",
+                options: [
+                    "Avoir un titre officiel",
+                    "Partager son expérience et inciter à se former",
+                    "Être pompier professionnel",
+                    "Être rémunéré pour enseigner"
+                ],
+                correct: 1,
+                explanation: "Être ambassadeur, c'est partager son expérience, inciter à se former et véhiculer les communications de Sécurité Civile."
+            },
+            {
+                q: "Le citoyen formé peut contribuer à la prévention en :",
+                options: [
+                    "Supprimant ou réduisant les dangers",
+                    "Appelant systématiquement les secours",
+                    "Ne faisant rien sans ordre",
+                    "Attendant les pompiers"
+                ],
+                correct: 0,
+                explanation: "En supprimant ou réduisant les dangers, vous prévenez les accidents et réduisez la sollicitation des secours."
+            }
+        ];
+
+        // Scénarios
+        const scenarios = [
+            {
+                title: "Scénario 1 : Accident de la route",
+                text: "Vous êtes témoin d'un accident de la route. Deux véhicules sont impliqués, l'un des conducteurs semble blessé. Que faites-vous en PREMIER ?",
+                options: [
+                    "Je cours vers la victime pour la secourir",
+                    "Je sécurise la zone et j'alerte les secours",
+                    "Je prends des photos pour les assurances",
+                    "J'attends que quelqu'un d'autre intervienne"
+                ],
+                correct: 1,
+                explanation: "PROTÉGER d'abord ! Vous devez sécuriser la zone (triangle, feux de détresse) et alerter les secours AVANT d'approcher les victimes."
+            },
+            {
+                title: "Scénario 2 : Malaise dans un supermarché",
+                text: "Une personne âgée fait un malaise devant vous dans un supermarché. Elle est consciente mais dit se sentir très mal. Quelle est votre responsabilité en tant que citoyen formé ?",
+                options: [
+                    "Je n'ai aucune obligation, je peux partir",
+                    "Je dois porter assistance dans la mesure de mes possibilités",
+                    "Je dois appeler ma famille pour savoir quoi faire",
+                    "Je dois attendre qu'un médecin arrive"
+                ],
+                correct: 1,
+                explanation: "L'article L721-1 vous impose de 'prendre les premières dispositions nécessaires' dans la mesure de vos possibilités. Vous devez agir !"
+            },
+            {
+                title: "Scénario 3 : Doute sur vos compétences",
+                text: "Vous avez passé votre PSC1 il y a 3 ans et vous n'avez jamais eu l'occasion d'intervenir. Vous doutez de vos compétences. Que devriez-vous faire ?",
+                options: [
+                    "Considérer que je ne suis plus formé",
+                    "Actualiser mes compétences par une formation de recyclage",
+                    "Attendre d'avoir à intervenir pour me rappeler",
+                    "Ne plus intervenir par peur de mal faire"
+                ],
+                correct: 1,
+                explanation: "Il est recommandé d'actualiser régulièrement ses compétences. Les formations de recyclage existent justement pour cela !"
+            }
+        ];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            generateQuiz();
+            generateScenarios();
+            updateProgress();
+        });
+
+        // Création particules
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Génération quiz
+        function generateQuiz() {
+            const container = document.getElementById('quizContainer');
+            quizQuestions.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <div class="question-text">${index + 1}. ${item.q}</div>
+                    <div class="options" id="options-${index}">
+                        ${item.options.map((opt, i) => `
+                            <div class="option" onclick="selectOption(${index}, ${i})">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="explanation-${index}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,212,255,0.1); border-radius: 5px;"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Sélection option quiz
+        function selectOption(questionIndex, optionIndex) {
+            const optionsDiv = document.getElementById(`options-${questionIndex}`);
+            const options = optionsDiv.querySelectorAll('.option');
+            
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            quizAnswers[questionIndex] = optionIndex;
+            
+            // Activer bouton si toutes réponses
+            if (quizAnswers.filter(a => a !== undefined).length === quizQuestions.length) {
+                document.getElementById('btnValidateQuiz').disabled = false;
+            }
+        }
+
+        // Validation quiz
+        function validateQuiz() {
+            let score = 0;
+            quizQuestions.forEach((item, index) => {
+                const optionsDiv = document.getElementById(`options-${index}`);
+                const options = optionsDiv.querySelectorAll('.option');
+                const explanationDiv = document.getElementById(`explanation-${index}`);
+                
+                if (quizAnswers[index] === item.correct) {
+                    score += 10;
+                    options[quizAnswers[index]].classList.add('correct');
+                } else {
+                    options[quizAnswers[index]].classList.add('incorrect');
+                    options[item.correct].classList.add('correct');
+                }
+                
+                explanationDiv.innerHTML = `<strong>Explication :</strong> ${item.explanation}`;
+                explanationDiv.style.display = 'block';
+                
+                // Désactiver clics
+                options.forEach(opt => opt.style.pointerEvents = 'none');
+            });
+            
+            quizScore = score;
+            document.getElementById('btnValidateQuiz').disabled = true;
+            
+            setTimeout(() => {
+                nextSection();
+            }, 3000);
+        }
+
+        // Génération scénarios
+        function generateScenarios() {
+            const container = document.getElementById('scenariosContainer');
+            scenarios.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+                card.innerHTML = `
+                    <div class="scenario-title">${item.title}</div>
+                    <div class="scenario-text">"${item.text}"</div>
+                    <div class="options" id="scenario-options-${index}">
+                        ${item.options.map((opt, i) => `
+                            <div class="option" onclick="selectScenario(${index}, ${i})">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="scenario-explanation-${index}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,212,255,0.1); border-radius: 5px;"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Sélection scénario
+        function selectScenario(scenarioIndex, optionIndex) {
+            const optionsDiv = document.getElementById(`scenario-options-${scenarioIndex}`);
+            const options = optionsDiv.querySelectorAll('.option');
+            
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            scenarioAnswers[scenarioIndex] = optionIndex;
+            
+            if (scenarioAnswers.filter(a => a !== undefined).length === scenarios.length) {
+                document.getElementById('btnValidateScenarios').disabled = false;
+            }
+        }
+
+        // Validation scénarios
+        function validateScenarios() {
+            let score = 0;
+            scenarios.forEach((item, index) => {
+                const optionsDiv = document.getElementById(`scenario-options-${index}`);
+                const options = optionsDiv.querySelectorAll('.option');
+                const explanationDiv = document.getElementById(`scenario-explanation-${index}`);
+                
+                if (scenarioAnswers[index] === item.correct) {
+                    score += 33.33;
+                    options[scenarioAnswers[index]].classList.add('correct');
+                } else {
+                    options[scenarioAnswers[index]].classList.add('incorrect');
+                    options[item.correct].classList.add('correct');
+                }
+                
+                explanationDiv.innerHTML = `<strong>✅ Bonne réponse :</strong> ${item.explanation}`;
+                explanationDiv.style.display = 'block';
+                
+                options.forEach(opt => opt.style.pointerEvents = 'none');
+            });
+            
+            scenariosScore = Math.round(score);
+            document.getElementById('btnValidateScenarios').disabled = true;
+            
+            setTimeout(() => {
+                showResults();
+            }, 3000);
+        }
+
+        // Afficher résultats
+        function showResults() {
+            nextSection();
+            
+            const totalScore = quizScore + scenariosScore;
+            document.getElementById('finalScore').textContent = totalScore + '/200';
+            document.getElementById('quizScoreDisplay').textContent = quizScore + '/100';
+            document.getElementById('scenariosScoreDisplay').textContent = scenariosScore + '/100';
+            
+            const messageDiv = document.getElementById('certificationMessage');
+            const codeDiv = document.getElementById('codeDisplay');
+            
+            if (totalScore >= 140) {
+                messageDiv.innerHTML = `
+                    <h3 style="color: #32cd32;">🎉 FÉLICITATIONS !</h3>
+                    <p style="font-size: 1.2em; margin: 15px 0;">Vous avez validé le module avec succès !</p>
+                `;
+                
+                // Générer code
+                const code = generateCertificationCode(totalScore);
+                document.getElementById('certificationCode').textContent = code;
+                codeDiv.style.display = 'block';
+            } else {
+                messageDiv.innerHTML = `
+                    <h3 style="color: #ffa500;">⚠️ SCORE INSUFFISANT</h3>
+                    <p style="font-size: 1.1em; margin: 15px 0;">
+                        Score minimum requis : 140/200<br>
+                        Votre score : ${totalScore}/200
+                    </p>
+                    <p>Veuillez recommencer le module pour obtenir la certification.</p>
+                `;
+            }
+        }
+
+        // Générer code certification
+        function generateCertificationCode(totalScore) {
+            const data = {
+                v: 1,
+                d: new Date().toISOString().split('T')[0],
+                m: 'PROTECT_01',
+                n: 'Apprenant',
+                s: totalScore,
+                q: Math.round((quizScore / 100) * 100),
+                sc: Math.round((scenariosScore / 100) * 100),
+                f: true
+            };
+            return btoa(JSON.stringify(data));
+        }
+
+        // Copier code
+        function copyCode() {
+            const code = document.getElementById('certificationCode').textContent;
+            navigator.clipboard.writeText(code);
+            alert('✅ Code copié dans le presse-papier !');
+        }
+
+        // Navigation sections
+        function nextSection() {
+            const sections = document.querySelectorAll('.section');
+            sections[currentSection].classList.remove('active');
+            currentSection++;
+            sections[currentSection].classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function previousSection() {
+            const sections = document.querySelectorAll('.section');
+            sections[currentSection].classList.remove('active');
+            currentSection--;
+            sections[currentSection].classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        // Mise à jour progression
+        function updateProgress() {
+            const progress = ((currentSection + 1) / 4) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Recommencer
+        function restartModule() {
+            location.reload();
+        }
+
+        // Retour hub
+        function returnToHub() {
+            window.location.href = 'index_PSC1.html';
+        }
+    </script>
+
+</body>
+</html>

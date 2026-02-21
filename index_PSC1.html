@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC1 - Formation aux Premiers Secours</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Hub central */
+            --hub-neon: #00d4ff;
+            --hub-gold: #ffd700;
+            --hub-dark: #0a0a12;
+            --hub-darker: #050508;
+            
+            /* Pilier 1 - PROTÉGER & ALERTER */
+            --p1-primary: #ff6b00;
+            --p1-accent: #ffa500;
+            --p1-dark: #2a1510;
+            --p1-glow: rgba(255, 107, 0, 0.4);
+            
+            /* Pilier 2 - OVA */
+            --p2-primary: #dc143c;
+            --p2-accent: #ff4444;
+            --p2-dark: #1a0d0d;
+            --p2-glow: rgba(220, 20, 60, 0.4);
+            
+            /* Pilier 3 - HÉMORRAGIE & INCONSCIENCE */
+            --p3-primary: #8b0000;
+            --p3-accent: #c41e3a;
+            --p3-dark: #150808;
+            --p3-glow: rgba(139, 0, 0, 0.4);
+            
+            /* Pilier 4 - ARRÊT CARDIAQUE */
+            --p4-primary: #4169e1;
+            --p4-accent: #00bfff;
+            --p4-dark: #0a0a1a;
+            --p4-glow: rgba(65, 105, 225, 0.4);
+            
+            /* Pilier 5 - AUTRES DÉTRESSES */
+            --p5-primary: #32cd32;
+            --p5-accent: #90ee90;
+            --p5-dark: #0d1a0d;
+            --p5-glow: rgba(50, 205, 50, 0.4);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: linear-gradient(135deg, var(--hub-darker) 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--hub-neon), var(--hub-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #8899aa;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .alert-banner {
+            background: linear-gradient(90deg, var(--p1-primary), var(--p2-primary));
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 900px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+        }
+
+        /* Matrice des piliers */
+        .matrix-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1600px;
+            margin: 0 auto 40px;
+            padding: 20px;
+        }
+
+        .pillar-column {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            padding: 20px;
+            border-top: 4px solid;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-column:hover {
+            transform: translateY(-5px);
+        }
+
+        .pillar-column::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            opacity: 0.05;
+            background: linear-gradient(180deg, currentColor 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        /* Couleurs spécifiques par pilier */
+        .pillar-column.p1 { border-top-color: var(--p1-primary); }
+        .pillar-column.p1:hover { box-shadow: 0 10px 40px var(--p1-glow); }
+        .pillar-column.p1::before { color: var(--p1-primary); }
+
+        .pillar-column.p2 { border-top-color: var(--p2-primary); }
+        .pillar-column.p2:hover { box-shadow: 0 10px 40px var(--p2-glow); }
+        .pillar-column.p2::before { color: var(--p2-primary); }
+
+        .pillar-column.p3 { border-top-color: var(--p3-primary); }
+        .pillar-column.p3:hover { box-shadow: 0 10px 40px var(--p3-glow); }
+        .pillar-column.p3::before { color: var(--p3-primary); }
+
+        .pillar-column.p4 { border-top-color: var(--p4-primary); }
+        .pillar-column.p4:hover { box-shadow: 0 10px 40px var(--p4-glow); }
+        .pillar-column.p4::before { color: var(--p4-primary); }
+
+        .pillar-column.p5 { border-top-color: var(--p5-primary); }
+        .pillar-column.p5:hover { box-shadow: 0 10px 40px var(--p5-glow); }
+        .pillar-column.p5::before { color: var(--p5-primary); }
+
+        .pillar-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
+        }
+
+        .pillar-description {
+            font-size: 0.95em;
+            color: #aabbcc;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Cartes modules */
+        .module-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .module-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(5px);
+        }
+
+        .module-card.locked { 
+            opacity: 0.5; 
+            border-left-color: #555;
+        }
+        .module-card.unlocked { 
+            border-left-color: var(--hub-gold);
+        }
+        .module-card.completed { 
+            border-left-color: var(--p5-primary);
+            background: rgba(50, 205, 50, 0.1);
+        }
+
+        .module-card h4 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .status-txt {
+            font-size: 0.85em;
+            display: block;
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        .module-card .btn-launch {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--hub-neon), var(--hub-gold));
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .module-card.unlocked .btn-launch,
+        .module-card.completed .btn-launch {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .module-card .btn-launch:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+        }
+
+        .cert-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--hub-gold), #ff8c00);
+            color: #000;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Section validation */
+        .validation-section {
+            max-width: 800px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .validation-section h2 {
+            font-family: 'Orbitron', monospace;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--hub-neon);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #aabbcc;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-validate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--hub-neon), var(--hub-gold));
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn-validate:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+        }
+
+        .result-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .result-message.success {
+            background: rgba(50, 205, 50, 0.2);
+            border: 1px solid var(--p5-primary);
+            color: var(--p5-accent);
+        }
+
+        .result-message.error {
+            background: rgba(220, 20, 60, 0.2);
+            border: 1px solid var(--p2-primary);
+            color: var(--p2-accent);
+        }
+
+        /* Forge admin */
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .admin-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .admin-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 400px;
+            max-height: 600px;
+            background: rgba(10, 10, 18, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--hub-gold);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .admin-panel.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-panel h3 {
+            color: var(--hub-gold);
+            margin-bottom: 20px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .forge-group {
+            margin-bottom: 15px;
+        }
+
+        .forge-group select,
+        .forge-group input[type="number"],
+        .forge-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .btn-forge {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--hub-gold), #ff8c00);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .generated-code {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid var(--hub-neon);
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            display: none;
+        }
+
+        /* Stats progression */
+        .stats-panel {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 3px solid;
+        }
+
+        .stat-card.p1 { border-left-color: var(--p1-primary); }
+        .stat-card.p2 { border-left-color: var(--p2-primary); }
+        .stat-card.p3 { border-left-color: var(--p3-primary); }
+        .stat-card.p4 { border-left-color: var(--p4-primary); }
+        .stat-card.p5 { border-left-color: var(--p5-primary); }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #8899aa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .subtitle { font-size: 1em; }
+            .matrix-container { grid-template-columns: 1fr; }
+            .admin-panel { width: 90%; right: 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🎵 MUSIQUE DE FOND -->
+    <audio id="bgMusic" loop>
+        <source src="emergency_horizon.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="musicToggle"
+        style="position:fixed; top:20px; left:20px; z-index:2000;
+               background:rgba(0,0,0,0.6); color:#fff;
+               border:1px solid #00d4ff; border-radius:20px;
+               padding:8px 14px; cursor:pointer;">
+        🔊 Activer l’ambiance sonore
+    </button>
+
+    <!-- Particules animées -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header>
+        <h1>🚑 PSC1</h1>
+        <div class="subtitle">FORMATION PREMIERS SECOURS CIVIQUES NIVEAU 1</div>
+        <button onclick="goSuperHub()" style="padding:8px 14px; border:none; border-radius:8px; font-weight:700; cursor:pointer; background:linear-gradient(135deg, var(--hub-neon), var(--hub-gold)); color:#000; margin-bottom:12px;">PORTAIL VIE SCOLAIRE</button>
+        <div class="alert-banner">
+            ⚠️ Référentiel officiel DGSCGC - Décembre 2023 | 18 modules | 5 piliers de compétences
+        </div>
+    </header>
+
+    <!-- TOUT LE RESTE DE TON HUB ICI -->
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        const toggle = document.getElementById('musicToggle');
+
+        let musicPlaying = false;
+
+        toggle.addEventListener('click', () => {
+            if (!musicPlaying) {
+                music.volume = 0.4;
+                music.play();
+                toggle.textContent = '🔈 Couper la musique';
+                musicPlaying = true;
+            } else {
+                music.pause();
+                toggle.textContent = '🔊 Activer l’ambiance sonore';
+                musicPlaying = false;
+            }
+        });
+    </script>
+
+</body>
+</html>
+    <!-- Stats progression -->
+    <div class="stats-panel">
+        <h2 style="text-align: center; font-family: 'Orbitron', monospace; color: var(--hub-neon);">📊 VOTRE PROGRESSION</h2>
+        <div class="stats-grid">
+            <div class="stat-card p1">
+                <div class="stat-value" id="stat-p1">0/3</div>
+                <div class="stat-label">PROTÉGER & ALERTER</div>
+            </div>
+            <div class="stat-card p2">
+                <div class="stat-value" id="stat-p2">0/3</div>
+                <div class="stat-label">OBSTRUCTION RESP.</div>
+            </div>
+            <div class="stat-card p3">
+                <div class="stat-value" id="stat-p3">0/4</div>
+                <div class="stat-label">HÉMORRAGIE & INCONS.</div>
+            </div>
+            <div class="stat-card p4">
+                <div class="stat-value" id="stat-p4">0/4</div>
+                <div class="stat-label">ARRÊT CARDIAQUE</div>
+            </div>
+            <div class="stat-card p5">
+                <div class="stat-value" id="stat-p5">0/4</div>
+                <div class="stat-label">AUTRES DÉTRESSES</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matrice des piliers -->
+    <div class="matrix-container">
+        
+        <!-- PILIER 1 : PROTÉGER & ALERTER -->
+        <div class="pillar-column p1">
+            <div class="pillar-title">🛡️ PROTÉGER & ALERTER</div>
+            <div class="pillar-description">Sécuriser, évaluer et déclencher la chaîne des secours</div>
+            
+            <div class="module-card locked" data-module="PROTECT_01" data-pillar="p1">
+                <h4>01 - Le Citoyen Sauveteur</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Rôle et responsabilités du citoyen formé</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_PROTECT_01.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="PROTECT_02" data-pillar="p1">
+                <h4>02 - Protection + Dégagement</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Protéger, supprimer le danger, dégager d'urgence</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_PROTECT_02.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="PROTECT_03" data-pillar="p1">
+                <h4>03 - Alerter Efficacement <span class="cert-badge">CERTIF</span></h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">15, 18, 112, 114 - Transmission d'informations</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_PROTECT_03.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+        </div>
+
+        <!-- PILIER 2 : OVA -->
+        <div class="pillar-column p2">
+            <div class="pillar-title">🫁 OBSTRUCTION RESPIRATOIRE</div>
+            <div class="pillar-description">Désobstruction des voies aériennes (OVA)</div>
+            
+            <div class="module-card locked" data-module="OVA_01" data-pillar="p2">
+                <h4>01 - OVA Adulte & Enfant</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Claques dans le dos + Compressions abdominales</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OVA_01.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="OVA_02" data-pillar="p2">
+                <h4>02 - OVA Nourrisson</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Claques + Compressions thoraciques</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OVA_02.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="OVA_03" data-pillar="p2">
+                <h4>03 - Synthèse OVA <span class="cert-badge">CERTIF</span></h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Cas complexes + Évaluation finale</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OVA_03.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+        </div>
+
+        <!-- PILIER 3 : HÉMORRAGIE & INCONSCIENCE -->
+        <div class="pillar-column p3">
+            <div class="pillar-title">🩸 HÉMORRAGIE & INCONSCIENCE</div>
+            <div class="pillar-description">Arrêter le saignement, protéger les voies aériennes</div>
+            
+            <div class="module-card locked" data-module="HEMORRHAGE_01" data-pillar="p3">
+                <h4>01 - Hémorragie Externe</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Compression directe + Pansement compressif</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_HEMORRHAGE_01.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="HEMORRHAGE_02" data-pillar="p3">
+                <h4>02 - Le Garrot</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Garrot improvisé et industriel</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_HEMORRHAGE_02.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="UNCONSCIOUS_01" data-pillar="p3">
+                <h4>03 - Perte de Connaissance</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">LVA + PLS (Position Latérale de Sécurité)</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_UNCONSCIOUS_01.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="HEMORRHAGE_UNCONS_SYNTH" data-pillar="p3">
+                <h4>04 - Synthèse <span class="cert-badge">CERTIF</span></h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Scénarios combinés + Évaluation</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_HEMORRHAGE_UNCONS_SYNTH.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+        </div>
+
+        <!-- PILIER 4 : ARRÊT CARDIAQUE -->
+        <div class="pillar-column p4">
+            <div class="pillar-title">💙 ARRÊT CARDIAQUE</div>
+            <div class="pillar-description">RCP + Défibrillation précoce</div>
+            
+            <div class="module-card locked" data-module="CARDIAC_01" data-pillar="p4">
+                <h4>01 - Reconnaître l'Arrêt Cardiaque</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Inconscience + Absence respiration</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_CARDIAC_01.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="CARDIAC_02" data-pillar="p4">
+                <h4>02 - Compressions Thoraciques</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Adulte, enfant, nourrisson - Technique MCE</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_CARDIAC_02.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="CARDIAC_03" data-pillar="p4">
+                <h4>03 - RCP Complète (30:2)</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Compressions + Insufflations</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_CARDIAC_03.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="CARDIAC_04" data-pillar="p4">
+                <h4>04 - Défibrillateur (DAE) <span class="cert-badge">CERTIF</span></h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">DSA/DEA - Électrodes - Choc électrique</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_CARDIAC_04.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+        </div>
+
+        <!-- PILIER 5 : AUTRES DÉTRESSES -->
+        <div class="pillar-column p5">
+            <div class="pillar-title">🏥 AUTRES DÉTRESSES</div>
+            <div class="pillar-description">Malaises, plaies, brûlures, traumatismes</div>
+            
+            <div class="module-card locked" data-module="OTHER_01" data-pillar="p5">
+                <h4>01 - Malaises</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">AVC, infarctus, hypoglycémie - Reconnaître les signes</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OTHER_01.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="OTHER_02" data-pillar="p5">
+                <h4>02 - Plaies</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Plaies simples vs graves - Nettoyer, protéger</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OTHER_02.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="OTHER_03" data-pillar="p5">
+                <h4>03 - Brûlures</h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Thermiques, chimiques, électriques - Refroidir</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OTHER_03.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+            
+            <div class="module-card locked" data-module="OTHER_04" data-pillar="p5">
+                <h4>04 - Traumatismes <span class="cert-badge">CERTIF</span></h4>
+                <p style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Fractures, entorses, traumatisme rachis</p>
+                <span class="status-txt">🔒 VERROUILLÉ</span>
+                <a href="PSC1_Module_OTHER_04.html" class="btn-launch">LANCER MODULE</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Section validation codes -->
+    <div class="validation-section">
+        <h2>🔑 VALIDER UN MODULE</h2>
+        <div class="input-group">
+            <label for="codeInput">Entrez votre code de certification :</label>
+            <input type="text" id="codeInput" placeholder="Collez le code ici...">
+        </div>
+        <button class="btn-validate" onclick="validateCode()">VALIDER LA CERTIFICATION</button>
+        <div class="result-message" id="resultMessage"></div>
+    </div>
+
+    <!-- Toggle admin -->
+    <div class="admin-toggle" onclick="toggleAdmin()">
+        🔧 FORGE ADMIN
+    </div>
+
+    <!-- Panel admin -->
+    <div class="admin-panel" id="adminPanel">
+        <h3>⚙️ GÉNÉRATEUR DE CODES</h3>
+        
+        <div class="forge-group">
+            <label>Module :</label>
+            <select id="forgeModule">
+                <option value="PROTECT_01">P1.01 - Citoyen Sauveteur</option>
+                <option value="PROTECT_02">P1.02 - Protection + Dégagement</option>
+                <option value="PROTECT_03">P1.03 - Alerter [CERTIF]</option>
+                <option value="OVA_01">P2.01 - OVA Adulte</option>
+                <option value="OVA_02">P2.02 - OVA Nourrisson</option>
+                <option value="OVA_03">P2.03 - Synthèse OVA [CERTIF]</option>
+                <option value="HEMORRHAGE_01">P3.01 - Hémorragie Externe</option>
+                <option value="HEMORRHAGE_02">P3.02 - Garrot</option>
+                <option value="UNCONSCIOUS_01">P3.03 - Perte Connaissance</option>
+                <option value="HEMORRHAGE_UNCONS_SYNTH">P3.04 - Synthèse [CERTIF]</option>
+                <option value="CARDIAC_01">P4.01 - Reconnaître Arrêt</option>
+                <option value="CARDIAC_02">P4.02 - Compressions Thoraciques</option>
+                <option value="CARDIAC_03">P4.03 - RCP Complète</option>
+                <option value="CARDIAC_04">P4.04 - DAE [CERTIF]</option>
+                <option value="OTHER_01">P5.01 - Malaises</option>
+                <option value="OTHER_02">P5.02 - Plaies</option>
+                <option value="OTHER_03">P5.03 - Brûlures</option>
+                <option value="OTHER_04">P5.04 - Traumatismes [CERTIF]</option>
+            </select>
+        </div>
+
+        <div class="forge-group">
+            <label>Nom apprenant :</label>
+            <input type="text" id="forgeName" placeholder="Prénom Nom" value="Aurèle">
+        </div>
+
+        <div class="forge-group">
+            <label>Score :</label>
+            <input type="number" id="forgeScore" min="0" max="200" value="150">
+        </div>
+
+        <div class="forge-group">
+            <label>Quiz (%) :</label>
+            <input type="number" id="forgeQuiz" min="0" max="100" value="85">
+        </div>
+
+        <div class="forge-group">
+            <label>Scénario (%) :</label>
+            <input type="number" id="forgeScenario" min="0" max="100" value="90">
+        </div>
+
+        <button class="btn-forge" onclick="generateCode()">🔨 GÉNÉRER CODE</button>
+
+        <div class="generated-code" id="generatedCode"></div>
+    </div>
+
+    <script>
+        // État de la progression
+        let progression = {
+            p1: [],
+            p2: [],
+            p3: [],
+            p4: [],
+            p5: []
+        };
+
+        const SUPERHUB_ACTIVE_PLAYER_KEY = "pvs_current_player";
+        const SUPERHUB_BRIDGE_KEY = "pvs_bridge_events";
+
+        function getActivePlayerCode() {
+            const params = new URLSearchParams(window.location.search);
+            const fromQuery = (params.get("player") || "").trim().toUpperCase();
+            if (fromQuery) {
+                localStorage.setItem(SUPERHUB_ACTIVE_PLAYER_KEY, fromQuery);
+                return fromQuery;
+            }
+            return (localStorage.getItem(SUPERHUB_ACTIVE_PLAYER_KEY) || "").trim().toUpperCase();
+        }
+
+        function goSuperHub() {
+            const player = getActivePlayerCode();
+            const suffix = player ? `?player=${encodeURIComponent(player)}` : "";
+            window.location.href = `../index.html${suffix}`;
+        }
+
+        function getPsc1CpTotal() {
+            return (Array.isArray(progression.p1) ? progression.p1.length : 0)
+                + (Array.isArray(progression.p2) ? progression.p2.length : 0)
+                + (Array.isArray(progression.p3) ? progression.p3.length : 0)
+                + (Array.isArray(progression.p4) ? progression.p4.length : 0)
+                + (Array.isArray(progression.p5) ? progression.p5.length : 0);
+        }
+
+        function pushSuperHubBridgeEvent(payload) {
+            try {
+                const raw = localStorage.getItem(SUPERHUB_BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                const safe = Array.isArray(list) ? list : [];
+                safe.push(payload);
+                if (safe.length > 500) safe.splice(0, safe.length - 500);
+                localStorage.setItem(SUPERHUB_BRIDGE_KEY, JSON.stringify(safe));
+            } catch (e) {
+                // Fallback silencieux
+            }
+        }
+
+        function bridgePsc1Progress(moduleId) {
+            const player = getActivePlayerCode();
+            if (!player) return;
+            pushSuperHubBridgeEvent({
+                id: `PSC1-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                type: "PSC1_PROGRESS",
+                player: player,
+                module: moduleId,
+                cpTotal: getPsc1CpTotal(),
+                d: new Date().toISOString()
+            });
+        }
+
+        // Charger progression depuis localStorage
+        function loadProgression() {
+            const saved = localStorage.getItem('psc1_progression');
+            if (saved) {
+                progression = JSON.parse(saved);
+                updateUI();
+            } else {
+                // Débloquer le premier module par défaut
+                unlockModule('PROTECT_01');
+            }
+        }
+
+        // Sauvegarder progression
+        function saveProgression() {
+            localStorage.setItem('psc1_progression', JSON.stringify(progression));
+        }
+
+        // Débloquer un module
+        function unlockModule(moduleId) {
+            const card = document.querySelector(`[data-module="${moduleId}"]`);
+            if (card) {
+                card.classList.remove('locked');
+                card.classList.add('unlocked');
+                card.querySelector('.status-txt').textContent = '🔓 DÉBLOQUÉ';
+            }
+        }
+
+        // Marquer module comme complété
+        function completeModule(moduleId, pillar) {
+            const card = document.querySelector(`[data-module="${moduleId}"]`);
+            if (card) {
+                card.classList.remove('unlocked');
+                card.classList.add('completed');
+                card.querySelector('.status-txt').textContent = '✅ COMPLÉTÉ';
+            }
+
+            // Ajouter à la progression
+            if (!progression[pillar].includes(moduleId)) {
+                progression[pillar].push(moduleId);
+                saveProgression();
+                bridgePsc1Progress(moduleId);
+            }
+
+            // Débloquer le module suivant
+            unlockNextModule(moduleId);
+        }
+
+        // Débloquer module suivant
+        function unlockNextModule(currentModule) {
+            const modules = [
+                // P1
+                'PROTECT_01', 'PROTECT_02', 'PROTECT_03',
+                // P2
+                'OVA_01', 'OVA_02', 'OVA_03',
+                // P3
+                'HEMORRHAGE_01', 'HEMORRHAGE_02', 'UNCONSCIOUS_01', 'HEMORRHAGE_UNCONS_SYNTH',
+                // P4
+                'CARDIAC_01', 'CARDIAC_02', 'CARDIAC_03', 'CARDIAC_04',
+                // P5
+                'OTHER_01', 'OTHER_02', 'OTHER_03', 'OTHER_04'
+            ];
+
+            const currentIndex = modules.indexOf(currentModule);
+            if (currentIndex !== -1 && currentIndex < modules.length - 1) {
+                unlockModule(modules[currentIndex + 1]);
+            }
+        }
+
+        // Valider code certification
+        function validateCode() {
+            const input = document.getElementById('codeInput').value.trim();
+            const result = document.getElementById('resultMessage');
+
+            if (!input) {
+                showResult('Veuillez entrer un code.', false);
+                return;
+            }
+
+            try {
+                // Décoder Base64
+                const decoded = atob(input);
+                const data = JSON.parse(decoded);
+
+                // Vérifier structure
+                if (!data.v || !data.m || !data.d) {
+                    throw new Error('Code invalide');
+                }
+
+                // Vérifier que le module existe
+                const moduleCard = document.querySelector(`[data-module="${data.m}"]`);
+                if (!moduleCard) {
+                    throw new Error('Module inconnu');
+                }
+
+                // Récupérer le pilier
+                const pillar = moduleCard.getAttribute('data-pillar');
+
+                // Marquer comme complété
+                completeModule(data.m, pillar);
+
+                // Afficher succès
+                showResult(`✅ MODULE VALIDÉ : ${data.m} | Score: ${data.s} | Quiz: ${data.q}% | Scénario: ${data.sc}%`, true);
+
+                // Mise à jour stats
+                updateStats();
+
+                // Vider input
+                document.getElementById('codeInput').value = '';
+
+            } catch (e) {
+                showResult('❌ Code invalide ou corrompu.', false);
+            }
+        }
+
+        // Afficher résultat
+        function showResult(message, success) {
+            const result = document.getElementById('resultMessage');
+            result.textContent = message;
+            result.className = 'result-message ' + (success ? 'success' : 'error');
+            result.style.display = 'block';
+
+            setTimeout(() => {
+                result.style.display = 'none';
+            }, 5000);
+        }
+
+        // Mise à jour UI
+        function updateUI() {
+            // Marquer modules complétés
+            for (const pillar in progression) {
+                progression[pillar].forEach(moduleId => {
+                    const card = document.querySelector(`[data-module="${moduleId}"]`);
+                    if (card) {
+                        card.classList.add('completed');
+                        card.querySelector('.status-txt').textContent = '✅ COMPLÉTÉ';
+                    }
+                });
+            }
+
+            // Débloquer modules
+            const allModules = [
+                'PROTECT_01', 'PROTECT_02', 'PROTECT_03',
+                'OVA_01', 'OVA_02', 'OVA_03',
+                'HEMORRHAGE_01', 'HEMORRHAGE_02', 'UNCONSCIOUS_01', 'HEMORRHAGE_UNCONS_SYNTH',
+                'CARDIAC_01', 'CARDIAC_02', 'CARDIAC_03', 'CARDIAC_04',
+                'OTHER_01', 'OTHER_02', 'OTHER_03', 'OTHER_04'
+            ];
+
+            let shouldUnlock = true;
+            allModules.forEach(moduleId => {
+                const card = document.querySelector(`[data-module="${moduleId}"]`);
+                const pillar = card.getAttribute('data-pillar');
+                
+                if (progression[pillar].includes(moduleId)) {
+                    // Déjà complété
+                    card.classList.add('completed');
+                } else if (shouldUnlock) {
+                    // Débloquer le prochain module non complété
+                    unlockModule(moduleId);
+                    shouldUnlock = false;
+                }
+            });
+
+            updateStats();
+        }
+
+        // Mise à jour statistiques
+        function updateStats() {
+            document.getElementById('stat-p1').textContent = `${progression.p1.length}/3`;
+            document.getElementById('stat-p2').textContent = `${progression.p2.length}/3`;
+            document.getElementById('stat-p3').textContent = `${progression.p3.length}/4`;
+            document.getElementById('stat-p4').textContent = `${progression.p4.length}/4`;
+            document.getElementById('stat-p5').textContent = `${progression.p5.length}/4`;
+        }
+
+        // Toggle admin panel
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+        }
+
+        // Générer code
+        function generateCode() {
+            const module = document.getElementById('forgeModule').value;
+            const name = document.getElementById('forgeName').value;
+            const score = parseInt(document.getElementById('forgeScore').value);
+            const quiz = parseInt(document.getElementById('forgeQuiz').value);
+            const scenario = parseInt(document.getElementById('forgeScenario').value);
+
+            const data = {
+                v: 1,
+                d: new Date().toISOString().split('T')[0],
+                m: module,
+                n: name,
+                s: score,
+                q: quiz,
+                sc: scenario,
+                f: true
+            };
+
+            const encoded = btoa(JSON.stringify(data));
+
+            const codeDisplay = document.getElementById('generatedCode');
+            codeDisplay.innerHTML = `
+                <strong>Code généré :</strong><br>
+                <span style="color: var(--hub-neon); font-size: 0.9em;">${encoded}</span><br><br>
+                <button onclick="navigator.clipboard.writeText('${encoded}')" style="padding: 8px 15px; background: var(--hub-gold); color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: 700;">
+                    📋 COPIER
+                </button>
+            `;
+            codeDisplay.style.display = 'block';
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProgression();
+        });
+
+        // Écouter Enter sur input code
+        document.getElementById('codeInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                validateCode();
+            }
+        });
+    </script>
+
+</body>
+</html>
