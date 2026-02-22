@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGORA | Module C01 - Missions & Devoirs</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --agora-blue: #0f172a;
+            --agora-gold: #fbbf24;
+            --agora-slate: #1e293b;
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--agora-blue);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #root { width: 100%; max-width: 800px; padding: 20px; }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 2px solid var(--agora-gold);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); }
+        
+        .btn {
+            background: var(--agora-gold);
+            color: var(--agora-blue);
+            border: none;
+            padding: 12px 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn:hover { filter: brightness(1.2); transform: scale(1.05); }
+
+        .option-btn {
+            display: block; width: 100%; text-align: left;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--agora-gold);
+            color: white; padding: 15px; margin: 10px 0;
+            cursor: pointer; transition: 0.2s;
+        }
+        .option-btn:hover { background: rgba(251, 191, 36, 0.1); }
+
+        .token-box {
+            background: #000; color: var(--agora-gold);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 15px; border: 1px dashed var(--agora-gold);
+            word-break: break-all; margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+
+        function App() {
+            const [step, setStep] = React.useState("intro");
+            const [userName, setUserName] = React.useState("");
+            const [quizIndex, setQuizIndex] = React.useState(0);
+            const [token, setToken] = React.useState("");
+
+            // CONFIGURATION DU MODULE
+            const MODULE_ID = "AG_C01";
+            const NEXT_CERT_KEY = "CERT_CADRE_1"; // Pour le Hub
+
+            const finishModule = () => {
+                const certData = {
+                    v: 1,
+                    d: new Date().toISOString(),
+                    m: MODULE_ID,
+                    n: userName || "Délégué Anonyme",
+                    f: true
+                };
+                
+                // 1. Enregistrement Local (Débloque le Hub)
+                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
+                
+                // 2. Génération du Jeton (Base64)
+                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
+                setToken(encoded);
+                setStep("complete");
+            };
+
+            const renderIntro = () => e("div", { className: "card" },
+                e("h1", null, "Module C01 : Missions & Devoirs"),
+                e("p", null, "Salut à toi, jeune élu ! Avant de siéger au Conseil, il faut connaître ton armure et ton épée. On ne représente pas ses camarades au petit bonheur la chance."),
+                e("input", { 
+                    type: "text", 
+                    placeholder: "Ton Nom / Prénom",
+                    style: { width: '100%', padding: '10px', marginBottom: '10px' },
+                    onChange: (ev) => setUserName(ev.target.value)
+                }),
+                e("button", { className: "btn", onClick: () => setStep("quiz") }, "Entrer dans l'Arène")
+            );
+
+            const questions = [
+                { q: "Un délégué doit-il donner son avis personnel en Conseil de Classe ?", a: ["Oui, c'est son rôle", "Non, il porte la parole collective", "Seulement s'il est d'accord"], c: 1 },
+                { q: "Quelle est la règle d'or concernant les informations privées ?", a: ["On raconte tout au foyer", "Confidentialité absolue", "On ne le dit qu'à ses potes"], c: 1 }
+            ];
+
+            const renderQuiz = () => {
+                const q = questions[quizIndex];
+                return e("div", { className: "card" },
+                    e("h2", null, "Question " + (quizIndex + 1)),
+                    e("p", null, q.q),
+                    q.a.map((opt, i) => e("button", { 
+                        key: i, className: "option-btn",
+                        onClick: () => {
+                            if(i === q.c) {
+                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
+                                else setStep("scenarios");
+                            } else { alert("Minute papillon ! Réfléchis encore..."); }
+                        }
+                    }, opt))
+                );
+            };
+
+            const renderScenarios = () => e("div", { className: "card" },
+                e("h2", null, "Mise en situation"),
+                e("p", null, "Un camarade vient te voir : il est victime de moqueries répétées. Que fais-tu ?"),
+                e("button", { className: "option-btn", onClick: finishModule }, "Je l'écoute et je l'oriente vers le CPE ou un adulte de confiance."),
+                e("button", { className: "option-btn", onClick: () => alert("Attention, le délégué n'est pas un justicier solitaire !") }, "Je vais voir les moqueurs pour leur dire d'arrêter en criant.")
+            );
+
+            const renderComplete = () => e("div", { className: "card" },
+                e("h1", null, "Mission Accomplie !"),
+                e("p", null, "Tu as validé tes connaissances de base. Ton nom est désormais inscrit dans le registre des délégués formés."),
+                e("div", { className: "token-box" }, token),
+                e("p", { style: { fontSize: '0.8em', color: '#94a3b8' } }, "Copie ce code pour prouver ta réussite ou pour le coller dans le Hub."),
+                e("button", { className: "btn", onClick: () => window.location.href = "index_AGORA.html" }, "Retour au Hub")
+            );
+
+            switch(step) {
+                case "intro": return renderIntro();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

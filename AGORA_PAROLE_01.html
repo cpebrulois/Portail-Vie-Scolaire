@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGORA | Module P01 - L'Écoute Active</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --agora-blue: #0f172a;
+            --agora-gold: #fbbf24;
+            --agora-slate: #1e293b;
+            --text-primary: #f8fafc;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--agora-blue);
+            color: var(--text-primary);
+            margin: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #root { width: 100%; max-width: 800px; padding: 20px; }
+
+        .card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid var(--agora-gold);
+            padding: 40px; border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
+        
+        .btn {
+            background: var(--agora-gold); color: var(--agora-blue);
+            border: none; padding: 12px 25px; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            display: block; margin: 20px auto;
+        }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+
+        .option-btn {
+            display: block; width: 100%; text-align: left;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: white; padding: 15px; margin: 10px 0;
+            cursor: pointer; transition: 0.2s; border-radius: 4px;
+        }
+        .option-btn:hover { background: rgba(251, 191, 36, 0.1); border-color: var(--agora-gold); }
+
+        .token-box {
+            background: #000; color: var(--agora-gold);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 15px; border: 1px dashed var(--agora-gold);
+            word-break: break-all; margin-top: 20px;
+        }
+
+        .quote { font-style: italic; color: #94a3b8; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+
+        function App() {
+            const [step, setStep] = React.useState("intro");
+            const [userName, setUserName] = React.useState("");
+            const [quizIndex, setQuizIndex] = React.useState(0);
+            const [token, setToken] = React.useState("");
+
+            const MODULE_ID = "AG_P01";
+            const NEXT_CERT_KEY = "CERT_PAROLE_1"; 
+
+            const finishModule = () => {
+                const certData = {
+                    v: 1, d: new Date().toISOString(), m: MODULE_ID,
+                    n: userName || "Auditeur Agora", f: true
+                };
+                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
+                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
+                setToken(encoded);
+                setStep("complete");
+            };
+
+            const renderIntro = () => e("div", { className: "card" },
+                e("h1", null, "P01 : L'Art de l'Écoute"),
+                e("p", { className: "quote" }, "\"On a deux oreilles et une seule langue pour écouter deux fois plus qu'on ne parle.\""),
+                e("p", null, "Pour être un bon délégué, il ne suffit pas de savoir 'causer'. Il faut savoir capter les ondes de la classe. C'est l'écoute active."),
+                e("input", { 
+                    type: "text", placeholder: "Ton nom pour le registre...",
+                    style: { width: '100%', padding: '12px', background: '#000', border: '1px solid var(--agora-gold)', color: '#fff', marginBottom: '20px', boxSizing: 'border-box' },
+                    onChange: (ev) => setUserName(ev.target.value)
+                }),
+                e("button", { className: "btn", onClick: () => userName ? setStep("quiz") : alert("Minute ! Comment je t'appelle ?") }, "Brancher les antennes")
+            );
+
+            const questions = [
+                { 
+                    q: "Quelle est la différence entre 'entendre' et 'écouter' ?", 
+                    a: ["C'est la même chose, c'est du bruit", "Entendre est un réflexe, écouter est une décision", "Écouter c'est pour les profs, entendre c'est pour les élèves"], 
+                    c: 1 
+                },
+                { 
+                    q: "Pendant qu'un camarade te parle d'un problème, que fait ton cerveau en mode 'Écoute Active' ?", 
+                    a: ["Il prépare déjà la réponse pour l'interrompre", "Il essaie de comprendre l'émotion derrière les mots", "Il pense à ce qu'il va manger à la cantine"], 
+                    c: 1 
+                }
+            ];
+
+            const renderQuiz = () => {
+                const q = questions[quizIndex];
+                return e("div", { className: "card" },
+                    e("h2", null, "Épreuve " + (quizIndex + 1)),
+                    e("p", null, q.q),
+                    q.a.map((opt, i) => e("button", { 
+                        key: i, className: "option-btn",
+                        onClick: () => {
+                            if(i === q.c) {
+                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
+                                else setStep("scenarios");
+                            } else { alert("T'as les écoutilles bouchées ? Réessaie !"); }
+                        }
+                    }, opt))
+                );
+            };
+
+            const renderScenarios = () => e("div", { className: "card" },
+                e("h2", null, "La Reformulation"),
+                e("p", null, "Un camarade te dit : 'J'en ai marre, les profs nous donnent trop de devoirs, c'est n'importe quoi !'. Quelle est la meilleure reformulation ?"),
+                e("button", { className: "option-btn", onClick: finishModule }, "Si j'ai bien compris, tu te sens débordé par la charge de travail actuelle ?"),
+                e("button", { className: "option-btn", onClick: () => alert("Pas terrible... Tu donnes un ordre là, tu n'écoutes pas.") }, "T'inquiète, travaille plus et ça ira mieux."),
+                e("button", { className: "option-btn", onClick: () => alert("Tu simplifies trop, l'émotion est perdue.") }, "Tu penses qu'il y a trop de devoirs.")
+            );
+
+            const renderComplete = () => e("div", { className: "card" },
+                e("h1", null, "Antennes Déployées !"),
+                e("p", null, "Bravo ", e("strong", null, userName), ". Tu as compris que le silence est parfois l'outil le plus puissant du délégué."),
+                e("div", { className: "token-box" }, token),
+                e("p", { style: { fontSize: '0.8em', color: '#94a3b8' } }, "Garde ce jeton précieusement. Il prouve ton passage au rang d'Auditeur."),
+                e("button", { className: "btn", onClick: () => window.location.href = "index_AGORA.html" }, "Retour au Hub")
+            );
+
+            switch(step) {
+                case "intro": return renderIntro();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

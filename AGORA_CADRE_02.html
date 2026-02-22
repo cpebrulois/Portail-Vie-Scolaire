@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGORA | Module C02 - Les Instances</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --agora-blue: #0f172a;
+            --agora-gold: #fbbf24;
+            --agora-slate: #1e293b;
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--agora-blue);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #root { width: 100%; max-width: 800px; padding: 20px; }
+
+        .card {
+            background: rgba(30, 41, 59, 0.85);
+            border: 2px solid var(--agora-gold);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
+        
+        .btn {
+            background: var(--agora-gold);
+            color: var(--agora-blue);
+            border: none;
+            padding: 12px 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+            display: block; width: fit-content; margin-left: auto; margin-right: auto;
+        }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3); }
+
+        .option-btn {
+            display: block; width: 100%; text-align: left;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: white; padding: 18px; margin: 12px 0;
+            cursor: pointer; transition: 0.3s;
+            border-radius: 4px;
+        }
+        .option-btn:hover { background: rgba(251, 191, 36, 0.15); border-color: var(--agora-gold); }
+
+        .token-box {
+            background: #000; color: var(--agora-gold);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 15px; border: 1px dashed var(--agora-gold);
+            word-break: break-all; margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .feedback { padding: 10px; margin-top: 10px; border-radius: 4px; font-weight: bold; }
+        .success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+
+        function App() {
+            const [step, setStep] = React.useState("intro");
+            const [userName, setUserName] = React.useState("");
+            const [quizIndex, setQuizIndex] = React.useState(0);
+            const [token, setToken] = React.useState("");
+
+            // CONFIGURATION DU MODULE
+            const MODULE_ID = "AG_C02";
+            const NEXT_CERT_KEY = "CERT_CADRE_2"; // Débloque le niveau suivant ou confirme celui-ci
+
+            const finishModule = () => {
+                const certData = {
+                    v: 1,
+                    d: new Date().toISOString(),
+                    m: MODULE_ID,
+                    n: userName || "Délégué",
+                    f: true
+                };
+                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
+                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
+                setToken(encoded);
+                setStep("complete");
+            };
+
+            const renderIntro = () => e("div", { className: "card" },
+                e("h1", null, "Module C02 : Le Plan du Château"),
+                e("p", null, "Bienvenue à bord ! Un délégué qui ne connaît pas les instances de son établissement, c'est comme un capitaine sans boussole : ça finit par tourner en rond dans les couloirs."),
+                e("p", null, "On va voir où se prennent les vraies décisions. Prêt à découvrir les coulisses du pouvoir scolaire ?"),
+                e("input", { 
+                    type: "text", 
+                    placeholder: "Confirme ton identité...",
+                    style: { width: '100%', padding: '12px', background: '#000', border: '1px solid var(--agora-gold)', color: 'white', marginBottom: '20px', boxSizing: 'border-box' },
+                    onChange: (ev) => setUserName(ev.target.value)
+                }),
+                e("button", { className: "btn", onClick: () => { if(userName) setStep("quiz"); else alert("Donne-moi un nom, petit !"); } }, "Lancer la reco")
+            );
+
+            const questions = [
+                { 
+                    q: "Quelle instance est le 'Parlement' de l'établissement, où l'on vote le budget et le règlement intérieur ?", 
+                    a: ["Le Conseil de Discipline", "Le Conseil d'Administration (CA)", "La réunion des délégués"], 
+                    c: 1 
+                },
+                { 
+                    q: "Au Conseil de Classe, le délégué doit être capable de :", 
+                    a: ["Donner les notes des copains", "Faire la synthèse des remarques de la classe", "Décider si un élève redouble"], 
+                    c: 1 
+                },
+                { 
+                    q: "Quelle instance s'occupe spécifiquement d'améliorer la vie quotidienne des élèves (projets, aménagement) ?", 
+                    a: ["Le CVC (Collège) ou CVL (Lycée)", "Le Conseil de Vie Prof", "Le secrétariat"], 
+                    c: 0 
+                }
+            ];
+
+            const renderQuiz = () => {
+                const q = questions[quizIndex];
+                return e("div", { className: "card" },
+                    e("h2", null, "Étape " + (quizIndex + 1)),
+                    e("p", { style: { fontSize: '1.1em', marginBottom: '25px' } }, q.q),
+                    q.a.map((opt, i) => e("button", { 
+                        key: i, className: "option-btn",
+                        onClick: () => {
+                            if(i === q.c) {
+                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
+                                else setStep("scenarios");
+                            } else { 
+                                alert("C'est un peu léger comme argumentation... réessaie !"); 
+                            }
+                        }
+                    }, opt))
+                );
+            };
+
+            const renderScenarios = () => e("div", { className: "card" },
+                e("h2", null, "Cas Pratique : Le CA"),
+                e("p", null, "Tu sièges au Conseil d'Administration. Un vote est proposé pour changer les horaires d'ouverture du foyer. Tes camarades t'ont demandé de voter contre, mais toi, personnellement, tu trouves ça bien. Que fais-tu ?"),
+                e("button", { className: "option-btn", onClick: finishModule }, "Je vote contre. Je suis là pour représenter la voix de ceux qui m'ont élu, pas mes préférences."),
+                e("button", { className: "option-btn", onClick: () => alert("Attention ! Tu n'es pas là pour toi, tu es un porte-parole.") }, "Je vote pour. Après tout, je sais mieux qu'eux ce qui est bon.")
+            );
+
+            const renderComplete = () => e("div", { className: "card" },
+                e("h1", null, "Brevet de Cartographe Obtenu !"),
+                e("p", null, "Tu sais désormais où te placer sur l'échiquier. Voici ton jeton de validation officielle :"),
+                e("div", { className: "token-box" }, token),
+                e("p", { style: { fontSize: '0.85em', marginTop: '20px', color: '#94a3b8' } }, "Copie ce code. C'est ton passe-droit pour le Hub."),
+                e("button", { className: "btn", onClick: () => window.location.href = "index_AGORA.html" }, "Retour à l'Agora")
+            );
+
+            switch(step) {
+                case "intro": return renderIntro();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>
