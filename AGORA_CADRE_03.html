@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGORA | Module C03 - Droits & Neutralité [CERTIFICATION]</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --agora-blue: #0f172a;
+            --agora-gold: #fbbf24;
+            --agora-slate: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--agora-blue);
+            color: var(--text-primary);
+            margin: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #root { width: 100%; max-width: 900px; padding: 20px; }
+
+        .card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid var(--agora-gold);
+            padding: 40px; border-radius: 4px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            position: relative; overflow: hidden;
+        }
+
+        /* Décoration "Héraldique" */
+        .card::before {
+            content: "AGORA"; position: absolute; top: -20px; right: -20px;
+            font-family: 'Playfair Display'; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);
+        }
+
+        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
+        
+        .btn {
+            background: var(--agora-gold); color: var(--agora-blue);
+            border: none; padding: 15px 30px; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            display: block; margin: 20px auto;
+        }
+        .btn:hover { filter: brightness(1.2); letter-spacing: 1px; }
+
+        .option-btn {
+            display: block; width: 100%; text-align: left;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--agora-slate);
+            color: white; padding: 15px; margin: 10px 0;
+            cursor: pointer; transition: 0.3s;
+        }
+        .option-btn:hover { border-color: var(--agora-gold); background: rgba(251, 191, 36, 0.05); }
+
+        .summary-box {
+            background: rgba(251, 191, 36, 0.05); border-left: 4px solid var(--agora-gold);
+            padding: 20px; margin: 20px 0; line-height: 1.6;
+        }
+
+        .token-display {
+            font-family: 'Share Tech Mono', monospace; background: #000;
+            color: var(--agora-gold); padding: 20px; border: 1px dashed var(--agora-gold);
+            word-break: break-all; font-size: 0.85em; margin: 20px 0;
+        }
+
+        .seal { text-align: center; font-size: 3rem; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+
+        function App() {
+            const [step, setStep] = React.useState("intro");
+            const [userName, setUserName] = React.useState("");
+            const [token, setToken] = React.useState("");
+
+            const MODULE_ID = "AG_C03";
+            const NEXT_CERT_KEY = "CERT_CADRE_3";
+
+            const handleFinish = () => {
+                const certData = {
+                    v: 1, d: new Date().toISOString(), m: MODULE_ID,
+                    n: userName || "Délégué Certifié", f: true
+                };
+                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
+                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
+                setToken(encoded);
+                setStep("complete");
+            };
+
+            const renderIntro = () => e("div", { className: "card" },
+                e("h1", null, "Certification : Droits & Neutralité"),
+                e("p", null, "On ne mélange pas les torchons et les serviettes. Un délégué n'est pas un chef de parti, c'est un garant du droit."),
+                e("p", null, "Pour clore ce pilier, tu dois prouver que tu sais rester juste, même quand ça chauffe."),
+                e("input", { 
+                    type: "text", placeholder: "Saisis ton nom pour le certificat...",
+                    style: { width: '100%', padding: '15px', background: '#000', border: '1px solid var(--agora-gold)', color: '#fff' },
+                    onChange: (ev) => setUserName(ev.target.value)
+                }),
+                e("button", { className: "btn", onClick: () => userName ? setStep("quiz") : alert("Un nom, voyons !") }, "Passer l'Examen")
+            );
+
+            const renderQuiz = () => e("div", { className: "card" },
+                e("h2", null, "La Minute de Vérité"),
+                e("p", null, "Un groupe d'élèves veut lancer une pétition pour changer le menu de la cantine au nom de leurs convictions personnelles. Que fais-tu ?"),
+                e("button", { className: "option-btn", onClick: () => setStep("synthesis") }, 
+                    "Je leur rappelle le cadre du règlement et je les aide à formuler une demande qui respecte la laïcité et le vivre-ensemble."),
+                e("button", { className: "option-btn", onClick: () => alert("Attention ! Tu n'es pas là pour exclure, mais pour fédérer.") }, 
+                    "Je refuse de les écouter car je ne suis pas d'accord avec eux."),
+                e("button", { className: "option-btn", onClick: () => alert("Oula ! Tu vas te brûler les ailes. Le délégué n'est pas un rebelle sans cause.") }, 
+                    "Je signe la pétition tout de suite sans réfléchir.")
+            );
+
+            const renderSynthesis = () => e("div", { className: "card" },
+                e("h2", null, "Synthèse du Pilier : L'Armure"),
+                e("div", { className: "summary-box" },
+                    e("p", null, e("strong", null, "1. Tes Missions :"), " Tu es le pont, pas le mur. Tu écoutes tout le monde, même ceux que tu n'aimes pas."),
+                    e("p", null, e("strong", null, "2. Les Instances :"), " Tu sais que le CA vote le budget et que le CVC améliore ton quotidien. Tu n'es pas perdu."),
+                    e("p", null, e("strong", null, "3. La Neutralité :"), " C'est ta force. En restant neutre, tu deviens intouchable et respectable.")
+                ),
+                e("button", { className: "btn", onClick: handleFinish }, "Valider mon Pilier")
+            );
+
+            const renderComplete = () => e("div", { className: "card" },
+                e("div", { className: "seal" }, "⚖️"),
+                e("h1", null, "PILIER I : VALIDÉ"),
+                e("p", { style: { textAlign: 'center' } }, "Bravo, ", e("strong", null, userName), ". Tu as terminé ta formation initiale."),
+                e("div", { className: "token-display" }, token),
+                e("p", { style: { fontSize: '0.8em', color: 'var(--text-secondary)' } }, "Ce code atteste de ta maîtrise du cadre légal et éthique du délégué."),
+                e("button", { className: "btn", onClick: () => window.location.href = "index_AGORA.html" }, "Retour au Hub")
+            );
+
+            switch(step) {
+                case "intro": return renderIntro();
+                case "quiz": return renderQuiz();
+                case "synthesis": return renderSynthesis();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>
