@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGORA - Hub de Formation des Délégués</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root { 
+            --agora-blue: #0f172a; 
+            --agora-gold: #fbbf24;
+            --agora-slate: #1e293b;
+            --agora-border: #334155;
+            --text: #f8fafc;
+        }
+        
+        body { background: var(--agora-blue); color: var(--text); font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; text-align: center; }
+        
+        h1 { font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 2px; color: var(--agora-gold); margin-bottom: 5px; font-weight: 800; text-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
+        .subtitle { color: #94a3b8; margin-bottom: 40px; font-style: italic; font-size: 0.9em; }
+
+        /* ZONE DE DECODAGE (Identique PIXHARe) */
+        .decoder-zone {
+            background: var(--agora-slate); border: 2px solid var(--agora-gold); padding: 25px;
+            max-width: 600px; margin: 0 auto 50px auto; border-radius: 4px;
+        }
+        input[type="text"] { 
+            width: 80%; padding: 12px; background: #000; border: 1px solid var(--agora-gold); 
+            color: var(--agora-gold); font-family: 'Share Tech Mono', monospace; text-align: center; margin-bottom: 15px;
+        }
+        button { 
+            background: var(--agora-gold); color: #000; border: none; padding: 10px 25px; 
+            font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        button:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--agora-gold); }
+
+        /* GRILLE DES PILIERS */
+        .agora-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .pillar-card { background: rgba(255,255,255,0.03); border: 1px solid var(--agora-border); padding: 20px; text-align: left; border-radius: 4px; }
+        .pillar-title { color: var(--agora-gold); font-family: 'Playfair Display', serif; font-size: 1.4em; border-bottom: 1px solid var(--agora-border); padding-bottom: 10px; margin-bottom: 15px; }
+
+        .module-link {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.2);
+            text-decoration: none; color: inherit; border-left: 3px solid #444; transition: 0.3s;
+        }
+        .module-link.unlocked { border-left-color: var(--agora-gold); cursor: pointer; }
+        .module-link.unlocked:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); }
+        .module-link.locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        
+        .badge { background: var(--agora-gold); color: #000; font-size: 0.7em; padding: 2px 6px; font-weight: 800; border-radius: 2px; }
+        .admin-toggle { margin-top: 50px; opacity: 0.3; cursor: pointer; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+    <h1>L'Agora des Délégués</h1>
+    <p class="subtitle">"Savoir pour représenter, agir pour transformer."</p>
+
+    <div class="decoder-zone">
+        <h3 style="margin-top:0">SAISIR UN JETON D'ACCÈS</h3>
+        <input type="text" id="tokenInput" placeholder="Coller le code reçu ici...">
+        <br>
+        <button onclick="decodeToken()">DÉBLOQUER LE MODULE</button>
+    </div>
+
+    <div id="agora-root" class="agora-grid"></div>
+
+    <div class="admin-toggle" onclick="document.getElementById('forge').style.display='block'">[ ADMINISTRATION ]</div>
+    
+    <div id="forge" style="display:none; margin-top:30px; border:1px dashed var(--agora-gold); padding:20px;">
+        <h3>FORGE DE JETONS</h3>
+        <input type="text" id="forgeName" placeholder="Nom de l'élève"><br>
+        <select id="forgePillar" onchange="updateForgeLevels()"></select>
+        <select id="forgeLevel"></select><br><br>
+        <button onclick="forgeToken()">GÉNÉRER LE JETON</button>
+        <p id="forgeResult" style="word-break:break-all; background:#000; padding:10px; display:none;"></p>
+        <button onclick="hardReset()" style="background:red; color:white; margin-top:20px;">RESET TOTAL</button>
+    </div>
+
+    <script>
+        const CONFIG = {
+            pillars: {
+                CADRE: {
+                    title: "L'ARMURE DU DÉLÉGUÉ",
+                    modules: [
+                        { id: "AG_C01", name: "Missions & Devoirs", url: "AGORA_CADRE_01.html" },
+                        { id: "AG_C02", name: "Instances & Pouvoirs", url: "AGORA_CADRE_02.html" },
+                        { id: "AG_C03", name: "Droits & Ressources", url: "AGORA_CADRE_03.html" }
+                    ]
+                },
+                PAROLE: {
+                    title: "L'ART DU VERBE",
+                    modules: [
+                        { id: "AG_P01", name: "Écoute Active", url: "AGORA_PAROLE_01.html" },
+                        { id: "AG_P02", name: "Prise de Parole", url: "AGORA_PAROLE_02.html" }
+                    ]
+                }
+            }
+        };
+
+        function renderAgora() {
+            const root = document.getElementById('agora-root');
+            root.innerHTML = '';
+            Object.keys(CONFIG.pillars).forEach(pk => {
+                const p = CONFIG.pillars[pk];
+                let html = `<div class="pillar-card"><div class="pillar-title">${p.title}</div>`;
+                p.modules.forEach((m, i) => {
+                    const isFirst = i === 0;
+                    const isDone = localStorage.getItem(`CERT_${pk}_${i+1}`);
+                    const prevDone = i > 0 ? localStorage.getItem(`CERT_${pk}_${i}`) : false;
+                    const unlocked = isFirst || prevDone || isDone;
+
+                    html += `
+                        <a href="${unlocked ? m.url : '#'}" class="module-link ${unlocked ? 'unlocked' : 'locked'}">
+                            <span>${m.name}</span>
+                            ${isDone ? '<span class="badge">VALIDÉ</span>' : (unlocked ? '▶' : '🔒')}
+                        </a>`;
+                });
+                html += `</div>`;
+                root.innerHTML += html;
+            });
+            initForge();
+        }
+
+        function decodeToken() {
+            try {
+                const t = document.getElementById('tokenInput').value.trim();
+                const d = JSON.parse(decodeURIComponent(escape(atob(t))));
+                // On cherche quel module correspond à cet ID
+                Object.keys(CONFIG.pillars).forEach(pk => {
+                    CONFIG.pillars[pk].modules.forEach((m, i) => {
+                        if(m.id === d.m) {
+                            localStorage.setItem(`CERT_${pk}_${i+1}`, JSON.stringify(d));
+                            alert(`Bravo ${d.n}, le module "${m.name}" est débloqué !`);
+                        }
+                    });
+                });
+                location.reload();
+            } catch(e) { alert("Jeton invalide !"); }
+        }
+
+        function initForge() {
+            const ps = document.getElementById('forgePillar');
+            ps.innerHTML = "";
+            Object.entries(CONFIG.pillars).forEach(([k,v]) => ps.innerHTML += `<option value="${k}">${v.title}</option>`);
+            updateForgeLevels();
+        }
+
+        function updateForgeLevels() {
+            const pk = document.getElementById('forgePillar').value;
+            const ls = document.getElementById('forgeLevel');
+            ls.innerHTML = "";
+            CONFIG.pillars[pk].modules.forEach((m,i) => {
+                ls.innerHTML += `<option value="${i+1}">Valider NIVEAU ${i+1}</option>`;
+            });
+        }
+
+        function forgeToken() {
+            const pk = document.getElementById('forgePillar').value, lv = parseInt(document.getElementById('forgeLevel').value);
+            const mod = CONFIG.pillars[pk].modules[lv-1];
+            const p = { v: 1, d: new Date().toISOString(), m: mod.id, n: document.getElementById('forgeName').value || "DELEGUE", f: true };
+            const t = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+            const o = document.getElementById('forgeResult'); o.style.display = 'block'; o.innerText = t;
+        }
+
+        function hardReset() { if(confirm("Supprimer toute la progression ?")) { localStorage.clear(); location.reload(); } }
+
+        window.onload = renderAgora;
+    </script>
+</body>
+</html>
