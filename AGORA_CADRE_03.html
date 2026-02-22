@@ -7,149 +7,221 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --agora-blue: #0f172a;
-            --agora-gold: #fbbf24;
-            --agora-slate: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--agora-blue);
-            color: var(--text-primary);
-            margin: 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        #root { width: 100%; max-width: 900px; padding: 20px; }
-
-        .card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid var(--agora-gold);
-            padding: 40px; border-radius: 4px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            position: relative; overflow: hidden;
-        }
-
-        /* Décoration "Héraldique" */
-        .card::before {
-            content: "AGORA"; position: absolute; top: -20px; right: -20px;
-            font-family: 'Playfair Display'; font-size: 5rem; opacity: 0.05; transform: rotate(-15deg);
-        }
-
-        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
-        
-        .btn {
-            background: var(--agora-gold); color: var(--agora-blue);
-            border: none; padding: 15px 30px; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-            display: block; margin: 20px auto;
-        }
-        .btn:hover { filter: brightness(1.2); letter-spacing: 1px; }
-
-        .option-btn {
-            display: block; width: 100%; text-align: left;
-            background: rgba(255,255,255,0.03); border: 1px solid var(--agora-slate);
-            color: white; padding: 15px; margin: 10px 0;
-            cursor: pointer; transition: 0.3s;
-        }
-        .option-btn:hover { border-color: var(--agora-gold); background: rgba(251, 191, 36, 0.05); }
-
-        .summary-box {
-            background: rgba(251, 191, 36, 0.05); border-left: 4px solid var(--agora-gold);
-            padding: 20px; margin: 20px 0; line-height: 1.6;
-        }
-
-        .token-display {
-            font-family: 'Share Tech Mono', monospace; background: #000;
-            color: var(--agora-gold); padding: 20px; border: 1px dashed var(--agora-gold);
-            word-break: break-all; font-size: 0.85em; margin: 20px 0;
-        }
-
-        .seal { text-align: center; font-size: 3rem; margin: 20px 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+        :root { --agora-blue:#0f172a; --agora-gold:#fbbf24; --agora-slate:#1e293b; --agora-green:#22c55e; --agora-red:#ef4444; --text-primary:#f8fafc; --text-muted:#94a3b8; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Montserrat',sans-serif; background:var(--agora-blue); color:var(--text-primary); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:20px 0 40px; }
+        #root { width:100%; max-width:860px; padding:20px; }
+        .card { background:rgba(15,23,42,0.97); border:2px solid var(--agora-gold); padding:40px; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.7); position:relative; overflow:hidden; }
+        .card::before { content:'C03'; position:absolute; top:-15px; right:-10px; font-family:'Playfair Display'; font-size:5rem; opacity:0.04; color:var(--agora-gold); transform:rotate(-10deg); }
+        h1 { font-family:'Playfair Display',serif; color:var(--agora-gold); text-align:center; font-size:1.9rem; margin-bottom:8px; }
+        h2 { font-family:'Playfair Display',serif; color:var(--agora-gold); font-size:1.4rem; margin-bottom:16px; }
+        .badge { display:inline-block; padding:6px 18px; border:2px solid var(--agora-gold); color:var(--agora-gold); font-family:'Share Tech Mono',monospace; font-size:0.78rem; margin-bottom:24px; letter-spacing:1px; }
+        .cert-badge { display:inline-block; padding:8px 22px; background:rgba(251,191,36,0.1); border:2px solid var(--agora-gold); color:var(--agora-gold); font-family:'Share Tech Mono',monospace; font-size:0.8rem; margin-bottom:20px; letter-spacing:2px; }
+        .progress { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+        .step { width:44px; height:44px; border:2px solid #334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:0.85rem; color:#475569; transition:all 0.3s; }
+        .step.active { border-color:var(--agora-gold); color:var(--agora-gold); box-shadow:0 0 12px rgba(251,191,36,0.4); }
+        .step.done { border-color:var(--agora-green); color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .lesson-block { background:rgba(251,191,36,0.04); border-left:3px solid var(--agora-gold); padding:18px 20px; margin-bottom:16px; border-radius:0 6px 6px 0; }
+        .lesson-block h3 { color:var(--agora-gold); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-family:'Share Tech Mono',monospace; }
+        .lesson-block p { line-height:1.75; color:var(--text-primary); font-size:0.95rem; margin-bottom:6px; }
+        .lesson-block strong { color:var(--agora-gold); }
+        .droit-item { display:flex; gap:12px; align-items:flex-start; margin-top:8px; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:4px; }
+        .droit-icon { font-size:1.1rem; flex-shrink:0; margin-top:2px; }
+        .droit-txt { font-size:0.9rem; line-height:1.6; color:var(--text-muted); }
+        .droit-txt strong { color:var(--text-primary); }
+        .attention-box { margin-top:12px; padding:12px 16px; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.3); border-radius:4px; font-size:0.88rem; color:#fca5a5; line-height:1.6; }
+        .btn { background:var(--agora-gold); color:var(--agora-blue); border:none; padding:14px 32px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; display:block; margin:28px auto 0; font-family:'Montserrat',sans-serif; font-size:0.95rem; letter-spacing:1px; border-radius:2px; }
+        .btn:hover { box-shadow:0 0 20px rgba(251,191,36,0.5); transform:translateY(-1px); }
+        .quiz-q { font-size:1.05rem; font-weight:600; padding:16px; background:rgba(251,191,36,0.06); border-left:4px solid var(--agora-gold); border-radius:0 4px 4px 0; margin-bottom:18px; line-height:1.6; }
+        .opt { display:block; width:100%; text-align:left; background:rgba(255,255,255,0.03); border:1px solid #334155; color:white; padding:16px 18px; margin:10px 0; cursor:pointer; transition:0.25s; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:0.95rem; line-height:1.5; }
+        .opt:hover:not(:disabled) { border-color:var(--agora-gold); background:rgba(251,191,36,0.06); transform:translateX(4px); }
+        .opt.correct { border-color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .opt.incorrect { border-color:var(--agora-red); background:rgba(239,68,68,0.1); }
+        .opt:disabled { cursor:default; }
+        .feedback { margin-top:16px; padding:14px 18px; border-radius:4px; line-height:1.65; font-size:0.93rem; }
+        .feedback.ok { border-left:3px solid var(--agora-green); background:rgba(34,197,94,0.08); }
+        .feedback.ko { border-left:3px solid var(--agora-red); background:rgba(239,68,68,0.08); }
+        .feedback strong { color:var(--agora-gold); }
+        .nav-row { display:flex; justify-content:center; gap:16px; margin-top:22px; }
+        .btn-sm { background:transparent; border:2px solid var(--agora-gold); color:var(--agora-gold); padding:10px 24px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; font-family:'Montserrat',sans-serif; font-size:0.85rem; border-radius:2px; }
+        .btn-sm:hover { background:rgba(251,191,36,0.1); }
+        .scenario-ctx { background:rgba(251,191,36,0.05); border:1px dashed #475569; padding:14px 18px; border-radius:4px; font-style:italic; color:var(--text-muted); margin-bottom:16px; line-height:1.65; font-size:0.93rem; }
+        .scenario-q { font-size:1.05rem; font-weight:600; margin-bottom:18px; line-height:1.6; }
+        .token-box { background:#000; color:var(--agora-gold); font-family:'Share Tech Mono',monospace; padding:16px; border:1px dashed var(--agora-gold); word-break:break-all; margin:20px 0; font-size:0.78rem; }
+        .score-row { display:flex; justify-content:center; gap:24px; margin:20px 0; }
+        .score-val { font-family:'Share Tech Mono',monospace; font-size:1.6rem; color:var(--agora-gold); }
+        .score-lbl { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+        .seal { font-size:4rem; text-align:center; margin:16px 0; }
+        input[type=text] { width:100%; padding:13px 15px; background:#000; border:1px solid var(--agora-gold); color:#fff; font-family:'Montserrat',sans-serif; font-size:0.95rem; margin-bottom:12px; outline:none; }
+        p.intro-txt { line-height:1.75; margin-bottom:14px; color:var(--text-primary); font-size:0.97rem; }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body><div id="root"></div>
+<script>
+const {useState} = React;
+const e = React.createElement;
+const MODULE_ID = "AG_C03";
+const CERT_KEY = "CERT_CADRE_3";
 
-    <script>
-        const e = React.createElement;
+const lessonBlocks = [
+    {
+        icon:"🔵",
+        title:"Les droits des élèves — ce que tu peux faire",
+        body:"Les élèves ont des droits reconnus par les textes officiels de l'Éducation Nationale. En tant que délégué, tu dois les connaître pour pouvoir les défendre.",
+        items:[
+            { icon:"💬", title:"Droit d'expression", desc:"Les élèves peuvent s'exprimer oralement et par écrit, y compris dans des publications lycéennes (avec autorisation préalable du chef d'établissement)." },
+            { icon:"🤝", title:"Droit de réunion", desc:"Les délégués élèves peuvent se réunir en dehors des cours, dans des locaux mis à disposition, pour préparer les instances." },
+            { icon:"📋", title:"Droit d'association", desc:"Les élèves peuvent créer des associations dans l'établissement, dans le respect du cadre réglementaire." }
+        ],
+        attention:null
+    },
+    {
+        icon:"🔴",
+        title:"Les limites — ce que tu ne peux pas faire",
+        body:"Le droit d'expression a des limites précises que tu dois connaître, surtout dans ton rôle de représentant.",
+        items:[
+            { icon:"⛔", title:"Pas de prosélytisme", desc:"Tu ne peux pas militer pour une religion, un parti politique ou une idéologie dans l'exercice de ton mandat." },
+            { icon:"⛔", title:"Pas de diffamation", desc:"Toute publication ou propos qui porte atteinte à la réputation d'un membre de la communauté scolaire est sanctionnable." },
+            { icon:"⛔", title:"Pas de perturbation", desc:"L'exercice du droit d'expression ne peut pas perturber le bon fonctionnement du service public d'éducation." }
+        ],
+        attention:"Attention : en tant que délégué, tu es visible. Si tu outrepasses ces limites, tu ne représentes plus ta classe — tu la compromets."
+    },
+    {
+        icon:"⚖️",
+        title:"La laïcité : la neutralité comme armure",
+        body:"L'école publique est laïque. Cela signifie que l'appartenance religieuse, politique ou communautaire ne doit pas s'exprimer dans l'espace scolaire, ni influencer les décisions prises en instances.",
+        items:[
+            { icon:"🌍", title:"Neutralité religieuse", desc:"Un délégué ne plaide pas pour des menus ou des aménagements basés sur des convictions religieuses. Il peut en revanche défendre le bien-être de tous." },
+            { icon:"🎖", title:"Neutralité politique", desc:"Le délégué représente toute la classe, pas une tendance politique. Les slogans partisans n'ont pas leur place dans les instances." }
+        ],
+        attention:"La neutralité n'est pas l'indifférence. Tu peux défendre avec passion les intérêts de tes camarades — mais au nom de tous, pas au nom d'une partie."
+    },
+    {
+        icon:"🏅",
+        title:"La neutralité : ta force, pas ta faiblesse",
+        body:"Un délégué qui reste neutre est paradoxalement le plus puissant. Pourquoi ? Parce que tout le monde lui fait confiance. Un délégué partisan rassure ses amis mais perd les autres. Un délégué neutre peut parler à tout le monde, y compris aux enseignants et aux administrateurs, sans être soupçonné d'agenda caché.",
+        items:[],
+        attention:null
+    }
+];
 
-        function App() {
-            const [step, setStep] = React.useState("intro");
-            const [userName, setUserName] = React.useState("");
-            const [token, setToken] = React.useState("");
+const quizData = [
+    {
+        q:"Un groupe d'élèves veut lancer une pétition pour changer le menu de la cantine, en invoquant leurs convictions religieuses. Ils te demandent de la porter en instance. Que fais-tu ?",
+        opts:[
+            "Tu refuses catégoriquement — c'est contraire à la laïcité.",
+            "Tu leur expliques comment reformuler leur demande autour de critères universels (variété des menus, allergies, équilibre nutritionnel) et tu portes cette version recadrée.",
+            "Tu signes la pétition et tu la portes telle quelle — la liberté de conscience prime."
+        ],
+        correct:1,
+        feedback_ok:"Parfait. Tu n'interdis pas la demande, tu l'aides à entrer dans le cadre laïque. C'est ça, le travail du délégué : traduire les besoins particuliers en demandes universelles.",
+        feedback_ko:"Ni refus total ni acceptation aveugle. Le rôle du délégué est de reformuler pour que la demande puisse être entendue dans le cadre de l'école publique."
+    },
+    {
+        q:"Un élève te demande si tu as le droit de publier un journal élève qui critique la direction de l'établissement.",
+        opts:[
+            "Non, toute critique est interdite dans un établissement scolaire.",
+            "Oui, sous conditions : contenu factuel, pas de diffamation, autorisation préalable du chef d'établissement selon le niveau.",
+            "Oui, la liberté de la presse s'applique totalement dans les établissements scolaires."
+        ],
+        correct:1,
+        feedback_ok:"Exact. Le droit d'expression existe mais est encadré. La critique respectueuse et factuelle est un droit ; la diffamation ou la déstabilisation gratuite est une faute.",
+        feedback_ko:"La liberté d'expression existe à l'école, mais elle n'est pas absolue. Elle s'exerce dans un cadre précis qui protège aussi bien les élèves que les adultes."
+    }
+];
 
-            const MODULE_ID = "AG_C03";
-            const NEXT_CERT_KEY = "CERT_CADRE_3";
+const scenarioData = {
+    ctx:"Lors du Conseil de Discipline d'un élève, tu siéges comme délégué. Tu connais l'élève concerné, et tu penses personnellement qu'il mérite une sanction. Mais tu sais aussi que la procédure présente une irrégularité : il n'a pas pu s'exprimer complètement.",
+    q:"Quelle est ta posture en tant que délégué ?",
+    choices:[
+        { txt:"Tu te tais, car tu penses qu'il mérite d'être sanctionné de toute façon.", ok:false, res:"Erreur. Ton rôle n'est pas de juger le fond, mais de garantir la forme. Une procédure irrégulière peut faire annuler la sanction — et mettre l'établissement en difficulté juridique." },
+        { txt:"Tu signales l'irrégularité de procédure et demandes que l'élève puisse s'exprimer, sans prendre position sur la sanction.", ok:true, res:"C'est exactement ton rôle. Le délégué au Conseil de Discipline est garant du respect de la procédure, pas juge du fond. Ta neutralité ici protège l'institution autant que l'élève." },
+        { txt:"Tu prends la défense de l'élève et argumes qu'il ne mérite pas de sanction.", ok:false, res:"Ce n'est pas ton rôle non plus. Tu n'es pas son avocat. Tu garantis que la procédure est respectée — la décision appartient au conseil." }
+    ]
+};
 
-            const handleFinish = () => {
-                const certData = {
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID,
-                    n: userName || "Délégué Certifié", f: true
-                };
-                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
-                setToken(encoded);
-                setStep("complete");
-            };
+function App() {
+    const [step, setStep] = useState("intro");
+    const [name, setName] = useState("");
+    const [qIdx, setQIdx] = useState(0);
+    const [chosen, setChosen] = useState(null);
+    const [validated, setValidated] = useState(false);
+    const [score, setScore] = useState(0);
+    const [scenChosen, setScenChosen] = useState(null);
+    const [token, setToken] = useState("");
 
-            const renderIntro = () => e("div", { className: "card" },
-                e("h1", null, "Certification : Droits & Neutralité"),
-                e("p", null, "On ne mélange pas les torchons et les serviettes. Un délégué n'est pas un chef de parti, c'est un garant du droit."),
-                e("p", null, "Pour clore ce pilier, tu dois prouver que tu sais rester juste, même quand ça chauffe."),
-                e("input", { 
-                    type: "text", placeholder: "Saisis ton nom pour le certificat...",
-                    style: { width: '100%', padding: '15px', background: '#000', border: '1px solid var(--agora-gold)', color: '#fff' },
-                    onChange: (ev) => setUserName(ev.target.value)
-                }),
-                e("button", { className: "btn", onClick: () => userName ? setStep("quiz") : alert("Un nom, voyons !") }, "Passer l'Examen")
-            );
+    function validate() { if(chosen===null)return; setValidated(true); if(chosen===quizData[qIdx].correct)setScore(s=>s+50); }
+    function nextQ() { if(qIdx<quizData.length-1){setQIdx(i=>i+1);setChosen(null);setValidated(false);}else setStep("scenario"); }
+    function finish() {
+        const cert={v:1,d:new Date().toISOString(),m:MODULE_ID,n:name||"Délégué Certifié",f:true,s:score};
+        localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+        setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+        setStep("complete");
+    }
 
-            const renderQuiz = () => e("div", { className: "card" },
-                e("h2", null, "La Minute de Vérité"),
-                e("p", null, "Un groupe d'élèves veut lancer une pétition pour changer le menu de la cantine au nom de leurs convictions personnelles. Que fais-tu ?"),
-                e("button", { className: "option-btn", onClick: () => setStep("synthesis") }, 
-                    "Je leur rappelle le cadre du règlement et je les aide à formuler une demande qui respecte la laïcité et le vivre-ensemble."),
-                e("button", { className: "option-btn", onClick: () => alert("Attention ! Tu n'es pas là pour exclure, mais pour fédérer.") }, 
-                    "Je refuse de les écouter car je ne suis pas d'accord avec eux."),
-                e("button", { className: "option-btn", onClick: () => alert("Oula ! Tu vas te brûler les ailes. Le délégué n'est pas un rebelle sans cause.") }, 
-                    "Je signe la pétition tout de suite sans réfléchir.")
-            );
+    if(step==="intro") return e("div",{className:"card"},
+        e("div",{style:{textAlign:"center"}},e("span",{className:"cert-badge"},"⚖️ CERTIFICATION — PILIER I")),
+        e("h1",null,"Droits & Neutralité"),
+        e("p",{className:"intro-txt",style:{marginTop:"20px"}},"Ce module est la certification finale du Pilier Cadre. Il couvre les droits des élèves, leurs limites, la laïcité et la posture de neutralité du délégué."),
+        e("p",{className:"intro-txt"},"Pour valider ce pilier, tu dois comprendre non seulement ce que tu as le droit de faire — mais ce que tu dois t'abstenir de faire pour rester crédible."),
+        e("input",{type:"text",placeholder:"Ton nom pour le certificat...",onChange:ev=>setName(ev.target.value)}),
+        e("button",{className:"btn",onClick:()=>name.trim()?setStep("lesson"):alert("Un nom pour le certificat.")},"Commencer la certification →")
+    );
 
-            const renderSynthesis = () => e("div", { className: "card" },
-                e("h2", null, "Synthèse du Pilier : L'Armure"),
-                e("div", { className: "summary-box" },
-                    e("p", null, e("strong", null, "1. Tes Missions :"), " Tu es le pont, pas le mur. Tu écoutes tout le monde, même ceux que tu n'aimes pas."),
-                    e("p", null, e("strong", null, "2. Les Instances :"), " Tu sais que le CA vote le budget et que le CVC améliore ton quotidien. Tu n'es pas perdu."),
-                    e("p", null, e("strong", null, "3. La Neutralité :"), " C'est ta force. En restant neutre, tu deviens intouchable et respectable.")
-                ),
-                e("button", { className: "btn", onClick: handleFinish }, "Valider mon Pilier")
-            );
+    if(step==="lesson") return e("div",{className:"card"},
+        e("div",{className:"progress"},e("div",{className:"step active"},"1"),e("div",{className:"step"},"2"),e("div",{className:"step"},"3")),
+        e("h2",null,"📚 Cours — Droits, limites et neutralité"),
+        ...lessonBlocks.map((b,i)=>e("div",{key:i,className:"lesson-block"},
+            e("h3",null,`${b.icon} ${b.title}`),
+            e("p",null,b.body),
+            b.items.length>0 && e("div",null,...b.items.map((it,j)=>e("div",{key:j,className:"droit-item"},
+                e("div",{className:"droit-icon"},it.icon),
+                e("div",{className:"droit-txt"},e("strong",null,it.title," : "),it.desc)
+            ))),
+            b.attention && e("div",{className:"attention-box"},"⚠️ ",b.attention)
+        )),
+        e("button",{className:"btn",onClick:()=>setStep("quiz")},"J'ai compris — Passer à l'examen ►")
+    );
 
-            const renderComplete = () => e("div", { className: "card" },
-                e("div", { className: "seal" }, "⚖️"),
-                e("h1", null, "PILIER I : VALIDÉ"),
-                e("p", { style: { textAlign: 'center' } }, "Bravo, ", e("strong", null, userName), ". Tu as terminé ta formation initiale."),
-                e("div", { className: "token-display" }, token),
-                e("p", { style: { fontSize: '0.8em', color: 'var(--text-secondary)' } }, "Ce code atteste de ta maîtrise du cadre légal et éthique du délégué."),
-                e("button", { className: "btn", onClick: () => window.location.href = "index PIX_DELEGUES.html" }, "Retour au Hub")
-            );
+    if(step==="quiz") {
+        const q=quizData[qIdx];
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"2"),e("div",{className:"step"},"3")),
+            e("h2",null,`🔬 Examen — Question ${qIdx+1}/${quizData.length}`),
+            e("div",{className:"quiz-q"},q.q),
+            q.opts.map((o,i)=>{ let cls="opt"; if(validated){if(i===q.correct)cls+=" correct";else if(i===chosen)cls+=" incorrect";} return e("button",{key:i,className:cls,disabled:validated,onClick:()=>setChosen(i)},o); }),
+            chosen!==null&&!validated&&e("button",{className:"btn",onClick:validate,style:{marginTop:"16px"}},"Valider"),
+            validated&&e("div",{className:`feedback ${chosen===q.correct?"ok":"ko"}`},e("strong",null,chosen===q.correct?"✔ Bonne réponse — ":"✘ À revoir — "),chosen===q.correct?q.feedback_ok:q.feedback_ko),
+            validated&&e("div",{className:"nav-row"},e("button",{className:"btn-sm",onClick:nextQ},qIdx<quizData.length-1?"Question suivante →":"Passer au scénario final →"))
+        );
+    }
 
-            switch(step) {
-                case "intro": return renderIntro();
-                case "quiz": return renderQuiz();
-                case "synthesis": return renderSynthesis();
-                case "complete": return renderComplete();
-                default: return renderIntro();
-            }
-        }
+    if(step==="scenario") {
+        const s=scenarioData;
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"3")),
+            e("h2",null,"⚡ Cas final de certification"),
+            e("div",{className:"scenario-ctx"},s.ctx),
+            e("div",{className:"scenario-q"},s.q),
+            scenChosen===null?s.choices.map((c,i)=>e("button",{key:i,className:"opt",onClick:()=>setScenChosen(i)},c.txt))
+            :e("div",null,
+                e("div",{className:`feedback ${s.choices[scenChosen].ok?"ok":"ko"}`},e("strong",null,s.choices[scenChosen].ok?"✔ Posture juste — ":"⚠ Posture à revoir — "),s.choices[scenChosen].res),
+                e("button",{className:"btn",onClick:finish},"Valider ma certification →")
+            )
+        );
+    }
 
-        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
-    </script>
-</body>
-</html>
+    return e("div",{className:"card",style:{textAlign:"center"}},
+        e("div",{className:"seal"},"⚖️"),
+        e("h1",null,"PILIER I : VALIDÉ"),
+        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`${name}, tu as démontré ta maîtrise du cadre légal et éthique du délégué.`),
+        e("div",{className:"score-row"},e("div",null,e("div",{className:"score-val"},score),e("div",{className:"score-lbl"},"Score certification"))),
+        e("div",{className:"token-box"},token),
+        e("p",{style:{fontSize:"0.8rem",color:"var(--text-muted)",marginBottom:"20px"}},"Ce code atteste de ta validation du Pilier I."),
+        e("button",{className:"btn",onClick:()=>window.location.href="index PIX_DELEGUES.html"},"Retour au Hub")
+    );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body></html>

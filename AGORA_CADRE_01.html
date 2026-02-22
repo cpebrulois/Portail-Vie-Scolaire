@@ -7,161 +7,231 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
         :root {
-            --agora-blue: #0f172a;
-            --agora-gold: #fbbf24;
-            --agora-slate: #1e293b;
-            --text: #f8fafc;
+            --agora-blue: #0f172a; --agora-gold: #fbbf24; --agora-slate: #1e293b;
+            --agora-green: #22c55e; --agora-red: #ef4444;
+            --text-primary: #f8fafc; --text-muted: #94a3b8;
         }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--agora-blue);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        #root { width: 100%; max-width: 800px; padding: 20px; }
-
-        .card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 2px solid var(--agora-gold);
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); }
-        
-        .btn {
-            background: var(--agora-gold);
-            color: var(--agora-blue);
-            border: none;
-            padding: 12px 25px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
-        }
-        .btn:hover { filter: brightness(1.2); transform: scale(1.05); }
-
-        .option-btn {
-            display: block; width: 100%; text-align: left;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--agora-gold);
-            color: white; padding: 15px; margin: 10px 0;
-            cursor: pointer; transition: 0.2s;
-        }
-        .option-btn:hover { background: rgba(251, 191, 36, 0.1); }
-
-        .token-box {
-            background: #000; color: var(--agora-gold);
-            font-family: 'Share Tech Mono', monospace;
-            padding: 15px; border: 1px dashed var(--agora-gold);
-            word-break: break-all; margin-top: 20px;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Montserrat',sans-serif; background:var(--agora-blue); color:var(--text-primary); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:20px 0 40px; }
+        #root { width:100%; max-width:860px; padding:20px; }
+        .card { background:rgba(15,23,42,0.97); border:2px solid var(--agora-gold); padding:40px; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.7); position:relative; overflow:hidden; }
+        .card::before { content:'C01'; position:absolute; top:-15px; right:-10px; font-family:'Playfair Display'; font-size:5rem; opacity:0.04; color:var(--agora-gold); transform:rotate(-10deg); }
+        h1 { font-family:'Playfair Display',serif; color:var(--agora-gold); text-align:center; font-size:1.9rem; margin-bottom:8px; }
+        h2 { font-family:'Playfair Display',serif; color:var(--agora-gold); font-size:1.4rem; margin-bottom:16px; }
+        .badge { display:inline-block; padding:6px 18px; border:1px solid var(--agora-gold); color:var(--agora-gold); font-family:'Share Tech Mono',monospace; font-size:0.8rem; margin-bottom:24px; }
+        .progress { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+        .step { width:44px; height:44px; border:2px solid #334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:0.85rem; color:#475569; transition:all 0.3s; }
+        .step.active { border-color:var(--agora-gold); color:var(--agora-gold); box-shadow:0 0 12px rgba(251,191,36,0.4); }
+        .step.done { border-color:var(--agora-green); color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .lesson-block { background:rgba(251,191,36,0.04); border-left:3px solid var(--agora-gold); padding:18px 20px; margin-bottom:16px; border-radius:0 6px 6px 0; }
+        .lesson-block h3 { color:var(--agora-gold); font-size:0.95rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-family:'Share Tech Mono',monospace; }
+        .lesson-block p { line-height:1.75; color:var(--text-primary); font-size:0.97rem; }
+        .lesson-block strong { color:var(--agora-gold); }
+        .lesson-block .exemple { margin-top:12px; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px dashed #334155; border-radius:4px; font-style:italic; color:var(--text-muted); font-size:0.9rem; }
+        .btn { background:var(--agora-gold); color:var(--agora-blue); border:none; padding:14px 32px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; display:block; margin:28px auto 0; font-family:'Montserrat',sans-serif; font-size:0.95rem; letter-spacing:1px; border-radius:2px; }
+        .btn:hover { box-shadow:0 0 20px rgba(251,191,36,0.5); transform:translateY(-1px); }
+        .btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+        .quiz-q { font-size:1.05rem; font-weight:600; padding:16px; background:rgba(251,191,36,0.06); border-left:4px solid var(--agora-gold); border-radius:0 4px 4px 0; margin-bottom:18px; line-height:1.6; }
+        .opt { display:block; width:100%; text-align:left; background:rgba(255,255,255,0.03); border:1px solid #334155; color:white; padding:16px 18px; margin:10px 0; cursor:pointer; transition:0.25s; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:0.95rem; line-height:1.5; }
+        .opt:hover:not(:disabled) { border-color:var(--agora-gold); background:rgba(251,191,36,0.06); transform:translateX(4px); }
+        .opt.correct { border-color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .opt.incorrect { border-color:var(--agora-red); background:rgba(239,68,68,0.1); }
+        .opt:disabled { cursor:default; }
+        .feedback { margin-top:16px; padding:14px 18px; border-radius:4px; line-height:1.65; font-size:0.93rem; }
+        .feedback.ok { border-left:3px solid var(--agora-green); background:rgba(34,197,94,0.08); }
+        .feedback.ko { border-left:3px solid var(--agora-red); background:rgba(239,68,68,0.08); }
+        .feedback strong { color:var(--agora-gold); }
+        .nav-row { display:flex; justify-content:center; gap:16px; margin-top:22px; }
+        .btn-sm { background:transparent; border:2px solid var(--agora-gold); color:var(--agora-gold); padding:10px 24px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; font-family:'Montserrat',sans-serif; font-size:0.85rem; border-radius:2px; }
+        .btn-sm:hover { background:rgba(251,191,36,0.1); }
+        .scenario-ctx { background:rgba(251,191,36,0.05); border:1px dashed #475569; padding:14px 18px; border-radius:4px; font-style:italic; color:var(--text-muted); margin-bottom:16px; line-height:1.65; font-size:0.93rem; }
+        .scenario-q { font-size:1.05rem; font-weight:600; margin-bottom:18px; line-height:1.6; }
+        .token-box { background:#000; color:var(--agora-gold); font-family:'Share Tech Mono',monospace; padding:16px; border:1px dashed var(--agora-gold); word-break:break-all; margin:20px 0; font-size:0.78rem; }
+        .score-row { display:flex; justify-content:center; gap:24px; margin:20px 0; flex-wrap:wrap; }
+        .score-item { text-align:center; }
+        .score-val { font-family:'Share Tech Mono',monospace; font-size:1.6rem; color:var(--agora-gold); }
+        .score-lbl { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+        input[type=text] { width:100%; padding:13px 15px; background:#000; border:1px solid var(--agora-gold); color:#fff; font-family:'Montserrat',sans-serif; font-size:0.95rem; margin-bottom:12px; outline:none; }
+        input[type=text]:focus { border-color:#fff; }
+        p.intro-txt { line-height:1.75; margin-bottom:14px; color:var(--text-primary); font-size:0.97rem; }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body><div id="root"></div>
+<script>
+const {useState} = React;
+const e = React.createElement;
+const MODULE_ID = "AG_C01";
+const CERT_KEY = "CERT_CADRE_1";
 
-    <script>
-        const e = React.createElement;
+const lessonBlocks = [
+    {
+        icon:"🎭",
+        title:"Tu es porte-parole, pas chef",
+        body:"Le délégué ne donne pas son avis personnel au Conseil de Classe : il porte la voix collective de sa classe. La différence est fondamentale. Si 80 % de tes camarades pensent que le cours de maths est trop rapide mais que toi tu trouves ça parfait, tu le dis quand même. Ton mandat efface temporairement ton ego.",
+        exemple:"❌ 'Moi je pense que...' → ✅ 'Mes camarades m'ont remonté que...'"
+    },
+    {
+        icon:"📋",
+        title:"Tes missions concrètes",
+        body:"Avant chaque conseil : consulte ta classe, note les points importants, classe-les par urgence. Pendant : prends la parole de façon claire et factuelle. Après : rends compte à tes camarades de ce qui s'est dit et décidé. Tu es un pont à double sens — de la classe vers l'institution, et de l'institution vers la classe.",
+        exemple:"Exemple de bonne pratique : tenir un petit carnet où tu notes les demandes que tes camarades te confient."
+    },
+    {
+        icon:"🔒",
+        title:"La règle d'or : la confidentialité",
+        body:"Ce qui se dit en Conseil de Classe reste en Conseil de Classe. Tu peux transmettre les décisions générales (appréciations globales, projets votés), mais tu ne répètes jamais les commentaires sur un élève précis. Le délégué qui trahit la confidentialité perd immédiatement toute crédibilité — auprès des profs comme des élèves.",
+        exemple:"Ce que tu n'as pas le droit de dire : 'Le prof de Français a dit que Lucas était fainéant.'"
+    },
+    {
+        icon:"⚖️",
+        title:"Représenter même ceux qu'on n'aime pas",
+        body:"Un mandat de délégué ne se donne pas seulement aux amis. Tu représentes toute la classe, y compris les élèves isolés, ceux avec qui tu es en conflit, ceux qui n'ont pas voté pour toi. Cette neutralité n'est pas de la faiblesse — c'est la source de ta légitimité. Elle te rend intouchable parce qu'on ne peut pas t'accuser de favoritisme.",
+        exemple:""
+    }
+];
 
-        function App() {
-            const [step, setStep] = React.useState("intro");
-            const [userName, setUserName] = React.useState("");
-            const [quizIndex, setQuizIndex] = React.useState(0);
-            const [token, setToken] = React.useState("");
+const quizData = [
+    {
+        q:"Un camarade que tu n'aimes pas du tout vient te voir pour te signaler un problème avec un prof. Que fais-tu ?",
+        opts:[
+            "Tu l'écoutes et tu transmets si c'est légitime — ton mandat ne choisit pas.",
+            "Tu lui dis que tu n'es pas là pour lui, il n'avait qu'à voter pour toi.",
+            "Tu lui dis d'aller voir lui-même le prof."
+        ],
+        correct:0,
+        feedback_ok:"Exactement. Le mandat ne se divise pas selon les affinités. C'est ta force : on sait que tu défends tout le monde.",
+        feedback_ko:"C'est là que le délégué devient inutile. Un mandat sélectif n'est pas un mandat — c'est du favoritisme déguisé."
+    },
+    {
+        q:"En Conseil de Classe, le prof principal te demande si tu as quelque chose à dire au nom de la classe. Tu n'as pas consulté tes camarades avant. Que fais-tu ?",
+        opts:[
+            "Tu inventes des avis pour paraître préparé.",
+            "Tu dis honnêtement que tu n'as pas eu le temps de consulter et demandes si tu peux revenir la prochaine fois.",
+            "Tu donnes ton opinion personnelle en la faisant passer pour celle de la classe."
+        ],
+        correct:1,
+        feedback_ok:"Bien joué. L'honnêteté sur ta préparation est toujours préférable à l'improvisation. Les profs respectent ça.",
+        feedback_ko:"Inventer ou substituer son avis à celui de la classe, c'est trahir son mandat. L'aveu d'impréparation est bien plus honorable."
+    }
+];
 
-            // CONFIGURATION DU MODULE
-            const MODULE_ID = "AG_C01";
-            const NEXT_CERT_KEY = "CERT_CADRE_1"; // Pour le Hub
+const scenarioData = {
+    ctx:"Après un Conseil de Classe tendu, un camarade t'arrête dans le couloir : 'Dis-moi ce que les profs ont dit sur moi !'",
+    q:"Comment réagis-tu ?",
+    choices:[
+        { txt:"Tu lui donnes les appréciations générales sur la classe, sans citer de commentaires personnels sur lui ou sur les autres.", ok:true, res:"Parfait. Tu es transparent sur ce qui peut être partagé, et tu protèges ce qui doit rester confidentiel. C'est exactement ça, le délégué." },
+        { txt:"Tu lui répètes tout en détail — il a le droit de savoir ce que les profs pensent de lui.", ok:false, res:"Non. Tu n'as pas le droit de transmettre des commentaires individuels. Cela brise la confiance que les enseignants t'ont accordée en te laissant siéger." },
+        { txt:"Tu refuses de dire quoi que ce soit : 'C'est confidentiel, point.'", ok:false, res:"C'est trop hermétique. La transparence sur les décisions générales fait partie de ton rôle — le secret total n'est pas non plus ta mission." }
+    ]
+};
 
-            const finishModule = () => {
-                const certData = {
-                    v: 1,
-                    d: new Date().toISOString(),
-                    m: MODULE_ID,
-                    n: userName || "Délégué Anonyme",
-                    f: true
-                };
-                
-                // 1. Enregistrement Local (Débloque le Hub)
-                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
-                
-                // 2. Génération du Jeton (Base64)
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
-                setToken(encoded);
-                setStep("complete");
-            };
+function App() {
+    const [step, setStep] = useState("intro");
+    const [name, setName] = useState("");
+    const [qIdx, setQIdx] = useState(0);
+    const [chosen, setChosen] = useState(null);
+    const [validated, setValidated] = useState(false);
+    const [score, setScore] = useState(0);
+    const [scenChosen, setScenChosen] = useState(null);
+    const [token, setToken] = useState("");
 
-            const renderIntro = () => e("div", { className: "card" },
-                e("h1", null, "Module C01 : Missions & Devoirs"),
-                e("p", null, "Salut à toi, jeune élu ! Avant de siéger au Conseil, il faut connaître ton armure et ton épée. On ne représente pas ses camarades au petit bonheur la chance."),
-                e("input", { 
-                    type: "text", 
-                    placeholder: "Ton Nom / Prénom",
-                    style: { width: '100%', padding: '10px', marginBottom: '10px' },
-                    onChange: (ev) => setUserName(ev.target.value)
-                }),
-                e("button", { className: "btn", onClick: () => userName ? setStep("quiz") : alert("Dis-moi ton nom avant d'entrer dans l'Arène !") }, "Entrer dans l'Arène")
-            );
+    function validate() {
+        if (chosen === null) return;
+        setValidated(true);
+        if (chosen === quizData[qIdx].correct) setScore(s => s + 50);
+    }
+    function nextQ() {
+        if (qIdx < quizData.length - 1) { setQIdx(i => i+1); setChosen(null); setValidated(false); }
+        else setStep("scenario");
+    }
+    function finish() {
+        const cert = { v:1, d:new Date().toISOString(), m:MODULE_ID, n:name||"Délégué", f:true, s:score };
+        localStorage.setItem(CERT_KEY, JSON.stringify(cert));
+        setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+        setStep("complete");
+    }
 
-            const questions = [
-                { q: "Un délégué doit-il donner son avis personnel en Conseil de Classe ?", a: ["Oui, c'est son rôle", "Non, il porte la parole collective", "Seulement s'il est d'accord"], c: 1 },
-                { q: "Quelle est la règle d'or concernant les informations privées ?", a: ["On raconte tout au foyer", "Confidentialité absolue", "On ne le dit qu'à ses potes"], c: 1 }
-            ];
+    if (step === "intro") return e("div",{className:"card"},
+        e("h1",null,"Module C01"),
+        e("div",{style:{textAlign:"center",marginBottom:"24px"}}, e("span",{className:"badge"},"MISSIONS & DEVOIRS DU DÉLÉGUÉ")),
+        e("p",{className:"intro-txt"},"Être délégué, ce n'est pas un titre honorifique. C'est un mandat — avec des droits, des devoirs, et des règles précises. Ce module t'apprend les bases avant que tu ne sièges à ta première instance."),
+        e("p",{className:"intro-txt"},"On commence par la théorie, puis on teste tes connaissances."),
+        e("input",{type:"text",placeholder:"Ton prénom...",onChange:ev=>setName(ev.target.value)}),
+        e("button",{className:"btn",onClick:()=>name.trim()?setStep("lesson"):alert("Donne-moi un prénom d'abord.")},name?"Commencer la formation →":"Entrez votre prénom")
+    );
 
-            const renderQuiz = () => {
-                const q = questions[quizIndex];
-                return e("div", { className: "card" },
-                    e("h2", null, "Question " + (quizIndex + 1)),
-                    e("p", null, q.q),
-                    q.a.map((opt, i) => e("button", { 
-                        key: i, className: "option-btn",
-                        onClick: () => {
-                            if(i === q.c) {
-                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
-                                else setStep("scenarios");
-                            } else { alert("Minute papillon ! Réfléchis encore..."); }
-                        }
-                    }, opt))
-                );
-            };
+    if (step === "lesson") return e("div",{className:"card"},
+        e("div",{className:"progress"},
+            e("div",{className:"step active"},"1"), e("div",{className:"step"},"2"), e("div",{className:"step"},"3")
+        ),
+        e("h2",null,"📚 Cours — Tes missions de délégué"),
+        e("p",{className:"intro-txt",style:{marginBottom:"22px"}},"Lis attentivement. Le quiz qui suit testeras exactement ces notions."),
+        ...lessonBlocks.map((b,i)=>e("div",{key:i,className:"lesson-block"},
+            e("h3",null,`${b.icon} ${b.title}`),
+            e("p",null,b.body),
+            b.exemple && e("div",{className:"exemple"},b.exemple)
+        )),
+        e("button",{className:"btn",onClick:()=>setStep("quiz")},"J'ai compris — Passer au Quiz ►")
+    );
 
-            const renderScenarios = () => e("div", { className: "card" },
-                e("h2", null, "Mise en situation"),
-                e("p", null, "Un camarade vient te voir : il est victime de moqueries répétées. Que fais-tu ?"),
-                e("button", { className: "option-btn", onClick: finishModule }, "Je l'écoute et je l'oriente vers le CPE ou un adulte de confiance."),
-                e("button", { className: "option-btn", onClick: () => alert("Attention, le délégué n'est pas un justicier solitaire !") }, "Je vais voir les moqueurs pour leur dire d'arrêter en criant.")
-            );
+    if (step === "quiz") {
+        const q = quizData[qIdx];
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},
+                e("div",{className:"step done"},"✓"), e("div",{className:"step active"},"2"), e("div",{className:"step"},"3")
+            ),
+            e("h2",null,`🔬 Quiz — Question ${qIdx+1}/${quizData.length}`),
+            e("div",{className:"quiz-q"},q.q),
+            q.opts.map((o,i)=>{
+                let cls="opt";
+                if (validated) { if(i===q.correct) cls+=" correct"; else if(i===chosen) cls+=" incorrect"; }
+                return e("button",{key:i,className:cls,disabled:validated,onClick:()=>setChosen(i)},o);
+            }),
+            chosen!==null && !validated && e("button",{className:"btn",onClick:validate,style:{marginTop:"16px"}},"Valider"),
+            validated && e("div",{className:`feedback ${chosen===q.correct?"ok":"ko"}`},
+                e("strong",null,chosen===q.correct?"✔ Bonne réponse":"✘ Pas tout à fait — "),
+                chosen===q.correct ? q.feedback_ok : q.feedback_ko
+            ),
+            validated && e("div",{className:"nav-row"},e("button",{className:"btn-sm",onClick:nextQ},qIdx<quizData.length-1?"Question suivante →":"Passer au scénario →"))
+        );
+    }
 
-            const renderComplete = () => e("div", { className: "card" },
-                e("h1", null, "Mission Accomplie !"),
-                e("p", null, "Tu as validé tes connaissances de base. Ton nom est désormais inscrit dans le registre des délégués formés."),
-                e("div", { className: "token-box" }, token),
-                e("p", { style: { fontSize: '0.8em', color: '#94a3b8' } }, "Copie ce code pour prouver ta réussite ou pour le coller dans le Hub."),
-                e("button", { className: "btn", onClick: () => window.location.href = "index PIX_DELEGUES.html" }, "Retour au Hub")
-            );
+    if (step === "scenario") {
+        const s = scenarioData;
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},
+                e("div",{className:"step done"},"✓"), e("div",{className:"step done"},"✓"), e("div",{className:"step active"},"3")
+            ),
+            e("h2",null,"⚡ Mise en situation"),
+            e("div",{className:"scenario-ctx"},s.ctx),
+            e("div",{className:"scenario-q"},s.q),
+            scenChosen===null ? s.choices.map((c,i)=>e("button",{key:i,className:"opt",onClick:()=>setScenChosen(i)},c.txt))
+            : e("div",null,
+                e("div",{className:`feedback ${s.choices[scenChosen].ok?"ok":"ko"}`},
+                    e("strong",null,s.choices[scenChosen].ok?"✔ Bonne approche — ":"⚠ À revoir — "),
+                    s.choices[scenChosen].res
+                ),
+                e("button",{className:"btn",onClick:finish},"Valider mon module →")
+            )
+        );
+    }
 
-            switch(step) {
-                case "intro": return renderIntro();
-                case "quiz": return renderQuiz();
-                case "scenarios": return renderScenarios();
-                case "complete": return renderComplete();
-                default: return renderIntro();
-            }
-        }
+    if (step === "complete") return e("div",{className:"card",style:{textAlign:"center"}},
+        e("div",{style:{fontSize:"3rem",marginBottom:"16px"}},"🏛"),
+        e("h1",null,"Module C01 validé !"),
+        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`Bravo ${name}. Tu connais maintenant les fondations du rôle.`),
+        e("div",{className:"score-row"},
+            e("div",{className:"score-item"},e("div",{className:"score-val"},score),e("div",{className:"score-lbl"},"Points Quiz"))
+        ),
+        e("div",{className:"token-box"},token),
+        e("p",{style:{fontSize:"0.8rem",color:"var(--text-muted)",marginBottom:"20px"}},"Copie ce code pour prouver ta réussite dans le Hub."),
+        e("button",{className:"btn",onClick:()=>window.location.href="index PIX_DELEGUES.html"},"Retour au Hub")
+    );
 
-        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
-    </script>
-</body>
-</html>
+    return null;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body></html>

@@ -7,158 +7,257 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --agora-blue: #0f172a;
-            --agora-gold: #fbbf24;
-            --agora-slate: #1e293b;
-            --text-primary: #f8fafc;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--agora-blue);
-            color: var(--text-primary);
-            margin: 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        #root { width: 100%; max-width: 850px; padding: 20px; }
-
-        .card {
-            background: rgba(15, 23, 42, 0.95);
-            border: 2px solid var(--agora-gold);
-            padding: 40px; border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-        }
-
-        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
-        
-        .btn {
-            background: var(--agora-gold); color: var(--agora-blue);
-            border: none; padding: 15px 30px; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-            display: block; margin: 25px auto;
-        }
-        .btn:hover { letter-spacing: 1px; box-shadow: 0 0 15px var(--agora-gold); }
-
-        .option-btn {
-            display: block; width: 100%; text-align: left;
-            background: rgba(255,255,255,0.03); border: 1px solid var(--agora-slate);
-            color: white; padding: 18px; margin: 12px 0;
-            cursor: pointer; transition: 0.3s; border-radius: 2px;
-        }
-        .option-btn:hover { border-color: var(--agora-gold); background: rgba(251, 191, 36, 0.05); }
-
-        .token-display {
-            font-family: 'Share Tech Mono', monospace; background: #000;
-            color: var(--agora-gold); padding: 15px; border: 1px dashed var(--agora-gold);
-            word-break: break-all; margin: 20px 0; font-size: 0.8em;
-        }
-
-        .stress-bar { height: 10px; background: #334155; border-radius: 5px; margin: 20px 0; overflow: hidden; }
-        .stress-fill { height: 100%; background: var(--agora-gold); transition: width 0.5s; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+        :root { --agora-blue:#0f172a; --agora-gold:#fbbf24; --agora-slate:#1e293b; --agora-green:#22c55e; --agora-red:#ef4444; --text-primary:#f8fafc; --text-muted:#94a3b8; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Montserrat',sans-serif; background:var(--agora-blue); color:var(--text-primary); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:20px 0 40px; }
+        #root { width:100%; max-width:860px; padding:20px; }
+        .card { background:rgba(15,23,42,0.97); border:2px solid var(--agora-gold); padding:40px; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.7); position:relative; overflow:hidden; }
+        .card::before { content:'P02'; position:absolute; top:-15px; right:-10px; font-family:'Playfair Display'; font-size:5rem; opacity:0.04; color:var(--agora-gold); transform:rotate(-10deg); }
+        h1 { font-family:'Playfair Display',serif; color:var(--agora-gold); text-align:center; font-size:1.9rem; margin-bottom:8px; }
+        h2 { font-family:'Playfair Display',serif; color:var(--agora-gold); font-size:1.4rem; margin-bottom:16px; }
+        .badge { display:inline-block; padding:6px 18px; border:1px solid var(--agora-gold); color:var(--agora-gold); font-family:'Share Tech Mono',monospace; font-size:0.8rem; margin-bottom:24px; }
+        .progress { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+        .step { width:44px; height:44px; border:2px solid #334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:0.85rem; color:#475569; transition:all 0.3s; }
+        .step.active { border-color:var(--agora-gold); color:var(--agora-gold); box-shadow:0 0 12px rgba(251,191,36,0.4); }
+        .step.done { border-color:var(--agora-green); color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .lesson-block { background:rgba(251,191,36,0.04); border-left:3px solid var(--agora-gold); padding:18px 20px; margin-bottom:16px; border-radius:0 6px 6px 0; }
+        .lesson-block h3 { color:var(--agora-gold); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-family:'Share Tech Mono',monospace; }
+        .lesson-block p { line-height:1.75; color:var(--text-primary); font-size:0.95rem; margin-bottom:8px; }
+        .lesson-block strong { color:var(--agora-gold); }
+        .ennemi-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px; }
+        .ennemi-item { padding:12px 14px; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:4px; }
+        .ennemi-title { color:#fca5a5; font-family:'Share Tech Mono',monospace; font-size:0.82rem; text-transform:uppercase; margin-bottom:6px; }
+        .ennemi-desc { font-size:0.85rem; color:var(--text-muted); line-height:1.55; }
+        .conseil-row { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+        .conseil-item { display:flex; gap:10px; align-items:flex-start; padding:8px 12px; background:rgba(34,197,94,0.04); border:1px solid rgba(34,197,94,0.15); border-radius:4px; }
+        .conseil-icon { font-size:1.1rem; flex-shrink:0; }
+        .conseil-txt { font-size:0.9rem; line-height:1.6; color:var(--text-muted); }
+        .conseil-txt strong { color:var(--text-primary); }
+        .posture-box { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+        .posture-do { padding:12px 14px; background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2); border-radius:4px; font-size:0.88rem; color:#86efac; line-height:1.6; }
+        .posture-dont { padding:12px 14px; background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); border-radius:4px; font-size:0.88rem; color:#fca5a5; line-height:1.6; }
+        .posture-do::before { content:"✅ "; }
+        .posture-dont::before { content:"❌ "; }
+        .phrase-box { margin-top:12px; padding:14px 18px; background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.3); border-radius:4px; font-style:italic; color:var(--agora-gold); font-size:0.95rem; line-height:1.65; text-align:center; }
+        .btn { background:var(--agora-gold); color:var(--agora-blue); border:none; padding:14px 32px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; display:block; margin:28px auto 0; font-family:'Montserrat',sans-serif; font-size:0.95rem; letter-spacing:1px; border-radius:2px; }
+        .btn:hover { box-shadow:0 0 20px rgba(251,191,36,0.5); transform:translateY(-1px); }
+        .quiz-q { font-size:1.05rem; font-weight:600; padding:16px; background:rgba(251,191,36,0.06); border-left:4px solid var(--agora-gold); border-radius:0 4px 4px 0; margin-bottom:18px; line-height:1.6; }
+        .opt { display:block; width:100%; text-align:left; background:rgba(255,255,255,0.03); border:1px solid #334155; color:white; padding:16px 18px; margin:10px 0; cursor:pointer; transition:0.25s; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:0.95rem; line-height:1.5; }
+        .opt:hover:not(:disabled) { border-color:var(--agora-gold); background:rgba(251,191,36,0.06); transform:translateX(4px); }
+        .opt.correct { border-color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .opt.incorrect { border-color:var(--agora-red); background:rgba(239,68,68,0.1); }
+        .opt:disabled { cursor:default; }
+        .feedback { margin-top:16px; padding:14px 18px; border-radius:4px; line-height:1.65; font-size:0.93rem; }
+        .feedback.ok { border-left:3px solid var(--agora-green); background:rgba(34,197,94,0.08); }
+        .feedback.ko { border-left:3px solid var(--agora-red); background:rgba(239,68,68,0.08); }
+        .feedback strong { color:var(--agora-gold); }
+        .nav-row { display:flex; justify-content:center; gap:16px; margin-top:22px; }
+        .btn-sm { background:transparent; border:2px solid var(--agora-gold); color:var(--agora-gold); padding:10px 24px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; font-family:'Montserrat',sans-serif; font-size:0.85rem; border-radius:2px; }
+        .btn-sm:hover { background:rgba(251,191,36,0.1); }
+        .scenario-ctx { background:rgba(251,191,36,0.05); border:1px dashed #475569; padding:14px 18px; border-radius:4px; font-style:italic; color:var(--text-muted); margin-bottom:16px; line-height:1.65; font-size:0.93rem; }
+        .scenario-q { font-size:1.05rem; font-weight:600; margin-bottom:18px; line-height:1.6; }
+        .token-box { background:#000; color:var(--agora-gold); font-family:'Share Tech Mono',monospace; padding:16px; border:1px dashed var(--agora-gold); word-break:break-all; margin:20px 0; font-size:0.78rem; }
+        .score-val { font-family:'Share Tech Mono',monospace; font-size:1.6rem; color:var(--agora-gold); text-align:center; }
+        .score-lbl { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; text-align:center; }
+        input[type=text] { width:100%; padding:13px 15px; background:#000; border:1px solid var(--agora-gold); color:#fff; font-family:'Montserrat',sans-serif; font-size:0.95rem; margin-bottom:12px; outline:none; }
+        p.intro-txt { line-height:1.75; margin-bottom:14px; color:var(--text-primary); font-size:0.97rem; }
+        @media(max-width:600px) { .ennemi-row { grid-template-columns:1fr; } .posture-box { grid-template-columns:1fr; } }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body><div id="root"></div>
+<script>
+const {useState} = React;
+const e = React.createElement;
+const MODULE_ID = "AG_P02";
+const CERT_KEY = "CERT_PAROLE_2";
 
-    <script>
-        const e = React.createElement;
+const lesson = [
+    {
+        icon:"🎤",
+        title:"Pourquoi la prise de parole est un sport de combat",
+        body:"Prendre la parole devant une assemblée — même petite — active le système de stress du cerveau. Ton cœur s'emballe, tes mains tremblent, ta voix se fissure. Ce n'est pas de la faiblesse : c'est de l'adrénaline. Et l'adrénaline, bien utilisée, donne de l'énergie et de la présence. Le problème n'est pas le trac — c'est de le subir au lieu de le piloter.",
+        extra:null
+    },
+    {
+        icon:"🏗",
+        title:"Les 3 ennemis de la parole en public",
+        body:"Avant de parler, connais tes ennemis. Les trois plus courants chez les délégués débutants :",
+        ennemis:[
+            { title:"Trop vite", desc:"Le stress accélère le débit. Personne ne comprend rien. Parler vite donne l'impression de ne pas maîtriser." },
+            { title:"Trop bas", desc:"La voix baisse sous l'effet du stress. Les gens au fond n'entendent plus. Tu perds leur attention sans le savoir." },
+            { title:"Regards fuyants", desc:"Fixer ses notes ou le plafond coupe la connexion avec l'auditoire. Le regard est le premier outil de crédibilité." }
+        ]
+    },
+    {
+        icon:"🧘",
+        title:"Gérer le trac : la technique de la respiration",
+        body:"La respiration est l'outil le plus simple et le plus efficace pour calmer le cerveau avant de parler. Voici le protocole en 3 étapes à faire juste avant de prendre la parole :",
+        conseils:[
+            { icon:"1️⃣", title:"Inspire lentement par le nez (4 secondes)", desc:"Concentre-toi sur le souffle, pas sur ce que tu vas dire." },
+            { icon:"2️⃣", title:"Retiens (2 secondes)", desc:"Ce temps d'arrêt signale à ton cerveau que tu contrôles la situation." },
+            { icon:"3️⃣", title:"Expire lentement par la bouche (6 secondes)", desc:"L'expiration longue active le système parasympathique — celui qui calme. Ton cœur ralentit, ta voix se stabilise." }
+        ]
+    },
+    {
+        icon:"👁",
+        title:"La posture physique : ton premier message",
+        body:"Avant que tu dises un mot, ton corps a déjà parlé. La posture décide si on t'écoutera ou non.",
+        postures:[
+            { do:"Pieds ancrés au sol, légèrement écartés — tu occupes l'espace.", dont:"Pieds qui bougent, poids sur un seul côté — tu signales le malaise." },
+            { do:"Regard qui balaye la salle — tu inclus tout le monde.", dont:"Regard fixé sur tes notes ou le chef d'établissement seulement." },
+            { do:"Voix projetée vers le fond de la salle — parle pour les derniers rangs.", dont:"Voix vers le bas, pour toi-même — les premiers rangs t'entendent, les autres non." },
+            { do:"Débit modéré, pauses assumées — les silences structurent le discours.", dont:"Remplir les silences avec 'euh', 'ben', 'donc' — ils signalent l'hésitation." }
+        ]
+    },
+    {
+        icon:"🚀",
+        title:"Commencer fort : la formule d'ouverture",
+        body:"Les 10 premières secondes déterminent si l'assemblée va t'écouter ou décrocher. Une bonne ouverture contient trois éléments :",
+        phrase:"« Monsieur/Madame [titre], au nom de ma classe, je souhaite aborder [sujet précis] : [une phrase synthétique sur la position de la classe]. »"
+    }
+];
 
-        function App() {
-            const [step, setStep] = React.useState("intro");
-            const [userName, setUserName] = React.useState("");
-            const [quizIndex, setQuizIndex] = React.useState(0);
-            const [token, setToken] = React.useState("");
+const quizData = [
+    {
+        q:"Juste avant de parler au Conseil de Classe, tu sens ton cœur s'emballer et ta voix trembler. C'est un signe que :",
+        opts:[
+            "Tu n'es pas fait pour parler en public — mieux vaut te taire.",
+            "Ton cerveau libère de l'adrénaline, qui peut devenir une source d'énergie si tu la pilotes plutôt que de la subir.",
+            "Tu manques de confiance en toi et il faudrait plusieurs années de formation."
+        ],
+        correct:1,
+        feedback_ok:"Exactement. Le trac n'est pas un défaut — c'est une réaction biologique normale. La clé est d'apprendre à le piloter avec des techniques concrètes.",
+        feedback_ko:"Le trac est universel et ne signifie pas qu'on n'est 'pas fait pour ça'. C'est une réaction physiologique qu'on peut apprendre à gérer."
+    },
+    {
+        q:"Tu prends la parole au CA. Quelle est la formule d'ouverture la plus efficace ?",
+        opts:[
+            "'Euh... ben voilà... mes camarades m'ont dit que... enfin, ça dépend...'",
+            "'Monsieur le Principal, au nom de ma classe, je souhaite aborder la question des horaires du foyer : une majorité de mes camarades souhaite une extension d'une heure le vendredi.'",
+            "'Tout le monde est d'accord pour dire que les horaires du foyer sont nuls.'"
+        ],
+        correct:1,
+        feedback_ok:"Parfait. Tu te présentes (en tant que représentant), tu annonces le sujet précis, et tu formules la position de ta classe clairement. C'est la structure qui rend crédible.",
+        feedback_ko:"Une bonne ouverture doit préciser qui tu représentes, quel est le sujet, et quelle est la position de ta classe — pas improviser ni généraliser de façon vague."
+    },
+    {
+        q:"Quel est l'ennemi numéro un de la clarté quand on parle en public ?",
+        opts:[
+            "Parler trop lentement.",
+            "Parler trop vite sous l'effet du stress.",
+            "Faire trop de pauses — ça perturbe l'auditoire."
+        ],
+        correct:1,
+        feedback_ok:"Exact. Le stress accélère le débit. Les auditeurs ne suivent plus, perdent le fil, et finissent par décrocher. Les pauses ne perturbent pas — elles structurent.",
+        feedback_ko:"Le débit trop rapide est l'ennemi classique. Les pauses, elles, sont des outils : elles donnent le temps à l'auditoire d'assimiler ce qu'on vient de dire."
+    }
+];
 
-            const MODULE_ID = "AG_P02";
-            const NEXT_CERT_KEY = "CERT_PAROLE_2";
+const scenarioData = {
+    ctx:"Tu es au Conseil de Classe. Le professeur principal te cède la parole : 'Les délégués ont-ils quelque chose à dire au nom de la classe ?' Silence dans la salle. 25 paires d'yeux te regardent.",
+    q:"Comment gères-tu ce moment ?",
+    choices:[
+        { txt:"Tu prends une grande inspiration, tu relèves la tête, et tu dis clairement : 'Oui, merci. Au nom de ma classe, je voudrais aborder deux points : d'abord le rythme des devoirs en maths, et ensuite l'ambiance en cours d'anglais.' Tu fais une pause et tu attends un signe d'approbation pour continuer.", ok:true, res:"C'est exactement ça. La respiration calme le trac, le regard droit établit la crédibilité, et l'annonce des deux points structure la suite. Tu prends le contrôle de la parole sans t'y noyer." },
+        { txt:"Tu dis rapidement 'Non, rien de spécial' pour éviter le regard des profs.", ok:false, res:"Tu as raté l'unique moment dans le trimestre où ta classe avait une voix officielle. Fuir la parole n'est pas une option pour un délégué — c'est trahir le mandat." },
+        { txt:"Tu parles longtemps, en détaillant toutes les plaintes de chaque élève une par une, pendant 10 minutes.", ok:false, res:"Le Conseil de Classe dure environ 1h pour toute la classe. 10 minutes sur les délégués, c'est déséquilibré et contre-productif. Prioriser, synthétiser, structurer : c'est le travail du délégué avant la réunion, pas pendant." }
+    ]
+};
 
-            const handleFinish = () => {
-                const certData = {
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID,
-                    n: userName || "Orateur Agora", f: true
-                };
-                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
-                setToken(encoded);
-                setStep("complete");
-            };
+function App() {
+    const [step, setStep] = useState("intro");
+    const [name, setName] = useState("");
+    const [qIdx, setQIdx] = useState(0);
+    const [chosen, setChosen] = useState(null);
+    const [validated, setValidated] = useState(false);
+    const [score, setScore] = useState(0);
+    const [scenChosen, setScenChosen] = useState(null);
+    const [token, setToken] = useState("");
 
-            const renderIntro = () => e("div", { className: "card" },
-                e("h1", null, "P02 : Le Verbe Haut"),
-                e("p", null, "Avoir les idées, c'est bien. Les faire sortir de sa bouche sans bégayer quand 25 personnes te regardent, c'est mieux."),
-                e("p", null, "Prendre la parole, c'est un sport de combat. On va bosser la posture et le souffle."),
-                e("input", { 
-                    type: "text", placeholder: "Ton nom d'orateur...",
-                    style: { width: '100%', padding: '15px', background: '#000', border: '1px solid var(--agora-gold)', color: '#fff' },
-                    onChange: (ev) => setUserName(ev.target.value)
-                }),
-                e("button", { className: "btn", onClick: () => userName ? setStep("quiz") : alert("Pas de nom, pas de micro !") }, "Entrer en Scène")
-            );
+    function validate() { if(chosen===null)return; setValidated(true); if(chosen===quizData[qIdx].correct)setScore(s=>s+40); }
+    function nextQ() { if(qIdx<quizData.length-1){setQIdx(i=>i+1);setChosen(null);setValidated(false);}else setStep("scenario"); }
+    function finish() {
+        const cert={v:1,d:new Date().toISOString(),m:MODULE_ID,n:name||"Orateur",f:true,s:score};
+        localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+        setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+        setStep("complete");
+    }
 
-            const questions = [
-                { 
-                    q: "Où doit se porter ton regard quand tu parles devant une assemblée ?", 
-                    a: ["Sur tes chaussures (c'est plus sûr)", "Au plafond pour chercher l'inspiration", "Dans les yeux de ton auditoire, en balayant la salle"], 
-                    c: 2 
-                },
-                { 
-                    q: "Ton cœur s'emballe juste avant de parler. Quelle est la meilleure technique ?", 
-                    a: ["Boire 3 cafés d'affilée", "Une grande inspiration profonde par le nez, et on expire lentement", "Parler très vite pour finir plus tôt"], 
-                    c: 1 
-                }
-            ];
+    function renderLesson() {
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step active"},"1"),e("div",{className:"step"},"2"),e("div",{className:"step"},"3")),
+            e("h2",null,"📚 Cours — Prendre la parole avec impact"),
+            e("p",{className:"intro-txt",style:{marginBottom:"22px"}},"Lis attentivement. Ces notions seront testées dans le quiz qui suit."),
+            ...lesson.map((b,i)=>e("div",{key:i,className:"lesson-block"},
+                e("h3",null,`${b.icon} ${b.title}`),
+                e("p",null,b.body),
+                b.ennemis && e("div",{className:"ennemi-row"},...b.ennemis.map((en,j)=>e("div",{key:j,className:"ennemi-item"},
+                    e("div",{className:"ennemi-title"},"⚠️ "+en.title),
+                    e("div",{className:"ennemi-desc"},en.desc)
+                ))),
+                b.conseils && e("div",{className:"conseil-row"},...b.conseils.map((c,j)=>e("div",{key:j,className:"conseil-item"},
+                    e("div",{className:"conseil-icon"},c.icon),
+                    e("div",{className:"conseil-txt"},e("strong",null,c.title," — "),c.desc)
+                ))),
+                b.postures && e("div",{className:"posture-box"},...b.postures.map((p,j)=>[
+                    e("div",{key:`d${j}`,className:"posture-do"},p.do),
+                    e("div",{key:`dt${j}`,className:"posture-dont"},p.dont)
+                ]).flat()),
+                b.phrase && e("div",{className:"phrase-box"},b.phrase)
+            )),
+            e("button",{className:"btn",onClick:()=>setStep("quiz")},"J'ai compris — Passer au Quiz ►")
+        );
+    }
 
-            const renderQuiz = () => {
-                const q = questions[quizIndex];
-                return e("div", { className: "card" },
-                    e("h2", null, "Technique " + (quizIndex + 1)),
-                    e("p", null, q.q),
-                    q.a.map((opt, i) => e("button", { 
-                        key: i, className: "option-btn",
-                        onClick: () => {
-                            if(i === q.c) {
-                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
-                                else setStep("scenarios");
-                            } else { alert("On dirait une bulle de savon... sois plus solide !"); }
-                        }
-                    }, opt))
-                );
-            };
+    if(step==="intro") return e("div",{className:"card"},
+        e("h1",null,"Module P02"),
+        e("div",{style:{textAlign:"center",marginBottom:"24px"}},e("span",{className:"badge"},"LE VERBE HAUT — PRISE DE PAROLE")),
+        e("p",{className:"intro-txt"},"Avoir les bonnes idées pour ta classe, c'est bien. Réussir à les faire entendre en Conseil de Classe sans perdre le fil, c'est autre chose. La prise de parole en public est une compétence — elle s'apprend."),
+        e("p",{className:"intro-txt"},"Ce module te donne les outils concrets : gérer le trac, structurer une intervention, poser la voix, tenir le regard."),
+        e("input",{type:"text",placeholder:"Ton prénom...",onChange:ev=>setName(ev.target.value)}),
+        e("button",{className:"btn",onClick:()=>name.trim()?setStep("lesson"):alert("Un prénom d'abord.")},name?"Entrer en scène →":"Entrez votre prénom")
+    );
 
-            const renderScenarios = () => e("div", { className: "card" },
-                e("h2", null, "Le Grand Moment"),
-                e("p", null, "Tu es au Conseil d'Administration. Le Principal te demande ton avis sur le nouveau règlement. Comment commences-tu ?"),
-                e("button", { className: "option-btn", onClick: handleFinish }, 
-                    "'Monsieur le Principal, après avoir consulté mes camarades, voici ce qui ressort de nos échanges...'"),
-                e("button", { className: "option-btn", onClick: () => alert("Trop timide ! On ne t'entend pas au fond.") }, 
-                    "'Euh... ben... je sais pas trop, les autres disent que c'est nul.'"),
-                e("button", { className: "option-btn", onClick: () => alert("Attention à l'agressivité, tu vas braquer tout le monde.") }, 
-                    "'C'est n'importe quoi votre règlement, on n'en veut pas !'")
-            );
+    if(step==="lesson") return renderLesson();
 
-            const renderComplete = () => e("div", { className: "card" },
-                e("h1", null, "Voix de Cristal !"),
-                e("p", null, "Bien joué, ", e("strong", null, userName), ". Tu as la posture. Prochaine étape : apprendre à construire des arguments qui font mouche."),
-                e("div", { className: "token-display" }, token),
-                e("p", { style: { fontSize: '0.8em', color: '#94a3b8' } }, "Copie ce code. C'est ton ticket pour la Certification Finale du Pilier II."),
-                e("button", { className: "btn", onClick: () => window.location.href = "index PIX_DELEGUES.html" }, "Retour au Hub")
-            );
+    if(step==="quiz") {
+        const q=quizData[qIdx];
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"2"),e("div",{className:"step"},"3")),
+            e("h2",null,`🔬 Quiz — Question ${qIdx+1}/${quizData.length}`),
+            e("div",{className:"quiz-q"},q.q),
+            q.opts.map((o,i)=>{ let cls="opt"; if(validated){if(i===q.correct)cls+=" correct";else if(i===chosen)cls+=" incorrect";} return e("button",{key:i,className:cls,disabled:validated,onClick:()=>setChosen(i)},o); }),
+            chosen!==null&&!validated&&e("button",{className:"btn",onClick:validate,style:{marginTop:"16px"}},"Valider"),
+            validated&&e("div",{className:`feedback ${chosen===q.correct?"ok":"ko"}`},e("strong",null,chosen===q.correct?"✔ Bonne réponse — ":"✘ À revoir — "),chosen===q.correct?q.feedback_ok:q.feedback_ko),
+            validated&&e("div",{className:"nav-row"},e("button",{className:"btn-sm",onClick:nextQ},qIdx<quizData.length-1?"Question suivante →":"Passer au scénario →"))
+        );
+    }
 
-            switch(step) {
-                case "intro": return renderIntro();
-                case "quiz": return renderQuiz();
-                case "scenarios": return renderScenarios();
-                case "complete": return renderComplete();
-                default: return renderIntro();
-            }
-        }
+    if(step==="scenario") {
+        const s=scenarioData;
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"3")),
+            e("h2",null,"⚡ Mise en situation"),
+            e("div",{className:"scenario-ctx"},s.ctx),
+            e("div",{className:"scenario-q"},s.q),
+            scenChosen===null?s.choices.map((c,i)=>e("button",{key:i,className:"opt",onClick:()=>setScenChosen(i)},c.txt))
+            :e("div",null,
+                e("div",{className:`feedback ${s.choices[scenChosen].ok?"ok":"ko"}`},e("strong",null,s.choices[scenChosen].ok?"✔ Bonne posture — ":"⚠ À revoir — "),s.choices[scenChosen].res),
+                e("button",{className:"btn",onClick:finish},"Valider mon module →")
+            )
+        );
+    }
 
-        const root = ReactDOM.createRoot(document.getElementById("root"));
-        root.render(e(App));
-    </script>
-</body>
-</html>
+    return e("div",{className:"card",style:{textAlign:"center"}},
+        e("div",{style:{fontSize:"3rem",marginBottom:"16px"}},"🎤"),
+        e("h1",null,"Voix de Cristal !"),
+        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`Bravo ${name}. Tu as la posture. Maintenant, entraîne-toi pour que ça devienne un réflexe.`),
+        e("div",null,e("div",{className:"score-val"},score),e("div",{className:"score-lbl"},"Points Quiz")),
+        e("div",{className:"token-box"},token),
+        e("p",{style:{fontSize:"0.8rem",color:"var(--text-muted)",marginBottom:"20px"}},"Ce code est ton ticket pour la Certification Finale du Pilier II."),
+        e("button",{className:"btn",onClick:()=>window.location.href="index PIX_DELEGUES.html"},"Retour au Hub")
+    );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body></html>

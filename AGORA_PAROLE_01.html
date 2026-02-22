@@ -7,157 +7,243 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --agora-blue: #0f172a;
-            --agora-gold: #fbbf24;
-            --agora-slate: #1e293b;
-            --text-primary: #f8fafc;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--agora-blue);
-            color: var(--text-primary);
-            margin: 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        #root { width: 100%; max-width: 800px; padding: 20px; }
-
-        .card {
-            background: rgba(30, 41, 59, 0.9);
-            border: 2px solid var(--agora-gold);
-            padding: 40px; border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-        }
-
-        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
-        
-        .btn {
-            background: var(--agora-gold); color: var(--agora-blue);
-            border: none; padding: 12px 25px; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-            display: block; margin: 20px auto;
-        }
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
-
-        .option-btn {
-            display: block; width: 100%; text-align: left;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: white; padding: 15px; margin: 10px 0;
-            cursor: pointer; transition: 0.2s; border-radius: 4px;
-        }
-        .option-btn:hover { background: rgba(251, 191, 36, 0.1); border-color: var(--agora-gold); }
-
-        .token-box {
-            background: #000; color: var(--agora-gold);
-            font-family: 'Share Tech Mono', monospace;
-            padding: 15px; border: 1px dashed var(--agora-gold);
-            word-break: break-all; margin-top: 20px;
-        }
-
-        .quote { font-style: italic; color: #94a3b8; text-align: center; margin-bottom: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+        :root { --agora-blue:#0f172a; --agora-gold:#fbbf24; --agora-slate:#1e293b; --agora-green:#22c55e; --agora-red:#ef4444; --text-primary:#f8fafc; --text-muted:#94a3b8; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Montserrat',sans-serif; background:var(--agora-blue); color:var(--text-primary); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:20px 0 40px; }
+        #root { width:100%; max-width:860px; padding:20px; }
+        .card { background:rgba(15,23,42,0.97); border:2px solid var(--agora-gold); padding:40px; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.7); position:relative; overflow:hidden; }
+        .card::before { content:'P01'; position:absolute; top:-15px; right:-10px; font-family:'Playfair Display'; font-size:5rem; opacity:0.04; color:var(--agora-gold); transform:rotate(-10deg); }
+        h1 { font-family:'Playfair Display',serif; color:var(--agora-gold); text-align:center; font-size:1.9rem; margin-bottom:8px; }
+        h2 { font-family:'Playfair Display',serif; color:var(--agora-gold); font-size:1.4rem; margin-bottom:16px; }
+        .badge { display:inline-block; padding:6px 18px; border:1px solid var(--agora-gold); color:var(--agora-gold); font-family:'Share Tech Mono',monospace; font-size:0.8rem; margin-bottom:24px; }
+        .progress { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+        .step { width:44px; height:44px; border:2px solid #334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:0.85rem; color:#475569; transition:all 0.3s; }
+        .step.active { border-color:var(--agora-gold); color:var(--agora-gold); box-shadow:0 0 12px rgba(251,191,36,0.4); }
+        .step.done { border-color:var(--agora-green); color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .lesson-block { background:rgba(251,191,36,0.04); border-left:3px solid var(--agora-gold); padding:18px 20px; margin-bottom:16px; border-radius:0 6px 6px 0; }
+        .lesson-block h3 { color:var(--agora-gold); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; font-family:'Share Tech Mono',monospace; }
+        .lesson-block p { line-height:1.75; color:var(--text-primary); font-size:0.95rem; margin-bottom:8px; }
+        .lesson-block strong { color:var(--agora-gold); }
+        .compare-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+        .compare-bad { padding:10px 14px; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.25); border-radius:4px; font-size:0.88rem; color:#fca5a5; line-height:1.6; }
+        .compare-good { padding:10px 14px; background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.25); border-radius:4px; font-size:0.88rem; color:#86efac; line-height:1.6; }
+        .compare-bad::before { content:"❌ "; }
+        .compare-good::before { content:"✅ "; }
+        .niveau-row { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+        .niveau-item { display:flex; gap:10px; align-items:flex-start; padding:8px 12px; border-radius:4px; background:rgba(255,255,255,0.02); }
+        .niveau-num { font-family:'Share Tech Mono',monospace; color:var(--agora-gold); font-size:0.85rem; flex-shrink:0; }
+        .niveau-txt { font-size:0.9rem; line-height:1.6; color:var(--text-muted); }
+        .niveau-txt strong { color:var(--text-primary); }
+        .btn { background:var(--agora-gold); color:var(--agora-blue); border:none; padding:14px 32px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; display:block; margin:28px auto 0; font-family:'Montserrat',sans-serif; font-size:0.95rem; letter-spacing:1px; border-radius:2px; }
+        .btn:hover { box-shadow:0 0 20px rgba(251,191,36,0.5); transform:translateY(-1px); }
+        .quiz-q { font-size:1.05rem; font-weight:600; padding:16px; background:rgba(251,191,36,0.06); border-left:4px solid var(--agora-gold); border-radius:0 4px 4px 0; margin-bottom:18px; line-height:1.6; }
+        .opt { display:block; width:100%; text-align:left; background:rgba(255,255,255,0.03); border:1px solid #334155; color:white; padding:16px 18px; margin:10px 0; cursor:pointer; transition:0.25s; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:0.95rem; line-height:1.5; }
+        .opt:hover:not(:disabled) { border-color:var(--agora-gold); background:rgba(251,191,36,0.06); transform:translateX(4px); }
+        .opt.correct { border-color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .opt.incorrect { border-color:var(--agora-red); background:rgba(239,68,68,0.1); }
+        .opt:disabled { cursor:default; }
+        .feedback { margin-top:16px; padding:14px 18px; border-radius:4px; line-height:1.65; font-size:0.93rem; }
+        .feedback.ok { border-left:3px solid var(--agora-green); background:rgba(34,197,94,0.08); }
+        .feedback.ko { border-left:3px solid var(--agora-red); background:rgba(239,68,68,0.08); }
+        .feedback strong { color:var(--agora-gold); }
+        .nav-row { display:flex; justify-content:center; gap:16px; margin-top:22px; }
+        .btn-sm { background:transparent; border:2px solid var(--agora-gold); color:var(--agora-gold); padding:10px 24px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; font-family:'Montserrat',sans-serif; font-size:0.85rem; border-radius:2px; }
+        .btn-sm:hover { background:rgba(251,191,36,0.1); }
+        .scenario-ctx { background:rgba(251,191,36,0.05); border:1px dashed #475569; padding:14px 18px; border-radius:4px; font-style:italic; color:var(--text-muted); margin-bottom:16px; line-height:1.65; font-size:0.93rem; }
+        .scenario-q { font-size:1.05rem; font-weight:600; margin-bottom:18px; line-height:1.6; }
+        .token-box { background:#000; color:var(--agora-gold); font-family:'Share Tech Mono',monospace; padding:16px; border:1px dashed var(--agora-gold); word-break:break-all; margin:20px 0; font-size:0.78rem; }
+        .score-val { font-family:'Share Tech Mono',monospace; font-size:1.6rem; color:var(--agora-gold); text-align:center; }
+        .score-lbl { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; text-align:center; }
+        input[type=text] { width:100%; padding:13px 15px; background:#000; border:1px solid var(--agora-gold); color:#fff; font-family:'Montserrat',sans-serif; font-size:0.95rem; margin-bottom:12px; outline:none; }
+        p.intro-txt { line-height:1.75; margin-bottom:14px; color:var(--text-primary); font-size:0.97rem; }
+        blockquote { border-left:3px solid var(--agora-gold); padding:10px 16px; margin:12px 0; font-style:italic; color:var(--text-muted); font-size:0.93rem; }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body><div id="root"></div>
+<script>
+const {useState} = React;
+const e = React.createElement;
+const MODULE_ID = "AG_P01";
+const CERT_KEY = "CERT_PAROLE_1";
 
-    <script>
-        const e = React.createElement;
+const lesson = [
+    {
+        icon:"👂",
+        title:"Entendre ≠ Écouter",
+        body:"Entendre est un réflexe physique involontaire : tes oreilles captent des sons. Écouter est une décision consciente : ton cerveau choisit de traiter ce que l'autre dit et cherche à le comprendre. Un délégué qui se contente d'entendre ses camarades ne remplit pas son rôle. Un délégué qui écoute transforme une plainte floue en demande actionnable.",
+        extra:null,
+        compare:{ bad:"'Ouais ouais, j'entends... (en regardant ailleurs)'", good:"Contact visuel, corps tourné vers la personne, téléphone rangé." }
+    },
+    {
+        icon:"📡",
+        title:"Les 3 niveaux d'écoute",
+        body:"L'écoute n'est pas binaire. Il existe au moins trois niveaux, du plus superficiel au plus efficace :",
+        niveaux:[
+            { num:"Niveau 1", name:"Écoute passive", desc:"Tu entends les mots sans vraiment traiter le sens. Tu penses à autre chose en même temps. Inutile pour un délégué." },
+            { num:"Niveau 2", name:"Écoute sélective", desc:"Tu filtres ce qui t'intéresse. Tu construis déjà ta réponse pendant que l'autre parle. Risque de rater l'essentiel." },
+            { num:"Niveau 3", name:"Écoute active", desc:"Tu suspends ton jugement. Tu cherches à comprendre l'émotion derrière les mots, pas seulement le contenu. C'est le niveau du délégué." }
+        ]
+    },
+    {
+        icon:"🔧",
+        title:"Les 4 outils de l'écoute active",
+        body:"L'écoute active ne s'improvise pas. Elle repose sur quatre techniques concrètes :",
+        items:[
+            { title:"Le silence actif", desc:"Laisser l'autre finir sans interrompre. Un silence de 3 secondes après que l'autre a parlé lui donne souvent envie d'aller plus loin." },
+            { title:"Le contact visuel", desc:"Regarder la personne (sans fixer) signale que tu es présent. Détourner le regard pendant qu'elle parle signale le contraire." },
+            { title:"Les questions ouvertes", desc:"'Comment tu t'es senti ?' plutôt que 'Tu étais énervé ?'. Les questions fermées (oui/non) coupent la parole ; les questions ouvertes l'ouvrent." },
+            { title:"La reformulation", desc:"Résumer dans tes propres mots ce que l'autre t'a dit. C'est la technique la plus puissante — elle prouve que tu as compris." }
+        ]
+    },
+    {
+        icon:"🔄",
+        title:"La reformulation : la technique clé",
+        body:"La reformulation ne consiste pas à répéter mot pour mot ce que l'autre a dit (ce serait du perroquet). Elle consiste à restructurer le message dans tes propres mots pour valider ta compréhension et permettre à l'autre de corriger si tu as raté quelque chose.",
+        extra:null,
+        compare:{ bad:"'T'as dit que les devoirs c'était trop.'", good:"'Si j'ai bien compris, tu te sens débordé par la charge de travail depuis le début du trimestre, c'est ça ?'" }
+    }
+];
 
-        function App() {
-            const [step, setStep] = React.useState("intro");
-            const [userName, setUserName] = React.useState("");
-            const [quizIndex, setQuizIndex] = React.useState(0);
-            const [token, setToken] = React.useState("");
+const quizData = [
+    {
+        q:"Quelle est la différence fondamentale entre 'entendre' et 'écouter' ?",
+        opts:[
+            "C'est la même chose — les deux désignent la perception sonore.",
+            "Entendre est un réflexe physique involontaire ; écouter est une décision consciente de comprendre l'autre.",
+            "Écouter c'est répéter ce que l'autre dit pour lui montrer qu'on l'a entendu."
+        ],
+        correct:1,
+        feedback_ok:"Exact. La différence est fondamentale pour un délégué : tu peux être présent sans écouter. C'est la seconde qui sert à quelque chose.",
+        feedback_ko:"La distinction est centrale. Entendre est passif et automatique ; écouter demande un effort conscient de compréhension. Ce n'est pas la même chose du tout."
+    },
+    {
+        q:"Pendant qu'un camarade te parle d'un problème, tu commences déjà à préparer ta réponse. À quel niveau d'écoute es-tu ?",
+        opts:[
+            "Écoute active — tu es attentif à ce qu'il dit.",
+            "Écoute sélective — tu filtres l'information plutôt que de la recevoir pleinement.",
+            "Écoute passive — tu n'entends rien du tout."
+        ],
+        correct:1,
+        feedback_ok:"Bonne analyse. Construire sa réponse pendant que l'autre parle, c'est le signe classique de l'écoute sélective. On rate l'émotion, on ne retient que les mots.",
+        feedback_ko:"Préparer sa réponse pendant que l'autre parle est précisément la définition de l'écoute sélective. L'écoute active demande de suspendre ce réflexe."
+    },
+    {
+        q:"Un camarade te dit : 'J'en ai marre, les profs nous donnent trop de devoirs, c'est n'importe quoi !' Quelle est la meilleure reformulation ?",
+        opts:[
+            "'T'inquiète, travaille plus et ça ira mieux.'",
+            "'Tu penses qu'il y a trop de devoirs.'",
+            "'Si j'ai bien compris, tu te sens débordé par la charge de travail — c'est quelque chose que je peux porter en Conseil de Classe ?'"
+        ],
+        correct:2,
+        feedback_ok:"Parfait. Tu reformules l'émotion (débordé), tu valides la compréhension, et tu projettes vers une action concrète. C'est la boucle complète.",
+        feedback_ko:"La reformulation doit capturer l'émotion, pas seulement le contenu factuel, et ouvrir vers une action. 'Tu penses qu'il y a trop de devoirs' ne fait que répéter le contenu sans l'émotion ni la suite."
+    }
+];
 
-            const MODULE_ID = "AG_P01";
-            const NEXT_CERT_KEY = "CERT_PAROLE_1"; 
+const scenarioData = {
+    ctx:"Une camarade t'intercepte entre deux cours, visiblement agitée : 'J'en peux plus de ce groupe de travail, ils ne font rien et c'est toujours moi qui porte tout. Mais je ne veux pas qu'on me voie comme une balance...'",
+    q:"Tu as 2 minutes avant le cours. Comment tu écoutes ?",
+    choices:[
+        { txt:"Tu l'écoutes attentivement, puis tu reformules : 'Tu te sens seule à porter la charge du groupe, et tu as peur d'être mal perçue si tu en parles — c'est bien ça ?' Tu lui demandes si elle veut qu'on en reparle après les cours.", ok:true, res:"C'est l'écoute active en action. Tu as reformulé l'émotion (seule, surchargée), l'obstacle (peur du regard), et tu as ouvert un espace pour la suite sans promettre plus que tu ne peux tenir en 2 minutes." },
+        { txt:"Tu lui dis rapidement : 'Dis-le au prof, c'est lui qui gère les groupes.'", ok:false, res:"Tu as entendu, mais pas écouté. Tu proposes une solution sans avoir compris l'enjeu émotionnel (elle ne veut pas passer pour une balance). Tu as coupé court à une situation qui nécessitait plus d'attention." },
+        { txt:"Tu écoutes, mais tu lui dis que tu ne peux rien faire et que c'est son problème.", ok:false, res:"Un délégué qui dit 'c'est ton problème' trahit la confiance qu'on lui accorde. Même si tu ne peux pas résoudre le problème sur le champ, accuser réception et offrir un moment ultérieur coûte zéro effort." }
+    ]
+};
 
-            const finishModule = () => {
-                const certData = {
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID,
-                    n: userName || "Auditeur Agora", f: true
-                };
-                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
-                setToken(encoded);
-                setStep("complete");
-            };
+function App() {
+    const [step, setStep] = useState("intro");
+    const [name, setName] = useState("");
+    const [qIdx, setQIdx] = useState(0);
+    const [chosen, setChosen] = useState(null);
+    const [validated, setValidated] = useState(false);
+    const [score, setScore] = useState(0);
+    const [scenChosen, setScenChosen] = useState(null);
+    const [token, setToken] = useState("");
 
-            const renderIntro = () => e("div", { className: "card" },
-                e("h1", null, "P01 : L'Art de l'Écoute"),
-                e("p", { className: "quote" }, "\"On a deux oreilles et une seule langue pour écouter deux fois plus qu'on ne parle.\""),
-                e("p", null, "Pour être un bon délégué, il ne suffit pas de savoir 'causer'. Il faut savoir capter les ondes de la classe. C'est l'écoute active."),
-                e("input", { 
-                    type: "text", placeholder: "Ton nom pour le registre...",
-                    style: { width: '100%', padding: '12px', background: '#000', border: '1px solid var(--agora-gold)', color: '#fff', marginBottom: '20px', boxSizing: 'border-box' },
-                    onChange: (ev) => setUserName(ev.target.value)
-                }),
-                e("button", { className: "btn", onClick: () => userName ? setStep("quiz") : alert("Minute ! Comment je t'appelle ?") }, "Brancher les antennes")
-            );
+    function validate() { if(chosen===null)return; setValidated(true); if(chosen===quizData[qIdx].correct)setScore(s=>s+40); }
+    function nextQ() { if(qIdx<quizData.length-1){setQIdx(i=>i+1);setChosen(null);setValidated(false);}else setStep("scenario"); }
+    function finish() {
+        const cert={v:1,d:new Date().toISOString(),m:MODULE_ID,n:name||"Auditeur",f:true,s:score};
+        localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+        setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+        setStep("complete");
+    }
 
-            const questions = [
-                { 
-                    q: "Quelle est la différence entre 'entendre' et 'écouter' ?", 
-                    a: ["C'est la même chose, c'est du bruit", "Entendre est un réflexe, écouter est une décision", "Écouter c'est pour les profs, entendre c'est pour les élèves"], 
-                    c: 1 
-                },
-                { 
-                    q: "Pendant qu'un camarade te parle d'un problème, que fait ton cerveau en mode 'Écoute Active' ?", 
-                    a: ["Il prépare déjà la réponse pour l'interrompre", "Il essaie de comprendre l'émotion derrière les mots", "Il pense à ce qu'il va manger à la cantine"], 
-                    c: 1 
-                }
-            ];
+    function renderLesson() {
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step active"},"1"),e("div",{className:"step"},"2"),e("div",{className:"step"},"3")),
+            e("h2",null,"📚 Cours — L'art de l'écoute active"),
+            e("p",{className:"intro-txt",style:{marginBottom:"22px"}},"Lis attentivement. Ces notions seront testées dans le quiz qui suit."),
+            ...lesson.map((b,i)=>e("div",{key:i,className:"lesson-block"},
+                e("h3",null,`${b.icon} ${b.title}`),
+                e("p",null,b.body),
+                b.niveaux && e("div",{className:"niveau-row"},...b.niveaux.map((n,j)=>e("div",{key:j,className:"niveau-item"},
+                    e("div",{className:"niveau-num"},n.num),
+                    e("div",{className:"niveau-txt"},e("strong",null,n.name," : "),n.desc)
+                ))),
+                b.items && e("div",{className:"niveau-row"},...b.items.map((it,j)=>e("div",{key:j,className:"niveau-item"},
+                    e("div",{className:"niveau-num"},"→"),
+                    e("div",{className:"niveau-txt"},e("strong",null,it.title," : "),it.desc)
+                ))),
+                b.compare && e("div",{className:"compare-row"},
+                    e("div",{className:"compare-bad"},b.compare.bad),
+                    e("div",{className:"compare-good"},b.compare.good)
+                )
+            )),
+            e("button",{className:"btn",onClick:()=>setStep("quiz")},"J'ai compris — Passer au Quiz ►")
+        );
+    }
 
-            const renderQuiz = () => {
-                const q = questions[quizIndex];
-                return e("div", { className: "card" },
-                    e("h2", null, "Épreuve " + (quizIndex + 1)),
-                    e("p", null, q.q),
-                    q.a.map((opt, i) => e("button", { 
-                        key: i, className: "option-btn",
-                        onClick: () => {
-                            if(i === q.c) {
-                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
-                                else setStep("scenarios");
-                            } else { alert("T'as les écoutilles bouchées ? Réessaie !"); }
-                        }
-                    }, opt))
-                );
-            };
+    if(step==="intro") return e("div",{className:"card"},
+        e("h1",null,"Module P01"),
+        e("div",{style:{textAlign:"center",marginBottom:"24px"}},e("span",{className:"badge"},"L'ART DE L'ÉCOUTE")),
+        e("blockquote",null,'"On a deux oreilles et une seule langue pour écouter deux fois plus qu\'on ne parle."'),
+        e("p",{className:"intro-txt"},"Pour être un bon délégué, il ne suffit pas de savoir parler. Il faut surtout savoir écouter — vraiment écouter, pas juste entendre. Ce module te donne les outils concrets pour y arriver."),
+        e("input",{type:"text",placeholder:"Ton prénom...",onChange:ev=>setName(ev.target.value)}),
+        e("button",{className:"btn",onClick:()=>name.trim()?setStep("lesson"):alert("Un prénom d'abord.")},name?"Brancher les antennes →":"Entrez votre prénom")
+    );
 
-            const renderScenarios = () => e("div", { className: "card" },
-                e("h2", null, "La Reformulation"),
-                e("p", null, "Un camarade te dit : 'J'en ai marre, les profs nous donnent trop de devoirs, c'est n'importe quoi !'. Quelle est la meilleure reformulation ?"),
-                e("button", { className: "option-btn", onClick: finishModule }, "Si j'ai bien compris, tu te sens débordé par la charge de travail actuelle ?"),
-                e("button", { className: "option-btn", onClick: () => alert("Pas terrible... Tu donnes un ordre là, tu n'écoutes pas.") }, "T'inquiète, travaille plus et ça ira mieux."),
-                e("button", { className: "option-btn", onClick: () => alert("Tu simplifies trop, l'émotion est perdue.") }, "Tu penses qu'il y a trop de devoirs.")
-            );
+    if(step==="lesson") return renderLesson();
 
-            const renderComplete = () => e("div", { className: "card" },
-                e("h1", null, "Antennes Déployées !"),
-                e("p", null, "Bravo ", e("strong", null, userName), ". Tu as compris que le silence est parfois l'outil le plus puissant du délégué."),
-                e("div", { className: "token-box" }, token),
-                e("p", { style: { fontSize: '0.8em', color: '#94a3b8' } }, "Garde ce jeton précieusement. Il prouve ton passage au rang d'Auditeur."),
-                e("button", { className: "btn", onClick: () => window.location.href = "index PIX_DELEGUES.html" }, "Retour au Hub")
-            );
+    if(step==="quiz") {
+        const q=quizData[qIdx];
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"2"),e("div",{className:"step"},"3")),
+            e("h2",null,`🔬 Quiz — Question ${qIdx+1}/${quizData.length}`),
+            e("div",{className:"quiz-q"},q.q),
+            q.opts.map((o,i)=>{ let cls="opt"; if(validated){if(i===q.correct)cls+=" correct";else if(i===chosen)cls+=" incorrect";} return e("button",{key:i,className:cls,disabled:validated,onClick:()=>setChosen(i)},o); }),
+            chosen!==null&&!validated&&e("button",{className:"btn",onClick:validate,style:{marginTop:"16px"}},"Valider"),
+            validated&&e("div",{className:`feedback ${chosen===q.correct?"ok":"ko"}`},e("strong",null,chosen===q.correct?"✔ Bonne réponse — ":"✘ À revoir — "),chosen===q.correct?q.feedback_ok:q.feedback_ko),
+            validated&&e("div",{className:"nav-row"},e("button",{className:"btn-sm",onClick:nextQ},qIdx<quizData.length-1?"Question suivante →":"Passer au scénario →"))
+        );
+    }
 
-            switch(step) {
-                case "intro": return renderIntro();
-                case "quiz": return renderQuiz();
-                case "scenarios": return renderScenarios();
-                case "complete": return renderComplete();
-                default: return renderIntro();
-            }
-        }
+    if(step==="scenario") {
+        const s=scenarioData;
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"3")),
+            e("h2",null,"⚡ Mise en situation"),
+            e("div",{className:"scenario-ctx"},s.ctx),
+            e("div",{className:"scenario-q"},s.q),
+            scenChosen===null?s.choices.map((c,i)=>e("button",{key:i,className:"opt",onClick:()=>setScenChosen(i)},c.txt))
+            :e("div",null,
+                e("div",{className:`feedback ${s.choices[scenChosen].ok?"ok":"ko"}`},e("strong",null,s.choices[scenChosen].ok?"✔ Écoute active — ":"⚠ À améliorer — "),s.choices[scenChosen].res),
+                e("button",{className:"btn",onClick:finish},"Valider mon module →")
+            )
+        );
+    }
 
-        const root = ReactDOM.createRoot(document.getElementById("root"));
-        root.render(e(App));
-    </script>
-</body>
-</html>
+    return e("div",{className:"card",style:{textAlign:"center"}},
+        e("div",{style:{fontSize:"3rem",marginBottom:"16px"}},"📡"),
+        e("h1",null,"Antennes déployées !"),
+        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`Bravo ${name}. Tu as compris que le silence est parfois l'outil le plus puissant du délégué.`),
+        e("div",null,e("div",{className:"score-val"},score),e("div",{className:"score-lbl"},"Points Quiz")),
+        e("div",{className:"token-box"},token),
+        e("p",{style:{fontSize:"0.8rem",color:"var(--text-muted)",marginBottom:"20px"}},"Garde ce jeton pour le Hub."),
+        e("button",{className:"btn",onClick:()=>window.location.href="index PIX_DELEGUES.html"},"Retour au Hub")
+    );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body></html>

@@ -3,185 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGORA | Module C02 - Les Instances</title>
+    <title>AGORA | Module C02 - Les Instances & Pouvoirs</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
-
-        :root {
-            --agora-blue: #0f172a;
-            --agora-gold: #fbbf24;
-            --agora-slate: #1e293b;
-            --text: #f8fafc;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--agora-blue);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        #root { width: 100%; max-width: 800px; padding: 20px; }
-
-        .card {
-            background: rgba(30, 41, 59, 0.85);
-            border: 2px solid var(--agora-gold);
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-        }
-
-        h1, h2 { font-family: 'Playfair Display', serif; color: var(--agora-gold); text-align: center; }
-        
-        .btn {
-            background: var(--agora-gold);
-            color: var(--agora-blue);
-            border: none;
-            padding: 12px 25px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
-            display: block; width: fit-content; margin-left: auto; margin-right: auto;
-        }
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3); }
-
-        .option-btn {
-            display: block; width: 100%; text-align: left;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: white; padding: 18px; margin: 12px 0;
-            cursor: pointer; transition: 0.3s;
-            border-radius: 4px;
-        }
-        .option-btn:hover { background: rgba(251, 191, 36, 0.15); border-color: var(--agora-gold); }
-
-        .token-box {
-            background: #000; color: var(--agora-gold);
-            font-family: 'Share Tech Mono', monospace;
-            padding: 15px; border: 1px dashed var(--agora-gold);
-            word-break: break-all; margin-top: 20px;
-            font-size: 0.9em;
-        }
-
-        .feedback { padding: 10px; margin-top: 10px; border-radius: 4px; font-weight: bold; }
-        .success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+        :root { --agora-blue:#0f172a; --agora-gold:#fbbf24; --agora-slate:#1e293b; --agora-green:#22c55e; --agora-red:#ef4444; --text-primary:#f8fafc; --text-muted:#94a3b8; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Montserrat',sans-serif; background:var(--agora-blue); color:var(--text-primary); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:20px 0 40px; }
+        #root { width:100%; max-width:860px; padding:20px; }
+        .card { background:rgba(15,23,42,0.97); border:2px solid var(--agora-gold); padding:40px; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,0.7); position:relative; overflow:hidden; }
+        .card::before { content:'C02'; position:absolute; top:-15px; right:-10px; font-family:'Playfair Display'; font-size:5rem; opacity:0.04; color:var(--agora-gold); transform:rotate(-10deg); }
+        h1 { font-family:'Playfair Display',serif; color:var(--agora-gold); text-align:center; font-size:1.9rem; margin-bottom:8px; }
+        h2 { font-family:'Playfair Display',serif; color:var(--agora-gold); font-size:1.4rem; margin-bottom:16px; }
+        .badge { display:inline-block; padding:6px 18px; border:1px solid var(--agora-gold); color:var(--agora-gold); font-family:'Share Tech Mono',monospace; font-size:0.8rem; margin-bottom:24px; }
+        .progress { display:flex; gap:10px; justify-content:center; margin-bottom:28px; }
+        .step { width:44px; height:44px; border:2px solid #334155; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Share Tech Mono',monospace; font-size:0.85rem; color:#475569; transition:all 0.3s; }
+        .step.active { border-color:var(--agora-gold); color:var(--agora-gold); box-shadow:0 0 12px rgba(251,191,36,0.4); }
+        .step.done { border-color:var(--agora-green); color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .instance-card { border:1px solid #334155; border-radius:6px; margin-bottom:16px; overflow:hidden; }
+        .instance-header { background:rgba(251,191,36,0.08); border-left:4px solid var(--agora-gold); padding:14px 18px; display:flex; align-items:center; gap:12px; }
+        .instance-icon { font-size:1.4rem; }
+        .instance-name { font-family:'Share Tech Mono',monospace; color:var(--agora-gold); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px; }
+        .instance-body { padding:16px 18px; }
+        .instance-body p { line-height:1.75; color:var(--text-primary); font-size:0.95rem; margin-bottom:8px; }
+        .instance-body strong { color:var(--agora-gold); }
+        .instance-role { margin-top:10px; padding:10px 14px; background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.3); border-radius:4px; font-size:0.88rem; color:var(--agora-green); font-style:italic; }
+        .btn { background:var(--agora-gold); color:var(--agora-blue); border:none; padding:14px 32px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; display:block; margin:28px auto 0; font-family:'Montserrat',sans-serif; font-size:0.95rem; letter-spacing:1px; border-radius:2px; }
+        .btn:hover { box-shadow:0 0 20px rgba(251,191,36,0.5); transform:translateY(-1px); }
+        .quiz-q { font-size:1.05rem; font-weight:600; padding:16px; background:rgba(251,191,36,0.06); border-left:4px solid var(--agora-gold); border-radius:0 4px 4px 0; margin-bottom:18px; line-height:1.6; }
+        .opt { display:block; width:100%; text-align:left; background:rgba(255,255,255,0.03); border:1px solid #334155; color:white; padding:16px 18px; margin:10px 0; cursor:pointer; transition:0.25s; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:0.95rem; line-height:1.5; }
+        .opt:hover:not(:disabled) { border-color:var(--agora-gold); background:rgba(251,191,36,0.06); transform:translateX(4px); }
+        .opt.correct { border-color:var(--agora-green); background:rgba(34,197,94,0.1); }
+        .opt.incorrect { border-color:var(--agora-red); background:rgba(239,68,68,0.1); }
+        .opt:disabled { cursor:default; }
+        .feedback { margin-top:16px; padding:14px 18px; border-radius:4px; line-height:1.65; font-size:0.93rem; }
+        .feedback.ok { border-left:3px solid var(--agora-green); background:rgba(34,197,94,0.08); }
+        .feedback.ko { border-left:3px solid var(--agora-red); background:rgba(239,68,68,0.08); }
+        .feedback strong { color:var(--agora-gold); }
+        .nav-row { display:flex; justify-content:center; gap:16px; margin-top:22px; }
+        .btn-sm { background:transparent; border:2px solid var(--agora-gold); color:var(--agora-gold); padding:10px 24px; font-weight:700; text-transform:uppercase; cursor:pointer; transition:0.3s; font-family:'Montserrat',sans-serif; font-size:0.85rem; border-radius:2px; }
+        .btn-sm:hover { background:rgba(251,191,36,0.1); }
+        .scenario-ctx { background:rgba(251,191,36,0.05); border:1px dashed #475569; padding:14px 18px; border-radius:4px; font-style:italic; color:var(--text-muted); margin-bottom:16px; line-height:1.65; font-size:0.93rem; }
+        .scenario-q { font-size:1.05rem; font-weight:600; margin-bottom:18px; line-height:1.6; }
+        .token-box { background:#000; color:var(--agora-gold); font-family:'Share Tech Mono',monospace; padding:16px; border:1px dashed var(--agora-gold); word-break:break-all; margin:20px 0; font-size:0.78rem; }
+        .score-row { display:flex; justify-content:center; gap:24px; margin:20px 0; flex-wrap:wrap; }
+        .score-item { text-align:center; }
+        .score-val { font-family:'Share Tech Mono',monospace; font-size:1.6rem; color:var(--agora-gold); }
+        .score-lbl { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+        input[type=text] { width:100%; padding:13px 15px; background:#000; border:1px solid var(--agora-gold); color:#fff; font-family:'Montserrat',sans-serif; font-size:0.95rem; margin-bottom:12px; outline:none; }
+        p.intro-txt { line-height:1.75; margin-bottom:14px; color:var(--text-primary); font-size:0.97rem; }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body><div id="root"></div>
+<script>
+const {useState} = React;
+const e = React.createElement;
+const MODULE_ID = "AG_C02";
+const CERT_KEY = "CERT_CADRE_2";
 
-    <script>
-        const e = React.createElement;
+const instances = [
+    {
+        icon:"🏛",
+        name:"Le Conseil d'Administration (CA)",
+        desc:"C'est le 'Parlement' de l'établissement. Il vote le budget annuel, adopte ou modifie le règlement intérieur, et approuve les grands projets pédagogiques. Il se réunit 3 fois par an minimum.",
+        members:"Qui y siège : le chef d'établissement, des représentants des enseignants, des personnels, des parents d'élèves, et des élèves (2 délégués au collège).",
+        role:"Ton rôle : voter en représentant la position de tes camarades, même si elle ne correspond pas à la tienne. Prépare-toi en amont en sondant tes pairs sur les points à l'ordre du jour."
+    },
+    {
+        icon:"📊",
+        name:"Le Conseil de Classe",
+        desc:"Il se tient chaque trimestre pour faire le bilan de la classe : résultats, comportement, projets d'orientation. C'est ici que les appréciations collectives sont formulées.",
+        members:"Qui y siège : le chef d'établissement ou son adjoint, les professeurs de la classe, les parents délégués, et les 2 délégués élèves de la classe.",
+        role:"Ton rôle : préparer une synthèse des remarques que tes camarades t'ont transmises (ambiance, rythme, difficultés). Tu parles en premier ou en dernier selon les établissements — dans tous les cas, tu parles."
+    },
+    {
+        icon:"🎯",
+        name:"Le CVC (Collège) / CVL (Lycée)",
+        desc:"Le Conseil de Vie Collégienne ou Lycéenne est l'instance spécifiquement dédiée aux élèves. Elle traite de la vie quotidienne : aménagement des espaces, projets culturels ou sportifs, conditions de travail.",
+        members:"Qui y siège : uniquement des élèves élus, avec l'accompagnement du CPE et parfois du chef d'établissement.",
+        role:"Ton rôle : proposer, voter, et faire remonter les projets de tes camarades. C'est l'instance où ton pouvoir d'initiative est le plus grand."
+    },
+    {
+        icon:"⚠️",
+        name:"Le Conseil de Discipline",
+        desc:"Instance exceptionnelle, convoquée pour les fautes graves. Elle peut prononcer des sanctions allant jusqu'à l'exclusion définitive. Ce n'est pas une instance de routine.",
+        members:"Qui y siège : le chef d'établissement (président), des enseignants, des parents, et des délégués élèves. La présence d'un délégué permet de s'assurer que l'élève concerné est bien entendu.",
+        role:"Ton rôle : t'assurer que la procédure est respectée et que l'élève concerné a pu s'expliquer. Tu n'es pas son avocat, tu es le garant du cadre."
+    }
+];
 
-        function App() {
-            const [step, setStep] = React.useState("intro");
-            const [userName, setUserName] = React.useState("");
-            const [quizIndex, setQuizIndex] = React.useState(0);
-            const [token, setToken] = React.useState("");
+const quizData = [
+    {
+        q:"Lors d'un Conseil d'Administration, un vote porte sur l'extension des horaires d'ouverture de la cantine. Tes camarades t'ont demandé de voter POUR. Personnellement, tu es CONTRE. Que fais-tu ?",
+        opts:[
+            "Tu votes POUR — tu représentes la position de ta classe, pas la tienne.",
+            "Tu votes CONTRE — ta conviction vaut mieux que leur opinion.",
+            "Tu t'abstiens pour ne pas trahir tes valeurs."
+        ],
+        correct:0,
+        feedback_ok:"C'est ça. Le mandat prime sur l'opinion personnelle. Tu es là pour porter une voix, pas pour substituer la tienne.",
+        feedback_ko:"Voter selon sa conviction personnelle en Conseil, c'est trahir son mandat. Tu as été élu pour représenter, pas pour décider à la place."
+    },
+    {
+        q:"Quelle est la différence principale entre le Conseil de Classe et le CVC/CVL ?",
+        opts:[
+            "Le Conseil de Classe vote le budget, le CVC organise les sorties.",
+            "Le Conseil de Classe fait le bilan pédagogique de la classe ; le CVC/CVL traite des projets et de la vie quotidienne des élèves.",
+            "Il n'y a pas de différence, ce sont deux noms pour la même instance."
+        ],
+        correct:1,
+        feedback_ok:"Exact. L'un regarde en arrière (bilan trimestre), l'autre regarde en avant (améliorer la vie à l'école). Les deux nécessitent ta présence active.",
+        feedback_ko:"Ce sont deux instances distinctes avec des missions très différentes. Les confondre, c'est arriver sans préparation dans l'une ou l'autre."
+    },
+    {
+        q:"Au Conseil de Classe, tu n'as rien noté des remarques de tes camarades avant la réunion. Que fais-tu ?",
+        opts:[
+            "Tu improvises des avis généraux qui semblent crédibles.",
+            "Tu admets honnêtement que tu n'étais pas préparé et tu proposes de faire une consultation rapide avant le prochain trimestre.",
+            "Tu répètes ce que les profs viennent de dire pour paraître en accord."
+        ],
+        correct:1,
+        feedback_ok:"L'honnêteté vaut toujours mieux que l'improvisation. Les enseignants savent distinguer un délégué préparé d'un délégué qui improvise.",
+        feedback_ko:"Improviser ou acquiescer sans mandat réel, c'est être présent sans représenter. C'est le pire scénario pour ta crédibilité."
+    }
+];
 
-            // CONFIGURATION DU MODULE
-            const MODULE_ID = "AG_C02";
-            const NEXT_CERT_KEY = "CERT_CADRE_2"; // Débloque le niveau suivant ou confirme celui-ci
+const scenarioData = {
+    ctx:"Ton CPE t'annonce qu'une réunion du CVC est prévue demain pour voter sur l'aménagement du foyer. Il te demande si tu as des propositions à apporter.",
+    q:"Tu n'as eu qu'une heure de prévenance. Comment réagis-tu ?",
+    choices:[
+        { txt:"Tu dis que tu seras là demain avec quelques idées que tu vas consulter ce soir en sondant rapidement tes camarades via messagerie.", ok:true, res:"Excellent réflexe. Le délai est court, mais tu prends quand même le temps de consulter avant de parler au nom de tes camarades. C'est l'essence du mandat." },
+        { txt:"Tu y vas demain en improvisant selon ce que tu penses personnellement être le mieux pour le foyer.", ok:false, res:"C'est exactement ce qu'il ne faut pas faire. Sans consultation préalable, tu représentes toi-même — pas tes camarades. Au CVC, ton opinion personnelle n'a pas de mandat." },
+        { txt:"Tu déclares que c'est trop court comme délai et que tu ne peux pas y aller sans préparation.", ok:false, res:"Refuser de participer n'est pas la bonne option non plus. L'idéal est de sonder rapidement, même en 30 minutes. Ton absence laisse ta classe sans voix." }
+    ]
+};
 
-            const finishModule = () => {
-                const certData = {
-                    v: 1,
-                    d: new Date().toISOString(),
-                    m: MODULE_ID,
-                    n: userName || "Délégué",
-                    f: true
-                };
-                localStorage.setItem(NEXT_CERT_KEY, JSON.stringify(certData));
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(certData))));
-                setToken(encoded);
-                setStep("complete");
-            };
+function App() {
+    const [step, setStep] = useState("intro");
+    const [name, setName] = useState("");
+    const [qIdx, setQIdx] = useState(0);
+    const [chosen, setChosen] = useState(null);
+    const [validated, setValidated] = useState(false);
+    const [score, setScore] = useState(0);
+    const [scenChosen, setScenChosen] = useState(null);
+    const [token, setToken] = useState("");
 
-            const renderIntro = () => e("div", { className: "card" },
-                e("h1", null, "Module C02 : Le Plan du Château"),
-                e("p", null, "Bienvenue à bord ! Un délégué qui ne connaît pas les instances de son établissement, c'est comme un capitaine sans boussole : ça finit par tourner en rond dans les couloirs."),
-                e("p", null, "On va voir où se prennent les vraies décisions. Prêt à découvrir les coulisses du pouvoir scolaire ?"),
-                e("input", { 
-                    type: "text", 
-                    placeholder: "Confirme ton identité...",
-                    style: { width: '100%', padding: '12px', background: '#000', border: '1px solid var(--agora-gold)', color: 'white', marginBottom: '20px', boxSizing: 'border-box' },
-                    onChange: (ev) => setUserName(ev.target.value)
-                }),
-                e("button", { className: "btn", onClick: () => { if(userName) setStep("quiz"); else alert("Donne-moi un nom, petit !"); } }, "Lancer la reco")
-            );
+    function validate() {
+        if (chosen === null) return;
+        setValidated(true);
+        if (chosen === quizData[qIdx].correct) setScore(s => s + 40);
+    }
+    function nextQ() {
+        if (qIdx < quizData.length - 1) { setQIdx(i=>i+1); setChosen(null); setValidated(false); }
+        else setStep("scenario");
+    }
+    function finish() {
+        const cert = { v:1, d:new Date().toISOString(), m:MODULE_ID, n:name||"Délégué", f:true, s:score };
+        localStorage.setItem(CERT_KEY, JSON.stringify(cert));
+        setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+        setStep("complete");
+    }
 
-            const questions = [
-                { 
-                    q: "Quelle instance est le 'Parlement' de l'établissement, où l'on vote le budget et le règlement intérieur ?", 
-                    a: ["Le Conseil de Discipline", "Le Conseil d'Administration (CA)", "La réunion des délégués"], 
-                    c: 1 
-                },
-                { 
-                    q: "Au Conseil de Classe, le délégué doit être capable de :", 
-                    a: ["Donner les notes des copains", "Faire la synthèse des remarques de la classe", "Décider si un élève redouble"], 
-                    c: 1 
-                },
-                { 
-                    q: "Quelle instance s'occupe spécifiquement d'améliorer la vie quotidienne des élèves (projets, aménagement) ?", 
-                    a: ["Le CVC (Collège) ou CVL (Lycée)", "Le Conseil de Vie Prof", "Le secrétariat"], 
-                    c: 0 
-                }
-            ];
+    if (step==="intro") return e("div",{className:"card"},
+        e("h1",null,"Module C02"),
+        e("div",{style:{textAlign:"center",marginBottom:"24px"}},e("span",{className:"badge"},"INSTANCES & POUVOIRS")),
+        e("p",{className:"intro-txt"},"Un délégué qui ne connaît pas les instances de son établissement, c'est comme un pilote qui ne connaît pas les commandes de son avion. Tu vas siéger dans des réunions avec des adultes — tu dois savoir de quoi on parle."),
+        e("p",{className:"intro-txt"},"Ce module te donne une carte complète du pouvoir scolaire."),
+        e("input",{type:"text",placeholder:"Ton prénom...",onChange:ev=>setName(ev.target.value)}),
+        e("button",{className:"btn",onClick:()=>name.trim()?setStep("lesson"):alert("Un prénom d'abord.")},name?"Commencer →":"Entrez votre prénom")
+    );
 
-            const renderQuiz = () => {
-                const q = questions[quizIndex];
-                return e("div", { className: "card" },
-                    e("h2", null, "Étape " + (quizIndex + 1)),
-                    e("p", { style: { fontSize: '1.1em', marginBottom: '25px' } }, q.q),
-                    q.a.map((opt, i) => e("button", { 
-                        key: i, className: "option-btn",
-                        onClick: () => {
-                            if(i === q.c) {
-                                if(quizIndex < questions.length - 1) setQuizIndex(quizIndex + 1);
-                                else setStep("scenarios");
-                            } else { 
-                                alert("C'est un peu léger comme argumentation... réessaie !"); 
-                            }
-                        }
-                    }, opt))
-                );
-            };
+    if (step==="lesson") return e("div",{className:"card"},
+        e("div",{className:"progress"},e("div",{className:"step active"},"1"),e("div",{className:"step"},"2"),e("div",{className:"step"},"3")),
+        e("h2",null,"📚 Cours — Les 4 instances que tu dois connaître"),
+        e("p",{className:"intro-txt",style:{marginBottom:"22px"}},"Chaque instance a un rôle précis. Ton rôle dans chacune est différent. Apprends à les distinguer."),
+        ...instances.map((inst,i)=>e("div",{key:i,className:"instance-card"},
+            e("div",{className:"instance-header"},
+                e("div",{className:"instance-icon"},inst.icon),
+                e("div",{className:"instance-name"},inst.name)
+            ),
+            e("div",{className:"instance-body"},
+                e("p",null,inst.desc),
+                e("p",null,e("strong",null,"Composition : "),inst.members),
+                e("div",{className:"instance-role"},"👤 ",e("strong",null,"Ton rôle : "),inst.role)
+            )
+        )),
+        e("button",{className:"btn",onClick:()=>setStep("quiz")},"J'ai compris — Passer au Quiz ►")
+    );
 
-            const renderScenarios = () => e("div", { className: "card" },
-                e("h2", null, "Cas Pratique : Le CA"),
-                e("p", null, "Tu sièges au Conseil d'Administration. Un vote est proposé pour changer les horaires d'ouverture du foyer. Tes camarades t'ont demandé de voter contre, mais toi, personnellement, tu trouves ça bien. Que fais-tu ?"),
-                e("button", { className: "option-btn", onClick: finishModule }, "Je vote contre. Je suis là pour représenter la voix de ceux qui m'ont élu, pas mes préférences."),
-                e("button", { className: "option-btn", onClick: () => alert("Attention ! Tu n'es pas là pour toi, tu es un porte-parole.") }, "Je vote pour. Après tout, je sais mieux qu'eux ce qui est bon.")
-            );
+    if (step==="quiz") {
+        const q = quizData[qIdx];
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"2"),e("div",{className:"step"},"3")),
+            e("h2",null,`🔬 Quiz — Question ${qIdx+1}/${quizData.length}`),
+            e("div",{className:"quiz-q"},q.q),
+            q.opts.map((o,i)=>{
+                let cls="opt";
+                if(validated){if(i===q.correct)cls+=" correct"; else if(i===chosen)cls+=" incorrect";}
+                return e("button",{key:i,className:cls,disabled:validated,onClick:()=>setChosen(i)},o);
+            }),
+            chosen!==null&&!validated&&e("button",{className:"btn",onClick:validate,style:{marginTop:"16px"}},"Valider"),
+            validated&&e("div",{className:`feedback ${chosen===q.correct?"ok":"ko"}`},
+                e("strong",null,chosen===q.correct?"✔ Bonne réponse — ":"✘ Pas tout à fait — "),
+                chosen===q.correct?q.feedback_ok:q.feedback_ko
+            ),
+            validated&&e("div",{className:"nav-row"},e("button",{className:"btn-sm",onClick:nextQ},qIdx<quizData.length-1?"Question suivante →":"Passer au scénario →"))
+        );
+    }
 
-            const renderComplete = () => e("div", { className: "card" },
-                e("h1", null, "Brevet de Cartographe Obtenu !"),
-                e("p", null, "Tu sais désormais où te placer sur l'échiquier. Voici ton jeton de validation officielle :"),
-                e("div", { className: "token-box" }, token),
-                e("p", { style: { fontSize: '0.85em', marginTop: '20px', color: '#94a3b8' } }, "Copie ce code. C'est ton passe-droit pour le Hub."),
-                e("button", { className: "btn", onClick: () => window.location.href = "index PIX_DELEGUES.html" }, "Retour à l'Agora")
-            );
+    if (step==="scenario") {
+        const s = scenarioData;
+        return e("div",{className:"card"},
+            e("div",{className:"progress"},e("div",{className:"step done"},"✓"),e("div",{className:"step done"},"✓"),e("div",{className:"step active"},"3")),
+            e("h2",null,"⚡ Mise en situation"),
+            e("div",{className:"scenario-ctx"},s.ctx),
+            e("div",{className:"scenario-q"},s.q),
+            scenChosen===null?s.choices.map((c,i)=>e("button",{key:i,className:"opt",onClick:()=>setScenChosen(i)},c.txt))
+            :e("div",null,
+                e("div",{className:`feedback ${s.choices[scenChosen].ok?"ok":"ko"}`},
+                    e("strong",null,s.choices[scenChosen].ok?"✔ Bonne approche — ":"⚠ À revoir — "),
+                    s.choices[scenChosen].res
+                ),
+                e("button",{className:"btn",onClick:finish},"Valider mon module →")
+            )
+        );
+    }
 
-            switch(step) {
-                case "intro": return renderIntro();
-                case "quiz": return renderQuiz();
-                case "scenarios": return renderScenarios();
-                case "complete": return renderComplete();
-                default: return renderIntro();
-            }
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById("root"));
-        root.render(e(App));
-    </script>
-</body>
-</html>
+    return e("div",{className:"card",style:{textAlign:"center"}},
+        e("div",{style:{fontSize:"3rem",marginBottom:"16px"}},"🗺"),
+        e("h1",null,"Module C02 validé !"),
+        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`Tu sais maintenant où se prennent les décisions, ${name}. Ne siège plus jamais sans préparation.`),
+        e("div",{className:"score-row"},e("div",{className:"score-item"},e("div",{className:"score-val"},score),e("div",{className:"score-lbl"},"Points Quiz"))),
+        e("div",{className:"token-box"},token),
+        e("p",{style:{fontSize:"0.8rem",color:"var(--text-muted)",marginBottom:"20px"}},"Copie ce code pour le Hub."),
+        e("button",{className:"btn",onClick:()=>window.location.href="index PIX_DELEGUES.html"},"Retour au Hub")
+    );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body></html>
