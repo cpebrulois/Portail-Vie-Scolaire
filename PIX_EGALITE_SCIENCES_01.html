@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module SCIENCES 01 - L'Effet Matilda</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --sci-cyan: #00f0ff;
+            --sci-blue: #0984e3;
+            --sci-magenta: #d500f9;
+            --sci-light: #e0f7fa;
+            --void-dark: #050510;
+            --deep-dark: #020205;
+            --panel-bg: rgba(10, 15, 30, 0.95);
+            --text-primary: #f0f8ff;
+            --text-secondary: #81ecec;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #root {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--sci-cyan);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #root::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--sci-blue), var(--sci-cyan), var(--sci-magenta));
+        }
+        
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        h1 { color: var(--sci-cyan); text-align: center; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.8rem; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+        h2 { color: var(--sci-light); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--sci-blue); padding-bottom: 5px; }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        .btn {
+            background: transparent;
+            color: var(--sci-cyan);
+            border: 1px solid var(--sci-cyan);
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover { background: var(--sci-cyan); color: var(--void-dark); box-shadow: 0 0 15px var(--sci-cyan); }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 4px solid var(--sci-magenta);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--sci-blue);
+            color: var(--text-primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .choice-btn:hover { background: rgba(0, 240, 255, 0.1); border-color: var(--sci-cyan); }
+        
+        .token-box {
+            background: var(--deep-dark);
+            border: 1px dashed var(--sci-cyan);
+            color: var(--sci-cyan);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            word-break: break-all;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .token-box:hover { background: rgba(0, 240, 255, 0.1); }
+        
+        .progress-bar {
+            height: 4px; background: rgba(255,255,255,0.1); margin-bottom: 20px; border-radius: 2px;
+        }
+        .progress-fill {
+            height: 100%; background: var(--sci-cyan); transition: width 0.3s ease; box-shadow: 0 0 10px var(--sci-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "SCI_01";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur-Anonyme";
+
+        // Fonction Bridge pour remonter les données vers ton super-hub
+        function pushBridge(payload) {
+            try {
+                const BRIDGE_KEY = "SUPER_HUB_BRIDGE";
+                const raw = localStorage.getItem(BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                list.push(payload);
+                if (list.length > 700) list.splice(0, list.length - 700);
+                localStorage.setItem(BRIDGE_KEY, JSON.stringify(list));
+            } catch (err) { console.error("Erreur pushBridge", err); }
+        }
+
+        function generateToken() {
+            const p = { 
+                v: 1, 
+                d: new Date().toISOString(), 
+                m: MODULE_ID, 
+                n: currentUser, 
+                c: "ELEVE", 
+                f: false 
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        }
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+            const [step, setStep] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+
+            const flashcards = [
+                { 
+                    title: "Ada Lovelace (1815-1852) : La mère de l'informatique", 
+                    text: "Sais-tu qui a inventé le tout premier algorithme informatique de l'histoire ? Ce n'est pas un homme du 20ème siècle, mais une mathématicienne anglaise du 19ème siècle : Ada Lovelace. Elle a compris bien avant tout le monde qu'une machine (la machine analytique de Babbage) pourrait un jour manipuler des symboles et créer de la musique ou des graphiques. Aujourd'hui, on l'oublie souvent au profit des inventeurs masculins des premiers ordinateurs." 
+                },
+                { 
+                    title: "Rosalind Franklin (1920-1958) : Le vol de l'ADN", 
+                    text: "En 1952, c'est elle qui réussit à photographier pour la première fois la structure en double hélice de l'ADN (la fameuse Photo 51). Mais ses collègues masculins, Watson et Crick, utilisent son travail à son insu pour publier leur propre article. Ils obtiendront le Prix Nobel... sans jamais la créditer de son vivant." 
+                },
+                { 
+                    title: "Katherine Johnson (1918-2020) : L'ordinateur humain de la NASA", 
+                    text: "Avant l'invention des calculatrices électroniques, la NASA employait des mathématiciennes noires brillantes pour calculer les trajectoires des fusées. Katherine Johnson a calculé la trajectoire de la mission Apollo 11 qui a emmené le premier homme sur la Lune ! Longtemps effacée de l'histoire, elle symbolise la double discrimination : être une femme et être noire dans le milieu scientifique de l'époque." 
+                }
+            ];
+
+            const quiz = [
+                { 
+                    q: "Qui a écrit le tout premier algorithme informatique de l'histoire ?", 
+                    options: ["Bill Gates", "Alan Turing", "Ada Lovelace", "Steve Jobs"], 
+                    ans: 2 
+                },
+                { 
+                    q: "Comment s'appelle le phénomène qui consiste à minimiser ou effacer les découvertes des femmes scientifiques ?", 
+                    options: ["Le syndrome de l'imposteur", "L'Effet Matilda", "L'Effet Einstein"], 
+                    ans: 1 
+                }
+            ];
+
+            const handleScenario = (marker) => {
+                pushBridge({
+                    id: `EVT-${Date.now()}`,
+                    type: 'PSY_MARKER',
+                    player: currentUser,
+                    module: MODULE_ID,
+                    action: 'SCENARIO_CHOICE',
+                    marker: marker,
+                    timestamp: new Date().toISOString()
+                });
+                setGameState("complete");
+            };
+
+            function renderProgressBar(current, total) {
+                return e("div", { className: "progress-bar" },
+                    e("div", { className: "progress-fill", style: { width: `${(current / total) * 100}%` } })
+                );
+            }
+
+            function renderIntro() {
+                return e("div", null,
+                    e("h1", null, "BASE DE DONNÉES : LES EFFACÉES"),
+                    e("p", null, "Reconnexion établie, ", e("strong", { style: { color: "var(--sci-cyan)" } }, currentUser), ". As-tu déjà remarqué que dans les livres de sciences, la quasi-totalité des grands inventeurs cités sont des hommes ?"),
+                    e("p", null, "On appelle cela ", e("strong", { style: { color: "var(--sci-magenta)" } }, "l'Effet Matilda"), " : un bug dans notre système de mémoire collective qui a effacé les découvertes des femmes au profit de leurs collègues masculins. Ta mission est de restaurer ces fichiers corrompus."),
+                    e("button", { className: "btn", onClick: () => {
+                        pushBridge({ type: "MODULE_START", player: currentUser, module: MODULE_ID, timestamp: new Date().toISOString() });
+                        setGameState("flashcards");
+                    }}, "RESTAURER LES PROFILS")
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcards[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, flashcards.length),
+                    e("h2", null, `PROFIL RÉCUPÉRÉ ${step + 1}/${flashcards.length}`),
+                    e("h3", { style: { color: "var(--sci-cyan)", marginBottom: "15px" } }, card.title),
+                    e("div", { className: "card" }, e("p", null, card.text)),
+                    e("button", { className: "btn", onClick: () => {
+                        if (step < flashcards.length - 1) setStep(step + 1);
+                        else { setStep(0); setGameState("quiz"); }
+                    }}, step < flashcards.length - 1 ? "DÉCRYPTER LE PROFIL SUIVANT" : "PASSER AU TEST DE CONNAISSANCES")
+                );
+            }
+
+            function renderQuiz() {
+                const q = quiz[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, quiz.length),
+                    e("h2", null, "VÉRIFICATION SYSTÈME"),
+                    e("p", { style: { color: "var(--sci-magenta)", marginBottom: "20px", fontSize: "1.3rem" } }, q.q),
+                    q.options.map((opt, i) => 
+                        e("button", { key: i, className: "choice-btn", onClick: () => {
+                            if (i === q.ans) setScore(score + 1);
+                            if (step < quiz.length - 1) setStep(step + 1);
+                            else setGameState("scenarios");
+                        }}, opt)
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                return e("div", null,
+                    e("h2", null, "SIMULATION DE LABORATOIRE"),
+                    e("p", null, "Imagine : Tu travailles sur un projet de sciences en groupe. Tu as fait toutes les recherches, les calculs complexes et le montage de l'expérience. Au moment de présenter devant le professeur, un garçon de ton groupe prend la parole, présente le tout comme si c'était son idée, et le professeur le félicite lui, personnellement. Que fais-tu ?"),
+                    
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("PROACTIVE_ASSERTIVE") }, 
+                        "Je prends immédiatement la parole pour remercier le professeur, et je précise devant tout le monde quelles parties complexes j'ai personnellement conçues et calculées."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("DELAYED_REPORT") }, 
+                        "Je ne dis rien devant la classe pour ne pas faire de scandale, mais j'attends la fin de l'heure pour aller voir le prof en tête-à-tête et rétablir la vérité sur mon travail."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("RESIGNATION_SILENCE") }, 
+                        "Je laisse couler. L'important c'est que le groupe ait une bonne note, peu importe qui récolte la gloire de l'expérience."
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const token = generateToken();
+                return e("div", null,
+                    e("h1", null, "SYSTÈME RESTAURÉ"),
+                    e("p", null, "Félicitations. En connaissant le nom de ces femmes de sciences, tu as désactivé une partie de l'Effet Matilda."),
+                    e("p", null, "Souviens-toi : que tu sois un garçon ou une fille, tes capacités en maths, en sciences ou en informatique ne dépendent que de ton entraînement, pas de ton genre !"),
+                    e("div", { 
+                        className: "token-box", 
+                        onClick: () => { navigator.clipboard.writeText(token); alert("Code de sécurité copié dans le presse-papier !"); }
+                    }, token),
+                    e("p", { style: { fontSize: "0.9rem", color: "var(--text-secondary)", textAlign: "center" } }, "(Clique sur le code pour le copier)"),
+                    e("button", { className: "btn", onClick: () => window.location.href = "index_PIX_Egalite.html" }, "RETOURNER AU PORTAIL")
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

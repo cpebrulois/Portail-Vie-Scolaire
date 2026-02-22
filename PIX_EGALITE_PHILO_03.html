@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module PHILO 03 - L'Éthique de l'Égalité</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --philo-indigo: #1a237e;
+            --philo-silver: #e0e0e0;
+            --philo-accent: #3949ab;
+            --void-dark: #02020a;
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-dim: #9fa8da;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        
+        #root {
+            width: 100%; max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid rgba(159, 168, 218, 0.3);
+            border-radius: 20px; padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 50px rgba(26, 35, 126, 0.3);
+        }
+
+        h1 { font-family: 'Orbitron', sans-serif; text-align: center; margin-bottom: 30px; letter-spacing: 4px; color: var(--philo-silver); }
+        h2 { color: var(--philo-dim); margin-bottom: 20px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; border-left: 2px solid var(--philo-accent); padding-left: 15px; }
+        
+        p { line-height: 1.8; margin-bottom: 20px; font-size: 1.25rem; }
+
+        .quote-box {
+            font-style: italic; background: rgba(255,255,255,0.03);
+            padding: 25px; border-radius: 12px; margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.1); text-align: center;
+        }
+
+        .btn {
+            background: var(--philo-silver); color: var(--philo-indigo);
+            border: none; padding: 18px; font-family: 'Orbitron'; font-weight: bold;
+            cursor: pointer; width: 100%; margin-top: 15px; border-radius: 50px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn:hover { background: #fff; transform: scale(1.02); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+
+        .choice-btn {
+            background: transparent; border: 1px solid rgba(159, 168, 218, 0.4);
+            color: white; padding: 18px; margin-bottom: 12px; width: 100%;
+            text-align: left; cursor: pointer; border-radius: 12px; font-size: 1.1rem;
+        }
+        .choice-btn:hover { background: rgba(57, 73, 171, 0.2); border-color: var(--philo-silver); }
+
+        .token-box {
+            background: rgba(0,0,0,0.5); border: 1px dashed var(--philo-dim); color: var(--philo-dim);
+            padding: 20px; font-family: 'Share Tech Mono'; text-align: center; margin-top: 25px; border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "PHIL_03";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Esprit Libre";
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+
+            const handleComplete = (marker) => {
+                const payload = {
+                    id: `EVT-${Date.now()}`, type: 'PSY_MARKER', player: currentUser,
+                    module: MODULE_ID, action: 'ETHICAL_POSITION', marker: marker, d: new Date().toISOString()
+                };
+                const list = JSON.parse(localStorage.getItem("SUPER_HUB_BRIDGE") || "[]");
+                list.push(payload);
+                localStorage.setItem("SUPER_HUB_BRIDGE", JSON.stringify(list));
+                setGameState("complete");
+            };
+
+            if (gameState === "intro") return e("div", null,
+                e("h1", null, "PHILO : L'ÉTHIQUE DE L'ÉGALITÉ"),
+                e("p", null, "Bonjour ", e("strong", null, currentUser), ". Nous arrivons au sommet de notre réflexion."),
+                e("p", null, "L'égalité n'est pas une destination, c'est une manière de marcher. C'est le choix, chaque jour, de regarder l'autre comme un égal en dignité et en potentiel."),
+                e("div", { className: "quote-box" }, "« On ne naît pas femme, on le devient. » — Simone de Beauvoir"),
+                e("button", { className: "btn", onClick: () => setGameState("ethics") }, "ACCÉDER À LA RÉFLEXION")
+            );
+
+            if (gameState === "ethics") return e("div", null,
+                e("h2", null, "LE DILEMME DE L'ÉQUITÉ"),
+                e("p", null, "Imagine que tu es membre d'un jury pour une bourse d'études très prestigieuse. À compétences strictement égales, deux dossiers se détachent : un garçon et une fille."),
+                e("p", null, "Cependant, tu sais que dans cette filière (ex: ingénierie spatiale), il n'y a que 5% de femmes. Que dicte ton éthique ?"),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("EQUITY_ACTIVE") }, 
+                    "Je choisis la fille pour favoriser la mixité et offrir un modèle aux futures étudiantes (Action Positive)."
+                ),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("STRICT_MERITOCRACY") }, 
+                    "Je demande une épreuve supplémentaire pour les départager, car le genre ne doit jamais entrer en ligne de compte, même pour compenser une injustice."
+                ),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("SYSTEMIC_AWARENESS") }, 
+                    "Je propose de diviser la bourse en deux, car la structure même du concours est injuste s'il ne peut pas choisir les deux."
+                )
+            );
+
+            const token = btoa(JSON.stringify({v:1, m:MODULE_ID, n:currentUser, f:true}));
+            return e("div", null,
+                e("h1", null, "PHILO : CYCLE TERMINÉ"),
+                e("p", null, "Tu as maintenant les outils pour déconstruire les évidences et penser par toi-même."),
+                e("p", { style: { color: "var(--philo-dim)" } }, "La philosophie ne donne pas de réponses toutes faites, elle t'apprend à poser les bonnes questions."),
+                e("div", { className: "token-box" }, token),
+                e("button", { className: "btn", onClick: () => window.location.href="index_PIX_Egalite.html" }, "RETOUR AU HUB")
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

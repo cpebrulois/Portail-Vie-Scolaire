@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module PHILO 01 - Nature ou Culture ?</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --philo-emerald: #00b894;
+            --philo-gold: #fdcb6e;
+            --philo-light: #ffeaa7;
+            --philo-stone: #636e72;
+            --void-dark: #1e272e;
+            --deep-dark: #000000;
+            --panel-bg: rgba(30, 39, 46, 0.95);
+            --text-primary: #ecf0f1;
+            --text-secondary: #b2bec3;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #root {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--philo-emerald);
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 184, 148, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #root::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--philo-gold), var(--philo-emerald), var(--philo-stone));
+        }
+        
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        h1 { color: var(--philo-gold); text-align: center; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.8rem; text-shadow: 0 0 10px rgba(253, 203, 110, 0.3); }
+        h2 { color: var(--philo-emerald); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--philo-stone); padding-bottom: 5px; }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        .btn {
+            background: transparent;
+            color: var(--philo-gold);
+            border: 1px solid var(--philo-gold);
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover { background: var(--philo-gold); color: var(--void-dark); box-shadow: 0 0 15px var(--philo-gold); }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid var(--philo-emerald);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--philo-stone);
+            color: var(--text-primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .choice-btn:hover { background: rgba(0, 184, 148, 0.1); border-color: var(--philo-emerald); }
+        
+        .token-box {
+            background: var(--deep-dark);
+            border: 1px dashed var(--philo-emerald);
+            color: var(--philo-emerald);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            word-break: break-all;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .token-box:hover { background: rgba(0, 184, 148, 0.15); }
+        
+        .progress-bar {
+            height: 4px; background: rgba(255,255,255,0.1); margin-bottom: 20px; border-radius: 2px;
+        }
+        .progress-fill {
+            height: 100%; background: var(--philo-emerald); transition: width 0.3s ease; box-shadow: 0 0 10px var(--philo-emerald);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "PHIL_01";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur-Anonyme";
+
+        function pushBridge(payload) {
+            try {
+                const BRIDGE_KEY = "SUPER_HUB_BRIDGE";
+                const raw = localStorage.getItem(BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                list.push(payload);
+                if (list.length > 700) list.splice(0, list.length - 700);
+                localStorage.setItem(BRIDGE_KEY, JSON.stringify(list));
+            } catch (err) { console.error("Erreur pushBridge", err); }
+        }
+
+        function generateToken() {
+            const p = { 
+                v: 1, 
+                d: new Date().toISOString(), 
+                m: MODULE_ID, 
+                n: currentUser, 
+                c: "ELEVE", 
+                f: false 
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        }
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+            const [step, setStep] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+
+            const flashcards = [
+                { 
+                    title: "La Révolution à moitié : Olympe de Gouges", 
+                    text: "En 1789, les philosophes des Lumières rédigent la Déclaration des Droits de l'Homme. Le problème ? Ils pensaient vraiment au mot 'Homme'. Les femmes n'avaient pas le droit d'être citoyennes. En 1791, une femme brillante, Olympe de Gouges, rédige la 'Déclaration des droits de la femme et de la citoyenne' pour exiger l'égalité totale. Elle le paiera de sa vie." 
+                },
+                { 
+                    title: "Le piège de la Nature", 
+                    text: "Pendant des siècles, on a justifié les inégalités en disant 'C'est naturel !'. On disait que les femmes étaient 'naturellement' plus douces et moins logiques. Mais la philosophie moderne a prouvé le contraire. Ce qu'on prend pour de la 'Nature' (biologie) est souvent de la 'Culture' (les habitudes d'une société). Savais-tu qu'au Moyen Âge, le rose était la couleur des petits garçons car c'était un 'sous-rouge' (couleur de la guerre) ?" 
+                },
+                { 
+                    title: "Simone de Beauvoir : On ne naît pas femme...", 
+                    text: "En 1949, la philosophe Simone de Beauvoir écrit une phrase qui va bouleverser le monde : 'On ne naît pas femme, on le devient'. Elle explique qu'à la naissance, un cerveau de fille ou de garçon a les mêmes capacités. C'est l'éducation, les jouets qu'on nous donne et ce que la société attend de nous qui 'fabriquent' nos comportements." 
+                }
+            ];
+
+            const quiz = [
+                { 
+                    q: "Qui a rédigé la Déclaration des droits de la femme et de la citoyenne en 1791 ?", 
+                    options: ["Marie-Antoinette", "Olympe de Gouges", "Simone de Beauvoir"], 
+                    ans: 1 
+                },
+                { 
+                    q: "Si un garçon aime porter la couleur rose, est-ce une question de Nature (biologie) ou de Culture (société) ?", 
+                    options: ["De Nature", "De Culture", "C'est impossible"], 
+                    ans: 1 
+                }
+            ];
+
+            const handleScenario = (marker) => {
+                pushBridge({
+                    id: `EVT-${Date.now()}`,
+                    type: 'PSY_MARKER',
+                    player: currentUser,
+                    module: MODULE_ID,
+                    action: 'SCENARIO_CHOICE',
+                    marker: marker,
+                    timestamp: new Date().toISOString()
+                });
+                setGameState("complete");
+            };
+
+            function renderProgressBar(current, total) {
+                return e("div", { className: "progress-bar" },
+                    e("div", { className: "progress-fill", style: { width: `${(current / total) * 100}%` } })
+                );
+            }
+
+            function renderIntro() {
+                return e("div", null,
+                    e("h1", null, "SANCTUAIRE DE LA PENSÉE"),
+                    e("p", null, "Entrée autorisée, ", e("strong", { style: { color: "var(--philo-emerald)" } }, currentUser), ". Jusqu'ici, nous avons regardé l'Histoire et les Sciences. Il est temps de s'attaquer au cœur du système : les idées."),
+                    e("p", null, "Le plus grand piège de l'humanité est un mot de six lettres : ", e("strong", { style: { color: "var(--philo-gold)" } }, "NATURE"), ". Pendant des siècles, on a utilisé ce mot pour enfermer les gens dans des cases. Es-tu prêt(e) à déconstruire cette illusion ?"),
+                    e("button", { className: "btn", onClick: () => {
+                        pushBridge({ type: "MODULE_START", player: currentUser, module: MODULE_ID, timestamp: new Date().toISOString() });
+                        setGameState("flashcards");
+                    }}, "OUVRIR LES LIVRES")
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcards[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, flashcards.length),
+                    e("h2", null, `RÉFLEXION ${step + 1}/${flashcards.length}`),
+                    e("h3", { style: { color: "var(--philo-gold)", marginBottom: "15px" } }, card.title),
+                    e("div", { className: "card" }, e("p", null, card.text)),
+                    e("button", { className: "btn", onClick: () => {
+                        if (step < flashcards.length - 1) setStep(step + 1);
+                        else { setStep(0); setGameState("quiz"); }
+                    }}, step < flashcards.length - 1 ? "TOURNER LA PAGE" : "PASSER À LA DIALECTIQUE")
+                );
+            }
+
+            function renderQuiz() {
+                const q = quiz[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, quiz.length),
+                    e("h2", null, "DIALECTIQUE (Vérification)"),
+                    e("p", { style: { color: "var(--philo-emerald)", marginBottom: "20px", fontSize: "1.3rem" } }, q.q),
+                    q.options.map((opt, i) => 
+                        e("button", { key: i, className: "choice-btn", onClick: () => {
+                            if (i === q.ans) setScore(score + 1);
+                            if (step < quiz.length - 1) setStep(step + 1);
+                            else setGameState("scenarios");
+                        }}, opt)
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                return e("div", null,
+                    e("h2", null, "L'ÉPREUVE DU QUOTIDIEN"),
+                    e("p", null, "Imagine : Dans la cour du collège, une discussion éclate. Un élève affirme très sérieusement : 'De toute façon, c'est scientifique, les garçons sont naturellement plus forts en logique et en bricolage, et les filles sont naturellement meilleures pour écouter et soigner les gens'. Que réponds-tu ?"),
+                    
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("DECONSTRUCTION_PEDAGOGY") }, 
+                        "J'explique calmement que c'est faux : ce n'est pas la nature, c'est juste que depuis l'enfance, on n'offre pas les mêmes jouets (Lego vs Poupées) et qu'on n'encourage pas les mêmes comportements selon notre genre."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("DIRECT_CONFRONTATION") }, 
+                        "Je le prends au mot ! Je le défie de résoudre une énigme logique ou de réparer un truc tout de suite pour lui prouver que ses théories sur la nature sont ridicules."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("AVOIDANCE_VALIDATION") }, 
+                        "Je ne dis rien. Même si ça m'énerve un peu, je me dis qu'il y a peut-être une part de vérité là-dedans, vu qu'on voit plus d'hommes dans le bâtiment et de femmes infirmières."
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const token = generateToken();
+                return e("div", null,
+                    e("h1", null, "ÉVEIL ACCOMPLI"),
+                    e("p", null, "Bravo. Tu viens d'acquérir l'arme la plus puissante : l'esprit critique. La prochaine fois qu'on te dira qu'un métier n'est 'pas fait pour toi', tu sauras que c'est une question de culture, pas de nature."),
+                    e("p", null, "Ton avenir t'appartient, tu as le droit de tout devenir."),
+                    e("div", { 
+                        className: "token-box", 
+                        onClick: () => { navigator.clipboard.writeText(token); alert("Code philosophique copié !"); }
+                    }, token),
+                    e("p", { style: { fontSize: "0.9rem", color: "var(--text-secondary)", textAlign: "center" } }, "(Clique sur le code pour le copier)"),
+                    e("button", { className: "btn", onClick: () => window.location.href = "index_PIX_Egalite.html" }, "RETOURNER AU PORTAIL")
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

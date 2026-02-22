@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module HISTOIRE 01 - Les Conquêtes</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --history-bronze: #cd7f32;
+            --history-amber: #d4a574;
+            --history-sepia: #b08968;
+            --history-parchment: #e8d5b5;
+            --history-ink: #2c1810;
+            --void-dark: #0a0a0a;
+            --deep-dark: #050505;
+            --panel-bg: rgba(44, 24, 16, 0.95);
+            --text-primary: #f5ede4;
+            --text-secondary: #a89984;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #root {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--history-bronze);
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #root::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--history-sepia), var(--history-amber), var(--history-bronze));
+        }
+        
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        h1 { color: var(--history-amber); text-align: center; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.8rem; }
+        h2 { color: var(--history-parchment); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--history-sepia); padding-bottom: 5px; }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        .btn {
+            background: transparent;
+            color: var(--history-amber);
+            border: 1px solid var(--history-amber);
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover { background: var(--history-amber); color: var(--void-dark); box-shadow: 0 0 15px var(--history-amber); }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid var(--history-amber);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--history-sepia);
+            color: var(--text-primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .choice-btn:hover { background: rgba(205, 127, 50, 0.2); border-color: var(--history-amber); }
+        
+        .token-box {
+            background: var(--deep-dark);
+            border: 1px dashed var(--history-amber);
+            color: var(--history-amber);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            word-break: break-all;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .token-box:hover { background: rgba(212, 165, 116, 0.1); }
+        
+        .progress-bar {
+            height: 4px; background: var(--history-ink); margin-bottom: 20px; border-radius: 2px;
+        }
+        .progress-fill {
+            height: 100%; background: var(--history-amber); transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "HIST_01";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur-Anonyme";
+
+        // Fonction Bridge standardisée PIXHARe
+        function pushBridge(payload) {
+            try {
+                const BRIDGE_KEY = "SUPER_HUB_BRIDGE";
+                const raw = localStorage.getItem(BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                list.push(payload);
+                if (list.length > 700) list.splice(0, list.length - 700);
+                localStorage.setItem(BRIDGE_KEY, JSON.stringify(list));
+            } catch (err) { console.error("Erreur pushBridge", err); }
+        }
+
+        function generateToken() {
+            const p = { 
+                v: 1, 
+                d: new Date().toISOString(), 
+                m: MODULE_ID, 
+                n: currentUser, 
+                c: "ELEVE", 
+                f: false 
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        }
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+            const [step, setStep] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+
+            const flashcards = [
+                { 
+                    title: "1848 vs 1944 : La question du vote", 
+                    text: "Sais-tu que le 'suffrage universel' de 1848 ne concernait que les hommes ? On pensait alors que les femmes n'avaient pas à s'occuper de politique. Il a fallu attendre près d'un siècle, en 1944, pour qu'elles obtiennent enfin le droit de voter en France, après des décennies de luttes menées par les suffragettes." 
+                },
+                { 
+                    title: "1965 : L'indépendance financière", 
+                    text: "C'est une date qui paraît très proche ! Jusqu'en 1965, une femme mariée ne pouvait pas travailler sans l'autorisation écrite de son mari, ni même ouvrir un compte en banque à son propre nom. Le salaire de la femme était géré par l'époux." 
+                },
+                { 
+                    title: "1881 : L'école, mais pas pour la même chose", 
+                    text: "La loi Camille Sée crée les premiers lycées pour filles. Mais attention : on n'y enseigne pas les mêmes matières qu'aux garçons ! Moins de sciences, plus de couture et de 'bonnes manières'. Le but n'était pas d'en faire des ingénieures ou des médecins, mais de 'bonnes épouses'. L'égalité des programmes scolaires n'est arrivée que bien plus tard." 
+                }
+            ];
+
+            const quiz = [
+                { 
+                    q: "En quelle année les Françaises ont-elles pu voter pour la première fois ?", 
+                    options: ["1789 (Pendant la Révolution)", "1848 (Création du suffrage universel)", "1944 (À la fin de la Seconde Guerre Mondiale)"], 
+                    ans: 2 
+                },
+                { 
+                    q: "Avant 1965, de quoi avait absolument besoin une femme mariée pour ouvrir un compte bancaire ?", 
+                    options: ["De l'accord de son patron", "De l'accord de son mari", "De l'accord du maire de sa ville"], 
+                    ans: 1 
+                }
+            ];
+
+            const handleScenario = (marker) => {
+                pushBridge({
+                    id: `EVT-${Date.now()}`,
+                    type: 'PSY_MARKER',
+                    player: currentUser,
+                    module: MODULE_ID,
+                    action: 'SCENARIO_CHOICE',
+                    marker: marker,
+                    timestamp: new Date().toISOString()
+                });
+                setGameState("complete");
+            };
+
+            function renderProgressBar(current, total) {
+                return e("div", { className: "progress-bar" },
+                    e("div", { className: "progress-fill", style: { width: `${(current / total) * 100}%` } })
+                );
+            }
+
+            function renderIntro() {
+                return e("div", null,
+                    e("h1", null, "ARCHIVES CLASSIFIÉES : LES CONQUÊTES"),
+                    e("p", null, "Bonjour, Enquêteur ", e("strong", { style: { color: "var(--history-amber)" } }, currentUser), ". L'égalité te semble normale aujourd'hui ? C'est parce que tu as oublié que l'Histoire a longtemps mis la moitié de l'humanité sur la touche."),
+                    e("p", null, "Ta mission : ouvrir les dossiers du passé pour comprendre que les droits dont nous disposons aujourd'hui ne sont pas 'naturels', mais qu'ils ont été arrachés de haute lutte."),
+                    e("button", { className: "btn", onClick: () => {
+                        pushBridge({ type: "MODULE_START", player: currentUser, module: MODULE_ID, timestamp: new Date().toISOString() });
+                        setGameState("flashcards");
+                    }}, "DÉVERROUILLER LES ARCHIVES")
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcards[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, flashcards.length),
+                    e("h2", null, `DOSSIER HISTORIQUE ${step + 1}/${flashcards.length}`),
+                    e("h3", { style: { color: "var(--history-sepia)", marginBottom: "15px" } }, card.title),
+                    e("div", { className: "card" }, e("p", null, card.text)),
+                    e("button", { className: "btn", onClick: () => {
+                        if (step < flashcards.length - 1) setStep(step + 1);
+                        else { setStep(0); setGameState("quiz"); }
+                    }}, step < flashcards.length - 1 ? "ARCHIVE SUIVANTE" : "PASSER À L'INTERROGATOIRE")
+                );
+            }
+
+            function renderQuiz() {
+                const q = quiz[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, quiz.length),
+                    e("h2", null, "VÉRIFICATION DES FAITS"),
+                    e("p", { style: { color: "var(--history-amber)", marginBottom: "20px", fontSize: "1.3rem" } }, q.q),
+                    q.options.map((opt, i) => 
+                        e("button", { key: i, className: "choice-btn", onClick: () => {
+                            if (i === q.ans) setScore(score + 1);
+                            if (step < quiz.length - 1) setStep(step + 1);
+                            else setGameState("scenarios");
+                        }}, opt)
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                return e("div", null,
+                    e("h2", null, "TEST DE POSITIONNEMENT"),
+                    e("p", null, "Imagine : Nous sommes en 1960. Tu es une jeune femme brillante qui veut devenir ingénieure en aéronautique et créer sa propre entreprise d'aviation. La banque refuse ton prêt car tu n'as pas la signature de ton mari. Comment réagis-tu ?"),
+                    
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("PROACTIVE_REBELLION") }, 
+                        "Je crée un collectif avec d'autres femmes pour faire pression sur les députés et forcer le changement de cette loi absurde."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("PRAGMATIC_ADAPTATION") }, 
+                        "Je trouve un prête-nom masculin (un ami, un frère) pour signer les papiers, et je lance mon projet en cachette."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("RESIGNATION_AVOIDANCE") }, 
+                        "J'abandonne l'idée de l'entreprise et je cherche un métier moins risqué où on ne me demandera pas d'emprunter de l'argent."
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const token = generateToken();
+                return e("div", null,
+                    e("h1", null, "MISSION ACCOMPLIE"),
+                    e("p", null, "Excellent travail. Tu as compris que l'organisation de la société n'a rien à voir avec la nature : ce sont des règles créées par des humains, et qui peuvent donc être changées."),
+                    e("p", null, "Prochain module : tu découvriras les femmes scientifiques (l'Effet Matilda) dont l'Histoire a tenté d'effacer les découvertes."),
+                    e("div", { 
+                        className: "token-box", 
+                        onClick: () => { navigator.clipboard.writeText(token); alert("Code de sécurité copié dans le presse-papier !"); }
+                    }, token),
+                    e("p", { style: { fontSize: "0.9rem", color: "var(--text-secondary)", textAlign: "center" } }, "(Clique sur le code pour le copier)"),
+                    e("button", { className: "btn", onClick: () => window.location.href = "index_PIX_Egalite.html" }, "RETOURNER AU PORTAIL")
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

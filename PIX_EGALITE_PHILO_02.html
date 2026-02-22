@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module PHILO 02 - La Construction des Clichés</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --philo-indigo: #3f51b5;
+            --philo-violet: #673ab7;
+            --philo-lavender: #9575cd;
+            --philo-light: #d1c4e9;
+            --void-dark: #050510;
+            --deep-dark: #020205;
+            --panel-bg: rgba(20, 15, 40, 0.95);
+            --text-primary: #f3e5f5;
+            --text-secondary: #b39ddb;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #root {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--philo-indigo);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(103, 58, 183, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #root::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--philo-indigo), var(--philo-violet), var(--philo-lavender));
+        }
+        
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        h1 { color: var(--philo-light); text-align: center; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.6rem; }
+        h2 { color: var(--philo-lavender); margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid var(--philo-indigo); padding-bottom: 5px; }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        .btn {
+            background: transparent;
+            color: var(--philo-light);
+            border: 1px solid var(--philo-light);
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover { background: var(--philo-violet); color: white; border-color: var(--philo-violet); box-shadow: 0 0 15px var(--philo-violet); }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 4px solid var(--philo-lavender);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px 0 0 8px;
+            font-style: italic;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--philo-indigo);
+            color: var(--text-primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+        }
+        
+        .choice-btn:hover { background: rgba(103, 58, 183, 0.15); border-color: var(--philo-lavender); }
+        
+        .token-box {
+            background: var(--deep-dark);
+            border: 1px dashed var(--philo-lavender);
+            color: var(--philo-lavender);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            word-break: break-all;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.05); margin-bottom: 20px; border-radius: 2px; }
+        .progress-fill { height: 100%; background: var(--philo-violet); transition: width 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "PHIL_02";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur-Anonyme";
+
+        function pushBridge(payload) {
+            try {
+                const BRIDGE_KEY = "SUPER_HUB_BRIDGE";
+                const raw = localStorage.getItem(BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                list.push(payload);
+                localStorage.setItem(BRIDGE_KEY, JSON.stringify(list));
+            } catch (err) {}
+        }
+
+        function generateToken() {
+            const p = { v: 1, d: new Date().toISOString(), m: MODULE_ID, n: currentUser, c: "ELEVE", f: false };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        }
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+            const [step, setStep] = React.useState(0);
+
+            const flashcards = [
+                { 
+                    title: "Le poids des attentes", 
+                    text: "Une étude a montré que dès l'âge de 6 ans, les petites filles commencent à croire que 'le génie' ou 'la grande intelligence' sont des qualités masculines. Ce n'est pas une vérité biologique, c'est une construction sociale : les livres, les films et les jouets leur envoient ce message sans qu'elles s'en rendent compte." 
+                },
+                { 
+                    title: "La menace du stéréotype", 
+                    text: "C'est un phénomène psychologique puissant : si on dit à un groupe de filles avant un test de maths que 'les filles sont moins bonnes en calcul', elles réussiront moins bien que si on ne leur dit rien. Le stress de confirmer un cliché négatif 'paralyse' une partie du cerveau." 
+                },
+                { 
+                    title: "L'illusion de la nature", 
+                    text: "On entend souvent : 'Les femmes sont naturellement plus douces'. Pourtant, l'histoire et l'anthropologie montrent que dans certaines cultures, les rôles étaient inversés. Ce que nous appelons 'nature' est souvent juste une habitude culturelle répétée depuis des siècles." 
+                }
+            ];
+
+            const quiz = [
+                { 
+                    q: "À quel âge environ les enfants commencent-ils à intégrer les clichés sur l'intelligence ?", 
+                    options: ["15 ans", "6 ans", "2 ans"], 
+                    ans: 1 
+                },
+                { 
+                    q: "Qu'est-ce que 'la menace du stéréotype' ?", 
+                    options: ["Une insulte directe", "Le stress de confirmer un cliché qui fait perdre ses moyens", "Un virus informatique"], 
+                    ans: 1 
+                }
+            ];
+
+            const handleScenario = (marker) => {
+                pushBridge({
+                    id: `EVT-${Date.now()}`,
+                    type: 'PSY_MARKER',
+                    player: currentUser,
+                    module: MODULE_ID,
+                    action: 'SCENARIO_CHOICE',
+                    marker: marker,
+                    timestamp: new Date().toISOString()
+                });
+                setGameState("complete");
+            };
+
+            function renderIntro() {
+                return e("div", null,
+                    e("h1", null, "PHILO : LA CONSTRUCTION DES CLICHÉS"),
+                    e("p", null, "Bonjour, ", e("strong", null, currentUser), ". Après avoir vu les faits scientifiques et historiques, posons-nous la question : pourquoi ces inégalités durent-elles encore ?"),
+                    e("p", null, "Tout se passe dans nos têtes. Nous allons explorer comment la société nous 'programme' à croire que certaines choses sont pour les filles et d'autres pour les garçons."),
+                    e("button", { className: "btn", onClick: () => setGameState("flashcards") }, "ANALYSER LES MÉCANISMES")
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcards[step];
+                return e("div", null,
+                    e("h2", null, `RÉFLEXION ${step + 1}/${flashcards.length}`),
+                    e("h3", { style: { color: "var(--philo-lavender)", marginBottom: "15px" } }, card.title),
+                    e("div", { className: "card" }, e("p", null, card.text)),
+                    e("button", { className: "btn", onClick: () => {
+                        if (step < flashcards.length - 1) setStep(step + 1);
+                        else { setStep(0); setGameState("quiz"); }
+                    }}, "CONTINUER")
+                );
+            }
+
+            function renderQuiz() {
+                const q = quiz[step];
+                return e("div", null,
+                    e("h2", null, "VÉRIFICATION"),
+                    e("p", { style: { color: "var(--philo-light)", marginBottom: "20px" } }, q.q),
+                    q.options.map((opt, i) => 
+                        e("button", { key: i, className: "choice-btn", onClick: () => {
+                            if (step < quiz.length - 1) setStep(step + 1);
+                            else setGameState("scenarios");
+                        }}, opt)
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                return e("div", null,
+                    e("h2", null, "MISE EN SITUATION"),
+                    e("p", null, "Tu es dans un magasin de jouets pour choisir un cadeau pour ton petit cousin de 5 ans. Il adore les couleurs vives et 'faire à manger'. Tu te diriges vers une dinette, mais un vendeur t'interpelle : 'Oh non, ça c'est pour les filles, prenez plutôt ce camion de pompier ou ces figurines de guerriers !'"),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("DECONSTRUCTION_ACTOR") }, "Je lui réponds qu'un enfant de 5 ans n'a pas de genre pour s'amuser et que savoir cuisiner est une compétence utile pour tout le monde. Je prends la dinette."),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("SOCIAL_CONFORMITY") }, "Je me sens un peu gêné(e) et je finis par prendre le camion pour éviter que mon cousin ne soit moqué plus tard par ses copains."),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("INDIFFERENT_PURCHASE") }, "Je ne réponds rien, je l'ignore, mais je prends quand même ce que j'avais prévu au départ.")
+                );
+            }
+
+            function renderComplete() {
+                const token = generateToken();
+                return e("div", null,
+                    e("h1", null, "RÉFLEXION VALIDÉE"),
+                    e("p", null, "Tu as compris que les clichés ne sont pas la réalité, mais des histoires que l'on se répète jusqu'à y croire."),
+                    e("p", null, "La liberté commence au moment où tu décides de ne plus laisser ces histoires choisir à ta place."),
+                    e("div", { className: "token-box", onClick: () => { navigator.clipboard.writeText(token); alert("Code copié !"); } }, token),
+                    e("button", { className: "btn", onClick: () => window.location.href = "index_PIX_Egalite.html" }, "RETOURNER AU PORTAIL")
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

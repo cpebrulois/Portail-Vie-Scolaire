@@ -14,7 +14,25 @@
 #authTitle{font-family:Orbitron,monospace;background:linear-gradient(135deg,#00d4ff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 8px}
 #hubScreen{display:none}
 </style>
-</head>
+<style>
+.fronton{margin-top:10px}
+.frontonHead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.frontonTitle{font-family:Orbitron,monospace;color:#ffd700;font-size:1.02rem}
+.frontonSub{color:#d4e3f7;font-size:.95rem}
+.frontonGrid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:10px}
+.frontonCol{border-radius:12px;padding:12px;border:1px solid #ffffff40;box-shadow:0 8px 20px #00000030}
+.frontonCol h3{margin:0 0 6px;font-size:1.1rem;color:inherit}
+.frontonCol p{margin:0 0 10px;font-size:.93rem}
+.frontonBlue{background:linear-gradient(140deg,#0b4fd6,#3ab6ff);color:#fff}
+.frontonWhite{background:linear-gradient(145deg,#f3f4f8,#ffffff);color:#0b1d3f;border:2px solid #d8dbe5}
+.frontonRed{background:linear-gradient(140deg,#ab1228,#ff4c4c);color:#fff}
+.frontonCol .rw{gap:6px}
+.frontonCol .btn2{border-color:rgba(255,255,255,.45)}
+.frontonWhite .btn2{color:#0b1d3f;border-color:#32496f66;background:#0b1d3f10}
+.frontonPrimary{font-family:Orbitron,monospace;letter-spacing:.4px}
+.frontonMain{transform:translateY(-2px);box-shadow:0 12px 24px #00000025}
+@media (max-width:980px){.frontonGrid{grid-template-columns:1fr}.frontonMain{transform:none}}
+</style></head>
 <body>
 <div id="authGate">
   <article id="authCard" class="card">
@@ -38,7 +56,7 @@
 <header>
 <div class="tag">GAME DESIGN SOCIAL</div>
 <h1>Portail Vie Scolaire</h1>
-<div class="sub">SuperHub central: PIXHARe + PSC1 + Videos + missions citoyennes.</div>
+<div class="sub">SuperHub central: PIXHARe + PSC1 + Videos + missions citoyennes + fronton Liberte / Egalite / Fraternite.</div>
 <div class="alert">Liaison stricte par ligne: Code Joueur (col.3) <-> Code Temoin (col.4).</div>
 </header>
 
@@ -81,6 +99,37 @@
 <div class="msg" id="wMsg"></div>
 <div class="rw" style="margin-top:10px"><button id="btnNegHub" class="btnNuclear" onclick="openNegativeHub()">Lancement alerte rouge: temoignages de faits negatifs</button></div>
 </article>
+</section>
+
+<section class="card fronton" id="frontonRepublicain">
+<div class="frontonHead">
+<div class="frontonTitle">Fronton Republicain</div>
+<div class="frontonSub">Trois axes structurants du portail: Liberte, Egalite, Fraternite.</div>
+</div>
+<div class="frontonGrid">
+<article class="frontonCol frontonBlue">
+<h3>Liberte</h3>
+<p>Modules autour des droits, de l'expression et de l'esprit critique.</p>
+<div class="rw">
+<button class="btn2 frontonPrimary" onclick="openTracked('theme','LIBERTE_HUB','hub_en_construction.html')">Ouvrir le Hub Liberte</button>
+</div>
+</article>
+<article class="frontonCol frontonWhite frontonMain">
+<h3>Egalite</h3>
+<p>Egalite filles-garcons et lutte contre les stereotypes: axe prioritaire actuel.</p>
+<div class="rw">
+<button id="btnPixEgalite" class="frontonPrimary" onclick="openTracked('theme','PIX_EGALITE_HUB','index_PIX_Egalite.html')">Entrer dans EGALITE !</button>
+<button class="btn2" onclick="openTracked('theme','PIX_EGALITE_HUB','index_PIX_Egalite.html')">Module principal</button>
+</div>
+</article>
+<article class="frontonCol frontonRed">
+<h3>Fraternite</h3>
+<p>Cooperation, solidarite, entraide et projets collectifs.</p>
+<div class="rw">
+<button class="btn2 frontonPrimary" onclick="openTracked('theme','FRATERNITE_HUB','hub_en_construction.html')">Ouvrir le Hub Fraternite</button>
+</div>
+</article>
+</div>
 </section>
 
 <section class="card" style="margin-top:10px">
@@ -384,6 +433,7 @@ const p=gp(code);
 if(!p)return false;
 if(ev.type==='PIXHARE_PROGRESS'){const b=Number(p.cp.pixhare||0),a=Math.max(b,Number(ev.cpTotal||b));if(a!==b){p.cp.pixhare=a;logEv(code,'PIXHARE_CODE',String(ev.module||'MODULE'),(a-b)*W.pixhare);return true}return false}
 if(ev.type==='PSC1_PROGRESS'){const b=Number(p.cp.psc1||0),a=Math.max(b,Number(ev.cpTotal||b));if(a!==b){p.cp.psc1=a;logEv(code,'PSC1_CODE',String(ev.module||'MODULE'),(a-b)*W.psc1);return true}return false}
+if(ev.type==='EGALITE_PROGRESS'){const b=Number(p.cp.autres||0),a=Math.max(b,Number(ev.cpTotal||b));if(a!==b){p.cp.autres=a;logEv(code,'EGALITE_CODE',String(ev.module||'MODULE'),(a-b)*W.autres);return true}return false}
 if(ev.type==='VIDEO_OPEN'){const v=getVideo(ev.module||'')||{id:String(ev.module||'VIDEO'),offer:Number(ev.offer||0)},k=nCode(v.id);if(!p.obj[k])p.obj[k]={open:false,valid:false};let xp=0;if(!p.obj[k].open){p.obj[k].open=true;xp=Number((ev.offer ?? v.offer) || 0);p.videoG+=xp;p.videoW+=xp}logEv(code,'OPEN_VIDEO',k,xp);return true}
 if(ev.type==='VIDEO_VALID'){const v=getVideo(ev.module||'')||{id:String(ev.module||'VIDEO'),reward:Number(ev.reward||0)},k=nCode(v.id);if(!p.obj[k])p.obj[k]={open:false,valid:false};if(p.obj[k].valid)return false;p.obj[k].valid=true;p.obj[k].open=true;const xp=Number((ev.reward ?? v.reward) || 0);p.videoG+=xp;p.videoW+=xp;logEv(code,'VALID_VIDEO',k,xp);return true}
 return false}
@@ -424,5 +474,9 @@ window.addEventListener('focus',()=>{processBridge();syncPull(false)});
 </script>
 </body>
 </html>
+
+
+
+
 
 

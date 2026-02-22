@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module SCIENCES 03 - Le Code de Demain</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --sci-cyan: #00f0ff;
+            --sci-steel: #455a64;
+            --sci-silver: #b0bec5;
+            --void-dark: #0a0e14;
+            --panel-bg: rgba(15, 25, 35, 0.98);
+            --text-primary: #e0f2f1;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        
+        #root {
+            width: 100%; max-width: 850px;
+            background: var(--panel-bg);
+            border: 2px solid var(--sci-steel);
+            border-radius: 4px; padding: 30px;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.1);
+            position: relative;
+        }
+
+        #root::before {
+            content: 'SYSTEM_READY'; position: absolute; top: 10px; right: 20px;
+            font-family: 'Share Tech Mono'; color: var(--sci-cyan); font-size: 0.8rem;
+        }
+        
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--sci-cyan); text-align: center; margin-bottom: 25px; text-transform: uppercase; }
+        h2 { color: var(--sci-silver); margin-bottom: 15px; border-left: 4px solid var(--sci-cyan); padding-left: 15px; }
+        
+        .map-box {
+            background: rgba(0,0,0,0.3); border: 1px solid var(--sci-cyan);
+            padding: 15px; margin: 20px 0; border-radius: 4px;
+        }
+
+        .btn {
+            background: var(--sci-cyan); color: var(--void-dark);
+            border: none; padding: 15px; font-family: 'Orbitron'; font-weight: 900;
+            cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s;
+        }
+        .btn:hover { background: #fff; box-shadow: 0 0 20px var(--sci-cyan); }
+
+        .choice-btn {
+            background: transparent; border: 1px solid var(--sci-steel);
+            color: white; padding: 12px; margin-bottom: 8px; width: 100%;
+            text-align: left; cursor: pointer; border-radius: 4px;
+        }
+        .choice-btn:hover { border-color: var(--sci-cyan); background: rgba(0, 240, 255, 0.05); }
+
+        .token-box {
+            background: #000; border: 1px dashed var(--sci-cyan); color: var(--sci-cyan);
+            padding: 20px; font-family: 'Share Tech Mono'; text-align: center; margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "SCI_03";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur";
+
+        function App() {
+            const [page, setPage] = React.useState("intro");
+
+            const sectors = [
+                { 
+                    loc: "Vesoul / Gray", 
+                    tech: "Automobile & Logistique", 
+                    desc: "Les usines comme Stellantis utilisent des robots ultra-perfectionnés. Le code contrôle tout, de la soudure laser à la gestion des stocks. C'est un terrain de jeu géant pour les futures ingénieures." 
+                },
+                { 
+                    loc: "Lure / Luxeuil", 
+                    tech: "Industrie du Bois & Aéronautique", 
+                    desc: "Travailler le bois avec des machines à commande numérique (CNC) ou maintenir les systèmes de la Base Aérienne 116 demande une précision chirurgicale et une maîtrise des interfaces numériques." 
+                }
+            ];
+
+            const handleComplete = (marker) => {
+                const payload = {
+                    id: `EVT-${Date.now()}`, type: 'PSY_MARKER', player: currentUser,
+                    module: MODULE_ID, action: 'ORIENTATION_INTENT', marker: marker, d: new Date().toISOString()
+                };
+                try {
+                    const list = JSON.parse(localStorage.getItem("SUPER_HUB_BRIDGE") || "[]");
+                    list.push(payload);
+                    localStorage.setItem("SUPER_HUB_BRIDGE", JSON.stringify(list));
+                } catch(err) {}
+                setPage("complete");
+            };
+
+            if (page === "intro") return e("div", null,
+                e("h1", null, "SCIENCES : LE CODE DE DEMAIN"),
+                e("p", null, "Bravo ", e("strong", null, currentUser), ". Tu as vu que les femmes ont inventé l'informatique. Maintenant, regarde autour de toi, en Haute-Saône."),
+                e("p", null, "Le futur n'est pas qu'à la Silicon Valley. Il est dans nos usines connectées, nos laboratoires et nos centres techniques."),
+                e("button", { className: "btn", onClick: () => setPage("map") }, "EXPLORER MON TERRITOIRE")
+            );
+
+            if (page === "map") return e("div", null,
+                e("h2", null, "VOTRE AVENIR EN 70"),
+                sectors.map((s, i) => e("div", { key: i, className: "map-box" },
+                    e("h3", { style: { color: "var(--sci-cyan)" } }, s.loc),
+                    e("p", { style: { fontSize: "0.9rem", marginTop: "5px" } }, e("strong", null, "Secteur : "), s.tech),
+                    e("p", { style: { marginTop: "10px" } }, s.desc)
+                )),
+                e("button", { className: "btn", onClick: () => setPage("scenario") }, "CHOISIR MA TRAJECTOIRE")
+            );
+
+            if (page === "scenario") return e("div", null,
+                e("h2", null, "DÉCISION D'ORIENTATION"),
+                e("p", null, "Un conseiller ou un proche te dit : 'La maintenance industrielle ou le code, c'est très masculin, tu devrais plutôt viser le secrétariat ou le soin, c'est plus sûr pour une fille.'"),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("TECH_AMBITION") }, 
+                    "Je réponds que les machines n'ont pas de genre et que je veux être celle qui les conçoit ou les répare. Je demande un stage en industrie."
+                ),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("SEARCHING_PATH") }, 
+                    "Je demande à rencontrer des femmes qui travaillent déjà dans ces secteurs pour voir si je m'y sens capable."
+                ),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("RISK_AVERSION") }, 
+                    "Je commence à douter. Peut-être qu'il a raison et que je serai plus à l'aise dans un métier plus 'classique'."
+                )
+            );
+
+            const token = btoa(JSON.stringify({v:1, m:MODULE_ID, n:currentUser, f:true}));
+            return e("div", null,
+                e("h1", null, "PILIER SCIENCES : TERMINÉ"),
+                e("p", null, "Tu possèdes désormais une vision complète : du passé des pionnières aux opportunités de ton propre département."),
+                e("p", { style: { color: "var(--sci-cyan)", fontWeight: "bold" } }, "L'industrie 4.0 a besoin de ton intelligence, pas de ton genre."),
+                e("div", { className: "token-box" }, token),
+                e("button", { className: "btn", onClick: () => window.location.href="index_PIX_Egalite.html" }, "RETOUR AU HUB")
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module SCIENCES 02 - Les Étoiles Cachées</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --sci-cyan: #00f0ff;
+            --sci-blue: #0984e3;
+            --sci-magenta: #d500f9;
+            --sci-light: #e0f7fa;
+            --void-dark: #050510;
+            --deep-dark: #020205;
+            --panel-bg: rgba(10, 15, 30, 0.95);
+            --text-primary: #f0f8ff;
+            --text-secondary: #81ecec;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #root {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--sci-cyan);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #root::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--sci-blue), var(--sci-cyan), var(--sci-magenta));
+        }
+        
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        h1 { color: var(--sci-cyan); text-align: center; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.8rem; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+        h2 { color: var(--sci-light); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--sci-blue); padding-bottom: 5px; }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        .btn {
+            background: transparent;
+            color: var(--sci-cyan);
+            border: 1px solid var(--sci-cyan);
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover { background: var(--sci-cyan); color: var(--void-dark); box-shadow: 0 0 15px var(--sci-cyan); }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 4px solid var(--sci-magenta);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--sci-blue);
+            color: var(--text-primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .choice-btn:hover { background: rgba(0, 240, 255, 0.1); border-color: var(--sci-cyan); }
+        
+        .token-box {
+            background: var(--deep-dark);
+            border: 1px dashed var(--sci-cyan);
+            color: var(--sci-cyan);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            word-break: break-all;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .token-box:hover { background: rgba(0, 240, 255, 0.1); }
+        
+        .progress-bar {
+            height: 4px; background: rgba(255,255,255,0.1); margin-bottom: 20px; border-radius: 2px;
+        }
+        .progress-fill {
+            height: 100%; background: var(--sci-cyan); transition: width 0.3s ease; box-shadow: 0 0 10px var(--sci-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "SCI_02";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur-Anonyme";
+
+        function pushBridge(payload) {
+            try {
+                const BRIDGE_KEY = "SUPER_HUB_BRIDGE";
+                const raw = localStorage.getItem(BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                list.push(payload);
+                if (list.length > 700) list.splice(0, list.length - 700);
+                localStorage.setItem(BRIDGE_KEY, JSON.stringify(list));
+            } catch (err) { console.error("Erreur pushBridge", err); }
+        }
+
+        function generateToken() {
+            const p = { 
+                v: 1, 
+                d: new Date().toISOString(), 
+                m: MODULE_ID, 
+                n: currentUser, 
+                c: "ELEVE", 
+                f: false 
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        }
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+            const [step, setStep] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+
+            const flashcards = [
+                { 
+                    title: "Les Programmatrices de l'ENIAC (1945)", 
+                    text: "L'ENIAC est le tout premier ordinateur électronique. Ses composants physiques (les câbles et les lampes) ont été construits par des hommes, qui en ont tiré toute la gloire. Mais le fonctionnement logique, les mathématiques et la programmation ultra-complexe ont été réalisés par six femmes brillantes. Leurs noms ont été effacés des manuels d'histoire de l'informatique pendant 50 ans !" 
+                },
+                { 
+                    title: "Hedy Lamarr (1942) : Plus qu'une star", 
+                    text: "Hedy Lamarr était considérée comme 'la plus belle femme du monde' à Hollywood. Mais elle était surtout une inventrice de génie. Pendant la guerre, elle a co-inventé une technologie secrète de codage des transmissions. Aujourd'hui, son invention est la base technologique du Wi-Fi, du GPS et du Bluetooth. Pourtant, à son époque, on lui disait de se taire et de juste 'être jolie'." 
+                },
+                { 
+                    title: "Margaret Hamilton (1969) : Objectif Lune", 
+                    text: "Sais-tu qui a écrit le code informatique qui a permis à la mission Apollo 11 d'atterrir en toute sécurité sur la Lune ? C'est Margaret Hamilton, directrice de l'ingénierie logicielle au MIT. C'est même elle qui a inventé le terme 'génie logiciel' (software engineering). Sans son code ultra-fiable, l'atterrissage sur la Lune aurait été annulé à la dernière minute." 
+                }
+            ];
+
+            const quiz = [
+                { 
+                    q: "Qui a inventé la technologie qui sert de base au Wi-Fi et au Bluetooth actuels ?", 
+                    options: ["Steve Jobs", "Hedy Lamarr", "Alan Turing"], 
+                    ans: 1 
+                },
+                { 
+                    q: "Quel rôle a joué Margaret Hamilton dans la mission spatiale Apollo 11 ?", 
+                    options: ["Elle a conçu les combinaisons spatiales", "Elle a écrit le code informatique de l'atterrissage lunaire", "Elle était la diététicienne des astronautes"], 
+                    ans: 1 
+                }
+            ];
+
+            const handleScenario = (marker) => {
+                pushBridge({
+                    id: `EVT-${Date.now()}`,
+                    type: 'PSY_MARKER',
+                    player: currentUser,
+                    module: MODULE_ID,
+                    action: 'SCENARIO_CHOICE',
+                    marker: marker,
+                    timestamp: new Date().toISOString()
+                });
+                setGameState("complete");
+            };
+
+            function renderProgressBar(current, total) {
+                return e("div", { className: "progress-bar" },
+                    e("div", { className: "progress-fill", style: { width: `${(current / total) * 100}%` } })
+                );
+            }
+
+            function renderIntro() {
+                return e("div", null,
+                    e("h1", null, "BASE DE DONNÉES : LES ÉTOILES CACHÉES"),
+                    e("p", null, "Bienvenue au niveau 2, ", e("strong", { style: { color: "var(--sci-cyan)" } }, currentUser), ". Aujourd'hui, on entend souvent dire que l'informatique, les jeux vidéo ou l'ingénierie sont 'des trucs de garçons'."),
+                    e("p", null, "C'est l'un des plus gros mensonges de l'Histoire moderne. Les fondations du numérique et de la conquête spatiale ont été posées par des femmes que la société a essayé d'oublier. ", e("strong", { style: { color: "var(--sci-magenta)" } }, "Réactivons leurs profils.")),
+                    e("button", { className: "btn", onClick: () => {
+                        pushBridge({ type: "MODULE_START", player: currentUser, module: MODULE_ID, timestamp: new Date().toISOString() });
+                        setGameState("flashcards");
+                    }}, "ACCÉDER AU CODE SOURCE")
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcards[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, flashcards.length),
+                    e("h2", null, `PROFIL INGÉNIERIE ${step + 1}/${flashcards.length}`),
+                    e("h3", { style: { color: "var(--sci-cyan)", marginBottom: "15px" } }, card.title),
+                    e("div", { className: "card" }, e("p", null, card.text)),
+                    e("button", { className: "btn", onClick: () => {
+                        if (step < flashcards.length - 1) setStep(step + 1);
+                        else { setStep(0); setGameState("quiz"); }
+                    }}, step < flashcards.length - 1 ? "DÉCRYPTER LE PROFIL SUIVANT" : "LANCER LE DIAGNOSTIC")
+                );
+            }
+
+            function renderQuiz() {
+                const q = quiz[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, quiz.length),
+                    e("h2", null, "DIAGNOSTIC SYSTÈME"),
+                    e("p", { style: { color: "var(--sci-magenta)", marginBottom: "20px", fontSize: "1.3rem" } }, q.q),
+                    q.options.map((opt, i) => 
+                        e("button", { key: i, className: "choice-btn", onClick: () => {
+                            if (i === q.ans) setScore(score + 1);
+                            if (step < quiz.length - 1) setStep(step + 1);
+                            else setGameState("scenarios");
+                        }}, opt)
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                return e("div", null,
+                    e("h2", null, "SIMULATION D'ENVIRONNEMENT"),
+                    e("p", null, "Imagine : Tu fais partie d'un club de robotique au collège. Tu as passé des heures à programmer la carte électronique du robot pour qu'il avance correctement. Un jury vient évaluer votre travail, mais il s'adresse naturellement aux garçons du groupe pour poser les questions sur le code et les moteurs, pensant que tu t'es occupée de la peinture et du design. Comment réagis-tu ?"),
+                    
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("ASSERTIVE_TECHNICAL_CLAIM") }, 
+                        "Je m'avance avec le robot, je montre l'écran d'ordinateur et j'explique moi-même, avec le vocabulaire technique, comment j'ai programmé les capteurs de mouvement."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("DELEGATION_AND_CORRECTION") }, 
+                        "Je laisse mes camarades garçons commencer à répondre, mais je complète en précisant doucement que c'est moi qui ai géré la partie programmation."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("IMPOSTOR_SILENCE") }, 
+                        "Je ne dis rien. L'important c'est qu'on ait une bonne note en groupe. Tant pis s'ils croient que ce sont les garçons qui ont géré la technique."
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const token = generateToken();
+                return e("div", null,
+                    e("h1", null, "MISE À JOUR TERMINÉE"),
+                    e("p", null, "Bravo. Tu sais maintenant que l'ingénierie et le code n'ont pas de sexe. L'ordinateur ne sait pas si la main qui tape sur le clavier est celle d'une fille ou d'un garçon."),
+                    e("p", null, "Ne laisse jamais personne supposer que tes talents se limitent à la 'décoration' ou au 'soin'. Tu as le droit d'inventer, de construire et de coder l'avenir !"),
+                    e("div", { 
+                        className: "token-box", 
+                        onClick: () => { navigator.clipboard.writeText(token); alert("Code source copié !"); }
+                    }, token),
+                    e("p", { style: { fontSize: "0.9rem", color: "var(--text-secondary)", textAlign: "center" } }, "(Clique sur le code pour le copier)"),
+                    e("button", { className: "btn", onClick: () => window.location.href = "index_PIX_Egalite.html" }, "RETOURNER AU PORTAIL")
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

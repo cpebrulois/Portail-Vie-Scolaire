@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module HISTOIRE 02 - Le Droit de Choisir</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --history-bronze: #cd7f32;
+            --history-amber: #d4a574;
+            --history-sepia: #b08968;
+            --history-parchment: #e8d5b5;
+            --history-ink: #2c1810;
+            --void-dark: #0a0a0a;
+            --deep-dark: #050505;
+            --panel-bg: rgba(44, 24, 16, 0.95);
+            --text-primary: #f5ede4;
+            --text-secondary: #a89984;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #root {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--history-bronze);
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #root::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--history-sepia), var(--history-amber), var(--history-bronze));
+        }
+        
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        h1 { color: var(--history-amber); text-align: center; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.8rem; }
+        h2 { color: var(--history-parchment); margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid var(--history-sepia); padding-bottom: 5px; }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        .btn {
+            background: transparent;
+            color: var(--history-amber);
+            border: 1px solid var(--history-amber);
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover { background: var(--history-amber); color: var(--void-dark); box-shadow: 0 0 15px var(--history-amber); }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid var(--history-amber);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--history-sepia);
+            color: var(--text-primary);
+            padding: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .choice-btn:hover { background: rgba(205, 127, 50, 0.2); border-color: var(--history-amber); }
+        
+        .token-box {
+            background: var(--deep-dark);
+            border: 1px dashed var(--history-amber);
+            color: var(--history-amber);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            word-break: break-all;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .token-box:hover { background: rgba(212, 165, 116, 0.1); }
+        
+        .progress-bar {
+            height: 4px; background: var(--history-ink); margin-bottom: 20px; border-radius: 2px;
+        }
+        .progress-fill {
+            height: 100%; background: var(--history-amber); transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "HIST_02";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur-Anonyme";
+
+        function pushBridge(payload) {
+            try {
+                const BRIDGE_KEY = "SUPER_HUB_BRIDGE";
+                const raw = localStorage.getItem(BRIDGE_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                list.push(payload);
+                if (list.length > 700) list.splice(0, list.length - 700);
+                localStorage.setItem(BRIDGE_KEY, JSON.stringify(list));
+            } catch (err) { console.error("Erreur pushBridge", err); }
+        }
+
+        function generateToken() {
+            const p = { 
+                v: 1, 
+                d: new Date().toISOString(), 
+                m: MODULE_ID, 
+                n: currentUser, 
+                c: "ELEVE", 
+                f: false 
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        }
+
+        function App() {
+            const [gameState, setGameState] = React.useState("intro");
+            const [step, setStep] = React.useState(0);
+            const [score, setScore] = React.useState(0);
+
+            const flashcards = [
+                { 
+                    title: "Le droit de s'habiller : L'interdit du pantalon", 
+                    text: "Sais-tu qu'une loi interdisait aux femmes de porter le pantalon à Paris, sauf si elles tenaient 'par la main un guidon de bicyclette ou les rênes d'un cheval' ? Le pantalon était considéré comme un vêtement de pouvoir, réservé aux hommes. Le plus fou ? Cette loi n'a été officiellement abrogée qu'en... 2013 !" 
+                },
+                { 
+                    title: "Le droit de transpirer : Le Marathon de Boston (1967)", 
+                    text: "En 1967, les femmes n'avaient pas le droit de courir de marathon. On prétendait que c'était 'trop dangereux pour leur santé'. Kathrine Switzer s'est inscrite avec ses initiales (K.V. Switzer) pour obtenir un dossard. Pendant la course, le directeur de l'épreuve l'a agressée physiquement pour l'empêcher de courir. Elle a tenu bon et a franchi la ligne d'arrivée, prouvant au monde entier que le sport n'a pas de genre." 
+                },
+                { 
+                    title: "Le droit de juger : L'accès aux métiers d'autorité", 
+                    text: "Pendant très longtemps, les femmes pouvaient être infirmières ou institutrices, mais les métiers représentant 'l'autorité de l'État' leur étaient fermés. Ce n'est qu'en 1946 qu'elles ont eu le droit de devenir magistrates (juges). On pensait avant cela qu'elles étaient 'trop émotives' pour rendre la justice de manière neutre." 
+                }
+            ];
+
+            const quiz = [
+                { 
+                    q: "En quelle année l'interdiction pour les femmes de porter le pantalon à Paris a-t-elle été officiellement annulée ?", 
+                    options: ["1920", "1968", "2013"], 
+                    ans: 2 
+                },
+                { 
+                    q: "Pourquoi les femmes n'avaient-elles pas le droit de courir le marathon avant les années 1970 ?", 
+                    options: ["Elles couraient trop vite", "On prétendait que c'était dangereux pour leur santé", "Elles refusaient de participer"], 
+                    ans: 1 
+                }
+            ];
+
+            const handleScenario = (marker) => {
+                pushBridge({
+                    id: `EVT-${Date.now()}`,
+                    type: 'PSY_MARKER',
+                    player: currentUser,
+                    module: MODULE_ID,
+                    action: 'SCENARIO_CHOICE',
+                    marker: marker,
+                    timestamp: new Date().toISOString()
+                });
+                setGameState("complete");
+            };
+
+            function renderProgressBar(current, total) {
+                return e("div", { className: "progress-bar" },
+                    e("div", { className: "progress-fill", style: { width: `${(current / total) * 100}%` } })
+                );
+            }
+
+            function renderIntro() {
+                return e("div", null,
+                    e("h1", null, "ARCHIVES CLASSIFIÉES : LE DROIT DE CHOISIR"),
+                    e("p", null, "Bon retour dans les archives, ", e("strong", { style: { color: "var(--history-amber)" } }, currentUser), ". Tu as vu comment les femmes ont conquis le droit de vote et l'indépendance financière. Mais la liberté, c'est aussi de pouvoir utiliser son corps comme on le souhaite."),
+                    e("p", null, "S'habiller, courir, choisir un métier d'autorité : ces choix qui te semblent évidents aujourd'hui ont été le fruit de longues batailles contre des interdictions absurdes."),
+                    e("button", { className: "btn", onClick: () => {
+                        pushBridge({ type: "MODULE_START", player: currentUser, module: MODULE_ID, timestamp: new Date().toISOString() });
+                        setGameState("flashcards");
+                    }}, "OUVRIR LES NOUVEAUX DOSSIERS")
+                );
+            }
+
+            function renderFlashcards() {
+                const card = flashcards[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, flashcards.length),
+                    e("h2", null, `DOSSIER HISTORIQUE ${step + 1}/${flashcards.length}`),
+                    e("h3", { style: { color: "var(--history-sepia)", marginBottom: "15px" } }, card.title),
+                    e("div", { className: "card" }, e("p", null, card.text)),
+                    e("button", { className: "btn", onClick: () => {
+                        if (step < flashcards.length - 1) setStep(step + 1);
+                        else { setStep(0); setGameState("quiz"); }
+                    }}, step < flashcards.length - 1 ? "ARCHIVE SUIVANTE" : "PASSER À L'INTERROGATOIRE")
+                );
+            }
+
+            function renderQuiz() {
+                const q = quiz[step];
+                return e("div", null,
+                    renderProgressBar(step + 1, quiz.length),
+                    e("h2", null, "VÉRIFICATION DES FAITS"),
+                    e("p", { style: { color: "var(--history-amber)", marginBottom: "20px", fontSize: "1.3rem" } }, q.q),
+                    q.options.map((opt, i) => 
+                        e("button", { key: i, className: "choice-btn", onClick: () => {
+                            if (i === q.ans) setScore(score + 1);
+                            if (step < quiz.length - 1) setStep(step + 1);
+                            else setGameState("scenarios");
+                        }}, opt)
+                    )
+                );
+            }
+
+            function renderScenarios() {
+                return e("div", null,
+                    e("h2", null, "TEST DE POSITIONNEMENT"),
+                    e("p", null, "Imagine : Tu es passionnée de mécanique depuis l'enfance. Tu postules pour un stage d'observation dans un grand garage de ta ville. Le gérant te refuse le stage en te disant : 'La mécanique, c'est salissant, c'est lourd, c'est un vrai métier d'homme, tu ne seras pas à l'aise ici'. Que fais-tu ?"),
+                    
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("PROACTIVE_REBELLION") }, 
+                        "Je rappelle le gérant, je lui rappelle que la loi interdit la discrimination à l'embauche (même pour un stage) et j'exige un essai d'une journée pour lui prouver mes compétences."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("PRAGMATIC_ADAPTATION") }, 
+                        "Je ne perds pas mon temps avec quelqu'un d'aussi fermé. Je cherche un autre garage, plus moderne, et je demanderai à mon professeur principal de m'appuyer."
+                    ),
+                    e("button", { className: "choice-btn", onClick: () => handleScenario("RESIGNATION_AVOIDANCE") }, 
+                        "Je me dis qu'il a peut-être raison et que l'ambiance sera trop dure pour moi. J'abandonne l'idée et je demande un stage dans la vente ou l'administration."
+                    )
+                );
+            }
+
+            function renderComplete() {
+                const token = generateToken();
+                return e("div", null,
+                    e("h1", null, "DOSSIERS CLASSÉS"),
+                    e("p", null, "Excellent travail. En comprenant que même tes vêtements ou le sport que tu pratiques ont été des combats, tu comprends pourquoi il ne faut jamais se laisser interdire un métier sous prétexte qu'il ne 'correspondrait' pas à ton genre."),
+                    e("p", null, "N'oublie jamais : le seul critère pour choisir une voie, c'est ton talent et ton envie !"),
+                    e("div", { 
+                        className: "token-box", 
+                        onClick: () => { navigator.clipboard.writeText(token); alert("Code de sécurité copié dans le presse-papier !"); }
+                    }, token),
+                    e("p", { style: { fontSize: "0.9rem", color: "var(--text-secondary)", textAlign: "center" } }, "(Clique sur le code pour le copier)"),
+                    e("button", { className: "btn", onClick: () => window.location.href = "index_PIX_Egalite.html" }, "RETOURNER AU PORTAIL")
+                );
+            }
+
+            switch (gameState) {
+                case "intro": return renderIntro();
+                case "flashcards": return renderFlashcards();
+                case "quiz": return renderQuiz();
+                case "scenarios": return renderScenarios();
+                case "complete": return renderComplete();
+                default: return renderIntro();
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(e(App));
+    </script>
+</body>
+</html>

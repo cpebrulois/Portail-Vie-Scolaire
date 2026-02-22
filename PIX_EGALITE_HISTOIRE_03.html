@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-Égalité | Module HISTOIRE 03 - Les Nouvelles Frontières</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --hist-gold: #c5a059;
+            --hist-bronze: #8e6d31;
+            --hist-dark: #1a1a1a;
+            --hist-paper: #f4f1ea;
+            --void-dark: #0d0d0d;
+            --panel-bg: rgba(26, 26, 26, 0.95);
+            --text-primary: #e8e8e8;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--void-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        
+        #root {
+            width: 100%; max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--hist-gold);
+            border-radius: 2px; padding: 30px;
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.15);
+        }
+
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--hist-gold); text-align: center; margin-bottom: 25px; letter-spacing: 3px; }
+        h2 { color: var(--hist-gold); margin-bottom: 15px; text-transform: uppercase; font-size: 1.2rem; border-bottom: 1px solid var(--hist-bronze); }
+        
+        p { line-height: 1.6; margin-bottom: 15px; font-size: 1.15rem; }
+
+        .btn {
+            background: var(--hist-gold); color: var(--hist-dark);
+            border: none; padding: 15px; font-family: 'Orbitron'; font-weight: bold;
+            cursor: pointer; width: 100%; margin-top: 15px; transition: 0.3s;
+        }
+        .btn:hover { background: #fff; transform: translateY(-2px); }
+
+        .card {
+            background: rgba(255,255,255,0.03); border-left: 3px solid var(--hist-gold);
+            padding: 20px; margin-bottom: 20px;
+        }
+
+        .choice-btn {
+            background: transparent; border: 1px solid var(--hist-bronze);
+            color: white; padding: 15px; margin-bottom: 10px; width: 100%;
+            text-align: left; cursor: pointer; border-radius: 4px; transition: 0.2s;
+        }
+        .choice-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--hist-gold); }
+
+        .token-box {
+            background: #000; border: 1px dashed var(--hist-gold); color: var(--hist-gold);
+            padding: 20px; font-family: 'Share Tech Mono'; text-align: center; margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const e = React.createElement;
+        const MODULE_ID = "HIST_03";
+        const currentUser = localStorage.getItem("EGALITE_ACTIVE_PLAYER") || "Visiteur";
+
+        function App() {
+            const [step, setStep] = React.useState("intro");
+            const [idx, setIdx] = React.useState(0);
+
+            const timeline = [
+                { 
+                    year: "2017", 
+                    title: "Le mouvement #MeToo", 
+                    text: "Un séisme mondial. Pour la première fois, la parole des femmes sur les violences sexistes et sexuelles est entendue massivement grâce aux réseaux sociaux. Cela force les entreprises et les gouvernements à changer les lois sur le consentement et le harcèlement." 
+                },
+                { 
+                    year: "2021", 
+                    title: "Loi Rixain (France)", 
+                    text: "Cette loi impose des quotas de femmes dans les postes de direction des grandes entreprises. On réalise que 'laisser faire le temps' ne suffit pas : il faut des règles pour briser le plafond de verre." 
+                },
+                { 
+                    year: "2024", 
+                    title: "L'IVG dans la Constitution", 
+                    text: "La France devient le premier pays au monde à inscrire explicitement la liberté garantie d'avoir recours à l'IVG dans sa Constitution, protégeant ce droit contre d'éventuels retours en arrière politiques." 
+                }
+            ];
+
+            const handleComplete = (marker) => {
+                const payload = {
+                    id: `EVT-${Date.now()}`, type: 'PSY_MARKER', player: currentUser,
+                    module: MODULE_ID, action: 'HISTORY_POSITION', marker: marker, d: new Date().toISOString()
+                };
+                const list = JSON.parse(localStorage.getItem("SUPER_HUB_BRIDGE") || "[]");
+                list.push(payload);
+                localStorage.setItem("SUPER_HUB_BRIDGE", JSON.stringify(list));
+                setStep("complete");
+            };
+
+            if (step === "intro") return e("div", null,
+                e("h1", null, "HISTOIRE : LES NOUVELLES FRONTIÈRES"),
+                e("p", null, "Bienvenue dans le temps présent, ", e("strong", null, currentUser), ". Les lois ont été votées, mais l'Histoire continue de s'écrire sous tes yeux."),
+                e("p", null, "Aujourd'hui, le défi n'est plus seulement d'avoir des droits, mais de les faire respecter partout : sur internet, au travail et à la maison."),
+                e("button", { className: "btn", onClick: () => setStep("timeline") }, "PARCOURIR LE XXIe SIÈCLE")
+            );
+
+            if (step === "timeline") return e("div", null,
+                e("h2", null, `ARCHIVE ${timeline[idx].year}`),
+                e("div", { className: "card" },
+                    e("h3", { style: { color: "var(--hist-gold)", marginBottom: "10px" } }, timeline[idx].title),
+                    e("p", null, timeline[idx].text)
+                ),
+                e("button", { className: "btn", onClick: () => {
+                    if (idx < timeline.length - 1) setIdx(idx + 1);
+                    else setStep("scenario");
+                }}, idx < timeline.length - 1 ? "VOIR L'ÉVÉNEMENT SUIVANT" : "CONFRONTER LE PRÉSENT")
+            );
+
+            if (step === "scenario") return e("div", null,
+                e("h2", null, "DÉFI CONTEMPORAIN"),
+                e("p", null, "Tu navigues sur un réseau social et tu vois un groupe de garçons harceler violemment une fille de ta classe à cause d'une photo qu'elle a postée. Ils disent que 'c'est juste pour rire' et que 'l'histoire est finie, les femmes sont déjà égales aux hommes'."),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("CYBER_SOLIDARITY") }, "Je signale les contenus, je soutiens mon amie et je rappelle que le harcèlement en ligne est un délit puni par la loi."),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("AWARENESS_DEFENDER") }, "J'essaie d'expliquer au groupe que l'égalité n'est jamais acquise et que leur comportement recrée des violences que l'on croyait disparues."),
+                e("button", { className: "choice-btn", onClick: () => handleComplete("BYSTANDER_EFFECT") }, "Je ne préfère pas m'en mêler pour ne pas devenir la prochaine cible, mais je trouve ça injuste.")
+            );
+
+            const token = btoa(JSON.stringify({v:1, m:MODULE_ID, n:currentUser, f:true}));
+            return e("div", null,
+                e("h1", null, "HISTOIRE : MISSION ACCOMPLIE"),
+                e("p", null, "Tu as voyagé du silence des citoyennes antiques aux combats numériques d'aujourd'hui."),
+                e("p", { style: { color: "var(--hist-gold)" } }, "L'Histoire n'est pas un livre fermé. Tu en es l'un des auteurs."),
+                e("div", { className: "token-box" }, token),
+                e("button", { className: "btn", onClick: () => window.location.href="index_PI_Egalite.html" }, "RETOUR AU PORTAIL")
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+    </script>
+</body>
+</html>

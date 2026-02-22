@@ -1,0 +1,824 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIX-EGALITE - Hub de Formation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;700&display=swap');
+  :root{
+    --teal:#00d4ff;
+    --purple:#b829d9;
+    --gold:#ffd700;
+    --red:#ff375f;
+    --bg:#0a0a12;
+    --panel:#161224;
+    --locked:#2a2a35;
+    --ok:#00d084;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:18px;background:radial-gradient(circle at 15% 15%,#00d4ff18,transparent 30%),radial-gradient(circle at 85% 85%,#b829d918,transparent 35%),var(--bg);color:#fff;font-family:Rajdhani,sans-serif;text-align:center}
+  h1{font-family:Orbitron,monospace;letter-spacing:3px;color:var(--teal);margin:8px 0 6px;text-shadow:0 0 12px #00d4ff66}
+  h2{font-family:Orbitron,monospace;color:var(--purple);margin:0 0 8px}
+  .sub{color:#b7c8e2;margin:0 0 8px}
+  .container{max-width:1120px;margin:0 auto 12px;background:var(--panel);padding:16px;border-radius:12px;border:1px solid #5f4d7f;box-shadow:0 0 20px #8f36d433;position:relative}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
+  .card{background:#221d33;padding:12px;border-radius:10px;border:1px solid #444;transition:.25s;text-align:left}
+  .card.locked{opacity:.58;border-color:var(--locked);background:#1a1a24}
+  .card.open{border-color:var(--teal);box-shadow:0 0 10px #00d4ff55}
+  .card.done{border-color:var(--ok);box-shadow:0 0 10px #00d08455;background:#122b24}
+  .pillarHead{grid-column:1/-1;border:0;background:transparent;border-bottom:1px solid #5f4d7f;padding:4px 2px}
+  .pillarHead h2{margin:0}
+  .status{font-size:.83rem;font-weight:700;text-transform:uppercase;float:right;margin-top:2px}
+  .status.locked{color:#7a8291}
+  .status.open{color:#b8ecff}
+  .status.done{color:#9ef5bf}
+  .btn{width:100%;margin-top:8px;padding:10px 12px;border-radius:8px;border:0;background:var(--purple);color:#fff;font-weight:700;cursor:pointer;font-family:Orbitron,monospace;font-size:.82rem}
+  .btn:hover{background:var(--teal);color:#000}
+  .btn:disabled{background:#444;color:#888;cursor:not-allowed}
+  .btn2{background:transparent;border:1px solid var(--teal);color:var(--teal)}
+  .btnGold{background:var(--gold);color:#000}
+  .btnGray{background:#444}
+  .btnBad{background:#a81d3a}
+  .btnOk{background:#158a63}
+  .rw{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .rw .btn{width:auto}
+  input,select,textarea{width:min(620px,96%);padding:10px;margin:8px 0;border-radius:8px;border:1px solid var(--teal);background:#00000066;color:#fff;text-align:center;font-family:monospace;font-size:15px}
+  input:focus,select:focus,textarea:focus{outline:none;box-shadow:0 0 12px #00d4ff66}
+  .decoder{background:#05050a;border:1px solid var(--teal);border-radius:10px;padding:14px;margin-top:10px}
+  .decoderTitle{font-family:Orbitron,monospace;color:var(--teal);margin-bottom:6px}
+  .msg{min-height:20px;margin-top:8px;font-weight:700}
+  .ok{color:#9ef5bf}
+  .bad{color:#ff9aa8}
+  .hint{color:#b7c8e2;font-size:.95rem}
+  .audio-toggle{position:absolute;top:12px;right:12px;background:transparent;border:1px solid var(--teal);color:var(--teal);padding:7px 11px;border-radius:999px;cursor:pointer;font-weight:700}
+  .audio-toggle.playing{border-color:var(--purple);color:var(--purple)}
+  .admin-fab{position:fixed;right:10px;bottom:10px;background:#111;border:1px solid #ffffff44;color:#fff;padding:8px 11px;border-radius:999px;cursor:pointer;opacity:.45;z-index:1400}
+  .admin-fab:hover{opacity:1}
+  .admin-panel{display:none;text-align:left;margin-top:12px;background:#111;border:1px dashed var(--red);border-radius:10px;padding:14px}
+  .adminTitle{color:#ff8aa3;text-align:center;font-family:Orbitron,monospace;margin:0 0 8px}
+  .adminBox{border:1px solid #ffffff26;border-radius:8px;padding:10px;margin-top:8px;background:#00000035}
+  .adminState{font-weight:700}
+  .summary{font-family:monospace;white-space:pre-wrap;background:#00000070;border:1px solid #ffffff22;border-radius:8px;padding:10px;margin-top:8px}
+  .forgeOut{margin-top:10px;padding:10px;background:#000;border:1px solid #00d08466;color:#9ef5bf;font-family:monospace;word-break:break-all;display:none;cursor:pointer}
+  .small{font-size:.88rem}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop preload="none"></audio>
+
+<div class="container" id="loginScreen">
+  <button id="audioBtnLogin" class="audio-toggle" onclick="toggleAudio()">Activer musique</button>
+  <h1>PIX-EGALITE</h1>
+  <p class="sub">Hub secondaire aligne sur PIXHARe: progression par codes secrets.</p>
+  <input type="text" id="playerCode" placeholder="Entre ton code joueur (tableau officiel)" onkeypress="if(event.key==='Enter') login()">
+  <button class="btn" style="width:auto" onclick="login()">Connexion</button>
+  <p id="loginStatus" class="msg">Chargement du referentiel joueurs...</p>
+</div>
+
+<div class="container" id="hubScreen" style="display:none">
+  <button id="audioBtnHub" class="audio-toggle" onclick="toggleAudio()">Activer musique</button>
+  <h1>PORTAIL DE LA VERITE</h1>
+  <p class="sub">Bienvenue, <b id="playerName"></b> | Progression reliee au Super-Hub</p>
+
+  <div class="rw" style="margin-bottom:6px">
+    <button class="btn btnGray" onclick="goSuperHub()">Portail Vie Scolaire</button>
+    <button class="btn btnGray" onclick="logout()">Deconnexion</button>
+  </div>
+
+  <div class="decoder">
+    <div class="decoderTitle">Module de validation</div>
+    <div class="hint">Colle ici le code secret obtenu en fin de mission pour debloquer le niveau suivant.</div>
+    <input type="text" id="inputToken" placeholder="Coller le code ici (ou identifiant admin)">
+    <button class="btn" style="width:auto" onclick="processTokenInput()">Valider le code</button>
+    <div id="feedback" class="msg"></div>
+    <div id="xpStatus" class="hint">XP: en attente de progression.</div>
+  </div>
+
+  <div id="pillarsContainer" class="grid"></div>
+</div>
+
+<div class="container admin-panel" id="adminPanel">
+  <h2 class="adminTitle">Mode Admin - Gestion des comptes eleves</h2>
+  <div class="hint small">Astuce: tu peux ouvrir ce panneau en entrant l'identifiant admin dans la zone de validation des codes.</div>
+
+  <div class="adminBox">
+    <div class="rw" style="justify-content:flex-start">
+      <input id="adminPass" type="password" style="max-width:340px;text-align:left" placeholder="Identifiant admin">
+      <button class="btn" onclick="adminLogin()">Activer admin</button>
+      <button class="btn btnGray" onclick="toggleAdminPanel()">Fermer</button>
+    </div>
+    <div id="adminState" class="adminState">Etat: non connecte</div>
+  </div>
+
+  <div id="adminControls" style="display:none">
+    <div class="adminBox">
+      <h3 style="margin:0 0 6px;color:#ffd2dc">Compte cible</h3>
+      <input id="adminTargetCode" list="codesList" placeholder="Code joueur eleve cible">
+      <datalist id="codesList"></datalist>
+      <div class="rw" style="justify-content:flex-start">
+        <button class="btn" onclick="adminShowTarget()">Afficher le profil</button>
+        <button class="btn btnBad" onclick="adminResetTarget()">Reset complet du compte</button>
+      </div>
+      <div id="adminSummary" class="summary">Aucun compte charge.</div>
+    </div>
+
+    <div class="adminBox">
+      <h3 style="margin:0 0 6px;color:#ffd2dc">Validation / revalidation</h3>
+      <div class="rw" style="justify-content:flex-start">
+        <select id="adminPillar" style="max-width:240px" onchange="updateAdminSelectors()"></select>
+        <select id="adminModule" style="max-width:330px"></select>
+        <select id="adminLevel" style="max-width:220px"></select>
+      </div>
+      <div class="rw" style="justify-content:flex-start">
+        <button class="btn btnOk" onclick="adminMarkModule()">Valider module</button>
+        <button class="btn btnBad" onclick="adminUnmarkModule()">Retirer module</button>
+        <button class="btn" onclick="adminSetPillarLevel()">Definir niveau du pilier</button>
+      </div>
+    </div>
+
+    <div class="adminBox">
+      <h3 style="margin:0 0 6px;color:#ffd2dc">Forge de code secret (depannage)</h3>
+      <div class="hint small">Genere un code pour debloquer un niveau cible (comme PIXHARe).</div>
+      <div class="rw" style="justify-content:flex-start">
+        <button class="btn" onclick="forgeToken()">Generer code</button>
+      </div>
+      <div id="forgeResult" class="forgeOut" onclick="copyToClipboard(this.innerText)"></div>
+    </div>
+
+    <div id="adminMsg" class="msg"></div>
+  </div>
+</div>
+
+<div class="admin-fab" onclick="toggleAdminPanel()">🛠</div>
+
+<script>
+const ACTIVE_KEY = 'EGALITE_ACTIVE_PLAYER';
+const SUPER_ACTIVE_KEY = 'pvs_current_player';
+const SUPER_STATE_KEY = 'pvs_hof_v2';
+const STATE_KEY = 'EGALITE_PROGRESS_V3';
+const ADMIN_SESSION_KEY = 'EGALITE_ADMIN_SESSION';
+const VISITOR_CODE = 'VISITEUR-VIESCOLAIRE-CHATEAURANCE';
+const BRIDGE_KEYS = ['pvs_bridge_events','SUPER_HUB_BRIDGE'];
+const ADMIN_KEYS = ['CPE59!-Chateau-70+','AGORA-ADMIN'];
+const AUDIO_FILES = ['Touségaux.mp3','Tousegaux.mp3','Tous%20egaux.mp3'];
+
+const CONFIG = {
+  pillars: {
+    HISTOIRE: {
+      title: 'Les Conquetes',
+      modules: [
+        { id: 'HIST_01', name: 'Le long chemin du vote', file: 'PIX_EGALITE_HISTOIRE_01.html' },
+        { id: 'HIST_02', name: 'Le droit de choisir', file: 'PIX_EGALITE_HISTOIRE_02.html' },
+        { id: 'HIST_03', name: 'Le mouvement #MeToo', file: 'PIX_EGALITE_HISTOIRE_03.html' }
+      ]
+    },
+    SCIENCES: {
+      title: 'Les Effacees',
+      modules: [
+        { id: 'SCI_01', name: 'L ombre des decouvertes', file: 'PIX_EGALITE_SCIENCES_01.html' },
+        { id: 'SCI_02', name: 'Les codes de demain', file: 'PIX_EGALITE_SCIENCES_02.html' },
+        { id: 'SCI_03', name: 'Le code de demain', file: 'PIX_EGALITE_SCIENCES_03.html' }
+      ]
+    },
+    PHILO: {
+      title: 'Les Penseurs',
+      modules: [
+        { id: 'PHIL_01', name: 'Nature ou culture ?', file: 'PIX_EGALITE_PHILO_01.html' },
+        { id: 'PHIL_02', name: 'La construction des cliches', file: 'PIX_EGALITE_PHILO_02.html' },
+        { id: 'PHIL_03', name: 'L\'éthique de l\'égalité', file: 'PIX_EGALITE_PHILO_03.html' }
+      ]
+    },
+    BILAN: {
+      title: 'Moi, demain',
+      modules: []
+    }
+  }
+};
+
+let currentUser = '';
+let isAudioPlaying = false;
+let audioIdx = 0;
+let adminMode = false;
+let state = { users:{} };
+const allowedPlayers = new Set();
+const MODULE_BY_NORM = {};
+
+function stripAcc(v){ return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function nCode(v){ return stripAcc(String(v||'')).trim().replace(/\s+/g,'').toUpperCase(); }
+function nowIso(){ return new Date().toISOString(); }
+
+(function buildModuleIndex(){
+  Object.entries(CONFIG.pillars).forEach(([pk,p])=>{
+    (p.modules||[]).forEach((m,idx)=>{
+      const item = Object.assign({ pillar: pk, index: idx }, m);
+      MODULE_BY_NORM[nCode(m.id)] = item;
+    });
+  });
+})();
+
+function allModules(){
+  const out=[];
+  Object.values(CONFIG.pillars).forEach(p=>{ (p.modules||[]).forEach(m=>out.push(m)); });
+  return out;
+}
+
+function setText(id, txt){
+  const el = document.getElementById(id);
+  if(el) el.textContent = txt;
+}
+
+function setMsg(id, txt, ok){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = txt || '';
+  el.className = 'msg' + (ok===true?' ok':(ok===false?' bad':''));
+}
+
+function clearMsg(id){ setMsg(id,'',null); }
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STATE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if(parsed && typeof parsed === 'object') state = parsed;
+  }catch(e){ state = { users:{} }; }
+  if(!state.users || typeof state.users !== 'object') state.users = {};
+}
+
+function saveState(){
+  localStorage.setItem(STATE_KEY, JSON.stringify(state));
+}
+
+function getUserState(code){
+  const c = nCode(code);
+  if(!c) return null;
+  if(!state.users[c] || typeof state.users[c] !== 'object'){
+    state.users[c] = { completed:{}, updatedAt: nowIso() };
+  }
+  if(!state.users[c].completed || typeof state.users[c].completed !== 'object'){
+    state.users[c].completed = {};
+  }
+  return state.users[c];
+}
+
+function hasDone(code, moduleId){
+  const us = getUserState(code);
+  return !!(us && us.completed && us.completed[moduleId]);
+}
+
+function countDone(code){
+  const us = getUserState(code);
+  return us ? Object.keys(us.completed||{}).length : 0;
+}
+
+function pillarLevel(code, pillarKey){
+  const p = CONFIG.pillars[pillarKey];
+  if(!p || !p.modules || !p.modules.length) return 0;
+  let lvl = 0;
+  for(let i=0;i<p.modules.length;i+=1){
+    if(hasDone(code,p.modules[i].id)) lvl = i+1;
+    else break;
+  }
+  return lvl;
+}
+
+function moduleOpen(code, pillarKey, idx){
+  const p = CONFIG.pillars[pillarKey];
+  if(!p || !p.modules || idx<0 || idx>=p.modules.length) return false;
+  const cur = p.modules[idx];
+  if(hasDone(code,cur.id)) return true;
+  if(idx===0) return true;
+  return hasDone(code,p.modules[idx-1].id);
+}
+
+function certKeyLegacy(moduleId){ return `CERT_EGALITE_${moduleId}`; }
+
+function migrateLegacyForUser(code){
+  const us = getUserState(code);
+  let changed = false;
+  allModules().forEach(m=>{
+    const k = certKeyLegacy(m.id);
+    const raw = localStorage.getItem(k);
+    if(raw && !us.completed[m.id]){
+      let cert = null;
+      try{ cert = JSON.parse(raw); }catch(e){ cert = null; }
+      if(!cert || typeof cert!=='object') cert = { v:1, d:nowIso(), m:m.id, n:code, c:'LEGACY', f:true };
+      us.completed[m.id] = cert;
+      changed = true;
+    }
+  });
+  if(changed){
+    us.updatedAt = nowIso();
+    saveState();
+    emitProgress(code, 'LEGACY_MIGRATION');
+  }
+}
+
+function pushBridgeEvent(payload){
+  BRIDGE_KEYS.forEach(key=>{
+    try{
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      const list = Array.isArray(arr) ? arr : [];
+      list.push(payload);
+      if(list.length>700) list.splice(0, list.length-700);
+      localStorage.setItem(key, JSON.stringify(list));
+    }catch(e){}
+  });
+}
+
+function emitProgress(playerCode, moduleId){
+  const p = nCode(playerCode);
+  if(!p) return;
+  const cpTotal = countDone(p);
+  pushBridgeEvent({
+    id: `EGA-${Date.now()}-${Math.random().toString(36).slice(2,9)}`,
+    type: 'EGALITE_PROGRESS',
+    player: p,
+    module: moduleId || 'EGALITE',
+    cpTotal,
+    d: nowIso()
+  });
+  if(currentUser===p){
+    setText('xpStatus', `XP synchronisee vers Super-Hub | Modules valides: ${cpTotal}`);
+  }
+}
+
+function csvSplitLine(line){
+  const out=[]; let cur=''; let q=false;
+  for(let i=0;i<line.length;i+=1){
+    const ch=line[i];
+    if(ch==='"'){
+      if(q && line[i+1]==='"'){ cur+='"'; i+=1; }
+      else q=!q;
+    } else if(ch===',' && !q){
+      out.push(cur); cur='';
+    } else {
+      cur+=ch;
+    }
+  }
+  out.push(cur);
+  return out;
+}
+
+function readCodesFromSuperState(){
+  try{
+    const raw = localStorage.getItem(SUPER_STATE_KEY);
+    if(!raw) return 0;
+    const obj = JSON.parse(raw);
+    const reg = Array.isArray(obj&&obj.registry) ? obj.registry : [];
+    reg.forEach(r=>{
+      const c = nCode(r&&r.code_joueur||'');
+      if(c) allowedPlayers.add(c);
+    });
+    return reg.length;
+  }catch(e){ return 0; }
+}
+
+function parseStudentsCsv(text){
+  const rows = String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);
+  if(rows.length<2) return 0;
+  const heads = csvSplitLine(rows[0]).map(h=>nCode(h).toLowerCase());
+  const idx = heads.indexOf('code_joueur');
+  if(idx<0) return 0;
+  let n=0;
+  for(let i=1;i<rows.length;i+=1){
+    const cols = csvSplitLine(rows[i]);
+    const code = nCode(cols[idx]||'');
+    if(code){ allowedPlayers.add(code); n+=1; }
+  }
+  return n;
+}
+
+async function loadCodesFromCsv(){
+  try{
+    const res = await fetch('students.csv',{cache:'no-store'});
+    if(!res.ok) return 0;
+    const txt = await res.text();
+    return parseStudentsCsv(txt);
+  }catch(e){ return 0; }
+}
+
+function populateCodesDatalist(){
+  const dl = document.getElementById('codesList');
+  if(!dl) return;
+  const arr = Array.from(allowedPlayers).sort();
+  dl.innerHTML = arr.map(c=>`<option value="${c}"></option>`).join('');
+}
+
+async function bootstrapRegistry(){
+  const n1 = readCodesFromSuperState();
+  if(allowedPlayers.size===0){ await loadCodesFromCsv(); }
+  populateCodesDatalist();
+  if(allowedPlayers.size>0){
+    setMsg('loginStatus', `Referentiel charge: ${allowedPlayers.size} codes joueurs.`, true);
+  } else {
+    setMsg('loginStatus', 'Referentiel non charge: verification stricte des codes inactive.', false);
+  }
+}
+
+function decodeToken(raw){
+  const s = String(raw||'').trim();
+  if(!s) return null;
+  try{ return JSON.parse(decodeURIComponent(escape(atob(s)))); }
+  catch(e){
+    try{ return JSON.parse(atob(s)); }
+    catch(e2){ return null; }
+  }
+}
+
+function markModuleDone(code, moduleInfo, cert){
+  const us = getUserState(code);
+  if(!us) return false;
+  const before = !!us.completed[moduleInfo.id];
+  us.completed[moduleInfo.id] = cert && typeof cert==='object' ? cert : { v:1, d:nowIso(), m:moduleInfo.id, n:code, c:'AUTO', f:true };
+  us.updatedAt = nowIso();
+  saveState();
+  emitProgress(code, moduleInfo.id);
+  return !before;
+}
+
+function unmarkModuleDone(code, moduleInfo){
+  const us = getUserState(code);
+  if(!us || !us.completed[moduleInfo.id]) return false;
+  delete us.completed[moduleInfo.id];
+  us.updatedAt = nowIso();
+  saveState();
+  emitProgress(code, moduleInfo.id);
+  return true;
+}
+
+function launchMission(file){
+  if(!currentUser){ setMsg('feedback','Connecte-toi d abord.',false); return; }
+  localStorage.setItem(ACTIVE_KEY, currentUser);
+  localStorage.setItem(SUPER_ACTIVE_KEY, currentUser);
+  const sep = file.includes('?') ? '&' : '?';
+  window.open(`${file}${sep}player=${encodeURIComponent(currentUser)}`,'_blank');
+}
+
+function downloadDiploma(pillarKey, idx){
+  if(!currentUser) return;
+  const mod = CONFIG.pillars[pillarKey].modules[idx];
+  const us = getUserState(currentUser);
+  const cert = us && us.completed && us.completed[mod.id];
+  if(!cert){ alert('Aucune preuve disponible pour ce module.'); return; }
+  const learner = cert.n || currentUser;
+  const dateStr = cert.d ? new Date(cert.d).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR');
+  const text = [
+    'PIX-EGALITE - PREUVE DE VALIDATION',
+    '',
+    `ELEVE: ${learner}`,
+    `DATE: ${dateStr}`,
+    `MODULE: ${mod.name} (${mod.id})`,
+    '',
+    'Statut: valide.'
+  ].join('\n');
+  const blob = new Blob([text],{type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Preuve_${learner}_${mod.id}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function renderHub(){
+  const root = document.getElementById('pillarsContainer');
+  root.innerHTML = '';
+  Object.entries(CONFIG.pillars).forEach(([pk,p])=>{
+    if(!p.modules || !p.modules.length) return;
+    root.innerHTML += `<div class="pillarHead"><h2>${p.title}</h2></div>`;
+    p.modules.forEach((m,idx)=>{
+      const done = hasDone(currentUser,m.id);
+      const open = moduleOpen(currentUser,pk,idx);
+      const cardClass = done ? 'done' : (open ? 'open' : 'locked');
+      const stTxt = done ? 'VALIDE' : (open ? 'DISPONIBLE' : 'VERROUILLE');
+      const stCls = done ? 'done' : (open ? 'open' : 'locked');
+      let actions = `<button class="btn" disabled>VERROUILLE</button>`;
+      if(open){
+        actions = `<button class="btn" onclick="launchMission('${m.file}')">Lancer mission</button>`;
+      }
+      if(done){
+        actions += `<button class="btn btnGold" onclick="downloadDiploma('${pk}',${idx})">Certificat</button>`;
+      }
+      root.innerHTML += `
+      <div class="card ${cardClass}">
+        <span class="status ${stCls}">${stTxt}</span>
+        <h3 style="margin:0 0 8px">Niveau ${idx+1}</h3>
+        <div style="margin-bottom:10px;color:#d7e2f4">${m.name}</div>
+        ${actions}
+      </div>`;
+    });
+  });
+  const total = countDone(currentUser);
+  setText('xpStatus', `XP synchronisee vers Super-Hub | Modules valides: ${total}`);
+}
+
+function processTokenInput(){
+  clearMsg('feedback');
+  const inputEl = document.getElementById('inputToken');
+  const raw = String(inputEl.value||'').trim();
+  if(!raw){ setMsg('feedback','Entre un code a valider.',false); return; }
+
+  if(ADMIN_KEYS.includes(raw)){
+    adminMode = true;
+    localStorage.setItem(ADMIN_SESSION_KEY,'1');
+    setAdminUi();
+    setMsg('feedback','Mode admin active.',true);
+    inputEl.value='';
+    return;
+  }
+
+  const data = decodeToken(raw);
+  if(!data || typeof data!=='object'){ setMsg('feedback','Code illisible.',false); return; }
+
+  const moduleNorm = nCode(data.m || data.mod || data.id || '');
+  const moduleInfo = MODULE_BY_NORM[moduleNorm];
+  if(!moduleInfo){ setMsg('feedback','Code non reconnu: module inconnu.',false); return; }
+
+  if(!currentUser){ setMsg('feedback','Connexion joueur requise.',false); return; }
+
+  const tokenOwner = nCode(data.n || '');
+  if(tokenOwner && tokenOwner!==currentUser && !adminMode){
+    setMsg('feedback','Ce code ne correspond pas a ton identifiant joueur.',false);
+    return;
+  }
+
+  if(moduleInfo.index>0){
+    const prev = CONFIG.pillars[moduleInfo.pillar].modules[moduleInfo.index-1];
+    if(!hasDone(currentUser, prev.id) && !adminMode){
+      setMsg('feedback',`Valide d abord le niveau precedent (${prev.id}).`,false);
+      return;
+    }
+  }
+
+  const cert = {
+    v: Number(data.v||1),
+    d: data.d || nowIso(),
+    m: moduleInfo.id,
+    n: tokenOwner || currentUser,
+    c: data.c || 'ELEVE',
+    f: (typeof data.f==='boolean') ? data.f : true,
+    src: 'token'
+  };
+
+  markModuleDone(currentUser, moduleInfo, cert);
+  renderHub();
+  setMsg('feedback', `Code valide: ${moduleInfo.id} enregistre.`, true);
+  inputEl.value = '';
+}
+
+function login(){
+  clearMsg('loginStatus');
+  const code = nCode(document.getElementById('playerCode').value);
+  if(code.length < 3){ setMsg('loginStatus','Identifiant invalide.',false); return; }
+  if(allowedPlayers.size>0 && !allowedPlayers.has(code) && code!==VISITOR_CODE){
+    setMsg('loginStatus','Code joueur absent du referentiel officiel.',false);
+    return;
+  }
+  currentUser = code;
+  localStorage.setItem(ACTIVE_KEY,currentUser);
+  localStorage.setItem(SUPER_ACTIVE_KEY,currentUser);
+  migrateLegacyForUser(currentUser);
+  document.getElementById('playerName').textContent = currentUser;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('hubScreen').style.display = 'block';
+  renderHub();
+  emitProgress(currentUser,'LOGIN');
+}
+
+function logout(){
+  localStorage.removeItem(ACTIVE_KEY);
+  currentUser = '';
+  location.reload();
+}
+
+function goSuperHub(){
+  const suffix = currentUser ? `?player=${encodeURIComponent(currentUser)}` : '';
+  window.location.href = `index.html${suffix}`;
+}
+
+function toggleAdminPanel(){
+  const p = document.getElementById('adminPanel');
+  p.style.display = (p.style.display==='block'?'none':'block');
+}
+
+function setAdminUi(){
+  const controls = document.getElementById('adminControls');
+  controls.style.display = adminMode ? 'block' : 'none';
+  setText('adminState', adminMode ? 'Etat: admin connecte' : 'Etat: non connecte');
+  if(adminMode){
+    initAdminSelectors();
+  }
+}
+
+function adminLogin(){
+  const pass = String(document.getElementById('adminPass').value || '').trim();
+  if(ADMIN_KEYS.includes(pass)){
+    adminMode = true;
+    localStorage.setItem(ADMIN_SESSION_KEY,'1');
+    setAdminUi();
+    setMsg('adminMsg','Mode admin active.',true);
+  } else {
+    setMsg('adminMsg','Identifiant admin invalide.',false);
+  }
+}
+
+function initAdminSelectors(){
+  const pSel = document.getElementById('adminPillar');
+  pSel.innerHTML = '';
+  Object.entries(CONFIG.pillars).forEach(([k,p])=>{
+    if((p.modules||[]).length) pSel.innerHTML += `<option value="${k}">${p.title}</option>`;
+  });
+  updateAdminSelectors();
+}
+
+function updateAdminSelectors(){
+  const pk = document.getElementById('adminPillar').value;
+  const mSel = document.getElementById('adminModule');
+  const lSel = document.getElementById('adminLevel');
+  const mods = (CONFIG.pillars[pk] && CONFIG.pillars[pk].modules) ? CONFIG.pillars[pk].modules : [];
+  mSel.innerHTML = mods.map(m=>`<option value="${m.id}">${m.id} - ${m.name}</option>`).join('');
+  lSel.innerHTML = `<option value="0">Niveau 0 (aucun valide)</option>` + mods.map((m,idx)=>`<option value="${idx+1}">Niveau ${idx+1}</option>`).join('');
+}
+
+function getAdminTarget(){
+  const code = nCode(document.getElementById('adminTargetCode').value);
+  if(!code){ setMsg('adminMsg','Entrer un code joueur cible.',false); return ''; }
+  if(allowedPlayers.size>0 && !allowedPlayers.has(code) && code!==VISITOR_CODE){
+    setMsg('adminMsg','Code cible absent du referentiel officiel.',false); return '';
+  }
+  return code;
+}
+
+function adminSummaryText(code){
+  const us = getUserState(code);
+  const lines = [];
+  lines.push(`Compte: ${code}`);
+  lines.push(`Modules valides: ${Object.keys(us.completed||{}).length}`);
+  Object.entries(CONFIG.pillars).forEach(([pk,p])=>{
+    if(!p.modules || !p.modules.length) return;
+    const lvl = pillarLevel(code,pk);
+    const done = p.modules.filter(m=>hasDone(code,m.id)).map(m=>m.id);
+    lines.push(`- ${p.title}: niveau ${lvl}/${p.modules.length} | ${done.join(', ') || 'Aucun'}`);
+  });
+  return lines.join('\n');
+}
+
+function adminShowTarget(){
+  if(!adminMode){ setMsg('adminMsg','Connexion admin requise.',false); return; }
+  const code = getAdminTarget();
+  if(!code) return;
+  document.getElementById('adminSummary').textContent = adminSummaryText(code);
+  setMsg('adminMsg',`Profil charge: ${code}`,true);
+}
+
+function adminMarkModule(){
+  if(!adminMode){ setMsg('adminMsg','Connexion admin requise.',false); return; }
+  const code = getAdminTarget(); if(!code) return;
+  const moduleId = document.getElementById('adminModule').value;
+  const mod = MODULE_BY_NORM[nCode(moduleId)];
+  if(!mod){ setMsg('adminMsg','Module invalide.',false); return; }
+  const cert = { v:1, d:nowIso(), m:mod.id, n:code, c:'ADMIN', f:true, admin:true };
+  markModuleDone(code,mod,cert);
+  document.getElementById('adminSummary').textContent = adminSummaryText(code);
+  if(code===currentUser) renderHub();
+  setMsg('adminMsg',`Module valide: ${mod.id} pour ${code}.`,true);
+}
+
+function adminUnmarkModule(){
+  if(!adminMode){ setMsg('adminMsg','Connexion admin requise.',false); return; }
+  const code = getAdminTarget(); if(!code) return;
+  const moduleId = document.getElementById('adminModule').value;
+  const mod = MODULE_BY_NORM[nCode(moduleId)];
+  if(!mod){ setMsg('adminMsg','Module invalide.',false); return; }
+  const ok = unmarkModuleDone(code,mod);
+  document.getElementById('adminSummary').textContent = adminSummaryText(code);
+  if(code===currentUser) renderHub();
+  setMsg('adminMsg', ok ? `Module retire: ${mod.id} pour ${code}.` : 'Ce module n etait pas valide.', ok);
+}
+
+function adminSetPillarLevel(){
+  if(!adminMode){ setMsg('adminMsg','Connexion admin requise.',false); return; }
+  const code = getAdminTarget(); if(!code) return;
+  const pk = document.getElementById('adminPillar').value;
+  const lvl = Number(document.getElementById('adminLevel').value || 0);
+  const mods = CONFIG.pillars[pk] ? CONFIG.pillars[pk].modules : [];
+  if(!mods.length){ setMsg('adminMsg','Pilier invalide.',false); return; }
+  const us = getUserState(code);
+  mods.forEach((m,idx)=>{
+    if(idx < lvl){
+      us.completed[m.id] = { v:1, d:nowIso(), m:m.id, n:code, c:'ADMIN', f:true, admin:true };
+    } else {
+      delete us.completed[m.id];
+    }
+  });
+  us.updatedAt = nowIso();
+  saveState();
+  emitProgress(code, `${pk}_LEVEL_${lvl}`);
+  document.getElementById('adminSummary').textContent = adminSummaryText(code);
+  if(code===currentUser) renderHub();
+  setMsg('adminMsg',`Niveau ${lvl} applique pour ${code} sur ${pk}.`,true);
+}
+
+function adminResetTarget(){
+  if(!adminMode){ setMsg('adminMsg','Connexion admin requise.',false); return; }
+  const code = getAdminTarget(); if(!code) return;
+  if(!confirm(`Confirmer le reset complet du compte ${code} ?`)) return;
+  state.users[code] = { completed:{}, updatedAt:nowIso() };
+  saveState();
+  emitProgress(code,'RESET');
+  document.getElementById('adminSummary').textContent = adminSummaryText(code);
+  if(code===currentUser) renderHub();
+  setMsg('adminMsg',`Compte reinitialise: ${code}.`,true);
+}
+
+function forgeToken(){
+  if(!adminMode){ setMsg('adminMsg','Connexion admin requise.',false); return; }
+  const code = getAdminTarget(); if(!code) return;
+  const pk = document.getElementById('adminPillar').value;
+  const lvl = Number(document.getElementById('adminLevel').value || 0);
+  const mods = CONFIG.pillars[pk] ? CONFIG.pillars[pk].modules : [];
+  if(lvl < 2 || lvl > mods.length){
+    setMsg('adminMsg','Choisir un niveau cible >= 2 pour forger un code de deblocage.',false);
+    return;
+  }
+  const prev = mods[lvl-2];
+  const payload = { v:1, d:nowIso(), m:prev.id, n:code, c:'ELEVE', f:true, admin:true };
+  const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const out = document.getElementById('forgeResult');
+  out.style.display = 'block';
+  out.textContent = token;
+  setMsg('adminMsg',`Code forge pour debloquer le niveau ${lvl} (${code}).`,true);
+}
+
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text).then(()=>setMsg('adminMsg','Code copie.',true));
+}
+
+function setAudioSource(idx){
+  audioIdx = Math.max(0, Math.min(Number(idx)||0, AUDIO_FILES.length-1));
+  const audio = document.getElementById('bgMusic');
+  const file = AUDIO_FILES[audioIdx];
+  audio.src = file.includes('%') ? file : encodeURI(file);
+}
+
+function updateAudioButtons(){
+  const txt = isAudioPlaying ? 'Couper musique' : 'Activer musique';
+  ['audioBtnLogin','audioBtnHub'].forEach(id=>{
+    const b = document.getElementById(id);
+    if(!b) return;
+    b.textContent = txt;
+    b.classList.toggle('playing', isAudioPlaying);
+  });
+}
+
+function toggleAudio(){
+  const audio = document.getElementById('bgMusic');
+  if(isAudioPlaying){
+    audio.pause();
+    isAudioPlaying = false;
+    updateAudioButtons();
+    return;
+  }
+  audio.play().then(()=>{
+    isAudioPlaying = true;
+    updateAudioButtons();
+  }).catch(()=>{ updateAudioButtons(); });
+}
+
+function initAudio(){
+  const audio = document.getElementById('bgMusic');
+  setAudioSource(0);
+  audio.addEventListener('error',()=>{
+    if(audioIdx < AUDIO_FILES.length-1){
+      setAudioSource(audioIdx+1);
+      if(isAudioPlaying) audio.play().catch(()=>{});
+    }
+  });
+  updateAudioButtons();
+}
+
+async function boot(){
+  loadState();
+  initAudio();
+  await bootstrapRegistry();
+
+  adminMode = localStorage.getItem(ADMIN_SESSION_KEY)==='1';
+  setAdminUi();
+
+  const qp = nCode(new URLSearchParams(window.location.search).get('player') || '');
+  const saved = nCode(localStorage.getItem(ACTIVE_KEY) || localStorage.getItem(SUPER_ACTIVE_KEY) || '');
+  const candidate = qp || saved;
+
+  if(candidate){
+    document.getElementById('playerCode').value = candidate===VISITOR_CODE ? 'Visiteur-Viescolaire-ChateauRance' : candidate;
+    login();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>
