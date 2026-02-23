@@ -33,23 +33,36 @@
 .frontonMain{transform:translateY(-2px);box-shadow:0 12px 24px #00000025}
 @media (max-width:980px){.frontonGrid{grid-template-columns:1fr}.frontonMain{transform:none}}
 
-#introOverlay{
-  position:fixed;inset:0;z-index:9999;background:#000;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity 0.8s ease;
-}
+#introOverlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s ease;}
 #introOverlay.fade-out{opacity:0;pointer-events:none}
-#introVideo{
-  width:100%;height:100%;object-fit:cover;
-}
-#introSkip{
-  position:absolute;bottom:32px;right:32px;
-  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);
-  color:#fff;padding:8px 20px;border-radius:20px;cursor:pointer;
-  font-size:0.85em;letter-spacing:1px;backdrop-filter:blur(4px);
-  transition:background 0.2s;z-index:10000;
-}
+#introVideo{width:100%;height:100%;object-fit:cover;}
+#introSkip{position:absolute;bottom:32px;right:32px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:8px 20px;border-radius:20px;cursor:pointer;font-size:0.85em;letter-spacing:1px;backdrop-filter:blur(4px);transition:background 0.2s;z-index:10000;}
 #introSkip:hover{background:rgba(255,255,255,0.25)}
+
+#rewardOverlay{position:fixed;inset:0;z-index:9998;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;}
+#rewardOverlay.active{display:flex}
+#rewardOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.8s ease}
+#rewardVideo{width:100%;height:100%;object-fit:cover}
+#rewardSkip{position:absolute;bottom:32px;right:32px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:8px 20px;border-radius:20px;cursor:pointer;font-size:0.85em;letter-spacing:1px;backdrop-filter:blur(4px);z-index:10000;}
+#rewardSkip:hover{background:rgba(255,255,255,0.25)}
+#rewardTitle{position:absolute;top:32px;left:50%;transform:translateX(-50%);color:#ffd700;font-family:Orbitron,monospace;font-size:1.1em;text-shadow:0 0 20px #ffd70088;letter-spacing:2px;text-align:center;pointer-events:none;}
+#rewardsSection{margin-top:16px}
+#rewardsToggle{width:100%;text-align:left;background:var(--panel,#1a2a4a);border:1px solid var(--neon,#00d4ff);border-radius:8px;color:var(--neon,#00d4ff);padding:10px 16px;cursor:pointer;font-size:0.95em;display:flex;justify-content:space-between;align-items:center;}
+#rewardsToggle:hover{background:var(--neon,#00d4ff);color:#000}
+#rewardsList{display:none;background:var(--panel,#1a2a4a);border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:8px;}
+#rewardsList.open{display:block}
+.reward-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:6px;cursor:default;transition:background 0.2s;border-bottom:1px solid #ffffff11;}
+.reward-item.unlocked:hover{background:rgba(255,255,255,0.07)}
+.reward-item .ri-icon{font-size:1.4em}
+.reward-item .ri-info{flex:1}
+.reward-item .ri-title{font-weight:bold;font-size:0.9em}
+.reward-item .ri-sub{font-size:0.75em;opacity:0.6}
+.reward-item.locked{opacity:0.38}
+#secretGameCard{display:none;margin-top:12px;border:2px solid #ffd700;background:linear-gradient(135deg,#1a1a00,#2a2a00);border-radius:10px;padding:16px;text-align:center;animation:glowGold 2s ease-in-out infinite;}
+#secretGameCard.unlocked{display:block}
+@keyframes glowGold{0%,100%{box-shadow:0 0 8px #ffd70044}50%{box-shadow:0 0 24px #ffd700aa}}
+.secret-title{color:#ffd700;font-family:Orbitron,monospace;font-size:1em;margin-bottom:8px}
+.secret-desc{font-size:0.85em;opacity:0.85;margin-bottom:12px;line-height:1.6}
 </style></head>
 <body>
 <div id="introOverlay">
@@ -57,6 +70,13 @@
     <source src="Les Chevaliers du Collège Château Rance.mp4" type="video/mp4">
   </video>
   <button id="introSkip" onclick="skipIntro()">Passer ▶</button>
+</div>
+<div id="rewardOverlay">
+  <div id="rewardTitle"></div>
+  <video id="rewardVideo" playsinline>
+    <source id="rewardVideoSrc" src="" type="video/mp4">
+  </video>
+  <button id="rewardSkip" onclick="closeReward()">Continuer ▶</button>
 </div>
 <div id="authGate">
   <article id="authCard" class="card">
@@ -178,6 +198,20 @@
 <div class="rw" style="margin-top:8px"><button id="btnVideos" onclick="openTracked('academy','VIDEO_HUB','hub_videos.html')">Hub Videos</button><button id="btnNeocities" onclick="openTracked('external','NEOCITIES_HUB','https://cpebru.neocities.org/cpebru_hub_index%20%283%29')">Neocities</button></div>
 <div class="rw" style="margin-top:8px"><button class="btn2" onclick="syncPixhare()">Importer CP PIXHARe</button></div>
 </article>
+<section id="rewardsSection" style="display:none">
+  <article class="card" style="padding:12px;margin-top:12px">
+    <button id="rewardsToggle" onclick="toggleRewardsList()">
+      🏆 Mes Récompenses <span>▼</span>
+    </button>
+    <div id="rewardsList"></div>
+    <div id="secretGameCard">
+      <div class="secret-title">🎮 Jeu Secret débloqué !</div>
+      <div class="secret-desc">Tu as débloqué <strong>"Les Chevaliers de la Justice"</strong> !<br>Tous les 500 XP, ton personnage devient plus puissant.<br><em>Progresse, jeune page !</em></div>
+      <a href="Chevaliers_Justice.html" target="_blank" class="btn2" style="display:inline-block;text-decoration:none;margin-top:4px">⚔️ Jouer maintenant</a>
+    </div>
+  </article>
+</section>
+
 <article class="card">
 <h3 style="color:#ffd700">Delegues</h3>
 <p class="hint" style="margin:0 0 8px">Formation, missions et ressources des delegues de classe.</p>
@@ -226,7 +260,7 @@
 <div class="grid3" style="margin-top:8px">
 <div class="card"><h3>CP / Academie</h3><div class="row"><label for="adCode">Code eleve</label><input id="adCode"></div><div class="row"><label for="adHub">Hub CP</label><select id="adHub"><option value="pixhare">PIXHARe</option><option value="psc1">PSC1</option><option value="sanctuaire">Sanctuaire</option><option value="loge">Loge</option><option value="autres">Autres</option></select></div><div class="row"><label for="adCp">Valeur</label><input id="adCp" type="number" min="0" step="1" value="1"></div><div class="rw"><button onclick="setCp()">Definir CP</button><button class="btn2" onclick="addCp()">Ajouter CP</button></div></div>
 <div class="card"><h3>Malus</h3><div class="row"><label for="malType">Regulation</label><select id="malType"></select></div><button class="btnBad" onclick="applyMalus()">Appliquer malus</button></div>
-<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button class="btn2" onclick="sbDiag()">&#128269; Diag Supabase</button><button onclick="(cur&&!isVisitorCode(cur)?sbPushPlayer(cur,true):Promise.resolve());sbPushGlobal(true)">&#128190; Sauvegarder maintenant</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
+<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
 </div>
 <h3 style="margin-top:10px">Missions Citoyennes (admin)</h3>
 <div id="missionAdmin" class="grid3"></div>
@@ -414,7 +448,7 @@ function renderProfile(){const c=document.getElementById('profile'),h=document.g
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=Object.keys(ADW).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
-function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();updateCodesInfo();updateVisitorUi();renderTutorial()}
+function refresh(){resetWeek();save();checkMilestones();renderRewardsSection();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();updateCodesInfo();updateVisitorUi();renderTutorial()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
@@ -460,9 +494,7 @@ async function loadDefaultCodes(showMsg){try{const res=await fetch(DEFAULT_CODES
 function importCodesFile(){if(!guardAdmin())return;const el=document.getElementById('codesFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseCodesText(rd.result||'');if(!rows.length){sm('aMsg','Aucune ligne code detectee.',false);return}setRegistry(rows,f.name);sm('aMsg',`Referentiel importe: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture impossible.',false);rd.readAsText(f)}
 function setAdults(rows,source){S.adults=(rows||[]).map(a=>({nom:demojibake(String(a.nom||'').trim()),prenom:demojibake(String(a.prenom||'').trim()),code_temoin:nCode(a.code_temoin||'')})).filter(a=>a.code_temoin);S.adults_source=String(source||'').trim();buildAdultMap();save();refresh()}
 function setParents(rows,source){S.parents=(rows||[]).map(p=>({nom:demojibake(String(p.nom||'').trim()),prenom:demojibake(String(p.prenom||'').trim()),code_joueur:nCode(p.code_joueur||''),code_public:nCode(p.code_public||'')||defaultPublicCode(p.code_joueur||'')})).filter(p=>p.code_joueur);S.parents_source=String(source||'').trim();buildParentMap();save();refresh()}
-async function loadDefaultAdults(showMsg){try{const res=await fetch(ADULT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseAdultsText(txt);if(!rows.length)throw new Error('empty');setAdults(rows,ADULT_DEFAULT_FILE);
-  const regRows=parseCodesText(txt);if(regRows.length){const existingCodes=new Set((S.registry||[]).map(r=>nCode(r.code_joueur||'')));const newRows=regRows.filter(r=>!existingCodes.has(nCode(r.code_joueur||'')));if(newRows.length){S.registry=[...(S.registry||[]),...newRows];buildRegistry();norm();}}
-  if(showMsg)sm('aMsg',`Adultes charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement adultes impossible. Importer manuellement.',false)}}
+async function loadDefaultAdults(showMsg){try{const res=await fetch(ADULT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseAdultsText(txt);if(!rows.length)throw new Error('empty');setAdults(rows,ADULT_DEFAULT_FILE);const regRows=parseCodesText(txt);if(regRows.length){const existingCodes=new Set((S.registry||[]).map(r=>nCode(r.code_joueur||'')));const newRows=regRows.filter(r=>!existingCodes.has(nCode(r.code_joueur||'')));if(newRows.length){S.registry=[...(S.registry||[]),...newRows];buildRegistry();norm();}}if(showMsg)sm('aMsg',`Adultes charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement adultes impossible. Importer manuellement.',false)}}
 function importAdultFile(){if(!guardAdmin())return;const el=document.getElementById('adultFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier adultes TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseAdultsText(rd.result||'');if(!rows.length){sm('aMsg','Aucun temoin adulte detecte.',false);return}setAdults(rows,f.name);sm('aMsg',`Temoins adultes importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture adultes impossible.',false);rd.readAsText(f)}
 async function loadDefaultParents(showMsg){try{const res=await fetch(PARENT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseCodesText(txt);if(!rows.length)throw new Error('empty');setParents(rows,PARENT_DEFAULT_FILE);if(showMsg)sm('aMsg',`Parents joueurs charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement parents impossible.',false)}}
 function importParentFile(){if(!guardAdmin())return;const el=document.getElementById('parentFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier parents TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseCodesText(rd.result||'');if(!rows.length){sm('aMsg','Aucun compte parent detecte.',false);return}setParents(rows,f.name);sm('aMsg',`Parents importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture parents impossible.',false);rd.readAsText(f)}
@@ -551,35 +583,9 @@ function getSbKey(){return String(localStorage.getItem(SB_PUBLISHABLE_KEY)||SB_K
 function isCloudPlayer(code){const c=nCode(code||'');return !!(c&&!isVisitorCode(c)&&c!=='ADMIN')}
 function initSupabase(){try{if(window.supabase&&typeof window.supabase.createClient==='function'&&getSbUrl()&&getSbKey()){sbClient=window.supabase.createClient(getSbUrl(),getSbKey())}else{sbClient=null}}catch(e){sbClient=null}updateSyncInfo()}
 function scheduleSbPush(){if(!sbClient)return;clearTimeout(sbPushTimer);sbPushTimer=setTimeout(()=>{sbPushCurrent(false)},900)}
-function startAutosave(){
-  setInterval(async()=>{
-    if(sessionStorage.getItem(SESSION_AUTH_KEY)!=='1')return;
-    const ts=new Date().toLocaleTimeString('fr-FR');
-    if(cur&&!isVisitorCode(cur)&&cur!=='ADMIN'){const ok=await sbPushPlayer(cur,false);if(ok)updateSyncInfo(`Autosave OK ${ts} | ${cur}`);}
-    if(sbClient)await sbPushGlobal(false);
-  },5*60*1000);
-}
+function startAutosave(){setInterval(async()=>{if(sessionStorage.getItem(SESSION_AUTH_KEY)!=="1")return;const ts=new Date().toLocaleTimeString("fr-FR");if(cur&&!isVisitorCode(cur)&&cur!=="ADMIN"){const ok=await sbPushPlayer(cur,false);if(ok)updateSyncInfo(`Autosave OK ${ts} | ${cur}`);}if(sbClient)await sbPushGlobal(false);},5*60*1000);}
 function scheduleSbGlobalPush(){if(!sbClient)return;clearTimeout(sbGlobalPushTimer);sbGlobalPushTimer=setTimeout(()=>{sbPushGlobal(false)},8000)}
-async function sbPullAllPlayers(showMsg){
-  if(!sbClient||sbBusyGlobalPull)return false;
-  sbBusyGlobalPull=true;
-  try{
-    const{data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at');
-    if(error)throw error;
-    if(!data||!data.length){sbOnline=true;updateSyncInfo(showMsg?'Cloud: aucun joueur en base':'');return true}
-    let changed=false;
-    data.forEach(row=>{
-      const code=nCode(row.player_id||'');
-      if(!code||isVisitorCode(code)||code==='ADMIN'||!row.full_state)return;
-      const existsLocally=!!(S.players&&S.players[code]&&S.players[code]._v2);
-      if(!existsLocally){S.players[code]=Object.assign(mkP(code),row.full_state,{code});changed=true;}
-      else{if(mergeCloudPlayer(code,row.full_state))changed=true;}
-    });
-    if(changed){norm();buildRegistry();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
-    sbOnline=true;updateSyncInfo(showMsg?`Cloud pull OK | ${data.length} joueurs charges`:'');return true;
-  }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}
-  finally{sbBusyGlobalPull=false}
-}
+async function sbPullAllPlayers(showMsg){if(!sbClient||sbBusyGlobalPull)return false;sbBusyGlobalPull=true;try{const{data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at');if(error)throw error;if(!data||!data.length){sbOnline=true;updateSyncInfo(showMsg?'Cloud: aucun joueur en base':'');return true}let changed=false;data.forEach(row=>{const code=nCode(row.player_id||'');if(!code||isVisitorCode(code)||code==='ADMIN'||!row.full_state)return;const existsLocally=!!(S.players&&S.players[code]&&S.players[code]._v2);if(!existsLocally){S.players[code]=Object.assign(mkP(code),row.full_state,{code});changed=true;}else{if(mergeCloudPlayer(code,row.full_state))changed=true;}});if(changed){norm();buildRegistry();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Cloud pull OK | ${data.length} joueurs charges`:'');return true;}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}finally{sbBusyGlobalPull=false}}
 
 async function sbPushGlobal(showMsg){
   if(!sbClient||sbBusyGlobalPush)return false;sbBusyGlobalPush=true;
@@ -592,22 +598,7 @@ async function sbPushGlobal(showMsg){
   finally{sbBusyGlobalPush=false}
 }
 
-async function sbDiag(){
-  const lines=['=== DIAGNOSTIC SUPABASE ==='];
-  lines.push('sbClient: '+(sbClient?'OK':'NULL'));
-  if(!sbClient){alert(lines.join('\n'));return}
-  try{
-    const{data,error}=await sbClient.from('pvs_sync').select('player_id,updated_at');
-    if(error)lines.push('ERREUR: '+error.message);
-    else{lines.push('Lignes pvs_sync: '+(data?data.length:0));if(data)data.forEach(r=>lines.push('  '+r.player_id));}
-  }catch(e){lines.push('EXCEPTION: '+e.message);}
-  lines.push('ADW (codes témoins): '+Object.keys(ADW).length);
-  lines.push('ADW_J (codes joueurs adultes): '+Object.keys(ADW_J).length);
-  if(Object.keys(ADW_J).length>0)Object.keys(ADW_J).slice(0,3).forEach(k=>lines.push('  ex: '+k));
-  lines.push('REG.j (élèves): '+Object.keys(REG.j||{}).length);
-  lines.push('Joueurs locaux: '+Object.keys(S.players||{}).length);
-  const msg=lines.join('\n');console.log(msg);alert(msg);
-}
+async function sbDiag(){const lines=["=== DIAGNOSTIC SUPABASE ==="];lines.push("sbClient: "+(sbClient?"OK":"NULL"));if(!sbClient){alert(lines.join("\n"));return}try{const{data,error}=await sbClient.from("pvs_sync").select("player_id,updated_at");if(error)lines.push("ERREUR: "+error.message);else{lines.push("Lignes pvs_sync: "+(data?data.length:0));if(data)data.forEach(r=>lines.push("  "+r.player_id));}}catch(e){lines.push("EXCEPTION: "+e.message);}lines.push("ADW (codes témoins): "+Object.keys(ADW).length);lines.push("ADW_J (codes joueurs adultes): "+Object.keys(ADW_J).length);if(Object.keys(ADW_J).length>0)Object.keys(ADW_J).slice(0,3).forEach(k=>lines.push("  ex: "+k));lines.push("REG.j (élèves): "+Object.keys(REG.j||{}).length);lines.push("Joueurs locaux: "+Object.keys(S.players||{}).length);const msg=lines.join("\n");console.log(msg);alert(msg);}
 async function sbPullGlobal(showMsg){
   if(!sbClient||sbBusyConfigPull)return false;sbBusyConfigPull=true;
   try{
@@ -623,18 +614,7 @@ async function sbPullGlobal(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
   finally{sbBusyConfigPull=false}
 }
-function mergeCloudPlayer(code,remote){
-  if(!remote||typeof remote!=='object')return false;
-  const local=gp(code);if(!local)return false;
-  let changed=false;
-  const cpKeys=['pixhare','psc1','sanctuaire','loge','autres'];
-  cpKeys.forEach(k=>{const rv=Number((remote.cp&&remote.cp[k])||0),lv=Number((local.cp&&local.cp[k])||0);if(rv>lv){local.cp[k]=rv;changed=true}});
-  ['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});
-  ['malusG','malusW'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});
-  const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;
-  if(rts>lts){if(remote.obj&&typeof remote.obj==='object'&&Object.keys(remote.obj).length)local.obj=remote.obj;if(remote.witness)local.witness=remote.witness;local.up=remote.up;changed=true;}
-  return changed;
-}
+function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;let changed=false;const cpKeys=['pixhare','psc1','sanctuaire','loge','autres'];cpKeys.forEach(k=>{const rv=Number((remote.cp&&remote.cp[k])||0),lv=Number((local.cp&&local.cp[k])||0);if(rv>lv){local.cp[k]=rv;changed=true}});['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});['malusG','malusW'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){if(remote.obj&&typeof remote.obj==='object'&&Object.keys(remote.obj).length)local.obj=remote.obj;if(remote.witness)local.witness=remote.witness;local.up=remote.up;changed=true;}return changed;}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
 async function sbPushPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPush)return false;const p=S.players[code];if(!p)return false;sbBusyPush=true;try{const payload={player_id:code,full_state:p,updated_at:new Date().toISOString()};const {error}=await sbClient.from('pvs_sync').upsert(payload,{onConflict:'player_id'});if(error)throw error;sbOnline=true;updateSyncInfo(showMsg?`Supabase push OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase push impossible.':'');return false}finally{sbBusyPush=false}}
 function sbPullCurrent(showMsg){const code=nCode(cur||'');if(!isCloudPlayer(code))return Promise.resolve(false);return sbPullPlayer(code,showMsg)}
@@ -649,35 +629,103 @@ window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()}
 window.addEventListener('focus',()=>{sbPullCurrent(false)});
 
 
-function skipIntro(){
-  const ov=document.getElementById('introOverlay');
-  const vid=document.getElementById('introVideo');
-  if(vid)vid.pause();
-  if(ov){
-    ov.classList.add('fade-out');
-    setTimeout(()=>{ov.style.display='none';},850);
-  }
+function skipIntro(){const ov=document.getElementById('introOverlay');const vid=document.getElementById('introVideo');if(vid)vid.pause();if(ov){ov.classList.add('fade-out');setTimeout(()=>{ov.style.display='none';},850);}}
+document.addEventListener('DOMContentLoaded',()=>{const vid=document.getElementById('introVideo');if(vid){vid.play().catch(()=>{const skip=document.getElementById('introSkip');if(skip)skip.textContent='▶ Lancer la vidéo';vid.addEventListener('click',()=>vid.play(),{once:true});});vid.addEventListener('ended',skipIntro);setTimeout(()=>{const ov=document.getElementById('introOverlay');if(ov&&!ov.classList.contains('fade-out')&&vid.readyState<2)skipIntro();},3000);}});
+
+
+// ══ SYSTÈME RÉCOMPENSES VIDÉO ══
+const MILESTONES=[
+  {xp:500,  file:'reward_apprenti.mp4',  title:'⚔️ L'Apprenti Chevalier', label:'L'Apprenti Chevalier',  sub:'Débloqué à 500 XP'},
+  {xp:1000, file:'reward_ecuyere.mp4',   title:'🛡️ La Jeune Écuyère',      label:'La Jeune Écuyère',       sub:'Débloqué à 1 000 XP'},
+  {xp:1500, file:'reward_chevalier.mp4', title:'⚔️ Le Jeune Chevalier',     label:'Le Jeune Chevalier',     sub:'Débloqué à 1 500 XP'},
+  {xp:2000, file:'reward_paladine.mp4',  title:'✨ La Paladine Rayonnante', label:'La Paladine Rayonnante', sub:'Débloqué à 2 000 XP'},
+];
+const SECRET_GAME={xp:500,file:'Chevaliers_Justice.html',title:'🎮 Les Chevaliers de la Justice'};
+const REWARD_SEEN_KEY='pvs_rewards_seen';
+
+function getSeenRewards(){try{return JSON.parse(localStorage.getItem(REWARD_SEEN_KEY)||'{}');}catch(e){return {};}}
+function markRewardSeen(k){const s=getSeenRewards();s[String(k)]=1;localStorage.setItem(REWARD_SEEN_KEY,JSON.stringify(s));}
+function isRewardSeen(k){return !!getSeenRewards()[String(k)];}
+
+let rewardQueue=[],rewardPlaying=false;
+
+function checkMilestones(){
+  if(!cur||isVisitorCode(cur)||cur==='ADMIN')return;
+  const p=gp(cur);if(!p)return;
+  const xpNow=xg(p);
+  MILESTONES.forEach(m=>{if(xpNow>=m.xp&&!isRewardSeen(m.xp))rewardQueue.push({type:'video',...m});});
+  if(xpNow>=SECRET_GAME.xp&&!isRewardSeen('game_secret'))rewardQueue.push({type:'game'});
+  if(!rewardPlaying)processRewardQueue();
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  const vid=document.getElementById('introVideo');
-  if(vid){
-    // Sur mobile, autoplay muted fonctionne — on ajoute un fallback
-    vid.play().catch(()=>{
-      // Si autoplay bloqué : afficher bouton play
-      const skip=document.getElementById('introSkip');
-      if(skip)skip.textContent='▶ Lancer la vidéo';
-      vid.addEventListener('click',()=>vid.play(),{once:true});
-    });
-    vid.addEventListener('ended',skipIntro);
-    // Sécurité : si la vidéo ne charge pas en 3s, passer automatiquement
-    setTimeout(()=>{
-      if(document.getElementById('introOverlay')&&
-         !document.getElementById('introOverlay').classList.contains('fade-out')){
-        if(vid.readyState<2)skipIntro();
-      }
-    },3000);
-  }
-});
+
+function processRewardQueue(){
+  if(!rewardQueue.length){rewardPlaying=false;renderRewardsSection();return;}
+  rewardPlaying=true;
+  const next=rewardQueue.shift();
+  if(next.type==='video')playRewardVideo(next);
+  else showSecretGameAlert();
+}
+
+function playRewardVideo(m){
+  markRewardSeen(m.xp);
+  const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc'),ttl=document.getElementById('rewardTitle');
+  if(!ov||!vid||!src)return processRewardQueue();
+  src.src=m.file;vid.load();ttl.textContent=m.title;
+  ov.classList.remove('fade-out');ov.classList.add('active');
+  vid.play().catch(()=>{});vid.onended=closeReward;
+}
+
+function closeReward(){
+  const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo');
+  if(vid){vid.pause();vid.currentTime=0;}
+  if(ov){ov.classList.add('fade-out');setTimeout(()=>{ov.classList.remove('active','fade-out');processRewardQueue();},850);}
+}
+
+function showSecretGameAlert(){
+  markRewardSeen('game_secret');
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`<div style="max-width:480px;width:100%;background:linear-gradient(135deg,#1a1a00,#2a2a00);border:2px solid #ffd700;border-radius:14px;padding:28px;text-align:center;box-shadow:0 0 40px #ffd70066">
+    <div style="font-size:2.5em;margin-bottom:12px">🎮</div>
+    <div style="color:#ffd700;font-family:Orbitron,monospace;font-size:1.1em;margin-bottom:16px">JEU SECRET DÉBLOQUÉ !</div>
+    <div style="font-size:0.9em;line-height:1.7;margin-bottom:20px">Tu as débloqué le jeu secret <strong>"Les Chevaliers de la Justice"</strong> !<br><br>Bravo ! Tous les 500 XP gagnés, ton personnage sera plus puissant !<br><br>🗡️ <em>Alors, progresse, jeune page !</em></div>
+    <button onclick="this.closest('div[style*=fixed]').remove();renderRewardsSection();processRewardQueue();" style="background:#ffd700;color:#000;border:none;padding:10px 28px;border-radius:20px;font-weight:bold;cursor:pointer;font-size:0.95em">⚔️ À l'aventure !</button>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+function replayReward(file,title){
+  const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc'),ttl=document.getElementById('rewardTitle');
+  if(!ov||!vid||!src)return;
+  src.src=file;vid.load();ttl.textContent=title;
+  ov.classList.remove('fade-out');ov.classList.add('active');
+  vid.play().catch(()=>{});vid.onended=closeReward;
+}
+
+function toggleRewardsList(){
+  const el=document.getElementById('rewardsList'),btn=document.getElementById('rewardsToggle');
+  if(!el||!btn)return;
+  el.classList.toggle('open');
+  btn.querySelector('span').textContent=el.classList.contains('open')?'▲':'▼';
+}
+
+function renderRewardsSection(){
+  const sec=document.getElementById('rewardsSection'),list=document.getElementById('rewardsList'),gameCard=document.getElementById('secretGameCard');
+  if(!sec||!list)return;
+  if(!cur||isVisitorCode(cur)){sec.style.display='none';return;}
+  sec.style.display='block';
+  const p=gp(cur);if(!p)return;
+  const xpNow=xg(p);
+  list.innerHTML='';
+  MILESTONES.forEach(m=>{
+    const unlocked=xpNow>=m.xp;
+    const div=document.createElement('div');
+    div.className='reward-item'+(unlocked?' unlocked':' locked');
+    div.innerHTML=`<span class="ri-icon">${unlocked?'🎬':'🔒'}</span><div class="ri-info"><div class="ri-title">${m.label}</div><div class="ri-sub">${m.sub}</div></div>${unlocked?`<button class="btn2" style="font-size:0.78em;padding:4px 10px" onclick="replayReward('${m.file}','${m.title}')">▶ Revoir</button>`:''}`;
+    list.appendChild(div);
+  });
+  if(gameCard){gameCard.classList.toggle('unlocked',xpNow>=SECRET_GAME.xp);}
+}
 
 </script>
 </body>
