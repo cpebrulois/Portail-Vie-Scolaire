@@ -484,7 +484,7 @@ fill();load();
 initAudio();
 if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm();updateCodesInfo()}
 if(!S.parents||!S.parents.length){await loadDefaultParents(false)}else{buildParentMap()}
-if(!S.adults||!S.adults.length){await loadDefaultAdults(false)}else{buildAdultMap()}
+await loadDefaultAdults(false);if(!S.adults||!S.adults.length){buildAdultMap()}
 await syncPing();
 initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
@@ -577,9 +577,11 @@ async function sbDiag(){
     if(error)lines.push('ERREUR: '+error.message);
     else{lines.push('Lignes pvs_sync: '+(data?data.length:0));if(data)data.forEach(r=>lines.push('  '+r.player_id));}
   }catch(e){lines.push('EXCEPTION: '+e.message);}
-  lines.push('ADW keys: '+Object.keys(ADW).length);
-  lines.push('ADW_J keys: '+Object.keys(ADW_J).length);
-  lines.push('REG.j keys: '+Object.keys(REG.j||{}).length);
+  lines.push('ADW (codes témoins): '+Object.keys(ADW).length);
+  lines.push('ADW_J (codes joueurs adultes): '+Object.keys(ADW_J).length);
+  if(Object.keys(ADW_J).length>0)Object.keys(ADW_J).slice(0,3).forEach(k=>lines.push('  ex: '+k));
+  lines.push('REG.j (élèves): '+Object.keys(REG.j||{}).length);
+  lines.push('sbBusyGlobalPull: '+sbBusyGlobalPull);
   lines.push('Joueurs locaux: '+Object.keys(S.players||{}).length);
   const msg=lines.join('\n');console.log(msg);alert(msg);
 }
