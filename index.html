@@ -552,6 +552,7 @@ async function sbPullAllPlayers(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}
   finally{sbBusyGlobalPull=false}
 }
+
 async function sbPushGlobal(showMsg){
   if(!sbClient||sbBusyGlobalPush)return false;sbBusyGlobalPush=true;
   try{
@@ -564,35 +565,22 @@ async function sbPushGlobal(showMsg){
 }
 
 async function sbDiag(){
-  const lines=[];
-  lines.push('=== DIAGNOSTIC SUPABASE ===');
-  lines.push('sbClient: '+(sbClient?'OK':'NULL - initSupabase a echoue'));
-  if(!sbClient){
-    lines.push('URL: '+getSbUrl());
-    lines.push('KEY: '+getSbKey().substring(0,20)+'...');
-    alert(lines.join('\n'));return;
-  }
+  const lines=['=== DIAGNOSTIC SUPABASE ==='];
+  lines.push('sbClient: '+(sbClient?'OK':'NULL'));
+  if(!sbClient){lines.push('URL: '+getSbUrl());alert(lines.join('\n'));return}
   lines.push('URL: '+getSbUrl());
   try{
-    const{data,error,count}=await sbClient.from('pvs_sync').select('player_id,updated_at',{count:'exact'});
-    if(error){lines.push('ERREUR SELECT: '+error.message+' | code: '+error.code);}
+    const{data,error}=await sbClient.from('pvs_sync').select('player_id,updated_at');
+    if(error){lines.push('ERREUR: '+error.message+' code:'+error.code);}
     else{
-      lines.push('Lignes visibles: '+(data?data.length:'null')+' (count: '+count+')');
-      if(data&&data.length){data.forEach(r=>lines.push('  - '+r.player_id+' | '+r.updated_at));}
-      else{lines.push('  -> TABLE VIDE ou RLS bloque tout');}
+      lines.push('Lignes pvs_sync visibles: '+(data?data.length:0));
+      if(data)data.forEach(r=>lines.push('  '+r.player_id));
     }
   }catch(e){lines.push('EXCEPTION: '+e.message);}
-  try{
-    const{data:d2,error:e2}=await sbClient.from('pvs_global_state').select('state_id,updated_at').eq('state_id','GLOBAL').maybeSingle();
-    if(e2)lines.push('pvs_global_state ERREUR: '+e2.message);
-    else lines.push('pvs_global_state: '+(d2?'OK updated '+d2.updated_at:'vide'));
-  }catch(e){lines.push('pvs_global_state EXCEPTION: '+e.message);}
   lines.push('sbBusyGlobalPull: '+sbBusyGlobalPull);
   lines.push('sbBusyConfigPull: '+sbBusyConfigPull);
-  lines.push('sbOnline: '+sbOnline);
-  const msg=lines.join('\n');
-  console.log(msg);
-  alert(msg);
+  lines.push('Joueurs locaux: '+Object.keys(S.players||{}).length);
+  const msg=lines.join('\n');console.log(msg);alert(msg);
 }
 async function sbPullGlobal(showMsg){
   if(!sbClient||sbBusyConfigPull)return false;sbBusyConfigPull=true;
@@ -609,7 +597,36 @@ async function sbPullGlobal(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
   finally{sbBusyConfigPull=false}
 }
-function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){S.players[code]=Object.assign(mkP(code),remote,{code});return true}return false}
+function mergeCloudPlayer(code,remote){
+  if(!remote||typeof remote!=='object')return false;
+  const local=gp(code);if(!local)return false;
+  let changed=false;
+  // CP : toujours prendre le maximum (les points ne font que monter)
+  const cpKeys=['pixhare','psc1','sanctuaire','loge','autres'];
+  cpKeys.forEach(k=>{
+    const rv=Number((remote.cp&&remote.cp[k])||0),lv=Number((local.cp&&local.cp[k])||0);
+    if(rv>lv){local.cp[k]=rv;changed=true}
+  });
+  // Compteurs sociaux / bonus : prendre le max aussi
+  ['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived'].forEach(k=>{
+    const rv=Number(remote[k]||0),lv=Number(local[k]||0);
+    if(rv>lv){local[k]=rv;changed=true}
+  });
+  // Malus : prendre le max (sécurité)
+  ['malusG','malusW'].forEach(k=>{
+    const rv=Number(remote[k]||0),lv=Number(local[k]||0);
+    if(rv>lv){local[k]=rv;changed=true}
+  });
+  // Autres champs : seulement si cloud plus récent
+  const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;
+  if(rts>lts){
+    if(remote.obj&&typeof remote.obj==='object'&&Object.keys(remote.obj).length)local.obj=remote.obj;
+    if(remote.witness)local.witness=remote.witness;
+    local.up=remote.up;
+    changed=true;
+  }
+  return changed;
+}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
 async function sbPushPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPush)return false;const p=S.players[code];if(!p)return false;sbBusyPush=true;try{const payload={player_id:code,full_state:p,updated_at:new Date().toISOString()};const {error}=await sbClient.from('pvs_sync').upsert(payload,{onConflict:'player_id'});if(error)throw error;sbOnline=true;updateSyncInfo(showMsg?`Supabase push OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase push impossible.':'');return false}finally{sbBusyPush=false}}
 function sbPullCurrent(showMsg){const code=nCode(cur||'');if(!isCloudPlayer(code))return Promise.resolve(false);return sbPullPlayer(code,showMsg)}
