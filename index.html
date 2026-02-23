@@ -32,8 +32,32 @@
 .frontonPrimary{font-family:Orbitron,monospace;letter-spacing:.4px}
 .frontonMain{transform:translateY(-2px);box-shadow:0 12px 24px #00000025}
 @media (max-width:980px){.frontonGrid{grid-template-columns:1fr}.frontonMain{transform:none}}
+
+#introOverlay{
+  position:fixed;inset:0;z-index:9999;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 0.8s ease;
+}
+#introOverlay.fade-out{opacity:0;pointer-events:none}
+#introVideo{
+  width:100%;height:100%;object-fit:cover;
+}
+#introSkip{
+  position:absolute;bottom:32px;right:32px;
+  background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);
+  color:#fff;padding:8px 20px;border-radius:20px;cursor:pointer;
+  font-size:0.85em;letter-spacing:1px;backdrop-filter:blur(4px);
+  transition:background 0.2s;z-index:10000;
+}
+#introSkip:hover{background:rgba(255,255,255,0.25)}
 </style></head>
 <body>
+<div id="introOverlay">
+  <video id="introVideo" autoplay playsinline muted>
+    <source src="Les Chevaliers du Collège Château Rance.mp4" type="video/mp4">
+  </video>
+  <button id="introSkip" onclick="skipIntro()">Passer ▶</button>
+</div>
 <div id="authGate">
   <article id="authCard" class="card">
     <div class="tag">AUTHENTIFICATION</div>
@@ -581,7 +605,6 @@ async function sbDiag(){
   lines.push('ADW_J (codes joueurs adultes): '+Object.keys(ADW_J).length);
   if(Object.keys(ADW_J).length>0)Object.keys(ADW_J).slice(0,3).forEach(k=>lines.push('  ex: '+k));
   lines.push('REG.j (élèves): '+Object.keys(REG.j||{}).length);
-  lines.push('sbBusyGlobalPull: '+sbBusyGlobalPull);
   lines.push('Joueurs locaux: '+Object.keys(S.players||{}).length);
   const msg=lines.join('\n');console.log(msg);alert(msg);
 }
@@ -624,6 +647,38 @@ function processBridge(){try{const a=JSON.parse(localStorage.getItem(BRIDGE_KEY)
 window.addEventListener('DOMContentLoaded',()=>{initSupabase();startAutosave();if(cur)sbPullCurrent(false)});
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
 window.addEventListener('focus',()=>{sbPullCurrent(false)});
+
+
+function skipIntro(){
+  const ov=document.getElementById('introOverlay');
+  const vid=document.getElementById('introVideo');
+  if(vid)vid.pause();
+  if(ov){
+    ov.classList.add('fade-out');
+    setTimeout(()=>{ov.style.display='none';},850);
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const vid=document.getElementById('introVideo');
+  if(vid){
+    // Sur mobile, autoplay muted fonctionne — on ajoute un fallback
+    vid.play().catch(()=>{
+      // Si autoplay bloqué : afficher bouton play
+      const skip=document.getElementById('introSkip');
+      if(skip)skip.textContent='▶ Lancer la vidéo';
+      vid.addEventListener('click',()=>vid.play(),{once:true});
+    });
+    vid.addEventListener('ended',skipIntro);
+    // Sécurité : si la vidéo ne charge pas en 3s, passer automatiquement
+    setTimeout(()=>{
+      if(document.getElementById('introOverlay')&&
+         !document.getElementById('introOverlay').classList.contains('fade-out')){
+        if(vid.readyState<2)skipIntro();
+      }
+    },3000);
+  }
+});
+
 </script>
 </body>
 </html>
