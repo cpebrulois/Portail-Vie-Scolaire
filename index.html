@@ -202,7 +202,7 @@
 <div class="grid3" style="margin-top:8px">
 <div class="card"><h3>CP / Academie</h3><div class="row"><label for="adCode">Code eleve</label><input id="adCode"></div><div class="row"><label for="adHub">Hub CP</label><select id="adHub"><option value="pixhare">PIXHARe</option><option value="psc1">PSC1</option><option value="sanctuaire">Sanctuaire</option><option value="loge">Loge</option><option value="autres">Autres</option></select></div><div class="row"><label for="adCp">Valeur</label><input id="adCp" type="number" min="0" step="1" value="1"></div><div class="rw"><button onclick="setCp()">Definir CP</button><button class="btn2" onclick="addCp()">Ajouter CP</button></div></div>
 <div class="card"><h3>Malus</h3><div class="row"><label for="malType">Regulation</label><select id="malType"></select></div><button class="btnBad" onclick="applyMalus()">Appliquer malus</button></div>
-<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button class="btn2" onclick="sbDiag()">&#128269; Diag Supabase</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
+<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button class="btn2" onclick="sbDiag()">&#128269; Diag Supabase</button><button onclick="sbPushPlayer(cur,true)||sbPushGlobal(true)">&#128190; Sauvegarder maintenant</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
 </div>
 <h3 style="margin-top:10px">Missions Citoyennes (admin)</h3>
 <div id="missionAdmin" class="grid3"></div>
@@ -525,6 +525,21 @@ function getSbKey(){return String(localStorage.getItem(SB_PUBLISHABLE_KEY)||SB_K
 function isCloudPlayer(code){const c=nCode(code||'');return !!(c&&!isVisitorCode(c)&&c!=='ADMIN')}
 function initSupabase(){try{if(window.supabase&&typeof window.supabase.createClient==='function'&&getSbUrl()&&getSbKey()){sbClient=window.supabase.createClient(getSbUrl(),getSbKey())}else{sbClient=null}}catch(e){sbClient=null}updateSyncInfo()}
 function scheduleSbPush(){if(!sbClient)return;clearTimeout(sbPushTimer);sbPushTimer=setTimeout(()=>{sbPushCurrent(false)},900)}
+// ── AUTOSAVE toutes les 5 minutes ──────────────────────────────
+function startAutosave(){
+  setInterval(async()=>{
+    // Ne tourne que si une session est active
+    if(sessionStorage.getItem(SESSION_AUTH_KEY)!=='1')return;
+    const ts=new Date().toLocaleTimeString('fr-FR');
+    // Push joueur courant
+    if(cur&&!isVisitorCode(cur)&&cur!=='ADMIN'){
+      const ok=await sbPushPlayer(cur,false);
+      if(ok)updateSyncInfo(`Autosave OK ${ts} | joueur ${cur}`);
+    }
+    // Push config globale (citizen_lists, neg_reports, registry)
+    if(sbClient)await sbPushGlobal(false);
+  }, 5*60*1000); // 5 minutes
+}
 function scheduleSbGlobalPush(){if(!sbClient)return;clearTimeout(sbGlobalPushTimer);sbGlobalPushTimer=setTimeout(()=>{sbPushGlobal(false)},8000)}
 async function sbPullAllPlayers(showMsg){
   if(!sbClient||sbBusyGlobalPull)return false;
@@ -568,17 +583,12 @@ async function sbDiag(){
   const lines=['=== DIAGNOSTIC SUPABASE ==='];
   lines.push('sbClient: '+(sbClient?'OK':'NULL'));
   if(!sbClient){lines.push('URL: '+getSbUrl());alert(lines.join('\n'));return}
-  lines.push('URL: '+getSbUrl());
   try{
     const{data,error}=await sbClient.from('pvs_sync').select('player_id,updated_at');
-    if(error){lines.push('ERREUR: '+error.message+' code:'+error.code);}
-    else{
-      lines.push('Lignes pvs_sync visibles: '+(data?data.length:0));
-      if(data)data.forEach(r=>lines.push('  '+r.player_id));
-    }
+    if(error)lines.push('ERREUR: '+error.message+' code:'+error.code);
+    else{lines.push('Lignes pvs_sync: '+(data?data.length:0));if(data)data.forEach(r=>lines.push('  '+r.player_id));}
   }catch(e){lines.push('EXCEPTION: '+e.message);}
   lines.push('sbBusyGlobalPull: '+sbBusyGlobalPull);
-  lines.push('sbBusyConfigPull: '+sbBusyConfigPull);
   lines.push('Joueurs locaux: '+Object.keys(S.players||{}).length);
   const msg=lines.join('\n');console.log(msg);alert(msg);
 }
@@ -601,30 +611,12 @@ function mergeCloudPlayer(code,remote){
   if(!remote||typeof remote!=='object')return false;
   const local=gp(code);if(!local)return false;
   let changed=false;
-  // CP : toujours prendre le maximum (les points ne font que monter)
   const cpKeys=['pixhare','psc1','sanctuaire','loge','autres'];
-  cpKeys.forEach(k=>{
-    const rv=Number((remote.cp&&remote.cp[k])||0),lv=Number((local.cp&&local.cp[k])||0);
-    if(rv>lv){local.cp[k]=rv;changed=true}
-  });
-  // Compteurs sociaux / bonus : prendre le max aussi
-  ['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived'].forEach(k=>{
-    const rv=Number(remote[k]||0),lv=Number(local[k]||0);
-    if(rv>lv){local[k]=rv;changed=true}
-  });
-  // Malus : prendre le max (sécurité)
-  ['malusG','malusW'].forEach(k=>{
-    const rv=Number(remote[k]||0),lv=Number(local[k]||0);
-    if(rv>lv){local[k]=rv;changed=true}
-  });
-  // Autres champs : seulement si cloud plus récent
+  cpKeys.forEach(k=>{const rv=Number((remote.cp&&remote.cp[k])||0),lv=Number((local.cp&&local.cp[k])||0);if(rv>lv){local.cp[k]=rv;changed=true}});
+  ['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});
+  ['malusG','malusW'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});
   const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;
-  if(rts>lts){
-    if(remote.obj&&typeof remote.obj==='object'&&Object.keys(remote.obj).length)local.obj=remote.obj;
-    if(remote.witness)local.witness=remote.witness;
-    local.up=remote.up;
-    changed=true;
-  }
+  if(rts>lts){if(remote.obj&&typeof remote.obj==='object'&&Object.keys(remote.obj).length)local.obj=remote.obj;if(remote.witness)local.witness=remote.witness;local.up=remote.up;changed=true;}
   return changed;
 }
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
@@ -636,7 +628,7 @@ function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)r
 function save(push=true){localStorage.setItem(KEY,JSON.stringify(S));if(push&&sessionStorage.getItem(SESSION_AUTH_KEY)==='1'){scheduleSyncPush();scheduleSbPush();scheduleSbGlobalPush()}}
 function processBridge(){try{const a=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]'),b=JSON.parse(localStorage.getItem(BRIDGE_ALT_KEY)||'[]');const arr=[...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])];if(!arr.length)return;let changed=false;arr.forEach(ev=>{if(bridgeApply(ev))changed=true});localStorage.setItem(BRIDGE_KEY,'[]');localStorage.setItem(BRIDGE_ALT_KEY,'[]');if(changed){save();refresh()}}catch(e){}}
 
-window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurrent(false)});
+window.addEventListener('DOMContentLoaded',()=>{initSupabase();startAutosave();if(cur)sbPullCurrent(false)});
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
 window.addEventListener('focus',()=>{sbPullCurrent(false)});
 </script>
