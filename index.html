@@ -202,7 +202,7 @@
 <div class="grid3" style="margin-top:8px">
 <div class="card"><h3>CP / Academie</h3><div class="row"><label for="adCode">Code eleve</label><input id="adCode"></div><div class="row"><label for="adHub">Hub CP</label><select id="adHub"><option value="pixhare">PIXHARe</option><option value="psc1">PSC1</option><option value="sanctuaire">Sanctuaire</option><option value="loge">Loge</option><option value="autres">Autres</option></select></div><div class="row"><label for="adCp">Valeur</label><input id="adCp" type="number" min="0" step="1" value="1"></div><div class="rw"><button onclick="setCp()">Definir CP</button><button class="btn2" onclick="addCp()">Ajouter CP</button></div></div>
 <div class="card"><h3>Malus</h3><div class="row"><label for="malType">Regulation</label><select id="malType"></select></div><button class="btnBad" onclick="applyMalus()">Appliquer malus</button></div>
-<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullGlobal(true)">&#9729; Cloud pull</button><button onclick="sbPushGlobal(true)">&#9729; Cloud push</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
+<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
 </div>
 <h3 style="margin-top:10px">Missions Citoyennes (admin)</h3>
 <div id="missionAdmin" class="grid3"></div>
@@ -357,7 +357,7 @@ function onAudioError(){
 }
 function initAudio(){const a=getAudioEl(),vol=document.getElementById('audioVol');if(!a||!vol)return;const vv=clampN(Number(localStorage.getItem(AUDIO_VOL_KEY)||35),0,100);vol.value=String(vv);a.volume=vv/100;vol.addEventListener('input',()=>{const v=clampN(Number(vol.value||35),0,100);a.volume=v/100;localStorage.setItem(AUDIO_VOL_KEY,String(v))});a.addEventListener('play',updateAudioUi);a.addEventListener('pause',updateAudioUi);a.addEventListener('error',onAudioError);audioRetries=0;setAudioSource(Number(localStorage.getItem(AUDIO_SOURCE_KEY)||0),false);updateAudioUi();if(localStorage.getItem(AUDIO_PREF_KEY)==='1')playAudio()}
 function getSyncUrl(){return String(localStorage.getItem(SYNC_URL_KEY)||DEFAULT_SYNC_URL).trim().replace(/\/+$/,'')}
-function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)return;const sbSt=sbClient?(sbOnline?'connecte':'hors ligne'):'non configure';if(msg){e.textContent=`${msg} | Supabase: ${sbSt}`;return}e.textContent=`Sync serveur: ${syncOnline?'connecte':'hors ligne'} | rev: ${Number(syncRev||0)} | Supabase: ${sbSt} | URL: ${getSyncUrl()}`}
+function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)return;if(msg){e.textContent=msg;return}e.textContent=`Sync serveur: ${syncOnline?'connecte':'hors ligne'} | rev: ${Number(syncRev||0)} | URL: ${getSyncUrl()}`}
 async function syncFetch(path,options){const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),2200);try{const res=await fetch(`${getSyncUrl()}${path}`,Object.assign({mode:'cors',cache:'no-store',signal:ctrl.signal},options||{}));clearTimeout(t);return res}catch(e){clearTimeout(t);throw e}}
 function scheduleSyncPush(){if(syncMutePush)return;clearTimeout(syncPushTimer);syncPushTimer=setTimeout(()=>{syncPush(false)},550)}
 async function syncPing(){try{const res=await syncFetch('/api/ping');if(!res.ok)throw new Error('http');const j=await res.json();if(j&&j.ok){syncOnline=true;if(Number(j.rev||0)>syncRev){syncRev=Number(j.rev||0);localStorage.setItem(SYNC_REV_KEY,String(syncRev))}updateSyncInfo();return true}}catch(e){syncOnline=false;updateSyncInfo();return false}return false}
@@ -398,12 +398,12 @@ function loginPlayer(){cm('loginMsg');const c=nCode((document.getElementById('au
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save();refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle()}
 else{if(hasRefCodes()&&!isKnownPlayerCode(c)){sm('authMsg','Code joueur absent du referentiel officiel.',false);return}gp(c);cur=c;isVisitor=false;localStorage.setItem(ACTIVE_PLAYER_KEY,c);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(c,'LOGIN','SUPERHUB',0);closeAuthGate();save();refresh();sm('loginMsg',`Connexion active: ${c}`,true)}
-syncPull(false);sbPullGlobal(false);sbPullCurrent(false);
+syncPull(false);sbPullCurrent(false);
 if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
 else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
 }
-function loginAdmin(){cm('loginMsg');const a=document.getElementById('authAdmin');const pass=String((a||{}).value||'');if(pass!==ADMIN_PASS){sm('authMsg','Identifiant admin invalide.',false);return}cur='';isVisitor=false;adminOn=true;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.setItem(SESSION_AUTH_KEY,'1');sessionStorage.setItem(ADMIN_SESSION_KEY,'1');if(a)a.value='';closeAuthGate();save();refresh();sm('loginMsg','Mode admin actif.',true);syncPull(false);sbPullGlobal(true)}
+function loginAdmin(){cm('loginMsg');const a=document.getElementById('authAdmin');const pass=String((a||{}).value||'');if(pass!==ADMIN_PASS){sm('authMsg','Identifiant admin invalide.',false);return}cur='';isVisitor=false;adminOn=true;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.setItem(SESSION_AUTH_KEY,'1');sessionStorage.setItem(ADMIN_SESSION_KEY,'1');if(a)a.value='';closeAuthGate();save();refresh();sm('loginMsg','Mode admin actif.',true);syncPull(false)}
 function logoutPlayer(){cur='';isVisitor=false;adminOn=false;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);cm('loginMsg');closeVisitorArticle();closeTutorial();renderProfile();updateVisitorUi();openAuthGate('Session verrouillee. Identifie-toi pour continuer.')}
 function guardPlayerBackup(){if(!cur||!S.players[cur]||isVisitor){sm('pbMsg','Connexion joueur requise (mode visiteur exclu).',false);return false}cm('pbMsg');return true}
 function getPlayerRef(code){const c=nCode(code||'');if(!c)return null;return ((S.registry||[]).find(r=>nCode(r.code_joueur||'')===c)||null)}
@@ -484,7 +484,7 @@ if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm()
 if(!S.parents||!S.parents.length){await loadDefaultParents(false)}else{buildParentMap()}
 if(!S.adults||!S.adults.length){await loadDefaultAdults(false)}else{buildAdultMap()}
 await syncPing();
-await syncPull(false);sbPullGlobal(false);sbPullCurrent(false);
+initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
 const remembered=nCode(localStorage.getItem(ACTIVE_PLAYER_KEY)||'');
 const authInput=document.getElementById('authCode');
@@ -510,7 +510,7 @@ window.addEventListener('resize',()=>renderTutorial());
 window.addEventListener('scroll',()=>renderTutorial(),{passive:true});
 });
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_KEY)processBridge()});
-window.addEventListener('focus',()=>{processBridge();syncPull(false)});
+window.addEventListener('focus',()=>{processBridge();syncPull(false);sbPullAllPlayers(false)});
 
 // --- Supabase hybrid sync (cloud + local) ---
 const BRIDGE_ALT_KEY='SUPER_HUB_BRIDGE';
@@ -518,13 +518,60 @@ const SB_URL_DEFAULT='https://zmeicqjkylxdaldiovxg.supabase.co';
 const SB_KEY_DEFAULT='sb_publishable_fvY1_6Pu7lMTNNBeBvI7Dw_jXLjv4oH';
 const SB_URL_KEY='pvs_supabase_url';
 const SB_PUBLISHABLE_KEY='pvs_supabase_publishable_key';
-var sbClient=null,sbOnline=false,sbPushTimer=null,sbBusyPush=false,sbBusyPull=false,sbGlobalPushTimer=null,sbBusyGlobalPush=false,sbBusyGlobalPull=false,sbLastGlobalPush=0;
+var sbClient=null,sbOnline=false,sbPushTimer=null,sbBusyPush=false,sbBusyPull=false,sbGlobalPushTimer=null,sbBusyGlobalPush=false,sbBusyGlobalPull=false;
 
 function getSbUrl(){return String(localStorage.getItem(SB_URL_KEY)||SB_URL_DEFAULT).trim().replace(/\/+$/,'')}
 function getSbKey(){return String(localStorage.getItem(SB_PUBLISHABLE_KEY)||SB_KEY_DEFAULT).trim()}
 function isCloudPlayer(code){const c=nCode(code||'');return !!(c&&!isVisitorCode(c)&&c!=='ADMIN')}
 function initSupabase(){try{if(window.supabase&&typeof window.supabase.createClient==='function'&&getSbUrl()&&getSbKey()){sbClient=window.supabase.createClient(getSbUrl(),getSbKey())}else{sbClient=null}}catch(e){sbClient=null}updateSyncInfo()}
-function scheduleSbPush(){if(!sbClient)return;clearTimeout(sbPushTimer);sbPushTimer=setTimeout(()=>{sbPushCurrent(false)},900)}function scheduleSbGlobalPush(){if(!sbClient)return;const now=Date.now();if(now-sbLastGlobalPush<30000)return;clearTimeout(sbGlobalPushTimer);sbGlobalPushTimer=setTimeout(()=>{sbPushGlobal(false)},8000)}async function sbPushGlobal(showMsg){if(!sbClient||sbBusyGlobalPush)return false;sbBusyGlobalPush=true;try{const payload={state_id:'GLOBAL',full_state:{week:S.week,players:S.players,citizen_lists:S.citizen_lists,neg_reports:(S.neg_reports||[]).slice(0,200),registry:S.registry,registry_source:S.registry_source,adults:S.adults,adults_source:S.adults_source,parents:S.parents,parents_source:S.parents_source,logs:(S.logs||[]).slice(0,200)},updated_at:new Date().toISOString()};const{error}=await sbClient.from('pvs_global_state').upsert(payload,{onConflict:'state_id'});if(error)throw error;sbLastGlobalPush=Date.now();sbOnline=true;updateSyncInfo(showMsg?'Cloud push OK | Etat global sauvegarde':''  );return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud push impossible: '+e.message:'');return false}finally{sbBusyGlobalPush=false}}async function sbPullGlobal(showMsg){if(!sbClient||sbBusyGlobalPull)return false;sbBusyGlobalPull=true;try{const{data,error}=await sbClient.from('pvs_global_state').select('full_state,updated_at').eq('state_id','GLOBAL').maybeSingle();if(error)throw error;if(!data||!data.full_state){sbOnline=true;updateSyncInfo(showMsg?'Cloud: aucun etat global':''  );return true}const remote=data.full_state;let changed=false;Object.keys(remote.players||{}).forEach(code=>{if(!isVisitorCode(code)&&code!=='ADMIN'){if(mergeCloudPlayer(code,remote.players[code]))changed=true}});if(remote.citizen_lists&&typeof remote.citizen_lists==='object'){ensureCitizenLists();Object.keys(remote.citizen_lists).forEach(k=>{if(Array.isArray(remote.citizen_lists[k])){const merged=[...new Set([...(S.citizen_lists[k]||[]),...remote.citizen_lists[k].map(nCode).filter(Boolean)])];if(merged.length!==(S.citizen_lists[k]||[]).length){S.citizen_lists[k]=merged;changed=true}}})}if(Array.isArray(remote.neg_reports)&&remote.neg_reports.length){const ids=new Set((S.neg_reports||[]).map(r=>r.id));remote.neg_reports.forEach(r=>{if(r.id&&!ids.has(r.id)){(S.neg_reports=S.neg_reports||[]).push(r);changed=true}})}if((!S.registry||!S.registry.length)&&Array.isArray(remote.registry)&&remote.registry.length){S.registry=remote.registry;S.registry_source=remote.registry_source||'cloud';changed=true}if((!S.adults||!S.adults.length)&&Array.isArray(remote.adults)&&remote.adults.length){S.adults=remote.adults;S.adults_source=remote.adults_source||'cloud';changed=true}if((!S.parents||!S.parents.length)&&Array.isArray(remote.parents)&&remote.parents.length){S.parents=remote.parents;S.parents_source=remote.parents_source||'cloud';changed=true}if(changed){buildRegistry();norm();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}const nb=Object.keys(remote.players||{}).length;sbOnline=true;updateSyncInfo(showMsg?`Cloud pull OK | ${nb} joueurs recuperes`:''  );return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}finally{sbBusyGlobalPull=false}}
+function scheduleSbPush(){if(!sbClient)return;clearTimeout(sbPushTimer);sbPushTimer=setTimeout(()=>{sbPushCurrent(false)},900)}
+function scheduleSbGlobalPush(){if(!sbClient)return;clearTimeout(sbGlobalPushTimer);sbGlobalPushTimer=setTimeout(()=>{sbPushGlobal(false)},8000)}
+async function sbPullAllPlayers(showMsg){
+  if(!sbClient||sbBusyGlobalPull)return false;
+  sbBusyGlobalPull=true;
+  try{
+    const{data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at');
+    if(error)throw error;
+    if(!data||!data.length){sbOnline=true;updateSyncInfo(showMsg?'Cloud: aucun joueur en base':'');return true}
+    let changed=false;
+    data.forEach(row=>{
+      const code=nCode(row.player_id||'');
+      if(code&&!isVisitorCode(code)&&code!=='ADMIN'&&row.full_state){
+        if(mergeCloudPlayer(code,row.full_state))changed=true;
+      }
+    });
+    if(changed){norm();buildRegistry();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
+    sbOnline=true;
+    updateSyncInfo(showMsg?`Cloud pull OK | ${data.length} joueurs charges`:'');
+    return true;
+  }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}
+  finally{sbBusyGlobalPull=false}
+}
+async function sbPushGlobal(showMsg){
+  if(!sbClient||sbBusyGlobalPush)return false;sbBusyGlobalPush=true;
+  try{
+    const payload={state_id:'GLOBAL',full_state:{week:S.week,citizen_lists:S.citizen_lists,neg_reports:(S.neg_reports||[]).slice(0,200),registry:S.registry,registry_source:S.registry_source,adults:S.adults,adults_source:S.adults_source,parents:S.parents,parents_source:S.parents_source},updated_at:new Date().toISOString()};
+    const{error}=await sbClient.from('pvs_global_state').upsert(payload,{onConflict:'state_id'});
+    if(error)throw error;
+    sbOnline=true;updateSyncInfo(showMsg?'Cloud push global OK':'');return true;
+  }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud push impossible: '+e.message:'');return false}
+  finally{sbBusyGlobalPush=false}
+}
+async function sbPullGlobal(showMsg){
+  if(!sbClient||sbBusyGlobalPull)return false;sbBusyGlobalPull=true;
+  try{
+    const{data,error}=await sbClient.from('pvs_global_state').select('full_state,updated_at').eq('state_id','GLOBAL').maybeSingle();
+    if(error)throw error;
+    if(!data||!data.full_state){sbOnline=true;return true}
+    const remote=data.full_state;let changed=false;
+    if(remote.citizen_lists&&typeof remote.citizen_lists==='object'){ensureCitizenLists();Object.keys(remote.citizen_lists).forEach(k=>{if(Array.isArray(remote.citizen_lists[k])){const merged=[...new Set([...(S.citizen_lists[k]||[]),...remote.citizen_lists[k].map(nCode).filter(Boolean)])];if(merged.length!==(S.citizen_lists[k]||[]).length){S.citizen_lists[k]=merged;changed=true}}})}
+    if(Array.isArray(remote.neg_reports)&&remote.neg_reports.length){const ids=new Set((S.neg_reports||[]).map(r=>r.id));remote.neg_reports.forEach(r=>{if(r.id&&!ids.has(r.id)){(S.neg_reports=S.neg_reports||[]).push(r);changed=true}})}
+    if((!S.registry||!S.registry.length)&&Array.isArray(remote.registry)&&remote.registry.length){S.registry=remote.registry;S.registry_source=remote.registry_source||'cloud';changed=true}
+    if(changed){buildRegistry();norm();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
+    sbOnline=true;updateSyncInfo(showMsg?'Cloud pull config OK':'');return true;
+  }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
+  finally{sbBusyGlobalPull=false}
+}
 function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){S.players[code]=Object.assign(mkP(code),remote,{code});return true}return false}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
 async function sbPushPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPush)return false;const p=S.players[code];if(!p)return false;sbBusyPush=true;try{const payload={player_id:code,full_state:p,updated_at:new Date().toISOString()};const {error}=await sbClient.from('pvs_sync').upsert(payload,{onConflict:'player_id'});if(error)throw error;sbOnline=true;updateSyncInfo(showMsg?`Supabase push OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase push impossible.':'');return false}finally{sbBusyPush=false}}
@@ -535,9 +582,9 @@ function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)r
 function save(push=true){localStorage.setItem(KEY,JSON.stringify(S));if(push&&sessionStorage.getItem(SESSION_AUTH_KEY)==='1'){scheduleSyncPush();scheduleSbPush();scheduleSbGlobalPush()}}
 function processBridge(){try{const a=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]'),b=JSON.parse(localStorage.getItem(BRIDGE_ALT_KEY)||'[]');const arr=[...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])];if(!arr.length)return;let changed=false;arr.forEach(ev=>{if(bridgeApply(ev))changed=true});localStorage.setItem(BRIDGE_KEY,'[]');localStorage.setItem(BRIDGE_ALT_KEY,'[]');if(changed){save();refresh()}}catch(e){}}
 
-window.addEventListener('DOMContentLoaded',()=>{initSupabase();sbPullGlobal(false);if(cur)sbPullCurrent(false)});
+window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurrent(false)});
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
-window.addEventListener('focus',()=>{sbPullCurrent(false)});
+window.addEventListener('focus',()=>{sbPullAllPlayers(false);sbPullCurrent(false)});
 </script>
 </body>
 </html>
