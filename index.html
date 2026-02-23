@@ -202,7 +202,7 @@
 <div class="grid3" style="margin-top:8px">
 <div class="card"><h3>CP / Academie</h3><div class="row"><label for="adCode">Code eleve</label><input id="adCode"></div><div class="row"><label for="adHub">Hub CP</label><select id="adHub"><option value="pixhare">PIXHARe</option><option value="psc1">PSC1</option><option value="sanctuaire">Sanctuaire</option><option value="loge">Loge</option><option value="autres">Autres</option></select></div><div class="row"><label for="adCp">Valeur</label><input id="adCp" type="number" min="0" step="1" value="1"></div><div class="rw"><button onclick="setCp()">Definir CP</button><button class="btn2" onclick="addCp()">Ajouter CP</button></div></div>
 <div class="card"><h3>Malus</h3><div class="row"><label for="malType">Regulation</label><select id="malType"></select></div><button class="btnBad" onclick="applyMalus()">Appliquer malus</button></div>
-<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
+<div class="card"><h3>Sauvegardes</h3><div class="row"><label for="jsonBox">JSON</label><textarea id="jsonBox"></textarea></div><div class="rw"><button class="btn2" onclick="exportData()">Exporter JSON</button><button class="btn2" onclick="importData()">Importer JSON</button><button class="btn2" onclick="downloadCsv()">Telecharger CSV</button><button class="btn2" onclick="downloadLogsCsv()">Telecharger logs CSV</button><button class="btn2" onclick="syncPull(true)">Sync pull</button><button class="btn2" onclick="syncPush(true)">Sync push</button><button onclick="sbPullAllPlayers(true)">&#9729; Pull tous les joueurs</button><button class="btn2" onclick="sbDiag()">&#128269; Diag Supabase</button><button onclick="sbPushGlobal(true)">&#9729; Push config</button></div><div class="row"><label for="stateFile">Snapshot global (.json)</label><input id="stateFile" type="file" accept=".json,application/json"></div><div class="rw"><button class="btn2" onclick="downloadStateFile()">Telecharger snapshot global</button><button class="btn2" onclick="importStateFile()">Importer snapshot global</button></div></div>
 </div>
 <h3 style="margin-top:10px">Missions Citoyennes (admin)</h3>
 <div id="missionAdmin" class="grid3"></div>
@@ -518,7 +518,7 @@ const SB_URL_DEFAULT='https://zmeicqjkylxdaldiovxg.supabase.co';
 const SB_KEY_DEFAULT='sb_publishable_fvY1_6Pu7lMTNNBeBvI7Dw_jXLjv4oH';
 const SB_URL_KEY='pvs_supabase_url';
 const SB_PUBLISHABLE_KEY='pvs_supabase_publishable_key';
-var sbClient=null,sbOnline=false,sbPushTimer=null,sbBusyPush=false,sbBusyPull=false,sbGlobalPushTimer=null,sbBusyGlobalPush=false,sbBusyGlobalPull=false;
+var sbClient=null,sbOnline=false,sbPushTimer=null,sbBusyPush=false,sbBusyPull=false,sbGlobalPushTimer=null,sbBusyGlobalPush=false,sbBusyGlobalPull=false,sbBusyConfigPull=false;
 
 function getSbUrl(){return String(localStorage.getItem(SB_URL_KEY)||SB_URL_DEFAULT).trim().replace(/\/+$/,'')}
 function getSbKey(){return String(localStorage.getItem(SB_PUBLISHABLE_KEY)||SB_KEY_DEFAULT).trim()}
@@ -537,13 +537,11 @@ async function sbPullAllPlayers(showMsg){
     data.forEach(row=>{
       const code=nCode(row.player_id||'');
       if(!code||isVisitorCode(code)||code==='ADMIN'||!row.full_state)return;
-      const existsLocally=!!(S.players&&S.players[code]);
+      const existsLocally=!!(S.players&&S.players[code]&&S.players[code]._v2);
       if(!existsLocally){
-        // Joueur absent localement : import direct sans vérif timestamp
         S.players[code]=Object.assign(mkP(code),row.full_state,{code});
         changed=true;
       } else {
-        // Joueur connu : merge classique par timestamp
         if(mergeCloudPlayer(code,row.full_state))changed=true;
       }
     });
@@ -564,8 +562,40 @@ async function sbPushGlobal(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud push impossible: '+e.message:'');return false}
   finally{sbBusyGlobalPush=false}
 }
+
+async function sbDiag(){
+  const lines=[];
+  lines.push('=== DIAGNOSTIC SUPABASE ===');
+  lines.push('sbClient: '+(sbClient?'OK':'NULL - initSupabase a echoue'));
+  if(!sbClient){
+    lines.push('URL: '+getSbUrl());
+    lines.push('KEY: '+getSbKey().substring(0,20)+'...');
+    alert(lines.join('\n'));return;
+  }
+  lines.push('URL: '+getSbUrl());
+  try{
+    const{data,error,count}=await sbClient.from('pvs_sync').select('player_id,updated_at',{count:'exact'});
+    if(error){lines.push('ERREUR SELECT: '+error.message+' | code: '+error.code);}
+    else{
+      lines.push('Lignes visibles: '+(data?data.length:'null')+' (count: '+count+')');
+      if(data&&data.length){data.forEach(r=>lines.push('  - '+r.player_id+' | '+r.updated_at));}
+      else{lines.push('  -> TABLE VIDE ou RLS bloque tout');}
+    }
+  }catch(e){lines.push('EXCEPTION: '+e.message);}
+  try{
+    const{data:d2,error:e2}=await sbClient.from('pvs_global_state').select('state_id,updated_at').eq('state_id','GLOBAL').maybeSingle();
+    if(e2)lines.push('pvs_global_state ERREUR: '+e2.message);
+    else lines.push('pvs_global_state: '+(d2?'OK updated '+d2.updated_at:'vide'));
+  }catch(e){lines.push('pvs_global_state EXCEPTION: '+e.message);}
+  lines.push('sbBusyGlobalPull: '+sbBusyGlobalPull);
+  lines.push('sbBusyConfigPull: '+sbBusyConfigPull);
+  lines.push('sbOnline: '+sbOnline);
+  const msg=lines.join('\n');
+  console.log(msg);
+  alert(msg);
+}
 async function sbPullGlobal(showMsg){
-  if(!sbClient||sbBusyGlobalPull)return false;sbBusyGlobalPull=true;
+  if(!sbClient||sbBusyConfigPull)return false;sbBusyConfigPull=true;
   try{
     const{data,error}=await sbClient.from('pvs_global_state').select('full_state,updated_at').eq('state_id','GLOBAL').maybeSingle();
     if(error)throw error;
@@ -577,7 +607,7 @@ async function sbPullGlobal(showMsg){
     if(changed){buildRegistry();norm();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
     sbOnline=true;updateSyncInfo(showMsg?'Cloud pull config OK':'');return true;
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
-  finally{sbBusyGlobalPull=false}
+  finally{sbBusyConfigPull=false}
 }
 function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){S.players[code]=Object.assign(mkP(code),remote,{code});return true}return false}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
@@ -591,7 +621,7 @@ function processBridge(){try{const a=JSON.parse(localStorage.getItem(BRIDGE_KEY)
 
 window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurrent(false)});
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
-window.addEventListener('focus',()=>{sbPullAllPlayers(false);sbPullCurrent(false)});
+window.addEventListener('focus',()=>{sbPullCurrent(false)});
 </script>
 </body>
 </html>
