@@ -536,7 +536,14 @@ async function sbPullAllPlayers(showMsg){
     let changed=false;
     data.forEach(row=>{
       const code=nCode(row.player_id||'');
-      if(code&&!isVisitorCode(code)&&code!=='ADMIN'&&row.full_state){
+      if(!code||isVisitorCode(code)||code==='ADMIN'||!row.full_state)return;
+      const existsLocally=!!(S.players&&S.players[code]);
+      if(!existsLocally){
+        // Joueur absent localement : import direct sans vérif timestamp
+        S.players[code]=Object.assign(mkP(code),row.full_state,{code});
+        changed=true;
+      } else {
+        // Joueur connu : merge classique par timestamp
         if(mergeCloudPlayer(code,row.full_state))changed=true;
       }
     });
