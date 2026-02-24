@@ -952,7 +952,13 @@ function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)r
 async function syncFetch(path,options){const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),2200);try{const res=await fetch(`${getSyncUrl()}${path}`,Object.assign({mode:'cors',cache:'no-store',signal:ctrl.signal},options||{}));clearTimeout(t);return res}catch(e){clearTimeout(t);throw e}}
 function scheduleSyncPush(){if(syncMutePush)return;clearTimeout(syncPushTimer);syncPushTimer=setTimeout(()=>{syncPush(false)},550)}
 async function syncPing(){try{const res=await syncFetch('/api/ping');if(!res.ok)throw new Error('http');const j=await res.json();if(j&&j.ok){syncOnline=true;if(Number(j.rev||0)>syncRev){syncRev=Number(j.rev||0);localStorage.setItem(SYNC_REV_KEY,String(syncRev))}updateSyncInfo();return true}}catch(e){syncOnline=false;updateSyncInfo();return false}return false}
-async function syncPull(showMsg){try{const res=await syncFetch('/api/state');if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok&&j.state&&typeof j.state==='object'))throw new Error('bad');syncOnline=true;const rev=Number(j.rev||0);if(rev>Number(syncRev||0)){syncRev=rev;localStorage.setItem(SYNC_REV_KEY,String(syncRev));syncMutePush=true;try{S=j.state;buildRegistry();norm();buildAdultMap();resetWeek();localStorage.setItem(KEY,JSON.stringify(S));refresh()}finally{syncMutePush=false}}updateSyncInfo(showMsg?`Sync pull OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync pull impossible (serveur hors ligne).':'');return false}}
+async function syncPull(showMsg){try{const res=await syncFetch('/api/state');if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok&&j.state&&typeof j.state==='object'))throw new Error('bad');syncOnline=true;const rev=Number(j.rev||0);if(rev>Number(syncRev||0)){syncRev=rev;localStorage.setItem(SYNC_REV_KEY,String(syncRev));syncMutePush=true;try{S=j.state;buildRegistry();norm();resetWeek();localStorage.setItem(KEY,JSON.stringify(S));
+          // Si les adults du state serveur sont en ancien format, les recharger
+          if(!S.adults||!S.adults.length||!S.adults.some(a=>a.code_joueur)){
+            loadDefaultAdults(false).then(()=>{refresh()});
+          } else {
+            buildAdultMap();refresh();
+          }}finally{syncMutePush=false}}updateSyncInfo(showMsg?`Sync pull OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync pull impossible (serveur hors ligne).':'');return false}}
 async function syncPush(showMsg){if(syncMutePush)return false;try{const payload={state:S,client:cur||'ANON',source:'index.html',sent_at:new Date().toISOString(),base_rev:Number(syncRev||0)};const res=await syncFetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok))throw new Error('bad');syncOnline=true;syncRev=Number(j.rev||syncRev||0);localStorage.setItem(SYNC_REV_KEY,String(syncRev));updateSyncInfo(showMsg?`Sync push OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync push impossible (serveur hors ligne).':'');return false}}
 function isVisitorCode(code){return nCode(code)===VISITOR_CODE}
 function hasRefCodes(){return Object.keys(REG.j).length>0||Object.keys(ADW).length>0||Object.keys(PRW).length>0}
@@ -1445,7 +1451,7 @@ fill();load();
 initAudio();
 if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm();updateCodesInfo()}
 if(!S.parents||!S.parents.length){await loadDefaultParents(false)}else{buildParentMap()}
-if(!S.adults||!S.adults.length||!S.adults.some(a=>a.code_joueur)){await loadDefaultAdults(false)}else{buildAdultMap()}
+await loadDefaultAdults(false);  // Toujours recharger pour garantir le format code_joueur
 await syncPing();
 initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
