@@ -1189,6 +1189,8 @@ function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';re
 async function loginPlayer(){cm('loginMsg');const c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save(false);refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle();return}
+// Garantir que ADWP est à jour avant la vérification (protection race condition)
+if(S.adults&&S.adults.length)buildAdultMap();
 if(hasRefCodes()&&!isKnownPlayerCode(c)){sm('authMsg','Code joueur absent du referentiel officiel.',false);return}
 // Créer profil local marqué comme "à jour: jamais" pour que le cloud gagne toujours
 const pLocal=gp(c);pLocal.up=new Date(0).toISOString();
@@ -1207,7 +1209,7 @@ try{
 // Mettre à jour le timestamp maintenant que le pull est fait
 if(S.players[c])S.players[c].up=new Date().toISOString();
 save(false); // persist local seulement, pas de push immédiat
-sm('loginMsg',`Connexion active: \${c}`,true);
+sm('loginMsg','Connexion active: '+c,true);
 if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
 else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
