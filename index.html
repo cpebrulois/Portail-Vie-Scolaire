@@ -879,9 +879,14 @@ function buildAdultMap(){
   ADW={};ADWP={};
   (S.adults||[]).forEach(a=>{
     const ct=nCode(a.code_temoin||'');
-    const cj=nCode(a.code_joueur||ct||'');
-    if(ct)ADW[ct]=cj||ct;       // code_temoin → code_joueur (pour resolveWitness)
-    if(cj)ADWP[cj]=ct||cj;     // code_joueur → code_temoin (pour login)
+    const cj=nCode(a.code_joueur||'');
+    if(ct&&cj&&ct!==cj){
+      ADW[ct]=cj;    // temoin → joueur (resolveWitness)
+      ADWP[cj]=ct;   // joueur → temoin (login)
+    } else if(ct){
+      ADW[ct]=ct;    // ancien format : code unique
+      ADWP[ct]=ct;
+    }
   });
 }
 function buildParentMap(){PRW={};PRP={};(S.parents||[]).forEach(p=>{const cj=nCode(p.code_joueur||'');const cp=nCode(p.code_public||'')||defaultPublicCode(cj);if(!cj)return;PRW[cj]={nom:p.nom||'',prenom:p.prenom||'',code_joueur:cj,code_public:cp};if(cp)PRP[cp]=cj})}
@@ -1440,7 +1445,7 @@ fill();load();
 initAudio();
 if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm();updateCodesInfo()}
 if(!S.parents||!S.parents.length){await loadDefaultParents(false)}else{buildParentMap()}
-if(!S.adults||!S.adults.length){await loadDefaultAdults(false)}else{buildAdultMap()}
+if(!S.adults||!S.adults.length||!S.adults.some(a=>a.code_joueur)){await loadDefaultAdults(false)}else{buildAdultMap()}
 await syncPing();
 initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
@@ -1525,6 +1530,7 @@ async function sbPullGlobal(showMsg){
     if(remote.citizen_lists&&typeof remote.citizen_lists==='object'){ensureCitizenLists();Object.keys(remote.citizen_lists).forEach(k=>{if(Array.isArray(remote.citizen_lists[k])){const merged=[...new Set([...(S.citizen_lists[k]||[]),...remote.citizen_lists[k].map(nCode).filter(Boolean)])];if(merged.length!==(S.citizen_lists[k]||[]).length){S.citizen_lists[k]=merged;changed=true}}})}
     if(Array.isArray(remote.neg_reports)&&remote.neg_reports.length){const ids=new Set((S.neg_reports||[]).map(r=>r.id));remote.neg_reports.forEach(r=>{if(r.id&&!ids.has(r.id)){(S.neg_reports=S.neg_reports||[]).push(r);changed=true}})}
     if((!S.registry||!S.registry.length)&&Array.isArray(remote.registry)&&remote.registry.length){S.registry=remote.registry;S.registry_source=remote.registry_source||'cloud';changed=true}
+    if(Array.isArray(remote.adults)&&remote.adults.length&&(!S.adults||!S.adults.length||!S.adults.some(a=>a.code_joueur))){S.adults=remote.adults;S.adults_source=remote.adults_source||'cloud';changed=true}
     if(changed){buildRegistry();norm();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
     sbOnline=true;updateSyncInfo(showMsg?'Cloud pull config OK':'');return true;
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
