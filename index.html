@@ -955,7 +955,7 @@ async function syncPing(){try{const res=await syncFetch('/api/ping');if(!res.ok)
 async function syncPull(showMsg){try{const res=await syncFetch('/api/state');if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok&&j.state&&typeof j.state==='object'))throw new Error('bad');syncOnline=true;const rev=Number(j.rev||0);if(rev>Number(syncRev||0)){syncRev=rev;localStorage.setItem(SYNC_REV_KEY,String(syncRev));syncMutePush=true;try{S=j.state;buildRegistry();norm();resetWeek();localStorage.setItem(KEY,JSON.stringify(S));
           // Si les adults du state serveur sont en ancien format, les recharger
           if(!S.adults||!S.adults.length||!S.adults.some(a=>a.code_joueur)){
-            loadDefaultAdults(false).then(()=>{refresh()});
+            await loadDefaultAdults(false);refresh();
           } else {
             buildAdultMap();refresh();
           }}finally{syncMutePush=false}}updateSyncInfo(showMsg?`Sync pull OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync pull impossible (serveur hors ligne).':'');return false}}
@@ -1204,8 +1204,10 @@ try{
   await sbPullCurrent(false);
 }catch(e){}
 // Maintenant sauvegarder (push Supabase) avec les vraies données cloud mergées
+// Mettre à jour le timestamp maintenant que le pull est fait
+if(S.players[c])S.players[c].up=new Date().toISOString();
 save(false); // persist local seulement, pas de push immédiat
-sm('loginMsg',`Connexion active: ${c}`,true);
+sm('loginMsg',`Connexion active: \${c}`,true);
 if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
 else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
@@ -1455,6 +1457,7 @@ await loadDefaultAdults(false);  // Toujours recharger pour garantir le format c
 await syncPing();
 initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
+if(S.adults&&S.adults.length)buildAdultMap(); // Garantir ADWP à jour
 const remembered=nCode(localStorage.getItem(ACTIVE_PLAYER_KEY)||'');
 const authInput=document.getElementById('authCode');
 const authAdmin=document.getElementById('authAdmin');
