@@ -29,6 +29,30 @@
 .acad-filters select{background:#1a1a2e;border:1px solid #333;color:#ccc;padding:4px 8px;border-radius:4px;font-size:0.78em}
 @media(max-width:500px){.acad-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+/* ── Intro vidéo ── */
+#introOverlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;}
+#introOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.85s ease}
+#introVideo{width:100%;height:100%;object-fit:cover;pointer-events:none}
+#introSkip{position:absolute;bottom:28px;right:28px;background:rgba(0,0,0,0.75);border:2px solid rgba(255,255,255,0.6);color:#fff;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:0.85em;z-index:10001;pointer-events:all;}
+/* ── Récompenses vidéo ── */
+#rewardOverlay{position:fixed;inset:0;z-index:9998;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;}
+#rewardOverlay.active{display:flex}
+#rewardOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.7s ease}
+#rewardVideo{width:100%;height:100%;object-fit:cover}
+#rewardSkip{position:absolute;bottom:28px;right:28px;background:rgba(0,0,0,0.7);border:2px solid rgba(255,255,255,0.5);color:#fff;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:0.85em;z-index:10000;}
+#rewardTitle{position:absolute;top:28px;left:50%;transform:translateX(-50%);color:#ffd700;font-size:1.3em;font-weight:700;text-shadow:0 0 20px rgba(255,215,0,0.8);text-align:center;white-space:nowrap}
+/* ── Section récompenses ── */
+#rewardsSection{margin-top:10px}
+#rewardsToggle{background:none;border:1px solid #ffd70055;color:#ffd700;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85em;margin-bottom:8px}
+.reward-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.04)}
+.reward-item.ri-locked{opacity:0.45}
+.ri-icon{font-size:1.4em}
+.ri-info{flex:1}
+.ri-title{font-weight:600;font-size:0.9em}
+.ri-sub{font-size:0.75em;color:#aaa}
+.btn2{background:linear-gradient(135deg,#ffd700,#ff8c00);border:none;color:#000;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8em;font-weight:700}
+
 </style>
 <style>
 #authGate{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 15% 15%,#00d4ff22,transparent 35%),radial-gradient(circle at 85% 85%,#ffd70022,transparent 40%),linear-gradient(135deg,#02060f,#101f3f)}
@@ -56,6 +80,21 @@
 @media (max-width:980px){.frontonGrid{grid-template-columns:1fr}.frontonMain{transform:none}}
 </style></head>
 <body>
+<div id="introOverlay">
+  <video id="introVideo" autoplay playsinline muted>
+    <source src="Les Chevaliers du Collège Château Rance.mp4" type="video/mp4">
+  </video>
+  <button id="introSkip" onclick="skipIntro()">Passer ▶</button>
+</div>
+
+<div id="rewardOverlay">
+  <video id="rewardVideo" playsinline>
+    <source id="rewardVideoSrc" src="" type="video/mp4">
+  </video>
+  <div id="rewardTitle"></div>
+  <button id="rewardSkip" onclick="closeReward()">Passer ▶</button>
+</div>
+
 <div id="authGate">
   <article id="authCard" class="card">
     <div class="tag">AUTHENTIFICATION</div>
@@ -172,7 +211,7 @@
 <article class="card">
 <h3 style="color:#ffd700">pHARe</h3>
 <p class="hint" style="margin:0 0 8px">Anti-harcelement & securite scolaire.</p>
-<div class="rw"><button id="btnPixhare" onclick="openTracked('academy','PIXHARE_HUB','https://aurelienbrulois23-boop.github.io/Portail-Vie-Scolaire/index_PIXHARe.html')">PIXHARe pHARe</button></div>
+<div class="rw"><button id="btnPixhare" onclick="openTracked('academy','PIXHARE_HUB','index_PIXHARe.html')">PIXHARe pHARe</button></div>
 <div class="rw" style="margin-top:8px"><button id="btnVideos" onclick="openTracked('academy','VIDEO_HUB','hub_videos.html')">Hub Videos</button><button id="btnNeocities" onclick="openTracked('external','NEOCITIES_HUB','https://cpebru.neocities.org/cpebru_hub_index%20%283%29')">Neocities</button></div>
 <div class="rw" style="margin-top:8px"><button class="btn2" onclick="syncPixhare()">Importer CP PIXHARe</button></div>
 </article>
@@ -190,7 +229,7 @@
 <article class="card">
 <h3 style="color:#ffd700">Cadets de la Securite</h3>
 <p class="hint" style="margin:0 0 8px">Formation securite civile et citoyennete active.</p>
-<div class="rw"><button class="btn2" onclick="openTracked('academy','CADETS_HUB','hub_en_construction.html')">Hub Cadets (bientot)</button><button id="btnPsc1" onclick="openTracked('academy','PSC1_HUB','https://aurelienbrulois23-boop.github.io/Portail-Vie-Scolaire/index_PSC1.html')">PIX_Like PSC1</button></div>
+<div class="rw"><button class="btn2" onclick="openTracked('academy','CADETS_HUB','hub_en_construction.html')">Hub Cadets (bientot)</button><button id="btnPsc1" onclick="openTracked('academy','PSC1_HUB','index_PSC1.html')">PIX_Like PSC1</button></div>
 <div class="rw" style="margin-top:8px"><button class="btn2" onclick="syncPsc1()">Importer CP PSC1</button></div>
 <div style="margin-top:10px"><p class="hint" style="margin:0 0 6px;font-weight:700">Video de formation :</p>
 <div style="display:flex;flex-direction:column;gap:6px">
@@ -937,7 +976,140 @@ document.getElementById('pCp').textContent=cpTotal(p);const nbAcad=acadDoneCount
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=Object.keys(ADW).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
-function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial()}
+
+// ══════════════════════════════════════════════════
+// INTRO VIDÉO
+// ══════════════════════════════════════════════════
+var _introSkipped=false;
+function skipIntro(){
+  if(_introSkipped)return;_introSkipped=true;
+  var ov=document.getElementById('introOverlay');
+  var vid=document.getElementById('introVideo');
+  if(vid){try{vid.pause();}catch(e){}}
+  if(ov){ov.classList.add('fade-out');setTimeout(function(){ov.style.display='none';},850);}
+}
+(function(){
+  var _abs=setTimeout(skipIntro,9000);
+  document.addEventListener('DOMContentLoaded',function(){
+    var vid=document.getElementById('introVideo');
+    if(!vid){clearTimeout(_abs);skipIntro();return;}
+    var ov=document.getElementById('introOverlay');
+    if(ov)ov.addEventListener('click',function(){clearTimeout(_abs);skipIntro();});
+    vid.addEventListener('ended',function(){clearTimeout(_abs);skipIntro();});
+    vid.addEventListener('error',function(){clearTimeout(_abs);skipIntro();});
+    setTimeout(function(){if(!_introSkipped&&vid.readyState<1){clearTimeout(_abs);skipIntro();}},3000);
+    var p=vid.play();
+    if(p&&typeof p.catch==='function'){
+      p.catch(function(){
+        var btn=document.getElementById('introSkip');
+        if(btn)btn.textContent='▶ Appuie pour continuer';
+        setTimeout(function(){if(!_introSkipped)skipIntro();},5000);
+      });
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════
+// RÉCOMPENSES VIDÉO + JEU SECRET
+// ══════════════════════════════════════════════════
+const MILESTONES=[
+  {xp:500,  file:'reward_apprenti.mp4',  title:'⚔️ L\'Apprenti Chevalier', label:'L\'Apprenti Chevalier',   sub:'Débloqué à 500 XP'},
+  {xp:1000, file:'reward_ecuyere.mp4',   title:'🛡️ La Jeune Écuyère',      label:'La Jeune Écuyère',        sub:'Débloqué à 1 000 XP'},
+  {xp:1500, file:'reward_chevalier.mp4', title:'⚔️ Le Jeune Chevalier',    label:'Le Jeune Chevalier',      sub:'Débloqué à 1 500 XP'},
+  {xp:2000, file:'reward_paladine.mp4',  title:'✨ La Paladine Rayonnante', label:'La Paladine Rayonnante',  sub:'Débloqué à 2 000 XP'},
+];
+const SECRET_GAME={xp:500,file:'Chevaliers_Justice.html',title:'🎮 Les Chevaliers de la Justice',
+  msg:'🏆 Tu as débloqué le jeu secret <strong>«&nbsp;Les Chevaliers de la Justice&nbsp;»</strong> !<br><br>Tous les 500 XP gagnés, ton personnage devient plus puissant !<br><br>⚔️ <em>Alors, progresse, jeune page !</em>'};
+const REWARD_SEEN_KEY='pvs_rewards_seen';
+function getSeenRewards(){try{return JSON.parse(localStorage.getItem(REWARD_SEEN_KEY)||'{}');}catch(e){return {};}}
+function markRewardSeen(k){const s=getSeenRewards();s[String(k)]=1;localStorage.setItem(REWARD_SEEN_KEY,JSON.stringify(s));}
+function isRewardSeen(k){return !!getSeenRewards()[String(k)];}
+var rewardQueue=[],rewardPlaying=false;
+function checkMilestones(){
+  if(!cur||isVisitorCode(cur)||cur==='ADMIN')return;
+  var p=gp(cur);if(!p)return;
+  var xpNow=xg(p);
+  MILESTONES.forEach(function(m){
+    if(xpNow>=m.xp&&!isRewardSeen(m.xp)){
+      markRewardSeen(m.xp);
+      rewardQueue.push(m);
+    }
+  });
+  if(SECRET_GAME&&xpNow>=SECRET_GAME.xp&&!isRewardSeen('game')){
+    markRewardSeen('game');
+    rewardQueue.push({isGame:true,...SECRET_GAME});
+  }
+  if(!rewardPlaying)playNextReward();
+  renderRewardsSection();
+}
+function playNextReward(){
+  if(!rewardQueue.length){rewardPlaying=false;return;}
+  rewardPlaying=true;
+  var m=rewardQueue.shift();
+  if(m.isGame){
+    var ov=document.getElementById('rewardOverlay');
+    var t=document.getElementById('rewardTitle');
+    if(t)t.innerHTML=m.title+'<br><small style="font-size:0.6em;color:#fff">'+m.msg+'</small>';
+    if(ov){ov.classList.add('active');}
+    setTimeout(function(){closeReward();},8000);
+    return;
+  }
+  playRewardVideo(m.file,m.title);
+}
+function playRewardVideo(file,title){
+  var ov=document.getElementById('rewardOverlay');
+  var src=document.getElementById('rewardVideoSrc');
+  var vid=document.getElementById('rewardVideo');
+  var t=document.getElementById('rewardTitle');
+  if(!ov||!src||!vid)return;
+  src.src=file;vid.load();
+  if(t)t.textContent=title||'';
+  ov.classList.add('active');
+  vid.play().catch(function(){});
+  vid.addEventListener('ended',function(){closeReward();},{once:true});
+}
+function closeReward(){
+  var ov=document.getElementById('rewardOverlay');
+  var vid=document.getElementById('rewardVideo');
+  if(vid){try{vid.pause();}catch(e){}}
+  if(ov){ov.classList.add('fade-out');setTimeout(function(){ov.classList.remove('active','fade-out');},700);}
+  rewardPlaying=false;
+  setTimeout(playNextReward,800);
+}
+function renderRewardsSection(){
+  var sec=document.getElementById('rewardsSection');
+  var list=document.getElementById('rewardsList');
+  var gameCard=document.getElementById('secretGameCard');
+  if(!sec||!list)return;
+  if(!cur||isVisitorCode(cur)){sec.style.display='none';return;}
+  sec.style.display='block';
+  var p=gp(cur);if(!p)return;
+  var xpNow=xg(p);
+  list.innerHTML='';
+  MILESTONES.forEach(function(m){
+    var unlocked=xpNow>=m.xp;
+    var div=document.createElement('div');
+    div.className='reward-item'+(unlocked?'':' ri-locked');
+    div.innerHTML='<span class="ri-icon">'+(unlocked?'🎬':'🔒')+'</span>'+
+      '<div class="ri-info"><div class="ri-title">'+m.label+'</div>'+
+      '<div class="ri-sub">'+(unlocked?m.sub:'??? · '+m.sub)+'</div></div>'+
+      (unlocked?'<button class="btn2" onclick="playRewardVideo(\''+m.file+'\',\''+m.title+'\')">▶ Revoir</button>':'');
+    list.appendChild(div);
+  });
+  if(gameCard){
+    if(xpNow>=SECRET_GAME.xp){
+      gameCard.style.display='block';
+      gameCard.innerHTML='<div style="background:linear-gradient(135deg,#1a1a2e,#2d1b69);border:2px solid #ffd700;border-radius:12px;padding:16px;text-align:center">'+
+        '<div style="font-size:1.2em;font-weight:700;color:#ffd700;margin-bottom:8px">🎮 Jeu Secret Débloqué !</div>'+
+        '<a href="Chevaliers_Justice.html?player='+encodeURIComponent(cur)+'" target="_blank" style="display:inline-block;margin-top:6px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;padding:10px 24px;border-radius:10px;font-weight:700;text-decoration:none">⚔️ Jouer aux Chevaliers de la Justice</a></div>';
+    } else {
+      gameCard.style.display='block';
+      gameCard.innerHTML='<div style="opacity:0.4;text-align:center;padding:10px;font-size:0.85em">🔒 Jeu secret — débloqué à '+SECRET_GAME.xp+' XP</div>';
+    }
+  }
+}
+
+function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();renderRewardsSection();checkMilestones();updateCodesInfo();updateVisitorUi();renderTutorial()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
@@ -1133,6 +1305,16 @@ window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurr
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
 window.addEventListener('focus',()=>{sbPullAllPlayers(false);sbPullCurrent(false)});
 </script>
+
+<!-- ══════════════════════════ Récompenses ══ -->
+<section id="rewardsSection" style="display:none">
+  <div class="card">
+    <button id="rewardsToggle" onclick="var l=document.getElementById('rewardsList');l.style.display=l.style.display==='none'?'block':'none'">🏆 Mes Récompenses &amp; Jeu Secret</button>
+    <div id="rewardsList" style="margin-top:8px"></div>
+    <div id="secretGameCard" style="margin-top:10px"></div>
+  </div>
+</section>
+
 </body>
 </html>
 
