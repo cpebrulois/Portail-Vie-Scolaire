@@ -29,6 +29,38 @@
 .acad-filters select{background:#1a1a2e;border:1px solid #333;color:#ccc;padding:4px 8px;border-radius:4px;font-size:0.78em}
 @media(max-width:500px){.acad-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+/* ─── Intro vidéo ─────────────────────────────── */
+#introOverlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center}
+#introOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.85s ease}
+#introVideo{width:100%;height:100%;object-fit:cover}
+#introSkip{position:absolute;bottom:28px;right:28px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);color:#fff;padding:8px 18px;border-radius:20px;cursor:pointer;font-size:0.82em;letter-spacing:1px;backdrop-filter:blur(4px);z-index:10001;transition:background 0.2s}
+#introSkip:hover{background:rgba(255,255,255,0.3)}
+/* ─── Récompenses vidéo ───────────────────────── */
+#rewardOverlay{position:fixed;inset:0;z-index:9998;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center}
+#rewardOverlay.active{display:flex}
+#rewardOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.8s ease}
+#rewardVideo{width:100%;height:100%;object-fit:cover}
+#rewardSkip{position:absolute;bottom:32px;right:32px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:8px 20px;border-radius:20px;cursor:pointer;font-size:0.85em;letter-spacing:1px;backdrop-filter:blur(4px);transition:background 0.2s}
+#rewardSkip:hover{background:rgba(255,255,255,0.3)}
+#rewardTitle{position:absolute;top:32px;left:50%;transform:translateX(-50%);color:#ffd700;font-family:Orbitron,sans-serif;font-size:1.3em;text-shadow:0 0 20px #ffd70088;white-space:nowrap}
+#rewardsSection{margin-top:10px}
+#rewardsToggle{background:none;border:1px solid #ffd70055;color:#ffd700;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:0.85em;letter-spacing:1px;transition:background 0.2s;width:100%;text-align:left}
+#rewardsToggle:hover{background:rgba(255,215,0,0.08)}
+#rewardsList{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+#rewardsList.open{max-height:600px}
+.reward-item{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.reward-item.ri-locked{opacity:0.45}
+.ri-icon{font-size:1.6em;min-width:32px;text-align:center}
+.ri-info{flex:1}
+.ri-title{font-size:0.85em;font-weight:600;color:#e8e8e8}
+.ri-sub{font-size:0.72em;color:#888;margin-top:2px}
+#secretGameCard{margin-top:10px;padding:14px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.25);border-radius:8px;display:none}
+#secretGameCard.unlocked{display:block}
+.secret-title{color:#ffd700;font-size:0.9em;font-weight:700;margin-bottom:6px}
+.secret-desc{font-size:0.8em;color:#ccc;line-height:1.6;margin-bottom:10px}
+/* ─── Quiz académique ─────────────────────────── */
+#acadModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:2000;overflow-y:auto;padding:20px}
 </style>
 <style>
 #authGate{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 15% 15%,#00d4ff22,transparent 35%),radial-gradient(circle at 85% 85%,#ffd70022,transparent 40%),linear-gradient(135deg,#02060f,#101f3f)}
@@ -56,6 +88,20 @@
 @media (max-width:980px){.frontonGrid{grid-template-columns:1fr}.frontonMain{transform:none}}
 </style></head>
 <body>
+<div id="introOverlay">
+  <video id="introVideo" autoplay playsinline muted>
+    <source src="Les Chevaliers du Collège Château Rance.mp4" type="video/mp4">
+  </video>
+  <button id="introSkip" onclick="skipIntro()">Passer ▶</button>
+
+<div id="rewardOverlay">
+  <video id="rewardVideo" playsinline>
+    <source id="rewardVideoSrc" src="" type="video/mp4">
+  </video>
+  <div id="rewardTitle"></div>
+  <button id="rewardSkip" onclick="closeReward()">Passer ▶</button>
+</div>
+</div>
 <div id="authGate">
   <article id="authCard" class="card">
     <div class="tag">AUTHENTIFICATION</div>
@@ -236,46 +282,7 @@
 
 <!-- ══════════════════════════════════════════════ -->
 <!-- HUB ACADÉMIQUE — Français & Mathématiques     -->
-<!-- Pour ajouter des modules : éditer ACAD_REGISTRY dans le JS ci-dessus -->
-<!-- ══════════════════════════════════════════════ -->
-<section class="card" id="acadHub" style="margin-top:18px">
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
-  <h2 style="margin:0">📚 Hub Académique</h2>
-  <span style="font-size:0.7em;color:#aaa">Français · Mathématiques · 6e → 3e</span>
-</div>
-<p class="hint" style="margin:0 0 10px">Ces modules renforcent les axes prioritaires du projet d'établissement.<br>
-Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augmente ton <b>coefficient multiplicatif</b> XP de +2 % (plafonné à ×2,00).</p>
-
-<div class="acad-coeff-bar">
-  <span>🔬 Coefficient académique :</span>
-  <span class="acad-coeff-val" id="acadCoeffDisp">×1,00</span>
-  <span style="color:#888;font-size:0.85em">— tous tes XP citoyens sont multipliés par ce coefficient.</span>
-</div>
-
-<div class="acad-filters">
-  <select id="acadFilterLevel" onchange="renderAcademie()">
-    <option value="">Tous niveaux</option>
-    <option value="6e">6e</option>
-    <option value="5e">5e</option>
-    <option value="4e">4e</option>
-    <option value="3e">3e</option>
-  </select>
-  <select id="acadFilterSubj" onchange="renderAcademie()">
-    <option value="">Toutes matières</option>
-    <option value="Francais">📝 Français</option>
-    <option value="Maths">🔢 Maths</option>
-  </select>
-</div>
-
-<div class="acad-grid" id="acadGrid"></div>
-<div class="msg" id="acadMsg"></div>
-<p class="hint" style="margin-top:10px;border-top:1px solid #222;padding-top:8px">
-  💡 <b>Pour ajouter des modules :</b> éditer le tableau <code>ACAD_REGISTRY</code> dans le code source du hub, puis créer le fichier HTML correspondant.
-</p>
-</section>
-
-
-
+<!-- Pour ajouter des modules dans le tableau ACAD_MODULES en haut du JS -->
 <!-- ══════════════════════════════════════════════ -->
 <!-- SECTION ACADÉMIQUE                             -->
 <!-- ══════════════════════════════════════════════ -->
@@ -301,193 +308,26 @@ Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augment
 <div id="acadGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px"></div>
 
 <!-- Modale quiz -->
-<div id="acadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:2000;overflow-y:auto;padding:20px">
-  <div style="max-width:600px;margin:0 auto;background:#1a1a2e;border:1px solid #444;border-radius:12px;padding:20px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <h3 id="quizTitle" style="color:#ffd700;font-size:1em"></h3>
-      <button onclick="closeAcadQuiz()" style="background:rgba(255,255,255,0.1);border:1px solid #555;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer">✕</button>
-    </div>
-    <div id="quizProgress" style="font-size:0.75em;color:#aaa;margin-bottom:10px"></div>
-    <div id="quizBar" style="height:4px;background:#333;border-radius:2px;margin-bottom:16px">
-      <div id="quizBarFill" style="height:100%;background:#ffd700;border-radius:2px;transition:width 0.3s"></div>
-    </div>
-    <div id="quizQuestion" style="font-size:0.95em;color:#e8e8e8;margin-bottom:16px;line-height:1.6"></div>
-    <div id="quizChoices" style="display:flex;flex-direction:column;gap:8px"></div>
-    <div id="quizExpl" style="display:none;margin-top:12px;padding:10px;background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;border-radius:4px;font-size:0.82em;color:#ccc;line-height:1.6"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
-      <div id="quizScore" style="font-size:0.78em;color:#aaa"></div>
-      <button id="quizNext" onclick="acadNextQ()" style="display:none;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;font-weight:600">Suivant →</button>
-    </div>
-  </div>
-</div>
 
+
+
+
+<section </section>
+
+id="rewardsSection" style="display:none;margin-top:10px">
+  <article class="card" style="padding:12px">
+    <button id="rewardsToggle" onclick="toggleRewardsList()">
+      🏆 Mes Récompenses <span>▼</span>
+    </button>
+    <div id="rewardsList"></div>
+    <div id="secretGameCard">
+      <div class="secret-title">🎮 Jeu Secret débloqué !</div>
+      <div class="secret-desc">Tu as débloqué <strong>«&nbsp;Les Chevaliers de la Justice&nbsp;»</strong> !<br>
+      Tous les 500 XP gagnés, ton personnage devient plus puissant.<br>⚔️ <em>Alors, progresse, jeune page !</em></div>
+      <a href="Chevaliers_Justice.html" target="_blank" class="btn2" style="display:inline-block;text-decoration:none;margin-top:4px">⚔️ Jouer maintenant</a>
+    </div>
+  </article>
 </section>
-
-<script>
-// ── État quiz ──
-let _qMod=null,_qIdx=0,_qScore=0,_qAnswered=false,_qLevelFilter='6e',_qMatiereFilter='all';
-
-function acadFilter(val,btn){
-  if(['6e','5e','4e','3e','all'].includes(val)){
-    _qLevelFilter=val;
-    document.querySelectorAll('#acadLevelTabs .tab').forEach(b=>{
-      if(['6e','5e','4e','3e','all'].includes(b.textContent.trim()))b.classList.remove('on');
-    });
-  } else {
-    _qMatiereFilter=val==='all'?'all':val;
-    document.querySelectorAll('#acadLevelTabs .tab').forEach(b=>{
-      if(['📖 Français','🔢 Maths'].includes(b.textContent.trim()))b.classList.remove('on');
-    });
-  }
-  btn.classList.add('on');
-  renderAcadGrid();
-}
-
-function renderAcadGrid(){
-  const b=document.getElementById('acadGrid');if(!b)return;
-  const p=cur?S.players[cur]:null;
-  const done=p?(p.acadDone||{}):{};
-  const coeff=p?acadCoeff(p):1;
-  const nb=acadDoneCount(p||{});
-
-  const dispEl=document.getElementById('acadCoeffDisplay');
-  if(dispEl){
-    if(nb>0)dispEl.textContent=`🎓 Modules réussis : ${nb} — Coefficient actuel : ×${coeff.toFixed(2)} — XP final : ${p?xgFinal(p):'—'}`;
-    else dispEl.textContent='Commence un module pour débloquer ton coefficient multiplicatif !';
-  }
-
-  const mods=ACAD_MODULES.filter(m=>{
-    const lvl=_qLevelFilter==='all'||m.niveau===_qLevelFilter;
-    const mat=_qMatiereFilter==='all'||m.matiere===_qMatiereFilter;
-    return lvl&&mat;
-  });
-
-  b.innerHTML='';
-  if(!mods.length){b.innerHTML='<div style="color:#aaa;font-size:0.8em">Aucun module pour ces filtres.</div>';return;}
-
-  mods.forEach(m=>{
-    const d=done[m.id];
-    const passed=!!d;
-    const card=document.createElement('div');
-    card.style.cssText='background:rgba(255,255,255,0.05);border:1px solid '+(passed?'rgba(80,220,80,0.4)':'rgba(255,255,255,0.15)')+';border-radius:8px;padding:10px;cursor:'+(passed&&cur?'default':'pointer')+';transition:border-color 0.2s;position:relative';
-    const niv=`<span style="font-size:0.65em;background:rgba(255,215,0,0.15);color:#ffd700;padding:2px 6px;border-radius:3px;margin-right:4px">${m.niveau}</span>`;
-    const mat=`<span style="font-size:0.65em;background:rgba(255,255,255,0.08);color:#aaa;padding:2px 6px;border-radius:3px">${m.matiere==='fr'?'Français':'Maths'}</span>`;
-    const badge=passed?'<span style="position:absolute;top:6px;right:8px;font-size:0.7em;color:#4CAF50">✓ Réussi</span>':'';
-    card.innerHTML=`${badge}<div style="font-size:1.3em;margin-bottom:4px">${m.icone}</div><div style="margin-bottom:5px">${niv}${mat}</div><div style="font-size:0.82em;font-weight:600;color:${passed?'#4CAF50':'#e8e8e8'};line-height:1.4">${m.titre}</div><div style="font-size:0.7em;color:#888;margin-top:4px">${m.questions.length} questions · ×1,02 si ≥60%</div>`;
-    if(!passed||!cur){
-      card.onclick=()=>startAcadQuiz(m.id);
-      card.onmouseenter=()=>{if(!passed)card.style.borderColor='rgba(255,215,0,0.4)';};
-      card.onmouseleave=()=>{if(!passed)card.style.borderColor='rgba(255,255,255,0.15)';};
-    }
-    b.appendChild(card);
-  });
-}
-
-function startAcadQuiz(id){
-  if(!cur&&!isVisitor){
-    alert('Connecte-toi pour enregistrer ta progression.');return;
-  }
-  _qMod=ACAD_MODULES.find(m=>m.id===id);
-  if(!_qMod)return;
-  _qIdx=0;_qScore=0;_qAnswered=false;
-  document.getElementById('quizTitle').textContent=_qMod.icone+' '+_qMod.titre+' ('+_qMod.niveau+')';
-  document.getElementById('acadModal').style.display='block';
-  document.body.style.overflow='hidden';
-  showAcadQ();
-}
-
-function showAcadQ(){
-  if(!_qMod)return;
-  const q=_qMod.questions[_qIdx];
-  const total=_qMod.questions.length;
-  _qAnswered=false;
-  document.getElementById('quizProgress').textContent=`Question ${_qIdx+1} / ${total}`;
-  document.getElementById('quizBarFill').style.width=((_qIdx/total)*100)+'%';
-  document.getElementById('quizQuestion').textContent=q.q;
-  document.getElementById('quizExpl').style.display='none';
-  document.getElementById('quizNext').style.display='none';
-  document.getElementById('quizScore').textContent=`Score : ${_qScore}/${_qIdx}`;
-  const cc=document.getElementById('quizChoices');cc.innerHTML='';
-  q.choices.forEach((c,i)=>{
-    const btn=document.createElement('button');
-    btn.textContent=c;
-    btn.style.cssText='background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#e8e8e8;padding:10px 14px;border-radius:6px;cursor:pointer;text-align:left;font-size:0.88em;transition:background 0.15s';
-    btn.onclick=()=>answerAcad(i,btn,q);
-    btn.onmouseenter=()=>{if(!_qAnswered)btn.style.background='rgba(255,215,0,0.12)';};
-    btn.onmouseleave=()=>{if(!_qAnswered)btn.style.background='rgba(255,255,255,0.07)';};
-    cc.appendChild(btn);
-  });
-}
-
-function answerAcad(i,btn,q){
-  if(_qAnswered)return;
-  _qAnswered=true;
-  const correct=i===q.ans;
-  if(correct)_qScore++;
-  document.querySelectorAll('#quizChoices button').forEach((b,idx)=>{
-    b.style.cursor='default';
-    if(idx===q.ans)b.style.background='rgba(76,175,80,0.3)',b.style.borderColor='#4CAF50';
-    else if(idx===i&&!correct)b.style.background='rgba(244,67,54,0.3)',b.style.borderColor='#f44336';
-    b.onmouseenter=null;b.onmouseleave=null;
-  });
-  const explEl=document.getElementById('quizExpl');
-  explEl.textContent='💡 '+q.expl;explEl.style.display='block';
-  document.getElementById('quizScore').textContent=`Score : ${_qScore}/${_qIdx+1}`;
-  document.getElementById('quizNext').style.display='block';
-  document.getElementById('quizNext').textContent=_qIdx<_qMod.questions.length-1?'Suivant →':'Terminer ✓';
-}
-
-function acadNextQ(){
-  _qIdx++;
-  if(_qIdx<_qMod.questions.length){showAcadQ();return;}
-  // Fin du quiz
-  const total=_qMod.questions.length;
-  const pct=_qScore/total;
-  const passed=pct>=ACAD_PASS_RATE;
-  const cc=document.getElementById('quizChoices');cc.innerHTML='';
-  document.getElementById('quizExpl').style.display='none';
-  document.getElementById('quizNext').style.display='none';
-  document.getElementById('quizBarFill').style.width='100%';
-  document.getElementById('quizProgress').textContent='Module terminé';
-  document.getElementById('quizQuestion').innerHTML=
-    `<div style="text-align:center;padding:20px 0">
-      <div style="font-size:2.5em;margin-bottom:10px">${passed?'🏆':'😕'}</div>
-      <div style="font-size:1.2em;color:${passed?'#4CAF50':'#ff9800'};font-weight:600;margin-bottom:8px">${passed?'Module réussi !':'Pas tout à fait…'}</div>
-      <div style="font-size:0.85em;color:#aaa">Score : <b style="color:#fff">${_qScore} / ${total}</b> (${Math.round(pct*100)}%)</div>
-      <div style="font-size:0.75em;color:#888;margin-top:6px">${passed?`Coefficient mis à jour !`:`Il faut ≥${Math.round(ACAD_PASS_RATE*100)}% pour valider. Tu peux réessayer.`}</div>
-    </div>`;
-  document.getElementById('quizScore').textContent='';
-
-  if(passed&&cur&&!isVisitor){
-    const p=S.players[cur];if(!p)return;
-    if(!p.acadDone)p.acadDone={};
-    if(!p.acadDone[_qMod.id]){
-      p.acadDone[_qMod.id]=new Date().toISOString();
-      logEv(cur,'ACAD_DONE',_qMod.id,0);
-      save();refresh();
-    }
-  }
-
-  // Bouton fermer/rejouer
-  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;justify-content:center;margin-top:16px';
-  const btnClose=document.createElement('button');btnClose.textContent='Retour aux modules';btnClose.style.cssText='background:rgba(255,255,255,0.1);border:1px solid #555;color:#fff;padding:8px 14px;border-radius:4px;cursor:pointer';btnClose.onclick=closeAcadQuiz;
-  if(!passed){
-    const btnRetry=document.createElement('button');btnRetry.textContent='↩ Réessayer';btnRetry.style.cssText='background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;font-weight:600';btnRetry.onclick=()=>startAcadQuiz(_qMod.id);
-    actions.appendChild(btnRetry);
-  }
-  actions.appendChild(btnClose);
-  cc.appendChild(actions);
-}
-
-function closeAcadQuiz(){
-  document.getElementById('acadModal').style.display='none';
-  document.body.style.overflow='';
-  renderAcadGrid();
-}
-
-// Initialisation
-document.addEventListener('DOMContentLoaded',()=>{renderAcadGrid();});
-</script>
 
 <div id="quickTabs" style="position:fixed;right:12px;bottom:12px;z-index:1400;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:680px">
   <button id="tutorialTab" class="btn2" onclick="openTutorial()">Guide didacticiel</button>
@@ -563,7 +403,6 @@ document.addEventListener('DOMContentLoaded',()=>{renderAcadGrid();});
 const KEY='pvs_hof_v2',ACTIVE_PLAYER_KEY='pvs_current_player',BRIDGE_KEY='pvs_bridge_events',DEFAULT_CODES_FILE='students.csv',ADULT_DEFAULT_FILE='adults.csv',PARENT_DEFAULT_FILE='parents.csv',ADMIN_PASS='CPE59!-Chateau-70+',RULES_SEEN_KEY='pvs_rules_seen_v1',TUTORIAL_SEEN_KEY='pvs_tutorial_seen_v1',VISITOR_ARTICLE_SEEN_KEY='pvs_visitor_article_seen_v1',VISITOR_CODE='VISITEUR-VIESCOLAIRE-CHATEAURANCE',SESSION_AUTH_KEY='pvs_session_auth_v1',ADMIN_SESSION_KEY='pvs_admin_session_v1',SYNC_URL_KEY='pvs_sync_url',SYNC_REV_KEY='pvs_sync_rev',DEFAULT_SYNC_URL='http://127.0.0.1:8765',AUDIO_PREF_KEY='pvs_audio_pref_v1',AUDIO_VOL_KEY='pvs_audio_vol_v1',AUDIO_SOURCE_KEY='pvs_audio_source_v1';
 const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
 const CIT={representant_ca:{title:'Representant CA',label:'Grand Stratege',xp:500},cadet:{title:'Cadet securite',label:'Gardien de la Cite',xp:450},ambassadeur:{title:'Ambassadeur pHARe',label:'Sentinelle de la Paix',xp:400},delegue:{title:'Delegue classe',label:'Porte-Voix',xp:350},eco_delegue:{title:'Eco-delegue',label:'Protecteur Nature',xp:300}};
-const ACAD_REGISTRY=[{"id": "FR_6E_01", "level": "6e", "subject": "Francais", "icon": "📝", "title": "Grammaire et classes de mots", "file": "ACAD_FR_6e_01.html"}, {"id": "FR_6E_02", "level": "6e", "subject": "Francais", "icon": "📝", "title": "Conjugaison - Present et Passe compose", "file": "ACAD_FR_6e_02.html"}, {"id": "FR_5E_01", "level": "5e", "subject": "Francais", "icon": "📝", "title": "Propositions et subordonnees", "file": "ACAD_FR_5e_01.html"}, {"id": "FR_5E_02", "level": "5e", "subject": "Francais", "icon": "📝", "title": "Imparfait, Plus-que-parfait et figures de style", "file": "ACAD_FR_5e_02.html"}, {"id": "FR_4E_01", "level": "4e", "subject": "Francais", "icon": "📝", "title": "Argumentation et discours rapporte", "file": "ACAD_FR_4e_01.html"}, {"id": "FR_4E_02", "level": "4e", "subject": "Francais", "icon": "📝", "title": "Stylistique et analyse de texte", "file": "ACAD_FR_4e_02.html"}, {"id": "FR_3E_01", "level": "3e", "subject": "Francais", "icon": "📝", "title": "Brevet - Grammaire et syntaxe", "file": "ACAD_FR_3e_01.html"}, {"id": "FR_3E_02", "level": "3e", "subject": "Francais", "icon": "📝", "title": "Brevet - Analyse de texte", "file": "ACAD_FR_3e_02.html"}, {"id": "MATH_6E_01", "level": "6e", "subject": "Maths", "icon": "🔢", "title": "Fractions et proportionnalite", "file": "ACAD_MATH_6e_01.html"}, {"id": "MATH_6E_02", "level": "6e", "subject": "Maths", "icon": "🔢", "title": "Geometrie et priorites operatoires", "file": "ACAD_MATH_6e_02.html"}, {"id": "MATH_5E_01", "level": "5e", "subject": "Maths", "icon": "🔢", "title": "Pythagore et equations", "file": "ACAD_MATH_5e_01.html"}, {"id": "MATH_5E_02", "level": "5e", "subject": "Maths", "icon": "🔢", "title": "Statistiques et probabilites", "file": "ACAD_MATH_5e_02.html"}, {"id": "MATH_4E_01", "level": "4e", "subject": "Maths", "icon": "🔢", "title": "Fonctions lineaires et trigonometrie", "file": "ACAD_MATH_4e_01.html"}, {"id": "MATH_4E_02", "level": "4e", "subject": "Maths", "icon": "🔢", "title": "Racines carrees et puissances", "file": "ACAD_MATH_4e_02.html"}, {"id": "MATH_3E_01", "level": "3e", "subject": "Maths", "icon": "🔢", "title": "Thales et geometrie", "file": "ACAD_MATH_3e_01.html"}, {"id": "MATH_3E_02", "level": "3e", "subject": "Maths", "icon": "🔢", "title": "Brevet - Algebre et fonctions", "file": "ACAD_MATH_3e_02.html"}];
 const ACT={tutorat:{l:'Tutorat / aide aux devoirs',x:100},mediation:{l:'Mediation de conflit',x:150},ramassage:{l:'Ramassage d ordures spontane',x:40},soutien:{l:'Soutien a un eleve isole',x:120},creation:{l:'Creation chanson / video NAH',x:200}};
 
 // ══════════════════════════════════════════════════════════════════
@@ -797,6 +636,287 @@ function parseCodesText(text){const raw=String(text||'').replace(/\uFEFF/g,'').r
 function parseAdultsText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);if(iT<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const ct=nCode(demojibake(cols[iT]||''));if(!ct)continue;rows.push({nom,prenom,code_temoin:ct})}return rows}
 function ensureCitizenLists(){if(!S.citizen_lists||typeof S.citizen_lists!=='object')S.citizen_lists={};Object.keys(CIT).forEach(k=>{if(!Array.isArray(S.citizen_lists[k]))S.citizen_lists[k]=[];S.citizen_lists[k]=S.citizen_lists[k].map(nCode).filter(Boolean)})}
 function mkP(code){return{code,witness:'',cp:{pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0},obj:{},socialG:0,socialW:0,wBonusG:0,wBonusW:0,videoG:0,videoW:0,malusG:0,malusW:0,witnessGiven:0,recognizedReceived:0,acadDone:0,acadIds:[],acadDone:{},up:new Date().toISOString(),_v2:1}}
+
+// ══════════════════════════════════════════════════
+// INTRO VIDÉO — 5 portes de sortie indépendantes
+// ══════════════════════════════════════════════════
+var _introSkipped=false;
+function skipIntro(){
+  if(_introSkipped)return;_introSkipped=true;
+  var ov=document.getElementById('introOverlay');
+  var vid=document.getElementById('introVideo');
+  if(vid){try{vid.pause();}catch(e){}}
+  if(ov){ov.classList.add('fade-out');setTimeout(function(){ov.style.display='none';},850);}
+}
+(function(){
+  var _abs=setTimeout(skipIntro,9000); // timeout absolu 9s
+  document.addEventListener('DOMContentLoaded',function(){
+    var vid=document.getElementById('introVideo');
+    if(!vid){clearTimeout(_abs);skipIntro();return;}
+    var ov=document.getElementById('introOverlay');
+    if(ov)ov.addEventListener('click',function(){clearTimeout(_abs);skipIntro();});
+    vid.addEventListener('ended',function(){clearTimeout(_abs);skipIntro();});
+    vid.addEventListener('error',function(){clearTimeout(_abs);skipIntro();});
+    setTimeout(function(){if(!_introSkipped&&vid.readyState<1){clearTimeout(_abs);skipIntro();}},3000);
+    var p=vid.play();
+    if(p&&typeof p.catch==='function'){
+      p.catch(function(){
+        var btn=document.getElementById('introSkip');
+        if(btn)btn.textContent='▶ Appuie pour continuer';
+        setTimeout(function(){if(!_introSkipped)skipIntro();},5000);
+      });
+    }
+  });
+})();
+
+// ══════════════════════════════════════════════════
+// RÉCOMPENSES VIDÉO — PALIERS XP
+// ══════════════════════════════════════════════════
+const MILESTONES=[
+  {xp:500, file:'reward_apprenti.mp4',  title:'⚔️ L\'Apprenti Chevalier',  label:'Apprenti Chevalier',  sub:'Débloqué à 500 XP'},
+  {xp:1000,file:'reward_ecuyere.mp4',   title:'🛡️ La Jeune Écuyère',       label:'La Jeune Écuyère',    sub:'Débloqué à 1000 XP'},
+  {xp:1500,file:'reward_chevalier.mp4', title:'⚔️ Le Jeune Chevalier',     label:'Le Jeune Chevalier',  sub:'Débloqué à 1500 XP'},
+  {xp:2000,file:'reward_paladine.mp4',  title:'✨ La Paladine Rayonnante', label:'La Paladine',         sub:'Débloqué à 2000 XP'},
+];
+const SECRET_GAME={xp:500,file:'Chevaliers_Justice.html',title:'🎮 Les Chevaliers de la Justice',
+  msg:'🏆 Tu as débloqué le jeu secret <strong>«&nbsp;Les Chevaliers de la Justice&nbsp;»</strong> !<br><br>Tous les 500 XP gagnés, ton personnage devient plus puissant !<br><br>⚔️ <em>Alors, progresse, jeune page !</em>'};
+const REWARD_SEEN_KEY='pvs_rewards_seen';
+function getSeenRewards(){try{return JSON.parse(localStorage.getItem(REWARD_SEEN_KEY)||'{}');}catch(e){return {};}}
+function markRewardSeen(xp){const s=getSeenRewards();s[String(xp)]=1;localStorage.setItem(REWARD_SEEN_KEY,JSON.stringify(s));}
+function isRewardSeen(xp){return !!getSeenRewards()[String(xp)];}
+let rewardQueue=[],rewardPlaying=false;
+function checkMilestones(){
+  if(!cur||isVisitorCode(cur)||cur==='ADMIN')return;
+  const p=gp(cur);if(!p)return;
+  const xpNow=xg(p);
+  MILESTONES.forEach(m=>{if(xpNow>=m.xp&&!isRewardSeen(m.xp))rewardQueue.push({type:'video',...m});});
+  if(xpNow>=SECRET_GAME.xp&&!isRewardSeen('game_secret'))rewardQueue.push({type:'game',...SECRET_GAME});
+  if(!rewardPlaying)processRewardQueue();
+}
+function processRewardQueue(){
+  if(!rewardQueue.length){rewardPlaying=false;renderRewardsSection();return;}
+  rewardPlaying=true;
+  const next=rewardQueue.shift();
+  if(next.type==='video')playRewardVideo(next);
+  else if(next.type==='game')showSecretGameAlert(next);
+}
+function playRewardVideo(m){
+  markRewardSeen(m.xp);
+  const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo');
+  const src=document.getElementById('rewardVideoSrc'),ttl=document.getElementById('rewardTitle');
+  if(!ov||!vid||!src)return processRewardQueue();
+  src.src=m.file;vid.load();ttl.textContent=m.title;
+  ov.classList.remove('fade-out');ov.classList.add('active');
+  vid.play().catch(()=>{});vid.onended=closeReward;
+}
+function closeReward(){
+  const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo');
+  if(vid){vid.pause();vid.currentTime=0;}
+  if(ov){ov.classList.add('fade-out');setTimeout(()=>{ov.classList.remove('active','fade-out');processRewardQueue();},850);}
+}
+function showSecretGameAlert(g){
+  markRewardSeen('game_secret');
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`<div style="max-width:480px;width:100%;background:linear-gradient(135deg,#1a1a00,#2a2a00);border:2px solid #ffd700;border-radius:14px;padding:28px;text-align:center;box-shadow:0 0 40px #ffd70066">
+    <div style="font-size:2.5em;margin-bottom:12px">🎮</div>
+    <div style="color:#ffd700;font-family:Orbitron,sans-serif;font-size:1.1em;margin-bottom:16px">JEU SECRET DÉBLOQUÉ !</div>
+    <div style="font-size:0.9em;line-height:1.7;margin-bottom:20px">${g.msg}</div>
+    <button onclick="this.closest('div[style]').remove();renderRewardsSection();processRewardQueue();" style="background:#ffd700;color:#000;border:none;padding:10px 28px;border-radius:20px;font-weight:bold;cursor:pointer;font-size:0.95em">⚔️ À l'aventure !</button>
+  </div>`;
+  document.body.appendChild(modal);
+}
+function replayReward(file,title){
+  const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo');
+  const src=document.getElementById('rewardVideoSrc'),ttl=document.getElementById('rewardTitle');
+  if(!ov||!vid||!src)return;
+  src.src=file;vid.load();ttl.textContent=title;
+  ov.classList.remove('fade-out');ov.classList.add('active');
+  vid.play().catch(()=>{});vid.onended=closeReward;
+}
+function toggleRewardsList(){
+  const el=document.getElementById('rewardsList'),btn=document.getElementById('rewardsToggle');
+  if(!el||!btn)return;
+  el.classList.toggle('open');
+  btn.querySelector('span').textContent=el.classList.contains('open')?'▲':'▼';
+}
+function renderRewardsSection(){
+  const sec=document.getElementById('rewardsSection'),list=document.getElementById('rewardsList');
+  const gameCard=document.getElementById('secretGameCard');
+  if(!sec||!list)return;
+  if(!cur||isVisitorCode(cur)){sec.style.display='none';return;}
+  sec.style.display='block';
+  const p=gp(cur);if(!p)return;
+  const xpNow=xg(p);
+  list.innerHTML='';
+  MILESTONES.forEach(m=>{
+    const unlocked=xpNow>=m.xp;
+    const div=document.createElement('div');
+    div.className='reward-item'+(unlocked?'':' ri-locked');
+    div.innerHTML=`<span class="ri-icon">${unlocked?'🎬':'🔒'}</span>
+      <div class="ri-info"><div class="ri-title">${m.label}</div><div class="ri-sub">${unlocked?m.sub:'??? · '+m.sub}</div></div>
+      ${unlocked?`<button class="btn2" style="font-size:0.8em;padding:4px 10px" onclick="replayReward('${m.file}','${m.title}')">▶ Revoir</button>`:''}`;
+    list.appendChild(div);
+  });
+  if(gameCard){const gameUnlocked=xpNow>=SECRET_GAME.xp;if(gameUnlocked)gameCard.classList.add('unlocked');}
+}
+
+// ══════════════════════════════════════════════════
+// QUIZ ACADÉMIQUE — état et fonctions
+// ══════════════════════════════════════════════════
+let _qMod=null,_qIdx=0,_qScore=0,_qAnswered=false,_qLevelFilter='6e',_qMatiereFilter='all';
+function acadFilter(val,btn){
+  if(['6e','5e','4e','3e','all'].includes(val)){
+    _qLevelFilter=val;
+    document.querySelectorAll('#acadLevelTabs .tab').forEach(b=>{
+      if(['6e','5e','4e','3e','Tous'].includes(b.textContent.trim()))b.classList.remove('on');
+    });
+  } else {
+    _qMatiereFilter=val==='all'?'all':val;
+    document.querySelectorAll('#acadLevelTabs .tab').forEach(b=>{
+      if(['📖 Français','🔢 Maths'].includes(b.textContent.trim()))b.classList.remove('on');
+    });
+  }
+  btn.classList.add('on');
+  renderAcadGrid();
+}
+function renderAcadGrid(){
+  const b=document.getElementById('acadGrid');if(!b)return;
+  const p=cur?S.players[cur]:null;
+  const done=p?(p.acadDone||{}):{};
+  const coeff=p?acadCoeff(p):1;
+  const nb=acadDoneCount(p||{});
+  const dispEl=document.getElementById('acadCoeffDisplay');
+  if(dispEl){
+    if(nb>0)dispEl.textContent=`🎓 Modules réussis : ${nb} — Coefficient : ×${coeff.toFixed(2)} — XP final : ${p?xgFinal(p):'—'}`;
+    else dispEl.textContent='Commence un module pour débloquer ton coefficient multiplicatif !';
+  }
+  const mods=ACAD_MODULES.filter(m=>{
+    const lvl=_qLevelFilter==='all'||m.niveau===_qLevelFilter;
+    const mat=_qMatiereFilter==='all'||m.matiere===_qMatiereFilter;
+    return lvl&&mat;
+  });
+  b.innerHTML='';
+  if(!mods.length){b.innerHTML='<div style="color:#aaa;font-size:0.8em;padding:8px">Aucun module pour ces filtres.</div>';return;}
+  mods.forEach(m=>{
+    const d=done[m.id],passed=!!d;
+    const card=document.createElement('div');
+    card.style.cssText='background:rgba(255,255,255,0.05);border:1px solid '+(passed?'rgba(80,220,80,0.4)':'rgba(255,255,255,0.15)')+';border-radius:8px;padding:10px;cursor:pointer;transition:border-color 0.2s;position:relative';
+    const niv=`<span style="font-size:0.65em;background:rgba(255,215,0,0.15);color:#ffd700;padding:2px 6px;border-radius:3px;margin-right:4px">${m.niveau}</span>`;
+    const mat=`<span style="font-size:0.65em;background:rgba(255,255,255,0.08);color:#aaa;padding:2px 6px;border-radius:3px">${m.matiere==='fr'?'Français':'Maths'}</span>`;
+    const badge=passed?'<span style="position:absolute;top:6px;right:8px;font-size:0.7em;color:#4CAF50">✓ Réussi</span>':'';
+    card.innerHTML=`${badge}<div style="font-size:1.3em;margin-bottom:4px">${m.icone}</div><div style="margin-bottom:5px">${niv}${mat}</div><div style="font-size:0.82em;font-weight:600;color:${passed?'#4CAF50':'#e8e8e8'};line-height:1.4">${m.titre}</div><div style="font-size:0.7em;color:#888;margin-top:4px">${m.questions.length} questions · ×1,02 si ≥60%</div>`;
+    card.onclick=()=>startAcadQuiz(m.id);
+    card.onmouseenter=()=>{if(!passed)card.style.borderColor='rgba(255,215,0,0.4)';};
+    card.onmouseleave=()=>{if(!passed)card.style.borderColor='rgba(255,255,255,0.15)';};
+    b.appendChild(card);
+  });
+}
+function startAcadQuiz(id){
+  if(!cur&&!isVisitor){alert('Connecte-toi pour enregistrer ta progression.');return;}
+  _qMod=ACAD_MODULES.find(m=>m.id===id);
+  if(!_qMod)return;
+  _qIdx=0;_qScore=0;_qAnswered=false;
+  document.getElementById('quizTitle').textContent=_qMod.icone+' '+_qMod.titre+' ('+_qMod.niveau+')';
+  document.getElementById('acadModal').style.display='block';
+  document.body.style.overflow='hidden';
+  showAcadQ();
+}
+function showAcadQ(){
+  if(!_qMod)return;
+  const q=_qMod.questions[_qIdx],total=_qMod.questions.length;
+  _qAnswered=false;
+  document.getElementById('quizProgress').textContent=`Question ${_qIdx+1} / ${total}`;
+  document.getElementById('quizBarFill').style.width=((_qIdx/total)*100)+'%';
+  document.getElementById('quizQuestion').textContent=q.q;
+  document.getElementById('quizExpl').style.display='none';
+  document.getElementById('quizNext').style.display='none';
+  document.getElementById('quizScore').textContent=`Score : ${_qScore}/${_qIdx}`;
+  const cc=document.getElementById('quizChoices');cc.innerHTML='';
+  q.choices.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.textContent=c;
+    btn.style.cssText='background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#e8e8e8;padding:10px 14px;border-radius:6px;cursor:pointer;text-align:left;font-size:0.88em;transition:background 0.15s;width:100%';
+    btn.onclick=()=>answerAcad(i,btn,q);
+    btn.onmouseenter=()=>{if(!_qAnswered)btn.style.background='rgba(255,215,0,0.12)';};
+    btn.onmouseleave=()=>{if(!_qAnswered)btn.style.background='rgba(255,255,255,0.07)';};
+    cc.appendChild(btn);
+  });
+}
+function answerAcad(i,btn,q){
+  if(_qAnswered)return;
+  _qAnswered=true;
+  const correct=i===q.ans;
+  if(correct)_qScore++;
+  document.querySelectorAll('#quizChoices button').forEach((b,idx)=>{
+    b.style.cursor='default';
+    if(idx===q.ans)b.style.background='rgba(76,175,80,0.3)',b.style.borderColor='#4CAF50';
+    else if(idx===i&&!correct)b.style.background='rgba(244,67,54,0.3)',b.style.borderColor='#f44336';
+    b.onmouseenter=null;b.onmouseleave=null;
+  });
+  const explEl=document.getElementById('quizExpl');
+  explEl.textContent='💡 '+q.expl;explEl.style.display='block';
+  document.getElementById('quizScore').textContent=`Score : ${_qScore}/${_qIdx+1}`;
+  document.getElementById('quizNext').style.display='block';
+  document.getElementById('quizNext').textContent=_qIdx<_qMod.questions.length-1?'Suivant →':'Terminer ✓';
+}
+function acadNextQ(){
+  _qIdx++;
+  if(_qIdx<_qMod.questions.length){showAcadQ();return;}
+  const total=_qMod.questions.length,pct=_qScore/total,passed=pct>=ACAD_PASS_RATE;
+  const cc=document.getElementById('quizChoices');cc.innerHTML='';
+  document.getElementById('quizExpl').style.display='none';
+  document.getElementById('quizNext').style.display='none';
+  document.getElementById('quizBarFill').style.width='100%';
+  document.getElementById('quizProgress').textContent='Module terminé';
+  document.getElementById('quizQuestion').innerHTML=`<div style="text-align:center;padding:20px 0">
+    <div style="font-size:2.5em;margin-bottom:10px">${passed?'🏆':'😕'}</div>
+    <div style="font-size:1.2em;color:${passed?'#4CAF50':'#ff9800'};font-weight:600;margin-bottom:8px">${passed?'Module réussi !':'Pas tout à fait…'}</div>
+    <div style="font-size:0.85em;color:#aaa">Score : <b style="color:#fff">${_qScore} / ${total}</b> (${Math.round(pct*100)}%)</div>
+    <div style="font-size:0.75em;color:#888;margin-top:6px">${passed?'Coefficient mis à jour !':'Il faut ≥'+Math.round(ACAD_PASS_RATE*100)+'% pour valider. Tu peux réessayer.'}</div>
+  </div>`;
+  document.getElementById('quizScore').textContent='';
+  if(passed&&cur&&!isVisitor){
+    const p=S.players[cur];if(!p)return;
+    if(!p.acadDone)p.acadDone={};
+    if(!p.acadDone[_qMod.id]){
+      p.acadDone[_qMod.id]=new Date().toISOString();
+      logEv(cur,'ACAD_DONE',_qMod.id,0);
+      save();refresh();
+    }
+  }
+  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;justify-content:center;margin-top:16px';
+  const btnClose=document.createElement('button');btnClose.textContent='Retour aux modules';btnClose.style.cssText='background:rgba(255,255,255,0.1);border:1px solid #555;color:#fff;padding:8px 14px;border-radius:4px;cursor:pointer';btnClose.onclick=closeAcadQuiz;
+  if(!passed){
+    const btnRetry=document.createElement('button');btnRetry.textContent='↩ Réessayer';btnRetry.style.cssText='background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;font-weight:600';btnRetry.onclick=()=>startAcadQuiz(_qMod.id);
+    actions.appendChild(btnRetry);
+  }
+  actions.appendChild(btnClose);cc.appendChild(actions);
+}
+function closeAcadQuiz(){
+  document.getElementById('acadModal').style.display='none';
+  document.body.style.overflow='';
+  renderAcadGrid();
+}
+function updateJetonDisplay(){
+  const el=document.getElementById('jetonCount');if(!el)return;
+  const rawW=document.getElementById('wCode');if(!rawW)return;
+  const wc=nCode(rawW.value||'');
+  const w=resolveWitness(wc);
+  if(!w||w.kind!=='student'){el.textContent=JETON_MAX+' jetons';el.style.color='';return;}
+  const wp=gp(w.player);if(!wp){el.textContent=JETON_MAX+' jetons';return;}
+  const used=Number(wp.witnessGivenW||0),left=JETON_MAX-used;
+  el.textContent=left+' jeton'+(left>1?'s':'')+' restant'+(left>1?'s':'');
+  el.style.color=left<=0?'#ff4444':left===1?'#ff9800':'#4fc3f7';
+}
+
+
+document.addEventListener('DOMContentLoaded',function(){
+  if(typeof renderAcadGrid==='function')renderAcadGrid();
+  const wc=document.getElementById('wCode');
+  if(wc)wc.addEventListener('input',updateJetonDisplay);
+});
+
 function wk(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=(x.getUTCDay()+6)%7;x.setUTCDate(x.getUTCDate()-day+3);const f=new Date(Date.UTC(x.getUTCFullYear(),0,4));const w=1+Math.round((x-f)/604800000);return `${x.getUTCFullYear()}-W${String(w).padStart(2,'0')}`}
 function buildRegistry(){REG={j:{},t:{},p:{}};(S.registry||[]).forEach(r=>{const cj=nCode(r.code_joueur||'');const ct=nCode(r.code_temoin||'');const cp=nCode(r.code_public||'')||cj;if(!cj)return;REG.j[cj]={nom:r.nom||'',prenom:r.prenom||'',code_joueur:cj,code_temoin:ct,code_public:cp};if(ct)REG.t[ct]=cj;if(cp)REG.p[cp]=cj})}
 function buildAdultMap(){ADW={};(S.adults||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');if(ct)ADW[ct]=1})}
@@ -889,47 +1009,6 @@ function prevTutorial(){openTutorial(tutoIdx-1)}
 function logEv(player,type,target,xp){S.logs.unshift({d:new Date().toISOString(),p:player||'',t:type||'',target:target||'',xp:Number(xp||0)});if(S.logs.length>700)S.logs.length=700}
 function renderHall(){const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount}`}
 
-function renderAcademie(){
-  const wrap=document.getElementById('acadGrid');
-  if(!wrap)return;
-  wrap.innerHTML='';
-  const p=cur?S.players[cur]:null;
-  const done=p&&Array.isArray(p.acadIds)?p.acadIds:[];
-  const coeff=p?acadCoeff(p):1;
-  // Titre coeff
-  const cc=document.getElementById('acadCoeffDisp');
-  if(cc)cc.textContent='Coefficient actuel : ×'+coeff.toFixed(2)+(done.length>0?' ('+done.length+' module'+(done.length>1?'s':'')+' accompli'+(done.length>1?'s':'')+')':'');
-  // Filtre actif
-  const fLevel=document.getElementById('acadFilterLevel');
-  const fSubj=document.getElementById('acadFilterSubj');
-  const lv=fLevel?fLevel.value:'';
-  const sj=fSubj?fSubj.value:'';
-  ACAD_REGISTRY.forEach(mod=>{
-    if(lv&&mod.level!==lv)return;
-    if(sj&&mod.subject!==sj)return;
-    const isDone=done.includes(mod.id);
-    const card=document.createElement('div');
-    card.className='acad-card'+(isDone?' acad-done':'');
-    card.innerHTML=`
-      <div class="acad-icon">${mod.icon}</div>
-      <div class="acad-meta"><span class="acad-level">${mod.level}</span> · <span class="acad-subj">${mod.subject}</span></div>
-      <div class="acad-title">${mod.title}</div>
-      <div class="acad-status">${isDone?'✅ Accompli':'⬜ À faire'}</div>
-      <button class="acad-btn ${isDone?'acad-redo':''}" onclick="openAcadModule('${mod.id}','${mod.file}')">${isDone?'↩ Refaire':'▶ Commencer'}</button>
-    `;
-    wrap.appendChild(card);
-  });
-  if(!wrap.children.length)wrap.innerHTML='<p style="color:#aaa;font-size:0.8em">Aucun module pour ce filtre.</p>';
-}
-
-function openAcadModule(id,file){
-  if(!cur&&!isVisitor){sm('acadMsg','Connecte-toi pour enregistrer ta progression.',false);return;}
-  const code=cur||(isVisitor?VISITOR_CODE:'');
-  const sep=file.includes('?')?'&':'?';
-  const url=file+sep+'player='+encodeURIComponent(code)+'&moduleId='+encodeURIComponent(id);
-  logEv(code||'ANON','OPEN_ACAD',id,0);save();
-  window.open(url,'_blank','noopener');
-}
 
 function renderProfile(){const c=document.getElementById('profile'),h=document.getElementById('loginHint');if(!cur||!S.players[cur]){c.classList.remove('on');h.textContent=adminOn?'Session admin active.':'Session verrouillee. Authentification requise.';return}const p=S.players[cur];c.classList.add('on');h.textContent=`Joueur connecte: ${cur}`;document.getElementById('pCode').textContent=p.code;document.getElementById('pRole').textContent=roleLabel(p.code);document.getElementById('pXg').textContent=xg(p);document.getElementById('pXw').textContent=xw(p);document.getElementById('pCit').textContent=citizenXp(p);document.getElementById('pAca').textContent=academyXp(p);document.getElementById('pVid').textContent=videoXp(p);document.getElementById('pPend').textContent=socialPendingG(p);const ac=acadCoeff(p);
 document.getElementById('pAcadCoeff').textContent='×'+ac.toFixed(2)+' ('+Math.min(Number(p.acadDone||0),50)+' modules)';
@@ -937,7 +1016,7 @@ document.getElementById('pCp').textContent=cpTotal(p);const nbAcad=acadDoneCount
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=Object.keys(ADW).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
-function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial()}
+function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderPosReports();renderAcadGrid();renderRewardsSection();checkMilestones();updateCodesInfo();updateVisitorUi();renderTutorial()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
@@ -1133,6 +1212,28 @@ window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurr
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
 window.addEventListener('focus',()=>{sbPullAllPlayers(false);sbPullCurrent(false)});
 </script>
+<!-- Modale quiz académique -->
+
+
+<div id="acadModal">
+  <div style="max-width:600px;margin:0 auto;background:#1a1a2e;border:1px solid #444;border-radius:12px;padding:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 id="quizTitle" style="color:#ffd700;font-size:1em"></h3>
+      <button onclick="closeAcadQuiz()" style="background:rgba(255,255,255,0.1);border:1px solid #555;color:#fff;padding:4px 10px;border-radius:4px;cursor:pointer">✕</button>
+    </div>
+    <div id="quizProgress" style="font-size:0.75em;color:#aaa;margin-bottom:8px"></div>
+    <div id="quizBar" style="height:4px;background:#333;border-radius:2px;margin-bottom:14px">
+      <div id="quizBarFill" style="height:100%;background:#ffd700;border-radius:2px;transition:width 0.3s"></div>
+    </div>
+    <div id="quizQuestion" style="font-size:0.95em;color:#e8e8e8;margin-bottom:14px;line-height:1.6"></div>
+    <div id="quizChoices" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="quizExpl" style="display:none;margin-top:12px;padding:10px;background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;border-radius:4px;font-size:0.82em;color:#ccc;line-height:1.6"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <div id="quizScore" style="font-size:0.78em;color:#aaa"></div>
+      <button id="quizNext" onclick="acadNextQ()" style="display:none;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;font-weight:600">Suivant →</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
 
