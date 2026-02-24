@@ -485,13 +485,6 @@ const MILESTONES=[
 ];
 const SECRET_GAME={xp:500,file:'Chevaliers_Justice.html',title:'🎮 Les Chevaliers de la Justice',
   msg:'🏆 Tu as débloqué le jeu secret <strong>«&nbsp;Les Chevaliers de la Justice&nbsp;»</strong> !<br><br>Tous les 500 XP gagnés, ton personnage devient plus puissant !<br><br>⚔️ <em>Alors, progresse, jeune page !</em>'};
-const MILESTONES=[
-  {xp:500,  file:'reward_apprenti.mp4',  title:'⚔️ L\'Apprenti Chevalier', label:'L\'Apprenti Chevalier',   sub:'D\u00e9bloqu\u00e9 \u00e0 500 XP'},
-  {xp:1000, file:'reward_ecuyere.mp4',   title:'??️ La Jeune \u00c9cuy\u00e8re',      label:'La Jeune \u00c9cuy\u00e8re',       sub:'D\u00e9bloqu\u00e9 \u00e0 1 000 XP'},
-  {xp:1500, file:'reward_chevalier.mp4', title:'⚔️ Le Jeune Chevalier',    label:'Le Jeune Chevalier',     sub:'D\u00e9bloqu\u00e9 \u00e0 1 500 XP'},
-  {xp:2000, file:'reward_paladine.mp4',  title:'\u2728 La Paladine Rayonnante', label:'La Paladine Rayonnante', sub:'D\u00e9bloqu\u00e9 \u00e0 2 000 XP'},
-];
-var SECRET_GAME={xp:500,file:'Chevaliers_Justice.html'};
 
 const REWARD_SEEN_KEY='pvs_rewards_seen';
 function getSeenRewards(){try{return JSON.parse(localStorage.getItem(REWARD_SEEN_KEY)||'{}');}catch(e){return {};}}
@@ -668,11 +661,6 @@ function updateJetonDisplay(){
 }
 
 
-document.addEventListener('DOMContentLoaded',function(){
-  if(typeof renderAcadGrid==='function')renderAcadGrid();
-  const wc=document.getElementById('wCode');
-  if(wc)wc.addEventListener('input',updateJetonDisplay);
-});
 
 function wk(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=(x.getUTCDay()+6)%7;x.setUTCDate(x.getUTCDate()-day+3);const f=new Date(Date.UTC(x.getUTCFullYear(),0,4));const w=1+Math.round((x-f)/604800000);return `${x.getUTCFullYear()}-W${String(w).padStart(2,'0')}`}
 function buildRegistry(){REG={j:{},t:{},p:{}};(S.registry||[]).forEach(r=>{const cj=nCode(r.code_joueur||'');const ct=nCode(r.code_temoin||'');const cp=nCode(r.code_public||'')||cj;if(!cj)return;REG.j[cj]={nom:r.nom||'',prenom:r.prenom||'',code_joueur:cj,code_temoin:ct,code_public:cp};if(ct)REG.t[ct]=cj;if(cp)REG.p[cp]=cj})}
