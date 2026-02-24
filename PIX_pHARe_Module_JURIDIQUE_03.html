@@ -436,7 +436,7 @@
             const [xp, setXp] = useState(0);
             const [quizScore, setQuizScore] = useState(0);
             const [dojoScore, setDojoScore] = useState(0);
-            const [nom, setNom] = useState('');
+            const [nom, setNom] = useState(getHubPlayer() || 'Agent');
             const [classe, setClasse] = useState('');
             const [unlockCode, setUnlockCode] = useState('');
             const [unlockError, setUnlockError] = useState('');
@@ -515,6 +515,30 @@
         }
 
         ReactDOM.createRoot(document.getElementById('root')).render(e(App));
-    </script>
+    
+        // === SUPERHUB BRIDGE ===
+        function getHubPlayer() {
+            try {
+                var code = localStorage.getItem('pvs_current_player') || '';
+                if (code && code !== 'VISITEUR' && code !== 'ADMIN') return code;
+            } catch(e) {}
+            return null;
+        }
+        function sendBridgeEvent(moduleId, score, xp) {
+            try {
+                var ev = {
+                    type: 'MODULE_COMPLETE',
+                    moduleId: moduleId,
+                    score: score,
+                    xp: xp,
+                    playerCode: getHubPlayer(),
+                    ts: Date.now()
+                };
+                localStorage.setItem('pvs_bridge_event', JSON.stringify(ev));
+                window.dispatchEvent(new Event('pvs_bridge'));
+            } catch(e) {}
+        }
+        // === FIN SUPERHUB BRIDGE ===
+</script>
 </body>
 </html>

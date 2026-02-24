@@ -989,7 +989,7 @@
 
         // --- Main App Component ---
         function App() {
-            const [mode, setMode] = useState('menu'); // menu, register, game, report, load
+            const [mode, setMode] = useState('menu'); // menu, game, report, load
             const [currentLevel, setCurrentLevel] = useState(1);
             const [cardIdx, setCardIdx] = useState(0);
             const [questionIdx, setQuestionIdx] = useState(0);
@@ -997,7 +997,7 @@
             const [xp, setXp] = useState(0);
             const [quizScore, setQuizScore] = useState(0);
             const [dojoScore, setDojoScore] = useState(0);
-            const [nom, setNom] = useState('');
+            const [nom, setNom] = useState(getHubPlayer() || 'Agent');
             const [classe, setClasse] = useState('');
             const [inputCode, setInputCode] = useState('');
             const [loadError, setLoadError] = useState('');
@@ -1027,7 +1027,7 @@
                         MODULE_DATA.description
                     ),
                     e('div', { className: 'btn-group' },
-                        e('button', { className: 'btn btn-block', onClick: () => setMode('register') }, 
+                        e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, 
                             '▶️ COMMENCER LA MISSION'
                         ),
                         e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('load') }, 
@@ -1040,47 +1040,7 @@
                 );
             }
 
-            // --- REGISTER ---
-            if (mode === 'register') {
-                const startGame = () => {
-                    if (!nom.trim()) {
-                        alert('Merci d\'entrer ton prénom ou pseudo !');
-                        return;
-                    }
-                    setMode('game');
-                };
-
-                return e('div', { className: 'app-container' },
-                    e(Header, { showProgress: false }),
-                    e('div', { className: 'card' },
-                        e('h3', { style: { marginBottom: '20px' } }, '👤 Identification de l\'Agent'),
-                        e('div', { style: { marginBottom: '15px' } },
-                            e('label', { style: { display: 'block', marginBottom: '5px', fontWeight: 'bold' } }, 'Prénom ou Pseudo *'),
-                            e('input', {
-                                type: 'text',
-                                value: nom,
-                                onChange: (ev) => setNom(ev.target.value),
-                                placeholder: 'Ex: Alex',
-                                style: { width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '1rem' }
-                            })
-                        ),
-                        e('div', { style: { marginBottom: '15px' } },
-                            e('label', { style: { display: 'block', marginBottom: '5px', fontWeight: 'bold' } }, 'Classe (optionnel)'),
-                            e('input', {
-                                type: 'text',
-                                value: classe,
-                                onChange: (ev) => setClasse(ev.target.value),
-                                placeholder: 'Ex: 4ème B',
-                                style: { width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '1rem' }
-                            })
-                        )
-                    ),
-                    e('div', { className: 'btn-group' },
-                        e('button', { className: 'btn btn-success btn-block', onClick: startGame }, '🚀 DÉMARRER'),
-                        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('menu') }, '← RETOUR')
-                    )
-                );
-            }
+            // REGISTER SUPPRIMÉ — bypass superhub
 
             // --- LOAD ---
             if (mode === 'load') {
@@ -1222,7 +1182,7 @@
                 return e('div', { className: 'app-container' },
                     e(Report, {
                         progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) },
-                        onRestart: () => { resetProgress(); setMode('register'); },
+                        onRestart: () => { resetProgress(); setMode('game'); },
                         onMenu: () => { resetProgress(); setMode('menu'); }
                     })
                 );
@@ -1234,7 +1194,31 @@
         // --- RENDER ---
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(e(App));
-    </script>
+    
+        // === SUPERHUB BRIDGE ===
+        function getHubPlayer() {
+            try {
+                var code = localStorage.getItem('pvs_current_player') || '';
+                if (code && code !== 'VISITEUR' && code !== 'ADMIN') return code;
+            } catch(e) {}
+            return null;
+        }
+        function sendBridgeEvent(moduleId, score, xp) {
+            try {
+                var ev = {
+                    type: 'MODULE_COMPLETE',
+                    moduleId: moduleId,
+                    score: score,
+                    xp: xp,
+                    playerCode: getHubPlayer(),
+                    ts: Date.now()
+                };
+                localStorage.setItem('pvs_bridge_event', JSON.stringify(ev));
+                window.dispatchEvent(new Event('pvs_bridge'));
+            } catch(e) {}
+        }
+        // === FIN SUPERHUB BRIDGE ===
+</script>
 
 </body>
 </html>
