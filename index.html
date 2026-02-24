@@ -32,50 +32,9 @@
 .frontonPrimary{font-family:Orbitron,monospace;letter-spacing:.4px}
 .frontonMain{transform:translateY(-2px);box-shadow:0 12px 24px #00000025}
 @media (max-width:980px){.frontonGrid{grid-template-columns:1fr}.frontonMain{transform:none}}
-
-#introOverlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;}
-#introOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.7s ease}
-#introVideo{width:100%;height:100%;object-fit:cover;pointer-events:none}
-#introSkip{position:absolute;bottom:28px;right:28px;background:rgba(0,0,0,0.75);border:2px solid rgba(255,255,255,0.6);color:#fff;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:0.85em;letter-spacing:1px;z-index:10001;pointer-events:all;}
-
-#rewardOverlay{position:fixed;inset:0;z-index:9998;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;}
-#rewardOverlay.active{display:flex}
-#rewardOverlay.fade-out{opacity:0;pointer-events:none;transition:opacity 0.7s ease}
-#rewardVideo{width:100%;height:100%;object-fit:cover}
-#rewardSkip{position:absolute;bottom:28px;right:28px;background:rgba(0,0,0,0.75);border:2px solid rgba(255,255,255,0.5);color:#fff;padding:10px 22px;border-radius:20px;cursor:pointer;font-size:0.85em;z-index:10000;}
-#rewardTitle{position:absolute;top:28px;left:50%;transform:translateX(-50%);color:#ffd700;font-family:Orbitron,monospace;font-size:1.1em;text-shadow:0 0 20px #ffd70088;letter-spacing:2px;text-align:center;pointer-events:none;}
-#rewardsSection{margin-top:16px}
-#rewardsToggle{width:100%;text-align:left;background:var(--panel,#1a2a4a);border:1px solid var(--neon,#00d4ff);border-radius:8px;color:var(--neon,#00d4ff);padding:10px 16px;cursor:pointer;font-size:0.95em;display:flex;justify-content:space-between;align-items:center;}
-#rewardsToggle:hover{background:var(--neon,#00d4ff);color:#000}
-#rewardsList{display:none;background:var(--panel,#1a2a4a);border:1px solid #333;border-top:none;border-radius:0 0 8px 8px;padding:8px;}
-#rewardsList.open{display:block}
-.reward-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:6px;border-bottom:1px solid #ffffff11;}
-.reward-item.ri-unlocked:hover{background:rgba(255,255,255,0.07);cursor:pointer}
-.reward-item .ri-icon{font-size:1.4em;flex-shrink:0}
-.reward-item .ri-info{flex:1;min-width:0}
-.reward-item .ri-title{font-weight:bold;font-size:0.9em}
-.reward-item .ri-sub{font-size:0.75em;opacity:0.6}
-.reward-item.ri-locked{opacity:0.38}
-#secretGameCard{display:none;margin-top:12px;border:2px solid #ffd700;background:linear-gradient(135deg,#1a1a00,#2a2a00);border-radius:10px;padding:16px;text-align:center;animation:glowGold 2s ease-in-out infinite;}
-#secretGameCard.sgc-unlocked{display:block}
-@keyframes glowGold{0%,100%{box-shadow:0 0 8px #ffd70044}50%{box-shadow:0 0 24px #ffd700aa}}
-.secret-title{color:#ffd700;font-family:Orbitron,monospace;font-size:1em;margin-bottom:8px}
-.secret-desc{font-size:0.85em;opacity:0.85;margin-bottom:12px;line-height:1.6}
-</style></head>
+</style><script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
 <body>
-<div id="introOverlay" onclick="skipIntro()">
-  <video id="introVideo" autoplay playsinline muted>
-    <source src="Les Chevaliers du Collège Château Rance.mp4" type="video/mp4">
-  </video>
-  <button id="introSkip" onclick="skipIntro()">Passer &#9658;</button>
-</div>
-<div id="rewardOverlay">
-  <div id="rewardTitle"></div>
-  <video id="rewardVideo" playsinline>
-    <source id="rewardVideoSrc" src="" type="video/mp4">
-  </video>
-  <button id="rewardSkip" onclick="closeReward()">Continuer &#9658;</button>
-</div>
 <div id="authGate">
   <article id="authCard" class="card">
     <div class="tag">AUTHENTIFICATION</div>
@@ -131,15 +90,33 @@
 </article>
 
 <article class="card">
-<h2>Action Temoin</h2>
-<div class="row"><label for="wCode">Code temoin (col.4)</label><input id="wCode" placeholder="Code temoin officiel"></div>
-<div class="row"><label for="tCode">Code public cible (col.5 ou code public)</label><input id="tCode" placeholder="Code public du camarade"></div>
-<div class="row"><label for="aType">Action</label><select id="aType"></select></div>
-<button id="btnWitnessSend" onclick="witnessAction()">Envoyer XP</button>
-<div class="hint">Bonus temoin = 10% des points envoyes, si le temoin a deja ete reconnu au moins 1 fois.</div>
-<div class="hint">Les XP sociaux ne sont valides que si l'eleve temoigne aussi au moins 1 fois.</div>
+<h2>⚔️ Temoignage Positif</h2>
+
+<div style="background:rgba(0,200,100,0.08);border:1px solid rgba(0,200,100,0.25);border-radius:8px;padding:10px;margin-bottom:12px;font-size:0.78em;line-height:1.7">
+  <b>📜 Engagement moral du temoin :</b> En soumettant ce temoignage, tu certifies que l'action a <b>reellement eu lieu</b>.<br>
+  <span style="color:#ff9800">⚠ Faux temoignage = convocation + minimum -500 XP (doublé pour actions majeures).</span><br>
+  <span style="color:#aaa">🎫 Limite : <b id="jetonCount">3 jetons</b>/semaine — au-delà, tu es convoqué(e) pour argumenter.</span>
+</div>
+
+<div class="row"><label for="wCode">Code temoin (col.4)</label><input id="wCode" placeholder="Ton code temoin officiel"></div>
+<div class="row"><label for="tCode">Code public du camarade (col.5)</label><input id="tCode" placeholder="Code public du camarade"></div>
+<div class="row"><label for="aType">Type d'action observee</label><select id="aType"></select></div>
+<div class="row"><label for="wDesc">Description de l'action <span style="color:#aaa;font-weight:normal">(obligatoire)</span></label>
+  <textarea id="wDesc" rows="2" placeholder="Decris precisement ce que tu as vu : quand, ou, comment..." style="width:100%;padding:8px;background:#1a1a2e;border:1px solid #444;color:#e8e8e8;border-radius:6px;resize:vertical;font-size:0.85em"></textarea>
+</div>
+
+<div style="font-size:0.75em;color:#aaa;margin:6px 0 10px;line-height:1.6">
+  💡 Actions <b>haute valeur</b> (mediation, creation) ou 2e validation de la semaine = <b>2 temoins independants requis</b>.<br>
+  💡 Un temoin ne peut pas valider quelqu'un qui l'a deja valide cette semaine.
+</div>
+
+<button id="btnWitnessSend" onclick="witnessAction()">✅ Soumettre le temoignage</button>
+<div class="hint">Bonus temoin = 10% des points, si tu as deja ete reconnu(e) au moins une fois.</div>
 <div class="msg" id="wMsg"></div>
-<div class="rw" style="margin-top:10px"><button id="btnNegHub" class="btnNuclear" onclick="openNegativeHub()">Lancement alerte rouge: temoignages de faits negatifs</button></div>
+
+<div class="rw" style="margin-top:14px">
+  <button id="btnNegHub" class="btnNuclear" onclick="openNegativeHub()">🚨 Lancement alerte rouge : temoignages de faits negatifs</button>
+</div>
 </article>
 </section>
 
@@ -196,20 +173,6 @@
 <div class="rw" style="margin-top:8px"><button id="btnVideos" onclick="openTracked('academy','VIDEO_HUB','hub_videos.html')">Hub Videos</button><button id="btnNeocities" onclick="openTracked('external','NEOCITIES_HUB','https://cpebru.neocities.org/cpebru_hub_index%20%283%29')">Neocities</button></div>
 <div class="rw" style="margin-top:8px"><button class="btn2" onclick="syncPixhare()">Importer CP PIXHARe</button></div>
 </article>
-<section id="rewardsSection" style="display:none">
-  <article class="card" style="padding:12px;margin-top:12px">
-    <button id="rewardsToggle" onclick="toggleRewardsList()">
-      &#127942; Mes R&#233;compenses <span>&#9660;</span>
-    </button>
-    <div id="rewardsList"></div>
-    <div id="secretGameCard">
-      <div class="secret-title">&#127918; Jeu Secret d&#233;bloqu&#233; !</div>
-      <div class="secret-desc">Tu as d&#233;bloqu&#233; <strong>"Les Chevaliers de la Justice"</strong> !<br>Bravo ! Tous les 500 XP gagn&#233;s, ton personnage sera plus puissant !<br><em>Alors, progresse, jeune page !</em></div>
-      <a href="Chevaliers_Justice.html" target="_blank" class="btn2" style="display:inline-block;text-decoration:none;margin-top:6px">&#9876; Jouer maintenant</a>
-    </div>
-  </article>
-</section>
-
 <article class="card">
 <h3 style="color:#ffd700">Delegues</h3>
 <p class="hint" style="margin:0 0 8px">Formation, missions et ressources des delegues de classe.</p>
@@ -262,6 +225,8 @@
 </div>
 <h3 style="margin-top:10px">Missions Citoyennes (admin)</h3>
 <div id="missionAdmin" class="grid3"></div>
+<h3 style="margin-top:10px">Pre-temoignages Positifs</h3>
+<div class="mini"><table><thead><tr><th>Date</th><th>1er Temoin</th><th>2e Temoin</th><th>Cible</th><th>Action</th><th>Statut</th><th>Action admin</th></tr></thead><tbody id="posBody"></tbody></table></div>
 <h3 style="margin-top:10px">Pre-signalements Negatifs</h3>
 <div class="mini"><table><thead><tr><th>Date</th><th>Temoin</th><th>Cible</th><th>Fait</th><th>Statut</th><th>Action</th></tr></thead><tbody id="negBody"></tbody></table></div>
 <div class="msg" id="aMsg"></div>
@@ -339,14 +304,44 @@
 <script src="videos_catalog.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const KEY='pvs_hof_v2',ACTIVE_PLAYER_KEY='pvs_current_player',BRIDGE_KEY='pvs_bridge_events',DEFAULT_CODES_FILE='students.csv',ADULT_DEFAULT_FILE='codes_100_lignes.csv',PARENT_DEFAULT_FILE='parents.csv',ADMIN_PASS='CPE59!-Chateau-70+',RULES_SEEN_KEY='pvs_rules_seen_v1',TUTORIAL_SEEN_KEY='pvs_tutorial_seen_v1',VISITOR_ARTICLE_SEEN_KEY='pvs_visitor_article_seen_v1',VISITOR_CODE='VISITEUR-VIESCOLAIRE-CHATEAURANCE',SESSION_AUTH_KEY='pvs_session_auth_v1',ADMIN_SESSION_KEY='pvs_admin_session_v1',SYNC_URL_KEY='pvs_sync_url',SYNC_REV_KEY='pvs_sync_rev',DEFAULT_SYNC_URL='http://127.0.0.1:8765',AUDIO_PREF_KEY='pvs_audio_pref_v1',AUDIO_VOL_KEY='pvs_audio_vol_v1',AUDIO_SOURCE_KEY='pvs_audio_source_v1';
+const KEY='pvs_hof_v2',ACTIVE_PLAYER_KEY='pvs_current_player',BRIDGE_KEY='pvs_bridge_events',DEFAULT_CODES_FILE='students.csv',ADULT_DEFAULT_FILE='adults.csv',PARENT_DEFAULT_FILE='parents.csv',ADMIN_PASS='CPE59!-Chateau-70+',RULES_SEEN_KEY='pvs_rules_seen_v1',TUTORIAL_SEEN_KEY='pvs_tutorial_seen_v1',VISITOR_ARTICLE_SEEN_KEY='pvs_visitor_article_seen_v1',VISITOR_CODE='VISITEUR-VIESCOLAIRE-CHATEAURANCE',SESSION_AUTH_KEY='pvs_session_auth_v1',ADMIN_SESSION_KEY='pvs_admin_session_v1',SYNC_URL_KEY='pvs_sync_url',SYNC_REV_KEY='pvs_sync_rev',DEFAULT_SYNC_URL='http://127.0.0.1:8765',AUDIO_PREF_KEY='pvs_audio_pref_v1',AUDIO_VOL_KEY='pvs_audio_vol_v1',AUDIO_SOURCE_KEY='pvs_audio_source_v1';
 const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
 const CIT={representant_ca:{title:'Representant CA',label:'Grand Stratege',xp:500},cadet:{title:'Cadet securite',label:'Gardien de la Cite',xp:450},ambassadeur:{title:'Ambassadeur pHARe',label:'Sentinelle de la Paix',xp:400},delegue:{title:'Delegue classe',label:'Porte-Voix',xp:350},eco_delegue:{title:'Eco-delegue',label:'Protecteur Nature',xp:300}};
 const ACT={tutorat:{l:'Tutorat / aide aux devoirs',x:100},mediation:{l:'Mediation de conflit',x:150},ramassage:{l:'Ramassage d ordures spontane',x:40},soutien:{l:'Soutien a un eleve isole',x:120},creation:{l:'Creation chanson / video NAH',x:200}};
+
+// ══════════════════════════════════════
+// CONFIG EMAILJS — à renseigner une fois
+// ══════════════════════════════════════
+const EMAILJS_PUBLIC_KEY  = 'VOTRE_CLE_PUBLIQUE'; // https://dashboard.emailjs.com
+const EMAILJS_SERVICE_ID  = 'VOTRE_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'VOTRE_TEMPLATE_ID';
+const EMAIL_DESTINATAIRE  = 'aurelien.brulois@eclat-bfc.fr';
+let _emailjsInit = false;
+function initEmailJS(){
+  if(_emailjsInit||EMAILJS_PUBLIC_KEY==='VOTRE_CLE_PUBLIQUE')return;
+  try{emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});_emailjsInit=true;}catch(e){}
+}
+function sendEmail(sujet, params){
+  initEmailJS();
+  if(!_emailjsInit)return;
+  const p=Object.assign({destinataire:EMAIL_DESTINATAIRE,sujet,semaine:wk(new Date()),date:new Date().toLocaleString('fr-FR')},params);
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, p).catch(()=>{});
+}
+
+// ══════════════════════════════════════
+// CONSTANTES ANTI-TRICHE
+// ══════════════════════════════════════
+const JETON_MAX       = 3;   // validations positives max/semaine/témoin
+const JETON_WARN      = 2;   // avertissement dès ce seuil
+const RECU_MAX        = 2;   // validations reçues max/semaine/joueur
+const HIGH_VALUE_KEYS = ['mediation','creation']; // double-témoin obligatoire
+const HIGH_VALUE_XP   = 150; // ou au-delà de ce seuil XP
+const MAL_FAUX_DOUBLE = -1000; // malus faux témoignage en contexte double-témoin
+
 const MAL={incivilite:{l:'Incivilite (-50)',x:-50},agressivite:{l:'Agressivite verbale (-150)',x:-150},degradation:{l:'Degradation materiel (-300)',x:-300},faux_temoignage:{l:'Faux temoignage (-500)',x:-500},reset_total:{l:'RESET total',x:0}};
 const VIDEOS=(Array.isArray(window.PVS_VIDEOS)&&window.PVS_VIDEOS.length)?window.PVS_VIDEOS:[{id:'YT_01',title:'Video 01',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'pHARe-SOLO',offer:20,reward:80},{id:'YT_02',title:'Video 02',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'EMPREINTE-2022',offer:20,reward:80}];
 const AUDIO_FILES=['Tous Ensemble Aujourd\u2019hui.mp3',"Tous Ensemble Aujourd'hui.mp3",'Tous_Ensemble_Aujourd_hui.mp3'];
-let S={week:'',players:{},logs:[],seen:{},registry:[],registry_source:'',adults:[],adults_source:'',parents:[],parents_source:'',neg_reports:[],citizen_lists:{}},REG={j:{},t:{},p:{}},ADW={},ADW_J={},PRW={},PRP={},cur='',mode='global',adminOn=false,isVisitor=false,tutoIdx=0,tutoFocusEl=null,syncRev=Number(localStorage.getItem(SYNC_REV_KEY)||0),syncOnline=false,syncMutePush=false,syncPushTimer=null,audioIdx=0,audioTryRaw=false,audioRetries=0;
+let S={week:'',players:{},logs:[],seen:{},registry:[],registry_source:'',adults:[],adults_source:'',parents:[],parents_source:'',neg_reports:[],pos_reports:[],citizen_lists:{}},REG={j:{},t:{},p:{}},ADW={},PRW={},PRP={},cur='',mode='global',adminOn=false,isVisitor=false,tutoIdx=0,tutoFocusEl=null,syncRev=Number(localStorage.getItem(SYNC_REV_KEY)||0),syncOnline=false,syncMutePush=false,syncPushTimer=null,audioIdx=0,audioTryRaw=false,audioRetries=0;
 const TUTO_STEPS=[
   {sel:'#profile',title:'1/10 Profil joueur',text:'Ici tu suis ton XP global, hebdo, citoyen, academie et videos.'},
   {sel:'#wCode',title:'2/10 Temoignage',text:'Saisis ton code temoin puis le code public cible pour reconnaitre un acte positif.'},
@@ -366,15 +361,15 @@ function idxAny(heads,list){for(const k of list){const i=heads.indexOf(k);if(i>=
 function rowObjFromText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(raw.length<2)return null;const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const vals=splitLine(raw[1],delim);const obj={};heads.forEach((h,i)=>{obj[h]=String(vals[i]??'')});return obj}
 function numOr(v,d){const n=Number(v);return Number.isFinite(n)?n:Number(d||0)}
 function parseCodesText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iJ=idxAny(heads,['code_joueur','joueur','player_code']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);const iP=idxAny(heads,['code_public','public_code','code_public_joueur','code_public_eleve']);if(iJ<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const cj=nCode(demojibake(cols[iJ]||''));const ct=nCode(demojibake((iT>=0?cols[iT]:'')||''));const cp=nCode(demojibake((iP>=0?cols[iP]:'')||''));if(!cj&&!ct)continue;rows.push({nom,prenom,code_joueur:cj,code_temoin:ct,code_public:cp||defaultPublicCode(cj)})}return rows}
-function parseAdultsText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);const iJ=idxAny(heads,['code_joueur','player_code']);if(iT<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const ct=nCode(demojibake(cols[iT]||''));const cj=iJ>=0?nCode(demojibake(cols[iJ]||'')):null;if(!ct)continue;rows.push({nom,prenom,code_temoin:ct,code_joueur:cj||''})}return rows}
+function parseAdultsText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);if(iT<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const ct=nCode(demojibake(cols[iT]||''));if(!ct)continue;rows.push({nom,prenom,code_temoin:ct})}return rows}
 function ensureCitizenLists(){if(!S.citizen_lists||typeof S.citizen_lists!=='object')S.citizen_lists={};Object.keys(CIT).forEach(k=>{if(!Array.isArray(S.citizen_lists[k]))S.citizen_lists[k]=[];S.citizen_lists[k]=S.citizen_lists[k].map(nCode).filter(Boolean)})}
-function mkP(code){return{code,witness:'',cp:{pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0},obj:{},socialG:0,socialW:0,wBonusG:0,wBonusW:0,videoG:0,videoW:0,malusG:0,malusW:0,witnessGiven:0,recognizedReceived:0,up:new Date().toISOString(),_v2:1}}
+function mkP(code){return{code,witness:'',cp:{pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0},obj:{},socialG:0,socialW:0,wBonusG:0,wBonusW:0,videoG:0,videoW:0,malusG:0,malusW:0,witnessGiven:0,witnessGivenW:0,receivedW:0,pairW:{},flaggedExcess:0,recognizedReceived:0,up:new Date().toISOString(),_v2:1}}
 function wk(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=(x.getUTCDay()+6)%7;x.setUTCDate(x.getUTCDate()-day+3);const f=new Date(Date.UTC(x.getUTCFullYear(),0,4));const w=1+Math.round((x-f)/604800000);return `${x.getUTCFullYear()}-W${String(w).padStart(2,'0')}`}
 function buildRegistry(){REG={j:{},t:{},p:{}};(S.registry||[]).forEach(r=>{const cj=nCode(r.code_joueur||'');const ct=nCode(r.code_temoin||'');const cp=nCode(r.code_public||'')||cj;if(!cj)return;REG.j[cj]={nom:r.nom||'',prenom:r.prenom||'',code_joueur:cj,code_temoin:ct,code_public:cp};if(ct)REG.t[ct]=cj;if(cp)REG.p[cp]=cj})}
-function buildAdultMap(){ADW={};ADW_J={};(S.adults||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');if(ct)ADW[ct]=1;const cj=nCode(a.code_joueur||'');if(cj)ADW_J[cj]=1})}
+function buildAdultMap(){ADW={};(S.adults||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');if(ct)ADW[ct]=1})}
 function buildParentMap(){PRW={};PRP={};(S.parents||[]).forEach(p=>{const cj=nCode(p.code_joueur||'');const cp=nCode(p.code_public||'')||defaultPublicCode(cj);if(!cj)return;PRW[cj]={nom:p.nom||'',prenom:p.prenom||'',code_joueur:cj,code_public:cp};if(cp)PRP[cp]=cj})}
 function norm(){ensureCitizenLists();Object.keys(S.players).forEach(code=>{const p=S.players[code]||{};if(!p.cp||typeof p.cp!=='object')p.cp={pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0};Object.keys(W).forEach(k=>p.cp[k]=Number(p.cp[k]||0));if(!p.obj||typeof p.obj!=='object')p.obj={};if(!p._v2){p.socialG=Number(p.socialG||0)+Number(p.sg||0);p.socialW=Number(p.socialW||0)+Number(p.sw||0);p.malusG=Number(p.malusG||0)+Number(p.mg||0);p.malusW=Number(p.malusW||0)+Number(p.mw||0);p._v2=1}else{p.socialG=Number(p.socialG||0);p.socialW=Number(p.socialW||0);p.malusG=Number(p.malusG||0);p.malusW=Number(p.malusW||0)}p.wBonusG=Number(p.wBonusG||0);p.wBonusW=Number(p.wBonusW||0);p.videoG=Number(p.videoG||0);p.videoW=Number(p.videoW||0);p.witnessGiven=Math.max(0,Number(p.witnessGiven||0));p.recognizedReceived=Math.max(0,Number(p.recognizedReceived||0));p.witness=String(p.witness||'');if(REG.j[code]&&REG.j[code].code_temoin)p.witness=REG.j[code].code_temoin;else if(ADW[code]&&!p.witness)p.witness=code;S.players[code]=p});if(!Array.isArray(S.logs))S.logs=[];if(!S.seen||typeof S.seen!=='object')S.seen={};if(!Array.isArray(S.registry))S.registry=[];S.registry=S.registry.map(r=>({nom:demojibake(String(r.nom||'').trim()),prenom:demojibake(String(r.prenom||'').trim()),code_joueur:nCode(r.code_joueur||''),code_temoin:nCode(r.code_temoin||''),code_public:nCode(r.code_public||'')||defaultPublicCode(r.code_joueur||'')})).filter(r=>r.code_joueur);if(!Array.isArray(S.adults))S.adults=[];S.adults=S.adults.map(a=>({nom:demojibake(String(a.nom||'').trim()),prenom:demojibake(String(a.prenom||'').trim()),code_temoin:nCode(a.code_temoin||'')})).filter(a=>a.code_temoin);if(!Array.isArray(S.parents))S.parents=[];S.parents=S.parents.map(p=>({nom:demojibake(String(p.nom||'').trim()),prenom:demojibake(String(p.prenom||'').trim()),code_joueur:nCode(p.code_joueur||''),code_public:nCode(p.code_public||'')||defaultPublicCode(p.code_joueur||'')})).filter(p=>p.code_joueur);if(!Array.isArray(S.neg_reports))S.neg_reports=[]}
-function resetWeek(){const cw=wk(new Date());if(S.week!==cw){Object.values(S.players).forEach(p=>{p.socialW=0;p.wBonusW=0;p.videoW=0;p.malusW=0});S.week=cw}}
+function resetWeek(){const cw=wk(new Date());if(S.week!==cw){Object.values(S.players).forEach(p=>{p.socialW=0;p.wBonusW=0;p.videoW=0;p.malusW=0;p.witnessGivenW=0;p.receivedW=0;p.pairW=p.pairW||{}});S.week=cw}}
 function load(){try{const j=localStorage.getItem(KEY);if(j){const p=JSON.parse(j);if(p&&typeof p==='object'){S={week:p.week||'',players:p.players||{},logs:Array.isArray(p.logs)?p.logs:[],seen:p.seen||{},registry:Array.isArray(p.registry)?p.registry:[],registry_source:String(p.registry_source||''),adults:Array.isArray(p.adults)?p.adults:[],adults_source:String(p.adults_source||''),parents:Array.isArray(p.parents)?p.parents:[],parents_source:String(p.parents_source||''),neg_reports:Array.isArray(p.neg_reports)?p.neg_reports:[],citizen_lists:p.citizen_lists||{}}}}}catch(e){S={week:'',players:{},logs:[],seen:{},registry:[],registry_source:'',adults:[],adults_source:'',parents:[],parents_source:'',neg_reports:[],citizen_lists:{}}}buildRegistry();norm();buildAdultMap();buildParentMap();resetWeek();save(false)}
 function save(push=true){localStorage.setItem(KEY,JSON.stringify(S));if(push&&sessionStorage.getItem(SESSION_AUTH_KEY)==='1'){scheduleSyncPush();scheduleSbPush();scheduleSbGlobalPush()}}
 function gp(code){const c=nCode(code);if(!c)return null;if(!S.players[c])S.players[c]=mkP(c);if(REG.j[c]&&REG.j[c].code_temoin)S.players[c].witness=REG.j[c].code_temoin;else if(ADW[c]&&!S.players[c].witness)S.players[c].witness=c;return S.players[c]}
@@ -420,10 +415,10 @@ async function syncPing(){try{const res=await syncFetch('/api/ping');if(!res.ok)
 async function syncPull(showMsg){try{const res=await syncFetch('/api/state');if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok&&j.state&&typeof j.state==='object'))throw new Error('bad');syncOnline=true;const rev=Number(j.rev||0);if(rev>Number(syncRev||0)){syncRev=rev;localStorage.setItem(SYNC_REV_KEY,String(syncRev));syncMutePush=true;try{S=j.state;buildRegistry();norm();buildAdultMap();resetWeek();localStorage.setItem(KEY,JSON.stringify(S));refresh()}finally{syncMutePush=false}}updateSyncInfo(showMsg?`Sync pull OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync pull impossible (serveur hors ligne).':'');return false}}
 async function syncPush(showMsg){if(syncMutePush)return false;try{const payload={state:S,client:cur||'ANON',source:'index.html',sent_at:new Date().toISOString(),base_rev:Number(syncRev||0)};const res=await syncFetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error('http');const j=await res.json();if(!(j&&j.ok))throw new Error('bad');syncOnline=true;syncRev=Number(j.rev||syncRev||0);localStorage.setItem(SYNC_REV_KEY,String(syncRev));updateSyncInfo(showMsg?`Sync push OK | rev ${syncRev}`:'');return true}catch(e){syncOnline=false;updateSyncInfo(showMsg?'Sync push impossible (serveur hors ligne).':'');return false}}
 function isVisitorCode(code){return nCode(code)===VISITOR_CODE}
-function hasRefCodes(){return Object.keys(REG.j).length>0||Object.keys(ADW).length>0||Object.keys(ADW_J).length>0||Object.keys(PRW).length>0}
-function isAdultPlayerCode(code){const c=nCode(code);return !!(ADW[c]||ADW_J[c])}
+function hasRefCodes(){return Object.keys(REG.j).length>0||Object.keys(ADW).length>0||Object.keys(PRW).length>0}
+function isAdultPlayerCode(code){const c=nCode(code);return !!ADW[c]}
 function isParentPlayerCode(code){const c=nCode(code);return !!PRW[c]}
-function isKnownPlayerCode(code){const c=nCode(code);return !!(c&&(REG.j[c]||ADW[c]||ADW_J[c]||PRW[c]))}
+function isKnownPlayerCode(code){const c=nCode(code);return !!(c&&(REG.j[c]||ADW[c]||PRW[c]))}
 function showHub(show){const a=document.getElementById('authGate'),h=document.getElementById('hubScreen');if(a)a.style.display=show?'none':'flex';if(h)h.style.display=show?'block':'none'}
 function renderAdminMode(){const c=document.getElementById('adminConsole'),h=document.getElementById('adminHint');if(c)c.style.display=adminOn?'block':'none';if(h)h.textContent=adminOn?'Mode admin actif.':'Mode admin inactif.'}
 function openAuthGate(msg){adminOn=false;sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);showHub(false);closeVisitorArticle();closeTutorial();renderAdminMode();if(msg)sm('authMsg',msg,false);else cm('authMsg')}
@@ -446,7 +441,7 @@ function renderProfile(){const c=document.getElementById('profile'),h=document.g
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=Object.keys(ADW).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
-function refresh(){resetWeek();save();checkMilestones();renderRewardsSection();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();updateCodesInfo();updateVisitorUi();renderTutorial()}
+function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderPosReports();updateCodesInfo();updateVisitorUi();renderTutorial()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
@@ -467,7 +462,242 @@ function downloadPlayerBackup(){if(!guardPlayerBackup())return;const p=S.players
 function importPlayerBackup(){if(!guardPlayerBackup())return;const el=document.getElementById('playerBackupFile');if(!el||!el.files||!el.files[0]){sm('pbMsg','Choisir un fichier .csv.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{try{const row=rowObjFromText(rd.result||'');if(!row)throw new Error('row');const code=nCode(row.code_joueur||row.joueur||row.player_code||'');if(!code||code!==cur){sm('pbMsg','Le fichier ne correspond pas au joueur connecte.',false);return}const p=gp(cur);p.cp.pixhare=Math.max(0,Math.floor(numOr(row.cp_pixhare,p.cp.pixhare)));p.cp.psc1=Math.max(0,Math.floor(numOr(row.cp_psc1,p.cp.psc1)));p.cp.sanctuaire=Math.max(0,Math.floor(numOr(row.cp_sanctuaire,p.cp.sanctuaire)));p.cp.loge=Math.max(0,Math.floor(numOr(row.cp_loge,p.cp.loge)));p.cp.autres=Math.max(0,Math.floor(numOr(row.cp_autres,p.cp.autres)));p.socialG=numOr(row.socialg,p.socialG);p.socialW=numOr(row.socialw,p.socialW);p.wBonusG=numOr(row.wbonusg,p.wBonusG);p.wBonusW=numOr(row.wbonusw,p.wBonusW);p.videoG=numOr(row.videog,p.videoG);p.videoW=numOr(row.videow,p.videoW);p.malusG=numOr(row.malusg,p.malusG);p.malusW=numOr(row.malusw,p.malusW);p.witnessGiven=Math.max(0,Math.floor(numOr(row.witnessgiven,p.witnessGiven)));p.recognizedReceived=Math.max(0,Math.floor(numOr(row.recognizedreceived,p.recognizedReceived)));const witnessRaw=nCode(row.code_temoin||'');if(witnessRaw)p.witness=witnessRaw;const objRaw=String(row.obj_json||row.obj||'').trim();if(objRaw){try{const o=JSON.parse(objRaw);if(o&&typeof o==='object')p.obj=o}catch(e){}}p.up=new Date().toISOString();logEv(cur,'BACKUP_IMPORT','LOCAL',0);save();refresh();sm('pbMsg','Sauvegarde joueur importee.',true)}catch(e){sm('pbMsg','Fichier de sauvegarde invalide.',false)}};rd.onerror=()=>sm('pbMsg','Lecture du fichier impossible.',false);rd.readAsText(f)}
 function resolveWitness(wc){const c=nCode(wc);if(!c)return null;if(REG.t[c])return {kind:'student',player:REG.t[c],code:c};if(ADW[c])return {kind:'adult',code:c};if(hasRefCodes())return null;for(const k of Object.keys(S.players)){if(nCode(S.players[k].witness)===c)return {kind:'student',player:k,code:c}}return null}
 function resolvePublicTarget(v){const c=nCode(v);if(!c)return '';if(REG.p[c])return REG.p[c];if(PRP[c])return PRP[c];if(REG.j[c]||PRW[c]||ADW[c])return c;if(hasRefCodes())return '';return c}
-function witnessAction(){cm('wMsg');if(isVisitor){const targetDemo=nCode(document.getElementById('tCode').value),kDemo=document.getElementById('aType').value,aDemo=ACT[kDemo];if(!targetDemo||!aDemo){sm('wMsg','Mode visiteur: renseigner une cible et une action pour la simulation.',false);return}sm('wMsg',`Mode visiteur: simulation envoyee (+${aDemo.x} XP pour ${targetDemo}), sans impact reel.`,true);return}if(isParentPlayerCode(cur)){sm('wMsg','Les comptes parents ne peuvent pas temoigner.',false);return}const rawW=document.getElementById('wCode').value,rawT=document.getElementById('tCode').value,k=document.getElementById('aType').value;const w=resolveWitness(rawW);if(!w){const wc=nCode(rawW);if(!wc)sm('wMsg','Code temoin vide. Saisis ton code temoin personnel (colonne 4 du referentiel).',false);else if(hasRefCodes())sm('wMsg',`Code temoin "${wc}" non reconnu dans le referentiel officiel. Verifie que tu utilises bien le code TEMOIN (col.4) et non le code joueur.`,false);else sm('wMsg',`Code temoin "${wc}" introuvable. Charge le referentiel en admin ou verifie le code.`,false);return}const targetPublic=nCode(rawT),t=resolvePublicTarget(targetPublic);if(!t){if(!targetPublic)sm('wMsg','Code public cible vide. Saisis le code public du camarade (colonne 5).',false);else if(hasRefCodes())sm('wMsg',`Code public cible "${targetPublic}" absent du referentiel officiel.`,false);else sm('wMsg',`Code public cible "${targetPublic}" introuvable.`,false);return}if(hasRefCodes()&&!isKnownPlayerCode(t)){sm('wMsg','Code public cible absent du referentiel officiel.',false);return}if(w.kind==='student'&&hasRefCodes()&&(!REG.j[w.player])){sm('wMsg','Code temoin eleve absent du referentiel officiel.',false);return}if(w.kind==='student'&&w.player===t){sm('wMsg','Temoin et cible doivent etre differents.',false);return}const a=ACT[k];if(!a){sm('wMsg','Action invalide.',false);return}const tp=gp(t);if(w.kind==='adult'){const gain=Math.max(1,Math.round(a.x/2));tp.socialG+=gain;tp.socialW+=gain;tp.recognizedReceived+=1;logEv(w.code,'WITNESS_ADULT',targetPublic||t,gain);save();refresh();sm('wMsg',`Temoignage adulte: +${gain} XP pour ${t} (2x moins qu'un eleve).`,true);return}const wp=gp(w.player);tp.socialG+=a.x;tp.socialW+=a.x;tp.recognizedReceived+=1;wp.witnessGiven+=1;let bonus=0;if(Number(wp.recognizedReceived||0)>0){bonus=Math.max(1,Math.round(a.x*0.10));wp.wBonusG+=bonus;wp.wBonusW+=bonus}logEv(w.player,'WITNESS',targetPublic||t,a.x);if(bonus>0)logEv(w.player,'WITNESS_BONUS',w.player,bonus);save();refresh();sm('wMsg',bonus>0?`+${a.x} XP pour ${t} | +${bonus} XP pour ${w.player}`:`+${a.x} XP pour ${t}. Bonus temoin non actif (pas encore reconnu).`,true)}
+function witnessAction(){
+  cm('wMsg');
+  // ── Mode visiteur
+  if(isVisitor){
+    const targetDemo=nCode(document.getElementById('tCode').value),kDemo=document.getElementById('aType').value,aDemo=ACT[kDemo];
+    if(!targetDemo||!aDemo){sm('wMsg','Mode visiteur: renseigner une cible et une action.',false);return}
+    sm('wMsg',`Mode visiteur: simulation (+${aDemo.x} XP pour ${targetDemo}), sans impact reel.`,true);return;
+  }
+  if(isParentPlayerCode(cur)){sm('wMsg','Les comptes parents ne peuvent pas temoigner.',false);return}
+
+  const rawW=document.getElementById('wCode').value;
+  const rawT=document.getElementById('tCode').value;
+  const k=document.getElementById('aType').value;
+  const desc=(document.getElementById('wDesc')||{}).value||'';
+
+  // ── Résolution témoin
+  const w=resolveWitness(rawW);
+  if(!w){
+    const wc=nCode(rawW);
+    if(!wc)sm('wMsg','⚠ Code temoin vide.',false);
+    else if(hasRefCodes())sm('wMsg',`⚠ Code temoin "${wc}" non reconnu dans le referentiel.`,false);
+    else sm('wMsg',`⚠ Code temoin "${wc}" introuvable.`,false);
+    return;
+  }
+
+  // ── Résolution cible
+  const targetPublic=nCode(rawT),t=resolvePublicTarget(targetPublic);
+  if(!t){
+    if(!targetPublic)sm('wMsg','⚠ Code public cible vide.',false);
+    else if(hasRefCodes())sm('wMsg',`⚠ Code "${targetPublic}" absent du referentiel.`,false);
+    else sm('wMsg',`⚠ Code "${targetPublic}" introuvable.`,false);
+    return;
+  }
+  if(hasRefCodes()&&!isKnownPlayerCode(t)){sm('wMsg','⚠ Code public cible absent du referentiel.',false);return}
+  if(w.kind==='student'&&hasRefCodes()&&!REG.j[w.player]){sm('wMsg','⚠ Code temoin eleve absent du referentiel.',false);return}
+  if(w.kind==='student'&&w.player===t){sm('wMsg','⚠ Temoin et cible doivent etre differents.',false);return}
+
+  const a=ACT[k];
+  if(!a){sm('wMsg','⚠ Action invalide.',false);return}
+  const tp=gp(t);
+  const cw=wk(new Date());
+
+  // ── Adulte : règles allégées (pas de jetons)
+  if(w.kind==='adult'){
+    const gain=Math.max(1,Math.round(a.x/2));
+    tp.socialG+=gain;tp.socialW+=gain;tp.recognizedReceived+=1;tp.receivedW=(tp.receivedW||0)+1;
+    logEv(w.code,'WITNESS_ADULT',targetPublic||t,gain);
+    sendEmail('✅ Temoignage ADULTE positif',{
+      type:'Temoignage positif (adulte)',temoin:w.code,cible:targetPublic||t,
+      action:a.l,points:gain,description:desc,statut:'Applique immediatement'});
+    save();refresh();
+    sm('wMsg',`Temoignage adulte enregistre : +${gain} XP pour ${t}.`,true);
+    return;
+  }
+
+  // ── Élève témoin : toutes les règles anti-triche
+  const wp=gp(w.player);
+  wp.witnessGivenW=Number(wp.witnessGivenW||0);
+  wp.pairW=wp.pairW||{};
+  tp.receivedW=Number(tp.receivedW||0);
+  tp.pairW=tp.pairW||{};
+
+  // RÈGLE 1 — Paire symétrique : si la cible a déjà validé le témoin cette semaine
+  if(tp.pairW[w.player]===cw){
+    sm('wMsg','⛔ ANTI-TRICHE : Ce camarade t\'a deja valide cette semaine. Validation reciproque interdite.',false);
+    return;
+  }
+
+  // RÈGLE 2 — Jetons témoin
+  if(wp.witnessGivenW>=JETON_MAX){
+    wp.flaggedExcess=(wp.flaggedExcess||0)+1;
+    logEv(w.player,'JETON_DEPASSE',t,0);
+    save();refresh();
+    sm('wMsg',`⛔ Tu as atteint ta limite de ${JETON_MAX} temoignages cette semaine. `+
+      `Tu es convoqu${wp.flaggedExcess>1?'e (RECIDIVE)':'e'} par M. Brulois pour argumenter tes choix. `+
+      `Faux temoignage = -500 XP minimum.`,false);
+    sendEmail('⚠ DEPASSEMENT JETONS TEMOIN',{
+      type:'Alerte anti-triche — dépassement jetons',temoin:w.player,cible:targetPublic||t,
+      action:a.l,description:desc,statut:`DEPASSEMENT (${wp.witnessGivenW}/${JETON_MAX}) — Convocation requise`,
+      recidive:wp.flaggedExcess>1?'OUI':'NON'});
+    return;
+  }
+
+  // RÈGLE 3 — Plafond reçu
+  if(tp.receivedW>=RECU_MAX){
+    sm('wMsg',`⛔ ${t} a deja recu le maximum de ${RECU_MAX} validations cette semaine.`,false);
+    return;
+  }
+
+  // RÈGLE 4 — Double témoin requis ?
+  const needDouble=HIGH_VALUE_KEYS.includes(k)||a.x>=HIGH_VALUE_XP||tp.receivedW>=1;
+  if(needDouble){
+    // Vérifier si un pos_report en attente existe déjà pour cette paire/action
+    const existing=(S.pos_reports||[]).find(r=>
+      r.status==='pending_2nd'&&r.target_player===t&&r.action_key===k&&
+      r.witness1_player!==w.player&&r.week===cw);
+    if(existing){
+      // 2e témoin → validation finale
+      applyPosReportWith2nd(existing.id, w, wp, desc);
+      return;
+    }
+    // Vérifier qu'un report de ce témoin pour cette cible n'existe pas déjà
+    const dupW=(S.pos_reports||[]).find(r=>
+      r.status==='pending_2nd'&&r.target_player===t&&r.witness1_player===w.player&&r.week===cw);
+    if(dupW){
+      sm('wMsg','⚠ Tu as deja soumis un pre-temoignage pour ce camarade/action cette semaine. En attente d\'un 2e temoin.',true);
+      return;
+    }
+    // 1er témoin → mise en attente
+    if(!Array.isArray(S.pos_reports))S.pos_reports=[];
+    const rId=Date.now()+Math.random().toString(36).slice(2,7);
+    S.pos_reports.unshift({
+      id:String(rId),d:new Date().toISOString(),week:cw,
+      witness1_code:rawW,witness1_player:w.player,
+      witness2_code:'',witness2_player:'',
+      target_public:targetPublic,target_player:t,
+      action_key:k,action_label:a.l,action_xp:a.x,
+      description:desc,status:'pending_2nd',
+      double_context:HIGH_VALUE_KEYS.includes(k)?'high_value':'received_already'
+    });
+    if(S.pos_reports.length>400)S.pos_reports.length=400;
+    wp.witnessGivenW++;
+    wp.witnessGiven++;
+    wp.pairW[t]=cw;
+    const warn=wp.witnessGivenW>=JETON_WARN?
+      ` ⚠ Attention : il te reste ${JETON_MAX-wp.witnessGivenW} jeton(s) cette semaine.`:'';
+    logEv(w.player,'WITNESS_PENDING',targetPublic||t,a.x);
+    sendEmail('⏳ Pre-temoignage positif — en attente 2e temoin',{
+      type:`Temoignage positif EN ATTENTE (${HIGH_VALUE_KEYS.includes(k)?'action haute valeur':'deja valide cette semaine'})`,
+      temoin1:w.player,temoin2:'EN ATTENTE',cible:targetPublic||t,
+      action:a.l,points:a.x,description:desc,statut:'En attente du 2e temoin independant'});
+    save();refresh();
+    sm('wMsg',`⏳ 1er temoignage enregistre pour "${a.l}". `+
+      `Un 2e temoin DIFFERENT doit confirmer (action ${HIGH_VALUE_KEYS.includes(k)?'haute valeur':'deja validee cette semaine'}). `+
+      `⚠ Faux temoignage = -${Math.abs(MAL_FAUX_DOUBLE)} XP pour chaque faux temoin.`+warn,true);
+    return;
+  }
+
+  // ── Validation simple immédiate
+  tp.socialG+=a.x;tp.socialW+=a.x;tp.recognizedReceived+=1;tp.receivedW++;
+  wp.witnessGiven++;wp.witnessGivenW++;
+  wp.pairW[t]=cw;
+  let bonus=0;
+  if(Number(wp.recognizedReceived||0)>0){
+    bonus=Math.max(1,Math.round(a.x*0.10));wp.wBonusG+=bonus;wp.wBonusW+=bonus;
+  }
+  const warn2=wp.witnessGivenW>=JETON_WARN?
+    ` ⚠ Plus qu'${JETON_MAX-wp.witnessGivenW} jeton(s) cette semaine avant convocation.`:'';
+  logEv(w.player,'WITNESS',targetPublic||t,a.x);
+  if(bonus>0)logEv(w.player,'WITNESS_BONUS',w.player,bonus);
+  sendEmail('✅ Temoignage positif validé',{
+    type:'Temoignage positif immediat',temoin:w.player,cible:targetPublic||t,
+    action:a.l,points:a.x,bonus_temoin:bonus,description:desc,statut:'Applique immediatement'});
+  save();refresh();
+  sm('wMsg',(bonus>0?`✅ +${a.x} XP pour ${t} | +${bonus} XP pour toi.`:
+    `✅ +${a.x} XP pour ${t}. Bonus non actif (pas encore reconnu).`)+warn2,true);
+}
+
+function applyPosReportWith2nd(id, w2, wp2, desc2){
+  const r=findPosRep(id);
+  if(!r){sm('wMsg','⚠ Pre-temoignage introuvable.',false);return}
+  r.witness2_code=w2.code;r.witness2_player=w2.player;
+  r.description2=desc2;r.status='applied';r.processed_at=new Date().toISOString();
+  const tp=gp(r.target_player);const a=ACT[r.action_key]||{x:r.action_xp||0,l:r.action_label||''};
+  tp.socialG+=a.x;tp.socialW+=a.x;tp.recognizedReceived+=1;tp.receivedW=(tp.receivedW||0)+1;
+  // Bonus pour chacun des deux témoins
+  [r.witness1_player,w2.player].forEach(wCode=>{
+    if(!wCode)return;
+    const wp=gp(wCode);if(!wp)return;
+    if(Number(wp.recognizedReceived||0)>0){
+      const b=Math.max(1,Math.round(a.x*0.10));wp.wBonusG+=b;wp.wBonusW+=b;
+      logEv(wCode,'WITNESS_BONUS',wCode,b);
+    }
+  });
+  wp2.witnessGiven++;wp2.witnessGivenW=(wp2.witnessGivenW||0)+1;
+  wp2.pairW=wp2.pairW||{};wp2.pairW[r.target_player]=wk(new Date());
+  logEv(w2.player,'WITNESS_2ND',r.target_public||r.target_player,a.x);
+  sendEmail('✅ Temoignage DOUBLE validé',{
+    type:'Double temoignage confirmé',temoin1:r.witness1_player,temoin2:w2.player,
+    cible:r.target_public||r.target_player,action:a.l,points:a.x,
+    description:r.description,description2:desc2,statut:'Applique — double validation'});
+  save();refresh();
+  sm('wMsg',`✅ 2e temoignage confirme ! +${a.x} XP pour ${r.target_player}.`,true);
+}
+
+function findPosRep(id){return(S.pos_reports||[]).find(r=>r.id===String(id))}
+
+function applyPosReport(id){
+  if(!guardAdmin())return;
+  const r=findPosRep(id);
+  if(!r||r.status!=='pending_2nd'){sm('aMsg','Impossible: non trouve ou deja traite.',false);return}
+  r.status='applied_admin';r.processed_at=new Date().toISOString();
+  const tp=gp(r.target_player);const a=ACT[r.action_key]||{x:r.action_xp||0,l:r.action_label||''};
+  tp.socialG+=a.x;tp.socialW+=a.x;tp.recognizedReceived+=1;tp.receivedW=(tp.receivedW||0)+1;
+  logEv(r.witness1_player||'ADMIN','WITNESS_ADMIN_APPLY',r.target_public||r.target_player,a.x);
+  save();refresh();sm('aMsg',`✅ Applique manuellement : +${a.x} XP pour ${r.target_player}.`,true);
+}
+
+function flagFalsePosReport(id){
+  if(!guardAdmin())return;
+  const r=findPosRep(id);
+  if(!r){sm('aMsg','Introuvable.',false);return}
+  r.status='faux';r.processed_at=new Date().toISOString();
+  const malPts=r.status==='applied'||r.status==='applied_admin'?
+    MAL_FAUX_DOUBLE:MAL.faux_temoignage.x;
+  [r.witness1_player,r.witness2_player].forEach(wCode=>{
+    if(!wCode)return;
+    const wp=gp(wCode);if(!wp)return;
+    wp.malusG+=malPts;wp.malusW+=malPts;
+    logEv(wCode,'FAUX_POS',r.target_public||r.target_player,malPts);
+  });
+  save();refresh();
+  sm('aMsg',`🚨 Faux temoignage marque : ${malPts} XP appliques a chaque temoin implique.`,true);
+}
+
+function renderPosReports(){
+  const b=document.getElementById('posBody');if(!b)return;
+  b.innerHTML='';
+  const rows=(S.pos_reports||[]).slice(0,150);
+  if(!rows.length){b.innerHTML='<tr><td colspan="7">Aucun pre-temoignage positif.</td></tr>';return}
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    const d=new Date(r.d||Date.now()).toLocaleString('fr-FR');
+    const t1=r.witness1_player||r.witness1_code||'-';
+    const t2=r.witness2_player||r.witness2_code||'⏳ EN ATTENTE';
+    const st=r.status||'pending_2nd';
+    const stLabel={pending_2nd:'⏳ Attente 2e temoin',applied:'✅ Valide (2 temoins)',
+      applied_admin:'✅ Valide (admin)',faux:'🚨 Faux temoignage'}[st]||st;
+    const acts=st==='pending_2nd'?
+      `<button class="btn2" onclick="applyPosReport('${r.id}')">✅ Valider</button> `+
+      `<button class="btn2" style="background:#8B0000" onclick="flagFalsePosReport('${r.id}')">🚨 Faux ×2 (${Math.abs(MAL_FAUX_DOUBLE)} XP)</button>`:'-';
+    tr.innerHTML=`<td>${d}</td><td>${t1}</td><td>${t2}</td><td>${r.target_public||'-'}</td>`+
+      `<td>${r.action_label||'-'}</td><td>${stLabel}</td><td>${acts}</td>`;
+    b.appendChild(tr);
+  });
+}
 function needCur(){if(!cur||!S.players[cur]){sm('sMsg','Connecter un joueur avant cette action.',false);return null}cm('sMsg');return S.players[cur]}
 function syncPixhare(){const p=needCur();if(!p)return;const v=['NUM','JUR','GRO','HIS'].map(k=>Number(localStorage.getItem(`PROG_${k}`)||0)).reduce((a,b)=>a+b,0);p.cp.pixhare=v;logEv(cur,'SYNC_PIXHARE','LOCAL',v*W.pixhare);save();refresh();sm('sMsg',`CP PIXHARe importes: ${v}`,true)}
 function syncPsc1(){const p=needCur();if(!p)return;let v=0;try{const d=JSON.parse(localStorage.getItem('psc1_progression')||'{}');v+=(Array.isArray(d.p1)?d.p1.length:0)+(Array.isArray(d.p2)?d.p2.length:0)+(Array.isArray(d.p3)?d.p3.length:0)+(Array.isArray(d.p4)?d.p4.length:0)+(Array.isArray(d.p5)?d.p5.length:0)}catch(e){v=0}p.cp.psc1=v;logEv(cur,'SYNC_PSC1','LOCAL',v*W.psc1);save();refresh();sm('sMsg',`CP PSC1 importes: ${v}`,true)}
@@ -492,7 +722,7 @@ async function loadDefaultCodes(showMsg){try{const res=await fetch(DEFAULT_CODES
 function importCodesFile(){if(!guardAdmin())return;const el=document.getElementById('codesFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseCodesText(rd.result||'');if(!rows.length){sm('aMsg','Aucune ligne code detectee.',false);return}setRegistry(rows,f.name);sm('aMsg',`Referentiel importe: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture impossible.',false);rd.readAsText(f)}
 function setAdults(rows,source){S.adults=(rows||[]).map(a=>({nom:demojibake(String(a.nom||'').trim()),prenom:demojibake(String(a.prenom||'').trim()),code_temoin:nCode(a.code_temoin||'')})).filter(a=>a.code_temoin);S.adults_source=String(source||'').trim();buildAdultMap();save();refresh()}
 function setParents(rows,source){S.parents=(rows||[]).map(p=>({nom:demojibake(String(p.nom||'').trim()),prenom:demojibake(String(p.prenom||'').trim()),code_joueur:nCode(p.code_joueur||''),code_public:nCode(p.code_public||'')||defaultPublicCode(p.code_joueur||'')})).filter(p=>p.code_joueur);S.parents_source=String(source||'').trim();buildParentMap();save();refresh()}
-async function loadDefaultAdults(showMsg){try{const res=await fetch(ADULT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseAdultsText(txt);if(!rows.length)throw new Error('empty');setAdults(rows,ADULT_DEFAULT_FILE);const regRows=parseCodesText(txt);if(regRows.length){const existingCodes=new Set((S.registry||[]).map(r=>nCode(r.code_joueur||'')));const newRows=regRows.filter(r=>!existingCodes.has(nCode(r.code_joueur||'')));if(newRows.length){S.registry=[...(S.registry||[]),...newRows];buildRegistry();norm();}}if(showMsg)sm('aMsg',`Adultes charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement adultes impossible. Importer manuellement.',false)}}
+async function loadDefaultAdults(showMsg){try{const res=await fetch(ADULT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseAdultsText(txt);if(!rows.length)throw new Error('empty');setAdults(rows,ADULT_DEFAULT_FILE);if(showMsg)sm('aMsg',`Temoins adultes charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement adultes impossible. Importer manuellement.',false)}}
 function importAdultFile(){if(!guardAdmin())return;const el=document.getElementById('adultFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier adultes TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseAdultsText(rd.result||'');if(!rows.length){sm('aMsg','Aucun temoin adulte detecte.',false);return}setAdults(rows,f.name);sm('aMsg',`Temoins adultes importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture adultes impossible.',false);rd.readAsText(f)}
 async function loadDefaultParents(showMsg){try{const res=await fetch(PARENT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseCodesText(txt);if(!rows.length)throw new Error('empty');setParents(rows,PARENT_DEFAULT_FILE);if(showMsg)sm('aMsg',`Parents joueurs charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement parents impossible.',false)}}
 function importParentFile(){if(!guardAdmin())return;const el=document.getElementById('parentFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier parents TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseCodesText(rd.result||'');if(!rows.length){sm('aMsg','Aucun compte parent detecte.',false);return}setParents(rows,f.name);sm('aMsg',`Parents importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture parents impossible.',false);rd.readAsText(f)}
@@ -538,7 +768,7 @@ fill();load();
 initAudio();
 if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm();updateCodesInfo()}
 if(!S.parents||!S.parents.length){await loadDefaultParents(false)}else{buildParentMap()}
-await loadDefaultAdults(false);if(!S.adults||!S.adults.length){buildAdultMap()}
+if(!S.adults||!S.adults.length){await loadDefaultAdults(false)}else{buildAdultMap()}
 await syncPing();
 initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
@@ -574,17 +804,35 @@ const SB_URL_DEFAULT='https://zmeicqjkylxdaldiovxg.supabase.co';
 const SB_KEY_DEFAULT='sb_publishable_fvY1_6Pu7lMTNNBeBvI7Dw_jXLjv4oH';
 const SB_URL_KEY='pvs_supabase_url';
 const SB_PUBLISHABLE_KEY='pvs_supabase_publishable_key';
-var sbClient=null,sbOnline=false,sbPushTimer=null,sbBusyPush=false,sbBusyPull=false,sbGlobalPushTimer=null,sbBusyGlobalPush=false,sbBusyGlobalPull=false,sbBusyConfigPull=false;
+var sbClient=null,sbOnline=false,sbPushTimer=null,sbBusyPush=false,sbBusyPull=false,sbGlobalPushTimer=null,sbBusyGlobalPush=false,sbBusyGlobalPull=false;
 
 function getSbUrl(){return String(localStorage.getItem(SB_URL_KEY)||SB_URL_DEFAULT).trim().replace(/\/+$/,'')}
 function getSbKey(){return String(localStorage.getItem(SB_PUBLISHABLE_KEY)||SB_KEY_DEFAULT).trim()}
 function isCloudPlayer(code){const c=nCode(code||'');return !!(c&&!isVisitorCode(c)&&c!=='ADMIN')}
 function initSupabase(){try{if(window.supabase&&typeof window.supabase.createClient==='function'&&getSbUrl()&&getSbKey()){sbClient=window.supabase.createClient(getSbUrl(),getSbKey())}else{sbClient=null}}catch(e){sbClient=null}updateSyncInfo()}
 function scheduleSbPush(){if(!sbClient)return;clearTimeout(sbPushTimer);sbPushTimer=setTimeout(()=>{sbPushCurrent(false)},900)}
-function startAutosave(){setInterval(async()=>{if(sessionStorage.getItem(SESSION_AUTH_KEY)!=="1")return;if(cur&&!isVisitorCode(cur)&&cur!=="ADMIN")await sbPushPlayer(cur,false);if(sbClient)await sbPushGlobal(false);},5*60*1000);}
 function scheduleSbGlobalPush(){if(!sbClient)return;clearTimeout(sbGlobalPushTimer);sbGlobalPushTimer=setTimeout(()=>{sbPushGlobal(false)},8000)}
-async function sbPullAllPlayers(showMsg){if(!sbClient||sbBusyGlobalPull)return false;sbBusyGlobalPull=true;try{const{data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at');if(error)throw error;if(!data||!data.length){sbOnline=true;updateSyncInfo(showMsg?'Cloud: aucun joueur en base':'');return true}let changed=false;data.forEach(row=>{const code=nCode(row.player_id||'');if(!code||isVisitorCode(code)||code==='ADMIN'||!row.full_state)return;const existsLocally=!!(S.players&&S.players[code]&&S.players[code]._v2);if(!existsLocally){S.players[code]=Object.assign(mkP(code),row.full_state,{code});changed=true;}else{if(mergeCloudPlayer(code,row.full_state))changed=true;}});if(changed){norm();buildRegistry();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Cloud pull OK | ${data.length} joueurs charges`:'');return true;}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}finally{sbBusyGlobalPull=false}}
-
+async function sbPullAllPlayers(showMsg){
+  if(!sbClient||sbBusyGlobalPull)return false;
+  sbBusyGlobalPull=true;
+  try{
+    const{data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at');
+    if(error)throw error;
+    if(!data||!data.length){sbOnline=true;updateSyncInfo(showMsg?'Cloud: aucun joueur en base':'');return true}
+    let changed=false;
+    data.forEach(row=>{
+      const code=nCode(row.player_id||'');
+      if(code&&!isVisitorCode(code)&&code!=='ADMIN'&&row.full_state){
+        if(mergeCloudPlayer(code,row.full_state))changed=true;
+      }
+    });
+    if(changed){norm();buildRegistry();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
+    sbOnline=true;
+    updateSyncInfo(showMsg?`Cloud pull OK | ${data.length} joueurs charges`:'');
+    return true;
+  }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull impossible: '+e.message:'');return false}
+  finally{sbBusyGlobalPull=false}
+}
 async function sbPushGlobal(showMsg){
   if(!sbClient||sbBusyGlobalPush)return false;sbBusyGlobalPush=true;
   try{
@@ -595,10 +843,8 @@ async function sbPushGlobal(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud push impossible: '+e.message:'');return false}
   finally{sbBusyGlobalPush=false}
 }
-
-async function sbDiag(){const lines=["=== DIAGNOSTIC SUPABASE ==="];lines.push("sbClient: "+(sbClient?"OK":"NULL"));if(!sbClient){alert(lines.join("\n"));return;}try{const{data,error}=await sbClient.from("pvs_sync").select("player_id,updated_at");if(error)lines.push("ERREUR: "+error.message);else{lines.push("Lignes pvs_sync: "+(data?data.length:0));if(data)data.forEach(r=>lines.push("  "+r.player_id));}}catch(e){lines.push("EXCEPTION: "+e.message);}lines.push("ADW: "+Object.keys(ADW).length);lines.push("ADW_J: "+Object.keys(ADW_J).length);lines.push("REG.j: "+Object.keys(REG.j||{}).length);lines.push("Joueurs locaux: "+Object.keys(S.players||{}).length);alert(lines.join("\n"));}
 async function sbPullGlobal(showMsg){
-  if(!sbClient||sbBusyConfigPull)return false;sbBusyConfigPull=true;
+  if(!sbClient||sbBusyGlobalPull)return false;sbBusyGlobalPull=true;
   try{
     const{data,error}=await sbClient.from('pvs_global_state').select('full_state,updated_at').eq('state_id','GLOBAL').maybeSingle();
     if(error)throw error;
@@ -610,9 +856,9 @@ async function sbPullGlobal(showMsg){
     if(changed){buildRegistry();norm();buildAdultMap();buildParentMap();localStorage.setItem(KEY,JSON.stringify(S));refresh()}
     sbOnline=true;updateSyncInfo(showMsg?'Cloud pull config OK':'');return true;
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
-  finally{sbBusyConfigPull=false}
+  finally{sbBusyGlobalPull=false}
 }
-function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;let changed=false;const cpKeys=['pixhare','psc1','sanctuaire','loge','autres'];cpKeys.forEach(k=>{const rv=Number((remote.cp&&remote.cp[k])||0),lv=Number((local.cp&&local.cp[k])||0);if(rv>lv){local.cp[k]=rv;changed=true}});['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});['malusG','malusW'].forEach(k=>{const rv=Number(remote[k]||0),lv=Number(local[k]||0);if(rv>lv){local[k]=rv;changed=true}});const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){if(remote.obj&&typeof remote.obj==='object'&&Object.keys(remote.obj).length)local.obj=remote.obj;if(remote.witness)local.witness=remote.witness;local.up=remote.up;changed=true;}return changed;}
+function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){S.players[code]=Object.assign(mkP(code),remote,{code});return true}return false}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
 async function sbPushPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPush)return false;const p=S.players[code];if(!p)return false;sbBusyPush=true;try{const payload={player_id:code,full_state:p,updated_at:new Date().toISOString()};const {error}=await sbClient.from('pvs_sync').upsert(payload,{onConflict:'player_id'});if(error)throw error;sbOnline=true;updateSyncInfo(showMsg?`Supabase push OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase push impossible.':'');return false}finally{sbBusyPush=false}}
 function sbPullCurrent(showMsg){const code=nCode(cur||'');if(!isCloudPlayer(code))return Promise.resolve(false);return sbPullPlayer(code,showMsg)}
@@ -622,132 +868,27 @@ function updateSyncInfo(msg){const e=document.getElementById('syncInfo');if(!e)r
 function save(push=true){localStorage.setItem(KEY,JSON.stringify(S));if(push&&sessionStorage.getItem(SESSION_AUTH_KEY)==='1'){scheduleSyncPush();scheduleSbPush();scheduleSbGlobalPush()}}
 function processBridge(){try{const a=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]'),b=JSON.parse(localStorage.getItem(BRIDGE_ALT_KEY)||'[]');const arr=[...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])];if(!arr.length)return;let changed=false;arr.forEach(ev=>{if(bridgeApply(ev))changed=true});localStorage.setItem(BRIDGE_KEY,'[]');localStorage.setItem(BRIDGE_ALT_KEY,'[]');if(changed){save();refresh()}}catch(e){}}
 
-window.addEventListener('DOMContentLoaded',()=>{initSupabase();startAutosave();if(cur)sbPullCurrent(false)});
+window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurrent(false)});
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
-window.addEventListener('focus',()=>{sbPullCurrent(false)});
+window.addEventListener('focus',()=>{sbPullAllPlayers(false);sbPullCurrent(false)});
 
-
-var _introSkipped=false;
-function skipIntro(){
-  if(_introSkipped)return;
-  _introSkipped=true;
-  var ov=document.getElementById('introOverlay');
-  var vid=document.getElementById('introVideo');
-  if(vid){try{vid.pause();}catch(e){}}
-  if(ov){ov.classList.add('fade-out');setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov);},750);}
+// Mise à jour compteur jetons en temps réel
+function updateJetonDisplay(){
+  const el=document.getElementById('jetonCount');if(!el)return;
+  const rawW=document.getElementById('wCode');if(!rawW)return;
+  const wc=nCode(rawW.value||'');
+  const w=resolveWitness(wc);
+  if(!w||w.kind!=='student'){el.textContent=JETON_MAX+' jetons';el.style.color='';return;}
+  const wp=gp(w.player);if(!wp){el.textContent=JETON_MAX+' jetons';return;}
+  const used=Number(wp.witnessGivenW||0);
+  const left=JETON_MAX-used;
+  el.textContent=left+' jeton'+(left>1?'s':'')+' restant'+(left>1?'s':'');
+  el.style.color=left<=0?'#ff4444':left===1?'#ff9800':'#4fc3f7';
 }
-(function(){
-  var _absTimeout=setTimeout(skipIntro,9000);
-  document.addEventListener('DOMContentLoaded',function(){
-    var vid=document.getElementById('introVideo');
-    if(!vid){clearTimeout(_absTimeout);skipIntro();return;}
-    vid.addEventListener('ended',function(){clearTimeout(_absTimeout);skipIntro();});
-    vid.addEventListener('error',function(){clearTimeout(_absTimeout);skipIntro();});
-    setTimeout(function(){if(!_introSkipped&&vid.readyState<1){clearTimeout(_absTimeout);skipIntro();}},3000);
-    var p=vid.play();
-    if(p&&typeof p.catch==='function'){
-      p.catch(function(){
-        var btn=document.getElementById('introSkip');
-        if(btn){btn.textContent='Appuie pour continuer >';}
-        setTimeout(function(){if(!_introSkipped)skipIntro();},5000);
-      });
-    }
-  });
-})();
-
-
-
-// === SYSTEME RECOMPENSES VIDEO + JEU SECRET ===
-var MILESTONES=[
-  {xp:500,  file:'reward_apprenti.mp4',  title:"L'Apprenti Chevalier",   label:"L'Apprenti Chevalier",   sub:'Debloqu\xe9 \xe0 500 XP'},
-  {xp:1000, file:'reward_ecuyere.mp4',   title:"La Jeune Ecuyere",        label:"La Jeune Ecuy\xe8re",    sub:'Debloqu\xe9 \xe0 1000 XP'},
-  {xp:1500, file:'reward_chevalier.mp4', title:"Le Jeune Chevalier",       label:"Le Jeune Chevalier",     sub:'Debloqu\xe9 \xe0 1500 XP'},
-  {xp:2000, file:'reward_paladine.mp4',  title:"La Paladine Rayonnante",   label:"La Paladine Rayonnante", sub:'Debloqu\xe9 \xe0 2000 XP'},
-];
-var SECRET_GAME_XP=500;
-var REWARD_SEEN_KEY='pvs_rewards_seen';
-function getSeenRewards(){try{return JSON.parse(localStorage.getItem(REWARD_SEEN_KEY)||'{}');}catch(e){return {};}}
-function markRewardSeen(k){var s=getSeenRewards();s[String(k)]=1;localStorage.setItem(REWARD_SEEN_KEY,JSON.stringify(s));}
-function isRewardSeen(k){return !!getSeenRewards()[String(k)];}
-var rewardQueue=[],rewardPlaying=false;
-function checkMilestones(){
-  if(!cur||isVisitorCode(cur)||cur==='ADMIN')return;
-  var p=gp(cur);if(!p)return;
-  var xpNow=xg(p);
-  MILESTONES.forEach(function(m){
-    if(xpNow>=m.xp&&!isRewardSeen(m.xp))rewardQueue.push({type:'video',xp:m.xp,file:m.file,title:m.title});
-  });
-  if(xpNow>=SECRET_GAME_XP&&!isRewardSeen('game_secret'))rewardQueue.push({type:'game'});
-  if(!rewardPlaying)processRewardQueue();
-}
-function processRewardQueue(){
-  if(!rewardQueue.length){rewardPlaying=false;renderRewardsSection();return;}
-  rewardPlaying=true;
-  var next=rewardQueue.shift();
-  if(next.type==='video')playRewardVideo(next);else showSecretGameAlert();
-}
-function playRewardVideo(m){
-  markRewardSeen(m.xp);
-  var ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc'),ttl=document.getElementById('rewardTitle');
-  if(!ov||!vid||!src){processRewardQueue();return;}
-  src.src=m.file;vid.load();ttl.textContent=m.title;
-  ov.classList.remove('fade-out');ov.classList.add('active');
-  vid.onended=closeReward;vid.onerror=closeReward;
-  var p=vid.play();if(p&&p.catch)p.catch(function(){});
-  setTimeout(function(){if(rewardPlaying&&ov.classList.contains('active'))closeReward();},30000);
-}
-function closeReward(){
-  var ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo');
-  if(vid){try{vid.pause();}catch(e){}vid.currentTime=0;vid.onended=null;vid.onerror=null;}
-  if(ov){ov.classList.add('fade-out');setTimeout(function(){ov.classList.remove('active','fade-out');processRewardQueue();},750);}
-}
-function showSecretGameAlert(){
-  markRewardSeen('game_secret');
-  var modal=document.createElement('div');
-  modal.setAttribute('id','secretModal');
-  modal.style.cssText='position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML='<div style="max-width:460px;width:100%;background:linear-gradient(135deg,#1a1a00,#2a2a00);border:2px solid #ffd700;border-radius:14px;padding:28px;text-align:center;box-shadow:0 0 40px #ffd70066">'
-    +'<div style="font-size:2em;margin-bottom:10px">&#127918;</div>'
-    +'<div style="color:#ffd700;font-family:Orbitron,monospace;font-size:0.95em;margin-bottom:14px">JEU SECRET D&#201;BLOQU&#201; !</div>'
-    +'<div style="font-size:0.88em;line-height:1.8;margin-bottom:18px">Tu as d\xe9bloqu\xe9 le jeu secret <strong>\"Les Chevaliers de la Justice\"</strong> !<br>Bravo ! Tous les 500 XP gagn\xe9s, ton personnage sera plus puissant !<br><em>Alors, progresse, jeune page !</em></div>'
-    +'<button onclick="var m=document.getElementById(\'secretModal\');if(m)m.remove();renderRewardsSection();processRewardQueue();" style="background:#ffd700;color:#000;border:none;padding:10px 28px;border-radius:20px;font-weight:bold;cursor:pointer">&#9876; A l\'aventure !</button>'
-    +'</div>';
-  document.body.appendChild(modal);
-}
-function replayReward(file,title){
-  var ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc'),ttl=document.getElementById('rewardTitle');
-  if(!ov||!vid||!src)return;
-  src.src=file;vid.load();ttl.textContent=title;
-  ov.classList.remove('fade-out');ov.classList.add('active');
-  vid.onended=closeReward;vid.onerror=closeReward;
-  var p=vid.play();if(p&&p.catch)p.catch(function(){});
-}
-function toggleRewardsList(){
-  var el=document.getElementById('rewardsList'),btn=document.getElementById('rewardsToggle');
-  if(!el||!btn)return;
-  el.classList.toggle('open');
-  btn.querySelector('span').innerHTML=el.classList.contains('open')?'&#9650;':'&#9660;';
-}
-function renderRewardsSection(){
-  var sec=document.getElementById('rewardsSection'),list=document.getElementById('rewardsList'),gameCard=document.getElementById('secretGameCard');
-  if(!sec||!list)return;
-  if(!cur||isVisitorCode(cur)){sec.style.display='none';return;}
-  sec.style.display='block';
-  var p=gp(cur);if(!p)return;
-  var xpNow=xg(p);
-  list.innerHTML='';
-  MILESTONES.forEach(function(m){
-    var unlocked=xpNow>=m.xp;
-    var div=document.createElement('div');
-    div.className='reward-item '+(unlocked?'ri-unlocked':'ri-locked');
-    div.innerHTML='<span class="ri-icon">'+(unlocked?'&#127916;':'&#128274;')+'</span>'
-      +'<div class="ri-info"><div class="ri-title">'+m.label+'</div><div class="ri-sub">'+m.sub+'</div></div>'
-      +(unlocked?'<button class="btn2" style="font-size:0.78em;padding:4px 10px;flex-shrink:0" onclick="replayReward(\''+m.file+'\',\''+m.title+'\')">&#9654; Revoir</button>':'');
-    list.appendChild(div);
-  });
-  if(gameCard)gameCard.classList.toggle('sgc-unlocked',xpNow>=SECRET_GAME_XP);
-}
-
+document.addEventListener('DOMContentLoaded',()=>{
+  const wc=document.getElementById('wCode');
+  if(wc)wc.addEventListener('input',updateJetonDisplay);
+});
 </script>
 </body>
 </html>
