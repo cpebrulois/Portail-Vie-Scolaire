@@ -872,7 +872,7 @@ function numOr(v,d){const n=Number(v);return Number.isFinite(n)?n:Number(d||0)}
 function parseCodesText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iJ=idxAny(heads,['code_joueur','joueur','player_code']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);const iP=idxAny(heads,['code_public','public_code','code_public_joueur','code_public_eleve']);if(iJ<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const cj=nCode(demojibake(cols[iJ]||''));const ct=nCode(demojibake((iT>=0?cols[iT]:'')||''));const cp=nCode(demojibake((iP>=0?cols[iP]:'')||''));if(!cj&&!ct)continue;rows.push({nom,prenom,code_joueur:cj,code_temoin:ct,code_public:cp||defaultPublicCode(cj)})}return rows}
 function parseAdultsText(text){const raw=String(text||'').replace(/\uFEFF/g,'').replace(/\r/g,'').split('\n').filter(x=>x.trim().length>0);if(!raw.length)return[];const delim=raw[0].includes('\t')?'\t':(raw[0].includes(';')?';':',');const heads=splitLine(raw[0],delim).map(nHead);const iNom=idxAny(heads,['nom','name']);const iPre=idxAny(heads,['prenom','first_name']);const iT=idxAny(heads,['code_temoin','temoin','witness_code']);if(iT<0)return[];const rows=[];for(let i=1;i<raw.length;i+=1){const cols=splitLine(raw[i],delim);const nom=demojibake(String(cols[iNom]||'').trim());const prenom=demojibake(String(cols[iPre]||'').trim());const ct=nCode(demojibake(cols[iT]||''));if(!ct)continue;rows.push({nom,prenom,code_temoin:ct})}return rows}
 function ensureCitizenLists(){if(!S.citizen_lists||typeof S.citizen_lists!=='object')S.citizen_lists={};Object.keys(CIT).forEach(k=>{if(!Array.isArray(S.citizen_lists[k]))S.citizen_lists[k]=[];S.citizen_lists[k]=S.citizen_lists[k].map(nCode).filter(Boolean)})}
-function mkP(code){return{code,witness:'',cp:{pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0},obj:{},socialG:0,socialW:0,wBonusG:0,wBonusW:0,videoG:0,videoW:0,malusG:0,malusW:0,witnessGiven:0,recognizedReceived:0,witnessGivenW:0,receivedW:0,pairW:{},flaggedExcess:0,acadDone:0,acadIds:[],acadDone:{},up:new Date().toISOString(),_v2:1}}
+function mkP(code){return{code,witness:'',cp:{pixhare:0,psc1:0,sanctuaire:0,loge:0,autres:0},obj:{},socialG:0,socialW:0,wBonusG:0,wBonusW:0,videoG:0,videoW:0,malusG:0,malusW:0,witnessGiven:0,recognizedReceived:0,witnessGivenW:0,receivedW:0,pairW:{},flaggedExcess:0,acadDone:{},acadIds:[],up:new Date().toISOString(),_v2:1}}
 function wk(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=(x.getUTCDay()+6)%7;x.setUTCDate(x.getUTCDate()-day+3);const f=new Date(Date.UTC(x.getUTCFullYear(),0,4));const w=1+Math.round((x-f)/604800000);return `${x.getUTCFullYear()}-W${String(w).padStart(2,'0')}`}
 function buildRegistry(){REG={j:{},t:{},p:{}};(S.registry||[]).forEach(r=>{const cj=nCode(r.code_joueur||'');const ct=nCode(r.code_temoin||'');const cp=nCode(r.code_public||'')||cj;if(!cj)return;REG.j[cj]={nom:r.nom||'',prenom:r.prenom||'',code_joueur:cj,code_temoin:ct,code_public:cp};if(ct)REG.t[ct]=cj;if(cp)REG.p[cp]=cj})}
 function buildAdultMap(){ADW={};(S.adults||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');if(ct)ADW[ct]=1})}
@@ -894,7 +894,7 @@ function socialValidG(p){return Number(p.witnessGiven||0)>0?socialRawG(p):0}
 function socialValidW(p){return Number(p.witnessGiven||0)>0?socialRawW(p):0}
 function socialPendingG(p){return Number(p.witnessGiven||0)>0?0:socialRawG(p)}
 function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
-function acadCoeff(p){const n=Math.min(Number(p.acadDone||0),50);return Math.round((1+n*0.02)*100)/100}
+function acadCoeff(p){const n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}
 function xg(p){const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}
 
 // ── Fonctions Académiques ──────────────────────────
@@ -1008,7 +1008,7 @@ function openAcadModule(id,file){
 }
 
 function renderProfile(){const c=document.getElementById('profile'),h=document.getElementById('loginHint');if(!cur||!S.players[cur]){c.classList.remove('on');h.textContent=adminOn?'Session admin active.':'Session verrouillee. Authentification requise.';return}const p=S.players[cur];c.classList.add('on');h.textContent=`Joueur connecte: ${cur}`;document.getElementById('pCode').textContent=p.code;document.getElementById('pRole').textContent=roleLabel(p.code);document.getElementById('pXg').textContent=xg(p);document.getElementById('pXw').textContent=xw(p);document.getElementById('pCit').textContent=citizenXp(p);document.getElementById('pAca').textContent=academyXp(p);document.getElementById('pVid').textContent=videoXp(p);document.getElementById('pPend').textContent=socialPendingG(p);const ac=acadCoeff(p);
-document.getElementById('pAcadCoeff').textContent='×'+ac.toFixed(2)+' ('+Math.min(Number(p.acadDone||0),50)+' modules)';
+document.getElementById('pAcadCoeff').textContent='×'+ac.toFixed(2)+' ('+acadDoneCount(p)+' modules)';
 document.getElementById('pCp').textContent=cpTotal(p);const nbAcad=acadDoneCount(p);const acadEl=document.getElementById('pAcadCoeff');if(acadEl)acadEl.textContent=nbAcad>0?`×${acadCoeff(p).toFixed(2)} (${nbAcad} module${nbAcad>1?'s':''})`:'×1,00 (aucun module)';const xgFEl=document.getElementById('pXgFinal');if(xgFEl)xgFEl.textContent=xgFinal(p);}
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
@@ -1522,7 +1522,40 @@ async function sbPullGlobal(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
   finally{sbBusyGlobalPull=false}
 }
-function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;if(rts>lts){S.players[code]=Object.assign(mkP(code),remote,{code});return true}return false}
+function mergeCloudPlayer(code,remote){
+  if(!remote||typeof remote!=='object')return false;
+  const local=gp(code);if(!local)return false;
+  const lts=Date.parse(local.up||0)||0,rts=Date.parse(remote.up||0)||0;
+  // Base = profil le plus récent
+  const base=rts>=lts?remote:local;
+  const other=rts>=lts?local:remote;
+  const merged=Object.assign(mkP(code),base,{code});
+  // ── Fusion ADDITIVE des champs académiques ──────────────────────
+  // acadDone : union des deux objets (garder toutes les validations)
+  const dBase=base.acadDone&&typeof base.acadDone==='object'?base.acadDone:{};
+  const dOther=other.acadDone&&typeof other.acadDone==='object'?other.acadDone:{};
+  merged.acadDone=Object.assign({},dOther,dBase); // base prioritaire pour les dates
+  // acadIds : union des deux tableaux
+  const iBase=Array.isArray(base.acadIds)?base.acadIds:[];
+  const iOther=Array.isArray(other.acadIds)?other.acadIds:[];
+  merged.acadIds=[...new Set([...iOther,...iBase])];
+  // pairW : union (anti-triche hebdo)
+  merged.pairW=Object.assign({},other.pairW||{},base.pairW||{});
+  // Champs numériques : prendre le max (ne jamais perdre des XP gagnés)
+  ['socialG','wBonusG','videoG','witnessGiven','recognizedReceived'].forEach(k=>{
+    merged[k]=Math.max(Number(base[k]||0),Number(other[k]||0));
+  });
+  // Champs CP : max par hub
+  merged.cp=merged.cp||{};
+  const cpB=base.cp||{},cpO=other.cp||{};
+  Object.keys(Object.assign({},cpB,cpO)).forEach(k=>{
+    merged.cp[k]=Math.max(Number(cpB[k]||0),Number(cpO[k]||0));
+  });
+  // Timestamp = le plus récent
+  merged.up=rts>=lts?(base.up||remote.up):(other.up||local.up);
+  S.players[code]=merged;
+  return true;
+}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
 async function sbPushPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPush)return false;const p=S.players[code];if(!p)return false;sbBusyPush=true;try{const payload={player_id:code,full_state:p,updated_at:new Date().toISOString()};const {error}=await sbClient.from('pvs_sync').upsert(payload,{onConflict:'player_id'});if(error)throw error;sbOnline=true;updateSyncInfo(showMsg?`Supabase push OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase push impossible.':'');return false}finally{sbBusyPush=false}}
 function sbPullCurrent(showMsg){const code=nCode(cur||'');if(!isCloudPlayer(code))return Promise.resolve(false);return sbPullPlayer(code,showMsg)}
