@@ -1172,11 +1172,12 @@ function loadGame() {
   btn.disabled = true;
 
   // CDN js-dos — cascade de fallbacks
+  // API utilisée = js-dos v6 (.ready / fs.extract / main)
+  // → CDN v6 obligatoire, v7+ a une API incompatible
   const JSDOS_URLS = [
-    'https://v8.js-dos.com/latest/js-dos.js',
-    'https://v8.js-dos.com/8.0.0/js-dos.js',
-    'https://cdn.jsdelivr.net/npm/js-dos@8.0.0/dist/js-dos.js',
-    'https://unpkg.com/js-dos@8.0.0/dist/js-dos.js',
+    'https://cdn.js-dos.com/js-dos/6.22.60/js-dos.js',
+    'https://cdn.jsdelivr.net/npm/js-dos@6.22.60/dist/js-dos.js',
+    'https://unpkg.com/js-dos@6.22.60/dist/js-dos.js',
   ];
 
   function tryLoad(idx) {
@@ -1216,12 +1217,12 @@ function initJsDos() {
     // Initialisation Dos()
     // eslint-disable-next-line no-undef
     Dos(canvas, {
-      wdosboxUrl: 'https://v8.js-dos.com/8.0.0/wdosbox.js',
+      wdosboxUrl: 'https://cdn.js-dos.com/js-dos/6.22.60/wdosbox.js',
     }).ready((fs, main) => {
       fs.extract(GAME_BUNDLE_URL).then(() => {
         main(['-c', 'C:', '-c', 'ACIV.EXE']);
       }).catch(err => {
-        showGameError(`Bundle introuvable (${GAME_BUNDLE_URL}). Placez aciv.jsdos dans le dossier game/.`);
+        showGameError(`Bundle introuvable (${GAME_BUNDLE_URL}). Placez aciv.jsdos à la racine du site (même dossier que ce HTML).`);
       });
     });
 
