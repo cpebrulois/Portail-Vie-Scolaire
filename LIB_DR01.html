@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIBERTÉ | LIB_DR01 — La DDHC : le texte qui a tout changé</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0f172a;--acc:#6366f1;--acc-d:#4338ca;--text:#f8fafc;--muted:#94a3b8;--border:#334155}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,0.09) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'LIBERTÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
+  font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
+  font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
+  display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
+  border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;
+  cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;
+  font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);
+  padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c0d4e8}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;
+  padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;
+  font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;
+  font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'LIB_DR01';
+const CERT_KEY  = 'CERT_LIBERTE_DR1';
+const XP_AMOUNT = 50;
+const BACK_URL  = 'index_PIX_LIBERTE.html';
+const CERT_KEYS = ["CERT_LIBERTE_DR1", "CERT_LIBERTE_DR2", "CERT_LIBERTE_DR3", "CERT_LIBERTE_DR4", "CERT_LIBERTE_EX1", "CERT_LIBERTE_EX2", "CERT_LIBERTE_EX3", "CERT_LIBERTE_EX4", "CERT_LIBERTE_EC1", "CERT_LIBERTE_EC2", "CERT_LIBERTE_EC3", "CERT_LIBERTE_EC4", "CERT_LIBERTE_EC5"];
+const QUESTIONS = [{"q": "En quelle année a été rédigée la Déclaration des Droits de l'Homme et du Citoyen ?", "a": ["1776", "1789", "1804", "1848"], "c": 1, "wrong": "1789 — l'année de la Révolution française. La DDHC est adoptée le 26 août."}, {"q": "Selon la DDHC, Article 2, quels sont les droits naturels et imprescriptibles de l'homme ?", "a": ["Le droit de vote, d'élire et d'être élu", "La liberté, la propriété, la sûreté et la résistance à l'oppression", "Le droit à l'éducation, à la santé et au travail", "La liberté de presse, d'opinion et d'association"], "c": 1, "wrong": "Article 2 exact : liberté, propriété, sûreté, résistance à l'oppression. Les autres droits sont réels mais viennent de textes ultérieurs."}, {"q": "La DDHC est aujourd'hui...", "a": ["Un texte historique sans valeur juridique", "Intégrée au bloc de constitutionnalité — les lois contraires peuvent être annulées", "Un simple symbole commémoratif voté par le Parlement tous les 50 ans", "Remplacée par la Convention européenne des droits de l'homme"], "c": 1, "wrong": "Elle est toujours du droit positif vivant. Le Conseil constitutionnel la cite dans ses décisions."}];
+const SCENARIO  = {"title": "Le droit naturel expliqué", "p": "Un camarade dit : 'La liberté, c'est le président qui nous la donne ou nous l'enlève, c'est lui qui décide.' Quelle est l'erreur fondamentale ?", "options": [{"text": "Selon la DDHC, la liberté est un droit naturel — elle précède l'État. Le rôle de l'État est de la garantir, pas de la concéder. C'est l'idée révolutionnaire de 1789 : on naît libre, on ne le devient pas par faveur d'un chef.", "ok": true, "fb": ""}, {"text": "Le président a effectivement ce pouvoir dans certains cas.", "ok": false, "fb": "Non. Même l'article 16 (pouvoirs de crise) ne permet pas de supprimer les droits fondamentaux — seulement de les restreindre temporairement."}, {"text": "C'est vrai pour les étrangers mais pas pour les Français.", "ok": false, "fb": "Les droits naturels s'appliquent à tous les êtres humains selon la DDHC — pas seulement aux ressortissants d'un pays."}]};
+const SYNTHESIS = [{"icon": "📜", "t": "26 août 1789 :", "v": "La DDHC est adoptée. 17 articles. Droit naturel, pas privilège royal."}, {"icon": "⚖️", "t": "Article 1er :", "v": "Les hommes naissent libres et égaux. Pas de concession : droit inné."}, {"icon": "🔒", "t": "Bloc de constitutionnalité :", "v": "La DDHC a force juridique aujourd'hui. Une loi qui la viole peut être annulée."}, {"icon": "🔗", "t": "Le lien avec toi :", "v": "Quand tu parles de tes droits à l'école, tu invoques un texte de 1789 encore vivant."}];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+
+function countCerts(){
+  let n=0;
+  CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}}); 
+  return n;
+}
+
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events');
+    const evts=raw?JSON.parse(raw):[];
+    evts.push({
+      id:'LIB-'+MODULE_ID+'-'+Date.now(),
+      type:'LIBERTE_PROGRESS',
+      player:getPlayer(),
+      module:MODULE_ID,
+      cpTotal:countCerts(),
+      label:'LIBERTÉ : La DDHC : le texte qui a tout changé',
+      d:new Date().toISOString()
+    });
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+
+  const finish=()=>{
+    const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};
+    localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+    awardXP();
+    setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+    setStep('complete');
+  };
+
+  const goBack=()=>{window.location.href=BACK_URL;};
+
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},
+      e('button',{className:'nav-back',onClick:goBack},'← Liberté'),
+      PlayerChip()
+    ),
+    e('div',{className:'tag'},'Droits · Module 1/4'),
+    
+    e('h1',null,"La DDHC : le texte qui a tout changé"),
+    e('p',{className:'quote'},"« Les hommes naissent et demeurent libres et égaux en droits. » — DDHC, Article 1er"),
+    e('p',null,"26 août 1789. Au milieu de la Révolution, les représentants du peuple français rédigent un texte court — 17 articles — qui va changer l'histoire du monde. La Déclaration des Droits de l'Homme et du Citoyen pose pour la première fois que la liberté n'est pas un privilège accordé par un roi : c'est un droit naturel."),
+    e('p',null,"Ce texte est toujours en vigueur. Il est intégré au bloc de constitutionnalité français. Quand un tribunal annule une loi, c'est souvent parce qu'elle viole ces 17 articles rédigés il y a 235 ans."),
+,
+    e('div',{style:{textAlign:'center'}},
+      e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},'Découvrir la Déclaration')
+  );
+
+  const renderQuiz=()=>{
+    const q=QUESTIONS[qIdx];
+    const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{
+        key:i,className:'opt',
+        onClick:()=>{
+          if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}
+          else alert(q.wrong||'Relis l'intro et réessaie.');
+        }
+      },opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),
+    e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{
+      key:i,className:'opt',
+      onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}
+    },opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,'Ce qu'il faut retenir'),
+    e('div',{className:'summary-box'},
+      SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))
+    ),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'📜'),
+    e('h1',null,'La DDHC n'a plus de secrets !'),
+    e('p',{style:{textAlign:'center'}},'Module validé — 1789 toujours vivant.'),
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},
+      e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
+      'Copie le jeton ci-dessous et colle-le dans le Hub Liberté si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Liberté')
+  );
+
+  switch(step){
+    case 'intro':     return renderIntro();
+    case 'quiz':      return renderQuiz();
+    case 'scenario':  return renderScenario();
+    case 'synthesis': return renderSynthesis();
+    case 'complete':  return renderComplete();
+    default:          return renderIntro();
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

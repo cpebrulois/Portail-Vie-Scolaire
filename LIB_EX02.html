@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIBERTÉ | LIB_EX02 — Les limites légales de l'expression</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0f172a;--acc:#ec4899;--acc-d:#be185d;--text:#f8fafc;--muted:#94a3b8;--border:#334155}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(236,72,153,0.08) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'LIBERTÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
+  font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
+  font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
+  display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
+  border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;
+  cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;
+  font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);
+  padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c0d4e8}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;
+  padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;
+  font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;
+  font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'LIB_EX02';
+const CERT_KEY  = 'CERT_LIBERTE_EX2';
+const XP_AMOUNT = 50;
+const BACK_URL  = 'index_PIX_LIBERTE.html';
+const CERT_KEYS = ["CERT_LIBERTE_DR1", "CERT_LIBERTE_DR2", "CERT_LIBERTE_DR3", "CERT_LIBERTE_DR4", "CERT_LIBERTE_EX1", "CERT_LIBERTE_EX2", "CERT_LIBERTE_EX3", "CERT_LIBERTE_EX4", "CERT_LIBERTE_EC1", "CERT_LIBERTE_EC2", "CERT_LIBERTE_EC3", "CERT_LIBERTE_EC4", "CERT_LIBERTE_EC5"];
+const QUESTIONS = [{"q": "La diffamation se distingue de l'injure parce que la diffamation...", "a": ["Est toujours plus grave que l'injure", "Allègue un fait précis faux ou non prouvé nuisant à la réputation, tandis que l'injure est une attaque directe sans fait allégué", "Concerne uniquement les personnalités publiques", "Ne peut se produire qu'à l'écrit"], "c": 1, "wrong": "Diffamation = fait allégué (prouvable ou réfutable). Injure = attaque directe sans fait ('T'es un idiot' = injure. 'T'as volé le vélo de Truc' sans preuve = diffamation.)"}, {"q": "L'incitation à la haine (loi Pleven, 1972) protège les personnes discriminées en raison de...", "a": ["Leurs opinions politiques uniquement", "Leur origine, religion, genre, orientation sexuelle, handicap — liste précise dans la loi", "Leur statut social ou leur richesse", "Uniquement leur nationalité"], "c": 1, "wrong": "La liste légale : origine, race, religion, nationalité, ethnie, sexe, orientation sexuelle, identité de genre, handicap. Pas les opinions politiques."}, {"q": "Un élève traite un camarade de 'débile' dans la cour. C'est juridiquement...", "a": ["Un acte relevant uniquement du règlement intérieur scolaire", "Une injure, qui peut être sanctionnée pénalement (contravention de 1ère classe)", "Un acte neutre, la liberté d'expression protège les insultes", "Un délit grave passible d'une peine d'emprisonnement"], "c": 1, "wrong": "Injure non publique = contravention. Injure publique (devant témoins ou en ligne) peut devenir un délit. Le règlement scolaire s'y ajoute mais ne remplace pas la loi."}];
+const SCENARIO  = {"title": "Le post des réseaux", "p": "Quelqu'un publie : 'Tous les élèves de [nationalité] de ce collège sont des voleurs.' Il dit : 'C'est ma liberté de dire ce que je pense.'", "options": [{"text": "Non. Ce propos cible des personnes en raison de leur nationalité et les présente collectivement comme délinquantes. C'est de l'incitation à la haine — un délit puni d'un an d'emprisonnement et 45 000 € d'amende (loi de 1972). Sa 'liberté d'opinion' ne couvre pas les propos haineux.", "ok": true, "fb": ""}, {"text": "C'est son opinion personnelle, il a le droit.", "ok": false, "fb": "La liberté d'opinion permet de penser ce qu'on veut. Elle ne protège pas l'expression publique de propos haineux sur un groupe."}, {"text": "C'est grave mais pas illégal s'il n'y a pas de violence physique.", "ok": false, "fb": "La loi de 1972 punit l'incitation à la haine verbale ou écrite, même sans violence physique. Les mots peuvent causer des torts réels."}]};
+const SYNTHESIS = [{"icon": "🚫", "t": "Injure :", "v": "Attaque directe d'une personne sans fait allégué. Contravention si privé, délit si public."}, {"icon": "📋", "t": "Diffamation :", "v": "Fait faux allégué nommément. Poursuite possible même si l'auteur croit avoir raison."}, {"icon": "⚠️", "t": "Incitation à la haine :", "v": "Cible un groupe par origine, religion, genre... Délit : 1 an + 45 000€."}, {"icon": "🔗", "t": "Principe :", "v": "Les limites ne bâillonnent pas — elles protègent. Surtout les plus vulnérables."}];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+
+function countCerts(){
+  let n=0;
+  CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}}); 
+  return n;
+}
+
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events');
+    const evts=raw?JSON.parse(raw):[];
+    evts.push({
+      id:'LIB-'+MODULE_ID+'-'+Date.now(),
+      type:'LIBERTE_PROGRESS',
+      player:getPlayer(),
+      module:MODULE_ID,
+      cpTotal:countCerts(),
+      label:'LIBERTÉ : Les limites légales de l'expression',
+      d:new Date().toISOString()
+    });
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+
+  const finish=()=>{
+    const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};
+    localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+    awardXP();
+    setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+    setStep('complete');
+  };
+
+  const goBack=()=>{window.location.href=BACK_URL;};
+
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},
+      e('button',{className:'nav-back',onClick:goBack},'← Liberté'),
+      PlayerChip()
+    ),
+    e('div',{className:'tag'},'Expression · Module 2/4'),
+    
+    e('h1',null,"Les limites légales de l'expression"),
+    e('p',{className:'quote'},"« Tout abus de cette liberté doit être réprimé dans les cas déterminés par la Loi. » — DDHC, Article 11 (seconde partie)"),
+    e('p',null,"La liberté d'expression n'est pas illimitée. La loi française définit précisément ce qu'elle n'autorise pas : l'injure (attaque de la personne sans preuve), la diffamation (fait faux allégué comme vrai), l'incitation à la haine (propos qui ciblent des personnes en raison de leur origine, religion, genre...)."),
+    e('p',null,"Ces limites ne sont pas des caprices politiques. Elles protègent les personnes les plus vulnérables des discours qui, historiquement, ont précédé les persécutions. La haine verbale prépare la violence physique — l'histoire l'a montré."),
+,
+    e('div',{style:{textAlign:'center'}},
+      e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},'Cartographier les limites')
+  );
+
+  const renderQuiz=()=>{
+    const q=QUESTIONS[qIdx];
+    const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{
+        key:i,className:'opt',
+        onClick:()=>{
+          if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}
+          else alert(q.wrong||'Les définitions sont précises ici. Réessaie.');
+        }
+      },opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),
+    e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{
+      key:i,className:'opt',
+      onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}
+    },opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,'Ce qu'il faut retenir'),
+    e('div',{className:'summary-box'},
+      SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))
+    ),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'⚖️'),
+    e('h1',null,'Les limites légales, c'est clair !'),
+    e('p',{style:{textAlign:'center'}},'Module validé — tu sais où s'arrête la liberté d'expression.'),
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},
+      e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
+      'Copie le jeton ci-dessous et colle-le dans le Hub Liberté si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Liberté')
+  );
+
+  switch(step){
+    case 'intro':     return renderIntro();
+    case 'quiz':      return renderQuiz();
+    case 'scenario':  return renderScenario();
+    case 'synthesis': return renderSynthesis();
+    case 'complete':  return renderComplete();
+    default:          return renderIntro();
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>
