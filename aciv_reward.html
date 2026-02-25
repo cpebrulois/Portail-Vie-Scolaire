@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACIV — Civilisations Antiques | Récompense PVS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════
+   VARIABLES & BASE
+════════════════════════════════════════════════ */
+:root {
+  --dark:       #070b17;
+  --panel:      #0c1222;
+  --border:     rgba(255,255,255,0.09);
+  --cyan:       #00d4ff;
+  --gold:       #ffd700;
+  --gold2:      #f59e0b;
+  --red:        #ff4466;
+  --parchment:  #c8a55a;
+  --stone:      #7a8fa6;
+  --purple:     #a78bfa;
+  --green:      #4ade80;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--dark); color: #e0e6f0;
+  min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 5% 10%,  rgba(0,212,255,0.05) 0%, transparent 35%),
+    radial-gradient(ellipse at 95% 90%, rgba(255,215,0,0.04)  0%, transparent 35%),
+    repeating-linear-gradient(0deg,  transparent, transparent 60px, rgba(255,255,255,0.006) 60px, rgba(255,255,255,0.006) 61px),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,0.006) 60px, rgba(255,255,255,0.006) 61px);
+}
+
+/* ════════════════════════════════════════════════
+   GATE XP
+════════════════════════════════════════════════ */
+#xpGate {
+  position: fixed; inset: 0; z-index: 9000;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 40%, #0d1e3a, #02050e);
+}
+#xpGate.hidden { display: none; }
+.gate-card {
+  max-width: 500px; width: 92%;
+  border: 1px solid var(--gold);
+  background: rgba(8,13,28,0.97);
+  padding: 38px 32px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.gate-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--gold), var(--cyan));
+}
+.gate-icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.8; }
+.gate-title {
+  font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold);
+  text-shadow: 0 0 20px rgba(255,215,0,0.3); margin-bottom: 8px;
+}
+.gate-sub { color: var(--stone); font-size: 0.85rem; margin-bottom: 22px; line-height: 1.7; }
+.xp-box {
+  background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+  padding: 14px 18px; margin-bottom: 16px;
+}
+.xp-nums { font-family: 'Orbitron', monospace; font-size: 0.82rem; color: var(--cyan); margin-bottom: 8px; }
+.xp-track { height: 6px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.xp-fill {
+  height: 100%; background: linear-gradient(90deg, var(--cyan), var(--gold));
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+.gate-note { font-size: 0.72rem; color: #445; line-height: 1.6; }
+.btn-gate {
+  display: inline-block; margin-top: 16px; padding: 9px 22px;
+  background: linear-gradient(135deg, var(--cyan), var(--gold));
+  color: #000; font-weight: 700; border: none; cursor: pointer;
+  font-family: 'Orbitron', monospace; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 1px; transition: filter .2s;
+}
+.btn-gate:hover { filter: brightness(1.15); }
+
+/* ════════════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════════════ */
+#mainWrap { display: none; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+#mainWrap.on { display: flex; }
+
+/* HEADER */
+#siteHdr {
+  background: rgba(5,8,18,0.97); border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 200; backdrop-filter: blur(6px);
+}
+.hdr-left { display: flex; align-items: center; gap: 12px; }
+.hdr-pvs {
+  font-family: 'Orbitron', monospace; font-size: 0.58rem;
+  background: linear-gradient(135deg, var(--cyan), var(--gold));
+  color: #000; padding: 3px 8px; font-weight: 700;
+}
+.hdr-title {
+  font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold);
+  text-shadow: 0 0 12px rgba(255,215,0,0.25);
+}
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+.chip {
+  padding: 3px 9px; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+  background: rgba(0,0,0,0.4); border: 1px solid;
+}
+.chip-c { border-color: rgba(0,212,255,0.3); color: var(--cyan); }
+.chip-g { border-color: rgba(255,215,0,0.3); color: var(--gold); }
+.chip-v { border-color: rgba(167,139,250,0.3); color: var(--purple); }
+.btn-s {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: #888; padding: 4px 9px; cursor: pointer; font-size: 0.7rem;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600; transition: .2s;
+}
+.btn-s:hover { background: rgba(255,255,255,0.1); color: #ddd; }
+
+/* ARÈNE 3 colonnes */
+#arena {
+  flex: 1; display: grid;
+  grid-template-columns: 290px 1fr 320px;
+  align-items: start;
+}
+@media (max-width:1100px) { #arena { grid-template-columns: 240px 1fr 280px; } }
+@media (max-width:860px)  {
+  #arena { grid-template-columns: 1fr; }
+  #gameCenter { order: 1; }
+  #panelLeft  { order: 2; }
+  #panelRight { order: 3; }
+}
+
+/* PANNEAUX */
+.side-panel {
+  background: rgba(8,12,24,0.9); border-right: 1px solid var(--border);
+  overflow-y: auto; max-height: calc(100vh - 50px);
+  position: sticky; top: 50px;
+}
+#panelRight { border-right: none; border-left: 1px solid var(--border); }
+
+.ph {
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(255,215,0,0.03));
+  border-bottom: 1px solid var(--border);
+  padding: 11px 13px;
+  position: sticky; top: 0; z-index: 10; backdrop-filter: blur(4px);
+}
+.ph-title { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--parchment); text-transform: uppercase; letter-spacing: 1.5px; }
+.ph-sub   { font-size: 0.65rem; color: var(--stone); margin-top: 2px; }
+
+/* TABS PANNEAU DROIT */
+.tab-bar {
+  display: flex; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel);
+}
+.tab-btn {
+  flex: 1; padding: 9px 4px; background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--stone); font-size: 0.65rem; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: .2s;
+  text-align: center;
+}
+.tab-btn.on { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-btn:hover:not(.on) { color: #ccc; }
+.tab-pane { display: none; }
+.tab-pane.on { display: block; }
+
+/* ACCORDION */
+.acc-item { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.acc-btn {
+  width: 100%; background: none; border: none;
+  padding: 10px 13px; display: flex; align-items: center; gap: 8px;
+  cursor: pointer; text-align: left; transition: background .2s; color: #ccd;
+}
+.acc-btn:hover { background: rgba(255,255,255,0.03); }
+.acc-btn.on { background: rgba(200,165,90,0.05); }
+.acc-ico { font-size: 1rem; flex-shrink: 0; }
+.acc-lbl { font-family: 'Cinzel', serif; font-size: 0.74rem; flex: 1; line-height: 1.3; }
+.acc-tag {
+  font-size: 0.58rem; padding: 1px 5px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  background: rgba(200,165,90,0.12); color: var(--parchment);
+  border: 1px solid rgba(200,165,90,0.2); white-space: nowrap;
+}
+.acc-arr { color: var(--parchment); font-size: 0.65rem; margin-left: 4px; transition: transform .22s; }
+.acc-btn.on .acc-arr { transform: rotate(180deg); }
+.acc-body { display: none; padding: 11px 13px 14px; background: rgba(0,0,0,0.18); border-top: 1px solid rgba(200,165,90,0.08); }
+.acc-body.on { display: block; }
+.acc-body p { font-size: 0.76rem; line-height: 1.65; color: #aabbd0; margin-bottom: 7px; }
+.acc-body p:last-child { margin-bottom: 0; }
+
+/* blocs internes */
+.fact-box {
+  background: rgba(200,165,90,0.06); border-left: 2px solid var(--parchment);
+  padding: 7px 10px; margin: 7px 0;
+}
+.fact-lbl { font-size: 0.6rem; color: var(--parchment); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
+.fact-box p { font-size: 0.74rem; color: #ccc; }
+.dates-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+.dtag { background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.18); padding: 1px 6px; border-radius: 2px; font-family: 'Share Tech Mono', monospace; font-size: 0.64rem; color: var(--cyan); }
+.igame { background: rgba(0,212,255,0.04); border: 1px solid rgba(0,212,255,0.18); padding: 6px 9px; border-radius: 2px; margin-top: 7px; font-size: 0.7rem; color: #8ce0ff; line-height: 1.5; }
+.igame .igl { font-size: 0.6rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 2px; }
+
+/* ════════════════════════════════════════════════
+   GUIDE DE JEU — éléments spécifiques
+════════════════════════════════════════════════ */
+.guide-intro {
+  padding: 11px 13px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.74rem; color: #8aaccc; line-height: 1.65;
+}
+.guide-intro strong { color: var(--gold); }
+
+/* Sections du guide */
+.guide-section { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.gs-header {
+  padding: 10px 13px;
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  background: none; border: none; width: 100%; text-align: left;
+  transition: background .2s; color: #cce;
+}
+.gs-header:hover { background: rgba(255,255,255,0.03); }
+.gs-header.on { background: rgba(0,212,255,0.04); }
+.gs-num {
+  width: 22px; height: 22px; background: rgba(0,212,255,0.12);
+  border: 1px solid rgba(0,212,255,0.3); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace; font-size: 0.58rem; color: var(--cyan); flex-shrink: 0;
+}
+.gs-label { font-family: 'Cinzel', serif; font-size: 0.73rem; flex: 1; }
+.gs-arr { color: var(--cyan); font-size: 0.62rem; transition: transform .22s; }
+.gs-header.on .gs-arr { transform: rotate(180deg); }
+
+.gs-body { display: none; padding: 10px 13px 14px; background: rgba(0,0,0,0.15); }
+.gs-body.on { display: block; }
+.gs-body p  { font-size: 0.74rem; line-height: 1.65; color: #aabbd0; margin-bottom: 7px; }
+.gs-body ul { padding-left: 16px; }
+.gs-body li { font-size: 0.73rem; line-height: 1.6; color: #aabbd0; margin-bottom: 4px; }
+.gs-body li strong { color: #e8e8ff; }
+
+/* cartes spéciales */
+.rule-box {
+  background: rgba(0,212,255,0.04); border: 1px solid rgba(0,212,255,0.15);
+  padding: 8px 10px; margin: 8px 0; font-size: 0.73rem; color: #9cc8ee; line-height: 1.6;
+}
+.rule-box .rl { font-size: 0.6rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
+.tip-box {
+  background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2);
+  padding: 8px 10px; margin: 8px 0; font-size: 0.73rem; color: #e8d088; line-height: 1.6;
+}
+.tip-box .tl { font-size: 0.6rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
+.warn-box {
+  background: rgba(255,68,102,0.05); border: 1px solid rgba(255,68,102,0.2);
+  padding: 8px 10px; margin: 8px 0; font-size: 0.73rem; color: #f8a8b8; line-height: 1.6;
+}
+.warn-box .wl { font-size: 0.6rem; color: var(--red); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
+
+/* Tableau civ */
+.civ-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; margin: 8px 0; }
+.civ-table th { background: rgba(0,0,0,0.4); color: var(--parchment); padding: 5px 7px; text-align: left; border: 1px solid rgba(255,255,255,0.08); font-weight: 700; }
+.civ-table td { padding: 5px 7px; border: 1px solid rgba(255,255,255,0.06); color: #aabbd0; }
+.civ-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.civ-table .str { color: var(--green); font-weight: 700; }
+.civ-table .wk  { color: var(--red); }
+
+/* Phases tour */
+.phase-list { padding: 4px 0; }
+.phase-item {
+  display: flex; gap: 9px; padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.phase-n {
+  width: 20px; height: 20px; background: rgba(255,215,0,0.1);
+  border: 1px solid rgba(255,215,0,0.25); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace; font-size: 0.55rem; color: var(--gold); flex-shrink: 0; margin-top: 1px;
+}
+.phase-c .ph-name { font-size: 0.72rem; font-weight: 700; color: #dde; margin-bottom: 2px; }
+.phase-c .ph-desc { font-size: 0.68rem; color: var(--stone); line-height: 1.5; }
+
+/* ════════════════════════════════════════════════
+   TIMELINE (panneau droit, onglet Histoire)
+════════════════════════════════════════════════ */
+.timeline { padding: 2px 0; }
+.tl-item { display: flex; gap: 9px; padding: 10px 13px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .2s; }
+.tl-item:hover { background: rgba(255,255,255,0.02); }
+.tl-left { display: flex; flex-direction: column; align-items: center; }
+.tl-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid; flex-shrink: 0; margin-top: 3px; }
+.tl-line { width: 1px; flex: 1; min-height: 16px; background: linear-gradient(to bottom, var(--border), transparent); margin: 2px 0; }
+.tl-c { flex: 1; }
+.tl-yr { font-family: 'Orbitron', monospace; font-size: 0.64rem; color: var(--gold); margin-bottom: 2px; }
+.tl-title { font-size: 0.75rem; font-weight: 700; color: #dde; margin-bottom: 2px; }
+.tl-desc { font-size: 0.69rem; color: var(--stone); line-height: 1.55; }
+.tl-hl {
+  font-size: 0.63rem; margin-top: 5px; display: inline-block;
+  padding: 2px 7px; border-radius: 2px;
+}
+.tl-item.active .tl-dot { box-shadow: 0 0 7px; }
+.tl-item.active .tl-hl { background: rgba(255,215,0,0.1); color: var(--gold); border: 1px solid rgba(255,215,0,0.25); }
+.tl-item.now .tl-dot    { border-color: var(--cyan); box-shadow: 0 0 7px rgba(0,212,255,.4); }
+.tl-item.now .tl-hl     { background: rgba(0,212,255,0.08); color: var(--cyan); border: 1px solid rgba(0,212,255,0.25); }
+
+/* ════════════════════════════════════════════════
+   OBJECTIFS (panneau droit, onglet Objectifs)
+════════════════════════════════════════════════ */
+.obj-wrap { padding: 10px 13px; }
+.obj-title { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--parchment); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(200,165,90,0.18); }
+.obj-item { display: flex; align-items: flex-start; gap: 7px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.72rem; color: #99aabb; line-height: 1.5; }
+.obj-ico { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+.obj-xp { font-family: 'Orbitron', monospace; font-size: 0.6rem; color: var(--gold); white-space: nowrap; margin-top: 2px; }
+.obj-done { color: var(--green) !important; }
+.obj-input { display: flex; gap: 5px; margin-top: 4px; }
+.obj-input input {
+  width: 90px; padding: 3px 7px; background: #0a0a1a; border: 1px solid #2a2a4a;
+  color: #fff; font-size: 0.67rem; font-family: 'Share Tech Mono', monospace; border-radius: 2px; outline: none;
+}
+.obj-input button {
+  padding: 3px 9px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.25);
+  color: var(--gold); font-size: 0.67rem; cursor: pointer; border-radius: 2px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+}
+
+/* ════════════════════════════════════════════════
+   CENTRE — JEU
+════════════════════════════════════════════════ */
+#gameCenter { display: flex; flex-direction: column; background: #000; }
+#gameTopBar {
+  background: rgba(3,6,14,0.99); border-bottom: 1px solid var(--border);
+  padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+}
+.gtb-title { font-family: 'Orbitron', monospace; font-size: 0.65rem; color: var(--cyan); letter-spacing: 1px; }
+.sess-xp { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--gold); }
+#dosWrap {
+  flex: 1; min-height: 420px; background: #000; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+#gameLoading {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; color: #334; text-align: center; padding: 32px; width: 100%;
+}
+.load-glyph { font-family: 'Share Tech Mono', monospace; font-size: 0.76rem; color: #223; line-height: 1.8; letter-spacing: 1.5px; }
+.scan { width: 180px; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); animation: sc 2s ease-in-out infinite; }
+@keyframes sc { 0%,100%{opacity:.15} 50%{opacity:1} }
+#jsdosMount { width:100%; height:100%; min-height:480px; display:none; }
+#bottomBar {
+  background: rgba(3,6,14,0.97); border-top: 1px solid var(--border);
+  padding: 7px 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.bb-i { display:flex; align-items:center; gap:5px; font-size:.68rem; color:var(--stone); }
+.bb-v { font-family:'Orbitron',monospace; font-size:.66rem; color:var(--gold); }
+.bb-sep { color:var(--border); }
+.tip-t { flex:1; font-size:.67rem; color:#445; font-family:'Share Tech Mono',monospace; }
+
+/* XP notif */
+#xpNotif {
+  position:fixed; bottom:55px; right:18px; z-index:1000;
+  background:rgba(255,215,0,.1); border:1px solid rgba(255,215,0,.35);
+  padding:8px 14px; font-family:'Orbitron',monospace; font-size:.72rem; color:var(--gold);
+  display:none; backdrop-filter:blur(5px);
+  animation: ns .3s ease;
+}
+@keyframes ns { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,.25)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+</style>
+</head>
+<body>
+
+<!-- GATE XP -->
+<div id="xpGate">
+  <div class="gate-card">
+    <div class="gate-icon">🏛️</div>
+    <div class="gate-title">Civilisations Antiques</div>
+    <p class="gate-sub">
+      Cette récompense est réservée aux délégués qui ont complété<br>
+      le pilier <strong>"La Cité & le Démos"</strong> dans l'Agora.<br>
+      Le seuil d'XP minimum est également vérifié.
+    </p>
+    <div class="xp-box">
+      <div class="xp-nums">
+        <span id="gCur">0</span> / <span id="gThr" style="color:#445">500</span> XP requis
+      </div>
+      <div class="xp-track"><div class="xp-fill" id="gBar" style="width:0%"></div></div>
+      <div style="font-size:.68rem;color:#445;margin-top:4px">Joueur : <span id="gPlayer" style="color:var(--cyan)">—</span></div>
+    </div>
+    <p class="gate-note">Complete les missions pHARe, Délégués et Hub Vidéos.<br>Reviens ici depuis l'Agora quand le pilier est terminé.</p>
+    <button class="btn-gate" onclick="goPortal()">← Retour à l'Agora</button>
+  </div>
+</div>
+
+<!-- INTERFACE PRINCIPALE -->
+<div id="mainWrap">
+
+  <header id="siteHdr">
+    <div class="hdr-left">
+      <div class="hdr-pvs">PVS · RÉCOMPENSE</div>
+      <div class="hdr-title">Advanced Civilization — Avalon Hill, 1995</div>
+    </div>
+    <div class="hdr-right">
+      <div class="chip chip-c">🎮 <span id="hPlayer">—</span></div>
+      <div class="chip chip-g">⚡ <span id="hXP">0</span> XP</div>
+      <div class="chip chip-v">🕹 Session <span id="hSess">00:00</span></div>
+      <button class="btn-s" onclick="togglePanels()">Panneaux</button>
+      <button class="btn-s" onclick="goPortal()">← Agora</button>
+    </div>
+  </header>
+
+  <div id="arena">
+
+    <!-- ══════════════════════════════════════
+         PANNEAU GAUCHE — ENCYCLOPÉDIE
+    ═════════════════════════════════════════ -->
+    <aside class="side-panel" id="panelLeft">
+      <div class="ph">
+        <div class="ph-title">📜 Encyclopédie</div>
+        <div class="ph-sub">Civilisations méditerranéennes antiques</div>
+      </div>
+
+      <div style="padding:10px 13px 8px; border-bottom:1px solid var(--border); font-size:.72rem; color:#7a9ab8; line-height:1.65;">
+        Le jeu couvre la période de l'<span style="color:var(--parchment)">Âge de Pierre</span> à
+        l'<span style="color:var(--parchment)">Âge du Fer</span> — le berceau de nos démocraties.
+      </div>
+
+      <!-- MÉSOPOTAMIE -->
+      <div class="acc-item">
+        <button class="acc-btn" onclick="togAcc(this)">
+          <span class="acc-ico">🌊</span>
+          <span class="acc-lbl">Mésopotamie</span>
+          <span class="acc-tag">5e HIS</span>
+          <span class="acc-arr">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="dates-row"><span class="dtag">~3500 av. J.-C.</span><span class="dtag">Sumer → Babylone</span></div>
+          <p>Entre le Tigre et l'Euphrate (Irak actuel) naissent les premières cités-États : <strong>Ur, Uruk, Nippur</strong>. Les Sumériens inventent l'écriture cunéiforme vers 3200 av. J.-C.</p>
+          <div class="fact-box">
+            <div class="fact-lbl">💡 À retenir</div>
+            <p>Le <strong>Code d'Hammurabi</strong> (v.1750 av. J.-C.) : 282 lois gravées sur basalte. Premier code de droit systématique connu.</p>
+          </div>
+          <p>Babylone sous Nabuchodonosor II (605–562) : 200 000 habitants, jardins suspendus, astronomie avancée.</p>
+          <div class="igame"><div class="igl">🎮 Dans le jeu</div>La civ <strong>Babylon</strong> débute en Mésopotamie. Les TOOLS <em>Pottery</em> et <em>Grain</em> reflètent les vraies innovations sumériennes.</div>
+        </div>
+      </div>
+
+      <!-- ÉGYPTE -->
+      <div class="acc-item">
+        <button class="acc-btn" onclick="togAcc(this)">
+          <span class="acc-ico">𓂀</span>
+          <span class="acc-lbl">Égypte Pharaonique</span>
+          <span class="acc-tag">6e HIS</span>
+          <span class="acc-arr">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="dates-row"><span class="dtag">~3100 av. J.-C.</span><span class="dtag">Narmer → Cléopâtre</span></div>
+          <p>Unifiée par Narmer vers 3100 av. J.-C., l'Égypte prospère grâce aux crues annuelles du Nil qui déposent un limon fertile. Trois millénaires de continuité culturelle.</p>
+          <div class="fact-box">
+            <div class="fact-lbl">💡 À retenir</div>
+            <p>Pyramides de Gizeh (2550–2490 av. J.-C.) : Khéops, Khéphren, Mykérinos. La Grande Pyramide pèse 6 millions de tonnes. Seule merveille antique encore debout.</p>
+          </div>
+          <p>L'écriture <em>hiéroglyphique</em> (700+ signes) sera déchiffrée par Champollion en 1822 grâce à la Pierre de Rosette.</p>
+          <div class="igame"><div class="igl">🎮 Dans le jeu</div><strong>Egypt</strong> : accès direct à la vallée du Nil, très fertile. Avantage pour construire des cités dès le début.</div>
+        </div>
+      </div>
+
+      <!-- GRÈCE -->
+      <div class="acc-item">
+        <button class="acc-btn" onclick="togAcc(this)">
+          <span class="acc-ico">🏺</span>
+          <span class="acc-lbl">Grèce Antique & la Démocratie</span>
+          <span class="acc-tag">5e HIS</span>
+          <span class="acc-arr">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="dates-row"><span class="dtag">~800 av. J.-C.</span><span class="dtag">Archaïque → hellénistique</span></div>
+          <p>Non pas un État mais un <strong>archipel de cités-États</strong> (<em>poleis</em>) : Athènes, Sparte, Corinthe, Thèbes. Chacune avec ses institutions, sa monnaie, ses lois.</p>
+          <div class="fact-box">
+            <div class="fact-lbl">🗳 La Démocratie — naissance</div>
+            <p>Clisthène (508 av. J.-C.) instaure la <strong>démocratie directe</strong> à Athènes : chaque citoyen vote en personne à l'<em>Ekklésia</em> (Assemblée du peuple). Le mot vient de <em>demos</em> (peuple) + <em>kratos</em> (pouvoir).</p>
+          </div>
+          <p>Limites : les esclaves (30–40 % de la population), les femmes et les <em>métèques</em> (étrangers résidents) sont exclus. La démocratie athénienne ne concerne que ~10 % des habitants.</p>
+          <div class="igame"><div class="igl">🎮 Dans le jeu</div><strong>Greece</strong> : civ maritime par excellence. Le TOOL <em>Astronomy</em> lui permet d'envoyer ses navires loin — comme les vraies colonies grecques de Marseille à Crimée.</div>
+        </div>
+      </div>
+
+      <!-- PHÉNICIE / CARTHAGE -->
+      <div class="acc-item">
+        <button class="acc-btn" onclick="togAcc(this)">
+          <span class="acc-ico">⚓</span>
+          <span class="acc-lbl">Phénicie & Carthage</span>
+          <span class="acc-tag">5e HIS</span>
+          <span class="acc-arr">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="dates-row"><span class="dtag">~1200 av. J.-C.</span><span class="dtag">Tyr → Carthage</span></div>
+          <p>Navigateurs et marchands du monde antique. Leur invention majeure : l'<strong>alphabet consonantique</strong> (22 lettres, ~1050 av. J.-C.) — ancêtre de tous nos alphabets modernes.</p>
+          <div class="fact-box">
+            <div class="fact-lbl">💡 Carthage vs Rome</div>
+            <p>Fondée vers 814 av. J.-C. près de Tunis, Carthage rivalise avec Rome. Guerres Puniques (264–146). Hannibal franchit les Alpes avec 37 éléphants. Rome finit par raser Carthage en 146 av. J.-C.</p>
+          </div>
+          <div class="igame"><div class="igl">🎮 Dans le jeu</div><strong>Carthage</strong> : Afrique du Nord, routes maritimes immédiates. Le TOOL <em>Trade</em> reflète l'ADN phénicien — tout est commerce.</div>
+        </div>
+      </div>
+
+      <!-- CRÈTE / ROME -->
+      <div class="acc-item">
+        <button class="acc-btn" onclick="togAcc(this)">
+          <span class="acc-ico">🦅</span>
+          <span class="acc-lbl">Rome & la République</span>
+          <span class="acc-tag">5e HIS</span>
+          <span class="acc-arr">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="dates-row"><span class="dtag">509 av. J.-C.</span><span class="dtag">République → Empire</span></div>
+          <p>En 509 av. J.-C., Rome chasse son dernier roi et instaure la <strong>République</strong> : deux consuls élus chaque année, le Sénat comme assemblée de sages, les Comices pour voter les lois.</p>
+          <div class="fact-box">
+            <div class="fact-lbl">🏛 La Représentation avant la démocratie</div>
+            <p>Rome invente la <strong>démocratie représentative</strong> : au lieu de voter eux-mêmes sur tout, les citoyens <em>élisent des représentants</em> (tribuns, consuls). Ce modèle inspirera les parlements modernes.</p>
+          </div>
+          <p>Le <em>Sénat</em> (de <em>senex</em>, vieillard) influence encore notre mot <em>sénateur</em>. La <em>plèbe</em> obtient ses tribuns en 494 av. J.-C. — première lutte sociale pour la représentation populaire.</p>
+          <div class="igame"><div class="igl">🎮 Dans le jeu</div><strong>Italie/Rome</strong> : civ centrale sur la carte. Le TOOL <em>Law</em> reflète l'obsession romaine du droit et de l'organisation.</div>
+        </div>
+      </div>
+
+      <!-- PERSE -->
+      <div class="acc-item">
+        <button class="acc-btn" onclick="togAcc(this)">
+          <span class="acc-ico">🦁</span>
+          <span class="acc-lbl">Empire Perse</span>
+          <span class="acc-tag">5e HIS</span>
+          <span class="acc-arr">▼</span>
+        </button>
+        <div class="acc-body">
+          <div class="dates-row"><span class="dtag">550 av. J.-C.</span><span class="dtag">Cyrus → Darius III</span></div>
+          <p>Cyrus II fonde le premier Empire achéménide en 550. À son apogée sous Darius Ier : de l'Indus à l'Égypte — le plus grand empire de l'Antiquité, ~50 millions d'habitants.</p>
+          <div class="fact-box">
+            <div class="fact-lbl">💡 La Route Royale</div>
+            <p>2700 km de Suse à Sardes, traversable en 7 jours grâce à des relais de chevaux. Première infrastructure de communication de masse — préfigure internet.</p>
+          </div>
+          <p>Guerres médiques (490–479 av. J.-C.) : Marathon, Salamine, Platées. La résistance grecque sauvegarde la démocratie naissante en Europe.</p>
+          <div class="igame"><div class="igl">🎮 Dans le jeu</div><strong>Persia</strong> : démarre à l'Est. Fort potentiel de population. Menace permanente sur les civs méditerranéennes.</div>
+        </div>
+      </div>
+
+      <!-- NOTE PROGRAMME -->
+      <div style="padding:10px 13px; background:rgba(0,212,255,0.03); border-top:1px solid rgba(0,212,255,0.12);">
+        <div style="font-family:'Cinzel',serif; font-size:.65rem; color:var(--cyan); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Programme d'histoire</div>
+        <p style="font-size:.7rem; color:#6a8aaa; line-height:1.7;">
+          <strong style="color:#99b">6e :</strong> Premières civilisations, écriture, Égypte, Grèce archaïque<br>
+          <strong style="color:#99b">5e :</strong> Athènes, Perse, Rome, Carthage, démocratie, République<br>
+          <strong style="color:#99b">Compétences :</strong> Localiser dans le temps et l'espace · Lire une carte historique · Analyser un document.
+        </p>
+      </div>
+    </aside><!-- /panelLeft -->
+
+    <!-- ══════════════════════════════════════
+         CENTRE — JEU
+    ═════════════════════════════════════════ -->
+    <main id="gameCenter">
+      <div id="gameTopBar">
+        <div class="gtb-title">DOS · ACIV.EXE · 640×480 · 256 couleurs</div>
+        <div class="sess-xp">Session : <span id="sessXP">0</span> XP</div>
+        <button class="btn-s" onclick="loadGame()" id="btnLoad">▶ Lancer</button>
+        <button class="btn-s" onclick="expandGame()">⛶ Plein écran</button>
+      </div>
+
+      <div id="dosWrap">
+        <div id="gameLoading">
+          <div style="font-size:2.2rem;opacity:.25;margin-bottom:8px;">🏛️</div>
+          <div class="load-glyph">
+            ADVANCED CIVILIZATION<br>
+            AVALON HILL · DOS · 1995<br>
+            486+ · SVGA · 16MB RAM
+          </div>
+          <div class="scan"></div>
+          <p style="font-size:.68rem;color:#2a3a4a;margin-top:14px;max-width:280px;line-height:1.65;">
+            Clique sur <strong style="color:var(--cyan)">▶ Lancer</strong> pour démarrer.<br>
+            Les fichiers doivent être dans <code style="color:#446">game/aciv.jsdos</code>
+          </p>
+          <div style="margin-top:10px;padding:10px;background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.12);font-size:.67rem;color:#665;max-width:320px;line-height:1.65;text-align:left;">
+            <strong style="color:var(--gold)">⚙ GitHub Pages :</strong> placer le bundle <code>game/aciv.jsdos</code>.<br>
+            Voir le README pour créer le bundle depuis les fichiers DOS.
+          </div>
+        </div>
+        <div id="jsdosMount"></div>
+      </div>
+
+      <div id="bottomBar">
+        <div class="bb-i">⏱ <span class="bb-v" id="bTime">00:00</span></div>
+        <div class="bb-sep">|</div>
+        <div class="bb-i">🏙 Cités : <span class="bb-v" id="bCit">0</span></div>
+        <div class="bb-sep">|</div>
+        <div class="bb-i">📚 TOOLS : <span class="bb-v" id="bTool">0</span></div>
+        <div class="bb-sep">|</div>
+        <div class="tip-t" id="tipT">💡 Construis tes cités dans les cases rouges/jaunes pour récupérer des cartes de commerce.</div>
+      </div>
+    </main>
+
+    <!-- ══════════════════════════════════════
+         PANNEAU DROIT — 3 ONGLETS
+    ═════════════════════════════════════════ -->
+    <aside class="side-panel" id="panelRight">
+
+      <!-- ONGLETS -->
+      <div class="tab-bar">
+        <button class="tab-btn on" onclick="switchTab(this,'tHist')">⏳ Histoire</button>
+        <button class="tab-btn"   onclick="switchTab(this,'tGuide')">🎮 Guide</button>
+        <button class="tab-btn"   onclick="switchTab(this,'tObj')">🏆 Objectifs</button>
+      </div>
+
+      <!-- ── ONGLET HISTOIRE ── -->
+      <div class="tab-pane on" id="tHist">
+        <div class="timeline">
+
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="border-color:#6a5a40"></div><div class="tl-line"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">1954</div>
+              <div class="tl-title">Civilization — Jeu de plateau</div>
+              <div class="tl-desc">Francis Tresham crée le jeu de plateau <em>Civilization</em> en Angleterre. 6–8 joueurs, durée : une journée entière.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="border-color:#4a6a4a"></div><div class="tl-line"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">1980</div>
+              <div class="tl-title">Advanced Civilization — Avalon Hill</div>
+              <div class="tl-desc">Version avancée : 8 civilisations, carte Méditerranée complète, commerce, technologies. Jeu légendaire dans les wargames.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="border-color:#4a4a8a"></div><div class="tl-line"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">1991</div>
+              <div class="tl-title">Sid Meier's Civilization — PC</div>
+              <div class="tl-desc">Sid Meier (MicroProse) s'inspire explicitement du jeu d'Avalon Hill pour créer l'un des jeux les plus influents de l'histoire vidéoludique.</div>
+              <div class="tl-hl">"L'un des jeux qui a le plus influencé ma carrière." — Sid Meier</div>
+            </div>
+          </div>
+
+          <div class="tl-item active">
+            <div class="tl-left"><div class="tl-dot" style="border-color:var(--gold)"></div><div class="tl-line"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">1995</div>
+              <div class="tl-title">ACIV — Version PC DOS</div>
+              <div class="tl-desc">Avalon Hill adapte son jeu de plateau sur PC. SVGA 640×480, jusqu'à 8 joueurs IA ou humains, développé pour 486 sous MS-DOS.</div>
+              <div class="tl-hl">📀 C'est ce fichier que tu joues maintenant !</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="border-color:#5a3a3a"></div><div class="tl-line"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">1998</div>
+              <div class="tl-title">Hasbro rachète Avalon Hill</div>
+              <div class="tl-desc">En difficulté financière, Avalon Hill est vendu à Hasbro. La plupart des jeux cessent d'être distribués. ACIV entre dans l'abandonware.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left"><div class="tl-dot" style="border-color:#3a5a6a"></div><div class="tl-line"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">2008–2021</div>
+              <div class="tl-title">DOSBox → WebAssembly</div>
+              <div class="tl-desc">DOSBox (open-source) est compilé en WASM par le projet js-dos. Des jeux DOS de 1995 tournent désormais dans un navigateur.</div>
+              <div class="tl-hl">⚡ Hardware des années 90 émulé par JavaScript</div>
+            </div>
+          </div>
+
+          <div class="tl-item now">
+            <div class="tl-left"><div class="tl-dot"></div></div>
+            <div class="tl-c">
+              <div class="tl-yr">2026</div>
+              <div class="tl-title">Toi, ici, maintenant</div>
+              <div class="tl-desc">Un jeu de 1995, sur un moteur de 1980, dans la lignée de l'Agora athénienne de 508 av. J.-C. — dans ton navigateur de collège.</div>
+              <div class="tl-hl">🏛️ L'histoire du jeu est une histoire de civilisation</div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tHist -->
+
+      <!-- ── ONGLET GUIDE DE JEU ── -->
+      <div class="tab-pane" id="tGuide">
+
+        <div class="guide-intro">
+          <strong>Advanced Civilization</strong> est un jeu de <strong>stratégie pure</strong> :
+          aucun dé, aucun hasard. Tu construis une civilisation méditerranéenne de l'Âge de Pierre
+          à l'Âge du Fer. Le premier à atteindre le bout de la piste d'âges (AST) gagne.
+          Ce guide te donne les outils pour comprendre et commencer à gagner.
+        </div>
+
+        <!-- S1 : Vue d'ensemble -->
+        <div class="guide-section">
+          <button class="gs-header on" onclick="togGuide(this)">
+            <div class="gs-num">1</div>
+            <div class="gs-label">Vue d'ensemble — l'objectif</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body on">
+            <p>Le but n'est <strong>pas de conquérir la carte</strong>. C'est de faire <strong>avancer ton pion sur l'AST</strong> (Advancement of Science Track) — une piste chronologique qui va de l'Âge de Pierre, au Bronze, puis au Fer.</p>
+            <div class="rule-box">
+              <div class="rl">📌 Règle clé</div>
+              Pour avancer sur l'AST, il faut avoir un certain nombre de <strong>cités</strong> ET avoir acquis certaines <strong>technologies (TOOLS)</strong>. Les deux ensemble.
+            </div>
+            <p>Ton avancement sur l'AST dépend de ton niveau de culture : plus tu as de cités, plus tu collectes de cartes de commerce, plus tu peux acheter de technologies. Tout est lié.</p>
+            <div class="tip-box">
+              <div class="tl">💡 Mentalité gagnante</div>
+              Pense "constructeur de civilisation", pas "conquérant". La guerre détruit autant chez toi que chez l'adversaire. Le vrai chemin vers la victoire passe par les cités et les technologies.
+            </div>
+          </div>
+        </div>
+
+        <!-- S2 : Structure d'un tour -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">2</div>
+            <div class="gs-label">Structure d'un tour (8 phases)</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <p>Chaque tour se déroule en <strong>8 phases dans l'ordre</strong> — tout le monde joue chaque phase avant de passer à la suivante :</p>
+            <div class="phase-list">
+              <div class="phase-item">
+                <div class="phase-n">1</div>
+                <div class="phase-c">
+                  <div class="ph-name">Croissance démographique</div>
+                  <div class="ph-desc">Chaque territoire occupé ajoute 1 token population. Tes cités deviennent temporairement des tokens aussi.</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">2</div>
+                <div class="phase-c">
+                  <div class="ph-name">Mouvement</div>
+                  <div class="ph-desc">Tes tokens se déplacent dans des territoires adjacents (1 case/tour par terre, plus par mer avec navires).</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">3</div>
+                <div class="phase-c">
+                  <div class="ph-name">Conflits</div>
+                  <div class="ph-desc">Si deux civs se retrouvent dans le même territoire, chaque camp perd autant de tokens que l'autre en a. Pas de dé — pure arithmétique.</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">4</div>
+                <div class="phase-c">
+                  <div class="ph-name">Construction de cités</div>
+                  <div class="ph-desc">Si tu as exactement 6 tokens dans un site de cité (case rouge ou jaune), ils se transforment en une cité.</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">5</div>
+                <div class="phase-c">
+                  <div class="ph-name">Suppression des surplus</div>
+                  <div class="ph-desc">Chaque territoire a une capacité max. Les tokens en excès sont <strong>automatiquement supprimés</strong>. Attention !</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">6</div>
+                <div class="phase-c">
+                  <div class="ph-name">Collecte des cartes de commerce</div>
+                  <div class="ph-desc">Chaque cité donne 1 carte. La valeur des cartes augmente avec le nombre de cités que tu possèdes.</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">7</div>
+                <div class="phase-c">
+                  <div class="ph-name">Commerce (négoce)</div>
+                  <div class="ph-desc">Tu échanges des cartes avec les autres joueurs pour constituer des ensembles (triplets, quadruplets) de la même marchandise — ça vaut bien plus qu'un tas disparate.</div>
+                </div>
+              </div>
+              <div class="phase-item">
+                <div class="phase-n">8</div>
+                <div class="phase-c">
+                  <div class="ph-name">Achat de technologies (TOOLS)</div>
+                  <div class="ph-desc">Tu dépenses la valeur totale de tes cartes pour acheter des technologies dans l'arbre de connaissance.</div>
+                </div>
+              </div>
+            </div>
+            <div class="warn-box">
+              <div class="wl">⚠ Calamités</div>
+              Certaines cartes de commerce déclenchent des <strong>calamités</strong> (épidémie, famine, guerre civile...) qui peuvent décimer ta population ou détruire des cités. Les technologies comme <em>Medicine</em> ou <em>Grain</em> te protègent.
+            </div>
+          </div>
+        </div>
+
+        <!-- S3 : Construire des cités -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">3</div>
+            <div class="gs-label">Construire des cités — la priorité n°1</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <p>Les cités sont le <strong>moteur de ta civilisation</strong>. Chaque cité = 1 carte de commerce par tour. Plus de cités = cartes plus précieuses = plus de technologies.</p>
+            <div class="rule-box">
+              <div class="rl">📌 Comment construire une cité</div>
+              Amène exactement <strong>6 tokens</strong> dans un territoire marqué d'un site de cité (case <strong style="color:#f66">rouge</strong> ou <strong style="color:#ffd700">jaune</strong>). À la phase 4, ils se transforment automatiquement en cité.
+            </div>
+            <ul>
+              <li><strong>Sites rouges</strong> : sites primaires, souvent bien placés mais disputés.</li>
+              <li><strong>Sites jaunes</strong> : sites secondaires, moins intéressants mais plus accessibles.</li>
+              <li>Une cité ne peut pas être dans le même territoire qu'une autre cité.</li>
+              <li>Une cité détruite par un conflit redevient des tokens adverses.</li>
+            </ul>
+            <div class="tip-box">
+              <div class="tl">💡 Stratégie cités</div>
+              <ul>
+                <li>Vise 3 cités avant le tour 5. Avec 3 cités, tu obtiens des cartes de valeur 3+.</li>
+                <li>Protège tes cités — laisse toujours 1–2 tokens de garnison.</li>
+                <li>Si un adversaire menace tes sites, bloque-les avec tes tokens AVANT lui.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- S4 : Le commerce -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">4</div>
+            <div class="gs-label">Les cartes de commerce — comment ça marche</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <p>Les cartes de commerce représentent des marchandises antiques : <em>blé, vin, huile, gemmes, soie, épices</em>... Elles ont une valeur nominale de 1 à 9.</p>
+            <div class="rule-box">
+              <div class="rl">📌 Valeur d'un ensemble</div>
+              Un ensemble de 3 cartes identiques vaut leur valeur nominale × 3. <br>Un ensemble de 4 vaut × 4, etc. <br>Exemple : 3 cartes "Gemmes" (valeur 9) = 27 points de commerce.
+            </div>
+            <p>La valeur des cartes tirées dépend de ton nombre de cités. Avec 1 cité, tu ne piras jamais de cartes de valeur 6+. Avec 5+ cités, tu accèdes aux cartes rares et précieuses.</p>
+            <div class="tip-box">
+              <div class="tl">💡 Stratégie de commerce</div>
+              <ul>
+                <li>Négocie toujours pour compléter des ensembles. Un triplet vaut 3× plus que 3 cartes isolées.</li>
+                <li>N'accepte jamais une carte de calamité en échange — refuse poliment ou impose une contrepartie.</li>
+                <li>Si tu as 3 cartes Grain, ne les trade pas — Grain te protège de la famine (calamité dévastatrice).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- S5 : Les technologies -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">5</div>
+            <div class="gs-label">Les Technologies (TOOLS) — quoi acheter en premier</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <p>Il y a plus de 100 technologies dans ACIV. Voici les priorités absolues pour débuter :</p>
+            <table class="civ-table">
+              <thead><tr><th>TOOL</th><th>Coût</th><th>Effet</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Grain</strong></td><td>3</td><td class="str">Réduit la famine. PRIORITÉ 1.</td></tr>
+                <tr><td><strong>Pottery</strong></td><td>6</td><td class="str">Réduit les épidémies. PRIORITÉ 2.</td></tr>
+                <tr><td><strong>Agriculture</strong></td><td>6</td><td>Augmente cap. de population.</td></tr>
+                <tr><td><strong>Clothmaking</strong></td><td>6</td><td>Bonus commerce.</td></tr>
+                <tr><td><strong>Metalworking</strong></td><td>35</td><td class="str">Fort bonus militaire.</td></tr>
+                <tr><td><strong>Astronomy</strong></td><td>20</td><td>Navires à longue portée.</td></tr>
+                <tr><td><strong>Trade</strong></td><td>40</td><td class="str">+2 cartes/tour. Puissant.</td></tr>
+                <tr><td><strong>Law</strong></td><td>40</td><td>Réduit anarchie + bonus AST.</td></tr>
+                <tr><td><strong>Medicine</strong></td><td>15</td><td>Protection contre épidémies.</td></tr>
+                <tr><td><strong>Engineering</strong></td><td>60</td><td>Fortifications, cités résistantes.</td></tr>
+              </tbody>
+            </table>
+            <div class="warn-box">
+              <div class="wl">⚠ Ne néglige pas les calamités</div>
+              Les 3 calamités les plus dévastatrices sont : <strong>Famine, Épidémie, Guerre civile</strong>. Grain + Pottery + Medicine te protègent des deux premières. Achète-les dès que possible.
+            </div>
+            <div class="tip-box">
+              <div class="tl">💡 Ordre d'achat conseillé</div>
+              Tour 1–3 : Grain, Pottery, Agriculture. <br>Tour 4–6 : Clothmaking, médecine. <br>Tour 7+ : vise Trade ou Law pour l'AST.
+            </div>
+          </div>
+        </div>
+
+        <!-- S6 : L'AST -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">6</div>
+            <div class="gs-label">La piste AST — comment gagner</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <p>L'AST (Advancement of Science Track) est la piste verticale sur le côté gauche du plateau. Ton pion commence en bas (Âge de Pierre) et remonte.</p>
+            <div class="rule-box">
+              <div class="rl">📌 Condition d'avancement</div>
+              À la fin de chaque tour, tu peux avancer sur l'AST si :<br>
+              1. Tu as le nombre de cités requis pour le niveau suivant.<br>
+              2. Tu as acquis les TOOLS requis par ce niveau.<br>
+              Les deux conditions doivent être remplies simultanément.
+            </div>
+            <ul>
+              <li><strong>Âge de Pierre</strong> → <strong>Âge du Cuivre</strong> : 2 cités + Grain ou Pottery.</li>
+              <li><strong>Âge du Cuivre</strong> → <strong>Bronze</strong> : 3–4 cités + plusieurs TOOLS basiques.</li>
+              <li><strong>Âge du Bronze</strong> → <strong>Fer</strong> : 5–6 cités + TOOLS avancés (Trade, Law, Metalworking...).</li>
+            </ul>
+            <div class="tip-box">
+              <div class="tl">💡 La vraie victoire</div>
+              Avance sur l'AST <em>avant</em> de te battre. Un joueur à l'Âge du Bronze face à un joueur en Âge de Pierre a un avantage massif en technologie. L'AST est une course — pas une guerre.
+            </div>
+          </div>
+        </div>
+
+        <!-- S7 : Profils civ -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">7</div>
+            <div class="gs-label">Profils des civilisations — leurs forces</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <table class="civ-table">
+              <thead><tr><th>Civ</th><th>Zone départ</th><th>Force</th><th>Faiblesse</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Egypt</strong></td><td>Vallée du Nil</td><td class="str">Terres fertiles, expansion facile</td><td class="wk">Isolée, peu de voisins à trader</td></tr>
+                <tr><td><strong>Babylon</strong></td><td>Mésopotamie</td><td class="str">Fort potentiel de population</td><td class="wk">Entourée de rivaux</td></tr>
+                <tr><td><strong>Crete</strong></td><td>Mer Égée</td><td class="str">Maritime, commerce naturel</td><td class="wk">Territoire limité</td></tr>
+                <tr><td><strong>Greece</strong></td><td>Grèce / Balkans</td><td class="str">Équilibre pop/commerce</td><td class="wk">Concurrence avec Crete/Thrace</td></tr>
+                <tr><td><strong>Carthage</strong></td><td>Afrique du Nord</td><td class="str">Accès mer direct, commerce</td><td class="wk">Expansion terrestre difficile</td></tr>
+                <tr><td><strong>Italy</strong></td><td>Italie centrale</td><td class="str">Position centrale, pivotal</td><td class="wk">Sous pression de tous</td></tr>
+                <tr><td><strong>Illyria</strong></td><td>Balkans Nord</td><td class="str">Territoire vaste</td><td class="wk">Peu de sites de cités premium</td></tr>
+                <tr><td><strong>Thrace</strong></td><td>Mer Noire</td><td class="str">Expansion vers Est</td><td class="wk">Loin des grandes routes commerciales</td></tr>
+              </tbody>
+            </table>
+            <div class="tip-box">
+              <div class="tl">💡 Pour débuter</div>
+              Egypt ou Greece sont les plus accessibles. Egypt pour la stratégie solitaire, Greece pour apprendre le commerce.
+            </div>
+          </div>
+        </div>
+
+        <!-- S8 : Stratégie d'ouverture -->
+        <div class="guide-section">
+          <button class="gs-header" onclick="togGuide(this)">
+            <div class="gs-num">8</div>
+            <div class="gs-label">Stratégie d'ouverture — les 5 premiers tours</div>
+            <div class="gs-arr">▼</div>
+          </button>
+          <div class="gs-body">
+            <p>La ouverture détermine souvent la partie entière. Voici la séquence gagnante standard :</p>
+            <ul>
+              <li><strong>Tour 1 :</strong> Étale ta population sur 3–4 territoires. Identifie les sites de cités rouges proches. Place 3–4 tokens dessus.</li>
+              <li><strong>Tour 2 :</strong> Complète la course vers tes sites rouges. Mets 6 tokens sur le 1er site. Construit ta 1ère cité !</li>
+              <li><strong>Tour 3 :</strong> Avec ta 1ère cité, tu reçois 1 carte. Commence à viser le 2ème site. Achète Grain si tu peux.</li>
+              <li><strong>Tour 4 :</strong> 2ème cité. Commence à trader pour faire des ensembles. Achète Pottery.</li>
+              <li><strong>Tour 5 :</strong> 3ème cité si possible. Commence à négocer sérieusement. Vise l'AST prochain niveau.</li>
+            </ul>
+            <div class="warn-box">
+              <div class="wl">⚠ Erreurs de débutant</div>
+              <ul>
+                <li>Se battre dès le début. La guerre = pertes des deux côtés = retard AST.</li>
+                <li>Oublier les capacités de territoire (surplus = tokens perdus).</li>
+                <li>Négliger la phase de commerce. Un mauvais trade peut te coûter la partie.</li>
+                <li>Acheter des technologies de prestige avant les technologies de survie.</li>
+              </ul>
+            </div>
+            <div class="tip-box">
+              <div class="tl">💡 La règle des 3-3-3</div>
+              3 cités, 3 technologies basiques, 3 ensembles de cartes commerciales = tu es en position solide pour viser la victoire.
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tGuide -->
+
+      <!-- ── ONGLET OBJECTIFS ── -->
+      <div class="tab-pane" id="tObj">
+        <div class="obj-wrap">
+          <div class="obj-title">Objectifs de session</div>
+
+          <div class="obj-item" id="o1">
+            <span class="obj-ico">🕐</span>
+            <div style="flex:1">Jouer 5 minutes</div>
+            <div class="obj-xp">+15 XP</div>
+          </div>
+          <div class="obj-item" id="o2">
+            <span class="obj-ico">🕑</span>
+            <div style="flex:1">Jouer 20 minutes</div>
+            <div class="obj-xp">+35 XP</div>
+          </div>
+
+          <div class="obj-item" id="o3">
+            <span class="obj-ico">🏙</span>
+            <div style="flex:1">
+              <div>Construire une cité</div>
+              <div class="obj-input">
+                <input type="text" id="cityIn" placeholder="Code cité">
+                <button onclick="validateObj('CITY')">Valider</button>
+              </div>
+            </div>
+            <div class="obj-xp">+25 XP</div>
+          </div>
+
+          <div class="obj-item" id="o4">
+            <span class="obj-ico">📚</span>
+            <div style="flex:1">
+              <div>Acquérir une technologie</div>
+              <div class="obj-input">
+                <input type="text" id="techIn" placeholder="Code techno">
+                <button onclick="validateObj('TECH')">Valider</button>
+              </div>
+            </div>
+            <div class="obj-xp">+25 XP</div>
+          </div>
+
+          <div class="obj-item" id="o5">
+            <span class="obj-ico">⚔️</span>
+            <div style="flex:1">
+              <div>Survivre à une calamité</div>
+              <div class="obj-input">
+                <input type="text" id="calIn" placeholder="Code calamité">
+                <button onclick="validateObj('CAL')">Valider</button>
+              </div>
+            </div>
+            <div class="obj-xp">+20 XP</div>
+          </div>
+
+        </div>
+
+        <!-- SESSION RECAP -->
+        <div style="padding:10px 13px; border-top:1px solid var(--border); margin-top:4px;">
+          <div style="font-family:'Cinzel',serif; font-size:.65rem; color:var(--parchment); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Récapitulatif session</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <div style="background:rgba(0,0,0,.3); border:1px solid var(--border); padding:8px; text-align:center;">
+              <div style="font-size:.62rem; color:var(--stone);">Temps</div>
+              <div style="font-family:'Orbitron',monospace; font-size:.8rem; color:var(--cyan);" id="recapTime">00:00</div>
+            </div>
+            <div style="background:rgba(0,0,0,.3); border:1px solid var(--border); padding:8px; text-align:center;">
+              <div style="font-size:.62rem; color:var(--stone);">XP Session</div>
+              <div style="font-family:'Orbitron',monospace; font-size:.8rem; color:var(--gold);" id="recapXP">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTE PÉDAGOGIQUE -->
+        <div style="padding:10px 13px; background:rgba(200,165,90,0.03); border-top:1px solid rgba(200,165,90,0.12);">
+          <div style="font-family:'Cinzel',serif; font-size:.65rem; color:var(--parchment); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">Note</div>
+          <p style="font-size:.7rem; color:#6a8a68; line-height:1.65;">
+            ACIV n'a aucune part de hasard — chaque conflit se résout par soustraction égale des deux côtés. La démo est limitée à <strong>16 tours</strong>. Pas de sauvegarde.
+          </p>
+        </div>
+      </div><!-- /tObj -->
+
+    </aside><!-- /panelRight -->
+
+  </div><!-- /arena -->
+</div><!-- /mainWrap -->
+
+<!-- XP NOTIF -->
+<div id="xpNotif">+<span id="xpN">0</span> XP !</div>
+
+<script>
+'use strict';
+const XP_THRESHOLD = 500;
+const GAME_BUNDLE  = 'game/aciv.jsdos';
+const SECRET_CITY  = 'CITAIVOK';
+const SECRET_TECH  = 'TOOLSAC95';
+const SECRET_CAL   = 'CALAMIVY';
+
+const TIPS = [
+  '💡 Construis tes cités dans les cases rouges/jaunes — 6 tokens exactement.',
+  '💡 Ne te bats pas dès le début. La guerre coûte autant chez toi que chez l\'adversaire.',
+  '💡 Achète d\'abord Grain et Pottery — les calamités peuvent te décimer.',
+  '💡 Négocie pour former des triplets de la même marchandise. Ça vaut 3× plus.',
+  '💡 Plus tu as de cités, plus tes cartes de commerce ont une valeur élevée.',
+  '💡 L\'AST se monte avec des cités ET des technologies. Les deux à la fois.',
+  '💡 Astronomy te donne des navires à longue portée. Essentiel pour les civs côtières.',
+  '💡 La vraie victoire = avancer sur l\'AST avant les adversaires. Pas les écraser.',
+];
+
+const BRIDGE_KEY = 'pvs_bridge_events';
+const PLAYER_KEY = 'pvs_current_player';
+
+let cur = '', sessionXP = 0, sessionSec = 0, timerInt = null, tipIdx = 0;
+let objectives = {time5:false, time20:false, city:false, tech:false, cal:false};
+
+function nCode(v) {
+  return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,'').toUpperCase();
+}
+function getParam(k) { return new URLSearchParams(window.location.search).get(k)||''; }
+
+function pushBridge(p) {
+  try {
+    const raw=localStorage.getItem(BRIDGE_KEY);
+    const l=raw?JSON.parse(raw):[];
+    l.push(p); if(l.length>700)l.splice(0,l.length-700);
+    localStorage.setItem(BRIDGE_KEY,JSON.stringify(l));
+  } catch(e){}
+}
+function evId(pfx) { return `${pfx}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`; }
+
+function calcXP(pc) {
+  try {
+    const e=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]');
+    if(!Array.isArray(e)) return 0;
+    return e.filter(x=>nCode(x.player)===nCode(pc))
+      .reduce((s,x)=>s+Number(x.reward||x.offer||x.xp||0),0);
+  } catch(e){return 0;}
+}
+
+function init() {
+  const fp=getParam('player');
+  if(fp) localStorage.setItem(PLAYER_KEY,nCode(fp));
+  cur=nCode(localStorage.getItem(PLAYER_KEY)||'');
+
+  const xp=calcXP(cur);
+  document.getElementById('gPlayer').textContent = cur||'(non connecté)';
+  document.getElementById('gCur').textContent    = xp;
+  document.getElementById('gThr').textContent    = XP_THRESHOLD;
+  document.getElementById('gBar').style.width    = Math.min(100,Math.round(xp/XP_THRESHOLD*100))+'%';
+
+  if(xp >= XP_THRESHOLD || !cur) unlock();
+}
+
+function unlock() {
+  document.getElementById('xpGate').classList.add('hidden');
+  document.getElementById('mainWrap').classList.add('on');
+  const xp=calcXP(cur);
+  document.getElementById('hPlayer').textContent = cur||'Visiteur';
+  document.getElementById('hXP').textContent     = xp;
+  startTimer(); rotateTip();
+  setInterval(rotateTip, 18000);
+  if(cur) pushBridge({id:evId('ACIV_OPEN'),type:'ACIV_OPEN',player:cur,d:new Date().toISOString()});
+}
+
+function startTimer() {
+  timerInt = setInterval(()=>{
+    sessionSec++;
+    const m=String(Math.floor(sessionSec/60)).padStart(2,'0');
+    const s=String(sessionSec%60).padStart(2,'0');
+    const t=`${m}:${s}`;
+    document.getElementById('hSess').textContent   = t;
+    document.getElementById('bTime').textContent   = t;
+    document.getElementById('recapTime').textContent = t;
+    if(sessionSec===300  && !objectives.time5)  { objectives.time5=true;  awardXP(15,'TIME5','5 minutes de jeu'); markObj('o1'); }
+    if(sessionSec===1200 && !objectives.time20) { objectives.time20=true; awardXP(35,'TIME20','20 minutes de jeu'); markObj('o2'); }
+  },1000);
+}
+
+function awardXP(amt,type,lbl) {
+  sessionXP+=amt;
+  document.getElementById('sessXP').textContent   = sessionXP;
+  document.getElementById('recapXP').textContent  = sessionXP;
+  document.getElementById('hXP').textContent      = calcXP(cur)+sessionXP;
+  if(cur) pushBridge({id:evId('ACIV_XP'),type:'ACIV_XP',player:cur,subtype:type,label:lbl,reward:amt,d:new Date().toISOString()});
+  showNotif(amt);
+}
+
+function showNotif(v) {
+  const n=document.getElementById('xpNotif');
+  document.getElementById('xpN').textContent=v;
+  n.style.display='block';
+  setTimeout(()=>n.style.display='none',2500);
+}
+
+function markObj(id) {
+  const el=document.getElementById(id);
+  if(el) { el.classList.add('obj-done'); el.querySelector('.obj-ico').textContent='✅'; }
+}
+
+function validateObj(type) {
+  const secrets = {CITY:SECRET_CITY, TECH:SECRET_TECH, CAL:SECRET_CAL};
+  const inputs  = {CITY:'cityIn', TECH:'techIn', CAL:'calIn'};
+  const objIds  = {CITY:'o3', TECH:'o4', CAL:'o5'};
+  const labels  = {CITY:'Cité construite', TECH:'Technologie acquise', CAL:'Calamité survécue'};
+  const xps     = {CITY:25, TECH:25, CAL:20};
+  const stats   = {CITY:'bCit', TECH:'bTool'};
+  const doneKey = {CITY:'city', TECH:'tech', CAL:'cal'};
+
+  const code=nCode(document.getElementById(inputs[type]).value);
+  if(code!==nCode(secrets[type])) { alert('Code incorrect. Demande-le au CPE après avoir accompli l\'action dans le jeu.'); return; }
+  if(objectives[doneKey[type]]) { alert('Objectif déjà validé !'); return; }
+  objectives[doneKey[type]]=true;
+  if(stats[type]) {
+    const el=document.getElementById(stats[type]);
+    if(el) el.textContent=parseInt(el.textContent||'0')+1;
+  }
+  awardXP(xps[type],type,labels[type]);
+  markObj(objIds[type]);
+}
+
+/* ACCORDION encyclopédie (panneau gauche) */
+function togAcc(btn) {
+  const body=btn.nextElementSibling;
+  const was=btn.classList.contains('on');
+  document.querySelectorAll('.acc-btn.on').forEach(b=>{b.classList.remove('on');b.nextElementSibling.classList.remove('on');});
+  if(!was){btn.classList.add('on');body.classList.add('on');}
+}
+
+/* ACCORDION guide (panneau droit) */
+function togGuide(btn) {
+  const body=btn.nextElementSibling;
+  const was=btn.classList.contains('on');
+  document.querySelectorAll('.gs-header.on').forEach(b=>{b.classList.remove('on');b.nextElementSibling.classList.remove('on');});
+  if(!was){btn.classList.add('on');body.classList.add('on');}
+}
+
+/* TABS panneau droit */
+function switchTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
+}
+
+/* TIPS */
+function rotateTip() {
+  document.getElementById('tipT').textContent=TIPS[tipIdx%TIPS.length];
+  tipIdx++;
+}
+
+/* PANNEAUX TOGGLE */
+let pv=true;
+function togglePanels() {
+  pv=!pv;
+  ['panelLeft','panelRight'].forEach(id=>{
+    document.getElementById(id).style.display=pv?'':'none';
+  });
+}
+
+/* PLEIN ÉCRAN */
+function expandGame() {
+  const el=document.getElementById('dosWrap');
+  if(el.requestFullscreen) el.requestFullscreen();
+}
+
+/* CHARGEMENT JS-DOS */
+function loadGame() {
+  const btn=document.getElementById('btnLoad');
+  btn.textContent='⏳ Chargement…'; btn.disabled=true;
+  const sc=document.createElement('script');
+  sc.src='https://v8.js-dos.com/8.0.0/js-dos.js';
+  sc.onload=initJsDos;
+  sc.onerror=()=>{btn.textContent='▶ Lancer';btn.disabled=false;alert('js-dos indisponible. Vérifiez votre connexion.');};
+  document.head.appendChild(sc);
+}
+
+function initJsDos() {
+  document.getElementById('gameLoading').style.display='none';
+  const mount=document.getElementById('jsdosMount');
+  mount.style.display='block';
+  try {
+    const canvas=document.createElement('canvas');
+    canvas.style.cssText='width:100%;height:100%;max-width:800px;max-height:600px;display:block;margin:auto;';
+    mount.appendChild(canvas);
+    Dos(canvas,{wdosboxUrl:'https://v8.js-dos.com/8.0.0/wdosbox.js'}).ready((fs,main)=>{
+      fs.extract(GAME_BUNDLE).then(()=>main(['-c','C:','-c','ACIV.EXE']))
+        .catch(()=>showErr(`Bundle ${GAME_BUNDLE} introuvable. Voir README.`));
+    });
+    document.getElementById('btnLoad').textContent='✅ Lancé';
+  } catch(e){showErr('Erreur js-dos: '+e.message);}
+}
+
+function showErr(msg) {
+  document.getElementById('jsdosMount').style.display='none';
+  const g=document.getElementById('gameLoading');
+  g.style.display='flex';
+  g.innerHTML=`<div style="font-size:.8rem;color:#aa4;max-width:300px;text-align:center;line-height:1.7;">${msg}</div>
+    <button onclick="location.reload()" style="margin-top:12px;padding:7px 16px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);color:var(--cyan);cursor:pointer;">Réessayer</button>`;
+  document.getElementById('btnLoad').textContent='▶ Lancer';
+  document.getElementById('btnLoad').disabled=false;
+}
+
+function goPortal() {
+  const s=cur?`?player=${encodeURIComponent(cur)}`:'';
+  window.location.href=`index_PIX_DELEGUES.html${s}`;
+}
+
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

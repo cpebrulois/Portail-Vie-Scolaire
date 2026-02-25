@@ -5,169 +5,634 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGORA - Hub de Formation des Délégués</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;700&family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
 
-        :root { 
-            --agora-blue: #0f172a; 
-            --agora-gold: #fbbf24;
-            --agora-slate: #1e293b;
+        :root {
+            --agora-blue:   #0f172a;
+            --agora-gold:   #fbbf24;
+            --agora-gold2:  #f59e0b;
+            --agora-slate:  #1e293b;
             --agora-border: #334155;
-            --text: #f8fafc;
+            --agora-cyan:   #38bdf8;
+            --agora-teal:   #14b8a6;
+            --agora-purple: #a78bfa;
+            --agora-red:    #ef4444;
+            --text:         #f8fafc;
+            --muted:        #94a3b8;
         }
-        
-        body { background: var(--agora-blue); color: var(--text); font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; text-align: center; }
-        
-        h1 { font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 2px; color: var(--agora-gold); margin-bottom: 5px; font-weight: 800; text-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
-        .subtitle { color: #94a3b8; margin-bottom: 40px; font-style: italic; font-size: 0.9em; }
 
-        /* ZONE DE DECODAGE (Identique PIXHARe) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--agora-blue);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            padding: 24px 20px 80px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(251,191,36,0.05) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 90%, rgba(56,189,248,0.04) 0%, transparent 40%);
+        }
+
+        .page-wrap { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; }
+
+        /* ─── HEADER ─── */
+        .page-header { text-align: center; margin-bottom: 28px; }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: var(--agora-gold);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(251,191,36,0.22);
+            margin-bottom: 5px;
+        }
+        .subtitle { color: var(--muted); font-style: italic; font-size: 0.86em; margin-bottom: 10px; }
+        .player-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.04); border: 1px solid var(--agora-border);
+            padding: 4px 14px; border-radius: 20px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.72em; color: var(--agora-cyan);
+        }
+
+        /* ─── DECODER ZONE ─── */
         .decoder-zone {
-            background: var(--agora-slate); border: 2px solid var(--agora-gold); padding: 25px;
-            max-width: 600px; margin: 0 auto 50px auto; border-radius: 4px;
+            background: var(--agora-slate); border: 2px solid var(--agora-gold);
+            padding: 20px 24px; max-width: 580px; margin: 0 auto 32px auto;
+            border-radius: 6px; position: relative;
         }
-        input[type="text"] { 
-            width: 80%; padding: 12px; background: #000; border: 1px solid var(--agora-gold); 
-            color: var(--agora-gold); font-family: 'Share Tech Mono', monospace; text-align: center; margin-bottom: 15px;
+        .decoder-zone::before {
+            content: "JETON D'ACCÈS";
+            position: absolute; top: -11px; left: 18px;
+            background: var(--agora-slate); padding: 0 10px;
+            color: var(--agora-gold); font-size: 0.68em; font-weight: 700; letter-spacing: 1px;
         }
-        button { 
-            background: var(--agora-gold); color: #000; border: none; padding: 10px 25px; 
-            font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        .decoder-zone h3 { margin-bottom: 12px; font-size: 0.8em; color: var(--muted); font-weight: 600; }
+        .decode-row { display: flex; gap: 8px; align-items: center; }
+        .decode-row input {
+            flex: 1; padding: 10px 13px;
+            background: #000; border: 1px solid var(--agora-gold);
+            color: var(--agora-gold); font-family: 'Share Tech Mono', monospace;
+            border-radius: 3px; outline: none; transition: border-color .2s;
         }
-        button:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--agora-gold); }
+        .decode-row input:focus { border-color: #fff; }
+        .btn-decode {
+            background: var(--agora-gold); color: #000; border: none;
+            padding: 10px 20px; font-weight: 700; cursor: pointer;
+            text-transform: uppercase; letter-spacing: .5px; border-radius: 3px;
+            transition: .2s; white-space: nowrap;
+        }
+        .btn-decode:hover { filter: brightness(1.12); box-shadow: 0 0 14px rgba(251,191,36,.35); }
 
-        /* GRILLE DES PILIERS */
-        .agora-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .pillar-card { background: rgba(255,255,255,0.03); border: 1px solid var(--agora-border); padding: 20px; text-align: left; border-radius: 4px; }
-        .pillar-title { color: var(--agora-gold); font-family: 'Playfair Display', serif; font-size: 1.4em; border-bottom: 1px solid var(--agora-border); padding-bottom: 10px; margin-bottom: 15px; }
+        /* ─── BARRE PROGRESSION GLOBALE ─── */
+        .global-bar {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--agora-border);
+            padding: 10px 16px; border-radius: 6px; margin-bottom: 22px; flex-wrap: wrap;
+        }
+        .gb-label { font-size: 0.72em; color: var(--muted); }
+        .gb-track { flex: 1; min-width: 100px; height: 4px; background: rgba(255,255,255,.07); border-radius: 2px; overflow: hidden; }
+        .gb-fill { height: 100%; background: linear-gradient(90deg, var(--agora-gold), var(--agora-purple)); border-radius: 2px; transition: width .6s ease; }
+        .gb-count { font-family: 'Share Tech Mono', monospace; font-size: 0.72em; color: var(--agora-gold); }
 
-        .module-link {
+        /* ─── GRILLE PILIERS ─── */
+        .agora-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        /* ─── CARD PILIER ─── */
+        .pillar-card {
+            background: rgba(255,255,255,0.025); border: 1px solid var(--agora-border);
+            border-radius: 8px; overflow: hidden; transition: border-color .3s;
+        }
+        .pillar-card:hover { border-color: rgba(251,191,36,.28); }
+        .pillar-card.p-special  { border-color: rgba(167,139,250,.35); background: rgba(167,139,250,.025); }
+        .pillar-card.p-republic { border-color: rgba(56,189,248,.35); background: rgba(56,189,248,.025); }
+        .pillar-card.p-special:hover  { border-color: rgba(167,139,250,.6); }
+        .pillar-card.p-republic:hover { border-color: rgba(56,189,248,.6); }
+
+        .pillar-header {
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid var(--agora-border);
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .p-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .p-info { flex: 1; }
+        .p-title { font-family: 'Playfair Display', serif; font-size: 1em; font-weight: 700; line-height: 1.2; margin-bottom: 2px; }
+        .p-sub   { font-size: 0.65em; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+        .p-count { font-family: 'Share Tech Mono', monospace; font-size: 0.65em; color: var(--agora-gold); white-space: nowrap; }
+        .p-special  .p-title { color: var(--agora-purple); }
+        .p-republic .p-title { color: var(--agora-cyan); }
+
+        .pillar-body { padding: 8px 10px 10px; }
+
+        /* ─── MODULE LINK ─── */
+        .mod-link {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.2);
-            text-decoration: none; color: inherit; border-left: 3px solid #444; transition: 0.3s;
+            padding: 9px 10px; margin: 4px 0;
+            background: rgba(0,0,0,.18); border-left: 3px solid #2a3448;
+            border-radius: 0 4px 4px 0; transition: all .22s; cursor: pointer;
+            text-decoration: none; color: inherit;
         }
-        .module-link.unlocked { border-left-color: var(--agora-gold); cursor: pointer; }
-        .module-link.unlocked:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); }
-        .module-link.locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        
-        .badge { background: var(--agora-gold); color: #000; font-size: 0.7em; padding: 2px 6px; font-weight: 800; border-radius: 2px; }
-        .admin-toggle { margin-top: 50px; opacity: 0.3; cursor: pointer; font-size: 0.8em; }
+        .mod-link.unlocked { border-left-color: var(--agora-gold); }
+        .mod-link.unlocked:hover { background: rgba(251,191,36,.06); transform: translateX(3px); }
+        .mod-link.locked   { opacity: .32; pointer-events: none; }
+        .p-special  .mod-link.unlocked { border-left-color: var(--agora-purple); }
+        .p-special  .mod-link.unlocked:hover { background: rgba(167,139,250,.06); }
+        .p-republic .mod-link.unlocked { border-left-color: var(--agora-cyan); }
+        .p-republic .mod-link.unlocked:hover { background: rgba(56,189,248,.06); }
+
+        .m-name { font-size: 0.78em; font-weight: 600; line-height: 1.3; }
+        .m-desc { font-size: 0.63em; color: var(--muted); margin-top: 1px; }
+
+        .badge         { background: var(--agora-gold);   color: #000; font-size: .6em; padding: 2px 6px; font-weight: 800; border-radius: 2px; }
+        .badge-purple  { background: var(--agora-purple); color: #000; }
+        .badge-cyan    { background: var(--agora-cyan);   color: #000; }
+        .m-arrow { font-size: .65em; color: var(--muted); flex-shrink: 0; }
+
+        /* ─── RÉCOMPENSE ─── */
+        .reward-block {
+            margin: 10px 2px 2px; padding: 12px;
+            border-radius: 5px;
+        }
+        .reward-block.unlocked { background: rgba(167,139,250,.07); border: 1px solid rgba(167,139,250,.25); }
+        .reward-block.locked   { background: rgba(0,0,0,.2); border: 1px dashed #2a3448; font-size:.72em; color:#3a4a5a; display:flex; align-items:center; gap:8px; }
+        .rw-title { font-family: 'Playfair Display', serif; font-size: .88em; color: var(--agora-purple); margin-bottom: 3px; }
+        .rw-desc  { font-size: .68em; color: var(--muted); margin-bottom: 8px; line-height: 1.5; }
+        .btn-aciv {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            color: #fff; border: none; padding: 9px 16px; border-radius: 4px;
+            font-weight: 700; font-size: .74em; cursor: pointer;
+            font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: .4px;
+            transition: filter .2s, box-shadow .2s; text-decoration: none;
+        }
+        .btn-aciv:hover { filter: brightness(1.15); box-shadow: 0 0 18px rgba(167,139,250,.4); }
+
+        /* ─── ADMIN — SÉCURISÉ ─── */
+        /* Le lien admin est invisible et accessible uniquement via URL param ?forge=1 */
+        #forge {
+            display: none; margin: 28px auto 0; max-width: 660px;
+            border: 1px dashed var(--agora-gold); padding: 22px;
+            border-radius: 8px; background: rgba(251,191,36,.03);
+        }
+        #forge h3 { color: var(--agora-gold); margin-bottom: 14px; font-size: .85em; letter-spacing: 1px; }
+        .forge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .forge-grid input, #forgePillar, #forgeLevel {
+            background: #111; border: 1px solid #333; color: #fff;
+            padding: 8px 10px; border-radius: 3px; font-family: 'Montserrat', sans-serif;
+            width: 100%; font-size: .8em;
+        }
+        .forge-selects { display: flex; gap: 8px; margin-bottom: 12px; }
+        .forge-selects select { flex: 1; }
+        .btn-forge { background: var(--agora-gold); color: #000; border: none; padding: 9px 20px; font-weight: 700; cursor: pointer; border-radius: 3px; transition: .2s; }
+        .btn-forge:hover { filter: brightness(1.1); }
+        #forgeResult {
+            word-break: break-all; background: #000; padding: 12px;
+            color: var(--agora-gold); font-family: 'Share Tech Mono', monospace; font-size: .72em;
+            border-radius: 4px; margin-top: 12px; display: none;
+        }
+        .forge-actions { margin-top: 14px; padding-top: 14px; border-top: 1px dashed #333; display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-danger { background: var(--agora-red); color: #fff; border: none; padding: 8px 16px; font-weight: 700; cursor: pointer; border-radius: 3px; transition: .2s; }
+        .btn-danger:hover { filter: brightness(1.1); }
+
+        /* MODALE MOT DE PASSE FORGE */
+        #forgeGate {
+            position: fixed; inset: 0; z-index: 9000;
+            background: rgba(0,0,0,.85); display: none;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        #forgeGate.visible { display: flex; }
+        .fg-card {
+            background: var(--agora-slate); border: 1px solid var(--agora-gold);
+            padding: 28px 28px 22px; max-width: 400px; width: 90%;
+            border-radius: 6px; text-align: center;
+        }
+        .fg-card h3 { color: var(--agora-gold); font-size: .9em; margin-bottom: 16px; letter-spacing: 1px; }
+        .fg-card input {
+            width: 100%; padding: 10px 12px; background: #000;
+            border: 1px solid var(--agora-gold); color: var(--agora-gold);
+            font-family: 'Share Tech Mono', monospace; text-align: center;
+            border-radius: 3px; outline: none; margin-bottom: 12px;
+        }
+        .fg-row { display: flex; gap: 8px; justify-content: center; }
+        .fg-error { color: var(--agora-red); font-size: .75em; margin-top: 8px; display: none; }
     </style>
 </head>
 <body>
+<div class="page-wrap">
 
-    <h1>L'Agora des Délégués</h1>
-    <p class="subtitle">"Savoir pour représenter, agir pour transformer."</p>
-
-    <div class="decoder-zone">
-        <h3 style="margin-top:0">SAISIR UN JETON D'ACCÈS</h3>
-        <input type="text" id="tokenInput" placeholder="Coller le code reçu ici...">
-        <br>
-        <button onclick="decodeToken()">DÉBLOQUER LE MODULE</button>
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1>L'Agora des Délégués</h1>
+        <p class="subtitle">"Savoir pour représenter, agir pour transformer."</p>
+        <div class="player-badge" id="playerBadge" style="display:none">
+            🎭 <span id="playerName">—</span>
+        </div>
     </div>
 
+    <!-- PROGRESSION GLOBALE -->
+    <div class="global-bar">
+        <div class="gb-label">Progression</div>
+        <div class="gb-track"><div class="gb-fill" id="gbFill" style="width:0%"></div></div>
+        <div class="gb-count"><span id="gbDone">0</span>/<span id="gbTotal">0</span> modules</div>
+    </div>
+
+    <!-- DÉCODAGE JETON -->
+    <div class="decoder-zone">
+        <h3>Colle le jeton reçu de ton CPE pour débloquer un module</h3>
+        <div class="decode-row">
+            <input type="text" id="tokenInput" placeholder="Code jeton…" autocomplete="off">
+            <button class="btn-decode" onclick="decodeToken()">Débloquer</button>
+        </div>
+    </div>
+
+    <!-- GRILLE DES PILIERS -->
     <div id="agora-root" class="agora-grid"></div>
 
-    <div class="admin-toggle" onclick="document.getElementById('forge').style.display='block'">[ ADMINISTRATION ]</div>
-    
-    <div id="forge" style="display:none; margin-top:30px; border:1px dashed var(--agora-gold); padding:20px;">
-        <h3>FORGE DE JETONS</h3>
-        <input type="text" id="forgeName" placeholder="Nom de l'élève"><br>
-        <select id="forgePillar" onchange="updateForgeLevels()"></select>
-        <select id="forgeLevel"></select><br><br>
-        <button onclick="forgeToken()">GÉNÉRER LE JETON</button>
-        <p id="forgeResult" style="word-break:break-all; background:#000; padding:10px; display:none;"></p>
-        <button onclick="hardReset()" style="background:red; color:white; margin-top:20px;">RESET TOTAL</button>
+    <!-- PANNEAU ADMIN (accès sécurisé) -->
+    <div id="forge">
+        <h3>⚙ Forge de Jetons — Administration</h3>
+        <div class="forge-grid">
+            <input type="text" id="forgeName" placeholder="Nom / prénom de l'élève">
+            <input type="text" id="forgePlayer" placeholder="Code joueur PVS (optionnel)">
+        </div>
+        <div class="forge-selects">
+            <select id="forgePillar" onchange="updateForgeLevels()"></select>
+            <select id="forgeLevel"></select>
+        </div>
+        <button class="btn-forge" onclick="forgeToken()">Générer le jeton</button>
+        <div id="forgeResult"></div>
+        <div class="forge-actions">
+            <button onclick="hardReset()" class="btn-danger">Reset total (supprimer progression)</button>
+        </div>
     </div>
 
-    <script>
-        const CONFIG = {
-            pillars: {
-                CADRE: {
-                    title: "L'ARMURE DU DÉLÉGUÉ",
-                    modules: [
-                        { id: "AG_C01", name: "Missions & Devoirs", url: "AGORA_CADRE_01.html" },
-                        { id: "AG_C02", name: "Instances & Pouvoirs", url: "AGORA_CADRE_02.html" },
-                        { id: "AG_C03", name: "Droits & Ressources", url: "AGORA_CADRE_03.html" }
-                    ]
-                },
-                PAROLE: {
-                    title: "L'ART DU VERBE",
-                    modules: [
-                        { id: "AG_P01", name: "Écoute Active", url: "AGORA_PAROLE_01.html" },
-                        { id: "AG_P02", name: "Prise de Parole", url: "AGORA_PAROLE_02.html" }
-                    ]
-                }
+</div><!-- /page-wrap -->
+
+<!-- MODALE AUTH FORGE -->
+<div id="forgeGate">
+    <div class="fg-card">
+        <h3>🔐 ACCÈS ADMINISTRATION</h3>
+        <input type="password" id="fgPass" placeholder="Mot de passe CPE" autocomplete="off"
+               onkeypress="if(event.key==='Enter')checkForgePass()">
+        <div class="fg-row">
+            <button class="btn-decode" onclick="checkForgePass()">Valider</button>
+            <button class="btn-danger" onclick="closeForgeGate()">Annuler</button>
+        </div>
+        <div class="fg-error" id="fgError">Mot de passe incorrect.</div>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   SÉCURITÉ ADMIN
+   Le mot de passe admin n'est PAS stocké ici en clair.
+   Il est vérifié via SHA-256 côté navigateur.
+   Pour changer le mot de passe :
+     1. Ouvrir la console du navigateur
+     2. Taper : await hashPass('VotreNouveauMotDePasse')
+     3. Copier le hash retourné et remplacer ADMIN_HASH ci-dessous.
+   Le mot de passe actuel ne figure nulle part dans ce fichier.
+═══════════════════════════════════════════════════════════ */
+const ADMIN_HASH = 'PLACER_ICI_LE_HASH_SHA256_DU_MOT_DE_PASSE';
+// Exemple d'utilisation en console : await hashPass('monMotDePasse')
+
+async function hashPass(pass) {
+    const enc = new TextEncoder().encode(pass);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkForgePass() {
+    const pass = document.getElementById('fgPass').value;
+    const err  = document.getElementById('fgError');
+    err.style.display = 'none';
+    const h = await hashPass(pass);
+    if (h === ADMIN_HASH) {
+        document.getElementById('forgeGate').classList.remove('visible');
+        document.getElementById('forge').style.display = 'block';
+        document.getElementById('fgPass').value = '';
+        initForge();
+    } else {
+        err.style.display = 'block';
+        document.getElementById('fgPass').value = '';
+        document.getElementById('fgPass').focus();
+    }
+}
+
+function closeForgeGate() {
+    document.getElementById('forgeGate').classList.remove('visible');
+    document.getElementById('fgPass').value = '';
+    document.getElementById('fgError').style.display = 'none';
+}
+
+/* Accès admin : paramètre URL ?forge=1 (invisible sur la page) */
+function checkAdminAccess() {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('forge') === '1') {
+        document.getElementById('forgeGate').classList.add('visible');
+        document.getElementById('fgPass').focus();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONFIGURATION DES PILIERS
+═══════════════════════════════════════════════════════════ */
+const CONFIG = {
+    pillars: {
+        CADRE: {
+            icon: '⚔️', title: "L'Armure du Délégué", subtitle: "Cadre institutionnel",
+            colorClass: '',
+            modules: [
+                { id: "AG_C01", name: "Missions & Devoirs",         desc: "Rôle officiel et responsabilités",   url: "AGORA_CADRE_01.html" },
+                { id: "AG_C02", name: "Les Instances Scolaires",    desc: "CA, CVL, conseil de classe",         url: "AGORA_CADRE_02.html" },
+                { id: "AG_C03", name: "Droits & Ressources",        desc: "Ce à quoi tu as droit",              url: "AGORA_CADRE_03.html" }
+            ]
+        },
+        PAROLE: {
+            icon: '🗣️', title: "L'Art du Verbe", subtitle: "Communication & influence",
+            colorClass: '',
+            modules: [
+                { id: "AG_P01", name: "Écoute Active",    desc: "Comprendre avant d'agir",    url: "AGORA_PAROLE_01.html" },
+                { id: "AG_P02", name: "Prise de Parole",  desc: "S'exprimer avec impact",     url: "AGORA_PAROLE_02.html" }
+            ]
+        },
+        NEGOCIATION: {
+            icon: '🤝', title: "L'Art de la Négociation", subtitle: "Médiateur & stratège",
+            colorClass: '',
+            modules: [
+                { id: "AG_N01", name: "Identifier un conflit",      desc: "Lire la situation",           url: "AGORA_NEG_01.html" },
+                { id: "AG_N02", name: "Techniques de médiation",    desc: "Outils concrets",             url: "AGORA_NEG_02.html" },
+                { id: "AG_N03", name: "Construire un compromis",    desc: "Trouver un terrain commun",   url: "AGORA_NEG_03.html" }
+            ]
+        },
+        CIVDEMOS: {
+            icon: '🏛️', title: "La Cité & le Démos", subtitle: "Histoire de la représentation",
+            colorClass: 'p-special',
+            modules: [
+                { id: "AG_CV01", name: "Qu'est-ce qu'une civilisation ?",  desc: "Du campement à la cité",         url: "AGORA_CIV_01.html" },
+                { id: "AG_CV02", name: "L'invention de la démocratie",     desc: "Athènes, Agora, le vote",        url: "AGORA_CIV_02.html" },
+                { id: "AG_CV03", name: "De l'Agora au Parlement",          desc: "2500 ans de représentation",     url: "AGORA_CIV_03.html" },
+                { id: "AG_CV04", name: "Délégué : héritier de l'Agora",   desc: "Ce que tu portes sans le savoir", url: "AGORA_CIV_04.html" }
+            ],
+            reward: {
+                label: "🎮 Advanced Civilization (1995)",
+                url: "aciv_reward.html",
+                desc: "Le jeu de stratégie qui a inspiré Sid Meier — Méditerranée antique, Bronze Age, Empires.",
+                badgeClass: 'badge-purple'
             }
-        };
+        },
+        REPUBLIQUE: {
+            icon: '🇫🇷', title: "La Ve République", subtitle: "Institutions françaises",
+            colorClass: 'p-republic',
+            modules: [
+                {
+                    id: "AG_R01",
+                    name: "La Ve République — comment ça marche ?",
+                    desc: "1958, de Gaulle, Constitution, régime semi-présidentiel",
+                    url: "AGORA_REP_01.html"
+                },
+                {
+                    id: "AG_R02",
+                    name: "Le Président & le Gouvernement",
+                    desc: "Élection, pouvoirs, Premier Ministre, Conseil des ministres",
+                    url: "AGORA_REP_02.html"
+                },
+                {
+                    id: "AG_R03",
+                    name: "Le Parlement : AN & Sénat",
+                    desc: "Composition, rôles, différences entre les deux chambres",
+                    url: "AGORA_REP_03.html"
+                },
+                {
+                    id: "AG_R04",
+                    name: "Comment naît une loi ?",
+                    desc: "Projet de loi, navette parlementaire, CMP, promulgation",
+                    url: "AGORA_REP_04.html"
+                },
+                {
+                    id: "AG_R05",
+                    name: "Du délégué au député",
+                    desc: "La chaîne de représentation — du CVL à l'Assemblée",
+                    url: "AGORA_REP_05.html"
+                }
+            ]
+        }
+    }
+};
 
-        function renderAgora() {
-            const root = document.getElementById('agora-root');
-            root.innerHTML = '';
-            Object.keys(CONFIG.pillars).forEach(pk => {
-                const p = CONFIG.pillars[pk];
-                let html = `<div class="pillar-card"><div class="pillar-title">${p.title}</div>`;
-                p.modules.forEach((m, i) => {
-                    const isFirst = i === 0;
-                    const isDone = localStorage.getItem(`CERT_${pk}_${i+1}`);
-                    const prevDone = i > 0 ? localStorage.getItem(`CERT_${pk}_${i}`) : false;
-                    const unlocked = isFirst || prevDone || isDone;
+/* ═══════════════════════════════════════════════════════════
+   UTILITAIRES
+═══════════════════════════════════════════════════════════ */
+function getPlayer() {
+    const q = new URLSearchParams(window.location.search).get('player');
+    if (q) { localStorage.setItem('pvs_current_player', q); return q; }
+    return localStorage.getItem('pvs_current_player') || '';
+}
 
-                    html += `
-                        <a href="${unlocked ? m.url : '#'}" class="module-link ${unlocked ? 'unlocked' : 'locked'}">
-                            <span>${m.name}</span>
-                            ${isDone ? '<span class="badge">VALIDÉ</span>' : (unlocked ? '▶' : '🔒')}
-                        </a>`;
-                });
-                html += `</div>`;
-                root.innerHTML += html;
+function certKey(pk, i) { return `CERT_${pk}_${i+1}`; }
+function isDone(pk, i)   { return !!localStorage.getItem(certKey(pk, i)); }
+
+function isPillarDone(pk) {
+    return CONFIG.pillars[pk].modules.every((_, i) => isDone(pk, i));
+}
+
+function countProgress() {
+    let done = 0, total = 0;
+    Object.keys(CONFIG.pillars).forEach(pk => {
+        CONFIG.pillars[pk].modules.forEach((_, i) => { total++; if (isDone(pk,i)) done++; });
+    });
+    return { done, total };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDU
+═══════════════════════════════════════════════════════════ */
+function renderAgora() {
+    const root   = document.getElementById('agora-root');
+    const player = getPlayer();
+    root.innerHTML = '';
+
+    if (player) {
+        document.getElementById('playerBadge').style.display = 'inline-flex';
+        document.getElementById('playerName').textContent    = player;
+    }
+
+    const { done, total } = countProgress();
+    document.getElementById('gbDone').textContent  = done;
+    document.getElementById('gbTotal').textContent = total;
+    document.getElementById('gbFill').style.width  = total ? Math.round(done/total*100)+'%' : '0%';
+
+    Object.keys(CONFIG.pillars).forEach(pk => {
+        const p           = CONFIG.pillars[pk];
+        const pillarDone  = p.modules.filter((_, i) => isDone(pk, i)).length;
+        const pillarFull  = pillarDone === p.modules.length;
+        const cc          = p.colorClass || '';
+
+        const card = document.createElement('div');
+        card.className = `pillar-card ${cc}`;
+
+        /* — HEADER — */
+        let html = `
+          <div class="pillar-header">
+            <div class="p-icon">${p.icon}</div>
+            <div class="p-info">
+              <div class="p-title">${p.title}</div>
+              <div class="p-sub">${p.subtitle}</div>
+            </div>
+            <div class="p-count">${pillarDone}/${p.modules.length}</div>
+          </div>
+          <div class="pillar-body">`;
+
+        /* — MODULES — */
+        p.modules.forEach((m, i) => {
+            const done_i    = isDone(pk, i);
+            const unlocked  = i === 0 || isDone(pk, i-1) || done_i;
+            const bc        = p.reward ? p.reward.badgeClass || '' : '';
+
+            html += `
+              <a href="${unlocked ? m.url : '#'}"
+                 class="mod-link ${unlocked ? 'unlocked' : 'locked'}">
+                <div>
+                  <div class="m-name">${m.name}</div>
+                  <div class="m-desc">${m.desc}</div>
+                </div>
+                ${done_i
+                    ? `<span class="badge ${bc}">VALIDÉ</span>`
+                    : (unlocked ? '<span class="m-arrow">▶</span>' : '<span class="m-arrow">🔒</span>')}
+              </a>`;
+        });
+
+        /* — RÉCOMPENSE (pilier CIV DEMOS) — */
+        if (p.reward) {
+            if (pillarFull) {
+                html += `
+                  <div class="reward-block unlocked">
+                    <div class="rw-title">🏆 Récompense débloquée !</div>
+                    <div class="rw-desc">${p.reward.desc}</div>
+                    <a href="${p.reward.url}${player ? '?player='+encodeURIComponent(player) : ''}"
+                       class="btn-aciv" target="_blank">
+                      🎮 Jouer à Advanced Civilization
+                    </a>
+                  </div>`;
+            } else {
+                const left = p.modules.length - pillarDone;
+                html += `
+                  <div class="reward-block locked">
+                    🔒
+                    <span><strong>${p.reward.label}</strong><br>
+                    ${left} module${left>1?'s':''} restant${left>1?'s':''} pour débloquer.</span>
+                  </div>`;
+            }
+        }
+
+        html += '</div>';
+        card.innerHTML = html;
+        root.appendChild(card);
+    });
+
+    initForge();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DÉCODAGE JETON
+═══════════════════════════════════════════════════════════ */
+function decodeToken() {
+    try {
+        const t = document.getElementById('tokenInput').value.trim();
+        if (!t) return;
+        const d = JSON.parse(decodeURIComponent(escape(atob(t))));
+        let found = false;
+
+        Object.keys(CONFIG.pillars).forEach(pk => {
+            CONFIG.pillars[pk].modules.forEach((m, i) => {
+                if (m.id !== d.m) return;
+                found = true;
+                localStorage.setItem(certKey(pk, i), JSON.stringify(d));
+
+                const lastOfPillar = CONFIG.pillars[pk].modules.every((_, j) =>
+                    j === i || isDone(pk, j)
+                );
+                const hasReward = !!CONFIG.pillars[pk].reward;
+
+                if (lastOfPillar && hasReward) {
+                    alert(`🏆 ${d.n||'Délégué'} — Module "${m.name}" validé !\n\n✨ Pilier "${CONFIG.pillars[pk].title}" COMPLÉTÉ !\nRécompense débloquée.`);
+                } else {
+                    alert(`✅ ${d.n||'Délégué'} — "${m.name}" débloqué !`);
+                }
             });
-            initForge();
-        }
+        });
 
-        function decodeToken() {
-            try {
-                const t = document.getElementById('tokenInput').value.trim();
-                const d = JSON.parse(decodeURIComponent(escape(atob(t))));
-                // On cherche quel module correspond à cet ID
-                Object.keys(CONFIG.pillars).forEach(pk => {
-                    CONFIG.pillars[pk].modules.forEach((m, i) => {
-                        if(m.id === d.m) {
-                            localStorage.setItem(`CERT_${pk}_${i+1}`, JSON.stringify(d));
-                            alert(`Bravo ${d.n}, le module "${m.name}" est débloqué !`);
-                        }
-                    });
-                });
-                location.reload();
-            } catch(e) { alert("Jeton invalide !"); }
-        }
+        if (!found) alert('Jeton valide, mais aucun module correspondant trouvé dans cette version.');
+        document.getElementById('tokenInput').value = '';
+        location.reload();
+    } catch(e) {
+        alert('Jeton invalide. Vérifie que tu as copié le code en entier.');
+    }
+}
 
-        function initForge() {
-            const ps = document.getElementById('forgePillar');
-            ps.innerHTML = "";
-            Object.entries(CONFIG.pillars).forEach(([k,v]) => ps.innerHTML += `<option value="${k}">${v.title}</option>`);
-            updateForgeLevels();
-        }
+/* ═══════════════════════════════════════════════════════════
+   FORGE (ADMIN)
+═══════════════════════════════════════════════════════════ */
+function initForge() {
+    const ps = document.getElementById('forgePillar');
+    if (!ps) return;
+    ps.innerHTML = '';
+    Object.entries(CONFIG.pillars).forEach(([k,v]) => {
+        ps.innerHTML += `<option value="${k}">${v.icon} ${v.title}</option>`;
+    });
+    updateForgeLevels();
+}
 
-        function updateForgeLevels() {
-            const pk = document.getElementById('forgePillar').value;
-            const ls = document.getElementById('forgeLevel');
-            ls.innerHTML = "";
-            CONFIG.pillars[pk].modules.forEach((m,i) => {
-                ls.innerHTML += `<option value="${i+1}">Valider NIVEAU ${i+1}</option>`;
-            });
-        }
+function updateForgeLevels() {
+    const pk = document.getElementById('forgePillar').value;
+    const ls = document.getElementById('forgeLevel');
+    ls.innerHTML = '';
+    CONFIG.pillars[pk].modules.forEach((m, i) => {
+        ls.innerHTML += `<option value="${i}">Module ${i+1} : ${m.name}</option>`;
+    });
+}
 
-        function forgeToken() {
-            const pk = document.getElementById('forgePillar').value, lv = parseInt(document.getElementById('forgeLevel').value);
-            const mod = CONFIG.pillars[pk].modules[lv-1];
-            const p = { v: 1, d: new Date().toISOString(), m: mod.id, n: document.getElementById('forgeName').value || "DELEGUE", f: true };
-            const t = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
-            const o = document.getElementById('forgeResult'); o.style.display = 'block'; o.innerText = t;
-        }
+function forgeToken() {
+    const pk   = document.getElementById('forgePillar').value;
+    const idx  = parseInt(document.getElementById('forgeLevel').value);
+    const mod  = CONFIG.pillars[pk].modules[idx];
+    const name = (document.getElementById('forgeName').value||'').trim() || 'DÉLÉGUÉ';
+    const player = (document.getElementById('forgePlayer').value||'').trim();
 
-        function hardReset() { if(confirm("Supprimer toute la progression ?")) { localStorage.clear(); location.reload(); } }
+    const payload = { v: 2, d: new Date().toISOString(), m: mod.id, n: name, p: player, f: true };
+    const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
-        window.onload = renderAgora;
-    </script>
+    const o = document.getElementById('forgeResult');
+    o.style.display = 'block';
+    o.textContent   = token;
+}
+
+function hardReset() {
+    if (confirm('⚠️ Supprimer TOUTE la progression AGORA de cet appareil ?\n\nIrréversible.')) {
+        Object.keys(CONFIG.pillars).forEach(pk => {
+            CONFIG.pillars[pk].modules.forEach((_, i) => localStorage.removeItem(certKey(pk,i)));
+        });
+        location.reload();
+    }
+}
+
+/* ─── BOOT ─── */
+window.addEventListener('DOMContentLoaded', () => {
+    checkAdminAccess();
+    renderAgora();
+});
+</script>
 </body>
 </html>
