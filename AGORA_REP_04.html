@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGORA | AG_R04 — Comment naît une loi ?</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0f172a;--panel:#1e293b;--acc:#38bdf8;--acc-d:#0284c7;--text:#f8fafc;--muted:#94a3b8;--border:#334155}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(56,189,248,0.07) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
+  box-shadow:0 0 50px rgba(0,0,0,0.7),0 0 80px rgba(56,189,248,0.07);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'AGORA';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
+  font-size:5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
+  font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.name-input{width:100%;padding:12px 14px;background:#000;border:1px solid var(--acc);
+  color:var(--acc);font-family:'Share Tech Mono',monospace;border-radius:3px;outline:none;
+  margin-bottom:14px;transition:border-color .2s;font-size:0.88rem}
+.name-input:focus{border-color:#fff}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace;
+  margin:8px auto 0;display:block;width:fit-content}
+.btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
+  display:block;margin:18px auto 0;border-radius:4px}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 6px 20px rgba(56,189,248,0.07)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
+  border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;
+  cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);
+  padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c0d4e8}
+.summary-box p:last-child{margin-bottom:0}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;
+  padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;
+  font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;
+  font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;
+  transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = "AG_R04";
+const CERT_KEY  = "CERT_REPUBLIQUE_4";
+const XP_AMOUNT = 50;
+const BACK_URL  = "index_PIX_DELEGUES.html";
+const QUESTIONS = [{"q": "Quelle est la différence entre un 'projet' et une 'proposition' de loi ?", "a": ["Un projet est voté à l'AN, une proposition au Sénat", "Un projet vient du gouvernement, une proposition d'un parlementaire", "Un projet est obligatoire, une proposition est facultative"], "c": 1, "wrong": "Projet = initiative gouvernementale. Proposition = initiative d'un député ou sénateur. ~80% des lois adoptées sont des projets."}, {"q": "La 'navette parlementaire' désigne...", "a": ["Le transport des parlementaires entre l'AN et le Sénat", "Les allers-retours du texte entre l'AN et le Sénat pour lecture, amendement et vote", "La procédure d'urgence pour voter une loi en 24h"], "c": 1, "wrong": "Le texte voyage entre les deux chambres jusqu'à accord ou CMP. C'est la navette."}, {"q": "Qui promulgue officiellement les lois en France ?", "a": ["Le Premier Ministre", "Le Président de la République", "Le Président de l'AN", "Le Conseil d'État"], "c": 1, "wrong": "Article 10 : 'Le Président promulgue les lois dans les 15 jours.' La promulgation rend la loi exécutoire."}];
+const SCENARIO  = {"title": "Ton camarade a une idée de loi", "p": "Un camarade veut qu'une loi interdise les devoirs le week-end. \"Comment je fais pour que ça arrive ?\" explique-lui.", "options": [{"text": "\"Il faut qu'un député ou sénateur reprenne cette idée comme proposition de loi. Elle sera débattue en commission, amendée, votée à l'AN puis au Sénat. Si accord, le Président la promulgue. C'est long. En attendant : délégué → CVC → instances académiques.\"", "ok": true, "fb": ""}, {"text": "\"Une pétition sur change.org à 500 000 signatures et le Parlement est obligé de voter.\"", "ok": false, "fb": "Non. En France, pas d'initiative populaire directe de ce type. Une pétition peut attirer l'attention mais n'oblige pas le Parlement."}, {"text": "\"Il faut voter pour le bon parti.\"", "ok": false, "fb": "Pas faux sur le fond, mais ça ne répond pas à la question du processus concret. Un délégué explique les mécanismes précis."}]};
+const SYNTHESIS = [{"icon": "💡", "t": "Projet vs Proposition :", "v": "Gouvernement = projet. Parlementaire = proposition. ~80% des lois viennent du gouvernement."}, {"icon": "🔄", "t": "Navette :", "v": "AN → Sénat → AN... La CMP tente l'accord. Sinon l'AN tranche."}, {"icon": "✍️", "t": "Promulgation :", "v": "Le Président promulgue sous 15 jours. Publication au Journal Officiel."}, {"icon": "⚖️", "t": "Conseil constitutionnel :", "v": "Peut censurer une loi inconstitutionnelle. Les citoyens peuvent aussi saisir via la QPC."}];
+
+function awardXP(name) {
+  try {
+    const raw   = localStorage.getItem('pvs_bridge_events');
+    const evts  = raw ? JSON.parse(raw) : [];
+    const player = localStorage.getItem('pvs_current_player') || name || 'inconnu';
+    evts.push({
+      id:     'AGORA-' + MODULE_ID + '-' + Date.now(),
+      type:   'AGORA_MODULE_COMPLETE',
+      player: player,
+      module: MODULE_ID,
+      label:  'AGORA : Comment naît une loi ?',
+      reward: XP_AMOUNT,
+      d:      new Date().toISOString()
+    });
+    if (evts.length > 700) evts.splice(0, evts.length - 700);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+  } catch(err) {}
+}
+
+function App() {
+  const [step,    setStep]    = React.useState('intro');
+  const [name,    setName]    = React.useState('');
+  const [qIdx,    setQIdx]    = React.useState(0);
+  const [token,   setToken]   = React.useState('');
+
+  const finish = () => {
+    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:name||'Délégué', f:true };
+    localStorage.setItem(CERT_KEY, JSON.stringify(cert));
+    awardXP(name);
+    setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+    setStep('complete');
+  };
+
+  const goBack = () => { window.location.href = BACK_URL; };
+
+  /* ── INTRO ── */
+  const renderIntro = () => e('div', {className:'card'},
+    e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
+    e('div', {className:'tag'}, "La Ve R\u00e9publique \u00b7 Module 4/5"),
+    
+    e('h1', null, "Comment naît une loi ?"),
+    e('p', {className:'quote'}, "« Une loi injuste n'est pas une loi. » — Saint Augustin"),
+    e('p', null, "Une loi ne surgit pas de nulle part. Deux types d'initiatives : le PROJET de loi (vient du gouvernement) ou la PROPOSITION de loi (vient d'un parlementaire). Les deux suivent le même chemin."),
+    e('p', null, "Première lecture AN → navette Sénat → navette AN... Si désaccord : CMP (7 députés + 7 sénateurs). Si toujours désaccord : l'AN tranche. Puis le Président promulgue sous 15 jours. Le Conseil constitutionnel peut censurer."),
+
+    e('input', {className:'name-input', type:'text', placeholder:"Ton nom, futur l\u00e9gislateur...",
+      autoComplete:'off', onChange: ev => setName(ev.target.value)}),
+    e('div', {className:'xp-badge'}, '⚡ +50 XP à la clé'),
+    e('button', {className:'btn', onClick: () => {
+      if (!name.trim()) { alert("Pour voter une loi, il faut une identit\u00e9 !"); return; }
+      setStep('quiz');
+    }}, "Suivre le parcours d'une loi")
+  );
+
+  /* ── QUIZ ── */
+  const renderQuiz = () => {
+    const q   = QUESTIONS[qIdx];
+    const pct = 25 + Math.round((qIdx / QUESTIONS.length) * 30);
+    return e('div', {className:'card'},
+      e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:pct+'%'}})),
+      e('div', {className:'step-tag'}, 'Question ' + (qIdx+1) + ' / ' + QUESTIONS.length),
+      e('h2', null, q.q),
+      q.a.map((opt, i) => e('button', {
+        key:i, className:'opt',
+        onClick: () => {
+          if (i === q.c) {
+            if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
+            else setStep('scenario');
+          } else {
+            alert(q.wrong || "Le processus l\u00e9gislatif est pr\u00e9cis. R\u00e9essaie.");
+          }
+        }
+      }, opt))
+    );
+  };
+
+  /* ── SCENARIO ── */
+  const renderScenario = () => e('div', {className:'card'},
+    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'70%'}})),
+    e('div', {className:'step-tag'}, 'Mise en situation'),
+    e('h2', null, SCENARIO.title),
+    e('p', null, SCENARIO.p),
+    SCENARIO.options.map((opt, i) => e('button', {
+      key:i, className:'opt',
+      onClick: () => {
+        if (opt.ok) setStep('synthesis');
+        else alert(opt.fb);
+      }
+    }, opt.text))
+  );
+
+  /* ── SYNTHESIS ── */
+  const renderSynthesis = () => e('div', {className:'card'},
+    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'88%'}})),
+    e('div', {className:'step-tag'}, 'Synthèse'),
+    e('h2', null, 'Ce qu\'il faut retenir'),
+    e('div', {className:'summary-box'},
+      SYNTHESIS.map((s,i) => e('p', {key:i},
+        e('strong', null, s.icon + ' ' + s.t + ' '), s.v
+      ))
+    ),
+    e('button', {className:'btn', onClick:finish}, 'Valider ce module →')
+  );
+
+  /* ── COMPLETE ── */
+  const renderComplete = () => e('div', {className:'card'},
+    e('div', {className:'seal'}, "\u2696\ufe0f"),
+    e('h1', null, "Tu sais comment na\u00eet une loi !"),
+    e('p', {style:{textAlign:'center'}}, "Processus l\u00e9gislatif ma\u00eetris\u00e9, ", e('strong', null, name), ' !'),
+    e('div', {style:{textAlign:'center'}}, e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
+    e('p', {style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
+      'Copie le jeton ci-dessous et colle-le dans l\'Agora.'),
+    e('div', {className:'token-box'}, token),
+    e('p', {className:'token-note'}, '📋 Sélectionne tout le code (clic dans la zone) et copie-le — Ctrl+C ou Cmd+C.'),
+    e('button', {className:'btn', onClick:goBack}, '← Retour à l\'Agora')
+  );
+
+  switch(step) {
+    case 'intro':     return renderIntro();
+    case 'quiz':      return renderQuiz();
+    case 'scenario':  return renderScenario();
+    case 'synthesis': return renderSynthesis();
+    case 'complete':  return renderComplete();
+    default:          return renderIntro();
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script>
+</body>
+</html>
