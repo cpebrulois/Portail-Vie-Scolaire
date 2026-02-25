@@ -1190,8 +1190,9 @@ function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';re
 async function loginPlayer(){cm('loginMsg');const c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save(false);refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle();return}
-// Garantir que ADWP est à jour avant la vérification (protection race condition)
-if(S.adults&&S.adults.length)buildAdultMap();
+// Reconstruire ADWP depuis ADULTS_BUILTIN (immuable, hors sync)
+ADW={};ADWP={};
+(ADULTS_BUILTIN||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');const cj=nCode(a.code_joueur||'');if(ct&&cj){ADW[ct]=cj;ADWP[cj]=ct;}});
 if(hasRefCodes()&&!isKnownPlayerCode(c)){sm('authMsg','Code joueur absent du referentiel officiel.',false);return}
 // Créer profil local marqué comme "à jour: jamais" pour que le cloud gagne toujours
 const pLocal=gp(c);pLocal.up=new Date(0).toISOString();
@@ -1479,7 +1480,13 @@ await loadDefaultAdults(false);  // Toujours recharger pour garantir le format c
 await syncPing();
 initSupabase();await syncPull(false);await sbPullAllPlayers(false);await sbPullGlobal(false);sbPullCurrent(false);
 const q=nCode(new URLSearchParams(window.location.search).get('player')||'');if(q)localStorage.setItem(ACTIVE_PLAYER_KEY,q);
-if(S.adults&&S.adults.length)buildAdultMap(); // Garantir ADWP à jour
+// Reconstruire ADWP/ADW depuis ADULTS_BUILTIN (source de vérité immuable, jamais écrasée par sync)
+ADW={};ADWP={};
+(ADULTS_BUILTIN||[]).forEach(a=>{
+  const ct=nCode(a.code_temoin||'');
+  const cj=nCode(a.code_joueur||'');
+  if(ct&&cj){ADW[ct]=cj;ADWP[cj]=ct;}
+});
 const remembered=nCode(localStorage.getItem(ACTIVE_PLAYER_KEY)||'');
 const authInput=document.getElementById('authCode');
 const authAdmin=document.getElementById('authAdmin');
@@ -1496,7 +1503,7 @@ else if(hasSession&&remembered){
     closeAuthGate();
   } else {
     adminOn=false;
-    if(S.adults&&S.adults.length)buildAdultMap(); // ADWP frais avant le check
+    ADW={};ADWP={};(ADULTS_BUILTIN||[]).forEach(a=>{const ct=nCode(a.code_temoin||'');const cj=nCode(a.code_joueur||'');if(ct&&cj){ADW[ct]=cj;ADWP[cj]=ct;}});
     cur=remembered;isVisitor=isVisitorCode(cur);
     if(cur&&hasRefCodes()&&!isKnownPlayerCode(cur)&&!isVisitor){cur='';isVisitor=false;refresh();openAuthGate('Session expiree ou identifiant invalide.');}
     else{if(cur&&!S.players[cur])gp(cur);closeAuthGate();refresh()}
