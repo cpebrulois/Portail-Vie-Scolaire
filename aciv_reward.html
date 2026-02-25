@@ -700,11 +700,11 @@ body::before {
           <div class="scan-line"></div>
           <p style="font-size:0.72rem; color:#334; margin-top:16px; max-width:300px; line-height:1.6;">
             Clique sur <strong style="color:#00d4ff">▶ Lancer le jeu</strong> pour démarrer.<br>
-            Les fichiers de jeu doivent être dans <code style="color:#558">game/</code>.
+            Les fichiers de jeu doivent être à la racine du site (même dossier que ce fichier HTML).
           </p>
           <div id="gameSetupNote" style="margin-top:12px; padding:12px; background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.15); border-radius:4px; font-size:0.7rem; color:#887; max-width:360px; line-height:1.6; text-align:left;">
             <strong style="color:#ffd700;">⚙ Configuration GitHub Pages :</strong><br>
-            Placer dans <code>game/aciv.jsdos</code> le bundle DOSBox.
+            Placer <code>aciv.jsdos</code> à la racine du site (même niveau que ce HTML).
             Voir README pour créer le bundle js-dos.
           </div>
         </div>
@@ -908,7 +908,7 @@ body::before {
 'use strict';
 /* ─── CONFIG ─────────────────────────────────────── */
 const XP_THRESHOLD    = 500;   // XP requis pour débloquer
-const GAME_BUNDLE_URL = 'game/aciv.jsdos'; // chemin du bundle relatif au HTML
+const GAME_BUNDLE_URL = 'aciv.jsdos'; // bundle à la racine, même niveau que ce HTML // chemin du bundle relatif au HTML
 const SECRET_CITY     = 'CITAIVOK';        // code secret objectif cité
 const SECRET_TECH     = 'TOOLSAC95';       // code secret objectif techno
 
@@ -1171,16 +1171,28 @@ function loadGame() {
   btn.textContent = '⏳ Chargement…';
   btn.disabled = true;
 
-  // Charger js-dos depuis CDN
-  const script = document.createElement('script');
-  script.src = 'https://v8.js-dos.com/8.0.0/js-dos.js';
-  script.onload = () => initJsDos();
-  script.onerror = () => {
-    btn.textContent = '▶ Lancer le jeu';
-    btn.disabled = false;
-    alert('Impossible de charger js-dos. Vérifiez votre connexion internet.');
-  };
-  document.head.appendChild(script);
+  // CDN js-dos — cascade de fallbacks
+  const JSDOS_URLS = [
+    'https://v8.js-dos.com/latest/js-dos.js',
+    'https://v8.js-dos.com/8.0.0/js-dos.js',
+    'https://cdn.jsdelivr.net/npm/js-dos@8.0.0/dist/js-dos.js',
+    'https://unpkg.com/js-dos@8.0.0/dist/js-dos.js',
+  ];
+
+  function tryLoad(idx) {
+    if (idx >= JSDOS_URLS.length) {
+      btn.textContent = '▶ Lancer le jeu';
+      btn.disabled = false;
+      alert('Impossible de charger le moteur DOSBox.\n\nEssayez :\n• Désactiver votre bloqueur de publicités\n• Vérifier votre connexion internet\n• Recharger la page');
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = JSDOS_URLS[idx];
+    script.onload = () => initJsDos();
+    script.onerror = () => tryLoad(idx + 1);
+    document.head.appendChild(script);
+  }
+  tryLoad(0);
 }
 
 function initJsDos() {
