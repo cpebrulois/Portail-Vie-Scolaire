@@ -16,27 +16,27 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse at 50% 0%,rgba(56,189,248,0.07) 0%,transparent 55%)}
 #root{width:100%;max-width:820px;position:relative;z-index:1}
 .card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
-  box-shadow:0 0 50px rgba(0,0,0,0.7),0 0 80px rgba(56,189,248,0.07);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
 .card::before{content:'AGORA';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
   font-size:5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
 h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
 h1{font-size:1.55rem}h2{font-size:1.2rem}
 p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
-.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
 .tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
   font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
-.name-input{width:100%;padding:12px 14px;background:#000;border:1px solid var(--acc);
-  color:var(--acc);font-family:'Share Tech Mono',monospace;border-radius:3px;outline:none;
-  margin-bottom:14px;transition:border-color .2s;font-size:0.88rem}
-.name-input:focus{border-color:#fff}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;margin-bottom:16px}
 .xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
   border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
-  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace;
-  margin:8px auto 0;display:block;width:fit-content}
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
 .btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
   text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
   display:block;margin:18px auto 0;border-radius:4px}
-.btn:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 6px 20px rgba(56,189,248,0.07)}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
 .progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
   border-radius:2px;transition:width .5s ease}
@@ -60,29 +60,34 @@ p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
   font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;
   transition:.2s;margin-bottom:18px}
 .nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
 const e = React.createElement;
-const MODULE_ID = "AG_R01";
-const CERT_KEY  = "CERT_REPUBLIQUE_1";
+const MODULE_ID = 'AG_R01';
+const CERT_KEY  = 'CERT_REPUBLIQUE_1';
 const XP_AMOUNT = 50;
-const BACK_URL  = "index_PIX_DELEGUES.html";
-const QUESTIONS = [{"q": "En quelle année la Constitution de la Ve République a-t-elle été adoptée par référendum ?", "a": ["1944 — à la Libération", "1958 — sous de Gaulle", "1962 — après la guerre d'Algérie", "1981 — avec Mitterrand"], "c": 1, "wrong": "28 septembre 1958. 79,25% de OUI. C'est la date de naissance de nos institutions actuelles."}, {"q": "La Ve République est un régime 'semi-présidentiel'. Cela signifie que...", "a": ["Le Président est élu au suffrage indirect", "Le Président a des pouvoirs forts ET le gouvernement est responsable devant le Parlement", "Président et Premier Ministre ont exactement les mêmes pouvoirs"], "c": 1, "wrong": "Semi-présidentiel = Président fort (art. 5) MAIS gouvernement responsable devant l'AN. Les deux en même temps."}, {"q": "Pourquoi a-t-on changé de Constitution en 1958 ?", "a": ["Pour donner plus de pouvoir au Parlement", "Parce que la IVe République était trop instable — 21 gouvernements en 12 ans", "Pour intégrer la France dans l'Europe", "Parce que la Constitution de 1946 avait expiré"], "c": 1, "wrong": "L'instabilité gouvernementale de la IVe République est la raison principale. 21 gouvernements en 12 ans, c'est ingouvernable."}];
-const SCENARIO  = {"title": "L'adulte curieux", "p": "Un adulte te demande : \"Pourquoi a-t-on changé de Constitution en 1958 ?\" Ta réponse de délégué formé ?", "options": [{"text": "\"La IVe République avait un Parlement trop fort et pas de leader stable — 21 gouvernements en 12 ans. De Gaulle a créé une Constitution avec un Président fort pour sortir de cette instabilité. Ça tient depuis 65 ans, même si ce n'est pas parfait.\"", "ok": true, "fb": ""}, {"text": "\"De Gaulle voulait plus de pouvoir pour lui.\"", "ok": false, "fb": "Trop simpliste. De Gaulle avait des convictions institutionnelles profondes. La crise réelle de la IVe justifiait la réforme."}, {"text": "\"Je sais pas trop, c'est compliqué.\"", "ok": false, "fb": "Tu viens de l'apprendre ! Un délégué citoyen ne se défausse pas. Reprends ta réponse."}]};
-const SYNTHESIS = [{"icon": "📅", "t": "1958 :", "v": "Naissance de la Ve République. 79% de OUI au référendum constitutionnel."}, {"icon": "⚖️", "t": "Semi-présidentiel :", "v": "Président fort (art. 5) + gouvernement responsable devant le Parlement."}, {"icon": "📜", "t": "La Constitution :", "v": "Texte fondamental au-dessus de toutes les lois ordinaires."}, {"icon": "🔗", "t": "Le lien avec toi :", "v": "Les règles de ton collège viennent de lois, qui viennent de cette Constitution."}];
+const BACK_URL  = 'index_PIX_DELEGUES.html';
+const QUESTIONS = [{"q": "En quelle année la Constitution de la Ve République a-t-elle été adoptée ?", "a": ["1944", "1958", "1962", "1981"], "c": 1, "wrong": "28 septembre 1958. 79,25 % de OUI. C'est la date de naissance de nos institutions."}, {"q": "La Ve République est un régime 'semi-présidentiel'. Cela signifie que...", "a": ["Le Président est élu au suffrage indirect", "Le Président a des pouvoirs forts ET le gouvernement est responsable devant le Parlement", "Président et Premier Ministre ont exactement les mêmes pouvoirs"], "c": 1, "wrong": "Semi-présidentiel = Président fort (art. 5) MAIS gouvernement responsable devant l'AN."}, {"q": "Pourquoi a-t-on changé de Constitution en 1958 ?", "a": ["Pour donner plus de pouvoir au Parlement", "Parce que la IVe République était trop instable — 21 gouvernements en 12 ans", "Pour intégrer la France dans l'Europe", "Parce que la Constitution de 1946 avait expiré"], "c": 1, "wrong": "L'instabilité de la IVe République est la raison principale. 21 gouvernements en 12 ans."}];
+const SCENARIO  = {"title": "L'adulte curieux", "p": "Un adulte te demande : \"Pourquoi a-t-on changé de Constitution en 1958 ?\"", "options": [{"text": "\"La IVe République était trop instable — 21 gouvernements en 12 ans. De Gaulle a créé une Constitution avec un Président fort pour sortir de cette crise. Ça tient depuis 65 ans.\"", "ok": true, "fb": ""}, {"text": "\"De Gaulle voulait plus de pouvoirs pour lui.\"", "ok": false, "fb": "Trop simpliste. La crise réelle de la IVe justifiait la réforme."}, {"text": "\"Je sais pas trop.\"", "ok": false, "fb": "Tu viens de l'apprendre. Un délégué ne se défausse pas."}]};
+const SYNTHESIS = [{"icon": "📅", "t": "1958 :", "v": "Naissance de la Ve République. 79 % de OUI au référendum."}, {"icon": "⚖️", "t": "Semi-présidentiel :", "v": "Président fort (art. 5) + gouvernement responsable devant le Parlement."}, {"icon": "📜", "t": "La Constitution :", "v": "Texte fondamental au-dessus de toutes les lois ordinaires."}, {"icon": "🔗", "t": "Le lien avec toi :", "v": "Les règles de ton collège viennent de lois, qui viennent de cette Constitution."}];
 
-function awardXP(name) {
+/* Récupère le code joueur depuis localStorage — pas de saisie manuelle (RGPD) */
+function getPlayer() {
+  return localStorage.getItem('pvs_current_player') || 'anonyme';
+}
+
+function awardXP() {
   try {
     const raw   = localStorage.getItem('pvs_bridge_events');
     const evts  = raw ? JSON.parse(raw) : [];
-    const player = localStorage.getItem('pvs_current_player') || name || 'inconnu';
     evts.push({
       id:     'AGORA-' + MODULE_ID + '-' + Date.now(),
       type:   'AGORA_MODULE_COMPLETE',
-      player: player,
+      player: getPlayer(),
       module: MODULE_ID,
       label:  'AGORA : La Ve République — comment ça marche ?',
       reward: XP_AMOUNT,
@@ -94,38 +99,38 @@ function awardXP(name) {
 }
 
 function App() {
-  const [step,    setStep]    = React.useState('intro');
-  const [name,    setName]    = React.useState('');
-  const [qIdx,    setQIdx]    = React.useState(0);
-  const [token,   setToken]   = React.useState('');
+  const [step, setStep] = React.useState('intro');
+  const [qIdx, setQIdx] = React.useState(0);
+  const [token, setToken] = React.useState('');
 
   const finish = () => {
-    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:name||'Délégué', f:true };
+    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:getPlayer(), f:true };
     localStorage.setItem(CERT_KEY, JSON.stringify(cert));
-    awardXP(name);
+    awardXP();
     setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
     setStep('complete');
   };
 
   const goBack = () => { window.location.href = BACK_URL; };
 
+  const PlayerChip = () => e('div', {className:'player-chip'}, '🎮 ', getPlayer());
+
   /* ── INTRO ── */
   const renderIntro = () => e('div', {className:'card'},
-    e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
-    e('div', {className:'tag'}, "La Ve R\u00e9publique \u00b7 Module 1/5"),
+    e('div', {className:'top-row'},
+      e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
+      PlayerChip()
+    ),
+    e('div', {className:'tag'}, 'La Ve République · Module 1/5'),
     
-    e('h1', null, "La Ve République"),
-    e('p', {className:'quote'}, "« La Constitution, c'est un esprit, des institutions, une pratique. » — Charles de Gaulle"),
-    e('p', null, "1958. La France est en crise. La IVe République s'effondre : 21 gouvernements en 12 ans. De Gaulle est rappelé. Il rédige une nouvelle constitution et la fait approuver par référendum le 28 septembre 1958 : 79% de OUI."),
-    e('p', null, "Idée centrale : un Président fort, garant des institutions, au-dessus des partis. Avec un gouvernement responsable devant le Parlement. C'est ce qu'on appelle un régime semi-présidentiel."),
+    e('h1', null, "La Vᵉ République"),
+    e('p', {className:'quote'}, "« La Constitution, c\'est un esprit, des institutions, une pratique. » — Charles de Gaulle"),
+    e('p', null, "1958. La France est en crise. La IVᵉ République s\'effondre : 21 gouvernements en 12 ans. De Gaulle est rappelé. Il fait approuver une nouvelle constitution par référendum le 28 septembre 1958 : 79 % de OUI."),
+    e('p', null, "Idée centrale : un Président fort, garant des institutions, avec un gouvernement responsable devant le Parlement. C\'est ce qu\'on appelle un régime semi-présidentiel."),
 
-    e('input', {className:'name-input', type:'text', placeholder:"Ton nom, futur citoyen...",
-      autoComplete:'off', onChange: ev => setName(ev.target.value)}),
-    e('div', {className:'xp-badge'}, '⚡ +50 XP à la clé'),
-    e('button', {className:'btn', onClick: () => {
-      if (!name.trim()) { alert("Nom obligatoire pour la carte \u00e9lectorale !"); return; }
-      setStep('quiz');
-    }}, "Entrer dans la Ve R\u00e9publique")
+    e('div', {style:{textAlign:'center'}},
+      e('div', {className:'xp-badge'}, '⚡ +50 XP à la clé')),
+    e('button', {className:'btn', onClick:() => setStep('quiz')}, 'Entrer dans la Ve République')
   );
 
   /* ── QUIZ ── */
@@ -133,7 +138,8 @@ function App() {
     const q   = QUESTIONS[qIdx];
     const pct = 25 + Math.round((qIdx / QUESTIONS.length) * 30);
     return e('div', {className:'card'},
-      e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:pct+'%'}})),
+      e('div', {className:'progress'},
+        e('div', {className:'progress-fill', style:{width:pct+'%'}})),
       e('div', {className:'step-tag'}, 'Question ' + (qIdx+1) + ' / ' + QUESTIONS.length),
       e('h2', null, q.q),
       q.a.map((opt, i) => e('button', {
@@ -143,7 +149,7 @@ function App() {
             if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
             else setStep('scenario');
           } else {
-            alert(q.wrong || "Les institutions demandent de la pr\u00e9cision. R\u00e9essaie.");
+            alert(q.wrong || 'Les institutions demandent de la précision. Réessaie.');
           }
         }
       }, opt))
@@ -152,42 +158,42 @@ function App() {
 
   /* ── SCENARIO ── */
   const renderScenario = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'70%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'70%'}})),
     e('div', {className:'step-tag'}, 'Mise en situation'),
     e('h2', null, SCENARIO.title),
     e('p', null, SCENARIO.p),
     SCENARIO.options.map((opt, i) => e('button', {
       key:i, className:'opt',
-      onClick: () => {
-        if (opt.ok) setStep('synthesis');
-        else alert(opt.fb);
-      }
+      onClick: () => { if (opt.ok) setStep('synthesis'); else alert(opt.fb); }
     }, opt.text))
   );
 
   /* ── SYNTHESIS ── */
   const renderSynthesis = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'88%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'88%'}})),
     e('div', {className:'step-tag'}, 'Synthèse'),
     e('h2', null, 'Ce qu\'il faut retenir'),
     e('div', {className:'summary-box'},
       SYNTHESIS.map((s,i) => e('p', {key:i},
-        e('strong', null, s.icon + ' ' + s.t + ' '), s.v
-      ))
+        e('strong', null, s.icon + ' ' + s.t + ' '), s.v))
     ),
     e('button', {className:'btn', onClick:finish}, 'Valider ce module →')
   );
 
   /* ── COMPLETE ── */
   const renderComplete = () => e('div', {className:'card'},
-    e('div', {className:'seal'}, "\ud83c\uddeb\ud83c\uddf7"),
-    e('h1', null, "La Ve R\u00e9publique n'a plus de secrets !"),
-    e('p', {style:{textAlign:'center'}}, "Institutions comprises, ", e('strong', null, name), ' !'),
-    e('div', {style:{textAlign:'center'}}, e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
+    e('div', {className:'seal'}, '🇫🇷'),
+    e('h1', null, 'La Ve République n\'a plus de secrets !'),
+    e('p', {style:{textAlign:'center'}}, 'Institutions maîtrisées.'),
+    e('div', {style:{textAlign:'center', margin:'8px 0'}},
+      e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
     e('p', {style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
       'Copie le jeton ci-dessous et colle-le dans l\'Agora.'),
     e('div', {className:'token-box'}, token),
-    e('p', {className:'token-note'}, '📋 Sélectionne tout le code (clic dans la zone) et copie-le — Ctrl+C ou Cmd+C.'),
+    e('p', {className:'token-note'},
+      '📋 Sélectionne tout le code (clic dans la zone) — Ctrl+C / Cmd+C.'),
     e('button', {className:'btn', onClick:goBack}, '← Retour à l\'Agora')
   );
 

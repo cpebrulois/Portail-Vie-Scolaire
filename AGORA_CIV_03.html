@@ -16,27 +16,27 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse at 50% 0%,rgba(167,139,250,0.08) 0%,transparent 55%)}
 #root{width:100%;max-width:820px;position:relative;z-index:1}
 .card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
-  box-shadow:0 0 50px rgba(0,0,0,0.7),0 0 80px rgba(167,139,250,0.08);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
 .card::before{content:'AGORA';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
   font-size:5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
 h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
 h1{font-size:1.55rem}h2{font-size:1.2rem}
 p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
-.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
 .tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
   font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
-.name-input{width:100%;padding:12px 14px;background:#000;border:1px solid var(--acc);
-  color:var(--acc);font-family:'Share Tech Mono',monospace;border-radius:3px;outline:none;
-  margin-bottom:14px;transition:border-color .2s;font-size:0.88rem}
-.name-input:focus{border-color:#fff}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;margin-bottom:16px}
 .xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
   border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
-  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace;
-  margin:8px auto 0;display:block;width:fit-content}
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
 .btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
   text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
   display:block;margin:18px auto 0;border-radius:4px}
-.btn:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 6px 20px rgba(167,139,250,0.08)}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
 .progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
   border-radius:2px;transition:width .5s ease}
@@ -60,31 +60,36 @@ p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
   font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;
   transition:.2s;margin-bottom:18px}
 .nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
 const e = React.createElement;
-const MODULE_ID = "AG_CV03";
-const CERT_KEY  = "CERT_CIVDEMOS_3";
+const MODULE_ID = 'AG_CV03';
+const CERT_KEY  = 'CERT_CIVDEMOS_3';
 const XP_AMOUNT = 50;
-const BACK_URL  = "index_PIX_DELEGUES.html";
-const QUESTIONS = [{"q": "La Magna Carta (1215) est historiquement importante car elle...", "a": ["Accorde le droit de vote à tous", "Limite pour la première fois le pouvoir du roi par un texte écrit", "Crée le Parlement britannique", "Abolit la féodalité"], "c": 1, "wrong": "Elle dit : même le roi a des limites. Premier texte constitutionnel de l'histoire occidentale."}, {"q": "En France, quand les femmes ont-elles obtenu le droit de vote ?", "a": ["1789 — avec la Révolution", "1871 — sous la IIIe République", "1944 — sous de Gaulle à la Libération", "1958 — avec la Ve République"], "c": 2, "wrong": "1944 — sous le Gouvernement Provisoire de de Gaulle. La France est l'un des derniers pays occidentaux à l'accorder."}, {"q": "Combien de Républiques la France a-t-elle connues depuis 1792 ?", "a": ["3", "4", "5", "6"], "c": 2, "wrong": "Ire (1792), IIe (1848), IIIe (1870), IVe (1946), Ve (1958). Cinq. Entre elles : deux empires, une monarchie, Vichy."}];
-const SCENARIO  = {"title": "La frise dans ta tête", "p": "Classe ces 4 événements du plus ancien au plus récent :", "options": [{"text": "Démocratie athénienne (508 av. J.-C.) → Magna Carta (1215) → Révolution française (1789) → Suffrage universel féminin France (1944)", "ok": true, "fb": ""}, {"text": "Magna Carta (1215) → Démocratie athénienne (508 av. J.-C.) → Révolution (1789) → Suffrage féminin (1944)", "ok": false, "fb": "L'Agora précède la Magna Carta de 1700 ans ! Athènes 508 av. J.-C. est le point de départ."}, {"text": "Révolution (1789) → Magna Carta (1215) → Démocratie athénienne (508 av. J.-C.) → Suffrage féminin (1944)", "ok": false, "fb": "Les trois premiers sont dans l'ordre inverse. Rappel : av. J.-C. va en décroissant depuis l'origine."}]};
-const SYNTHESIS = [{"icon": "🏛️", "t": "508 av. J.-C. :", "v": "Démocratie directe athénienne. Première fois dans l'histoire."}, {"icon": "📜", "t": "1215 :", "v": "Magna Carta. Le roi a des limites. Naissance du constitutionnalisme."}, {"icon": "🔥", "t": "1789 :", "v": "Révolution française. Souveraineté du peuple. Droits de l'Homme."}, {"icon": "🗳️", "t": "1848 / 1944 :", "v": "Suffrage universel masculin, puis féminin. Le cercle s'élargit."}, {"icon": "🔗", "t": "Aujourd'hui :", "v": "La Ve République hérite de tout ça. Et toi, tu en es le dernier maillon."}];
+const BACK_URL  = 'index_PIX_DELEGUES.html';
+const QUESTIONS = [{"q": "La Magna Carta (1215) est historiquement importante car elle...", "a": ["Accorde le droit de vote à tous", "Limite pour la première fois le pouvoir du roi par un texte écrit", "Crée le Parlement britannique", "Abolit la féodalité"], "c": 1, "wrong": "Elle dit : même le roi a des limites. Premier texte constitutionnel de l'histoire occidentale."}, {"q": "En France, quand les femmes ont-elles obtenu le droit de vote ?", "a": ["1789", "1871", "1944", "1958"], "c": 2, "wrong": "1944 — sous le Gouvernement Provisoire. La France est l'un des derniers pays occidentaux."}, {"q": "Combien de Républiques la France a-t-elle connues depuis 1792 ?", "a": ["3", "4", "5", "6"], "c": 2, "wrong": "Ire (1792), IIe (1848), IIIe (1870), IVe (1946), Ve (1958). Cinq."}];
+const SCENARIO  = {"title": "La frise dans ta tête", "p": "Classe ces 4 événements du plus ancien au plus récent :", "options": [{"text": "Démocratie athénienne (508 av. J.-C.) → Magna Carta (1215) → Révolution française (1789) → Suffrage féminin France (1944)", "ok": true, "fb": ""}, {"text": "Magna Carta → Démocratie athénienne → Révolution → Suffrage féminin", "ok": false, "fb": "L'Agora précède la Magna Carta de 1700 ans !"}, {"text": "Révolution → Magna Carta → Démocratie athénienne → Suffrage féminin", "ok": false, "fb": "Les trois premiers sont dans l'ordre inverse."}]};
+const SYNTHESIS = [{"icon": "🏛️", "t": "508 av. J.-C. :", "v": "Démocratie directe athénienne."}, {"icon": "📜", "t": "1215 :", "v": "Magna Carta. Le roi a des limites."}, {"icon": "🔥", "t": "1789 :", "v": "Révolution française. Souveraineté du peuple."}, {"icon": "🗳️", "t": "1848 / 1944 :", "v": "Suffrage universel masculin, puis féminin."}, {"icon": "🔗", "t": "Aujourd'hui :", "v": "La Ve République hérite de tout ça. Et toi, tu en es le dernier maillon."}];
 
-function awardXP(name) {
+/* Récupère le code joueur depuis localStorage — pas de saisie manuelle (RGPD) */
+function getPlayer() {
+  return localStorage.getItem('pvs_current_player') || 'anonyme';
+}
+
+function awardXP() {
   try {
     const raw   = localStorage.getItem('pvs_bridge_events');
     const evts  = raw ? JSON.parse(raw) : [];
-    const player = localStorage.getItem('pvs_current_player') || name || 'inconnu';
     evts.push({
       id:     'AGORA-' + MODULE_ID + '-' + Date.now(),
       type:   'AGORA_MODULE_COMPLETE',
-      player: player,
+      player: getPlayer(),
       module: MODULE_ID,
-      label:  'AGORA : De l'Agora au Parlement',
+      label:  'AGORA : De l\'Agora au Parlement',
       reward: XP_AMOUNT,
       d:      new Date().toISOString()
     });
@@ -94,38 +99,38 @@ function awardXP(name) {
 }
 
 function App() {
-  const [step,    setStep]    = React.useState('intro');
-  const [name,    setName]    = React.useState('');
-  const [qIdx,    setQIdx]    = React.useState(0);
-  const [token,   setToken]   = React.useState('');
+  const [step, setStep] = React.useState('intro');
+  const [qIdx, setQIdx] = React.useState(0);
+  const [token, setToken] = React.useState('');
 
   const finish = () => {
-    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:name||'Délégué', f:true };
+    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:getPlayer(), f:true };
     localStorage.setItem(CERT_KEY, JSON.stringify(cert));
-    awardXP(name);
+    awardXP();
     setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
     setStep('complete');
   };
 
   const goBack = () => { window.location.href = BACK_URL; };
 
+  const PlayerChip = () => e('div', {className:'player-chip'}, '🎮 ', getPlayer());
+
   /* ── INTRO ── */
   const renderIntro = () => e('div', {className:'card'},
-    e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
-    e('div', {className:'tag'}, "La Cit\u00e9 & le D\u00e9mos \u00b7 Module 3/4"),
+    e('div', {className:'top-row'},
+      e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
+      PlayerChip()
+    ),
+    e('div', {className:'tag'}, 'La Cité & le Démos · Module 3/4'),
     
-    e('h1', null, "De l'Agora au Parlement"),
-    e('p', {className:'quote'}, "« La liberté est le droit de faire tout ce que les lois permettent. » — Montesquieu (1748)"),
-    e('p', null, "La démocratie athénienne meurt avec la conquête macédonienne en 338 av. J.-C. Deux millénaires passent. Mais l'idée ne meurt pas."),
-    e('p', null, "Rome invente la République et la représentation (509 av. J.-C.). 1215 : la Magna Carta limite le roi anglais. 1789 : la Révolution française pose la souveraineté du peuple. 1944 : les femmes votent en France. 2000 : majorité à 18 ans. Chaque génération a élargi le cercle."),
+    e('h1', null, "De l\'Agora au Parlement"),
+    e('p', {className:'quote'}, "« La liberté est le droit de faire tout ce que les lois permettent. » — Montesquieu (1748)"),
+    e('p', null, "La démocratie athénienne meurt avec la conquête macédonienne en 338 av. J.-C. Deux millénaires passent. Mais l\'idée ne meurt pas."),
+    e('p', null, "Rome invente la République (509 av. J.-C.). 1215 : la Magna Carta limite le roi anglais. 1789 : la Révolution française pose la souveraineté du peuple. 1944 : les femmes votent en France. Chaque génération a élargi le cercle."),
 
-    e('input', {className:'name-input', type:'text', placeholder:"Ton nom pour la frise...",
-      autoComplete:'off', onChange: ev => setName(ev.target.value)}),
-    e('div', {className:'xp-badge'}, '⚡ +50 XP à la clé'),
-    e('button', {className:'btn', onClick: () => {
-      if (!name.trim()) { alert("Inscris ton nom dans l'Histoire !"); return; }
-      setStep('quiz');
-    }}, "Traverser les si\u00e8cles")
+    e('div', {style:{textAlign:'center'}},
+      e('div', {className:'xp-badge'}, '⚡ +50 XP à la clé')),
+    e('button', {className:'btn', onClick:() => setStep('quiz')}, 'Traverser les siècles')
   );
 
   /* ── QUIZ ── */
@@ -133,7 +138,8 @@ function App() {
     const q   = QUESTIONS[qIdx];
     const pct = 25 + Math.round((qIdx / QUESTIONS.length) * 30);
     return e('div', {className:'card'},
-      e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:pct+'%'}})),
+      e('div', {className:'progress'},
+        e('div', {className:'progress-fill', style:{width:pct+'%'}})),
       e('div', {className:'step-tag'}, 'Question ' + (qIdx+1) + ' / ' + QUESTIONS.length),
       e('h2', null, q.q),
       q.a.map((opt, i) => e('button', {
@@ -143,7 +149,7 @@ function App() {
             if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
             else setStep('scenario');
           } else {
-            alert(q.wrong || "Les dates sont tes alli\u00e9es. Reprends la frise.");
+            alert(q.wrong || 'Les dates sont tes alliées. Reprends la frise.');
           }
         }
       }, opt))
@@ -152,42 +158,42 @@ function App() {
 
   /* ── SCENARIO ── */
   const renderScenario = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'70%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'70%'}})),
     e('div', {className:'step-tag'}, 'Mise en situation'),
     e('h2', null, SCENARIO.title),
     e('p', null, SCENARIO.p),
     SCENARIO.options.map((opt, i) => e('button', {
       key:i, className:'opt',
-      onClick: () => {
-        if (opt.ok) setStep('synthesis');
-        else alert(opt.fb);
-      }
+      onClick: () => { if (opt.ok) setStep('synthesis'); else alert(opt.fb); }
     }, opt.text))
   );
 
   /* ── SYNTHESIS ── */
   const renderSynthesis = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'88%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'88%'}})),
     e('div', {className:'step-tag'}, 'Synthèse'),
     e('h2', null, 'Ce qu\'il faut retenir'),
     e('div', {className:'summary-box'},
       SYNTHESIS.map((s,i) => e('p', {key:i},
-        e('strong', null, s.icon + ' ' + s.t + ' '), s.v
-      ))
+        e('strong', null, s.icon + ' ' + s.t + ' '), s.v))
     ),
     e('button', {className:'btn', onClick:finish}, 'Valider ce module →')
   );
 
   /* ── COMPLETE ── */
   const renderComplete = () => e('div', {className:'card'},
-    e('div', {className:'seal'}, "\ud83d\udcdc"),
-    e('h1', null, "2500 ans en poche !"),
-    e('p', {style:{textAlign:'center'}}, "La chronologie n'a plus de secrets pour toi, ", e('strong', null, name), ' !'),
-    e('div', {style:{textAlign:'center'}}, e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
+    e('div', {className:'seal'}, '📜'),
+    e('h1', null, '2500 ans en poche !'),
+    e('p', {style:{textAlign:'center'}}, 'La chronologie est maîtrisée.'),
+    e('div', {style:{textAlign:'center', margin:'8px 0'}},
+      e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
     e('p', {style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
       'Copie le jeton ci-dessous et colle-le dans l\'Agora.'),
     e('div', {className:'token-box'}, token),
-    e('p', {className:'token-note'}, '📋 Sélectionne tout le code (clic dans la zone) et copie-le — Ctrl+C ou Cmd+C.'),
+    e('p', {className:'token-note'},
+      '📋 Sélectionne tout le code (clic dans la zone) — Ctrl+C / Cmd+C.'),
     e('button', {className:'btn', onClick:goBack}, '← Retour à l\'Agora')
   );
 

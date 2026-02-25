@@ -16,27 +16,27 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse at 50% 0%,rgba(167,139,250,0.1) 0%,transparent 55%)}
 #root{width:100%;max-width:820px;position:relative;z-index:1}
 .card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
-  box-shadow:0 0 50px rgba(0,0,0,0.7),0 0 80px rgba(167,139,250,0.1);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
 .card::before{content:'AGORA';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
   font-size:5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
 h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
 h1{font-size:1.55rem}h2{font-size:1.2rem}
 p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
-.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
 .tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
   font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
-.name-input{width:100%;padding:12px 14px;background:#000;border:1px solid var(--acc);
-  color:var(--acc);font-family:'Share Tech Mono',monospace;border-radius:3px;outline:none;
-  margin-bottom:14px;transition:border-color .2s;font-size:0.88rem}
-.name-input:focus{border-color:#fff}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;margin-bottom:16px}
 .xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
   border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
-  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace;
-  margin:8px auto 0;display:block;width:fit-content}
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
 .btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
   text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
   display:block;margin:18px auto 0;border-radius:4px}
-.btn:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 6px 20px rgba(167,139,250,0.1)}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
 .progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
   border-radius:2px;transition:width .5s ease}
@@ -60,31 +60,36 @@ p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
   font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;
   transition:.2s;margin-bottom:18px}
 .nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
 const e = React.createElement;
-const MODULE_ID = "AG_CV04";
-const CERT_KEY  = "CERT_CIVDEMOS_4";
+const MODULE_ID = 'AG_CV04';
+const CERT_KEY  = 'CERT_CIVDEMOS_4';
 const XP_AMOUNT = 75;
-const BACK_URL  = "index_PIX_DELEGUES.html";
-const QUESTIONS = [{"q": "Quelle est la différence fondamentale entre démocratie directe et représentative ?", "a": ["Aucune, c'est juste une question d'échelle", "En directe, les citoyens votent eux-mêmes toutes les lois. En représentative, ils élisent des représentants qui votent à leur place.", "En directe, tout le monde peut être élu. En représentative, il faut un diplôme."], "c": 1, "wrong": "L'échelle n'est pas le seul facteur. Le mécanisme est fondamentalement différent."}, {"q": "Quand un délégué présente les préoccupations de sa classe au conseil de classe, il accomplit le même geste que...", "a": ["Un avocat plaidant devant un tribunal", "Un citoyen athénien prenant la parole à l'Ekklésia pour exposer un problème de son dème", "Un journaliste faisant un reportage scolaire"], "c": 1, "wrong": "L'Ekklésia = assemblée où les citoyens portent les problèmes de leur quartier. Conseil de classe = idem. Même structure, 2500 ans d'écart."}, {"q": "Le 'mandat' confié au délégué signifie qu'il doit...", "a": ["Faire ce qu'il pense être le mieux, même contre l'avis de sa classe", "Porter la parole collective de ses camarades, même quand il n'est pas personnellement d'accord", "Voter uniquement sur les sujets qui l'intéressent"], "c": 1, "wrong": "Un mandat est une mission confiée. Si tu votes selon tes préférences contre l'avis général, tu trahis ton mandat."}];
-const SCENARIO  = {"title": "La transmission", "p": "Un délégué de 4e qui arrête dit à un de 5e qui commence : \"C'est juste un rôle pour avoir une bonne mention sur le dossier.\" Que lui réponds-tu ?", "options": [{"text": "\"Non. Quand tu portes la parole de ta classe devant des adultes, tu fais exactement ce que faisaient les citoyens athéniens à l'Ekklésia. C'est pas des privilèges, c'est une responsabilité vieille de 2500 ans. Cocher une case, ça, c'est le gâchis.\"", "ok": true, "fb": ""}, {"text": "\"T'as pas tort, mais bon...\"", "ok": false, "fb": "Tu as fait tout ce parcours pour te déformer devant une idée fausse ? Un délégué qui connaît l'histoire de son rôle sait pourquoi il se bat."}, {"text": "\"C'est nul de penser ça.\"", "ok": false, "fb": "L'agressivité n'est jamais la bonne réponse. Éduquer, convaincre — voilà ton rôle."}]};
-const SYNTHESIS = [{"icon": "🧬", "t": "L'héritage :", "v": "Athènes → Rome → 1215 → 1789 → Ve République → Toi. C'est une généalogie, pas un programme scolaire."}, {"icon": "🎭", "t": "Ton rôle :", "v": "Tu n'es pas un représentant de tes opinions. Tu es un porte-voix de ta classe. Nuance fondamentale."}, {"icon": "⚖️", "t": "Le mandat :", "v": "Mission confiée = responsabilité de l'honorer, même quand c'est inconfortable."}, {"icon": "🌍", "t": "La portée :", "v": "Chaque fois que tu siègles au conseil de classe, tu fais vivre 2500 ans de démocratie."}];
+const BACK_URL  = 'index_PIX_DELEGUES.html';
+const QUESTIONS = [{"q": "Quelle est la différence fondamentale entre démocratie directe et représentative ?", "a": ["Aucune, c'est juste une question d'échelle", "En directe, les citoyens votent eux-mêmes toutes les lois. En représentative, ils élisent des représentants qui votent à leur place.", "En directe, tout le monde peut être élu. En représentative, il faut un diplôme."], "c": 1, "wrong": "L'échelle n'est pas le seul facteur. Le mécanisme est fondamentalement différent."}, {"q": "Quand un délégué présente les préoccupations de sa classe au conseil de classe, il accomplit le même geste que...", "a": ["Un avocat plaidant devant un tribunal", "Un citoyen athénien prenant la parole à l'Ekklésia pour exposer un problème de son dème", "Un journaliste faisant un reportage scolaire"], "c": 1, "wrong": "L'Ekklésia = assemblée où les citoyens portent les problèmes de leur quartier. Conseil de classe = idem. Même structure, 2500 ans d'écart."}, {"q": "Le 'mandat' confié au délégué signifie qu'il doit...", "a": ["Faire ce qu'il pense être le mieux, même contre l'avis de sa classe", "Porter la parole collective de ses camarades, même quand il n'est pas personnellement d'accord", "Voter uniquement sur les sujets qui l'intéressent"], "c": 1, "wrong": "Un mandat est une mission confiée. Voter contre l'avis général, c'est trahir ce mandat."}];
+const SCENARIO  = {"title": "La transmission", "p": "Un délégué qui arrête dit à celui qui commence : \"C'est juste un rôle pour avoir une bonne mention.\" Que lui réponds-tu ?", "options": [{"text": "\"Non. Quand tu portes la parole de ta classe devant des adultes, tu fais exactement ce que faisaient les citoyens athéniens. C'est une responsabilité vieille de 2500 ans. Cocher une case, c'est le gâchis.\"", "ok": true, "fb": ""}, {"text": "\"T'as pas tort, mais bon...\"", "ok": false, "fb": "Tu as fait tout ce parcours pour capituler devant une idée fausse ?"}, {"text": "\"C'est nul de penser ça.\"", "ok": false, "fb": "Éduquer, convaincre — voilà ton rôle. Pas condamner."}]};
+const SYNTHESIS = [{"icon": "🧬", "t": "L'héritage :", "v": "Athènes → Rome → 1215 → 1789 → Ve République → Toi."}, {"icon": "🎭", "t": "Ton rôle :", "v": "Tu n'es pas un représentant de tes opinions. Tu es un porte-voix de ta classe."}, {"icon": "⚖️", "t": "Le mandat :", "v": "Mission confiée = responsabilité de l'honorer, même quand c'est inconfortable."}, {"icon": "🌍", "t": "La portée :", "v": "Chaque fois que tu siègles au conseil de classe, tu fais vivre 2500 ans de démocratie."}];
 
-function awardXP(name) {
+/* Récupère le code joueur depuis localStorage — pas de saisie manuelle (RGPD) */
+function getPlayer() {
+  return localStorage.getItem('pvs_current_player') || 'anonyme';
+}
+
+function awardXP() {
   try {
     const raw   = localStorage.getItem('pvs_bridge_events');
     const evts  = raw ? JSON.parse(raw) : [];
-    const player = localStorage.getItem('pvs_current_player') || name || 'inconnu';
     evts.push({
       id:     'AGORA-' + MODULE_ID + '-' + Date.now(),
       type:   'AGORA_MODULE_COMPLETE',
-      player: player,
+      player: getPlayer(),
       module: MODULE_ID,
-      label:  'AGORA : Délégué : héritier de l'Agora',
+      label:  'AGORA : Délégué : héritier de l\'Agora',
       reward: XP_AMOUNT,
       d:      new Date().toISOString()
     });
@@ -94,38 +99,38 @@ function awardXP(name) {
 }
 
 function App() {
-  const [step,    setStep]    = React.useState('intro');
-  const [name,    setName]    = React.useState('');
-  const [qIdx,    setQIdx]    = React.useState(0);
-  const [token,   setToken]   = React.useState('');
+  const [step, setStep] = React.useState('intro');
+  const [qIdx, setQIdx] = React.useState(0);
+  const [token, setToken] = React.useState('');
 
   const finish = () => {
-    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:name||'Délégué', f:true };
+    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:getPlayer(), f:true };
     localStorage.setItem(CERT_KEY, JSON.stringify(cert));
-    awardXP(name);
+    awardXP();
     setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
     setStep('complete');
   };
 
   const goBack = () => { window.location.href = BACK_URL; };
 
+  const PlayerChip = () => e('div', {className:'player-chip'}, '🎮 ', getPlayer());
+
   /* ── INTRO ── */
   const renderIntro = () => e('div', {className:'card'},
-    e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
-    e('div', {className:'tag'}, "La Cit\u00e9 & le D\u00e9mos \u00b7 Module 4/4 \u2726 CERTIFICATION"),
+    e('div', {className:'top-row'},
+      e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
+      PlayerChip()
+    ),
+    e('div', {className:'tag'}, 'La Cité & le Démos · Module 4/4 ✦ CERTIFICATION'),
     
-    e('h1', null, "Délégué : héritier de l'Agora"),
-    e('p', {className:'quote'}, "« Être citoyen, c'est être responsable. » — Antoine de Saint-Exupéry"),
-    e('p', null, "Tu as traversé 5 000 ans d'histoire : des premiers villages sumériens à la démocratie athénienne, de la Magna Carta à la Révolution française. Maintenant, la question centrale : qu'est-ce que tout ça a à voir avec toi, délégué de collège ?"),
-    e('p', null, "La réponse va peut-être te surprendre : absolument tout."),
+    e('h1', null, "Délégué : héritier de l\'Agora"),
+    e('p', {className:'quote'}, "« Être citoyen, c\'est être responsable. » — Antoine de Saint-Exupéry"),
+    e('p', null, "Tu as traversé 5 000 ans d\'histoire : des premiers villages sumériens à la démocratie athénienne, de la Magna Carta à la Révolution française. Maintenant, la question centrale : qu\'est-ce que tout ça a à voir avec toi, délégué de collège ?"),
+    e('p', null, "La réponse va peut-être te surprendre : absolument tout."),
 
-    e('input', {className:'name-input', type:'text', placeholder:"Ton nom pour le dipl\u00f4me...",
-      autoComplete:'off', onChange: ev => setName(ev.target.value)}),
-    e('div', {className:'xp-badge'}, '⚡ +75 XP à la clé'),
-    e('button', {className:'btn', onClick: () => {
-      if (!name.trim()) { alert("Un grand nom pour un grand moment !"); return; }
-      setStep('quiz');
-    }}, "La derni\u00e8re \u00e9tape")
+    e('div', {style:{textAlign:'center'}},
+      e('div', {className:'xp-badge'}, '⚡ +75 XP à la clé')),
+    e('button', {className:'btn', onClick:() => setStep('quiz')}, 'La dernière étape')
   );
 
   /* ── QUIZ ── */
@@ -133,7 +138,8 @@ function App() {
     const q   = QUESTIONS[qIdx];
     const pct = 25 + Math.round((qIdx / QUESTIONS.length) * 30);
     return e('div', {className:'card'},
-      e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:pct+'%'}})),
+      e('div', {className:'progress'},
+        e('div', {className:'progress-fill', style:{width:pct+'%'}})),
       e('div', {className:'step-tag'}, 'Question ' + (qIdx+1) + ' / ' + QUESTIONS.length),
       e('h2', null, q.q),
       q.a.map((opt, i) => e('button', {
@@ -143,7 +149,7 @@ function App() {
             if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
             else setStep('scenario');
           } else {
-            alert(q.wrong || "La certification demande de la pr\u00e9cision. R\u00e9essaie.");
+            alert(q.wrong || 'La certification demande de la précision. Réessaie.');
           }
         }
       }, opt))
@@ -152,42 +158,42 @@ function App() {
 
   /* ── SCENARIO ── */
   const renderScenario = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'70%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'70%'}})),
     e('div', {className:'step-tag'}, 'Mise en situation'),
     e('h2', null, SCENARIO.title),
     e('p', null, SCENARIO.p),
     SCENARIO.options.map((opt, i) => e('button', {
       key:i, className:'opt',
-      onClick: () => {
-        if (opt.ok) setStep('synthesis');
-        else alert(opt.fb);
-      }
+      onClick: () => { if (opt.ok) setStep('synthesis'); else alert(opt.fb); }
     }, opt.text))
   );
 
   /* ── SYNTHESIS ── */
   const renderSynthesis = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'88%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'88%'}})),
     e('div', {className:'step-tag'}, 'Synthèse'),
     e('h2', null, 'Ce qu\'il faut retenir'),
     e('div', {className:'summary-box'},
       SYNTHESIS.map((s,i) => e('p', {key:i},
-        e('strong', null, s.icon + ' ' + s.t + ' '), s.v
-      ))
+        e('strong', null, s.icon + ' ' + s.t + ' '), s.v))
     ),
     e('button', {className:'btn', onClick:finish}, 'Valider ce module →')
   );
 
   /* ── COMPLETE ── */
   const renderComplete = () => e('div', {className:'card'},
-    e('div', {className:'seal'}, "\u26a1"),
-    e('h1', null, "Pilier La Cit\u00e9 & le D\u00e9mos \u2014 Valid\u00e9 !"),
-    e('p', {style:{textAlign:'center'}}, "F\u00e9licitations, h\u00e9ritier de l'Agora, ", e('strong', null, name), ' !'),
-    e('div', {style:{textAlign:'center'}}, e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
+    e('div', {className:'seal'}, '⚡'),
+    e('h1', null, 'Pilier La Cité & le Démos — Validé !'),
+    e('p', {style:{textAlign:'center'}}, 'Félicitations, héritier de l\'Agora.'),
+    e('div', {style:{textAlign:'center', margin:'8px 0'}},
+      e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
     e('p', {style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
       'Copie le jeton ci-dessous et colle-le dans l\'Agora.'),
     e('div', {className:'token-box'}, token),
-    e('p', {className:'token-note'}, '📋 Sélectionne tout le code (clic dans la zone) et copie-le — Ctrl+C ou Cmd+C.'),
+    e('p', {className:'token-note'},
+      '📋 Sélectionne tout le code (clic dans la zone) — Ctrl+C / Cmd+C.'),
     e('button', {className:'btn', onClick:goBack}, '← Retour à l\'Agora')
   );
 

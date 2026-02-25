@@ -16,27 +16,27 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse at 50% 0%,rgba(56,189,248,0.1) 0%,transparent 55%)}
 #root{width:100%;max-width:820px;position:relative;z-index:1}
 .card{background:rgba(15,23,42,0.92);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
-  box-shadow:0 0 50px rgba(0,0,0,0.7),0 0 80px rgba(56,189,248,0.1);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
 .card::before{content:'AGORA';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
   font-size:5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
 h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
 h1{font-size:1.55rem}h2{font-size:1.2rem}
 p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
-.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
 .tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
   font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
-.name-input{width:100%;padding:12px 14px;background:#000;border:1px solid var(--acc);
-  color:var(--acc);font-family:'Share Tech Mono',monospace;border-radius:3px;outline:none;
-  margin-bottom:14px;transition:border-color .2s;font-size:0.88rem}
-.name-input:focus{border-color:#fff}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;margin-bottom:16px}
 .xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
   border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
-  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace;
-  margin:8px auto 0;display:block;width:fit-content}
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
 .btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
   text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
   display:block;margin:18px auto 0;border-radius:4px}
-.btn:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 6px 20px rgba(56,189,248,0.1)}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
 .progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));
   border-radius:2px;transition:width .5s ease}
@@ -60,29 +60,34 @@ p{line-height:1.75;margin-bottom:12px;color:#d8e8f8}
   font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;
   transition:.2s;margin-bottom:18px}
 .nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
 const e = React.createElement;
-const MODULE_ID = "AG_R05";
-const CERT_KEY  = "CERT_REPUBLIQUE_5";
+const MODULE_ID = 'AG_R05';
+const CERT_KEY  = 'CERT_REPUBLIQUE_5';
 const XP_AMOUNT = 75;
-const BACK_URL  = "index_PIX_DELEGUES.html";
-const QUESTIONS = [{"q": "Le CVC (Conseil de Vie Collégienne) est l'équivalent scolaire de...", "a": ["Le Sénat — car composé de représentants indirects", "L'Assemblée nationale — car membres élus directement par leurs pairs", "Le Conseil d'État — car il donne des avis sur les règlements"], "c": 1, "wrong": "Le CVC = représentants élus directement par les élèves. Même logique que l'AN élue directement par les citoyens."}, {"q": "Pour devenir député, quelles sont les conditions principales ?", "a": ["30 ans minimum, être magistrat ou professeur, passer un concours", "18 ans minimum, nationalité française, être élu au suffrage universel direct dans sa circonscription", "Avoir été ministre et être parrainé par 500 élus"], "c": 1, "wrong": "18 ans, nationalité française, élection directe. Pas de diplôme requis — la légitimité vient du vote des citoyens."}, {"q": "Un problème dans ta classe peut remonter au niveau national via...", "a": ["Uniquement une pétition sur les réseaux", "Délégué → CVC → Parlement des lycéens → instances nationales → parlementaires", "Directement en écrivant au Président"], "c": 1, "wrong": "C'est la chaîne institutionnelle. Lente mais légitime et traçable. Chaque maillon compte."}];
-const SCENARIO  = {"title": "Le bilan", "p": "À la fin de ton mandat, un nouvel élu te demande : \"À quoi ça sert d'être délégué si on n'a pas vraiment de pouvoir ?\"", "options": [{"text": "\"Tu as un mandat, des instances reconnues par la loi, la capacité de faire remonter des problèmes réels qui changent des choses concrètes. Et tu t'entraînes à la citoyenneté active, à 13 ans, dans un pays qui en a besoin. C'est pas du pouvoir ça ? C'est le début du pouvoir.\"", "ok": true, "fb": ""}, {"text": "\"C'est vrai, on n'a pas vraiment de pouvoir.\"", "ok": false, "fb": "Ce défaitisme est compréhensible mais faux. Un délégué qui pense ça n'exerce pas son rôle — et effectivement finit par ne pas avoir de pouvoir."}, {"text": "\"Ça sert à avoir une bonne mention sur Parcoursup.\"", "ok": false, "fb": "Si c'est la seule raison, tu n'as rien retenu. Être délégué c'est hériter de 2500 ans de démocratie. Pas cocher une case."}]};
-const SYNTHESIS = [{"icon": "🔗", "t": "La chaîne :", "v": "Classe → CVC → Parlement des lycéens → instances nationales → Parlement. Chaque maillon compte."}, {"icon": "🗳️", "t": "Devenir député :", "v": "18 ans, nationalité française, élection directe. Pas de diplôme — la légitimité vient du vote."}, {"icon": "💪", "t": "Ton pouvoir réel :", "v": "Mandat, instances légales, capacité à faire remonter et changer les choses. C'est le début."}, {"icon": "🏛️", "t": "L'héritage total :", "v": "Athènes 508 av. J.-C. → Rome → 1789 → 1958 → Toi, délégué, aujourd'hui. Une seule et même histoire."}];
+const BACK_URL  = 'index_PIX_DELEGUES.html';
+const QUESTIONS = [{"q": "Le CVC (Conseil de Vie Collégienne) est l'équivalent scolaire de...", "a": ["Le Sénat — représentants indirects", "L'Assemblée nationale — membres élus directement par leurs pairs", "Le Conseil d'État — donne des avis"], "c": 1, "wrong": "Le CVC = représentants élus directement par les élèves. Même logique que l'AN."}, {"q": "Pour devenir député, quelles sont les conditions principales ?", "a": ["30 ans minimum, être magistrat, passer un concours", "18 ans minimum, nationalité française, être élu au suffrage universel direct", "Avoir été ministre et être parrainé par 500 élus"], "c": 1, "wrong": "18 ans, nationalité française, élection directe. Pas de diplôme requis."}, {"q": "Un problème dans ta classe peut remonter au niveau national via...", "a": ["Uniquement une pétition sur les réseaux", "Délégué → CVC → Parlement des lycéens → instances nationales → parlementaires", "Directement en écrivant au Président"], "c": 1, "wrong": "C'est la chaîne institutionnelle. Lente mais légitime."}];
+const SCENARIO  = {"title": "Le bilan", "p": "À la fin de ton mandat, un nouvel élu te demande : \"À quoi ça sert si on n'a pas vraiment de pouvoir ?\"", "options": [{"text": "\"Tu as un mandat, des instances reconnues par la loi, la capacité de faire remonter des problèmes réels. Et tu t'entraînes à la citoyenneté active, à 13 ans. C'est le début du pouvoir.\"", "ok": true, "fb": ""}, {"text": "\"C'est vrai, on n'a pas vraiment de pouvoir.\"", "ok": false, "fb": "Ce défaitisme est compréhensible mais faux. Un délégué qui pense ça n'exerce pas son rôle."}, {"text": "\"Ça sert à avoir une bonne mention.\"", "ok": false, "fb": "Si c'est la seule raison, tu n'as rien retenu de ce parcours."}]};
+const SYNTHESIS = [{"icon": "🔗", "t": "La chaîne :", "v": "Classe → CVC → Parlement des lycéens → instances nationales → Parlement."}, {"icon": "🗳️", "t": "Devenir député :", "v": "18 ans, nationalité française, élection directe. Pas de diplôme."}, {"icon": "💪", "t": "Ton pouvoir réel :", "v": "Mandat, instances légales, capacité à faire remonter et changer les choses."}, {"icon": "🏛️", "t": "L'héritage total :", "v": "Athènes 508 av. J.-C. → Rome → 1789 → 1958 → Toi, délégué, aujourd'hui."}];
 
-function awardXP(name) {
+/* Récupère le code joueur depuis localStorage — pas de saisie manuelle (RGPD) */
+function getPlayer() {
+  return localStorage.getItem('pvs_current_player') || 'anonyme';
+}
+
+function awardXP() {
   try {
     const raw   = localStorage.getItem('pvs_bridge_events');
     const evts  = raw ? JSON.parse(raw) : [];
-    const player = localStorage.getItem('pvs_current_player') || name || 'inconnu';
     evts.push({
       id:     'AGORA-' + MODULE_ID + '-' + Date.now(),
       type:   'AGORA_MODULE_COMPLETE',
-      player: player,
+      player: getPlayer(),
       module: MODULE_ID,
       label:  'AGORA : Du délégué au député',
       reward: XP_AMOUNT,
@@ -94,38 +99,38 @@ function awardXP(name) {
 }
 
 function App() {
-  const [step,    setStep]    = React.useState('intro');
-  const [name,    setName]    = React.useState('');
-  const [qIdx,    setQIdx]    = React.useState(0);
-  const [token,   setToken]   = React.useState('');
+  const [step, setStep] = React.useState('intro');
+  const [qIdx, setQIdx] = React.useState(0);
+  const [token, setToken] = React.useState('');
 
   const finish = () => {
-    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:name||'Délégué', f:true };
+    const cert = { v:2, d:new Date().toISOString(), m:MODULE_ID, n:getPlayer(), f:true };
     localStorage.setItem(CERT_KEY, JSON.stringify(cert));
-    awardXP(name);
+    awardXP();
     setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
     setStep('complete');
   };
 
   const goBack = () => { window.location.href = BACK_URL; };
 
+  const PlayerChip = () => e('div', {className:'player-chip'}, '🎮 ', getPlayer());
+
   /* ── INTRO ── */
   const renderIntro = () => e('div', {className:'card'},
-    e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
-    e('div', {className:'tag'}, "La Ve R\u00e9publique \u00b7 Module 5/5 \u2726 CERTIFICATION"),
+    e('div', {className:'top-row'},
+      e('button', {className:'nav-back', onClick:goBack}, '← Agora'),
+      PlayerChip()
+    ),
+    e('div', {className:'tag'}, 'La Ve République · Module 5/5 ✦ CERTIFICATION'),
     
     e('h1', null, "Du délégué au député"),
-    e('p', {className:'quote'}, "« La politique est trop sérieuse pour être laissée aux seuls politiques. » — Charles de Gaulle"),
-    e('p', null, "Ce module fait le lien entre tout ce que tu viens d'apprendre et ton rôle concret. Il existe une chaîne de représentation qui va de ta classe au Parlement national : délégué → CVC → Parlement des lycéens → instances nationales → parlementaires."),
-    e('p', null, "Tu n'es pas 'juste' un délégué de collège. Tu es le premier échelon d'un système qui monte jusqu'aux plus hautes instances du pays. Ce n'est pas une métaphore — c'est institutionnellement vrai."),
+    e('p', {className:'quote'}, "« La politique est trop sérieuse pour être laissée aux seuls politiques. » — Charles de Gaulle"),
+    e('p', null, "Ce module fait le lien entre les institutions françaises et ton rôle concret. Il existe une chaîne de représentation qui va de ta classe au Parlement national."),
+    e('p', null, "Délégué → CVC → Parlement des lycéens → instances nationales → parlementaires. Tu n\'es pas \'juste\' un délégué de collège. Tu es le premier échelon d\'un système qui monte jusqu\'aux plus hautes instances du pays."),
 
-    e('input', {className:'name-input', type:'text', placeholder:"Ton nom pour le dipl\u00f4me final...",
-      autoComplete:'off', onChange: ev => setName(ev.target.value)}),
-    e('div', {className:'xp-badge'}, '⚡ +75 XP à la clé'),
-    e('button', {className:'btn', onClick: () => {
-      if (!name.trim()) { alert("Ce dipl\u00f4me a besoin d'un nom !"); return; }
-      setStep('quiz');
-    }}, "Tracer la cha\u00eene")
+    e('div', {style:{textAlign:'center'}},
+      e('div', {className:'xp-badge'}, '⚡ +75 XP à la clé')),
+    e('button', {className:'btn', onClick:() => setStep('quiz')}, 'Tracer la chaîne')
   );
 
   /* ── QUIZ ── */
@@ -133,7 +138,8 @@ function App() {
     const q   = QUESTIONS[qIdx];
     const pct = 25 + Math.round((qIdx / QUESTIONS.length) * 30);
     return e('div', {className:'card'},
-      e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:pct+'%'}})),
+      e('div', {className:'progress'},
+        e('div', {className:'progress-fill', style:{width:pct+'%'}})),
       e('div', {className:'step-tag'}, 'Question ' + (qIdx+1) + ' / ' + QUESTIONS.length),
       e('h2', null, q.q),
       q.a.map((opt, i) => e('button', {
@@ -143,7 +149,7 @@ function App() {
             if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
             else setStep('scenario');
           } else {
-            alert(q.wrong || "La cha\u00eene de repr\u00e9sentation est pr\u00e9cise. R\u00e9essaie.");
+            alert(q.wrong || 'La chaîne de représentation est précise. Réessaie.');
           }
         }
       }, opt))
@@ -152,42 +158,42 @@ function App() {
 
   /* ── SCENARIO ── */
   const renderScenario = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'70%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'70%'}})),
     e('div', {className:'step-tag'}, 'Mise en situation'),
     e('h2', null, SCENARIO.title),
     e('p', null, SCENARIO.p),
     SCENARIO.options.map((opt, i) => e('button', {
       key:i, className:'opt',
-      onClick: () => {
-        if (opt.ok) setStep('synthesis');
-        else alert(opt.fb);
-      }
+      onClick: () => { if (opt.ok) setStep('synthesis'); else alert(opt.fb); }
     }, opt.text))
   );
 
   /* ── SYNTHESIS ── */
   const renderSynthesis = () => e('div', {className:'card'},
-    e('div', {className:'progress'}, e('div', {className:'progress-fill', style:{width:'88%'}})),
+    e('div', {className:'progress'},
+      e('div', {className:'progress-fill', style:{width:'88%'}})),
     e('div', {className:'step-tag'}, 'Synthèse'),
     e('h2', null, 'Ce qu\'il faut retenir'),
     e('div', {className:'summary-box'},
       SYNTHESIS.map((s,i) => e('p', {key:i},
-        e('strong', null, s.icon + ' ' + s.t + ' '), s.v
-      ))
+        e('strong', null, s.icon + ' ' + s.t + ' '), s.v))
     ),
     e('button', {className:'btn', onClick:finish}, 'Valider ce module →')
   );
 
   /* ── COMPLETE ── */
   const renderComplete = () => e('div', {className:'card'},
-    e('div', {className:'seal'}, "\ud83d\uddf3\ufe0f"),
-    e('h1', null, "Pilier La Ve R\u00e9publique \u2014 Valid\u00e9 !"),
-    e('p', {style:{textAlign:'center'}}, "La cha\u00eene de repr\u00e9sentation n'a plus de secrets pour toi, ", e('strong', null, name), ' !'),
-    e('div', {style:{textAlign:'center'}}, e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
+    e('div', {className:'seal'}, '🗳️'),
+    e('h1', null, 'Pilier La Ve République — Validé !'),
+    e('p', {style:{textAlign:'center'}}, 'La chaîne de représentation est maîtrisée.'),
+    e('div', {style:{textAlign:'center', margin:'8px 0'}},
+      e('div', {className:'xp-badge'}, '⚡ +' + XP_AMOUNT + ' XP envoyés au Portail')),
     e('p', {style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
       'Copie le jeton ci-dessous et colle-le dans l\'Agora.'),
     e('div', {className:'token-box'}, token),
-    e('p', {className:'token-note'}, '📋 Sélectionne tout le code (clic dans la zone) et copie-le — Ctrl+C ou Cmd+C.'),
+    e('p', {className:'token-note'},
+      '📋 Sélectionne tout le code (clic dans la zone) — Ctrl+C / Cmd+C.'),
     e('button', {className:'btn', onClick:goBack}, '← Retour à l\'Agora')
   );
 
