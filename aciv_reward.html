@@ -683,7 +683,7 @@ body::before {
     <main id="gameCenter">
 
       <div id="gameTopBar">
-        <div class="gtb-title">DOS · ACIV.EXE · 640×480 · 256 couleurs</div>
+        <div class="gtb-title">DOS · ADVCIV.EXE · 640×480 · 256 couleurs</div>
         <div class="session-xp">Session : <span id="sessionXP">0</span> XP gagnés</div>
         <button class="btn-small" onclick="loadGame()" id="btnLoadGame">▶ Lancer le jeu</button>
         <button class="btn-small" onclick="expandGame()">⛶ Plein écran</button>
@@ -1220,7 +1220,13 @@ function initJsDos() {
       wdosboxUrl: 'https://cdn.js-dos.com/js-dos/6.22.60/wdosbox.js',
     }).ready((fs, main) => {
       fs.extract(GAME_BUNDLE_URL).then(() => {
-        main(['-c', 'C:', '-c', 'ACIV.EXE']);
+        // Image CD CloneCD (.ccd/.sub + données)
+        // IMGMOUNT monte l'image sur le lecteur D:, puis on exécute depuis D:
+        main([
+          '-c', 'IMGMOUNT D "advanced civ.ccd" -t cdrom',
+          '-c', 'D:',
+          '-c', 'ADVCIV.EXE',
+        ]);
       }).catch(err => {
         showGameError(`Bundle introuvable (${GAME_BUNDLE_URL}). Placez aciv.jsdos à la racine du site (même dossier que ce HTML).`);
       });
