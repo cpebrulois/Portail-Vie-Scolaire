@@ -569,7 +569,7 @@
         // --- MAIN APP ---
         function App() {
             const [gameState, setGameState] = useState("intro");
-            const [playerData, setPlayerData] = useState({ name: "", class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, flashcardsViewed: 0 });
+            const [playerData, setPlayerData] = useState({ name: localStorage.getItem('pvs_current_player') || "", class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, flashcardsViewed: 0 });
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
             const [flashcardFlipped, setFlashcardFlipped] = useState(false);
             const [currentQuiz, setCurrentQuiz] = useState(0);
@@ -615,13 +615,25 @@
                 setPlayerData(prev => ({ ...prev, score: prev.score + totalChange, scenarioScore: prev.scenarioScore + totalChange, xp: prev.xp + 25 }));
             }
             function nextScenario() {
+                
+                // ── Bridge Superhub PVS ──
+                try {
+                    var _b = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                    _b.push({ id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
+                               type: 'PIXHARE_PROGRESS', player: playerData.name,
+                               module: MODULE_ID, score: playerData.score,
+                               xp: playerData.xp, d: new Date().toISOString() });
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
+                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                } catch(_e) {}
+                // ── Fin Bridge ──
                 setGameState("complete");
                 setPlayerData(prev => ({ ...prev, xp: prev.xp + 50 }));
             }
             function generateSaveCode() {
                 return encodeSaveCode({
                     v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
-                    n: playerData.name, c: playerData.class, l: 3, s: playerData.score,
+                    n: playerData.name, l: 3, s: playerData.score,
                     x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore, f: true
                 });
             }
@@ -651,22 +663,24 @@
                                     "Découvre comment l’humain peut comprendre… ou manipuler."
                                 ),
                                 e("div", { className: "name-input-group" },
-                                    e("input", {
-                                        type: "text",
-                                        className: "name-input",
-                                        value: playerData.name,
-                                        onChange: ev => setPlayerData(prev => ({ ...prev, name: ev.target.value })),
-                                        placeholder: "Ton prénom ou pseudo..."
-                                    }),
-                                    e("input", {
-                                        type: "text",
-                                        className: "name-input",
-                                        value: playerData.class,
-                                        onChange: ev => setPlayerData(prev => ({ ...prev, class: ev.target.value })),
-                                        placeholder: "Ta classe (optionnel)..."
-                                    })
-                                ),
-                                e("button", { className: "action-btn", onClick: startGame, disabled: !playerData.name.trim() }, "[ COMMENCER ]")
+                                playerData.name
+                                    ? e("div", { style: { textAlign: "center", padding: "15px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: "8px", marginBottom: "20px" } },
+                                        e("div", { style: { fontSize: "1.8rem", marginBottom: "8px" } }, "\u2705"),
+                                        e("div", { style: { color: "#94a3b8", fontSize: "0.85rem", marginBottom: "6px" } }, "Connect\u00e9 via Portail Vie Scolaire"),
+                                        e("div", { style: { color: "#f8fafc", fontFamily: "'Share Tech Mono', monospace", fontSize: "1.1rem", fontWeight: "bold" } }, playerData.name)
+                                      )
+                                    : e("div", { style: { textAlign: "center", padding: "15px", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "8px", marginBottom: "20px" } },
+                                        e("div", { style: { fontSize: "1.8rem", marginBottom: "8px" } }, "\u26a0\ufe0f"),
+                                        e("p", { style: { color: "#f87171", fontWeight: "bold", marginBottom: "8px" } }, "Non connect\u00e9 au Portail Vie Scolaire"),
+                                        e("p", { style: { color: "#94a3b8", fontSize: "0.85rem" } }, "Connecte-toi d'abord depuis le Superhub, puis reviens ici.")
+                                      ),
+                                e("div", { style: { textAlign: "center", marginTop: "20px" } },
+                                    e("button", {
+                                        className: "action-btn",
+                                        onClick: startGame,
+                                        disabled: !playerData.name.trim()
+                                    }, "[ COMMENCER ]")
+                                )
                             )
                         )
                     )

@@ -884,6 +884,14 @@
                 };
                 localStorage.setItem('pvs_bridge_event', JSON.stringify(ev));
                 window.dispatchEvent(new Event('pvs_bridge'));
+                // ── Bridge PIXHARe hub (pvs_bridge_events array) ──
+                var _b = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                _b.push({ id: 'PIXHARE-' + moduleId + '-' + Date.now(),
+                           type: 'PIXHARE_PROGRESS', player: getHubPlayer() || '',
+                           module: moduleId, score: score, xp: xp,
+                           d: new Date().toISOString() });
+                localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
+                window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
             } catch(e) {}
         }
         // === FIN SUPERHUB BRIDGE ===

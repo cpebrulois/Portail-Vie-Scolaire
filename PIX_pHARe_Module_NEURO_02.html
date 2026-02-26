@@ -812,8 +812,7 @@
 
         function App() {
             const [gameState, setGameState] = useState("intro");
-            const [playerData, setPlayerData] = useState({ 
-                name: "", 
+            const [playerData, setPlayerData] = useState({ name: localStorage.getItem('pvs_current_player') || "", 
                 class: "", 
                 level: 1, 
                 score: 0, 
@@ -920,6 +919,18 @@
                     finished: true, 
                     xp: prev.xp + 100 
                 }));
+                
+                // ── Bridge Superhub PVS ──
+                try {
+                    var _b = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                    _b.push({ id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
+                               type: 'PIXHARE_PROGRESS', player: playerData.name,
+                               module: MODULE_ID, score: playerData.score,
+                               xp: playerData.xp, d: new Date().toISOString() });
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
+                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                } catch(_e) {}
+                // ── Fin Bridge ──
                 setGameState("final");
             }
 
@@ -929,7 +940,6 @@
                     d: new Date().toISOString(),
                     m: MODULE_DATA.id,
                     n: playerData.name,
-                    c: playerData.class,
                     s: playerData.score,
                     x: playerData.xp,
                     f: playerData.finished
@@ -976,27 +986,27 @@
                                 </p>
 
                                 <div className="name-input-group">
-                                    <input 
-                                        type="text" 
-                                        className="name-input"
-                                        placeholder="Ton prénom"
-                                        value={playerData.name}
-                                        onChange={(e) => setPlayerData(prev => ({...prev, name: e.target.value}))}
-                                    />
-                                    <input 
-                                        type="text" 
-                                        className="name-input"
-                                        placeholder="Ta classe (optionnel)"
-                                        value={playerData.class}
-                                        onChange={(e) => setPlayerData(prev => ({...prev, class: e.target.value}))}
-                                    />
-                                    <button 
-                                        className="btn" 
+                                    {playerData.name ? (
+                                        <div style={{textAlign:"center",padding:"15px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:"8px",marginBottom:"20px"}}>
+                                            <div style={{fontSize:"1.8rem",marginBottom:"8px"}}>✅</div>
+                                            <div style={{color:"#94a3b8",fontSize:"0.85rem",marginBottom:"6px"}}>Connecté via Portail Vie Scolaire</div>
+                                            <div style={{color:"#f8fafc",fontFamily:"'Share Tech Mono',monospace",fontSize:"1.1rem",fontWeight:"bold"}}>{playerData.name}</div>
+                                        </div>
+                                    ) : (
+                                        <div style={{textAlign:"center",padding:"15px",background:"rgba(248,113,113,0.1)",border:"1px solid rgba(248,113,113,0.3)",borderRadius:"8px",marginBottom:"20px"}}>
+                                            <div style={{fontSize:"1.8rem",marginBottom:"8px"}}>⚠️</div>
+                                            <p style={{color:"#f87171",fontWeight:"bold",marginBottom:"8px"}}>Non connecté au Portail Vie Scolaire</p>
+                                            <p style={{color:"#94a3b8",fontSize:"0.85rem"}}>Connecte-toi d'abord depuis le Superhub, puis reviens ici.</p>
+                                        </div>
+                                    )}
+                                    <button
+                                        className="btn"
                                         onClick={startGame}
                                         disabled={!playerData.name.trim()}
                                     >
                                         Commencer
                                     </button>
+                                </button>
                                 </div>
                             </div>
                         </div>
