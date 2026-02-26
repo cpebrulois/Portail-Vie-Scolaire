@@ -801,7 +801,7 @@
         function App() {
             const [gameState, setGameState] = useState("intro");
             const [playerData, setPlayerData] = useState({
-                name: "",
+                name: localStorage.getItem('pvs_current_player') || "",
                 class: "",
                 xp: 0,
                 score: 0,
@@ -895,7 +895,24 @@
                     setScenarioChoice(null);
                     setShowScenarioResult(false);
                 } else {
-                    setGameState("complete");
+                    
+                // ── Bridge Superhub PVS ──
+                try {
+                    var _pvsBridge = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                    _pvsBridge.push({
+                        id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
+                        type: 'PIXHARE_PROGRESS',
+                        player: playerData.name,
+                        module: MODULE_ID,
+                        score: playerData.score,
+                        xp: playerData.xp,
+                        d: new Date().toISOString()
+                    });
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvsBridge));
+                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                } catch(e) {}
+                // ── Fin Bridge ──
+                setGameState("complete");
                     setPlayerData(prev => ({ ...prev, xp: prev.xp + 75 }));
                 }
             }
@@ -930,83 +947,25 @@
                                 )
                             ),
                             e("div", { className: "name-input-group" },
-                                e("div", { className: "input-wrapper" },
-                                    e("label", null, "Ton Pseudo :"),
-                                    e("input", {
-                                        type: "text",
-                                        value: playerData.name,
-                                        onChange: (ev) => setPlayerData(prev => ({ ...prev, name: ev.target.value })),
-                                        placeholder: "Entre ton prénom ou pseudo"
-                                    })
-                                ),
-                                e("div", { className: "input-wrapper" },
-                                    e("label", null, "Ta Classe :"),
-                                    e("input", {
-                                        type: "text",
-                                        value: playerData.class,
-                                        onChange: (ev) => setPlayerData(prev => ({ ...prev, class: ev.target.value })),
-                                        placeholder: "Ex: 4ème B"
-                                    })
-                                ),
-                                e("div", { style: { textAlign: "center", marginTop: "30px" } },
+                                playerData.name
+                                    ? e("div", { style: { textAlign: "center", padding: "15px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: "8px", marginBottom: "20px" } },
+                                        e("div", { style: { fontSize: "1.8rem", marginBottom: "8px" } }, "\u2705"),
+                                        e("div", { style: { color: "#94a3b8", fontSize: "0.85rem", marginBottom: "6px" } }, "Connect\u00e9 via Portail Vie Scolaire"),
+                                        e("div", { style: { color: "#f8fafc", fontFamily: "'Share Tech Mono', monospace", fontSize: "1.1rem", fontWeight: "bold" } }, playerData.name)
+                                      )
+                                    : e("div", { style: { textAlign: "center", padding: "15px", background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "8px", marginBottom: "20px" } },
+                                        e("div", { style: { fontSize: "1.8rem", marginBottom: "8px" } }, "\u26a0\ufe0f"),
+                                        e("p", { style: { color: "#f87171", fontWeight: "bold", marginBottom: "8px" } }, "Non connect\u00e9 au Portail Vie Scolaire"),
+                                        e("p", { style: { color: "#94a3b8", fontSize: "0.85rem" } }, "Connecte-toi d'abord depuis le Superhub, puis reviens ici.")
+                                      ),
+                                e("div", { style: { textAlign: "center", marginTop: "20px" } },
                                     e("button", {
                                         className: "action-btn",
                                         onClick: startGame,
-                                        disabled: !playerData.name.trim() || !playerData.class.trim()
+                                        disabled: !playerData.name.trim()
                                     }, "[ COMMENCER ]")
                                 )
                             )
-                        )
-                    )
-                );
-            }
-
-            function renderFlashcards() {
-                const card = flashcardsData[currentFlashcard];
-
-                return e("div", { className: "app-container" },
-                    e("div", { className: "header" },
-                        e("div", { className: "pillar-icon" }, "📜"),
-                        e("h1", { className: "glitch-title" }, MODULE_TITLE),
-                        e("div", { className: "subtitle" }, "Niveau 1 : Archéologie du Silence")
-                    ),
-                    e("div", { className: "progress-bar" },
-                        e("div", { className: "progress-node active" }, "1"),
-                        e("div", { className: "progress-node" }, "2"),
-                        e("div", { className: "progress-node" }, "3")
-                    ),
-                    e("div", { className: "xp-display" },
-                        e("div", { className: "xp-box" },
-                            e("div", { className: "xp-label" }, "XP"),
-                            e("div", { className: "xp-value" }, playerData.xp)
-                        ),
-                        e("div", { className: "xp-box" },
-                            e("div", { className: "xp-label" }, "Carte"),
-                            e("div", { className: "xp-value" }, `${currentFlashcard + 1}/${flashcardsData.length}`)
-                        )
-                    ),
-                    e("div", { className: "content-panel" },
-                        e("div", { className: "panel-header" },
-                            e("div", { className: "panel-icon" }, "📚"),
-                            e("div", { className: "panel-title" }, "Archives Historiques")
-                        ),
-                        e("div", { className: "panel-body" },
-                            e("div", { className: "flashcard-container" },
-                                e("div", {
-                                    className: `flashcard ${flashcardFlipped ? "flipped" : ""}`,
-                                    onClick: () => setFlashcardFlipped(!flashcardFlipped)
-                                },
-                                    e("div", { className: "flashcard-face flashcard-front" },
-                                        e("div", { className: "flashcard-question" }, card.question),
-                                        e("div", { className: "flashcard-hint" }, card.hint)
-                                    ),
-                                    e("div", { className: "flashcard-face flashcard-back" },
-                                        e("div", {
-                                            className: "flashcard-answer",
-                                            dangerouslySetInnerHTML: { __html: card.answer }
-                                        })
-                                    )
-                                )
                             ),
                             e("div", { className: "flashcard-nav" },
                                 e("button", {

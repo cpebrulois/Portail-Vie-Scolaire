@@ -613,7 +613,7 @@
 
         function App() {
             const [gameState, setGameState] = useState("unlock");
-            const [playerData, setPlayerData] = useState({ name: "", class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, finished: false });
+            const [playerData, setPlayerData] = useState({ name: localStorage.getItem('pvs_current_player') || "", class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, finished: false });
             const [unlockCode, setUnlockCode] = useState("");
             const [unlockError, setUnlockError] = useState("");
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
@@ -630,7 +630,7 @@
                 if (!decoded) { setUnlockError("Code invalide."); return; }
                 if (decoded.m !== PREREQUISITE_MODULE) { setUnlockError(`Code du module ${decoded.m}. Il te faut celui de ${PREREQUISITE_MODULE}.`); return; }
                 if (!decoded.f) { setUnlockError("Module précédent non terminé."); return; }
-                setPlayerData(prev => ({ ...prev, name: decoded.n || "", class: decoded.c || "" }));
+                setPlayerData(prev => ({ ...prev, name: localStorage.getItem('pvs_current_player') || decoded.n || "" }));
                 setGameState("intro");
             }
 
@@ -678,12 +678,29 @@
                     setShowScenarioResult(false);
                 } else {
                     setPlayerData(prev => ({ ...prev, finished: true, xp: prev.xp + 150 }));
-                    setGameState("complete");
+                    
+                // ── Bridge Superhub PVS ──
+                try {
+                    var _pvsBridge = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                    _pvsBridge.push({
+                        id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
+                        type: 'PIXHARE_PROGRESS',
+                        player: playerData.name,
+                        module: MODULE_ID,
+                        score: playerData.score,
+                        xp: playerData.xp,
+                        d: new Date().toISOString()
+                    });
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvsBridge));
+                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                } catch(e) {}
+                // ── Fin Bridge ──
+                setGameState("complete");
                 }
             }
 
             function generateSaveCode() {
-                return encodeSaveCode({ v: 1, d: new Date().toISOString(), m: MODULE_ID, p: PILLAR_ID, n: playerData.name, c: playerData.class, s: playerData.score, x: playerData.xp, f: true, pillarComplete: true });
+                return encodeSaveCode({ v: 1, d: new Date().toISOString(), m: MODULE_ID, p: PILLAR_ID, n: playerData.name, s: playerData.score, x: playerData.xp, f: true, pillarComplete: true });
             }
 
             function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code copié !")); }
