@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hub FRATERNITÉ — Portail Vie Scolaire</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:64px 24px 52px;text-align:center;
+  background:linear-gradient(180deg,#1c0e02 0%,#0a0804 100%)}
+.hero::before{content:'FRATERNITÉ';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);font-family:'Playfair Display';
+  font-size:clamp(3rem,13vw,10rem);opacity:0.05;
+  color:#f59e0b;pointer-events:none;white-space:nowrap;letter-spacing:.05em}
+.hero-embers{position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(2px 2px at 15% 25%,rgba(245,158,11,0.35),transparent),
+    radial-gradient(1px 1px at 75% 18%,rgba(251,191,36,0.4),transparent),
+    radial-gradient(2px 2px at 45% 65%,rgba(239,68,68,0.2),transparent),
+    radial-gradient(1px 1px at 88% 45%,rgba(245,158,11,0.35),transparent),
+    radial-gradient(1px 1px at 30% 80%,rgba(251,191,36,0.25),transparent)}
+
+/* DRAPEAU */
+.flag-strip{display:flex;height:5px;border-radius:3px;overflow:hidden;width:120px;margin:0 auto 22px}
+.flag-strip .f-b{flex:1;background:#002395}
+.flag-strip .f-w{flex:1;background:#fff}
+.flag-strip .f-r{flex:1;background:#ED2939}
+
+h1{font-family:'Playfair Display';font-size:clamp(2rem,6vw,3.4rem);margin-bottom:8px;
+  background:linear-gradient(135deg,#fde68a,#f59e0b,#ef4444);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--muted);font-size:.93rem;max-width:580px;margin:0 auto 26px;line-height:1.75}
+
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.22);
+  padding:5px 14px;border-radius:20px;font-size:.7rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;margin-bottom:18px}
+.xp-total{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.22);
+  padding:8px 20px;border-radius:24px;font-family:'Share Tech Mono';
+  font-size:.78rem;color:#fbbf24;margin-bottom:6px}
+
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  color:var(--muted);padding:6px 16px;cursor:pointer;border-radius:3px;
+  font-size:.72rem;font-family:'Montserrat';font-weight:600;transition:.2s;
+  position:absolute;top:20px;left:20px}
+.nav-back:hover{background:rgba(255,255,255,0.1);color:#fff}
+
+/* CONTENU */
+.wrap{max-width:1120px;margin:0 auto;padding:40px 20px 0}
+.pillar{margin-bottom:50px}
+.pillar-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;
+  padding-bottom:14px;border-bottom:1px solid var(--border)}
+.pillar-icon{font-size:1.8rem}
+.pillar-title{font-family:'Playfair Display';font-size:1.4rem}
+.pillar-count{font-family:'Share Tech Mono';font-size:.7rem;color:var(--muted);margin-top:2px}
+
+.mods-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.mod-card{border-radius:8px;padding:20px;cursor:pointer;transition:.22s;
+  border:1px solid rgba(255,255,255,0.07);position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.03)}
+.mod-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.55)}
+.mod-card.done{cursor:default}
+.mod-card.done::after{content:'✓';position:absolute;top:12px;right:12px;
+  width:26px;height:26px;border-radius:50%;background:rgba(0,200,100,0.12);
+  border:1px solid rgba(0,200,100,0.4);color:#4ade80;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;line-height:26px;text-align:center}
+.mod-num{font-family:'Share Tech Mono';font-size:.62rem;color:var(--muted);margin-bottom:6px}
+.mod-title{font-weight:700;font-size:.88rem;line-height:1.45;margin-bottom:8px}
+.mod-xp{font-family:'Share Tech Mono';font-size:.68rem;margin-top:8px}
+.cert-badge{display:inline-block;font-size:.6rem;font-family:'Share Tech Mono';
+  padding:2px 7px;border-radius:10px;margin-bottom:6px}
+
+.progress-bar-wrap{background:rgba(255,255,255,0.05);border-radius:3px;
+  height:4px;margin:6px 0 4px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.progress-label{font-size:.65rem;color:var(--muted);font-family:'Share Tech Mono'}
+
+.footer-note{text-align:center;color:var(--muted);font-size:.72rem;
+  font-family:'Share Tech Mono';padding:30px 20px 0;line-height:1.8}
+
+@media(max-width:600px){.mods-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- BOUTON ADMIN (discret, fixe en bas à droite) -->
+<div id="fraForgeBtn" onclick="openFraForge()"
+  title="Administration — Forge modules"
+  style="position:fixed;bottom:14px;right:14px;background:rgba(0,0,0,0.5);
+         border:1px solid rgba(245,158,11,0.2);color:rgba(245,158,11,0.3);
+         padding:7px 11px;border-radius:4px;font-size:.7rem;font-family:monospace;
+         cursor:pointer;z-index:1000;user-select:none;transition:.2s;"
+  onmouseover="this.style.color='rgba(245,158,11,0.9)';this.style.borderColor='rgba(245,158,11,0.6)'"
+  onmouseout="this.style.color='rgba(245,158,11,0.3)';this.style.borderColor='rgba(245,158,11,0.2)'">
+  ⚙
+</div>
+
+<script>
+const e = React.createElement;
+
+/* ── DONNÉES MODULES ─────────────────────────────────────────────────── */
+const CERT_KEYS_ALL = [
+  "CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4",
+  "CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4",
+  "CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"
+];
+
+const PILLARS = [
+  {
+    id:'solidarite', icon:'🤝', title:'Solidarité', color:'#f97316', glow:'rgba(249,115,22,0.13)',
+    desc:'Comprendre, ressentir et pratiquer la solidarité — de la classe à l\'humanité',
+    modules:[
+      {id:'FRA_SOL01', file:'FRA_SOL01.html', ckey:'CERT_FRATERNITE_SOL1', xp:50,
+       title:'Qu\'est-ce que la solidarité ?', cert:false},
+      {id:'FRA_SOL02', file:'FRA_SOL02.html', ckey:'CERT_FRATERNITE_SOL2', xp:50,
+       title:'Solidarité à l\'école : petits gestes, grands effets', cert:false},
+      {id:'FRA_SOL03', file:'FRA_SOL03.html', ckey:'CERT_FRATERNITE_SOL3', xp:50,
+       title:'Solidarité nationale et internationale', cert:false},
+      {id:'FRA_SOL04', file:'FRA_SOL04.html', ckey:'CERT_FRATERNITE_SOL4', xp:75,
+       title:'Agir solidaire : de l\'intention à l\'acte', cert:true},
+    ]
+  },
+  {
+    id:'discriminations', icon:'⚖️', title:'Discriminations', color:'#8b5cf6', glow:'rgba(139,92,246,0.13)',
+    desc:'Reconnaître les préjugés, comprendre les mécanismes, refuser toute discrimination',
+    modules:[
+      {id:'FRA_DIS01', file:'FRA_DIS01.html', ckey:'CERT_FRATERNITE_DIS1', xp:50,
+       title:'Qu\'est-ce qu\'une discrimination ?', cert:false},
+      {id:'FRA_DIS02', file:'FRA_DIS02.html', ckey:'CERT_FRATERNITE_DIS2', xp:50,
+       title:'Stéréotypes, préjugés, discriminations : la chaîne', cert:false},
+      {id:'FRA_DIS03', file:'FRA_DIS03.html', ckey:'CERT_FRATERNITE_DIS3', xp:50,
+       title:'Discriminations à l\'école : reconnaître et réagir', cert:false},
+      {id:'FRA_DIS04', file:'FRA_DIS04.html', ckey:'CERT_FRATERNITE_DIS4', xp:75,
+       title:'Être allié·e : s\'engager contre les discriminations', cert:true},
+    ]
+  },
+  {
+    id:'vivre-ensemble', icon:'🌍', title:'Vivre-ensemble', color:'#06b6d4', glow:'rgba(6,182,212,0.13)',
+    desc:'Laïcité, diversité culturelle, cohésion sociale — construire le commun',
+    modules:[
+      {id:'FRA_VIE01', file:'FRA_VIE01.html', ckey:'CERT_FRATERNITE_VIE1', xp:50,
+       title:'La laïcité : ce que c\'est vraiment', cert:false},
+      {id:'FRA_VIE02', file:'FRA_VIE02.html', ckey:'CERT_FRATERNITE_VIE2', xp:50,
+       title:'Diversité culturelle : richesse ou défi ?', cert:false},
+      {id:'FRA_VIE03', file:'FRA_VIE03.html', ckey:'CERT_FRATERNITE_VIE3', xp:50,
+       title:'Cohésion sociale : ce qui nous tient ensemble', cert:false},
+      {id:'FRA_VIE04', file:'FRA_VIE04.html', ckey:'CERT_FRATERNITE_VIE4', xp:75,
+       title:'Construire le commun — la fraternité en actes', cert:true},
+    ]
+  }
+];
+
+/* ── UTILITAIRES ─────────────────────────────────────────────────────── */
+function getPlayer(){ return localStorage.getItem('pvs_current_player')||''; }
+
+function countCerts(){
+  let n=0;
+  CERT_KEYS_ALL.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});
+  return n;
+}
+
+function countPillarCerts(pillar){
+  let n=0;
+  pillar.modules.forEach(m=>{try{if(localStorage.getItem(m.ckey))n++;}catch(ex){}});
+  return n;
+}
+
+function totalXP(){
+  let xp=0;
+  PILLARS.forEach(p=>p.modules.forEach(m=>{
+    if(localStorage.getItem(m.ckey)) xp+=m.xp;
+  }));
+  return xp;
+}
+
+function openModule(file){
+  window.location.href=file;
+}
+
+/* ── COMPOSANT HUB ───────────────────────────────────────────────────── */
+function Hub(){
+  const [tick,setTick]=React.useState(0);
+  React.useEffect(()=>{
+    const h=()=>setTick(t=>t+1);
+    window.addEventListener('storage',h);
+    return()=>window.removeEventListener('storage',h);
+  },[]);
+
+  const player=getPlayer();
+  const xp=totalXP();
+  const certsTotal=countCerts();
+  const TOTAL_MODS=CERT_KEYS_ALL.length;
+
+  const SuperHubBtn=()=>e('button',{
+    className:'nav-back',
+    onClick:()=>window.location.href='index.html'
+  },'← Superhub');
+
+  const renderPillar=(pillar)=>{
+    const done=countPillarCerts(pillar);
+    const pct=Math.round((done/pillar.modules.length)*100);
+    return e('div',{className:'pillar',key:pillar.id},
+      e('div',{className:'pillar-header'},
+        e('div',{className:'pillar-icon'},pillar.icon),
+        e('div',null,
+          e('div',{className:'pillar-title',style:{color:pillar.color}},pillar.title),
+          e('div',{className:'pillar-count',style:{color:pillar.color}},
+            done+'/'+pillar.modules.length+' modules · '+pct+'% complété')
+        )
+      ),
+      e('p',{style:{color:'#9d8060',fontSize:'.82rem',marginBottom:'16px',lineHeight:'1.65'}},pillar.desc),
+      e('div',{className:'progress-bar-wrap',style:{marginBottom:'18px'}},
+        e('div',{className:'progress-bar-fill',style:{width:pct+'%',background:pillar.color}})
+      ),
+      e('div',{className:'mods-grid'},
+        pillar.modules.map(mod=>{
+          const isDone=!!localStorage.getItem(mod.ckey);
+          return e('div',{
+            key:mod.id,
+            className:'mod-card'+(isDone?' done':''),
+            style:{background:pillar.glow,borderColor:isDone?pillar.color+'55':'rgba(255,255,255,0.07)'},
+            onClick:()=>!isDone&&openModule(mod.file)
+          },
+            mod.cert&&e('div',{className:'cert-badge',style:{background:pillar.color+'22',border:'1px solid '+pillar.color+'55',color:pillar.color}},'✦ CERTIFICATION'),
+            e('div',{className:'mod-num',style:{color:pillar.color}},mod.id),
+            e('div',{className:'mod-title'},mod.title),
+            e('div',{className:'mod-xp',style:{color:pillar.color}},'⚡ +'+mod.xp+' XP'+(isDone?' — Validé':''))
+          );
+        })
+      )
+    );
+  };
+
+  return e('div',null,
+    e('div',{className:'hero'},
+      SuperHubBtn(),
+      e('div',{className:'hero-embers'}),
+      e('div',{className:'flag-strip'},
+        e('div',{className:'f-b'}),e('div',{className:'f-w'}),e('div',{className:'f-r'})
+      ),
+      e('h1',null,'FRATERNITÉ'),
+      e('p',{className:'hero-sub'},
+        'Solidarité · Lutte contre les discriminations · Vivre-ensemble — ',
+        e('em',null,'trois piliers pour faire de la fraternité une pratique, pas un mot')
+      ),
+      player
+        ? e('div',{className:'player-chip'},'🎮 ',player)
+        : e('div',{className:'player-chip',style:{color:'#f87171'}},'⚠ Non connecté au Superhub'),
+      e('div',null,
+        e('div',{className:'xp-total'},
+          '⚡ ',xp,' XP · ',certsTotal,'/',TOTAL_MODS,' modules validés'
+        )
+      )
+    ),
+    e('div',{className:'wrap'},
+      PILLARS.map(renderPillar),
+      e('div',{className:'footer-note'},
+        'FRATERNITÉ · Portail Vie Scolaire · Collège Château-Rance',e('br',null),
+        'Complète les 12 modules pour maîtriser les 3 piliers — 650 XP au total',e('br',null),
+        e('span',{style:{opacity:.4,fontSize:'.6rem'}},'FRA-HUB-v2.0')
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(Hub));
+
+/* ══════════════════════════════════════════════════════════════════════
+   PROTECTION ADMIN UNIFIÉE — identique hub LIBERTÉ
+══════════════════════════════════════════════════════════════════════ */
+const ADMIN_PASS_HUB = atob('Q1BFNTkhLUNoYXRlYXUtNzAr'); // CPE59!-Chateau-70+
+let _adminUnlocked = false;
+function getHubPlayer(){ return localStorage.getItem('pvs_current_player')||''; }
+function _agInput(){ return document.getElementById('adminGateInput'); }
+function _agErr(){ return document.getElementById('adminGateErr'); }
+function _agModal(){ return document.getElementById('adminGateModal'); }
+
+function openAdminGate(onSuccess){
+  var existing=_agModal();
+  if(existing){existing.style.display='flex';existing._cb=onSuccess;setTimeout(function(){var i=_agInput();if(i)i.focus();},50);return;}
+  var m=document.createElement('div');
+  m.id='adminGateModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  m.innerHTML=[
+    '<div style="background:#0f172a;border:2px solid #f59e0b;border-radius:8px;padding:28px 32px;max-width:360px;width:90%;text-align:center;font-family:monospace;">',
+    '<div style="color:#f59e0b;font-size:1.1rem;margin-bottom:16px;">&#x1F510; ACC&Egrave;S ADMINISTRATION</div>',
+    '<div style="color:#94a3b8;font-size:.8rem;margin-bottom:16px;">Identifiant CPE requis</div>',
+    '<input id="adminGateInput" type="password" placeholder="Identifiant admin" style="width:100%;background:#1e293b;border:1px solid #334155;color:#fff;padding:10px 14px;border-radius:4px;font-family:monospace;font-size:.9rem;margin-bottom:14px;">',
+    '<div style="display:flex;gap:10px;justify-content:center;">',
+    '<button onclick="checkAdminGate()" style="background:#f59e0b;color:#000;border:none;padding:9px 22px;border-radius:4px;font-weight:700;cursor:pointer;">Valider</button>',
+    '<button onclick="closeAdminGate()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:9px 22px;border-radius:4px;cursor:pointer;">Annuler</button>',
+    '</div>',
+    '<div id="adminGateErr" style="color:#f87171;font-size:.75rem;margin-top:10px;height:16px;"></div>',
+    '</div>'
+  ].join('');
+  m._cb=onSuccess;
+  document.body.appendChild(m);
+  var inp=_agInput();
+  if(inp){
+    inp.addEventListener('keydown',function(ev){if(ev.keyCode===13)checkAdminGate();});
+    inp.focus();
+  }
+}
+
+function checkAdminGate(){
+  var inp=_agInput(),err=_agErr();
+  if(!inp)return;
+  if(inp.value===ADMIN_PASS_HUB){
+    _adminUnlocked=true;
+    var m=_agModal();
+    if(m){m.style.display='none';inp.value='';if(m._cb)m._cb();}
+  } else {
+    if(err)err.textContent='Identifiant incorrect.';
+    inp.value='';inp.focus();
+  }
+}
+function closeAdminGate(){var m=_agModal();if(m)m.style.display='none';}
+/* ── FIN PROTECTION ADMIN ── */
+
+/* ══════════════════════════════════════════════════════════════════════
+   FORGE FRATERNITÉ — validation manuelle des modules par le CPE
+══════════════════════════════════════════════════════════════════════ */
+function openFraForge(){
+  openAdminGate(function(){
+    var player=getHubPlayer();
+    if(!player){alert('Aucun joueur connecté au Superhub.');return;}
+    var KEYS=[
+      {k:'CERT_FRATERNITE_SOL1',l:'SOL01 — Solidarité : définition',x:50},
+      {k:'CERT_FRATERNITE_SOL2',l:'SOL02 — Solidarité à l\'école',x:50},
+      {k:'CERT_FRATERNITE_SOL3',l:'SOL03 — Solidarité nationale/internationale',x:50},
+      {k:'CERT_FRATERNITE_SOL4',l:'SOL04 — Agir solidaire (CERT)',x:75},
+      {k:'CERT_FRATERNITE_DIS1',l:'DIS01 — Discrimination : définition',x:50},
+      {k:'CERT_FRATERNITE_DIS2',l:'DIS02 — Stéréotypes et préjugés',x:50},
+      {k:'CERT_FRATERNITE_DIS3',l:'DIS03 — Discriminations à l\'école',x:50},
+      {k:'CERT_FRATERNITE_DIS4',l:'DIS04 — Être allié·e (CERT)',x:75},
+      {k:'CERT_FRATERNITE_VIE1',l:'VIE01 — Laïcité',x:50},
+      {k:'CERT_FRATERNITE_VIE2',l:'VIE02 — Diversité culturelle',x:50},
+      {k:'CERT_FRATERNITE_VIE3',l:'VIE03 — Cohésion sociale',x:50},
+      {k:'CERT_FRATERNITE_VIE4',l:'VIE04 — Fraternité en actes (CERT)',x:75},
+    ];
+    var msg=KEYS.map(function(k,i){return (i+1)+'. ['+(localStorage.getItem(k.k)?'X':' ')+'] '+k.l;}).join('\n');
+    var choice=prompt('FORGE FRATERNITÉ — Joueur : '+player+'\n\nModules disponibles (numéro(s) séparés par virgule, ou "all") :\n\n'+msg+'\n\nNuméros à valider :');
+    if(!choice)return;
+    var idxs=choice.trim().toLowerCase()==='all'
+      ? KEYS.map(function(_,i){return i;})
+      : choice.split(',').map(function(s){return parseInt(s.trim())-1;}).filter(function(n){return n>=0&&n<KEYS.length;});
+    if(!idxs.length){alert('Aucun module valide.');return;}
+    var now=new Date().toISOString(),done=0;
+    idxs.forEach(function(i){
+      var cert={v:2,d:now,m:KEYS[i].k,n:player,f:true,forge:true};
+      localStorage.setItem(KEYS[i].k,JSON.stringify(cert));
+      try{
+        var raw=localStorage.getItem('pvs_bridge_events');
+        var evts=raw?JSON.parse(raw):[];
+        var total=KEYS.filter(function(k){return !!localStorage.getItem(k.k);}).length;
+        evts.push({id:'FORGE-FRA-'+Date.now()+'-'+i,type:'FRATERNITE_PROGRESS',player:player,module:KEYS[i].k,cpTotal:total,label:'FRATERNITÉ : '+KEYS[i].l,d:now});
+        localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+      }catch(ex){}
+      done++;
+    });
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+    alert('Forge terminée — '+done+' module(s) validé(s) pour '+player+'.');
+    location.reload();
+  });
+}
+/* ── FIN FORGE FRATERNITÉ ── */
+</script>
+</body>
+</html>

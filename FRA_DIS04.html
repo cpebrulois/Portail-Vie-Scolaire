@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_DIS04 — Être allié·e : agir contre les discriminations</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#8b5cf6;--acc-d:#6d28d9;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08;--gold:#ffd700}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.12) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+.card.gold{border-color:var(--gold);box-shadow:0 0 60px rgba(255,215,0,0.15)}
+.card.gold::before{color:var(--gold)}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+.gold h1{color:var(--gold)}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.cert-tag{font-size:0.65rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:8px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.4);padding:4px 12px;border-radius:20px;font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#fff;border:none;padding:13px 28px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.btn.gold-btn{background:linear-gradient(135deg,#b8860b,var(--gold));color:#000}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--gold);font-family:'Share Tech Mono',monospace;padding:16px;border:1px dashed var(--gold);word-break:break-all;margin:18px 0;font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:3.5rem;margin:18px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ally-card{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.3);padding:14px 16px;border-radius:4px;margin:10px 0;font-size:0.85rem;line-height:1.65;color:#d8c8f0}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_DIS04';
+const CERT_KEY  = 'CERT_FRATERNITE_DIS4';
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const ALLY_POSTURES = [
+  {icon:"🗣️", t:"L'Interrupteur :", v:"Coupe la discrimination au moment où elle se produit. 'Attends, là c'est pas ok.' Nommer dans le moment est l'acte le plus puissant — et le plus difficile."},
+  {icon:"🤝", t:"L'Accompagnateur :", v:"Après un incident, vérifie que la personne touchée va bien. 'Est-ce que tu veux en parler ?' 'Je peux t'accompagner au CPE si tu veux.' Pas de pression — mais une présence."},
+  {icon:"📣", t:"L'Amplificateur :", v:"Relaie la parole de ceux qui ont été ignorés ou coupés. 'Comme Amina le disait...' Visible dans les réunions de classe, les conseils de délégués."},
+  {icon:"🧠", t:"L'Éducateur :", v:"Partage les mécanismes (stéréotypes, biais) sans moraliser. Pas de leçon de morale — une information utile. 'Tu sais ce que j'ai appris sur l'effet spectateur ?'"}
+];
+
+const QUESTIONS = [
+  {
+    q: "Être 'allié·e' d'une personne discriminée signifie principalement...",
+    a: ["Lui parler souvent et lui montrer qu'on l'apprécie", "Agir depuis sa propre position de non-discrimination pour réduire les inégalités subies par d'autres", "Partager ses publications sur les réseaux sociaux", "Compatir sans nécessairement intervenir"],
+    c: 1,
+    wrong: "L'allyship (ou allié·isme) est une posture active : utiliser le fait de ne pas appartenir au groupe discriminé pour intervenir plus facilement et réduire les coûts que subirait la victime en s'exprimant seule. Ce n'est pas de la sympathie — c'est de l'action."
+  },
+  {
+    q: "Quand on tente d'interrompre une discrimination, quelle approche est généralement la plus efficace ?",
+    a: ["Attaquer moralement l'auteur pour qu'il comprenne sa faute", "Se concentrer sur le comportement, pas sur l'intention. 'Ce que tu dis a cet effet...' plutôt que 'T'es raciste'", "Attendre que l'incident soit terminé pour en parler", "Demander l'avis du groupe pour vérifier si c'est vraiment une discrimination"],
+    c: 1,
+    wrong: "Attaquer l'identité ('t'es raciste') déclenche une réponse défensive qui bloque l'écoute. Cibler le comportement et son effet ('ce mot crée un climat hostile') maintient le dialogue ouvert. L'objectif est le changement — pas la condamnation symbolique."
+  },
+  {
+    q: "Le concept de 'charge de la preuve renversée' dans le droit anti-discrimination signifie...",
+    a: ["La victime doit prouver qu'elle n'a pas provoqué la discrimination", "Dès que la victime présente des éléments laissant supposer une discrimination, c'est à l'auteur supposé de prouver qu'il n'a pas discriminé", "L'auteur est présumé innocent jusqu'à preuve du contraire comme dans tout procès", "La discrimination doit être filmée pour être prouvée"],
+    c: 1,
+    wrong: "En matière de discrimination, la loi française allège le fardeau de la preuve pour la victime : elle présente des éléments laissant supposer une discrimination (CV, statistiques, témoignages), et c'est à l'auteur présumé de démontrer que sa décision était justifiée par un motif légitime étranger à toute discrimination."
+  }
+];
+
+const SCENARIO = {
+  title: "L'allyship au conseil de classe",
+  p: "Lors d'un conseil de classe, un enseignant fait une remarque qui te semble condescendante sur l'avenir d'un élève en lien avec son origine familiale. Les autres adultes ne réagissent pas. Tu es délégué·e. Comment agis-tu ?",
+  options: [
+    {
+      text: "Je note mentalement la formulation exacte. En fin de conseil, je demande calmement à l'équipe de réexaminer la remarque : 'Cette formulation me semble faire une hypothèse sur l'avenir d'un élève en fonction de critères non scolaires — est-ce l'intention ?' Factuel, posé, sans accusation. Et si rien ne change, je le rapporte au CPE.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "Je l'interromps immédiatement en disant que c'est raciste.",
+      ok: false,
+      fb: "Interrompre est bien, mais qualifier directement 'c'est raciste' dans le feu de l'action provoque souvent une fermeture défensive. 'Cette formulation me pose un problème' ou 'Je comprends pas ce que ça veut dire pour la scolarité de cet élève' est souvent plus efficace pour obtenir un résultat réel."
+    },
+    {
+      text: "Ce n'est pas mon rôle de délégué·e de corriger un enseignant.",
+      ok: false,
+      fb: "Le rôle de délégué·e inclut défendre les intérêts de tous les élèves — y compris quand des remarques en conseil de classe peuvent avoir des effets discriminatoires. La voie institutionnelle (CPE) est toujours disponible si l'interpellation directe te semble disproportionnée."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"⚡", t:"Allyship actif :", v:"Utiliser sa position de non-discrimination pour intervenir. Ce n'est pas de la sympathie — c'est de l'action avec des effets réels."},
+  {icon:"🎯", t:"Comportement, pas identité :", v:"'Ce que tu dis a cet effet...' plutôt que 'T'es...' L'objectif est le changement, pas la condamnation."},
+  {icon:"⚖️", t:"Charge de la preuve :", v:"En droit anti-discrimination, la victime présente des éléments → l'auteur doit prouver l'absence de discrimination."},
+  {icon:"🛡️", t:"4 postures d'allié·e :", v:"Interrupteur, Accompagnateur, Amplificateur, Éducateur. Chaque situation appelle une posture différente."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];
+    evts.push({id:'FRA-'+MODULE_ID+'-'+Date.now(),type:'FRATERNITE_PROGRESS',player:getPlayer(),module:MODULE_ID,cpTotal:countCerts(),label:"FRATERNITÉ : Être allié·e — agir contre les discriminations",d:new Date().toISOString()});
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+  const finish=()=>{const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};localStorage.setItem(CERT_KEY,JSON.stringify(cert));awardXP();setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));setStep('complete');};
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),PlayerChip()),
+    e('div',{className:'cert-tag'},'⭐ MODULE CERTIFICAT — Discriminations · 4/4'),
+    e('h1',null,"Être allié·e : agir contre les discriminations"),
+    e('p',{className:'quote'},"« Parler n'est jamais trivial — c'est déjà un acte. » — Frantz Fanon"),
+    e('p',null,"Reconnaître une discrimination, c'est bien. Agir face à elle, c'est une compétence qui s'apprend. L'allyship — le fait d'être allié·e actif·ve — ne demande pas d'héroïsme, mais des postures concrètes : interrompre, accompagner, amplifier, éduquer."),
+    e('p',null,"Ce module présente les 4 postures d'allié·e, les techniques d'intervention efficaces (sans moralisme contre-productif), et le cadre juridique qui renforce l'action."),
+    e('div',{style:{marginBottom:'18px'}},ALLY_POSTURES.map((a,i)=>e('div',{key:i,className:'ally-card'},e('strong',null,a.icon+' '+a.t+' '),a.v))),
+    e('div',{style:{textAlign:'center'}},e('div',{className:'xp-badge'},'⭐ +75 XP CERTIFICAT')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},"Devenir allié·e")
+  );
+
+  const renderQuiz=()=>{const q=QUESTIONS[qIdx];const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}else alert(q.wrong||"L'allyship a sa propre logique. Réessaie.");}},opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation — Conseil de classe'),
+    e('h2',null,SCENARIO.title),e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}},opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))),
+    e('button',{className:'btn gold-btn',onClick:finish},'🏆 Obtenir le Certificat Discriminations →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card gold'},
+    e('div',{className:'seal'},'🏆'),
+    e('div',{className:'cert-tag'},'CERTIFICAT PILIER DISCRIMINATIONS'),
+    e('h1',null,"Allié·e actif·ve !"),
+    e('p',{style:{textAlign:'center',fontSize:'0.9rem'}},"Pilier Discriminations complété — de l'identification à l'action, tu as tout le spectre."),
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},e('div',{className:'xp-badge'},'⭐ +75 XP CERTIFICAT envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn gold-btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){case 'intro':return renderIntro();case 'quiz':return renderQuiz();case 'scenario':return renderScenario();case 'synthesis':return renderSynthesis();case 'complete':return renderComplete();default:return renderIntro();}
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

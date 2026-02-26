@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_SOL04 — Agir solidaire : de l'intention à l'acte</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#f97316;--acc-d:#c2410c;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(249,115,22,0.11) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
+  font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cert-banner{background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.3);
+  border-radius:4px;padding:10px 16px;text-align:center;margin-bottom:16px;
+  font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--acc);letter-spacing:.5px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_SOL04';
+const CERT_KEY  = 'CERT_FRATERNITE_SOL4';
+const XP_AMOUNT = 75;
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const QUESTIONS = [
+  {
+    q: "Quelle est la principale barrière psychologique qui empêche d'agir solidairement, même quand on le veut ?",
+    a: ["L'ignorance — on ne sait pas quoi faire", "La peur du regard des pairs et du jugement social", "Le manque de temps", "Le sentiment que les autres sont mieux placés pour agir"],
+    c: 1,
+    wrong: "Les études en psychologie sociale montrent que la principale barrière à l'acte solidaire chez les adolescents est la peur du regard des pairs — être vu comme 'nerd', 'chouchou', ou comme cherchant à se mettre en avant. Cette peur est réelle et légitime, et la reconnaître est la première étape pour la dépasser."
+  },
+  {
+    q: "Un 'acte de bienveillance aléatoire' (random act of kindness) se caractérise par...",
+    a: ["Un geste planifié et organisé à l'avance", "Un geste spontané, sans attente de réciprocité immédiate, qui améliore la journée de l'autre", "Un geste réalisé uniquement envers ses proches", "Une action nécessairement visible et reconnue publiquement"],
+    c: 1,
+    wrong: "La bienveillance aléatoire est par définition spontanée et sans calcul de réciprocité. Elle peut être infime (tenir une porte, ramasser quelque chose qui est tombé, offrir un stylo) mais son effet est réel — sur l'autre, et sur soi-même."
+  },
+  {
+    q: "Face à une urgence (quelqu'un qui se sent mal, une situation dangereuse), la bonne réaction solidaire est...",
+    a: ["Filmer pour documenter et alerter les secours", "Alerter un adulte ou les secours ET rester auprès de la personne jusqu'à leur arrivée", "Partir chercher de l'aide et revenir le plus vite possible", "Ne rien faire pour ne pas aggraver la situation"],
+    c: 1,
+    wrong: "Le principe de base : alerter (appel, demande d'aide) ET rester. Une personne en détresse ne doit pas se retrouver seule pendant l'attente des secours. Partir chercher de l'aide sans rester peut être dangereux si la situation évolue."
+  }
+];
+
+const SCENARIO = {
+  title: "Créer un réseau d'entraide",
+  p: "En tant que délégué·e, tu veux mettre en place un système d'entraide dans ta classe : des élèves volontaires disponibles pour aider les camarades en difficulté sur un cours. Comment l'organises-tu pour que ça marche vraiment ?",
+  options: [
+    {
+      text: "Je propose une liste de volontaires (pas une désignation forcée) par matière. L'aide est basée sur la réciprocité : chacun peut demander et proposer. Pas de hiérarchie entre celui qui aide et celui qui reçoit. Je présente ça comme un outil collectif, pas comme une faveur individuelle.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "Je désigne les meilleurs élèves pour qu'ils aident les plus faibles.",
+      ok: false,
+      fb: "La désignation crée une hiérarchie (les bons vs les mauvais) qui peut gêner ceux qui reçoivent l'aide. Le volontariat et la réciprocité sont essentiels pour que l'entraide soit vécue comme un échange entre pairs, pas comme de la charité."
+    },
+    {
+      text: "Je laisse les élèves s'organiser spontanément, ça viendra naturellement.",
+      ok: false,
+      fb: "La solidarité spontanée existe mais reste limitée. Lui donner une structure légère (liste de volontaires, espaces dédiés) lui permet de s'étendre bien au-delà des amitiés préexistantes."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"😰", t:"Barrière principale :", v:"La peur du regard des pairs. La reconnaître, c'est déjà commencer à la dépasser."},
+  {icon:"💛", t:"Bienveillance aléatoire :", v:"Petits gestes spontanés sans attente de retour. Effets réels sur l'autre — et sur soi."},
+  {icon:"🚨", t:"En urgence :", v:"Alerter ET rester. Ne jamais laisser seule une personne en détresse."},
+  {icon:"🔗", t:"Réciprocité :", v:"Une entraide qui marche n'est pas verticale (le fort aide le faible) mais horizontale — chacun a quelque chose à donner et à recevoir."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events');
+    const evts=raw?JSON.parse(raw):[];
+    evts.push({
+      id:'FRA-'+MODULE_ID+'-'+Date.now(),
+      type:'FRATERNITE_PROGRESS',
+      player:getPlayer(),
+      module:MODULE_ID,
+      cpTotal:countCerts(),
+      label:"FRATERNITÉ : Agir solidaire — de l'intention à l'acte",
+      d:new Date().toISOString()
+    });
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+
+  const finish=()=>{
+    const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};
+    localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+    awardXP();
+    setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+    setStep('complete');
+  };
+
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},
+      e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),
+      PlayerChip()
+    ),
+    e('div',{className:'tag'},'Solidarité · Module 4/4 ✦ CERTIFICATION'),
+    e('div',{className:'cert-banner'},'✦ MODULE DE CERTIFICATION — 75 XP ✦'),
+    e('h1',null,"Agir solidaire : de l'intention à l'acte"),
+    e('p',{className:'quote'},"« Le monde ne sera pas détruit par ceux qui font le mal, mais par ceux qui les regardent sans rien faire. » — Albert Einstein"),
+    e('p',null,"Vouloir être solidaire ne suffit pas : entre l'intention et l'acte, il y a des barrières psychologiques réelles — la peur du jugement, le syndrome du spectateur, l'habitude du confort. Les connaître, c'est déjà les réduire."),
+    e('p',null,"Ce module de certification vérifie que tu sais non seulement définir la solidarité, mais comprendre ce qui empêche d'agir et identifier les leviers pour passer à l'acte — pour toi et pour organiser l'entraide autour de toi."),
+    e('div',{style:{textAlign:'center'}},
+      e('div',{className:'xp-badge'},'⚡ +75 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},'Finaliser le pilier Solidarité')
+  );
+
+  const renderQuiz=()=>{
+    const q=QUESTIONS[qIdx];
+    const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length+' — CERTIFICATION'),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{
+        key:i,className:'opt',
+        onClick:()=>{
+          if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}
+          else alert(q.wrong||'La certification demande de la précision. Réessaie.');
+        }
+      },opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation — CERTIFICATION'),
+    e('h2',null,SCENARIO.title),
+    e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{
+      key:i,className:'opt',
+      onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}
+    },opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse — Pilier Solidarité'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},
+      SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))
+    ),
+    e('button',{className:'btn',onClick:finish},'Valider le pilier Solidarité →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'🌟'),
+    e('h1',null,"Pilier Solidarité — Certifié !"),
+    e('p',{style:{textAlign:'center'}},"Tu es maintenant acteur de la solidarité, pas seulement spectateur."},
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},
+      e('div',{className:'xp-badge'},'⚡ +75 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
+      'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){
+    case 'intro':     return renderIntro();
+    case 'quiz':      return renderQuiz();
+    case 'scenario':  return renderScenario();
+    case 'synthesis': return renderSynthesis();
+    case 'complete':  return renderComplete();
+    default:          return renderIntro();
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

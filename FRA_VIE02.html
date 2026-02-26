@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_VIE02 — Diversité culturelle : richesse ou tension ?</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#06b6d4;--acc-d:#0891b2;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(6,182,212,0.09) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_VIE02';
+const CERT_KEY  = 'CERT_FRATERNITE_VIE2';
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const QUESTIONS = [
+  {
+    q: "L'ethnocentrisme se définit comme...",
+    a: ["La fierté de sa propre culture", "La tendance à percevoir et juger les autres cultures à travers le prisme de sa propre culture, érigée en norme universelle", "L'étude scientifique des cultures", "La promotion politique d'une culture nationale"],
+    c: 1,
+    wrong: "L'ethnocentrisme (terme de W.G. Sumner, 1906) est un biais cognitif universel : percevoir sa culture comme la norme et les autres comme déviantes ou inférieures. Ce n'est pas nécessairement hostile — c'est souvent inconscient. Son opposé méthodologique est le relativisme culturel : comprendre une culture dans ses propres termes avant de la juger."
+  },
+  {
+    q: "La 'déclaration universelle de l'UNESCO sur la diversité culturelle' (2001) affirme que la diversité culturelle est...",
+    a: ["Une source de conflits à gérer", "Un patrimoine commun de l'humanité, aussi nécessaire pour l'espèce humaine que la biodiversité l'est pour le vivant", "Un obstacle à l'universalisme des droits de l'homme", "Une réalité propre aux pays en développement"],
+    c: 1,
+    wrong: "L'UNESCO compare la diversité culturelle à la biodiversité : les deux sont des ressources vitales. Une culture qui disparaît, c'est un mode de compréhension du monde qui s'efface. Cette perspective transforme la diversité d'un 'problème à gérer' en 'richesse à préserver'."
+  },
+  {
+    q: "L'acculturation désigne...",
+    a: ["La perte totale de sa culture d'origine lors d'une migration", "Le processus d'échanges mutuels entre cultures en contact, avec adaptations des deux côtés", "L'imposition d'une culture dominante sur une culture minoritaire", "L'apprentissage de la langue nationale dans un pays d'accueil"],
+    c: 1,
+    wrong: "L'acculturation (Berry, 1997) décrit un processus bidirectionnel d'échanges entre cultures en contact — et non une perte unilatérale. Quatre stratégies existent : intégration (maintien identité + adoption culture d'accueil), assimilation, séparation, marginalisation. L'intégration est associée aux meilleurs indicateurs de santé et de bien-être."
+  }
+];
+
+const SCENARIO = {
+  title: "Le plat 'bizarre'",
+  p: "Un élève sort son repas à la cantine — un plat traditionnel de sa famille qui a une odeur forte. Des camarades grimacent et font des remarques. Il se referme, ne finit pas son repas. En tant que délégué·e, que fais-tu ?",
+  options: [
+    {
+      text: "Je m'assieds avec lui et manifeste ma curiosité authentique : 'C'est quoi ce plat ? Ça vient d'où ?' Je normalise le fait d'apporter autre chose que ce que tout le monde mange. Et si les moqueries reviennent, je les recadre : 'Ce que tu manges chez toi n'est pas bizarres pour toi non plus.' La curiosité est un antidote à la moquerie.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "Je dis aux moqueurs d'arrêter.",
+      ok: false,
+      fb: "Recadrer est bien, mais insuffisant. L'élève a surtout besoin d'une présence positive, pas seulement de protection négative. Montrer de la curiosité authentique pour ce qu'il apporte transforme la situation — et envoie un signal à tout le groupe."
+    },
+    {
+      text: "C'est la cantine qui devrait mieux gérer ça, pas mon rôle.",
+      ok: false,
+      fb: "L'institution joue son rôle, mais l'environnement de pairs a une influence que les adultes n'ont pas. Un geste de curiosité sincère d'un camarade pèse souvent plus qu'une intervention d'adulte dans l'expérience quotidienne de l'élève."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"🔍", t:"Ethnocentrisme :", v:"Biais universel et inconscient. Premier pas : savoir qu'on l'a. Deuxième pas : comprendre une culture dans ses propres termes avant de la juger."},
+  {icon:"🌿", t:"Diversité = biodiversité :", v:"UNESCO 2001 : la diversité culturelle est un patrimoine commun aussi vital que la biodiversité pour le vivant."},
+  {icon:"🔄", t:"Acculturation :", v:"Processus bidirectionnel — pas une perte unilatérale. L'intégration (maintien identité + adaptation) est associée aux meilleurs indicateurs de bien-être."},
+  {icon:"💡", t:"Curiosité :", v:"La curiosité authentique est l'antidote à la moquerie. Elle transforme l'altérité en intérêt, pas en menace."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];
+    evts.push({id:'FRA-'+MODULE_ID+'-'+Date.now(),type:'FRATERNITE_PROGRESS',player:getPlayer(),module:MODULE_ID,cpTotal:countCerts(),label:'FRATERNITÉ : Diversité culturelle — richesse ou tension ?',d:new Date().toISOString()});
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+  const finish=()=>{const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};localStorage.setItem(CERT_KEY,JSON.stringify(cert));awardXP();setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));setStep('complete');};
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),PlayerChip()),
+    e('div',{className:'tag'},'Vivre-ensemble · Module 2/4'),
+    e('h1',null,"Diversité culturelle : richesse ou tension ?"),
+    e('p',{className:'quote'},"« L'altérité est la condition de la connaissance de soi. » — Paul Ricœur"),
+    e('p',null,"La diversité culturelle est souvent vécue à la fois comme une chance et une source de tensions. Cette ambivalence n'est pas une contradiction — c'est une réalité complexe qui demande des outils pour être pensée. L'ethnocentrisme, l'acculturation, le relativisme culturel : ces concepts permettent de mettre des mots sur ce qu'on vit au quotidien."),
+    e('p',null,"Ce module propose une lecture outillée de la diversité culturelle — ni naïvement optimiste ('tout se passe bien'), ni défaitiste ('ça ne peut que conflictuellement se passer'). Entre les deux : la pensée critique et la curiosité comme postures citoyennes."),
+    e('div',{style:{textAlign:'center'}},e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},"Explorer la diversité")
+  );
+
+  const renderQuiz=()=>{const q=QUESTIONS[qIdx];const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}else alert(q.wrong||'Les concepts ont une définition précise. Réessaie.');}},opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}},opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'🌍'),
+    e('h1',null,"La diversité culturelle maîtrisée !"),
+    e('p',{style:{textAlign:'center'}},"Module validé — la curiosité transforme l'altérité en richesse."},
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){case 'intro':return renderIntro();case 'quiz':return renderQuiz();case 'scenario':return renderScenario();case 'synthesis':return renderSynthesis();case 'complete':return renderComplete();default:return renderIntro();}
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

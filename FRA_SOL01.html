@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_SOL01 — Qu'est-ce que la solidarité ?</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#f97316;--acc-d:#c2410c;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(249,115,22,0.09) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
+  font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);
+  padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;
+  font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);
+  border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;
+  font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);
+  font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#000;border:none;padding:13px 28px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;
+  display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.12);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;
+  cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;
+  font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);
+  padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;
+  padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;
+  font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;
+  font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_SOL01';
+const CERT_KEY  = 'CERT_FRATERNITE_SOL1';
+const XP_AMOUNT = 50;
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const QUESTIONS = [
+  {
+    q: "La devise républicaine française place la 'Fraternité' aux côtés de la Liberté et de l'Égalité. À partir de quand est-elle devenue officielle ?",
+    a: ["Dès la Révolution de 1789", "Sous la IIe République, vers 1848, après une longue évolution", "Seulement sous la Ve République (1958)", "Lors de l'adoption du drapeau tricolore en 1794"],
+    c: 1,
+    wrong: "La Fraternité a mis du temps à s'imposer. La Révolution de 1789 l'évoque, mais c'est sous la IIe République (1848) qu'elle entre véritablement dans la devise officielle de la République française."
+  },
+  {
+    q: "Quelle est la différence fondamentale entre 'charité' et 'solidarité' ?",
+    a: ["Il n'y en a aucune, ce sont des synonymes", "La charité est verticale (de celui qui a vers celui qui manque) ; la solidarité est horizontale (entre pairs partageant une condition commune)", "La charité est légale, la solidarité est un sentiment privé", "La solidarité implique nécessairement une organisation de l'État"],
+    c: 1,
+    wrong: "La distinction est philosophiquement importante. La charité suppose une asymétrie (le bienfaiteur et le pauvre). La solidarité reconnaît une interdépendance : nous sommes dans le même bateau. La Sécurité sociale française est un exemple de solidarité horizontale — chacun cotise selon ses moyens, reçoit selon ses besoins."
+  },
+  {
+    q: "La Sécurité sociale française, créée en 1945, est souvent citée comme exemple de solidarité. Pourquoi ?",
+    a: ["Parce qu'elle est gérée par l'État", "Parce qu'elle organise une mutualisation des risques : ceux qui vont bien contribuent pour ceux qui sont malades ou sans emploi", "Parce qu'elle est obligatoire pour tous les Français", "Parce qu'elle date de la Révolution française"],
+    c: 1,
+    wrong: "C'est l'essence de la solidarité organisée : mutualiser les risques. Les cotisations de ceux qui travaillent et sont en bonne santé financent les soins de ceux qui sont malades — et inversement quand les situations s'inversent."
+  }
+];
+
+const SCENARIO = {
+  title: "La nouvelle élève",
+  p: "Léa est arrivée en milieu d'année dans ta classe. Elle mange seule à la cantine depuis deux semaines. Personne n'a été malveillant — mais personne ne l'a invitée non plus. Quelle est l'approche solidaire ?",
+  options: [
+    {
+      text: "Je l'invite à ma table, simplement, sans en faire un événement. La solidarité ne demande pas un geste héroïque — juste de remarquer celui qui est seul et d'agir avant d'attendre que quelqu'un d'autre le fasse.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "Ce n'est pas mon problème, elle doit s'intégrer d'elle-même.",
+      ok: false,
+      fb: "L'isolement scolaire n'est pas anodin. Deux semaines seule à la cantine crée un sentiment d'exclusion réel. La solidarité commence par remarquer l'autre — ce que tu as fait en posant la question montre que tu l'as vu."
+    },
+    {
+      text: "Je l'envoie voir le CPE pour qu'il gère la situation.",
+      ok: false,
+      fb: "Le CPE peut accompagner, mais la solidarité entre pairs a un pouvoir que les adultes n'ont pas. Un geste d'un camarade vaut plus qu'une intervention institutionnelle pour briser l'isolement."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"🤝", t:"Solidarité horizontale :", v:"Entre pairs partageant une condition — différente de la charité verticale. Reconnaissance d'une interdépendance."},
+  {icon:"🏥", t:"Sécurité sociale (1945) :", v:"Modèle de solidarité nationale institutionnalisée. Cotisations selon les moyens, soins selon les besoins."},
+  {icon:"⚖️", t:"Devise républicaine :", v:"'Fraternité' officielle dès 1848 (IIe République). Ce n'est pas un ornement — c'est un programme."},
+  {icon:"👁️", t:"Premier geste :", v:"Remarquer celui qui est seul. Agir avant d'attendre. La solidarité, c'est d'abord voir l'autre."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events');
+    const evts=raw?JSON.parse(raw):[];
+    evts.push({
+      id:'FRA-'+MODULE_ID+'-'+Date.now(),
+      type:'FRATERNITE_PROGRESS',
+      player:getPlayer(),
+      module:MODULE_ID,
+      cpTotal:countCerts(),
+      label:'FRATERNITÉ : Qu\'est-ce que la solidarité ?',
+      d:new Date().toISOString()
+    });
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+
+  const finish=()=>{
+    const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};
+    localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+    awardXP();
+    setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
+    setStep('complete');
+  };
+
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},
+      e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),
+      PlayerChip()
+    ),
+    e('div',{className:'tag'},'Solidarité · Module 1/4'),
+    e('h1',null,"Qu'est-ce que la solidarité ?"),
+    e('p',{className:'quote'},"« Nul ne peut se suffire à lui-même. L'homme est par nature un animal politique. » — Aristote"),
+    e('p',null,"La solidarité est l'un des mots les plus employés et les moins définis. Elle n'est pas la charité (qui suppose une asymétrie entre bienfaiteur et bénéficiaire). Elle est la reconnaissance d'une condition partagée : nous dépendons les uns des autres, et c'est cette interdépendance qui nous oblige."),
+    e('p',null,"En France, la Fraternité est inscrite dans la devise républicaine depuis 1848. Ce n'est pas un ornement : c'est la reconnaissance que liberté et égalité restent des abstractions sans le lien concret qui unit les citoyens. La Sécurité sociale, créée en 1945, en est l'expression institutionnelle la plus visible."),
+    e('div',{style:{textAlign:'center'}},
+      e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},'Explorer la solidarité')
+  );
+
+  const renderQuiz=()=>{
+    const q=QUESTIONS[qIdx];
+    const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{
+        key:i,className:'opt',
+        onClick:()=>{
+          if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}
+          else alert(q.wrong||'La solidarité mérite qu\'on la comprenne avec précision. Réessaie.');
+        }
+      },opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),
+    e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{
+      key:i,className:'opt',
+      onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}
+    },opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},
+      SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))
+    ),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'🤝'),
+    e('h1',null,"La solidarité n'a plus de secrets !"),
+    e('p',{style:{textAlign:'center'}},"Module validé — de la devise à la pratique quotidienne."),
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},
+      e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
+      'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){
+    case 'intro':     return renderIntro();
+    case 'quiz':      return renderQuiz();
+    case 'scenario':  return renderScenario();
+    case 'synthesis': return renderSynthesis();
+    case 'complete':  return renderComplete();
+    default:          return renderIntro();
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

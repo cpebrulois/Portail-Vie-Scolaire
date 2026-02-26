@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_DIS01 — Qu'est-ce qu'une discrimination ?</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#8b5cf6;--acc-d:#6d28d9;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.09) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;
+  box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';
+  font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#fff;border:none;padding:13px 28px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_DIS01';
+const CERT_KEY  = 'CERT_FRATERNITE_DIS1';
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const QUESTIONS = [
+  {
+    q: "En droit français, combien de critères de discrimination sont officiellement reconnus et protégés par la loi ?",
+    a: ["5 critères (race, sexe, religion, origine, handicap)", "16 critères", "25 critères", "Les critères varient selon les tribunaux"],
+    c: 2,
+    wrong: "La loi française reconnaît 25 critères de discrimination prohibés : origine, sexe, âge, situation de famille, grossesse, apparence physique, vulnérabilité économique, patronyme, lieu de résidence, état de santé, perte d'autonomie, handicap, caractéristiques génétiques, moeurs, orientation sexuelle, identité de genre, appartenance (vraie ou supposée) à une ethnie, une nation ou une race, opinions politiques, activités syndicales, appartenance (vraie ou supposée) à une religion, domiciliation bancaire, capacité à s'exprimer dans une langue étrangère."
+  },
+  {
+    q: "Un employeur refuse d'embaucher quelqu'un uniquement parce que son prénom est d'origine étrangère. C'est...",
+    a: ["Légal, l'employeur est libre de choisir", "Une discrimination directe fondée sur l'origine, illégale", "Une discrimination indirecte", "Légal si l'emploi exige un contact avec le public"],
+    c: 1,
+    wrong: "C'est une discrimination directe et illégale fondée sur l'origine (réelle ou supposée). Des études de testing l'ont démontré massivement : à CV égal, un prénom perçu comme d'origine étrangère réduit significativement les chances de recevoir une réponse."
+  },
+  {
+    q: "Une discrimination 'indirecte' se produit quand...",
+    a: ["Elle est commise sans en avoir conscience", "Une règle en apparence neutre défavorise systématiquement une catégorie de personnes", "Elle est commise par un intermédiaire", "Elle touche une personne indirectement liée à la victime"],
+    c: 1,
+    wrong: "Exemple classique : exiger une 'mobilité totale' pour un poste désavantage statistiquement les femmes (plus souvent chargées des enfants). La règle semble neutre, mais son effet est discriminatoire. La loi reconnaît les deux formes."
+  }
+];
+
+const SCENARIO = {
+  title: "Remarquer et documenter",
+  p: "Tu observes qu'un enseignant interroge systématiquement moins les élèves d'une certaine origine dans sa classe. Personne d'autre ne semble le remarquer. En tant que délégué·e, quelle est ta démarche ?",
+  options: [
+    {
+      text: "Je note les faits précisément (dates, situations) sans accuser. Je consulte mes camarades pour vérifier que mon observation n'est pas isolée. Je porte le sujet au CPE ou à la direction de manière factuelle : 'Voici ce que j'ai observé.' C'est la méthode qui protège à la fois la victime et la démarche.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "Je confronte directement l'enseignant en classe.",
+      ok: false,
+      fb: "La confrontation directe sans préparation peut aggraver la situation pour les élèves concernés. La démarche institutionnelle — factuelle et documentée — est plus efficace et plus protectrice."
+    },
+    {
+      text: "Ce n'est peut-être que mon impression, mieux vaut ne rien dire.",
+      ok: false,
+      fb: "Documenter, c'est précisément ce qui permet de distinguer impression et réalité. Si les faits confirment le schéma, il mérite d'être signalé. L'inaction face à une discrimination supposée est aussi un choix."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"⚖️", t:"25 critères légaux :", v:"La loi française protège contre 25 formes de discrimination. Un cadre juridique parmi les plus complets au monde."},
+  {icon:"👁️", t:"Directe vs indirecte :", v:"Directe = traitement différent explicite. Indirecte = règle neutre en apparence mais discriminatoire dans ses effets."},
+  {icon:"📝", t:"Méthode :", v:"Observer, documenter les faits, vérifier avec les pairs, signaler de façon factuelle. Pas d'accusation sans preuve."},
+  {icon:"🎯", t:"Le testing :", v:"La technique du CV fictif a prouvé scientifiquement les discriminations à l'embauche. Les chiffres rendent visible l'invisible."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];
+    evts.push({id:'FRA-'+MODULE_ID+'-'+Date.now(),type:'FRATERNITE_PROGRESS',player:getPlayer(),module:MODULE_ID,cpTotal:countCerts(),label:"FRATERNITÉ : Qu'est-ce qu'une discrimination ?",d:new Date().toISOString()});
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+  const finish=()=>{const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};localStorage.setItem(CERT_KEY,JSON.stringify(cert));awardXP();setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));setStep('complete');};
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),PlayerChip()),
+    e('div',{className:'tag'},'Discriminations · Module 1/4'),
+    e('h1',null,"Qu'est-ce qu'une discrimination ?"),
+    e('p',{className:'quote'},"« L'injustice n'importe où est une menace à la justice partout. » — Martin Luther King"),
+    e('p',null,"Discriminer, c'est traiter une personne différemment — et de manière défavorable — en raison d'une caractéristique personnelle protégée par la loi. La France reconnaît 25 critères de discrimination prohibés. C'est un délit pénal."),
+    e('p',null,"La discrimination peut être directe (refus explicite) ou indirecte (règle neutre dont l'effet défavorise systématiquement une catégorie). Les deux sont illégales. Les reconnaître est la première étape pour les combattre."),
+    e('div',{style:{textAlign:'center'}},e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},"Identifier la discrimination")
+  );
+
+  const renderQuiz=()=>{const q=QUESTIONS[qIdx];const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}else alert(q.wrong||'La loi est précise. Réessaie.');}},opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}},opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'⚖️'),
+    e('h1',null,"La discrimination identifiée !"),
+    e('p',{style:{textAlign:'center'}},"Module validé — nommer le problème, c'est déjà le combattre."),
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){case 'intro':return renderIntro();case 'quiz':return renderQuiz();case 'scenario':return renderScenario();case 'synthesis':return renderSynthesis();case 'complete':return renderComplete();default:return renderIntro();}
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script>
+</body></html>

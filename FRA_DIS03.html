@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_DIS03 — Discriminations à l'école : reconnaître et réagir</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#8b5cf6;--acc-d:#6d28d9;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.09) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#fff;border:none;padding:13px 28px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_DIS03';
+const CERT_KEY  = 'CERT_FRATERNITE_DIS3';
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const QUESTIONS = [
+  {
+    q: "La discrimination liée au handicap dans un contexte scolaire peut prendre plusieurs formes. Laquelle de ces situations constitue une discrimination ?",
+    a: ["Un élève handicapé qui obtient du temps supplémentaire aux examens", "Des moqueries répétées sur le handicap d'un élève, même perçues comme 'juste pour rire'", "Un dispositif d'accompagnement spécifique (AVS/AESH)", "Une classe adaptée pour répondre aux besoins de l'élève"],
+    c: 1,
+    wrong: "Les moqueries répétées fondées sur le handicap constituent une discrimination (critère légalement protégé) et peuvent relever du harcèlement scolaire. Le temps supplémentaire et l'AESH sont au contraire des aménagements obligatoires qui permettent l'égalité réelle — pas des avantages injustes."
+  },
+  {
+    q: "Les injures ou insultes à caractère homophobe, lesbophobe ou transphobe dans le milieu scolaire...",
+    a: ["Sont tolérées si elles sont dites 'sans méchanceté' ou 'entre amis'", "Sont illégales (délit de provocation à la discrimination ou injure publique) et peuvent être signalées", "Ne concernent que des situations hors de l'école", "Sont traitées uniquement par le règlement intérieur, pas par la loi"],
+    c: 1,
+    wrong: "Les insultes LGBTphobes sont des délits en droit français (loi du 30 juillet 2004). Même dites 'pour rire', elles contribuent à un climat hostile illégal. Les études montrent que les jeunes LGBT+ sont significativement plus exposés au décrochage scolaire et aux problèmes de santé mentale dans des environnements où ces insultes sont banalisées."
+  },
+  {
+    q: "La technique du 'testing' permet de prouver une discrimination. Elle consiste à...",
+    a: ["Tester les connaissances juridiques des victimes", "Envoyer des candidatures fictives identiques, sauf sur le critère discriminant, pour mesurer les différences de traitement", "Interroger les auteurs présumés de discrimination", "Collecter les témoignages des victimes"],
+    c: 1,
+    wrong: "Le testing (ou audit) est une méthode scientifique et légale pour prouver la discrimination : on crée deux profils identiques sauf sur le critère suspecté (prénom, adresse, etc.) et on mesure les différences de réponse. C'est une preuve recevable en justice en France depuis 2006."
+  }
+];
+
+const SCENARIO = {
+  title: "L'insulte banalisée",
+  p: "Dans le couloir, tu entends un groupe de camarades utiliser l'insulte 'PD' à répétition, en riant. Personne dans le groupe n'est ouvertement gay — ils disent que c'est juste 'une façon de parler'. Quelle est l'approche juste ?",
+  options: [
+    {
+      text: "Je leur signale que ce mot, même utilisé sans cible directe, contribue à rendre l'école hostile pour les élèves LGBT+ qui l'entendent — et qui sont peut-être dans ce couloir sans se faire connaître. Une insulte banalisée crée un climat, pas juste un mot isolé. Et c'est un délit.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "Comme personne n'est visé directement, ce n'est pas vraiment discriminatoire.",
+      ok: false,
+      fb: "Une insulte ne requiert pas de cible nommée pour créer un climat discriminatoire. Un élève LGBT+ qui entend ce mot régulièrement intègre que cet espace n'est pas sûr pour lui — sans qu'on lui ait jamais adressé la parole."
+    },
+    {
+      text: "Je leur dis rien mais je rapporte au CPE.",
+      ok: false,
+      fb: "Signaler est bien. Mais si tu peux le faire en sécurité, une interpellation directe et calme a plus d'impact pédagogique — et montre que c'est un problème qui concerne tout le monde, pas seulement les adultes."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"♿", t:"Handicap :", v:"Moqueries, exclusion, attentes dégradées = discrimination. Les aménagements (AESH, temps+) sont des droits, pas des faveurs."},
+  {icon:"🏳️‍🌈", t:"LGBTphobies :", v:"Illégales, documentées, avec des effets réels sur la santé mentale et la scolarité des jeunes concernés."},
+  {icon:"🧪", t:"Testing :", v:"Méthode scientifique de preuve de la discrimination. Recevable en justice depuis 2006 en France."},
+  {icon:"🌡️", t:"Le climat :", v:"Une insulte banalisée crée un environnement hostile même sans cible directe. Les mots construisent l'espace vécu."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];
+    evts.push({id:'FRA-'+MODULE_ID+'-'+Date.now(),type:'FRATERNITE_PROGRESS',player:getPlayer(),module:MODULE_ID,cpTotal:countCerts(),label:"FRATERNITÉ : Discriminations à l'école — reconnaître et réagir",d:new Date().toISOString()});
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+  const finish=()=>{const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};localStorage.setItem(CERT_KEY,JSON.stringify(cert));awardXP();setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));setStep('complete');};
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),PlayerChip()),
+    e('div',{className:'tag'},'Discriminations · Module 3/4'),
+    e('h1',null,"Discriminations à l'école : reconnaître et réagir"),
+    e('p',{className:'quote'},"« L'éducation est l'arme la plus puissante qu'on puisse utiliser pour changer le monde. » — Nelson Mandela"),
+    e('p',null,"L'école n'est pas à l'abri des discriminations — elle en est parfois le théâtre quotidien. Handicap, LGBTphobies, origine, religion : chaque forme a ses mécanismes propres. Les reconnaître dans leur réalité concrète est la condition pour réagir de façon juste et efficace."),
+    e('p',null,"Ce module aborde les discriminations les plus fréquentes en milieu scolaire, les outils pour les prouver (testing) et les voies pour les signaler — en comprenant pourquoi même les insultes 'sans cible' construisent un climat hostile illégal."),
+    e('div',{style:{textAlign:'center'}},e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},"Reconnaître pour réagir")
+  );
+
+  const renderQuiz=()=>{const q=QUESTIONS[qIdx];const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}else alert(q.wrong||'Les formes de discrimination ont des définitions précises. Réessaie.');}},opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}},opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'🛡️'),
+    e('h1',null,"Les discriminations scolaires maîtrisées !"),
+    e('p',{style:{textAlign:'center'}},"Module validé — reconnaître, documenter, signaler."},
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){case 'intro':return renderIntro();case 'quiz':return renderQuiz();case 'scenario':return renderScenario();case 'synthesis':return renderSynthesis();case 'complete':return renderComplete();default:return renderIntro();}
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

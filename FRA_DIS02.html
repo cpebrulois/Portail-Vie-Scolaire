@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRATERNITÉ | FRA_DIS02 — Stéréotypes, préjugés, discriminations : la chaîne</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+:root{--bg:#0a0804;--acc:#8b5cf6;--acc-d:#6d28d9;--text:#fdf6e8;--muted:#9d8060;--border:#2a1a08}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:32px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,0.09) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:rgba(10,8,4,0.93);border:2px solid var(--acc);padding:36px 40px;border-radius:6px;box-shadow:0 0 50px rgba(0,0,0,0.7);backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.card::before{content:'FRATERNITÉ';position:absolute;top:-20px;right:-10px;font-family:'Playfair Display';font-size:4.5rem;opacity:0.04;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--acc);text-align:center;margin-bottom:14px}
+h1{font-size:1.55rem}h2{font-size:1.2rem}
+p{line-height:1.75;margin-bottom:12px;color:#e8d8c0}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7}
+.tag{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;margin-bottom:12px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);padding:4px 12px;border-radius:20px;font-size:0.7rem;color:#ffd700;font-family:'Share Tech Mono',monospace}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:0.68rem;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.btn{background:var(--acc);color:#fff;border:none;padding:13px 28px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:4px;font-family:'Montserrat',sans-serif}
+.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.progress{height:3px;background:rgba(255,255,255,0.07);margin-bottom:24px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s ease}
+.step-tag{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.22s;border-radius:4px;font-size:0.88rem;line-height:1.5;font-family:'Montserrat',sans-serif}
+.opt:hover{background:rgba(255,255,255,0.09);border-color:var(--acc)}
+.summary-box{background:rgba(255,255,255,0.03);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.75}
+.summary-box p{margin-bottom:8px;font-size:0.85rem;color:#c8b89a}
+.token-box{background:#000;color:var(--acc);font-family:'Share Tech Mono',monospace;padding:16px;border:1px dashed var(--acc);word-break:break-all;margin:18px 0;font-size:0.8rem;border-radius:3px;cursor:text;user-select:all;line-height:1.6}
+.token-note{font-size:0.72rem;color:var(--muted);line-height:1.65;margin-top:4px}
+.seal{text-align:center;font-size:2.8rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:3px;font-size:0.7rem;font-family:'Montserrat',sans-serif;font-weight:600;transition:.2s;margin-bottom:18px}
+.nav-back:hover{background:rgba(255,255,255,0.09);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+</style></head>
+<body><div id="root"></div>
+<script>
+const e = React.createElement;
+const MODULE_ID = 'FRA_DIS02';
+const CERT_KEY  = 'CERT_FRATERNITE_DIS2';
+const BACK_URL  = 'index_PIX_FRATERNITE.html';
+const CERT_KEYS = ["CERT_FRATERNITE_SOL1","CERT_FRATERNITE_SOL2","CERT_FRATERNITE_SOL3","CERT_FRATERNITE_SOL4","CERT_FRATERNITE_DIS1","CERT_FRATERNITE_DIS2","CERT_FRATERNITE_DIS3","CERT_FRATERNITE_DIS4","CERT_FRATERNITE_VIE1","CERT_FRATERNITE_VIE2","CERT_FRATERNITE_VIE3","CERT_FRATERNITE_VIE4"];
+
+const QUESTIONS = [
+  {
+    q: "Un stéréotype est une...",
+    a: ["Insulte volontaire envers un groupe", "Représentation simplifiée et généralisante d'un groupe, pas nécessairement hostile", "Forme d'humour acceptable si elle n'est pas méchante", "Croyance fondée sur des statistiques réelles"],
+    c: 1,
+    wrong: "Le stéréotype est d'abord une simplification cognitive : le cerveau classe pour économiser de l'énergie. Ce n'est pas forcément hostile au départ — mais c'est réducteur. Il gomme la diversité réelle au sein d'un groupe. C'est la première brique de la chaîne qui peut mener au préjugé puis à la discrimination."
+  },
+  {
+    q: "La 'menace du stéréotype' (Claude Steele, 1995) désigne...",
+    a: ["Le fait d'être victime de stéréotypes dans l'espace public", "L'anxiété ressentie par une personne qui craint de confirmer un stéréotype négatif sur son groupe, au point que cette anxiété dégrade ses performances", "Une forme d'agression physique liée aux préjugés", "Le refus d'un employeur d'embaucher sur base de stéréotypes"],
+    c: 1,
+    wrong: "Steele a montré expérimentalement que rappeler un stéréotype négatif avant un test suffisait à dégrader les résultats du groupe concerné — pas parce qu'ils sont moins capables, mais parce que l'anxiété de 'confirmer le stéréotype' consomme des ressources cognitives. La stigmatisation a un coût neurologique réel."
+  },
+  {
+    q: "Un 'biais implicite' se caractérise par...",
+    a: ["Un préjugé conscient et assumé", "Une association automatique et inconsciente que le cerveau fait sans que la personne en ait conscience", "Un comportement discriminatoire intentionnel", "Une opinion politique sur l'immigration"],
+    c: 1,
+    wrong: "Les biais implicites sont des associations mentales automatiques (par exemple : associer inconsciemment 'femme' à 'foyer' plutôt que 'science'). Ils opèrent sous le seuil de conscience et influencent les comportements même chez des personnes qui rejettent consciemment tout préjugé. Le test IAT de Harvard en mesure les effets."
+  }
+];
+
+const SCENARIO = {
+  title: "Le stéréotype positif",
+  p: "Un camarade dit à Yusuf : 'T'as 18 en maths ? C'est normal, vous êtes tous doués pour ça.' Yusuf ne répond pas, mais il grimace. Pourquoi ce commentaire est-il problématique même s'il est 'positif' ?",
+  options: [
+    {
+      text: "Même bienveillant en apparence, un stéréotype positif nie l'individualité : le mérite de Yusuf est attribué à son groupe, pas à son travail. Il réduit la personne à son appartenance. Et les stéréotypes positifs ont l'envers de leur décor : ils impliquent souvent des stéréotypes négatifs sur d'autres groupes.",
+      ok: true,
+      fb: ""
+    },
+    {
+      text: "C'est un compliment, Yusuf devrait apprécier.",
+      ok: false,
+      fb: "C'est là le piège du stéréotype positif : en apparence flatteur, il efface le travail personnel de Yusuf et le réduit à son groupe d'appartenance. 'Tu es bon parce que vous êtes comme ça' nie l'individu."
+    },
+    {
+      text: "C'est problématique seulement si Yusuf le ressent comme une insulte.",
+      ok: false,
+      fb: "Non. L'effet d'un stéréotype ne dépend pas de la réaction de la victime. Le problème est structurel : attribuer une réussite individuelle à une appartenance collective, c'est déjà une forme de réduction."
+    }
+  ]
+};
+
+const SYNTHESIS = [
+  {icon:"🧱", t:"La chaîne :", v:"Stéréotype (simplification) → préjugé (jugement négatif) → discrimination (traitement différent). Briser la chaîne dès le premier maillon."},
+  {icon:"😰", t:"Menace du stéréotype :", v:"L'anxiété de 'confirmer' un stéréotype dégrade réellement les performances. Les mots ont un coût cognitif mesurable."},
+  {icon:"🧠", t:"Biais implicite :", v:"Associations automatiques inconscientes. Tout le monde en a. Les reconnaître permet de les corriger dans ses décisions."},
+  {icon:"⚠️", t:"Stéréotype positif :", v:"'Vous êtes tous...' efface l'individu même quand c'est flatteur. Le mérite personnel disparaît derrière l'appartenance."}
+];
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function countCerts(){let n=0;CERT_KEYS.forEach(k=>{try{if(localStorage.getItem(k))n++;}catch(ex){}});return n;}
+function awardXP(){
+  try{
+    const raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];
+    evts.push({id:'FRA-'+MODULE_ID+'-'+Date.now(),type:'FRATERNITE_PROGRESS',player:getPlayer(),module:MODULE_ID,cpTotal:countCerts(),label:'FRATERNITÉ : Stéréotypes, préjugés, discriminations',d:new Date().toISOString()});
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  const [step,setStep]=React.useState('intro');
+  const [qIdx,setQIdx]=React.useState(0);
+  const [token,setToken]=React.useState('');
+  const finish=()=>{const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};localStorage.setItem(CERT_KEY,JSON.stringify(cert));awardXP();setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));setStep('complete');};
+  const goBack=()=>{window.location.href=BACK_URL;};
+  const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
+
+  const renderIntro=()=>e('div',{className:'card'},
+    e('div',{className:'top-row'},e('button',{className:'nav-back',onClick:goBack},'← Fraternité'),PlayerChip()),
+    e('div',{className:'tag'},'Discriminations · Module 2/4'),
+    e('h1',null,"Stéréotypes, préjugés, discriminations : la chaîne"),
+    e('p',{className:'quote'},"« On ne naît pas raciste, on le devient — et on peut cesser de l'être. » — Albert Memmi"),
+    e('p',null,"La discrimination ne surgit pas de nulle part. Elle s'installe en trois temps : le stéréotype (simplification d'un groupe), le préjugé (jugement négatif non vérifié), puis la discrimination (traitement différent). Comprendre cette chaîne, c'est savoir où la briser."),
+    e('p',null,"La psychologie cognitive a aussi révélé des phénomènes contre-intuitifs : la 'menace du stéréotype' qui dégrade les performances de ceux qui le subissent, et les 'biais implicites' qui opèrent en dehors de notre conscience. Personne n'en est exempt — mais on peut les reconnaître et les corriger."),
+    e('div',{style:{textAlign:'center'}},e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
+    e('button',{className:'btn',onClick:()=>setStep('quiz')},"Comprendre la chaîne")
+  );
+
+  const renderQuiz=()=>{const q=QUESTIONS[qIdx];const pct=25+Math.round((qIdx/QUESTIONS.length)*30);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Question '+(qIdx+1)+' / '+QUESTIONS.length),
+      e('h2',null,q.q),
+      q.a.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}else alert(q.wrong||'Les mécanismes sont précis. Réessaie.');}},opt))
+    );
+  };
+
+  const renderScenario=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'70%'}})),
+    e('div',{className:'step-tag'},'Mise en situation'),
+    e('h2',null,SCENARIO.title),e('p',null,SCENARIO.p),
+    SCENARIO.options.map((opt,i)=>e('button',{key:i,className:'opt',onClick:()=>{if(opt.ok)setStep('synthesis');else alert(opt.fb);}},opt.text))
+  );
+
+  const renderSynthesis=()=>e('div',{className:'card'},
+    e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
+    e('div',{className:'step-tag'},'Synthèse'),
+    e('h2',null,"Ce qu'il faut retenir"),
+    e('div',{className:'summary-box'},SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))),
+    e('button',{className:'btn',onClick:finish},'Valider ce module →')
+  );
+
+  const renderComplete=()=>e('div',{className:'card'},
+    e('div',{className:'seal'},'🔗'),
+    e('h1',null,"La chaîne stéréotype → discrimination maîtrisée !"),
+    e('p',{style:{textAlign:'center'}},"Module validé — comprendre les mécanismes, c'est s'en libérer."),
+    e('div',{style:{textAlign:'center',margin:'8px 0'}},e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
+    e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},'Copie le jeton ci-dessous et colle-le dans le Hub Fraternité si demandé.'),
+    e('div',{className:'token-box'},token),
+    e('p',{className:'token-note'},'📋 Sélectionne tout le code (clic) — Ctrl+C / Cmd+C.'),
+    e('button',{className:'btn',onClick:goBack},'← Retour au Hub Fraternité')
+  );
+
+  switch(step){case 'intro':return renderIntro();case 'quiz':return renderQuiz();case 'scenario':return renderScenario();case 'synthesis':return renderSynthesis();case 'complete':return renderComplete();default:return renderIntro();}
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>
