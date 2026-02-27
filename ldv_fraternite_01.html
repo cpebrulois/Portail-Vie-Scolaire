@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Liens du Château — LDVELH · Fraternité · Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--rouge:#8b2a2a;--sol:#c47a1a;--dis:#6a3a9a;--vie:#0a6a7a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.12em;line-height:1.9;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(196,122,26,.05) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,rgba(106,58,154,.05) 0%,transparent 50%),
+  radial-gradient(1px 1px at 25% 35%,rgba(201,168,76,.3),transparent),
+  radial-gradient(1px 1px at 75% 20%,rgba(201,168,76,.25),transparent),
+  radial-gradient(1px 1px at 50% 70%,rgba(201,168,76,.2),transparent)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+.event-banner{background:linear-gradient(135deg,#1a0a2a,#2a1505,#0a1a2a);border-bottom:2px solid var(--or);padding:10px 20px;text-align:center;font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or2);position:relative;z-index:10}
+.lock-screen{position:fixed;inset:0;background:rgba(8,6,4,.96);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
+.lock-box{max-width:460px;padding:44px 40px;background:var(--p1);border:1px solid rgba(201,168,76,.25);border-radius:12px}
+.lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.lock-title{font-family:'Cinzel',serif;font-size:1.1em;color:var(--or2);margin-bottom:12px;letter-spacing:2px}
+.lock-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.75;margin-bottom:20px}
+.manuscript{max-width:720px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1}
+.chapter-header{text-align:center;margin-bottom:52px;padding-bottom:30px;border-bottom:1px solid rgba(201,168,76,.25)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.67em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:14px;opacity:.8}
+.badge-module{display:inline-block;background:linear-gradient(135deg,rgba(196,122,26,.4),rgba(106,58,154,.4));border:1px solid var(--or);border-radius:4px;padding:4px 14px;font-family:'Cinzel',serif;font-size:.62em;letter-spacing:2px;color:var(--or2);margin-bottom:22px}
+h1.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,4.5vw,2.2em);color:var(--or2);line-height:1.25;margin-bottom:8px;text-shadow:0 0 40px rgba(201,168,76,.2)}
+.chapter-subtitle{font-style:italic;color:var(--enc2);font-size:.9em;opacity:.7}
+.pillar-map{display:flex;gap:8px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.pillar-pip{font-family:'Cinzel',serif;font-size:.58em;letter-spacing:2px;padding:4px 12px;border-radius:20px;border:1px solid;opacity:.35;transition:all .4s}
+.pillar-pip.sol{border-color:var(--sol);color:var(--sol)}
+.pillar-pip.dis{border-color:var(--dis);color:var(--dis)}
+.pillar-pip.vie{border-color:var(--vie);color:var(--vie)}
+.pillar-pip.active{opacity:1;box-shadow:0 0 10px currentColor}
+.scene{display:none}.scene.active{display:block;animation:fadeUp .55s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+p{margin-bottom:1.4em;text-align:justify;text-indent:1.5em}
+p.ni{text-indent:0}
+.drop-cap::first-letter{font-family:'Cinzel',serif;font-size:4.2em;font-weight:600;color:var(--or);float:left;line-height:.76;margin:6px 8px 0 0;text-shadow:0 0 18px rgba(201,168,76,.4)}
+em{font-style:italic;color:var(--enc2)}
+.dialogue{margin:1.7em 0;padding:0 0 0 22px;border-left:2px solid rgba(201,168,76,.22);text-indent:0;font-style:italic;color:var(--enc2)}
+.scene-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.13);border-radius:4px;padding:16px 22px;margin:1.7em 0;font-style:italic;color:var(--enc2);text-indent:0}
+.scene-block::before{content:'⬡ ';color:var(--or);font-style:normal;opacity:.5}
+.sep{text-align:center;margin:2.2em 0;color:var(--or);font-size:1em;opacity:.4;letter-spacing:10px}
+.scene-epoch{display:inline-block;font-family:'Cinzel',serif;font-size:.6em;letter-spacing:3px;color:var(--or);opacity:.55;text-transform:uppercase;margin-bottom:6px;padding:2px 10px;border:1px solid rgba(201,168,76,.2);border-radius:20px}
+.scene-title{font-family:'Cinzel',serif;font-size:1.06em;color:var(--or2);margin-bottom:20px}
+.choice-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase;margin:2.4em 0 .9em;display:block}
+.choice-btn{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.16);border-radius:5px;color:var(--enc);padding:16px 22px;margin:9px 0;cursor:pointer;transition:all .22s;font-family:'Crimson Text',Georgia,serif;font-size:1em;line-height:1.65}
+.choice-btn:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.45);transform:translateX(5px)}
+.ar{color:var(--or);margin-right:10px;font-style:normal}
+.fb{padding:14px 20px;margin:16px 0;border-radius:5px;font-style:italic;font-size:.91em;line-height:1.72;text-indent:0}
+.fb-bad{background:rgba(139,42,42,.07);border-left:3px solid #7a2a2a;color:#c09080}
+.fb-good{background:rgba(40,90,40,.07);border-left:3px solid #4a8a4a;color:#90c080}
+.fb-info{background:rgba(201,168,76,.05);border-left:3px solid rgba(201,168,76,.3);color:var(--enc2)}
+.reward-block{margin:52px 0 28px;padding:28px;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(106,58,154,.08));border:1px solid var(--or);border-radius:12px;text-align:center;animation:gP 3.5s ease-in-out infinite}
+@keyframes gP{0%,100%{box-shadow:0 0 10px rgba(201,168,76,.12)}50%{box-shadow:0 0 30px rgba(201,168,76,.4)}}
+.reward-icon{font-size:2.8em;display:block;margin-bottom:12px}
+.reward-name{font-family:'Cinzel Decorative',serif;font-size:1.1em;color:var(--or2);margin-bottom:8px;letter-spacing:2px}
+.reward-desc{font-size:.86em;color:var(--enc2);opacity:.72;font-style:italic;line-height:1.75;text-indent:0}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.22);padding:5px 16px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:14px}
+.nav-top{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:4px;color:var(--enc2);font-size:.73em;text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.note-fin{margin-top:44px;padding-top:22px;border-top:1px solid rgba(201,168,76,.15);font-size:.83em;color:var(--enc2);opacity:.6;font-style:italic;text-indent:0;line-height:1.8}
+@media(max-width:600px){.manuscript{padding:24px 16px 60px}h1.chapter-title{font-size:1.4em}body{font-size:1.04em}}
+</style>
+</head>
+<body>
+
+<div id="lockScreen" class="lock-screen" style="display:none">
+  <div class="lock-box">
+    <span class="lock-icon">🤝</span>
+    <div class="lock-title">Les Liens du Château</div>
+    <p class="lock-txt">Cette histoire se débloque après avoir complété au moins un <strong>module Fraternité</strong> du Portail.<br><br>Solidarité, discrimination, vivre-ensemble — commence par là.</p>
+    <a href="hub_narration.html" class="bk" style="margin-top:10px">← Bibliothèque</a>
+  </div>
+</div>
+
+<div class="event-banner">🤝 &nbsp; HISTOIRE ANNEXE &nbsp;·&nbsp; <span>Les Liens du Château</span> &nbsp;·&nbsp; Module Fraternité · Valdurne An I</div>
+
+<div class="manuscript" id="mainContent" style="display:none">
+
+  <div class="nav-top">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <span class="bk" style="opacity:.4;pointer-events:none;cursor:default">LDVELH · Fraternité</span>
+  </div>
+
+  <div class="chapter-header">
+    <div class="chapter-label">Château de Valdurne &nbsp;·&nbsp; Année I &nbsp;·&nbsp; Pilier Fraternité</div>
+    <div class="badge-module">🤝 Solidarité · Discrimination · Vivre-ensemble 🤝</div>
+    <h1 class="chapter-title">Les Liens<br>du Château</h1>
+    <p class="chapter-subtitle">Trois situations. Trois choix. Une seule question :<br>qu'est-ce que ça veut dire, agir ensemble ?</p>
+  </div>
+
+  <div class="pillar-map">
+    <div class="pillar-pip sol active" id="pip-sol">SOLIDARITÉ</div>
+    <div class="pillar-pip dis" id="pip-dis">DISCRIMINATION</div>
+    <div class="pillar-pip vie" id="pip-vie">VIVRE-ENSEMBLE</div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PARTIE 1 — SOLIDARITÉ
+       La fête manquée
+  ══════════════════════════════════════ -->
+  <div class="scene active" id="s0">
+    <div class="scene-epoch">Partie I · Solidarité</div>
+    <div class="scene-title">Le Sac de Vivres</div>
+
+    <p class="drop-cap ni">Mael est rentré de la cité de Brumeval avec un sac de vivres pour tout le groupe — pain dur, pommes, une poignée de noix. C'est lui qui avait l'argent ce mois-ci, lui qui avait fait la route. Il pose le sac au centre de la chambre commune et dit : <em>c'est pour tout le monde</em>.</p>
+
+    <p>Sauf que Yara, elle, n'a rien pu apporter depuis des semaines. Son billet de transit n'est pas renouvelé, elle ne peut pas sortir du domaine. Elle écoute les autres remercier Mael. Elle ne dit rien.</p>
+
+    <p>Lyam la voit. Il sait ce qu'elle a dans la tête.</p>
+
+    <span class="choice-label">Que fait Lyam ?</span>
+    <button class="choice-btn" onclick="go('s1a','dis')"><span class="ar">▶</span>Il dit à Mael à voix basse : "Yara peut pas sortir en ce moment. Ce serait bien que tu gardes ça pour toi." Il gère le problème discrètement.</button>
+    <button class="choice-btn" onclick="go('s1b','dis')"><span class="ar">▶</span>Il propose à tout le groupe : "Pour les fois où quelqu'un peut pas contribuer — on garde quand même la part entière pour eux." Une règle pour tous.</button>
+    <button class="choice-btn" onclick="go('s1c','dis')"><span class="ar">▶</span>Il demande à Yara ce qu'elle veut, avant de rien décider à sa place.</button>
+  </div>
+
+  <!-- S1A — discret mais paternaliste -->
+  <div class="scene" id="s1a">
+    <div class="scene-epoch">Solidarité · Réponse A</div>
+    <div class="scene-title">La Charité discrète</div>
+    <div class="fb fb-info">Lyam a agi avec bienveillance — mais <em>pour</em> Yara sans lui demander. Ce geste ressemble à de la charité : une aide descendante, d'un qui peut vers un qui ne peut pas. Yara ne sait pas ce qui s'est dit. Elle reste dans la position de celle qui reçoit sans avoir choisi.</div>
+    <div class="dialogue">— La solidarité, ce n'est pas la pitié bien élevée, lui expliquera Réna plus tard. La différence, c'est si l'autre a son mot à dire dans l'arrangement.</div>
+    <div class="fb fb-info">La solidarité <strong>horizontale</strong> : l'autre reste sujet, pas objet d'aide. Ce n'est pas "je donne à celui qui manque" — c'est "on construit ensemble une règle qui tient quand quelqu'un manque".</div>
+    <span class="choice-label">Continuer vers la Partie II.</span>
+    <button class="choice-btn" onclick="go('s2','vie')"><span class="ar">▶</span>Partie II — Discrimination.</button>
+  </div>
+
+  <!-- S1B — règle collective -->
+  <div class="scene" id="s1b">
+    <div class="scene-epoch">Solidarité · Réponse B</div>
+    <div class="scene-title">La Règle qu'on pose ensemble</div>
+    <div class="fb fb-good">Lyam n'a pas géré la situation pour Yara — il a proposé une règle qui s'applique à tout le monde, dans les deux sens. Si lui ne peut pas sortir un mois, la règle le protège aussi. Ce n'est pas de la charité : c'est de la réciprocité.</div>
+    <div class="dialogue">— Ce qui est donné librement, disait quelqu'un dans les anciens textes, ne diminue pas celui qui donne. Et si les deux savent qu'ils peuvent être dans l'un ou l'autre rôle, personne ne perd sa dignité dans l'échange.</div>
+    <div class="fb fb-info">La distinction solidarité / charité tient à ça : la charité est verticale (de celui qui a vers celui qui n'a pas), la solidarité est horizontale (on est tous potentiellement dans les deux positions).</div>
+    <span class="choice-label">Continuer vers la Partie II.</span>
+    <button class="choice-btn" onclick="go('s2','vie')"><span class="ar">▶</span>Partie II — Discrimination.</button>
+  </div>
+
+  <!-- S1C — demander à Yara -->
+  <div class="scene" id="s1c">
+    <div class="scene-epoch">Solidarité · Réponse C</div>
+    <div class="scene-title">La Question qu'on pose d'abord</div>
+    <div class="fb fb-good">Avant d'agir pour quelqu'un, lui demander ce qu'il veut — c'est déjà un acte de solidarité. Yara a peut-être déjà trouvé sa façon de gérer la situation. Peut-être qu'elle ne veut pas qu'on en parle. Peut-être qu'elle attend exactement que quelqu'un lui demande.</div>
+    <div class="dialogue">— Je voulais te demander avant de rien dire, lui dit Lyam.<br>— C'est bien, dit-elle. C'est rare.</div>
+    <div class="fb fb-info">La solidarité qui ne demande pas ce que l'autre veut ressemble parfois plus à une gestion de l'inconfort du donneur qu'à une aide réelle. La première étape, c'est souvent : <em>qu'est-ce que tu veux toi ?</em></div>
+    <span class="choice-label">Continuer vers la Partie II.</span>
+    <button class="choice-btn" onclick="go('s2','vie')"><span class="ar">▶</span>Partie II — Discrimination.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PARTIE 2 — DISCRIMINATION
+       Le Concours de Composition
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s2">
+    <div class="scene-epoch">Partie II · Discrimination</div>
+    <div class="scene-title">Le Concours de Composition</div>
+
+    <p>Le concours de composition musicale est ouvert à tous les écuyers de l'école. Trois prix. Jury de cinq maîtres. Compositions anonymisées — les noms ne sont révélés qu'après la délibération.</p>
+
+    <p>Cette année, les trois lauréats sont tous des fils de nobles. Ce qui, en soi, ne prouve rien. Sauf que Lyam sait — parce qu'il a entendu les délibérations par une fenêtre entrouverte — que Sirin, dont la mère est tisserande, avait la meilleure note technique. Elle n'a pas eu de prix. Le jury a choisi de "pondérer par l'originalité thématique". Sans définir ce que ça voulait dire.</p>
+
+    <span class="choice-label">Ce que Lyam a entendu, ça ressemble à quoi ?</span>
+    <button class="choice-btn" onclick="go('s2a','vie')"><span class="ar">▶</span>Une discrimination directe : le jury a refusé Sirin parce qu'elle est de basse origine.</button>
+    <button class="choice-btn" onclick="go('s2b','vie')"><span class="ar">▶</span>Une discrimination indirecte : le critère "originalité thématique" est subjectif et défavorise structurellement certains profils.</button>
+    <button class="choice-btn" onclick="go('s2c','vie')"><span class="ar">▶</span>Pas une discrimination — le jury a le droit de pondérer. La subjectivité fait partie du jugement artistique.</button>
+  </div>
+
+  <!-- S2A — directe -->
+  <div class="scene" id="s2a">
+    <div class="scene-epoch">Discrimination · Réponse A</div>
+    <div class="scene-title">Directe ou indirecte ?</div>
+    <div class="fb fb-info">Pour que ce soit une discrimination <strong>directe</strong>, il faudrait que le jury ait explicitement mentionné l'origine de Sirin comme critère. Ce n'est pas ce qui s'est passé — ils n'ont pas dit "pas de prix parce que fille de tisserande". Ils ont utilisé un critère en apparence neutre.</div>
+    <div class="fb fb-good">Ce qui s'est passé ressemble davantage à une discrimination <strong>indirecte</strong> : une règle ou un critère présenté comme universel, mais qui produit des effets défavorables prévisibles sur certains profils. L'"originalité thématique" non définie favorise ceux dont les références culturelles sont proches des juges.</div>
+    <span class="choice-label">Continuer.</span>
+    <button class="choice-btn" onclick="go('s2d','vie')"><span class="ar">▶</span>Et maintenant — que faire avec cette information ?</button>
+  </div>
+
+  <!-- S2B — indirecte (bonne) -->
+  <div class="scene" id="s2b">
+    <div class="scene-epoch">Discrimination · Réponse B</div>
+    <div class="scene-title">Le Critère qui semble neutre</div>
+    <div class="fb fb-good">Exactement. La discrimination indirecte ne dit jamais son nom — elle passe par des critères en apparence objectifs ou universels, mais qui avantagent structurellement certains groupes. "Originalité thématique" non définie, c'est laisser le jury juger selon ses propres références culturelles. Et ces références ne sont jamais neutres.</div>
+    <div class="scene-block">En droit français, 25 critères de discrimination sont reconnus — origine, sexe, âge, handicap, orientation sexuelle, appartenance syndicale... La discrimination indirecte est illégale au même titre que la directe, même si elle est bien plus difficile à prouver.</div>
+    <span class="choice-label">Que fait Lyam avec cette observation ?</span>
+    <button class="choice-btn" onclick="go('s2d','vie')"><span class="ar">▶</span>Réfléchir à ce qu'on peut faire — agir ou laisser passer.</button>
+  </div>
+
+  <!-- S2C — pas une discrimination -->
+  <div class="scene" id="s2c">
+    <div class="scene-epoch">Discrimination · Réponse C</div>
+    <div class="scene-title">La Subjectivité comme argument</div>
+    <div class="fb fb-bad">La subjectivité artistique est réelle — mais elle ne protège pas contre la discrimination. Si un critère subjectif produit des effets prévisibles et réguliers défavorisant un groupe particulier, c'est une discrimination indirecte, même sans intention affichée. "Le jury a le droit de choisir" n'efface pas l'effet discriminatoire du choix.</div>
+    <div class="fb fb-info">Ce qui compte en droit de la discrimination, ce n'est pas l'intention — c'est l'effet. Une règle qui semblait neutre peut être discriminatoire si elle désavantage systématiquement certains groupes.</div>
+    <span class="choice-label">Continuer.</span>
+    <button class="choice-btn" onclick="go('s2d','vie')"><span class="ar">▶</span>Et maintenant — que faire ?</button>
+  </div>
+
+  <!-- S2D — agir ou pas -->
+  <div class="scene" id="s2d">
+    <div class="scene-epoch">Discrimination · Suite</div>
+    <div class="scene-title">Le Témoin et son choix</div>
+
+    <p>Lyam a une observation. Il n'a pas de preuve solide — juste ce qu'il a entendu par la fenêtre, et les résultats du classement technique. Sirin ne lui a rien demandé. Il peut choisir de ne rien faire, personne ne le saura.</p>
+
+    <span class="choice-label">Que fait Lyam ?</span>
+    <button class="choice-btn" onclick="go('s2e','vie')"><span class="ar">▶</span>Il note ce qu'il a entendu précisément — dates, faits, formulations exactes. Pas pour accuser : pour avoir quelque chose de solide si Sirin veut agir.</button>
+    <button class="choice-btn" onclick="go('s2f','vie')"><span class="ar">▶</span>Il va voir Sirin directement et lui raconte tout ce qu'il a entendu.</button>
+    <button class="choice-btn" onclick="go('s2g','vie')"><span class="ar">▶</span>Il laisse tomber. Ce n'est pas son affaire — Sirin peut porter ça elle-même si elle le veut.</button>
+  </div>
+
+  <div class="scene" id="s2e">
+    <div class="scene-epoch">Discrimination · Témoin actif</div>
+    <div class="scene-title">La Méthode du Témoin</div>
+    <div class="fb fb-good">Observer précisément, noter les faits sans interpréter, vérifier — c'est la base du témoignage utile. Lyam ne décide pas à la place de Sirin, mais il lui donne les éléments pour décider. C'est une forme de solidarité qui respecte son agentivité.</div>
+    <div class="dialogue">— Observer, vérifier, formuler, transmettre si l'autre le veut, dit Réna quand Lyam lui en parle. Pas dénoncer. Pas gérer à sa place. Équiper.</div>
+    <span class="choice-label">Continuer vers la Partie III.</span>
+    <button class="choice-btn" onclick="go('s3','')"><span class="ar">▶</span>Partie III — Vivre-ensemble.</button>
+  </div>
+
+  <div class="scene" id="s2f">
+    <div class="scene-epoch">Discrimination · Réponse F</div>
+    <div class="scene-title">Tout dire — et après ?</div>
+    <div class="fb fb-info">L'intention est bonne. Mais "lui raconter tout" peut mettre Sirin dans une position difficile — elle reçoit une information lourde sans avoir demandé, sans savoir ce qu'on attend d'elle. La question avant de parler à quelqu'un d'une injustice qui le concerne : <em>est-ce qu'elle veut le savoir ? est-ce qu'elle veut qu'on agisse ?</em></div>
+    <div class="fb fb-good">Le bon réflexe : noter d'abord ce qu'on a observé, puis demander à Sirin ce qu'elle veut faire — avec l'information ou sans.</div>
+    <span class="choice-label">Continuer vers la Partie III.</span>
+    <button class="choice-btn" onclick="go('s3','')"><span class="ar">▶</span>Partie III — Vivre-ensemble.</button>
+  </div>
+
+  <div class="scene" id="s2g">
+    <div class="scene-epoch">Discrimination · Réponse G</div>
+    <div class="scene-title">Le Témoin qui détourne les yeux</div>
+    <div class="fb fb-bad">Laisser passer, c'est un choix aussi. Mais ne rien faire face à une injustice probable, c'est participer à la normaliser. La discrimination indirecte survit précisément parce que les témoins se disent que ce n'est pas leur affaire — et que les victimes se disent qu'elles ne peuvent rien prouver.</div>
+    <div class="fb fb-info">Être allié·e, ça ne signifie pas se battre à la place des autres. Ça peut vouloir dire noter, proposer, demander — et laisser l'autre décider si elle veut qu'on agisse.</div>
+    <span class="choice-label">Continuer vers la Partie III.</span>
+    <button class="choice-btn" onclick="go('s3','')"><span class="ar">▶</span>Partie III — Vivre-ensemble.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PARTIE 3 — VIVRE-ENSEMBLE / LAÏCITÉ
+       Le Repas du jeûne
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s3">
+    <div class="scene-epoch">Partie III · Vivre-ensemble</div>
+    <div class="scene-title">Le Repas du Jeûne</div>
+
+    <p>Pendant une semaine chaque automne, Elio et Nassim observent un jeûne religieux. Ils ne mangent pas à la table commune le soir. Ils s'assoient quand même, pour rester avec le groupe — mais ils ne prennent rien.</p>
+
+    <p>Daran de Mauren lève les yeux de son assiette :</p>
+
+    <div class="dialogue">— Dans une école, on devrait tous manger pareil. La laïcité, c'est ça. Les pratiques religieuses, c'est privé — pas à la table commune.</div>
+
+    <p>Il y a un silence. Kern, le maître de table, attend.</p>
+
+    <span class="choice-label">Daran a-t-il raison ?</span>
+    <button class="choice-btn" onclick="go('s3a')"><span class="ar">▶</span>Oui — dans un espace commun, chacun laisse ses pratiques religieuses à la porte. C'est le principe de laïcité.</button>
+    <button class="choice-btn" onclick="go('s3b')"><span class="ar">▶</span>Non — Elio et Nassim ne demandent rien à personne. S'asseoir sans manger, ce n'est pas imposer une pratique religieuse.</button>
+    <button class="choice-btn" onclick="go('s3c')"><span class="ar">▶</span>La laïcité s'applique aux institutions, pas aux comportements des élèves. Daran confond deux choses.</button>
+  </div>
+
+  <div class="scene" id="s3a">
+    <div class="scene-epoch">Vivre-ensemble · Réponse A</div>
+    <div class="scene-title">Une lecture trop large</div>
+    <div class="fb fb-bad">La laïcité ne signifie pas l'effacement des convictions individuelles dans les espaces communs. Elle signifie que l'<strong>institution</strong> est neutre — qu'elle ne favorise ni n'interdit aucune religion. Elle protège la liberté de conscience, elle ne l'efface pas. Ne pas manger, c'est exercer une liberté individuelle, pas imposer une croyance.</div>
+    <div class="dialogue">— La laïcité protège Elio et Nassim autant qu'elle protège Daran, dit Kern. Elle leur garantit qu'ils peuvent pratiquer — ou ne pas pratiquer. Ce n'est pas la même chose que "tout le monde fait pareil".</div>
+    <span class="choice-label">Vers l'épilogue.</span>
+    <button class="choice-btn" onclick="go('s4')"><span class="ar">▶</span>Voir comment cette soirée se termine.</button>
+  </div>
+
+  <div class="scene" id="s3b">
+    <div class="scene-epoch">Vivre-ensemble · Réponse B</div>
+    <div class="scene-title">La Présence sans imposition</div>
+    <div class="fb fb-good">Exactement. Elio et Nassim ne demandent rien à personne — ils ne réclament pas que la cuisine change, pas que les autres s'abstiennent. Ils exercent une pratique qui ne touche que leur propre corps. La laïcité ne peut pas les en empêcher — elle protège précisément cette liberté.</div>
+    <div class="scene-block">Principe : la laïcité est une règle pour les institutions (l'école ne favorise aucune religion), pas pour les individus (les élèves peuvent croire et pratiquer). Ce qui est interdit, c'est de mettre en cause la neutralité de l'institution — pas d'être croyant dans ses comportements.</div>
+    <span class="choice-label">Vers l'épilogue.</span>
+    <button class="choice-btn" onclick="go('s4')"><span class="ar">▶</span>Voir comment cette soirée se termine.</button>
+  </div>
+
+  <div class="scene" id="s3c">
+    <div class="scene-epoch">Vivre-ensemble · Réponse C</div>
+    <div class="scene-title">Deux niveaux de laïcité</div>
+    <div class="fb fb-good">Tu as mis le doigt sur quelque chose d'essentiel. La laïcité a deux dimensions : la neutralité de l'<strong>institution</strong> (l'école ne prend parti pour aucune religion) et la <strong>liberté de conscience</strong> des individus (les élèves peuvent croire et pratiquer, dans la limite du respect des autres). Daran applique la règle institutionnelle aux comportements personnels — c'est une confusion.</div>
+    <div class="dialogue">— Demander à Elio de manger quand il jeûne, dit Lyam, c'est lui imposer quelque chose. C'est l'inverse de ce que Daran croit défendre.</div>
+    <span class="choice-label">Vers l'épilogue.</span>
+    <button class="choice-btn" onclick="go('s4')"><span class="ar">▶</span>Voir comment cette soirée se termine.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ÉPILOGUE
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s4">
+    <div class="scene-epoch">Épilogue · Valdurne, An I</div>
+    <div class="scene-title">Ce qui tient les châteaux debout</div>
+
+    <p class="drop-cap ni">Le soir, Kern laissa tout le monde se lever de table et souffla la dernière chandelle avant de parler — à voix basse, comme s'il parlait à la pierre des murs autant qu'aux élèves.</p>
+
+    <div class="dialogue">— Un château, dit-il, ce n'est pas les murs. Les murs, ça tient par la physique. Ce qui tient un château vivant — un château où des gens différents peuvent passer une vie ensemble — c'est plus compliqué. Et plus fragile. C'est des règles qu'on construit ensemble. Des distinctions qu'on apprend à faire. Des questions qu'on accepte de poser quand c'est inconfortable.</div>
+
+    <p>Lyam pensa au sac de vivres. Au concours de composition. À Elio qui s'asseyait à la table sans manger, comme si c'était la chose la plus normale du monde d'être là sans que ça ressemble à une revendication.</p>
+
+    <p>Il y avait quelque chose de commun dans ces trois moments — quelque chose qui n'était pas héroïque, pas spectaculaire. Just précis. La différence entre une règle qui protège tout le monde et une habitude qui protège ceux qui ont déjà. La différence entre voir et regarder. Entre parler <em>pour</em> et parler <em>avec</em>.</p>
+
+    <div class="sep">🤝 · · · 🤝 · · · 🤝</div>
+
+    <p class="note-fin">Solidarité, discrimination, vivre-ensemble : trois façons d'aborder la même question — comment des personnes différentes construisent quelque chose ensemble sans que les plus avantagées écrasent les autres par défaut. Les réponses ne sont jamais simples. Mais les questions, elles, peuvent s'apprendre.<br><br><em>Dans votre château aussi, ces trois questions circulent — souvent sans qu'on les nomme.</em></p>
+
+    <div class="reward-block" id="rewardBlock">
+      <span class="reward-icon">🤝</span>
+      <div class="reward-name">La Pierre de Fraternité</div>
+      <p class="reward-desc">Tu as traversé trois situations — solidarité, discrimination, vivre-ensemble. Tu as appris à distinguer la charité de la solidarité, la discrimination directe de l'indirecte, et la laïcité de l'uniformité.<br>Ce n'est pas rien.</p>
+      <div class="xp-badge">⚡ +40 XP — Histoire complète</div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px">
+      <a href="hub_narration.html" class="bk">← Retour à la Bibliothèque</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var KEY='pvs_hof_v2',AKEY='pvs_current_player',DKEY='pvs_narration_done';
+var MID='ldvelh_fraternite';var cur='';
+
+function gS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function svS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function gP(c){var S=gS();return S.players&&S.players[c]?S.players[c]:null}
+function gD(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function mD(id){var d=gD();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+
+function setPillar(next){
+  var map={dis:['sol','dis'],vie:['sol','dis','vie']};
+  var pips=map[next]||[];
+  document.querySelectorAll('.pillar-pip').forEach(function(p){p.classList.remove('active')});
+  pips.forEach(function(cl){var el=document.querySelector('.pillar-pip.'+cl);if(el)el.classList.add('active');});
+}
+
+function go(id, pillar){
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});
+  var n=document.getElementById(id);
+  if(n){n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  if(pillar)setPillar(pillar);
+  if(id==='s4'){
+    if(['sol','dis','vie'].forEach) document.querySelectorAll('.pillar-pip').forEach(function(p){p.classList.add('active')});
+    var d=gD();if(!d[MID]){mD(MID);creditXP(cur,40);}
+  }
+}
+
+function creditXP(code,amount){
+  if(!code)return;
+  var S=gS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  if(S.logs.find(function(l){return l.t==='LDVELH_FRATERNITE_DONE'}))return;
+  S.logs.unshift({d:now,p:code,t:'LDVELH_FRATERNITE_DONE',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+4);p.wBonusW=(Number(p.wBonusW||0)+4);p.up=now;svS(S);
+  var ev=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  ev.push({id:'LDVELH-FRA-'+code+'-'+Date.now(),type:'NARRATION_READ',player:code,module:'LDVELH_FRATERNITE',xp:amount,d:now});
+  if(ev.length>700)ev=ev.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(ev));
+}
+
+function checkUnlock(p){
+  try{
+    var cp=(p&&p.cp)||{};
+    var keys=['fraternite','sol','dis','vie'];
+    for(var i=0;i<keys.length;i++){if(Number(cp[keys[i]]||0)>0)return true;}
+    var d=gD();
+    if(d['cert_fraternite']||d['ldvelh_fraternite'])return true;
+    var lkeys=['CERT_FRATERNITE_SOL1','CERT_FRATERNITE_DIS1','CERT_FRATERNITE_VIE1'];
+    for(var j=0;j<lkeys.length;j++){if(localStorage.getItem(lkeys[j]))return true;}
+    if(localStorage.getItem('pvs_unlock_fraternite')==='1')return true;
+    return false;
+  }catch(e){return false;}
+}
+
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=gP(cur);
+  if(!p){window.location.href='hub_narration.html';return}
+  if(!checkUnlock(p)){document.getElementById('lockScreen').style.display='flex';return;}
+  document.getElementById('mainContent').style.display='block';
+  if(gD()[MID])go('s4');
+})();
+</script>
+</body>
+</html>

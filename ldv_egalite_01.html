@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Écu d'Égale — LDVELH · Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--rouge:#8b2a2a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.12em;line-height:1.9;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(201,168,76,.4),transparent),radial-gradient(1px 1px at 70% 15%,rgba(201,168,76,.3),transparent),radial-gradient(1px 1px at 45% 80%,rgba(201,168,76,.2),transparent),radial-gradient(1px 1px at 85% 60%,rgba(201,168,76,.35),transparent)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+/* LOCK */
+.lock-screen{position:fixed;inset:0;background:rgba(8,6,4,.96);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
+.lock-box{max-width:480px;padding:44px 40px;background:var(--p1);border:1px solid rgba(201,168,76,.25);border-radius:12px}
+.lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.lock-title{font-family:'Cinzel',serif;font-size:1.1em;color:var(--or2);margin-bottom:12px;letter-spacing:2px}
+.lock-txt{font-style:italic;color:var(--enc2);font-size:.88em;line-height:1.75;margin-bottom:18px}
+.lock-code-wrap{display:flex;gap:8px;margin-top:14px;justify-content:center}
+.lock-input{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc);padding:8px 12px;font-family:'Cinzel',serif;font-size:.85em;letter-spacing:2px;width:130px;text-align:center;outline:none}
+.lock-input:focus{border-color:var(--or)}
+.lock-btn{padding:8px 18px;background:rgba(201,168,76,.12);border:1px solid var(--or);border-radius:4px;color:var(--or2);font-family:'Cinzel',serif;font-size:.78em;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.lock-btn:hover{background:rgba(201,168,76,.25)}
+.lock-error{color:#c08070;font-size:.8em;margin-top:8px;font-style:italic;height:18px}
+/* BANNIÈRE */
+.event-banner{background:linear-gradient(135deg,#2a0a0a,#4a1a1a,#2a0a0a);border-bottom:2px solid var(--or);padding:10px 20px;text-align:center;font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or2);position:relative;z-index:10}
+.event-banner span{color:#fff}
+/* MAIN */
+.manuscript{max-width:720px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1}
+.chapter-header{text-align:center;margin-bottom:52px;padding-bottom:30px;border-bottom:1px solid rgba(201,168,76,.28)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.68em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:14px;opacity:.8}
+.badge-event{display:inline-block;background:linear-gradient(135deg,rgba(139,42,42,.55),rgba(42,42,139,.55));border:1px solid var(--or);border-radius:4px;padding:4px 14px;font-family:'Cinzel',serif;font-size:.63em;letter-spacing:2px;color:var(--or2);margin-bottom:22px}
+h1.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.6em,5vw,2.3em);color:var(--or2);line-height:1.25;margin-bottom:8px;text-shadow:0 0 40px rgba(201,168,76,.25)}
+.chapter-subtitle{font-style:italic;color:var(--enc2);font-size:.9em;opacity:.72}
+.progress-track{height:2px;background:rgba(255,255,255,.06);margin-bottom:36px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--rouge),var(--or));transition:width .6s ease}
+.scene{display:none}.scene.active{display:block;animation:fadeUp .55s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+p{margin-bottom:1.4em;text-align:justify;text-indent:1.5em}
+p.ni{text-indent:0}
+.drop-cap::first-letter{font-family:'Cinzel',serif;font-size:4.5em;font-weight:600;color:var(--or);float:left;line-height:.75;margin:8px 8px 0 0;text-shadow:0 0 20px rgba(201,168,76,.45)}
+em{font-style:italic;color:var(--enc2)}
+.dialogue{margin:1.8em 0;padding:0 0 0 24px;border-left:2px solid rgba(201,168,76,.25);text-indent:0;font-style:italic;color:var(--enc2)}
+.scene-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:4px;padding:18px 22px;margin:1.8em 0;font-style:italic;color:var(--enc2);text-indent:0}
+.scene-block::before{content:'⬡ ';color:var(--or);font-style:normal;opacity:.55}
+.separator{text-align:center;margin:2.4em 0;color:var(--or);font-size:1em;opacity:.45;letter-spacing:8px}
+.scene-num{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:3px;color:var(--or);opacity:.6;text-transform:uppercase;margin-bottom:5px}
+.scene-title{font-family:'Cinzel',serif;font-size:1.05em;color:var(--or2);margin-bottom:22px}
+.choice-label{font-family:'Cinzel',serif;font-size:.68em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin:2.4em 0 .9em;display:block}
+.choice-btn{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:5px;color:var(--enc);padding:17px 22px;margin:9px 0;cursor:pointer;transition:all .2s;font-family:'Crimson Text',Georgia,serif;font-size:1em;line-height:1.65}
+.choice-btn:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.5);transform:translateX(5px)}
+.arrow{color:var(--or);margin-right:10px;font-style:normal}
+.fb{padding:15px 20px;margin:18px 0;border-radius:5px;font-style:italic;font-size:.92em;line-height:1.72;text-indent:0}
+.fb-bad{background:rgba(139,42,42,.07);border-left:3px solid #7a2a2a;color:#c09080}
+.fb-good{background:rgba(40,90,40,.07);border-left:3px solid #4a8a4a;color:#90c080}
+.fb-neutre{background:rgba(201,168,76,.05);border-left:3px solid rgba(201,168,76,.3);color:var(--enc2)}
+.reward-block{margin:52px 0 28px;padding:26px;background:linear-gradient(135deg,rgba(201,168,76,.07),rgba(42,42,139,.07));border:1px solid var(--or);border-radius:10px;text-align:center;animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.15)}50%{box-shadow:0 0 28px rgba(201,168,76,.45)}}
+.reward-icon{font-size:2.6em;display:block;margin-bottom:12px}
+.reward-name{font-family:'Cinzel Decorative',serif;font-size:1.1em;color:var(--or2);margin-bottom:7px;letter-spacing:2px}
+.reward-desc{font-size:.86em;color:var(--enc2);opacity:.75;font-style:italic;line-height:1.7;text-indent:0}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);padding:5px 14px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:14px}
+.author-note{margin-top:44px;padding-top:22px;border-top:1px solid rgba(201,168,76,.18);font-size:.84em;color:var(--enc2);opacity:.62;font-style:italic;text-indent:0;line-height:1.8}
+.nav-top{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.22);border-radius:4px;color:var(--enc2);font-size:.74em;text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.nav-footer{text-align:center;margin-top:44px;padding-top:22px;border-top:1px solid rgba(201,168,76,.15)}
+@media(max-width:600px){.manuscript{padding:24px 16px 60px}h1.chapter-title{font-size:1.6em}body{font-size:1.05em}}
+</style>
+</head>
+<body>
+
+<!-- LOCK — Fix 404 : pas de redirect, bypass code prof -->
+<div id="lockScreen" class="lock-screen" style="display:none">
+  <div class="lock-box">
+    <span class="lock-icon">⚖️</span>
+    <div class="lock-title">L'Écu d'Égale · Verrouillé</div>
+    <p class="lock-txt">Cette histoire se débloque après avoir complété le <strong>module Égalité</strong> — ou s'ouvre automatiquement durant la <strong>semaine du 8 mars</strong>.</p>
+    <p class="lock-txt" style="margin-top:8px;font-size:.82em;opacity:.65">Code d'accès (prof / administration) :</p>
+    <div class="lock-code-wrap">
+      <input class="lock-input" id="codeInput" type="text" placeholder="CODE" maxlength="12" autocomplete="off">
+      <button class="lock-btn" onclick="tryCode()">Entrer</button>
+    </div>
+    <div class="lock-error" id="lockError"></div>
+    <div style="margin-top:20px">
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+</div>
+
+<div class="event-banner">⚖️ &nbsp; ÉDITION SPÉCIALE &nbsp;·&nbsp; <span>Semaine du 8 mars</span> &nbsp;·&nbsp; Journée internationale des droits des femmes &nbsp; ⚖️</div>
+
+<div class="manuscript" id="mainContent" style="display:none">
+
+  <div class="nav-top">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <span class="bk" style="opacity:.4;pointer-events:none;cursor:default">LDVELH · Égalité</span>
+  </div>
+
+  <div class="chapter-header">
+    <div class="chapter-label">L'Ordre des Écuyers de Château-Rance &nbsp;·&nbsp; Année I</div>
+    <div class="badge-event">✦ Nouvelle exclusive — débloquée via le module Égalité ✦</div>
+    <h1 class="chapter-title">L'Écu d'Égale</h1>
+    <p class="chapter-subtitle">Dans lequel Lyam apprend que les règles non écrites<br>sont les plus difficiles à effacer — et les plus faciles à changer.</p>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:4%"></div></div>
+
+  <!-- S0 PROLOGUE -->
+  <div class="scene active" id="s0">
+    <div class="scene-num">Prologue</div>
+    <div class="scene-title">L'Escalier de la Tour Sud</div>
+    <p class="drop-cap ni">La forge haute se trouvait au sommet de la tour sud, là où la fumée rejoignait les nuages bas de février. Lyam y montait chaque jeudi depuis que Maître Aldric l'avait jugé prêt — ce qui, dans la bouche du vieux forgeron, signifiait simplement qu'il avait cessé de claquer la porte en entrant.</p>
+    <p>Ce jeudi-là, dans l'escalier étroit qui sentait le charbon refroidi et le métal travaillé, il croisa Kira. Elle descendait. Lui montait. Ils s'arrêtèrent au même palier, comme deux pièces d'engrenage qui auraient oublié de s'éviter.</p>
+    <p>Elle portait sous le bras un rouleau de parchemins couverts d'équations en spirale — des formules d'enchantement de niveau avancé, le genre que les écuyers de troisième année effleuraient à peine. Lyam les avait vus dans les mains du Doyen. Il savait que Kira les comprenait. Tout le monde le savait, même ceux qui faisaient semblant de ne pas la voir.</p>
+    <span class="choice-label">Que fait Lyam ?</span>
+    <button class="choice-btn" onclick="go('s1a',15)"><span class="arrow">▶</span>Il lui rappelle la règle : la Forge Haute est réservée au parcours forge. Poliment, mais fermement.</button>
+    <button class="choice-btn" onclick="go('s1b',15)"><span class="arrow">▶</span>Il ne dit rien. Il observe — les parchemins, les formules — et continue de monter en silence.</button>
+    <button class="choice-btn" onclick="go('s1c',15)"><span class="arrow">▶</span>Il lui demande où elle en est avec ses formules. Sans plan précis — juste pour voir.</button>
+  </div>
+
+  <!-- S1A — A dit la règle -->
+  <div class="scene" id="s1a">
+    <div class="scene-num">Scène I · A</div><div class="scene-title">La Règle qu'on répète</div>
+    <div class="dialogue">— Tu n'es pas supposée monter plus loin, lui dit-il. La Forge Haute est réservée aux écuyers du parcours forge.</div>
+    <p>C'était une règle. Ou plutôt : c'est ce qu'on disait. Lyam réalisa en l'énonçant qu'il n'avait jamais vu cette règle écrite nulle part — ni dans le Codex des Pratiques, ni sur les panneaux de la grande salle. C'était le genre de règle qui n'existe que dans les bouches, et qui se transmet comme une évidence parce que personne ne demande jamais <em>pourquoi</em>.</p>
+    <p>Elle avait dans les yeux quelque chose de plus lourd et de plus calme. La patience précise de quelqu'un qui a déjà cartographié tous les murs avant de chercher la porte.</p>
+    <div class="dialogue">— Je sais, dit-elle. On me l'a déjà dit.</div>
+    <div class="fb fb-neutre">Tu as répété une règle sans l'avoir vérifiée. C'est comme ça que les règles non écrites survivent : de bouche en bouche, jusqu'à ce que tout le monde les croie officielles.</div>
+    <span class="choice-label">À la forge, Lyam ne peut pas travailler.</span>
+    <button class="choice-btn" onclick="go('s2a',35)"><span class="arrow">▶</span>Il redescend chercher le Codex des Pratiques. La règle est écrite où, exactement ?</button>
+    <button class="choice-btn" onclick="go('s2x',28)"><span class="arrow">▶</span>Il frappe le métal. En travaillant, parfois les idées se mettent en ordre.</button>
+  </div>
+
+  <!-- S1B — Silence -->
+  <div class="scene" id="s1b">
+    <div class="scene-num">Scène I · B</div><div class="scene-title">Ce qu'on voit sans rien dire</div>
+    <p>Il ne dit rien. Elle descend. Lui monte. C'est la façon la plus simple.</p>
+    <div class="scene-block">Il pensa aux parchemins sous son bras — pas comme quelqu'un qui cache, pas comme quelqu'un qui cherche à être vu. Les équations en spirale. Le niveau trois. La façon dont le Doyen lui-même consultait ses notes à elle.</div>
+    <div class="fb fb-neutre">Le silence était confortable. Les règles non écrites survivent précisément dans ces silences : personne ne les conteste, tout le monde les respecte par défaut.</div>
+    <span class="choice-label">Aldric le regarde poser ses affaires sans travailler.</span>
+    <button class="choice-btn" onclick="go('s2a',35)"><span class="arrow">▶</span>Lyam redescend chercher le Codex des Pratiques. La règle est écrite où ?</button>
+    <button class="choice-btn" onclick="go('s3',55)"><span class="arrow">▶</span>Il lui parle directement — ce qu'il a vu, ce qu'il ne comprend pas.</button>
+  </div>
+
+  <!-- S1C — A posé une question -->
+  <div class="scene" id="s1c">
+    <div class="scene-num">Scène I · C</div><div class="scene-title">La Question qu'on pose</div>
+    <p>Elle s'arrête avec une légère surprise — celle qu'on a quand quelqu'un fait quelque chose d'inattendu dans un espace où rien n'était attendu.</p>
+    <div class="dialogue">— La troisième série. Les résonances croisées. C'est plus compliqué que ce que le Doyen en dit dans ses notes.</div>
+    <p>Elle lui en parle deux minutes. Il comprend la moitié. Elle adapte sans condescendance. Puis elle repart. Mais maintenant il sait : elle n'a pas accès à la Forge Haute. Et son niveau devrait lui en donner le droit.</p>
+    <div class="fb fb-good">Poser une vraie question à quelqu'un, c'est déjà le voir. Kira n'est plus une silhouette dans l'escalier. Tu as créé quelque chose de petit mais de réel.</div>
+    <span class="choice-label">À la forge, Lyam ne peut pas travailler.</span>
+    <button class="choice-btn" onclick="go('s2a',35)"><span class="arrow">▶</span>Il redescend chercher le Codex des Pratiques.</button>
+  </div>
+
+  <!-- S2A — Le Codex -->
+  <div class="scene" id="s2a">
+    <div class="scene-num">Scène II</div><div class="scene-title">Ce qu'on cherche avant d'agir</div>
+    <p>Il redescendit sans avoir frappé une seule pièce.</p>
+    <p>Il chercha dans le Codex des Pratiques — le document de 47 pages que tout le monde reçoit en arrivant et que personne ne lit entièrement. La section sur les ateliers, les parcours, les accès aux espaces spécialisés.</p>
+    <div class="scene-block">La Forge Haute n'y était pas mentionnée. Pas une ligne. Pas une restriction. Pas un critère d'accès. La règle existait seulement dans les habitudes.</div>
+    <div class="fb fb-good">Vérifier avant d'agir. Tu sais maintenant ce que tu as : une règle orale sans base écrite. C'est précisément ce qui permet de la contester — pas par caprice, par méthode.</div>
+    <span class="choice-label">Avec cette preuve, Lyam va voir qui ?</span>
+    <button class="choice-btn" onclick="go('s3',55)"><span class="arrow">▶</span>Maître Aldric — lui montrer qu'il a cherché d'abord.</button>
+    <button class="choice-btn" onclick="go('s3b',48)"><span class="arrow">▶</span>Directement le Doyen Ferraud — avec la preuve que la règle n'est pas écrite.</button>
+  </div>
+
+  <!-- S2X — Travaille pour oublier -->
+  <div class="scene" id="s2x">
+    <div class="scene-num">Scène II · Déviation</div><div class="scene-title">Le Métal qui ne répond pas</div>
+    <p>Il frappe. Aldric ne dit rien — c'est sa façon d'approuver. Mais au bout d'une heure, il pose le marteau.</p>
+    <div class="fb fb-bad">Les règles non écrites attendent dans les angles morts. Elles ne partent pas sous les coups de marteau.</div>
+    <div class="dialogue">— T'as quelque chose dans la tête, dit Aldric sans le regarder. Tu claques pas la porte — c'est bien. Mais tu frappes pas le métal non plus.</div>
+    <button class="choice-btn" onclick="go('s3',55)"><span class="arrow">▶</span>Lyam lui explique ce qu'il a vu et ce qu'il ne comprend pas.</button>
+  </div>
+
+  <!-- S3 — Aldric -->
+  <div class="scene" id="s3">
+    <div class="scene-num">Scène III</div><div class="scene-title">Ce qu'Aldric dit</div>
+    <p>Il trouva Maître Aldric le lendemain matin, avant que le feu soit allumé. Il n'avait pas préparé de discours. Il dit juste ce qu'il avait vu, et ce qu'il ne comprenait pas.</p>
+    <div class="dialogue">— Kira connaît les formules de niveau trois mieux que la plupart des écuyers de deuxième année. Elle ne peut pas monter à la Forge Haute parce que... parce que c'est comme ça. C'est écrit où, cette règle ?</div>
+    <p>Aldric alimenta le foyer avec le soin qu'il mettait à toutes ses actions.</p>
+    <div class="dialogue">— C'est une vieille règle. Elle n'a jamais été écrite nulle part.<br>— Alors elle peut changer ?<br>— Tout peut changer, Lyam.</div>
+    <p>Il marqua une pause. Les braises prirent.</p>
+    <div class="dialogue">— La question, c'est qui décide de le faire, et quand.</div>
+    <span class="choice-label">La porte est ouverte. Comment Lyam la franchit ?</span>
+    <button class="choice-btn" onclick="go('s4a',78)"><span class="arrow">▶</span>Il demande à Aldric de porter le sujet en tant que Maître — c'est plus légitime.</button>
+    <button class="choice-btn" onclick="go('s4b',78)"><span class="arrow">▶</span>Il va voir le Doyen Ferraud lui-même — par écrit, avec ses arguments.</button>
+    <button class="choice-btn" onclick="go('s4c',72)"><span class="arrow">▶</span>Il parle à Kira d'abord. C'est son accès — elle devrait décider.</button>
+  </div>
+
+  <!-- S3B — Voie directe -->
+  <div class="scene" id="s3b">
+    <div class="scene-num">Scène III · Directe</div><div class="scene-title">Le Bureau du Doyen</div>
+    <p>Le Doyen l'écouta, prit des notes, dit qu'il allait examiner la question.</p>
+    <div class="fb fb-neutre">La voie directe est rapide, mais sans soutien adulte dans la salle, la demande est plus fragile. Une semaine passe. Puis deux.</div>
+    <span class="choice-label">Face au silence ?</span>
+    <button class="choice-btn" onclick="go('s4a',78)"><span class="arrow">▶</span>Demander à Aldric de relancer — son soutien pèse plus lourd.</button>
+    <button class="choice-btn" onclick="go('s4c',72)"><span class="arrow">▶</span>En parler à Kira — peut-être qu'elle veut s'impliquer.</button>
+  </div>
+
+  <!-- S4A — Aldric porte -->
+  <div class="scene" id="s4a">
+    <div class="scene-num">Scène IV · A</div><div class="scene-title">Le Maître qui prend position</div>
+    <p>Aldric porta le sujet. Deux lignes dans le registre, une réunion de quinze minutes avec le Doyen — les mêmes arguments, dans la voix de quelqu'un avec trente ans de forge.</p>
+    <div class="scene-block">Trois jours plus tard, le Doyen Ferraud rédigea un mot sobre. La règle de la Forge Haute était déclarée caduque — n'ayant jamais été écrite, elle ne pouvait être maintenue.</div>
+    <div class="fb fb-good">Tu as choisi de passer par quelqu'un qui avait plus de poids institutionnel. Ce n'est pas de la faiblesse — c'est de la stratégie.</div>
+    <button class="choice-btn" onclick="go('s5',100)"><span class="arrow">▶</span>La semaine suivante… Voir l'épilogue.</button>
+  </div>
+
+  <!-- S4B — Lettre -->
+  <div class="scene" id="s4b">
+    <div class="scene-num">Scène IV · B</div><div class="scene-title">La Lettre qu'on écrit</div>
+    <p>Il posa la question par écrit — compétences observables, règles non documentées. Le Doyen lut. Répondit trois jours plus tard par un mot sobre, sans cérémonie.</p>
+    <div class="fb fb-good">La méthode par écrit laisse une trace, force à clarifier les arguments, et crée une situation où la non-réponse devient visible. Ce qui n'est nulle part écrit ne peut pas être défendu.</div>
+    <button class="choice-btn" onclick="go('s5',100)"><span class="arrow">▶</span>La réponse est venue. Voir l'épilogue.</button>
+  </div>
+
+  <!-- S4C — Parler à Kira -->
+  <div class="scene" id="s4c">
+    <div class="scene-num">Scène IV · C</div><div class="scene-title">Ce qu'on demande avant d'agir pour quelqu'un</div>
+    <div class="dialogue">— Je voulais te demander avant de faire quoi que ce soit. C'est ton accès dont il s'agit. Si tu veux qu'on agisse, on agit. Si tu préfères pas, je n'en parle plus.</div>
+    <div class="dialogue">— J'ai pas besoin qu'on me sauve. Mais j'ai besoin qu'on pose les questions que je peux pas toujours poser moi-même sans qu'on voie d'abord une fille qui se plaint.<br><br>— Alors oui. Agis. Et fais-le bien.</div>
+    <div class="fb fb-good">Tu as posé la question la plus importante : est-ce que l'autre veut qu'on agisse ? La solidarité qui n'interroge pas, c'est juste une autre forme d'autorité.</div>
+    <button class="choice-btn" onclick="go('s4a',78)"><span class="arrow">▶</span>Il va voir Aldric.</button>
+    <button class="choice-btn" onclick="go('s4b',78)"><span class="arrow">▶</span>Il va chez le Doyen par écrit.</button>
+  </div>
+
+  <!-- S5 ÉPILOGUE -->
+  <div class="scene" id="s5">
+    <div class="scene-num">Épilogue</div><div class="scene-title">La Semaine Suivante</div>
+    <p class="drop-cap ni">Ce n'est pas une histoire de héros. Lyam n'eut pas de grand moment. Il n'y eut pas de discours devant l'assemblée des maîtres, pas de confrontation dramatique dans le couloir de pierre. La réalité est plus ordinaire que ça, et peut-être plus solide.</p>
+    <p>La semaine suivante, Kira monta à la Forge Haute pour la première fois. Elle traversa le palier où ils s'étaient croisés, continua jusqu'en haut, et travailla là trois heures.</p>
+    <p>Elle ne dit rien à Lyam. Elle n'avait pas à le faire. Ce n'était pas à lui qu'elle devait quelque chose — c'était au Château, qui avait enfin décidé de se corriger.</p>
+    <p>Mais dans la cour, en passant, elle lança son rouleau de parchemins dans sa direction — un lancer précis, désinvolte, comme si elle faisait ça depuis toujours.</p>
+    <div class="dialogue">— Tu en auras besoin pour la semaine prochaine, dit-elle.<br>— J'en suis pas sûr.<br>— Moi si.</div>
+    <p>Il les attrapa. Les déplia. Les regarda. Elles étaient effectivement difficiles. Il les étudia jusqu'au soir.</p>
+    <div class="separator">✦ · ✦ · ✦</div>
+    <p class="author-note">Cette histoire raconte comment l'égalité se construit : non pas par des déclarations, mais par des actes ordinaires de personnes qui posent les bonnes questions au bon moment.<br><br><em>Dans votre château aussi, des règles non écrites attendent d'être questionnées.</em></p>
+    <div class="reward-block">
+      <span class="reward-icon">⚖️</span>
+      <div class="reward-name">L'Écu d'Égale</div>
+      <p class="reward-desc">Décerné à celles et ceux qui ont compris que l'égalité se construit par la méthode, pas la proclamation.</p>
+      <div class="xp-badge">⚡ +40 XP — Histoire complète</div>
+    </div>
+    <div class="nav-footer"><a href="hub_narration.html" class="bk">← Retour à la Bibliothèque</a></div>
+  </div>
+</div>
+
+<script>
+var KEY='pvs_hof_v2',AKEY='pvs_current_player',DKEY='pvs_narration_done';
+var MID='egalite';var cur='';
+// Codes d'accès prof (personnalisables)
+var CODES=['EGALITE2025','CHATEAURANCE','VALDURNE8MARS','PROF1234'];
+
+function gS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function svS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function gP(c){var S=gS();return S.players&&S.players[c]?S.players[c]:null}
+function gD(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function mD(id){var d=gD();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+
+function tryCode(){
+  var v=(document.getElementById('codeInput').value||'').toUpperCase().trim();
+  var ok=CODES.indexOf(v)>=0;
+  if(ok){
+    localStorage.setItem('pvs_unlock_'+MID,'1');
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+  } else {
+    document.getElementById('lockError').textContent='Code incorrect — demande à ton professeur.';
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('codeInput');
+  if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter')tryCode();});
+});
+
+function go(id,pct){
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});
+  var n=document.getElementById(id);if(n){n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  var f=document.getElementById('progressFill');if(f)f.style.width=(pct||50)+'%';
+  if(id==='s5'){var d=gD();if(!d[MID]){mD(MID);creditXP(40);}}
+}
+
+function creditXP(amount){
+  if(!cur)return;
+  var S=gS();if(!S.players||!S.players[cur])return;
+  var p=S.players[cur];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  var tag='LDVELH_'+MID.toUpperCase()+'_DONE';
+  if(S.logs.find(function(l){return l.t===tag}))return;
+  S.logs.unshift({d:now,p:cur,t:tag,xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+4);p.wBonusW=(Number(p.wBonusW||0)+4);p.up=now;svS(S);
+  var ev=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  ev.push({id:'LDVELH-'+MID+'-'+cur+'-'+Date.now(),type:'NARRATION_READ',player:cur,module:'LDVELH_'+MID.toUpperCase(),xp:amount,d:now});
+  if(ev.length>700)ev=ev.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(ev));
+}
+
+function checkUnlock(){
+  // Semaine du 8 mars
+  var n=new Date(),m=n.getMonth()+1,j=n.getDate();
+  if(m===3&&j>=6&&j<=14)return true;
+  // Override local
+  if(localStorage.getItem('pvs_unlock_'+MID)==='1')return true;
+  // Module complété
+  var d=gD();if(d['egalite_cert']||d['egalite_pilier'])return true;
+  // Joueur avec CP egalite
+  if(cur){var p=gP(cur);if(p&&p.cp&&Number(p.cp.egalite||0)>0)return true;}
+  return false;
+}
+
+(function(){
+  // FIX 404 : on ne redirige plus — on affiche lock ou contenu
+  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
+  // pas de redirect si pas de joueur — lock screen gère ça
+  if(!checkUnlock()){
+    document.getElementById('lockScreen').style.display='flex';
+    return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  if(gD()[MID])go('s5',100);
+})();
+</script>
+</body>
+</html>

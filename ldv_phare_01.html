@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Veilleurs — LDVELH · pHARe · Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#080b0d;--p1:#0f1418;--vert:#1a4a2a;--rouge:#7a1a1a;--bleu:#0a1a3a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.12em;line-height:1.9;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+  radial-gradient(ellipse at 50% 0%,rgba(26,74,42,.12) 0%,transparent 60%),
+  radial-gradient(1px 1px at 20% 25%,rgba(201,168,76,.25),transparent),
+  radial-gradient(1px 1px at 75% 15%,rgba(201,168,76,.2),transparent),
+  radial-gradient(1px 1px at 55% 75%,rgba(201,168,76,.15),transparent),
+  radial-gradient(1px 1px at 10% 80%,rgba(201,168,76,.18),transparent)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+
+/* BANNIÈRE */
+.event-banner{background:linear-gradient(135deg,#050d08,#0d1a10,#050d08);border-bottom:2px solid rgba(26,140,60,.5);padding:12px 20px;text-align:center;position:relative;z-index:10}
+.banner-title{font-family:'Cinzel',serif;font-size:.72em;letter-spacing:3px;color:#5aaa7a;display:block}
+.banner-sub{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:2px;color:rgba(90,170,122,.5);margin-top:3px;display:block}
+
+/* LOCK */
+.lock-screen{position:fixed;inset:0;background:rgba(4,6,4,.97);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
+.lock-box{max-width:460px;padding:44px 40px;background:var(--p1);border:1px solid rgba(26,140,60,.3);border-radius:12px}
+.lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.lock-title{font-family:'Cinzel',serif;font-size:1.1em;color:#5aaa7a;margin-bottom:12px;letter-spacing:2px}
+.lock-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.75;margin-bottom:20px}
+
+/* MAIN */
+.manuscript{max-width:720px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1}
+.chapter-header{text-align:center;margin-bottom:52px;padding-bottom:30px;border-bottom:1px solid rgba(26,140,60,.2)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.67em;letter-spacing:4px;color:#4a9a6a;text-transform:uppercase;margin-bottom:14px;opacity:.8}
+.badge-module{display:inline-block;background:linear-gradient(135deg,rgba(26,74,42,.6),rgba(10,26,58,.6));border:1px solid rgba(26,140,60,.4);border-radius:4px;padding:4px 14px;font-family:'Cinzel',serif;font-size:.62em;letter-spacing:2px;color:#7acca0;margin-bottom:22px}
+h1.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,4.5vw,2.2em);color:#7acca0;line-height:1.25;margin-bottom:8px;text-shadow:0 0 30px rgba(26,140,60,.25)}
+.chapter-subtitle{font-style:italic;color:var(--enc2);font-size:.9em;opacity:.7}
+
+/* PHASES */
+.phase-map{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
+.phase-pip{font-family:'Cinzel',serif;font-size:.56em;letter-spacing:2px;padding:4px 12px;border-radius:20px;border:1px solid rgba(26,140,60,.3);color:rgba(90,170,122,.4);transition:all .4s}
+.phase-pip.active{border-color:#5aaa7a;color:#7acca0;box-shadow:0 0 8px rgba(26,140,60,.3)}
+.phase-pip.done{border-color:rgba(26,140,60,.5);color:rgba(90,170,122,.6)}
+
+/* SCÈNES */
+.scene{display:none}.scene.active{display:block;animation:fadeUp .55s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* TEXTE */
+p{margin-bottom:1.4em;text-align:justify;text-indent:1.5em}
+p.ni{text-indent:0}
+.drop-cap::first-letter{font-family:'Cinzel',serif;font-size:4em;font-weight:600;color:rgba(90,170,122,.9);float:left;line-height:.76;margin:6px 8px 0 0}
+em{font-style:italic;color:var(--enc2)}
+.dialogue{margin:1.7em 0;padding:0 0 0 22px;border-left:2px solid rgba(26,140,60,.25);text-indent:0;font-style:italic;color:var(--enc2)}
+.scene-block{background:rgba(26,140,60,.04);border:1px solid rgba(26,140,60,.15);border-radius:4px;padding:16px 22px;margin:1.7em 0;font-style:italic;color:var(--enc2);text-indent:0}
+.scene-block::before{content:'⬡ ';color:#5aaa7a;font-style:normal;opacity:.5}
+.doc-block{background:rgba(10,26,58,.3);border:1px solid rgba(80,120,200,.2);border-radius:4px;padding:16px 22px;margin:1.7em 0;color:var(--enc2);text-indent:0;border-left:3px solid rgba(80,120,200,.4);font-size:.92em}
+.doc-block::before{content:'📜 ';font-style:normal}
+.sep{text-align:center;margin:2.2em 0;color:#5aaa7a;font-size:1em;opacity:.35;letter-spacing:10px}
+
+/* SCÈNE LABELS */
+.scene-epoch{display:inline-block;font-family:'Cinzel',serif;font-size:.6em;letter-spacing:3px;color:#5aaa7a;opacity:.55;text-transform:uppercase;margin-bottom:6px;padding:2px 10px;border:1px solid rgba(26,140,60,.2);border-radius:20px}
+.scene-title{font-family:'Cinzel',serif;font-size:1.06em;color:#7acca0;margin-bottom:20px}
+
+/* CHOIX */
+.choice-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:3px;color:#4a9a6a;opacity:.65;text-transform:uppercase;margin:2.4em 0 .9em;display:block}
+.choice-btn{display:block;width:100%;text-align:left;background:rgba(255,255,255,.02);border:1px solid rgba(26,140,60,.15);border-radius:5px;color:var(--enc);padding:16px 22px;margin:9px 0;cursor:pointer;transition:all .22s;font-family:'Crimson Text',Georgia,serif;font-size:1em;line-height:1.65}
+.choice-btn:hover{background:rgba(26,140,60,.07);border-color:rgba(26,140,60,.4);transform:translateX(5px)}
+.ar{color:#5aaa7a;margin-right:10px;font-style:normal}
+
+/* FEEDBACK */
+.fb{padding:14px 20px;margin:16px 0;border-radius:5px;font-style:italic;font-size:.91em;line-height:1.72;text-indent:0}
+.fb-bad{background:rgba(122,26,26,.08);border-left:3px solid #7a2a2a;color:#c09080}
+.fb-good{background:rgba(26,74,42,.1);border-left:3px solid #4a8a5a;color:#90c090}
+.fb-info{background:rgba(10,26,58,.2);border-left:3px solid rgba(80,120,200,.35);color:var(--enc2)}
+.fb-warn{background:rgba(180,140,0,.06);border-left:3px solid rgba(180,140,0,.4);color:#d4b870}
+
+/* REWARD */
+.reward-block{margin:52px 0 28px;padding:28px;background:linear-gradient(135deg,rgba(26,74,42,.1),rgba(10,26,58,.15));border:1px solid rgba(26,140,60,.4);border-radius:12px;text-align:center;animation:gP 3.5s ease-in-out infinite}
+@keyframes gP{0%,100%{box-shadow:0 0 10px rgba(26,140,60,.1)}50%{box-shadow:0 0 28px rgba(26,140,60,.35)}}
+.reward-icon{font-size:2.8em;display:block;margin-bottom:12px}
+.reward-name{font-family:'Cinzel Decorative',serif;font-size:1.1em;color:#7acca0;margin-bottom:8px;letter-spacing:2px}
+.reward-desc{font-size:.86em;color:var(--enc2);opacity:.72;font-style:italic;line-height:1.75;text-indent:0}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2);padding:5px 16px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:14px}
+
+/* NAV */
+.nav-top{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(26,140,60,.2);border-radius:4px;color:var(--enc2);font-size:.73em;text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block}
+.bk:hover{border-color:#5aaa7a;color:#7acca0}
+.note-fin{margin-top:44px;padding-top:22px;border-top:1px solid rgba(26,140,60,.15);font-size:.83em;color:var(--enc2);opacity:.6;font-style:italic;text-indent:0;line-height:1.8}
+@media(max-width:600px){.manuscript{padding:24px 16px 60px}h1.chapter-title{font-size:1.4em}body{font-size:1.04em}}
+</style>
+</head>
+<body>
+
+<div id="lockScreen" class="lock-screen" style="display:none">
+  <div class="lock-box">
+    <span class="lock-icon">🛡️</span>
+    <div class="lock-title">Les Veilleurs · Verrouillé</div>
+    <p class="lock-txt">Cette histoire se débloque après avoir commencé un <strong>module pHARe</strong> du Portail.<br><br>L'Ordre des Veilleurs attend ses membres.</p>
+    <a href="hub_narration.html" class="bk" style="margin-top:10px">← Bibliothèque</a>
+  </div>
+</div>
+
+<div class="event-banner">
+  <span class="banner-title">🛡️ LES VEILLEURS DE VALDURNE · LDVELH · MODULE pHARe 🛡️</span>
+  <span class="banner-sub">Reconnaître · Comprendre · Agir</span>
+</div>
+
+<div class="manuscript" id="mainContent" style="display:none">
+
+  <div class="nav-top">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <span class="bk" style="opacity:.4;pointer-events:none;cursor:default">LDVELH · pHARe</span>
+  </div>
+
+  <div class="chapter-header">
+    <div class="chapter-label">Château de Valdurne &nbsp;·&nbsp; Année I &nbsp;·&nbsp; Ordre des Veilleurs</div>
+    <div class="badge-module">🛡️ Programme pHARe — Prévention du Harcèlement</div>
+    <h1 class="chapter-title">Les Veilleurs<br>de Valdurne</h1>
+    <p class="chapter-subtitle">Trois situations. La même question à chaque fois :<br><em>qu'est-ce que tu fais quand tu vois ?</em></p>
+  </div>
+
+  <div class="phase-map">
+    <div class="phase-pip active" id="pip0">LE GROUPE</div>
+    <div class="phase-pip" id="pip1">LA RUMEUR</div>
+    <div class="phase-pip" id="pip2">LE DROIT</div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PROLOGUE — L'ORDRE DES VEILLEURS
+  ══════════════════════════════════════ -->
+  <div class="scene active" id="s0">
+    <div class="scene-epoch">Prologue · Valdurne An I</div>
+    <div class="scene-title">L'Ordre des Veilleurs</div>
+
+    <p class="drop-cap ni">Au Château de Valdurne, il existe un ordre que personne n'a fondé officiellement et dont aucun texte ne fixe les règles. On l'appelle l'Ordre des Veilleurs. Ce ne sont pas des héros — pas de cape, pas de serment solennel. Ce sont des écuyers qui ont appris une chose difficile : qu'il existe une différence entre <em>voir</em> et <em>regarder</em>. Entre être présent et être là.</p>
+
+    <p>Lyam n'en fait pas encore partie. Pas officiellement. Mais ce soir, en traversant le couloir de la cantine, il va croiser trois situations qui vont décider si ce mot — <em>Veilleur</em> — a quelque chose à voir avec lui.</p>
+
+    <span class="choice-label">Commencer.</span>
+    <button class="choice-btn" onclick="go('s1',0)"><span class="ar">▶</span>Entrer dans la cantine.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SITUATION 1 — LE GROUPE À LA CANTINE
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s1">
+    <div class="scene-epoch">Situation I · Le Groupe</div>
+    <div class="scene-title">La Table du fond</div>
+
+    <p>Chaque midi, depuis deux semaines, le même rituel. Un groupe de six écuyers s'assoit autour de Pénor — et Nadia s'assoit seule à la table du fond. Ce n'est pas qu'on lui interdise de s'asseoir ailleurs. Mais quand elle approche, quelqu'un glisse une remarque sur sa façon de parler, sur ses vêtements, sur quelque chose. Rien d'énorme. Rien qu'on pourrait montrer du doigt. Juste assez pour qu'elle comprenne.</p>
+
+    <p>Aujourd'hui, Pénor imite sa façon de manger. Les autres rient.</p>
+
+    <p>Lyam est à deux tables de distance. Il a tout vu.</p>
+
+    <div class="scene-block">Les témoins ont un pouvoir que personne ne leur explique : quand un témoin réagit, même de façon discrète, la probabilité que le comportement s'arrête augmente considérablement. Le silence des témoins est lu comme une approbation. Leur réaction — même minime — change le signal.</div>
+
+    <span class="choice-label">Que fait Lyam ?</span>
+    <button class="choice-btn" onclick="go('s1a',1)"><span class="ar">▶</span>Il ne fait rien. Ce n'est pas son groupe, pas son problème. Intervenir risque de lui attirer des ennuis.</button>
+    <button class="choice-btn" onclick="go('s1b',1)"><span class="ar">▶</span>Il se lève et dit fort à Pénor d'arrêter. Il confronte le groupe directement.</button>
+    <button class="choice-btn" onclick="go('s1c',1)"><span class="ar">▶</span>Il va s'asseoir à la table de Nadia, sort ses affaires, commence à manger — comme si c'était la place la plus normale du monde.</button>
+    <button class="choice-btn" onclick="go('s1d',1)"><span class="ar">▶</span>Il prévient discrètement le maître de surveillance après le repas, en expliquant ce qu'il a vu depuis deux semaines.</button>
+  </div>
+
+  <!-- S1A — ne rien faire -->
+  <div class="scene" id="s1a">
+    <div class="scene-epoch">Situation I · Réponse A</div>
+    <div class="scene-title">Ce que le silence dit</div>
+    <div class="fb fb-bad">Ne rien faire, c'est un choix actif — même si ça ne ressemble pas à une action. Le silence des témoins est lu par le groupe comme un accord silencieux. Et Nadia, elle, a vu que quelqu'un regardait et n'a rien fait. Ce n'est pas neutre.</div>
+    <div class="fb fb-info">Le harcèlement répété ne tient pas uniquement par les actes de ceux qui harcelèrent — il tient aussi par le silence de ceux qui voient. Les études montrent que la simple présence d'un témoin qui n'approuve pas peut réduire la durée des comportements.</div>
+    <span class="choice-label">Ce soir, une deuxième situation.</span>
+    <button class="choice-btn" onclick="go('s2',1)"><span class="ar">▶</span>Situation II — La rumeur.</button>
+  </div>
+
+  <!-- S1B — confrontation directe -->
+  <div class="scene" id="s1b">
+    <div class="scene-epoch">Situation I · Réponse B</div>
+    <div class="scene-title">L'Éclat et ses conséquences</div>
+    <div class="fb fb-warn">L'intention est juste. Mais la confrontation directe devant tout le monde peut mettre Nadia dans une position difficile — soudainement au centre de l'attention, "défendue" publiquement, sans avoir demandé à l'être. Ça peut aussi aggraver les comportements hors de ta vue.</div>
+    <div class="fb fb-info">Il n'y a pas de réponse unique. Parfois la confrontation directe est nécessaire. Mais le plus souvent, des interventions moins visibles — s'asseoir avec la personne isolée, prévenir un adulte — sont plus efficaces et moins risquées pour tout le monde.</div>
+    <span class="choice-label">La deuxième situation arrive.</span>
+    <button class="choice-btn" onclick="go('s2',1)"><span class="ar">▶</span>Situation II — La rumeur.</button>
+  </div>
+
+  <!-- S1C — s'asseoir avec elle -->
+  <div class="scene" id="s1c">
+    <div class="scene-epoch">Situation I · Réponse C</div>
+    <div class="scene-title">Le Geste qui change la configuration</div>
+    <div class="fb fb-good">S'asseoir avec Nadia sans faire de discours — sans que ce soit un acte héroïque, juste une action normale — ça change la configuration du groupe. Elle n'est plus seule. Le groupe ne peut plus faire comme si personne ne voyait. Lyam a rendu l'isolement visible sans confrontation directe.</div>
+    <div class="dialogue">— T'as besoin de rien, lui dit Lyam en posant son plateau. Je mange juste là.</div>
+    <div class="fb fb-info">L'intervention du témoin n'a pas besoin d'être spectaculaire. Rompre l'isolement, signaler sa présence, montrer qu'on n'est pas dans le camp du silence — c'est souvent plus efficace que la confrontation.</div>
+    <span class="choice-label">Ce soir, une deuxième situation.</span>
+    <button class="choice-btn" onclick="go('s2',1)"><span class="ar">▶</span>Situation II — La rumeur.</button>
+  </div>
+
+  <!-- S1D — prévenir adulte -->
+  <div class="scene" id="s1d">
+    <div class="scene-epoch">Situation I · Réponse D</div>
+    <div class="scene-title">L'Adulte dans la chaîne</div>
+    <div class="fb fb-good">Prévenir un adulte de confiance, ce n'est pas "rapporter" — c'est comprendre qu'on n'est pas seul à porter ça, et que les adultes ont des outils qu'un page de première année n'a pas. Lyam a vu depuis deux semaines. Il a les faits. Il les transmet.</div>
+    <div class="fb fb-info">La dénonciation et le signalement, ce sont deux choses différentes. Dénoncer, c'est accuser sans preuve pour nuire. Signaler, c'est transmettre ce qu'on a observé à quelqu'un qui peut agir — parce qu'on ne peut pas tout gérer seul.</div>
+    <span class="choice-label">Ce soir, une deuxième situation.</span>
+    <button class="choice-btn" onclick="go('s2',1)"><span class="ar">▶</span>Situation II — La rumeur.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SITUATION 2 — LA RUMEUR NUMÉRIQUE
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s2">
+    <div class="scene-epoch">Situation II · La Rumeur</div>
+    <div class="scene-title">Le Parchemin qui Circule</div>
+
+    <p>Le lendemain, un parchemin circule dans les couloirs — et dans l'équivalent valdurnien des messages groupés. On raconte que Yasmina, une page de deuxième année, a triché au grand concours de navigation céleste. La rumeur dit qu'elle a copié les formules de quelqu'un d'autre. Que son rang est volé.</p>
+
+    <p>Lyam sait que c'est faux. Il était là quand Yasmina a travaillé ses formules — des heures, seule, dans la salle des cartes. Il l'a vu. Mais il ne la connaît pas bien. Et la rumeur fait déjà le tour du couloir nord.</p>
+
+    <span class="choice-label">Que fait Lyam ?</span>
+    <button class="choice-btn" onclick="go('s2a',2)"><span class="ar">▶</span>Il ne dit rien — c'est pas son problème, et il ne voulait pas être mêlé à ça.</button>
+    <button class="choice-btn" onclick="go('s2b',2)"><span class="ar">▶</span>Il like le parchemin qui circule. Les images sont drôles et tout le monde le fait.</button>
+    <button class="choice-btn" onclick="go('s2c',2)"><span class="ar">▶</span>Il va trouver Yasmina directement pour lui dire qu'il sait la vérité et qu'il est prêt à en témoigner.</button>
+    <button class="choice-btn" onclick="go('s2d',2)"><span class="ar">▶</span>Il rétablit la vérité publiquement devant ceux qui colportent la rumeur, sans attendre de demander à Yasmina.</button>
+  </div>
+
+  <!-- S2A — silence -->
+  <div class="scene" id="s2a">
+    <div class="scene-epoch">Rumeur · Réponse A</div>
+    <div class="scene-title">La Rumeur et son carburant</div>
+    <div class="fb fb-bad">Une rumeur se nourrit du silence de ceux qui savent la vérité. Ne rien dire quand on a les éléments pour corriger, c'est laisser le mensonge circuler librement. Yasmina subit des conséquences réelles — réputation, relations, peut-être sanctions — pour quelque chose que Lyam sait être faux.</div>
+    <span class="choice-label">La troisième situation approche.</span>
+    <button class="choice-btn" onclick="go('s3',2)"><span class="ar">▶</span>Situation III — Le Droit.</button>
+  </div>
+
+  <!-- S2B — liker -->
+  <div class="scene" id="s2b">
+    <div class="scene-epoch">Rumeur · Réponse B</div>
+    <div class="scene-title">Le Like comme acte</div>
+    <div class="fb fb-bad">Liker, c'est participer. Ce n'est pas neutre. Approuver une rumeur en sachant qu'elle est fausse — même discrètement, même parce que "tout le monde le fait" — c'est contribuer activement à un comportement de harcèlement. En droit, diffuser une information fausse qui porte atteinte à quelqu'un peut être qualifié de diffamation.</div>
+    <div class="fb fb-info">Le harcèlement numérique suit les mêmes mécanismes que le harcèlement physique — mais avec une amplification et une persistance souvent plus grandes. Une rumeur en ligne peut toucher des centaines de personnes en quelques heures.</div>
+    <span class="choice-label">La troisième situation.</span>
+    <button class="choice-btn" onclick="go('s3',2)"><span class="ar">▶</span>Situation III — Le Droit.</button>
+  </div>
+
+  <!-- S2C — aller voir Yasmina (bonne) -->
+  <div class="scene" id="s2c">
+    <div class="scene-epoch">Rumeur · Réponse C</div>
+    <div class="scene-title">Ce qu'on offre avant d'agir</div>
+    <div class="fb fb-good">Aller voir Yasmina d'abord — lui dire qu'on sait, lui demander si elle veut qu'on témoigne. Elle décide. C'est son histoire, sa réputation, son choix de comment on y répond. Lyam lui offre une ressource sans la lui imposer.</div>
+    <div class="dialogue">— Je sais que tu n'as pas triché, lui dit Lyam. Je t'ai vue travailler. Si tu veux que j'en parle, je suis là.</div>
+    <div class="fb fb-info">Rétablir la vérité <em>pour</em> quelqu'un sans lui demander, c'est parfois renforcer son sentiment d'impuissance. La bonne intention ne remplace pas le consentement de la personne concernée.</div>
+    <span class="choice-label">La troisième situation.</span>
+    <button class="choice-btn" onclick="go('s3',2)"><span class="ar">▶</span>Situation III — Le Droit.</button>
+  </div>
+
+  <!-- S2D — rétablir publiquement sans demander -->
+  <div class="scene" id="s2d">
+    <div class="scene-epoch">Rumeur · Réponse D</div>
+    <div class="scene-title">Agir sans demander</div>
+    <div class="fb fb-warn">L'intention est juste — rétablir la vérité publiquement est souvent nécessaire. Mais le faire sans demander à Yasmina, c'est lui retirer le contrôle de sa propre situation. Elle peut avoir des raisons de vouloir gérer ça autrement. Elle peut vouloir choisir comment, quand, devant qui.</div>
+    <div class="fb fb-info">Quand on agit pour défendre quelqu'un, la première étape est souvent : lui demander comment elle veut qu'on l'aide — ou si elle le veut.</div>
+    <span class="choice-label">La troisième situation.</span>
+    <button class="choice-btn" onclick="go('s3',2)"><span class="ar">▶</span>Situation III — Le Droit.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SITUATION 3 — LE DROIT
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s3">
+    <div class="scene-epoch">Situation III · Le Droit</div>
+    <div class="scene-title">Ce que dit le Codex</div>
+
+    <p>Troisième situation. Moins immédiate que les deux premières — plus difficile, peut-être.</p>
+
+    <p>Un écuyer de troisième année, Corvin, raconte à Lyam que depuis six mois, chaque fois qu'il traverse le couloir nord après les cours, il se fait bousculer par le même groupe. Pas de blessures. Juste assez pour que ça continue, juste assez pour que ce soit difficile à prouver. Corvin pense que ça fait partie du château, que c'est comme ça. Qu'il n'y a rien à faire.</p>
+
+    <span class="choice-label">Qu'est-ce qui distingue un conflit d'un harcèlement ?</span>
+    <button class="choice-btn" onclick="go('s3a')"><span class="ar">▶</span>La gravité des actes — un conflit, c'est moins grave qu'un harcèlement.</button>
+    <button class="choice-btn" onclick="go('s3b')"><span class="ar">▶</span>La répétition et le déséquilibre de pouvoir — des actes répétés sur une personne qui ne peut pas se défendre seule.</button>
+    <button class="choice-btn" onclick="go('s3c')"><span class="ar">▶</span>L'intention — dans un conflit, personne ne veut vraiment blesser, dans un harcèlement c'est voulu.</button>
+  </div>
+
+  <div class="scene" id="s3a">
+    <div class="scene-epoch">Droit · Réponse A</div>
+    <div class="scene-title">La Gravité n'est pas le critère</div>
+    <div class="fb fb-bad">Un conflit peut être très grave — une bagarre unique peut blesser sérieusement. Ce n'est pas la gravité qui définit le harcèlement. Un harcèlement peut sembler "pas grand chose" à chaque fois, mais sa répétition sur une même personne en fait quelque chose de structurellement différent.</div>
+    <button class="choice-btn" onclick="go('s3d')"><span class="ar">▶</span>Qu'est-ce que ça change concrètement pour Corvin ?</button>
+  </div>
+
+  <div class="scene" id="s3b">
+    <div class="scene-epoch">Droit · Réponse B</div>
+    <div class="scene-title">La Définition juridique</div>
+    <div class="fb fb-good">C'est exactement ça. Le harcèlement se distingue du conflit par deux critères : la <strong>répétition</strong> (des actes qui se reproduisent sur la même personne) et le <strong>déséquilibre de pouvoir</strong> (la victime ne peut pas mettre fin à la situation seule). Un conflit peut être sévère mais équilibré — chacun peut répondre. Le harcèlement est asymétrique.</div>
+    <div class="doc-block">Droit français — Article 222-33-2-3 du Code Pénal : le harcèlement scolaire est reconnu comme infraction pénale depuis la loi du 2 mars 2022. Il est défini par la répétition et la dégradation des conditions de vie. Les sanctions peuvent aller jusqu'à 10 ans de prison si aggravé.</div>
+    <button class="choice-btn" onclick="go('s3d')"><span class="ar">▶</span>Qu'est-ce que ça change pour Corvin ?</button>
+  </div>
+
+  <div class="scene" id="s3c">
+    <div class="scene-epoch">Droit · Réponse C</div>
+    <div class="scene-title">L'Intention n'est pas le seul critère</div>
+    <div class="fb fb-info">L'intention compte — mais elle ne suffit pas comme critère distinctif. On peut harceler "sans s'en rendre compte", par habitude ou jeu de groupe. Et un conflit peut impliquer une intention de blesser. Ce qui définit le harcèlement en droit, c'est la répétition et le déséquilibre — pas l'intention.</div>
+    <button class="choice-btn" onclick="go('s3d')"><span class="ar">▶</span>Pour Corvin, ça change quoi ?</button>
+  </div>
+
+  <div class="scene" id="s3d">
+    <div class="scene-epoch">Droit · Suite</div>
+    <div class="scene-title">Ce que Corvin peut faire</div>
+
+    <p>Lyam explique à Corvin ce qu'il a compris : six mois, même groupe, même couloir, même script. Ce n'est pas "comme ça". Ce n'est pas inévitable. C'est qualifiable — et donc contestable.</p>
+
+    <span class="choice-label">Que peut faire Corvin concrètement ?</span>
+    <button class="choice-btn" onclick="go('s3e')"><span class="ar">▶</span>Rien — il n'a pas de preuve physique, pas de témoin officiel. Sans preuve, inutile d'essayer.</button>
+    <button class="choice-btn" onclick="go('s3f')"><span class="ar">▶</span>Commencer à noter les incidents — date, lieu, ce qui s'est passé, qui était là. Construire une trace écrite.</button>
+    <button class="choice-btn" onclick="go('s3g')"><span class="ar">▶</span>En parler directement au groupe qui le cible et leur expliquer les conséquences légales.</button>
+  </div>
+
+  <div class="scene" id="s3e">
+    <div class="scene-epoch">Droit · Sans preuve</div>
+    <div class="scene-title">La Preuve qui s'écrit</div>
+    <div class="fb fb-bad">Sans rien faire, la situation ne change pas. Et "pas de preuve" est une situation qui peut évoluer — notamment en commençant à en créer. Un journal de bord (dates, faits, témoins potentiels) construit progressivement la trace qui permettra d'agir.</div>
+    <button class="choice-btn" onclick="go('s4')"><span class="ar">▶</span>Vers l'épilogue.</button>
+  </div>
+
+  <div class="scene" id="s3f">
+    <div class="scene-epoch">Droit · La trace écrite</div>
+    <div class="scene-title">La Méthode du Journal</div>
+    <div class="fb fb-good">Tenir un journal des incidents — dates, faits précis, témoins présents, formulations exactes — c'est construire une preuve avant d'en avoir besoin. Ce n'est pas de la paranoïa : c'est la méthode qui permet d'agir sur des bases solides quand l'heure est venue.</div>
+    <div class="fb fb-info">En France, l'établissement scolaire a une obligation légale de protection des élèves. Signaler à la direction avec des faits documentés oblige l'institution à agir — et trace sa propre responsabilité si elle ne le fait pas.</div>
+    <button class="choice-btn" onclick="go('s4')"><span class="ar">▶</span>Vers l'épilogue.</button>
+  </div>
+
+  <div class="scene" id="s3g">
+    <div class="scene-epoch">Droit · Confrontation directe</div>
+    <div class="scene-title">Le Risque de la confrontation solo</div>
+    <div class="fb fb-warn">Expliquer les conséquences légales directement au groupe, seul — c'est risqué. Ça peut aggraver la situation pour Corvin, concentrer la cible. Les confrontations directes ont leur place, mais rarement seules et rarement sans adulte impliqué.</div>
+    <div class="fb fb-info">La chaîne la plus efficace en cas de harcèlement : documenter, signaler à un adulte de confiance, l'adulte active les mécanismes institutionnels. Les adultes ont des leviers que les élèves n'ont pas.</div>
+    <button class="choice-btn" onclick="go('s4')"><span class="ar">▶</span>Vers l'épilogue.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ÉPILOGUE — L'ORDRE DES VEILLEURS
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s4">
+    <div class="scene-epoch">Épilogue · L'Ordre</div>
+    <div class="scene-title">Ce que veut dire Veiller</div>
+
+    <p class="drop-cap ni">Kern avait dit à Lyam, un soir, que l'Ordre des Veilleurs n'avait pas de serment d'entrée. Pas de cérémonie. On n'y entrait pas — on y était, ou on n'y était pas, selon les choix qu'on faisait dans les couloirs ordinaires du Château.</p>
+
+    <div class="dialogue">— Ce qui fait un Veilleur, dit-il, ce n'est pas la force. Ni le courage spectaculaire. C'est la capacité à remarquer ce que les autres font semblant de ne pas voir — et à décider que ça compte. Même quand c'est inconfortable. Même quand personne ne te regarde.</div>
+
+    <p>Lyam pensa à Nadia à la table du fond. À Yasmina et la rumeur dans le couloir nord. À Corvin qui croyait que six mois de bousculades faisaient partie du paysage du château.</p>
+
+    <p>Il pensa à ce qu'il avait fait — ou n'avait pas fait. À la différence entre voir et regarder. Entre être là et être présent.</p>
+
+    <p>Il n'y avait pas de récompense à ça. Pas de badge. Pas d'annonce dans la grande salle. Juste quelque chose qui avait changé — quelque chose de petit, et de difficile à défaire.</p>
+
+    <div class="sep">🛡️ · · · 🛡️ · · · 🛡️</div>
+
+    <p class="note-fin">Le programme pHARe (Prévention du Harcèlement et de Respect à l'École) repose sur un principe : les témoins ont plus de pouvoir que les harceleurs sur la durée d'une situation de harcèlement. Former les élèves à reconnaître, comprendre et agir — plutôt qu'à supporter ou ignorer — c'est le cœur du dispositif.<br><br><em>Veiller, c'est un verbe actif.</em></p>
+
+    <div class="reward-block" id="rewardBlock">
+      <span class="reward-icon">🛡️</span>
+      <div class="reward-name">L'Insigne des Veilleurs</div>
+      <p class="reward-desc">Tu as traversé trois situations — le groupe, la rumeur, le droit. Tu as appris à distinguer conflit et harcèlement, témoin passif et témoin actif, signalement et dénonciation.<br>L'Ordre des Veilleurs compte maintenant un membre de plus.</p>
+      <div class="xp-badge">⚡ +40 XP — Histoire complète</div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px">
+      <a href="hub_narration.html" class="bk">← Retour à la Bibliothèque</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var KEY='pvs_hof_v2',AKEY='pvs_current_player',DKEY='pvs_narration_done';
+var MID='ldvelh_phare';var cur='';
+var pips=['pip0','pip1','pip2'];
+
+function gS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function svS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function gP(c){var S=gS();return S.players&&S.players[c]?S.players[c]:null}
+function gD(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function mD(id){var d=gD();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+
+function updatePips(phase){
+  pips.forEach(function(id,i){
+    var el=document.getElementById(id);if(!el)return;
+    el.classList.remove('active','done');
+    if(i<phase)el.classList.add('done');
+    else if(i===phase)el.classList.add('active');
+  });
+}
+
+function go(id,phase){
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});
+  var n=document.getElementById(id);
+  if(n){n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  if(phase!==undefined)updatePips(phase);
+  if(id==='s4'){
+    pips.forEach(function(pid){var el=document.getElementById(pid);if(el)el.classList.add('done');});
+    var d=gD();if(!d[MID]){mD(MID);creditXP(cur,40);}
+  }
+}
+
+function creditXP(code,amount){
+  if(!code)return;
+  var S=gS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  if(S.logs.find(function(l){return l.t==='LDVELH_PHARE_DONE'}))return;
+  S.logs.unshift({d:now,p:code,t:'LDVELH_PHARE_DONE',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+4);p.wBonusW=(Number(p.wBonusW||0)+4);p.up=now;svS(S);
+  var ev=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  ev.push({id:'LDVELH-PH-'+code+'-'+Date.now(),type:'NARRATION_READ',player:code,module:'LDVELH_PHARE',xp:amount,d:now});
+  if(ev.length>700)ev=ev.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(ev));
+}
+
+function checkUnlock(p){
+  try{
+    var cp=(p&&p.cp)||{};
+    var keys=['phare','pHARe','phare_groupe','phare_neuro','phare_juridique'];
+    for(var i=0;i<keys.length;i++){if(Number(cp[keys[i]]||0)>0)return true;}
+    var d=gD();
+    if(d['cert_phare']||d['ldvelh_phare'])return true;
+    if(localStorage.getItem('pvs_unlock_phare')==='1')return true;
+    var lskeys=['CERT_PHARE_G1','CERT_PHARE_N1','CERT_PHARE_H1','CERT_PHARE_J1','CERT_PHARE_NUM1'];
+    for(var j=0;j<lskeys.length;j++){if(localStorage.getItem(lskeys[j]))return true;}
+    return false;
+  }catch(e){return false;}
+}
+
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=gP(cur);
+  if(!p){window.location.href='hub_narration.html';return}
+  if(!checkUnlock(p)){document.getElementById('lockScreen').style.display='flex';return;}
+  document.getElementById('mainContent').style.display='block';
+  if(gD()[MID])go('s4');
+})();
+</script>
+</body>
+</html>
