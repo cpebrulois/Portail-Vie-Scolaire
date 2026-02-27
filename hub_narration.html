@@ -499,6 +499,12 @@ body::before{
       <div class="cards-grid" id="satelliteGrid"></div>
     </div>
 
+    <!-- ── PILIER 3 : Expéditions au-delà du Portail ── -->
+    <div class="pillar-section">
+      <div class="pillar-label">🌀 Expéditions au-delà du Portail</div>
+      <div class="cards-grid" id="expeditionGrid"></div>
+    </div>
+
   </div>
 </div>
 
@@ -547,13 +553,40 @@ function getPlayer(code){
   const S=getS();
   return S.players&&S.players[code]?S.players[code]:null;
 }
+
+// ── Réplique exacte de xg() + fonctions auxiliaires du superhub ──
+// W = poids des CP (identique au superhub)
+const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+// CIT = missions citoyennes (identique au superhub)
+const CIT={representant_ca:{xp:500}};
+
+function missionXp(code){
+  // Lit S.citizen_lists pour savoir si le joueur est dans une mission
+  const S=getS();
+  const lists=S.citizen_lists||{};
+  let n=0;
+  Object.keys(CIT).forEach(k=>{
+    const lst=lists[k]||[];
+    if(lst.includes(code))n+=CIT[k].xp;
+  });
+  return n;
+}
+function socialRawG(p){return Number(p.socialG||0)+Number(p.wBonusG||0)}
+function socialValidG(p){return Number(p.witnessGiven||0)>0?socialRawG(p):0}
+function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
+function academyXp(p){
+  const cp=p.cp||{};
+  return Object.keys(W).reduce((a,k)=>a+Number(cp[k]||0)*W[k],0);
+}
+function videoXp(p){return Number(p.videoG||0)}
+function acadCoeff(p){
+  const n=Math.min(Number(p.acadDone||0),50);
+  return Math.round((1+n*0.02)*100)/100;
+}
 function xpGlobal(p){
   if(!p)return 0;
-  const citizen=(Number(p.socialG||0)+Number(p.wBonusG||0))*10;
-  const video=Number(p.videoG||0)*5;
-  const acad=(p.acadDone&&typeof p.acadDone==='object'?Object.keys(p.acadDone).length:Number(p.acadDone||0))*15;
-  const malus=Number(p.malusG||0);
-  return Math.max(0,citizen+video+acad+malus);
+  const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);
+  return Math.round(base*acadCoeff(p));
 }
 function getDone(){
   try{return JSON.parse(localStorage.getItem(NARRATION_DONE)||'{}')}catch{return{}}
@@ -664,6 +697,7 @@ function renderHub(p){
 
   renderMainStory(p,xp);
   renderSatellites(p);
+  renderExpeditions(p,xp);
 }
 
 // ── HISTOIRE PRINCIPALE ──
@@ -1302,6 +1336,75 @@ document.getElementById('codeInput').addEventListener('keydown',e=>{
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')closeLdvelh();
 });
+
+// ══════════════════════════════════════════════════════════════
+// PILIER 3 — EXPÉDITIONS AU-DELÀ DU PORTAIL
+// ══════════════════════════════════════════════════════════════
+const EXPEDITIONS=[
+  {
+    id:'exp_fontainebleau',
+    icon:'🏰',
+    title:'Château de Fontainebleau',
+    subtitle:'Au-delà du portail de la bibliothèque',
+    accent:'#8a6a1f',
+    minXP:400,
+    excerpt:'Lyam et Réna franchissent un portail dans un grimoire ancien. De l'autre côté : un château de huit siècles, trente-quatre rois, et des visiteurs qui lèvent de petits rectangles brillants pour capturer les âmes des fresques.',
+    modules:'5 salles · quiz · LDVELH passges secrets',
+    file:'hub_fontainebleau.html',
+    badge:'🗝️ Explorateur de Mondes',
+  },
+  {
+    id:'exp_prochaine',
+    icon:'🌀',
+    title:'Prochaine Expédition',
+    subtitle:'Destination inconnue',
+    accent:'#3a3a5a',
+    minXP:0,
+    excerpt:'Le portail s'allume parfois seul, la nuit. Personne ne sait encore où il mène. La bibliothèque garde ses secrets.',
+    modules:'À venir…',
+    file:null,
+    badge:null,
+  },
+];
+
+function renderExpeditions(p,xp){
+  const grid=document.getElementById('expeditionGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  EXPEDITIONS.forEach(exp=>{
+    const unlocked=xp>=exp.minXP&&exp.file;
+    const card=document.createElement('div');
+    card.className='story-card'+(unlocked?' unlocked':'  locked');
+    card.style.setProperty('--card-accent',exp.accent||'#c9a84c');
+    if(unlocked){
+      card.onclick=()=>{ window.location.href=exp.file; };
+      card.innerHTML=`
+        <span class="sc-icon">${exp.icon}</span>
+        <div class="sc-title">${exp.title}</div>
+        <div class="sc-meta">${exp.subtitle}</div>
+        <div class="sc-excerpt">${exp.excerpt}</div>
+        <div class="sc-footer">
+          ${exp.badge?`<span class="sc-badge">${exp.badge}</span>`:'<span></span>'}
+          <span class="sc-cta">Franchir le portail ▸</span>
+        </div>`;
+    } else if(!exp.file){
+      card.innerHTML=`
+        <span class="sc-icon">${exp.icon}</span>
+        <div class="sc-title">${exp.title}</div>
+        <div class="sc-meta">${exp.subtitle}</div>
+        <div class="sc-excerpt">${exp.excerpt}</div>
+        <div class="sc-footer"><span class="sc-locked-hint">📅 ${exp.modules}</span></div>`;
+    } else {
+      card.innerHTML=`
+        <span class="sc-icon">🔒</span>
+        <div class="sc-title">${exp.title}</div>
+        <div class="sc-meta">${exp.subtitle}</div>
+        <div class="sc-locked-hint">Il te faut ${exp.minXP-xp} XP de plus pour franchir ce portail.</div>`;
+    }
+    grid.appendChild(card);
+  });
+}
+
 </script>
 </body>
 </html>
