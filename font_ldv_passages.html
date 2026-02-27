@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Couloirs de l'Ombre - Fontainebleau</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#120e0a;--p1:#1e1710;--r:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+.wrap{max-width:740px;margin:0 auto;padding:32px 24px 60px}
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc2);font-size:.8em;text-decoration:none;display:inline-block;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.chap-tag{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase}
+.chap-title{font-family:'Cinzel',serif;font-size:clamp(1.4em,4vw,2em);font-weight:700;color:var(--or2);line-height:1.2;margin-bottom:6px;margin-top:20px}
+.chap-meta{font-size:.78em;color:var(--enc2);opacity:.6;margin-bottom:24px;font-style:italic}
+.ldv-bar{display:flex;gap:4px;margin-bottom:28px}
+.ldv-s{height:3px;flex:1;border-radius:2px;background:rgba(201,168,76,.15);transition:background .4s}
+.ldv-s.done{background:rgba(201,168,76,.7)}.ldv-s.cur{background:var(--or)}
+.pas{display:none}.pas.active{display:block;animation:pi .4s ease}
+@keyframes pi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pnum{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:3px;color:var(--or);opacity:.5;margin-bottom:16px}
+.pmood{font-size:2.6em;text-align:center;margin:14px 0;filter:drop-shadow(0 0 12px rgba(201,168,76,.4))}
+.ptxt{font-size:1.05em;line-height:1.9;margin-bottom:22px}
+.ptxt p{margin-bottom:1em;text-align:justify}
+.ptxt em{color:var(--enc2);font-style:italic}
+.divider{border:none;border-top:1px solid rgba(201,168,76,.12);margin:20px 0}
+.choix{display:flex;flex-direction:column;gap:8px}
+.cbtn{width:100%;padding:12px 16px;text-align:left;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.22);border-radius:6px;color:var(--enc);font-family:'Crimson Text',serif;font-size:.97em;line-height:1.5;cursor:pointer;transition:all .2s}
+.cbtn::before{content:'▸ ';color:var(--or);opacity:.6}
+.cbtn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.5);color:var(--or2);transform:translateX(4px)}
+.res{margin-top:18px;padding:20px;border-radius:8px;text-align:center}
+.res.ok{background:linear-gradient(135deg,rgba(26,58,26,.6),rgba(42,74,26,.4));border:1px solid rgba(100,180,100,.4)}
+.res.ko{background:linear-gradient(135deg,rgba(58,26,26,.6),rgba(74,42,26,.4));border:1px solid rgba(180,80,80,.4)}
+.ri{font-size:2em;display:block;margin-bottom:8px}
+.rt{font-family:'Cinzel',serif;font-size:.88em;margin-bottom:6px}
+.res.ok .rt{color:#8fe888}.res.ko .rt{color:#e88888}
+.rxp{font-size:1.1em;font-weight:600;margin:6px 0}
+.res.ok .rxp{color:#b8e8b8}.res.ko .rxp{color:#e8b8b8}
+.rn{font-size:.84em;color:var(--enc2);font-style:italic;margin-bottom:12px;line-height:1.6}
+.btn-a{padding:9px 22px;border-radius:4px;cursor:pointer;font-size:.8em;margin:4px;transition:all .2s}
+.btn-gold{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or2);font-family:'Cinzel',serif;letter-spacing:1px}
+.btn-gold:hover{background:rgba(201,168,76,.25)}
+.btn-grey{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
+.btn-grey:hover{border-color:rgba(255,255,255,.35)}
+@media(max-width:600px){.wrap{padding:20px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a class="bk" href="hub_fontainebleau.html">Fontainebleau</a>
+    <a class="bk" href="hub_narration.html">Bibliotheque</a>
+    <span class="chap-tag">Sequence LDVELH - Fontainebleau</span>
+  </div>
+  <h1 class="chap-title">Les Couloirs de l'Ombre</h1>
+  <p class="chap-meta">Tu incarnes Lyam - 6 passages - Tes choix ont des consequences</p>
+
+  <div class="ldv-bar" id="ldv-bar"></div>
+  <div id="ldv-content"></div>
+</div>
+
+<script>
+var KEY='pvs_hof_v2'; var AKEY='pvs_current_player'; var XKEY='pvs_narration_xp'; var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60}; var CIT={representant_ca:{xp:500}};
+var cur='';
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(code){try{var S=getS();var lists=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((lists[k]||[]).indexOf(code)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadCoeff(p){try{var n=Math.min(Number(p&&p.acadDone||0),50);var c=Math.round((1+n*0.02)*100)/100;return isNaN(c)?1:c}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);var r=Math.round(base*acadCoeff(p));return isNaN(r)?0:r}catch(e){return 0}}
+function creditXP(code,amount,reason){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:reason,target:'FONTAINEBLEAU',xp:Number(amount)});
+  if(S.logs.length>700)S.logs.length=700;
+  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
+  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem(XKEY)||'[]');
+  pending.push({code:code,amount:amount,reason:reason,d:now});
+  localStorage.setItem(XKEY,JSON.stringify(pending));
+}
+function showXpNotif(amount){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9em;text-align:center;pointer-events:none';
+  if(amount>0){d.style.background='linear-gradient(135deg,#1a3a1a,#2a4a1a)';d.style.border='1px solid rgba(100,200,100,.5)';d.style.color='#b8e8b8';d.textContent='+'+amount+' XP'}
+  else{d.style.background='linear-gradient(135deg,#3a1a1a,#4a1a1a)';d.style.border='1px solid rgba(200,80,80,.5)';d.style.color='#e8b8b8';d.textContent=amount+' XP'}
+  document.body.appendChild(d);setTimeout(function(){d.remove()},4000);
+}
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_fontainebleau.html';return}
+  cur=raw.trim().toUpperCase();
+  if(!getP(cur)){window.location.href='hub_fontainebleau.html';return}
+})();
+
+var STEPS=6;
+var hist=[];
+
+var PAS={
+  p1:{num:'1 - La decouverte',mood:'🕯️',
+    txt:['Tu es Lyam. Tu traverses la Galerie des Cerfs apres avoir visite les appartements royaux.',
+         'Une tapisserie ancienne couvre presque entierement le mur nord. Elle represente une chasse royale - des chiens, des cerfs, des ecuyers a cheval.',
+         'Le bas de la tapisserie bouge legerement. Pas de vent ici, les fenetres sont fermees.',
+         'Tu souleves le coin. Derriere : une porte de bois sombre sans poignee visible. Juste une encoche dans le bois a hauteur de main.',
+         'Rena est quelques pas derriere toi. Elle n\'a pas encore vu.'],
+    choix:[{t:'Entrer seul, explorer rapidement et ressortir avant que Rena ne remarque.',n:'p2a'},
+           {t:'Appeler Rena et entrer ensemble.',n:'p2b'},
+           {t:'Refermer la tapisserie et aller voir un gardien du musee.',n:'p2c'}]},
+
+  p2a:{num:'2 - Le couloir solitaire',mood:'🌑',
+    txt:['Le couloir descend. Tu comptes onze marches, un palier, puis un couloir horizontal.',
+         'La pierre est differente ici - plus ancienne, plus rugueuse. Tu entends des pas legers et reguliers au-dessus de toi. Des visiteurs qui marchent dans la galerie, a quelques metres, sans savoir que tu es la.',
+         'Le couloir tourne a droite. Tu debouches dans une petite piece circulaire : une chaise de bois, un chandelier de fer vide, et un mur couvert de marques gravees. Des noms, des dates, des phrases en vieilles lettres.',
+         'Des gens sont passes ici, beaucoup, depuis tres longtemps. Le plus recent que tu peux dechiffrer : 1901. Le plus ancien, presque efface : 1647.'],
+    choix:[{t:'Rester et essayer de recopier et comprendre toutes les inscriptions.',n:'p3a'},
+           {t:'Continuer, chercher une autre sortie plus profonde dans le passage.',n:'p3b'}]},
+
+  p2b:{num:'2 - Ensemble dans l\'ombre',mood:'🤝',
+    txt:['Vous entrez tous les deux. La porte se referme sans bruit derriere vous - pas completement, un filet de lumiere reste visible.',
+         'Rena sort une pierre lumineuse de son sac - une habitude de Valdurne. La lueur bleutee eclaire une pierre vieille de plusieurs siecles.',
+         '"Ces passages ont ete construits pour se deplacer sans etre vu," dit-elle.',
+         '"Par un roi ?" tu demandes.',
+         '"Ou par quelqu\'un qui voulait s\'approcher du roi sans que personne le sache." Elle montre deux directions. "Lequel on prend ?"'],
+    choix:[{t:'Le passage qui monte - vers les appartements royaux.',n:'p3a'},
+           {t:'Le passage qui descend - vers les caves et les fondations.',n:'p3b'}]},
+
+  p2c:{num:'2 - La transparence',mood:'💡',
+    txt:['Tu trouves un gardien en uniforme vert, badge dore, pres de la sortie de la galerie.',
+         'Tu lui montres la porte derriere la tapisserie. Il sourit.',
+         '"Ah oui, les passages. Ils sont tous repertories. Certains sont accessibles en visite guidee."',
+         'Lyam reste silencieux un moment. Dans son monde, un passage secret decouvert est abandonne ou condamne. Ici, c\'est une attraction.',
+         'La visite guidee commence vingt minutes plus tard. Le guide repond a toutes les questions de Lyam. Toutes.'],
+    choix:[{t:'Suivre la visite guidee jusqu\'au bout et ecouter attentivement.',n:'p3c'}]},
+
+  p3a:{num:'3 - Les noms graves',mood:'📜',
+    txt:['Les inscriptions sur le mur circulaire couvrent deux cent cinquante ans. Noms, dates, parfois une phrase.',
+         'Ce ne sont pas des rois. Pas de titres, pas de blasons. Juste : un prenom, une annee, parfois deux mots.',
+         'Un domestique qui a vecu ici quarante ans. Une femme qui a grave son prenom deux fois, a dix ans d\'intervalle. Quelqu\'un qui a ecrit juste : "J\'etais la."',
+         'L\'histoire officielle n\'a garde aucun de ces noms. Les grandes salles racontent l\'histoire des commanditaires. Ces murs racontent l\'histoire des gens qui ont vecu dans leurs ombres.',
+         'Rena - ou la voix du guide, selon le chemin que tu as pris - te pose une question directe.'],
+    choix:[{t:'Continuer vers le dilemme final.',n:'p_dilemme'}]},
+
+  p3b:{num:'3 - Les fondations',mood:'🏛️',
+    txt:['Le passage descend encore. L\'air devient humide et froid. Des niches dans le mur semblent avoir contenu des torches, autrefois.',
+         'Une porte en fer forge, fine, fermee par un cadenas moderne. Derriere : des formes sous des baches blanches.',
+         'Des oeuvres. Protegees la, dans l\'obscurite.',
+         'Tu comprendras plus tard : elles ont ete cachees ici pendant la Seconde Guerre mondiale, quand des soldats occupaient le chateau en 1940. Des gens ont traverse ces passages pour mettre la beaute a l\'abri.',
+         'Lyam reste immobile un moment. La beaute mise a l\'ombre pour qu\'elle survive. Il trouve ca etrangement emouvant.'],
+    choix:[{t:'Continuer vers le dilemme final.',n:'p_dilemme'}]},
+
+  p3c:{num:'3 - Ce que le guide raconte',mood:'🎙️',
+    txt:['Le guide connait tous les passages : les escaliers du Roi, de la Reine, les couloirs derriere la chapelle.',
+         '"Ces passages permettaient aux souverains de circuler sans etre vus des courtisans. Intimite, intrigues politiques, parfois amours secretes."',
+         'Il s\'arrete devant une porte fermee. "En 1657, la reine Christine de Suede residait au chateau comme invitee de Louis XIV. Elle soupconnait son grand ecuyer Monaldeschi de l\'avoir trahie. Elle l\'a fait suivre dans la Galerie des Cerfs par ses hommes, et a ordonne son execution. Dans ce chateau. En tant qu\'invitee."',
+         'Lyam ecoute sans bouger. Dans son monde, les regles de l\'hospitalite sont absolues : on ne fait pas de mal a quelqu\'un sous son propre toit, jamais. Ce que Christine a fait transgresse un code qu\'il ne peut pas calculer.',
+         'Ce que ca dit sur le pouvoir, il n\'est pas sur de vouloir le savoir.'],
+    choix:[{t:'Continuer vers le dilemme final.',n:'p_dilemme'}]},
+
+  p_dilemme:{num:'4 - La vraie question',mood:'⚖️',
+    txt:['Vous etes revenus dans les grandes salles. Lyam reflechit a tout ce qu\'il a vu.',
+         'Les passages racontent une histoire differente des galeries. Les galeries : tout visible, tout magnifie, tout public. Histoire officielle. Les passages : invisibles. Domestiques, fugitifs, oeuvres cachees, espions peut-etre.',
+         'Rena te pose la question directement.',
+         '"Laquelle des deux histoires de ce chateau est vraie ?"'],
+    choix:[{t:'"L\'histoire officielle - les rois qui ont bati et commande tout ca."',n:'p_echec',r:'fail'},
+           {t:'"Les deux. L\'une n\'existe pas sans l\'autre."',n:'p_ok',r:'success'},
+           {t:'"L\'histoire des gens invisibles. Elle est plus vraie parce qu\'elle a moins ete racontee."',n:'p_ok2',r:'success'}]},
+
+  p_ok:{num:'Fin - La bonne reponse',mood:'🌟',r:true,rt:'success',
+    txt:['Rena hoche la tete lentement. "C\'est ca."',
+         'L\'histoire d\'un lieu n\'est pas la somme des grandes dates et des grands noms. C\'est la tension entre ce qui est montre et ce qui est cache, entre ce qui est visible et ce qui reste dans l\'ombre.',
+         'Fontainebleau vaut autant dans ses passages secrets que dans sa Galerie Francois Ier. Les deux sont indissociables.',
+         'Ce que les historiens appellent l\'histoire des "oublies" ou des "sans-noms" - Lyam, lui, sait juste que la realite est epaisse, qu\'elle a des couloirs caches, et que visiter change la facon dont tu regardes les grandes salles.'],
+    note:"Histoire complete : les grandes figures ET ceux qui n'ont pas de statues. Les deux forment l'epaisseur du reel."},
+
+  p_ok2:{num:'Fin - Une reponse juste, dangereuse',mood:'🌟',r:true,rt:'success',
+    txt:['Rena sourit. "Dangereux comme reponse. Mais pas faux."',
+         'Les histoires peu racontees meritent d\'etre entendues d\'abord parce qu\'elles sont minoritaires - pas parce qu\'elles sont plus vraies.',
+         'Mais tu as raison de les privilegier ici : ces histoires ont ete effacees volontairement. L\'histoire officielle avait les moyens de se raconter elle-meme. Donner une voix a ce qui a ete tu, c\'est une forme de justice historique.',
+         'Lyam note que corriger un desequilibre, ce n\'est pas nier ce qui existait. C\'est rendre le terrain plus juste.'],
+    note:"Valoriser les histoires oubliees, c'est corriger un desequilibre - pas nier l'existence de l'histoire officielle."},
+
+  p_echec:{num:'Un angle mort',mood:'🌫️',r:true,rt:'fail',
+    txt:['Rena secoue doucement la tete. "Tu viens de traverser des passages ou des gens ont vecu, cache des oeuvres pendant la guerre, grave des noms pour qu\'on n\'oublie pas qu\'ils existaient. Et tu dis que l\'histoire des rois qui ont commande est la seule vraie ?"',
+         'Pas de jugement dans sa voix. Juste la question.',
+         'Tu n\'as pas tort - les rois ont bati Fontainebleau. Mais reduire l\'histoire d\'un lieu a ses commanditaires officiels, c\'est amputer la realite de toute son epaisseur.',
+         'L\'histoire complete integre tous ceux qui y ont vecu, travaille, laisse une trace - meme invisible.'],
+    note:"Retente. La bonne reponse est plus complexe que 'l'un ou l'autre'."},
+};
+
+function renderBar(histLen){
+  var bar=document.getElementById('ldv-bar');bar.innerHTML='';
+  for(var i=0;i<STEPS;i++){
+    var s=document.createElement('div');
+    s.className='ldv-s'+(i<histLen-1?' done':i===histLen-1?' cur':'');
+    bar.appendChild(s);
+  }
+}
+
+function renderPas(id){
+  var p=PAS[id];if(!p)return;
+  hist.push(id);
+  renderBar(hist.length);
+  var c=document.getElementById('ldv-content');
+  var h='<div class="pas active">';
+  h+='<div class="pnum">'+p.num+'</div>';
+  if(p.mood) h+='<div class="pmood">'+p.mood+'</div>';
+  h+='<div class="ptxt">';
+  p.txt.forEach(function(t){h+='<p>'+t+'</p>';});
+  h+='</div><div class="divider"></div>';
+
+  if(p.r){
+    var ok=p.rt==='success';var xp=ok?50:-25;
+    if(ok)markDone('font_ldv');
+    creditXP(cur,xp,'FONT_LDV_'+(ok?'OK':'KO'));
+    showXpNotif(xp);
+    h+='<div class="res '+(ok?'ok':'ko')+'">';
+    h+='<span class="ri">'+(ok?'⭐':'💭')+'</span>';
+    h+='<div class="rt">'+(ok?'Bonne reponse !':'A retravailler...')+'</div>';
+    h+='<div class="rxp">'+(ok?'+'+xp:''+xp)+' XP</div>';
+    h+='<div class="rn">'+(p.note||'')+'</div>';
+    h+='<div>';
+    if(!ok) h+='<button class="btn-a btn-gold" onclick="restart()">Recommencer</button>';
+    h+='<button class="btn-a btn-grey" onclick="window.location.href=\'hub_fontainebleau.html\'">Retour au chateau</button>';
+    h+='</div></div>';
+  } else if(p.choix){
+    h+='<div class="choix">';
+    p.choix.forEach(function(ch){
+      h+='<button class="cbtn" onclick="renderPas(\''+ch.n+'\')">'+ch.t+'</button>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  c.innerHTML=h;
+  window.scrollTo(0,0);
+}
+
+function restart(){hist=[];renderPas('p1');}
+renderPas('p1');
+</script>
+</body>
+</html>

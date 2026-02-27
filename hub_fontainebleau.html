@@ -3,764 +3,202 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expédition à Fontainebleau — L'Ordre des Écuyers</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<title>Chateau de Fontainebleau - Expedition de Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --or:#c9a84c; --or-clair:#e8c97a; --or-sombre:#8a6a1f;
-  --encre:#e8dfc8; --encre-2:#c8bfa8;
-  --parchemin:#120e0a; --parchemin-2:#1e1710; --parchemin-3:#2a2218;
-  --rouge:#7a2020; --bleu-royal:#0e1a30; --vert-foret:#0e1e0e;
-  --radius:8px;
-  /* Couleurs modules */
-  --c1:#5a3a1a; --c2:#1a2a5a; --c3:#4a1a2a; --c4:#1a3a1a; --c5:#2a1a4a;
-}
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#120e0a;--p1:#1e1710;--r:8px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--parchemin);color:var(--encre);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 70% 50% at 15% 25%,rgba(90,58,26,0.08) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 70% at 85% 75%,rgba(26,42,90,0.07) 0%,transparent 60%);}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--parchemin)}
-::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.3);border-radius:3px}
-
-/* ══════════ AUTH ══════════ */
-
-
-.auth-card{width:min(460px,92vw);background:var(--parchemin-2);border:1px solid rgba(201,168,76,0.35);border-radius:12px;padding:36px;text-align:center;box-shadow:0 0 60px rgba(0,0,0,0.6),0 0 20px rgba(201,168,76,0.1);animation:card-in 0.6s ease;}
-@keyframes card-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.auth-portal-img{font-size:3em;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(201,168,76,0.5))}
-.auth-title{font-family:'Cinzel',serif;font-size:1.3em;color:var(--or-clair);margin-bottom:4px;letter-spacing:2px}
-.auth-sub{font-style:italic;color:var(--encre-2);font-size:0.88em;margin-bottom:20px;opacity:0.75;line-height:1.5}
-.auth-input{width:100%;padding:11px 15px;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.3);border-radius:6px;color:var(--encre);font-family:'Crimson Text',serif;font-size:1em;text-align:center;letter-spacing:2px;text-transform:uppercase;outline:none;transition:border-color 0.2s;margin-bottom:14px;}
-.auth-input:focus{border-color:var(--or);box-shadow:0 0 16px rgba(201,168,76,0.25)}
-.btn-primary{width:100%;padding:11px;background:linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.1));border:1px solid var(--or);border-radius:6px;color:var(--or-clair);font-family:'Cinzel',serif;font-size:0.82em;letter-spacing:2px;cursor:pointer;transition:all 0.2s;}
-.btn-primary:hover{background:rgba(201,168,76,0.35)}
-.auth-msg{margin-top:10px;font-size:0.82em;min-height:1.4em;color:#e88}
-.back-link{display:inline-block;margin-top:16px;color:var(--encre-2);font-size:0.8em;opacity:0.6;cursor:pointer;text-decoration:none;transition:opacity 0.2s;}
-.back-link:hover{opacity:1;color:var(--or)}
-
-/* ══════════ PORTAIL INTRO ══════════ */
-#hubMain{display:none}
-#hubMain.visible{display:block}
-.portal-header{position:relative;z-index:1;padding:40px 24px 0;max-width:1100px;margin:0 auto}
-.portal-tag{font-family:'Cinzel',serif;font-size:0.63em;letter-spacing:5px;color:var(--or);opacity:0.7;text-transform:uppercase;margin-bottom:10px}
-.portal-title{font-family:'Cinzel',serif;font-size:clamp(1.8em,5vw,2.6em);font-weight:700;color:var(--or-clair);text-shadow:0 0 40px rgba(201,168,76,0.3);line-height:1.2;margin-bottom:6px}
-.portal-sub{font-style:italic;color:var(--encre-2);opacity:0.7;margin-bottom:20px}
-.player-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:6px;margin-bottom:28px;font-size:0.82em;}
-.pb-item{color:var(--encre-2)}.pb-val{color:var(--or-clair);font-weight:600;margin-left:4px}
-.pb-sep{color:rgba(201,168,76,0.3)}
-.btn-sm{padding:5px 14px;background:transparent;border:1px solid rgba(201,168,76,0.25);border-radius:4px;color:var(--encre-2);font-size:0.82em;cursor:pointer;transition:all 0.2s;margin-left:auto}
-.btn-sm:hover{border-color:var(--or);color:var(--or)}
-
-/* ══════════ INTRO NARRATIVE ══════════ */
-.narrative-intro{max-width:740px;margin:0 auto 40px;padding:0 24px;position:relative;z-index:1;}
-.ni-card{background:linear-gradient(135deg,rgba(90,58,26,0.15),rgba(26,42,90,0.1));border:1px solid rgba(201,168,76,0.25);border-radius:var(--radius);padding:24px 28px;position:relative;overflow:hidden;}
-.ni-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.6),transparent)}
-.ni-rune{font-size:0.65em;letter-spacing:4px;color:var(--or);font-family:'Cinzel',serif;opacity:0.7;margin-bottom:12px;text-transform:uppercase}
-.ni-text{font-style:italic;font-size:0.95em;line-height:1.85;color:var(--encre-2)}
-.ni-text p{margin-bottom:1em}
-.ni-text em{color:var(--encre);font-style:normal;font-weight:600}
-.ni-voice{margin-top:12px;padding:10px 14px;background:rgba(201,168,76,0.06);border-left:2px solid rgba(201,168,76,0.3);font-size:0.87em;line-height:1.7}
-
-/* ══════════ GRILLE MODULES ══════════ */
-.modules-section{max-width:1100px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
-.section-label{font-family:'Cinzel',serif;font-size:0.7em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;gap:10px}
-.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,0.2),transparent)}
-.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.module-card{background:var(--parchemin-2);border:1px solid rgba(201,168,76,0.18);border-radius:var(--radius);padding:20px;cursor:pointer;transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;}
-.module-card:hover{transform:translateY(-3px);border-color:rgba(201,168,76,0.45);box-shadow:0 8px 30px rgba(0,0,0,0.4),0 0 12px rgba(201,168,76,0.12)}
-.module-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--mc-accent,#c9a84c),transparent)}
-.module-card.done::after{content:'✓';position:absolute;top:12px;right:14px;color:var(--or);opacity:0.7;font-size:0.8em}
-.mc-icon{font-size:1.9em;margin-bottom:10px;display:block}
-.mc-num{font-family:'Cinzel',serif;font-size:0.6em;letter-spacing:3px;color:var(--or);opacity:0.6;margin-bottom:4px;text-transform:uppercase}
-.mc-title{font-family:'Cinzel',serif;font-size:0.92em;font-weight:600;color:var(--or-clair);line-height:1.3;margin-bottom:6px}
-.mc-lyam{font-style:italic;font-size:0.8em;color:var(--encre-2);border-left:2px solid rgba(201,168,76,0.2);padding-left:8px;margin-bottom:10px;line-height:1.6}
-.mc-footer{display:flex;align-items:center;justify-content:space-between;font-size:0.72em}
-.mc-tag{color:var(--or);opacity:0.7}
-.mc-cta{color:var(--encre-2);opacity:0.6}
-.mc-ldvelh{display:inline-block;padding:2px 8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:3px;font-size:0.9em;color:var(--or-clair)}
-
-/* ══════════ MODALE MODULE ══════════ */
-#moduleModal{position:fixed;inset:0;z-index:9500;background:rgba(10,8,5,0.97);display:none;overflow-y:auto;}
-#moduleModal.open{display:block}
-.mm-wrap{max-width:760px;margin:0 auto;padding:28px 24px 60px}
-.mm-nav{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
-.btn-back{padding:7px 16px;background:transparent;border:1px solid rgba(201,168,76,0.3);border-radius:4px;color:var(--encre-2);cursor:pointer;font-size:0.8em;transition:all 0.2s;}
-.btn-back:hover{border-color:var(--or);color:var(--or)}
-.mm-chapter{font-family:'Cinzel',serif;font-size:0.72em;letter-spacing:2px;color:var(--or);opacity:0.8}
-.mm-content{animation:fade-in 0.4s ease}
-@keyframes fade-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-/* ── Section "Regard de Lyam" ── */
-.lyam-block{background:linear-gradient(135deg,rgba(90,58,26,0.2),rgba(26,42,90,0.15));border:1px solid rgba(201,168,76,0.25);border-radius:var(--radius);padding:20px 22px;margin-bottom:28px;position:relative;}
-.lyam-block::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.5),transparent)}
-.lb-tag{font-family:'Cinzel',serif;font-size:0.62em;letter-spacing:3px;color:var(--or);opacity:0.75;margin-bottom:10px;text-transform:uppercase}
-.lb-text{font-style:italic;font-size:0.92em;line-height:1.85;color:var(--encre-2)}
-.lb-text p{margin-bottom:0.9em}
-
-/* ── Section "Ce que c'est vraiment" ── */
-.reality-block{margin-bottom:28px}
-.rb-tag{font-family:'Cinzel',serif;font-size:0.62em;letter-spacing:3px;color:#7ab;opacity:0.75;margin-bottom:14px;text-transform:uppercase;border-bottom:1px solid rgba(120,160,180,0.2);padding-bottom:6px}
-.rb-text{font-size:0.95em;line-height:1.85}
-.rb-text p{margin-bottom:1.1em;text-align:justify}
-.rb-text strong{color:var(--or-clair)}
-.rb-text em{color:var(--encre-2);font-style:italic}
-.rb-text h3{font-family:'Cinzel',serif;font-size:0.85em;color:var(--or);margin:20px 0 10px;letter-spacing:1px}
-.fact-box{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:6px;padding:14px 16px;margin:16px 0;font-size:0.85em;color:var(--encre-2)}
-.fact-box strong{color:var(--or-clair);display:block;margin-bottom:4px}
-
-/* ── Quiz ── */
-.quiz-block{margin-top:32px}
-.quiz-tag{font-family:'Cinzel',serif;font-size:0.62em;letter-spacing:3px;color:#a7c;opacity:0.75;margin-bottom:16px;text-transform:uppercase;border-bottom:1px solid rgba(160,120,200,0.2);padding-bottom:6px}
-.quiz-q{margin-bottom:20px}
-.qq-text{font-size:0.92em;margin-bottom:10px;font-weight:600;color:var(--encre)}
-.qq-choices{display:flex;flex-direction:column;gap:7px}
-.qq-btn{padding:10px 14px;text-align:left;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);border-radius:5px;color:var(--encre-2);font-family:'Crimson Text',serif;font-size:0.9em;cursor:pointer;transition:all 0.15s;}
-.qq-btn:hover:not(.answered){background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.4);color:var(--encre)}
-.qq-btn.correct{background:rgba(26,58,26,0.5);border-color:rgba(100,180,100,0.5);color:#b8e8b8}
-.qq-btn.wrong{background:rgba(58,26,26,0.5);border-color:rgba(180,80,80,0.4);color:#e8b8b8}
-.qq-feedback{margin-top:8px;font-size:0.82em;font-style:italic;min-height:1.2em;color:var(--encre-2)}
-.quiz-result{margin-top:20px;padding:16px;border-radius:6px;text-align:center;display:none}
-.quiz-result.visible{display:block}
-.quiz-result.ok{background:rgba(26,58,26,0.4);border:1px solid rgba(100,180,100,0.35)}
-.quiz-result.ok .qr-title{color:#8fe888}
-.quiz-result.nok{background:rgba(58,26,26,0.4);border:1px solid rgba(180,80,80,0.35)}
-.quiz-result.nok .qr-title{color:#e88888}
-.qr-title{font-family:'Cinzel',serif;font-size:0.9em;letter-spacing:1px;margin-bottom:6px}
-.qr-xp{font-size:1.1em;font-weight:600;margin:6px 0}
-.qr-text{font-size:0.82em;color:var(--encre-2);font-style:italic}
-.btn-retry-quiz{margin-top:10px;padding:8px 20px;background:rgba(201,168,76,0.1);border:1px solid var(--or);border-radius:4px;color:var(--or-clair);cursor:pointer;font-family:'Cinzel',serif;font-size:0.75em;letter-spacing:1px;transition:all 0.2s}
-.btn-retry-quiz:hover{background:rgba(201,168,76,0.25)}
-
-/* ══════════ LDVELH INTÉGRÉ ══════════ */
-.ldvelh-section{margin-top:32px;border-top:1px solid rgba(201,168,76,0.15);padding-top:28px}
-.ldvelh-tag{font-family:'Cinzel',serif;font-size:0.62em;letter-spacing:3px;color:#ca7;opacity:0.75;margin-bottom:16px;text-transform:uppercase}
-.ldv-progress{display:flex;gap:4px;margin-bottom:24px}
-.ldv-step{height:3px;flex:1;border-radius:2px;background:rgba(201,168,76,0.15);transition:background 0.3s}
-.ldv-step.done{background:rgba(201,168,76,0.7)}.ldv-step.current{background:var(--or)}
-.passage{display:none;animation:fade-in 0.4s ease}.passage.active{display:block}
-.p-num{font-family:'Cinzel',serif;font-size:0.62em;letter-spacing:3px;color:var(--or);opacity:0.5;margin-bottom:16px}
-.p-mood{text-align:center;font-size:2.8em;margin:16px 0;filter:drop-shadow(0 0 12px rgba(201,168,76,0.4))}
-.p-text{font-size:1.05em;line-height:1.9;margin-bottom:24px}
-.p-text p{margin-bottom:1.1em;text-align:justify}
-.p-text em{color:var(--encre-2);font-style:italic}
-.choices{display:flex;flex-direction:column;gap:9px}
-.choice-btn{width:100%;padding:13px 16px;text-align:left;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.22);border-radius:6px;color:var(--encre);font-family:'Crimson Text',serif;font-size:0.97em;line-height:1.5;cursor:pointer;transition:all 0.2s}
-.choice-btn::before{content:'▸ ';color:var(--or);opacity:0.6}
-.choice-btn:hover{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.45);color:var(--or-clair);transform:translateX(4px)}
-.ldv-result{margin-top:20px;padding:20px;border-radius:8px;text-align:center}
-.ldv-result.success{background:linear-gradient(135deg,rgba(26,58,26,0.6),rgba(42,74,26,0.4));border:1px solid rgba(100,180,100,0.4)}
-.ldv-result.fail{background:linear-gradient(135deg,rgba(58,26,26,0.6),rgba(74,42,26,0.4));border:1px solid rgba(180,80,80,0.4)}
-.lr-icon{font-size:2.2em;display:block;margin-bottom:10px}
-.lr-title{font-family:'Cinzel',serif;font-size:0.95em;margin-bottom:6px}
-.ldv-result.success .lr-title{color:#8fe888}.ldv-result.fail .lr-title{color:#e88888}
-.lr-xp{font-size:1.15em;font-weight:600;margin:8px 0}
-.ldv-result.success .lr-xp{color:#b8e8b8}.ldv-result.fail .lr-xp{color:#e8b8b8}
-.lr-text{font-size:0.84em;color:var(--encre-2);font-style:italic;margin-bottom:12px}
-.btn-close-mod{padding:9px 22px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:4px;color:var(--encre-2);cursor:pointer;font-size:0.82em;margin-right:8px;transition:all 0.2s}
-.btn-close-mod:hover{border-color:rgba(255,255,255,0.4)}
-.btn-retry-ldv{padding:9px 22px;background:rgba(201,168,76,0.1);border:1px solid var(--or);border-radius:4px;color:var(--or-clair);cursor:pointer;font-family:'Cinzel',serif;font-size:0.75em;letter-spacing:1px;transition:all 0.2s}
-.btn-retry-ldv:hover{background:rgba(201,168,76,0.25)}
-
-/* ══════════ NOTIF XP ══════════ */
-.xp-notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:11px 26px;border-radius:8px;font-weight:600;font-size:0.92em;text-align:center;pointer-events:none;animation:ni-in 0.4s ease, ni-out 0.5s ease 4s forwards}
-.xp-notif.ok{background:linear-gradient(135deg,#1a3a1a,#2a4a1a);border:1px solid rgba(100,200,100,0.5);color:#b8e8b8;box-shadow:0 0 20px rgba(100,200,100,0.3)}
-.xp-notif.fail{background:linear-gradient(135deg,#3a1a1a,#4a1a1a);border:1px solid rgba(200,80,80,0.5);color:#e8b8b8}
-@keyframes ni-in{from{opacity:0;top:0}to{opacity:1;top:20px}}
-@keyframes ni-out{from{opacity:1}to{opacity:0}}
-
-@media(max-width:600px){.portal-header,.modules-section,.narrative-intro{padding-left:14px;padding-right:14px}.mm-wrap{padding:20px 14px 40px}.modules-grid{grid-template-columns:1fr}}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+.hdr{max-width:1100px;margin:0 auto;padding:36px 24px 0}
+.htag{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:5px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:10px}
+.htitle{font-family:'Cinzel',serif;font-size:clamp(1.8em,5vw,2.6em);font-weight:700;color:var(--or2);line-height:1.2;margin-bottom:6px}
+.hsub{font-style:italic;color:var(--enc2);opacity:.7;margin-bottom:20px}
+.pbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:6px;margin-bottom:28px;font-size:.82em}
+.pi{color:var(--enc2)}.pv{color:var(--or2);font-weight:600;margin-left:4px}.ps{color:rgba(201,168,76,.3)}
+.bnav{padding:5px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--enc2);font-size:.82em;text-decoration:none;display:inline-block;transition:all .2s}
+.bnav:hover{border-color:var(--or);color:var(--or)}
+.lib{max-width:1100px;margin:0 auto;padding:0 24px 60px}
+.plabel{font-family:'Cinzel',serif;font-size:.7em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,.2)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:36px}
+.card{background:var(--p1);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ca,var(--or)),transparent)}
+.card.ok{cursor:pointer}
+.card.ok:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.5);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.card.nok{opacity:.5}
+.card.done::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--or);opacity:.7;font-size:.75em;font-family:'Cinzel',serif}
+.cnum{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.6;margin-bottom:6px}
+.cicon{font-size:1.8em;margin-bottom:8px;display:block}
+.ctitle{font-family:'Cinzel',serif;font-size:.9em;font-weight:600;color:var(--or2);line-height:1.3;margin-bottom:4px}
+.cmeta{font-size:.72em;color:var(--enc2);opacity:.65;margin-bottom:8px}
+.cexc{font-style:italic;font-size:.82em;color:var(--enc2);line-height:1.65;border-left:2px solid rgba(201,168,76,.2);padding-left:10px;margin-bottom:14px}
+.cfooter{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cbadge{font-size:.7em;color:var(--or);opacity:.8}
+.ccta{padding:5px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:var(--or2);font-size:.75em;letter-spacing:1px}
+.csoon{font-size:.75em;color:#666;font-style:italic}
+.etag{position:absolute;top:10px;right:12px;background:linear-gradient(135deg,#5a3a1a,#3a2a0a);border:1px solid var(--or);border-radius:3px;padding:2px 8px;font-size:.6em;color:var(--or2);letter-spacing:1px;font-family:'Cinzel',serif}
+.intro-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:20px 24px;margin-bottom:32px;font-style:italic;color:var(--enc2);line-height:1.8;font-size:.92em}
+.intro-block strong{color:var(--or2);font-style:normal}
+@media(max-width:600px){.hdr,.lib{padding-left:14px;padding-right:14px}}
 </style>
 </head>
 <body>
 
-    <h1 class="auth-title">Château de Fontainebleau</h1>
-    <p class="auth-sub">Expédition au-delà du portail de la Bibliothèque de Valdurne.<br><em>Il te faut 400 XP pour traverser.</em></p>
-    <button class="btn-primary" onclick="tryLogin()">Franchir le Portail ▸</button>
-    <div class="auth-msg" id="authMsg"></div>
-    <a class="back-link" href="hub_narration.html">← Retourner à la Bibliothèque de Valdurne</a>
+<div class="hdr">
+  <div class="htag">Expedition de Valdurne - Portail de la Bibliotheque</div>
+  <h1 class="htitle">Chateau de Fontainebleau</h1>
+  <p class="hsub">Lyam et Rena ont franchi le portail. De l'autre cote : huit siecles d'histoire royale.</p>
+  <div class="pbar">
+    <span class="pi">Ecuyer : <span class="pv" id="nomJ">-</span></span>
+    <span class="ps">·</span>
+    <span class="pi">XP : <span class="pv" id="xpJ">-</span></span>
+    <span class="ps">·</span>
+    <span class="pi">Salles visitees : <span class="pv" id="nbVisites">0</span> / 5</span>
+    <a class="bnav" href="hub_narration.html">Bibliotheque de Valdurne</a>
+    <a class="bnav" href="index.html">Portail Vie Scolaire</a>
   </div>
 </div>
 
-<!-- HUB PRINCIPAL -->
-<div id="hubMain" style="display:none">
-  <div class="portal-header">
-    <div class="portal-tag">Expédition au-delà du Portail · Bibliothèque de Valdurne</div>
-    <h1 class="portal-title">Château de Fontainebleau</h1>
-    <p class="portal-sub">Huit siècles d'histoire — vus à travers les yeux d'un écuyer de Valdurne.</p>
-    <div class="player-bar">
-      <span class="pb-item">Écuyer : <span class="pb-val" id="playerName">—</span></span>
-      <span class="pb-sep">·</span>
-      <span class="pb-item">XP : <span class="pb-val" id="playerXP">0</span></span>
-      <span class="pb-sep">·</span>
-      <span class="pb-item">Modules : <span class="pb-val" id="moduleDone">0</span> / 5</span>
-      <button class="btn-sm" onclick="logout()">Quitter</button>
-    </div>
+<div class="lib">
+  <div class="intro-block">
+    <strong>Comment ca marche :</strong> Lyam et Rena decouvrent le chateau avec les yeux d'ecuyers du Xeme siecle. Chaque salle presente d'abord leur regard etonne — puis la realite historique. Un quiz valide ta comprehension et te rapporte des XP.
   </div>
 
-  <!-- Intro narrative -->
-  <div class="narrative-intro">
-    <div class="ni-card">
-      <div class="ni-rune">📖 Journal de Lyam — Expédition I</div>
-      <div class="ni-text">
-        <p>C'est Réna qui a trouvé le grimoire. Il était glissé derrière le rayon des cartes militaires, dans la partie de la Bibliothèque où les moisissures avaient presque effacé les titres. La couverture ne portait aucun symbole familier. Les lettres à l'intérieur ressemblaient à notre écriture, mais formaient des mots que ni lui ni moi ne comprenions.</p>
-        <p>Maître Aldric nous a regardés l'un après l'autre. <em>« Ce sont des traces d'un autre monde. Un monde qui existe en même temps que le nôtre, mais que nous ne pouvons pas toucher — sauf par certains passages. »</em></p>
-        <p>Il a posé le doigt sur une enluminure représentant un château aux toits en ardoise et aux fenêtres claires comme de l'eau gelée. <em>« Ils l'appellent Fontainebleau. Trente-quatre rois et deux empereurs y ont régné. Dans leur monde, c'est du passé. Dans le nôtre, c'est une légende. »</em></p>
-        <p>Le portail s'est ouvert le lendemain matin. Nous avons traversé.</p>
-      </div>
-      <div class="ni-voice">
-        <em>Ce que Lyam ne savait pas :</em> le château était plein de visiteurs modernes. Et l'un d'eux levait un petit rectangle plat et brillant en direction des fresques. L'objet a émis un déclic. Lyam a reculé d'un pas. Il croyait avoir assisté à une capture d'âme.
-      </div>
-    </div>
-  </div>
+  <div class="plabel">Les Salles du Chateau</div>
+  <div class="pgrid" id="gridSalles"></div>
 
-  <!-- Modules -->
-  <div class="modules-section">
-    <div class="section-label">🏰 Les Cinq Salles de l'Expédition</div>
-    <div class="modules-grid" id="modulesGrid"></div>
-  </div>
-</div>
-
-<!-- MODALE MODULE -->
-<div id="moduleModal">
-  <div class="mm-wrap">
-    <div class="mm-nav">
-      <button class="btn-back" onclick="closeModule()">← Retour au château</button>
-      <span class="mm-chapter" id="modalTitle"></span>
-    </div>
-    <div class="mm-content" id="modalContent"></div>
-  </div>
+  <div class="plabel">Sequence - Les Couloirs de l'Ombre</div>
+  <div class="pgrid" id="gridLDVELH"></div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-// CONFIG — identique au superhub
-// ══════════════════════════════════════════════════════════
-const KEY = 'pvs_hof_v2';
-const ACTIVE_PLAYER_KEY = 'pvs_current_player';
-const XP_PENDING_KEY = 'pvs_narration_xp';
-const DONE_KEY = 'pvs_font_done';
-const XP_MIN = 400;
-const XP_BON = 50;
-const XP_MAL = -25;
-const W = {pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
-const CIT = {representant_ca:{xp:500}};
+var KEY  = 'pvs_hof_v2';
+var AKEY = 'pvs_current_player';
+var XKEY = 'pvs_narration_xp';
+var DKEY = 'pvs_narration_done';
+var W    = {pixhare:60, psc1:60, sanctuaire:60, loge:60, autres:60};
+var CIT  = {representant_ca:{xp:500}};
+var cur  = '';
 
-function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}}
-function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function getPlayer(c){const S=getS();return S.players&&S.players[c]?S.players[c]:null}
-function nCode(v){return String(v||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'')}
-function missionXp(code){const S=getS();const lists=S.citizen_lists||{};let n=0;Object.keys(CIT).forEach(k=>{if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}
-function socialRawG(p){return Number(p.socialG||0)+Number(p.wBonusG||0)}
-function socialValidG(p){return Number(p.witnessGiven||0)>0?socialRawG(p):0}
-function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
-function academyXp(p){const cp=p.cp||{};return Object.keys(W).reduce((a,k)=>a+Number(cp[k]||0)*W[k],0)}
-function videoXp(p){return Number(p.videoG||0)}
-function acadCoeff(p){const n=Math.min(Number(p.acadDone||0),50);return Math.round((1+n*0.02)*100)/100}
-function xpTotal(p){if(!p)return 0;const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}
+function getS(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+function saveS(S){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+function getP(code){ var S=getS(); return (S.players&&S.players[code]) ? S.players[code] : null; }
+function getDone(){ try{ return JSON.parse(localStorage.getItem(DKEY)||'{}'); }catch(e){ return {}; } }
 
-function getDone(){try{return JSON.parse(localStorage.getItem(DONE_KEY)||'{}')}catch{return{}}}
-function markDone(id){const d=getDone();d[id]=Date.now();localStorage.setItem(DONE_KEY,JSON.stringify(d))}
-function isDone(id){return !!getDone()[id]}
+function missionXp(code){
+  try{ var S=getS(); var lists=S.citizen_lists||{}; var n=0;
+    Object.keys(CIT).forEach(function(k){ if((lists[k]||[]).indexOf(code)>=0) n+=CIT[k].xp; });
+    return n; }catch(e){ return 0; }
+}
+function socialRaw(p){ return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0); }
+function socialValid(p){ return Number(p&&p.witnessGiven||0)>0 ? socialRaw(p) : 0; }
+function citizenXp(p){ try{ return missionXp(p&&p.code)+socialValid(p); }catch(e){ return 0; } }
+function academyXp(p){
+  try{ var cp=(p&&p.cp)||{};
+    return Object.keys(W).reduce(function(a,k){ return a+Number(cp[k]||0)*W[k]; }, 0);
+  }catch(e){ return 0; } }
+function videoXp(p){ return Number(p&&p.videoG||0); }
+function acadCoeff(p){
+  try{ var n=Math.min(Number(p&&p.acadDone||0),50); var c=Math.round((1+n*0.02)*100)/100; return isNaN(c)?1:c; }catch(e){ return 1; } }
+function xg(p){
+  if(!p) return 0;
+  try{ var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);
+    var r=Math.round(base*acadCoeff(p)); return isNaN(r)?0:r; }catch(e){ return 0; } }
 
 function creditXP(code,amount,reason){
-  if(!code)return;
-  const S=getS();if(!S.players||!S.players[code])return;
-  const p=S.players[code];const now=new Date().toISOString();
-  if(!Array.isArray(S.logs))S.logs=[];
+  if(!code) return; var S=getS(); if(!S.players||!S.players[code]) return;
+  var p=S.players[code]; var now=new Date().toISOString();
+  if(!Array.isArray(S.logs)) S.logs=[];
   S.logs.unshift({d:now,p:code,t:reason,target:'FONTAINEBLEAU',xp:Number(amount)});
-  if(S.logs.length>700)S.logs.length=700;
-  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
-  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
-  p.up=now;saveS(S);
-  const pending=JSON.parse(localStorage.getItem(XP_PENDING_KEY)||'[]');
-  pending.push({code,amount,reason,d:now});
-  localStorage.setItem(XP_PENDING_KEY,JSON.stringify(pending));
+  if(S.logs.length>700) S.logs.length=700;
+  if(amount>0){ p.wBonusG=(Number(p.wBonusG||0)+(amount/10)); p.wBonusW=(Number(p.wBonusW||0)+(amount/10)); }
+  else { p.malusG=(Number(p.malusG||0)+amount); p.malusW=(Number(p.malusW||0)+amount); }
+  p.up=now; saveS(S);
+  var pending=JSON.parse(localStorage.getItem(XKEY)||'[]');
+  pending.push({code:code,amount:amount,reason:reason,d:now});
+  localStorage.setItem(XKEY,JSON.stringify(pending));
 }
 
-// ══════════════════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════════════════
-let cur='';
-function openHub(code,p){
-  cur=code;
-  
-  document.getElementById('hubMain').classList.add('visible');
-  renderHub(p);
-}
-function logout(){ window.location.href='index.html'; }
-
-(function(){
-  var raw = localStorage.getItem('pvs_current_player') || '';
-  if(!raw){ window.location.href='index.html'; return; }
-  cur = raw.trim().toUpperCase();
-  var p = getPlayer(cur);
-  if(!p){ window.location.href='index.html'; return; }
-  document.getElementById('hubMain').style.display='block';
-  renderHub(p);
-})();
-
-// ══════════════════════════════════════════════════════════
-// CONTENU DES MODULES
-// ══════════════════════════════════════════════════════════
-const MODULES = [
-  {
-    id:'m1', icon:'🗼', num:'Salle I', accent:'#c9a84c',
-    title:'Le Donjon Familier',
-    lyam_preview:'Il reconnaît quelque chose dans ces murs. Mais certains détails l\'arrêtent — une petite plaque de métal avec des chiffres. Un fil rouge en velours qui interdit l\'accès.',
-    tag:'Origines médiévales · 1137—1527',
-    lyam:[
-      `Le château ressemble à Valdurne. Pas identique — les pierres sont d'une couleur plus claire, le mortier plus régulier — mais Lyam reconnaît la logique du donjon massif, les cours imbriquées, les meurtrières tournées vers la forêt.`,
-      `Il s'arrête devant une petite plaque de métal fixée sur la pierre. Elle porte des chiffres gravés : <em>1268</em>. Rien d'autre. Dans son monde, on aurait sculpté une épée, un blason, un saint. Ici, juste des chiffres — comme si la date seule suffisait à tout expliquer.`,
-      `Et ce fil rouge en velours tendu entre deux poteaux dorés : il comprend que c'est une frontière. On ne passe pas. Mais il n'y a personne pour la garder. Dans son monde, une frontière sans garde, c'est une invitation.`,
-      `Il n'a pas franchi le fil. Mais il y a pensé très fort.`,
-    ],
-    reality_title:'Fontainebleau médiéval — La maison des siècles',
-    reality:[
-      {type:'text',content:`Le château de Fontainebleau est l'un des rares monuments d'Europe à avoir servi de résidence royale de manière quasi ininterrompue pendant **huit siècles**. Sa première mention remonte à 1137, sous Louis VII, mais l'édifice était probablement antérieur — un donjon de chasse au cœur d'une forêt giboyeuse.`},
-      {type:'fact',title:'1268 — La naissance du roi de fer',content:`Philippe le Bel naît au château cette année-là. Il mourra dans ce même donjon en 1314, des suites d'une chute de cheval. Ce roi qui « figerait » l'or sur son passage aura vécu et terminé sa vie entre ces murs.`},
-      {type:'text',content:`Saint Louis y installe des moines trinitaires en 1259 — une communauté chargée de racheter les croisés capturés. La chapelle de la Trinité que l'on voit aujourd'hui est l'héritière directe de ce couvent. Les Capétiens considéraient Fontainebleau comme un refuge, loin du tumulte de Paris — ce que Saint Louis appelait <em>ses déserts</em>.`},
-      {type:'fact',title:'1527 — La prestigieuse ruine',content:`À cette date, le château est dans un état de délabrement avancé. François Ier, de retour de captivité en Espagne, décide alors de tout reconstruire. Ce qui semblait une fin deviendra le début de la plus grande transformation du palais.`},
-      {type:'text',content:`Ce premier château médiéval survit partiellement aujourd'hui dans la **Cour Ovale**, le cœur originel du domaine. Autour de ce noyau, huit siècles de rois et d'empereurs ont empilé leurs ambitions architecturales — chacun ajoutant une couche sans détruire celle d'en dessous.`},
-    ],
-    quiz:[
-      {q:'En quelle année est née la première mention écrite du château ?',choices:['1068','1137','1259','1314'],correct:1,feedback:'1137 — sous Louis VII, premier roi à mentionner le château dans des textes officiels.'},
-      {q:'Comment Saint Louis appelait-il Fontainebleau ?',choices:['Son trésor','Ses déserts','La vraie demeure','Le refuge royal'],correct:1,feedback:'"Ses déserts" — un lieu de retrait et de silence, loin de l\'agitation parisienne.'},
-      {q:'Que représente la plaque "1268" que voit Lyam sur le mur ?',choices:['L\'année de construction du donjon','L\'année de naissance de Philippe le Bel','Le numéro de la salle','L\'année d\'un traité'],correct:1,feedback:'1268 — année de naissance de Philippe le Bel, "le roi de fer", dans ce château.'},
-    ]
-  },
-  {
-    id:'m2', icon:'🎨', num:'Salle II', accent:'#4a7aaa',
-    title:'La Galerie des Sortilèges',
-    lyam_preview:'Des murs entiers couverts de corps humains en or et en couleurs. Ni dieux, ni saints — des créatures nues à la peau de nacre. Lyam pense à des enchantements d\'illusionniste figés dans la pierre.',
-    tag:'Renaissance · École de Fontainebleau · 1527—1610',
-    lyam:[
-      `La galerie n'a pas de fin visible. Lyam entre et reste cloué sur place.`,
-      `Les murs ne sont pas des murs. Ce sont des rêves durcis. Des corps humains — il n'y a pas d'autre mot — grandeur nature, certains en relief comme s'ils voulaient sortir de la pierre, d'autres peints avec une précision qui lui donne le vertige. Ni dieux, ni saints. Des créatures à la peau de nacre, dans des positions qu'aucun enlumineur de Valdurne n'aurait osé.`,
-      `Il touche un cadre de plâtre peint. Du relief. Des feuilles, des anneaux, des visages souriant. <em>Comment ?</em> Il ne connaît pas la technique. Dans son monde, les murs restent des murs.`,
-      `Un panneau sur pied explique quelque chose dans la langue de ce monde. Il ne lit pas cette langue. Mais les chiffres — 1533, 1540 — il les comprend. Sept ans de travail pour un seul couloir. Il murmure à Réna : <em>« Ces gens devaient vraiment vouloir que leur roi soit content. »</em>`,
-    ],
-    reality_title:'La Galerie François Ier — naissance de la Renaissance française',
-    reality:[
-      {type:'text',content:`Quand François Ier décide de transformer Fontainebleau en palais digne de ses ambitions, il fait appel à des artistes italiens. En 1530, **Rosso Fiorentino** arrive. En 1532, c'est **Le Primatice** qui le rejoint. Ensemble, ils inventent quelque chose d'inédit en Europe du Nord.`},
-      {type:'fact',title:'Le stuc et la fresque — une révolution technique',content:`La Galerie François Ier (1533-1540) combine deux techniques : la fresque peinte directement sur l'enduit humide du mur, et le stuc — un mélange de plâtre, de marbre broyé et de colle — modelé en haut-relief. Les cadres de stuc débordent sur les peintures, effaçant la frontière entre sculpture et image. C'était inconnu en France.`},
-      {type:'text',content:`Les thèmes sont délibérément cryptiques et mythologiques — **l'Éléphant au caparaçon**, **le Sacrifice**, **la Danaé**. Chaque tableau est une allégorie de la gloire royale, mais suffisamment codée pour que seuls les lettrés de la cour puissent la lire. Le reste admirait les formes et les couleurs sans forcément comprendre le message.`},
-      {type:'fact',title:'L\'École de Fontainebleau — une influence continentale',content:`Ce style maniériste — élégance des formes allongées, complexité des poses, richesse ornementale — va se répandre dans toute l'Europe via des estampes gravées et copiées. La cour d'Angleterre (Hampton Court), les princes allemands (Munich) et même les peintres flamands s'en emparent. Fontainebleau devient "la nouvelle Rome" du Nord.`},
-      {type:'text',content:`Sous Henri IV (1593-1610), une **Seconde École de Fontainebleau** prolonge ce travail avec des artistes français comme Toussaint Dubreuil et Martin Fréminet, qui décore la voûte de la chapelle de la Trinité. Le château reste pendant un siècle entier le laboratoire artistique de la France.`},
-    ],
-    quiz:[
-      {q:'Quel artiste arrive en premier à Fontainebleau, en 1530 ?',choices:['Le Primatice','Rosso Fiorentino','Gilles Le Breton','Niccolò dell\'Abate'],correct:1,feedback:'Rosso Fiorentino (Giovanni Battista di Jacopo) arrive en 1530, suivi du Primatice deux ans plus tard.'},
-      {q:'Quelle technique nouvelle associée à la Galerie François Ier combine relief et peinture ?',choices:['La mosaïque','L\'huile sur toile','Le stuc et la fresque','La tempera'],correct:2,feedback:'Le stuc — mélange de plâtre et marbre — est modelé en haut-relief autour des fresques. C\'est une innovation venue d\'Italie.'},
-      {q:'Pourquoi les thèmes de la Galerie sont-ils "cryptiques" ?',choices:['Pour ne pas choquer les visiteurs','Pour cacher des plans secrets du roi','Pour que seuls les lettrés comprennent les allégories royales','Parce que les artistes ne parlaient pas français'],correct:2,feedback:'Les allégories mythologiques servaient de langage codé entre le roi et les courtisans cultivés. La beauté visuelle touchait tout le monde — le sens profond, seulement quelques-uns.'},
-    ]
-  },
-  {
-    id:'m3', icon:'👑', num:'Salle III', accent:'#7a2020',
-    title:'Le Trône et les Adieux',
-    lyam_preview:'Un escalier qui ressemble à un fer à cheval de cheval géant. Et une pièce où l\'atmosphère est si chargée que Lyam arrête de parler.',
-    tag:'Bourbons · Napoléon · 1610—1814',
-    lyam:[
-      `L'escalier en Fer-à-Cheval est la première chose vraiment grande qu'il voit — pas grande comme une tour de guet, grande autrement. Deux rampes de pierre qui s'écartent, s'arrondissent, se retrouvent en bas sur la même marche. Personne dans son monde n'aurait gaspillé de la pierre pour faire ça. On aurait fait un escalier droit. Efficace.`,
-      `Il comprend plus tard que l'inefficacité était le message. Le roi descendait lentement. Les courtisans le regardaient descendre. La magnificence, ça prend du temps.`,
-      `La Salle du Trône est petite. Il s'y attendait à quelque chose d'écrasant — comme la grande salle de Valdurne en fête. Mais c'est presque intime. Et pourtant il ne peut pas rester longtemps dedans. Il y a quelque chose dans l'air, une présence lourde. Réna lui dit qu'un homme y a signé sa propre capitulation. Lyam ne sait pas ce qu'est une capitulation. Quand Réna lui explique, il reste silencieux un long moment.`,
-    ],
-    reality_title:'Des Bourbons à Napoléon — le château comme théâtre du pouvoir',
-    reality:[
-      {type:'text',content:`Henri IV fait de Fontainebleau sa résidence favorite et entreprend de **doubler la surface du château** entre 1593 et 1610. Il fait creuser le **Grand Canal**, long de 1,2 kilomètre, précédant de soixante ans celui de Versailles. Une fille naît au château en 1601 : le futur Louis XIII.`},
-      {type:'fact',title:'L\'Escalier en Fer-à-Cheval — 1632-1634',content:`Conçu par Jean Androuet du Cerceau, cet escalier extérieur en forme de fer à cheval remplace un escalier Renaissance vétuste. Sa double volée incurvée en fait un chef-d'œuvre de géométrie baroque. Il sera copié au Palais de Monaco et à la cour Visconti du Louvre. C'est là que Napoléon prononcera ses Adieux en 1814.`},
-      {type:'text',content:`Louis XIV, bien qu'il ait transféré le centre du pouvoir à Versailles, continue les **"voyages à Fontainebleau"** chaque automne. C'est dans le cabinet de sa favorite, Mme de Maintenon, qu'il signe en 1685 l'**Édit de Fontainebleau** — révoquant l'Édit de Nantes et interdisant le culte protestant. 200 000 huguenots s'exilent.`},
-      {type:'fact',title:'Napoléon — "la vraie demeure des rois"',content:`L'Empereur dépense des millions pour remeubler le palais vidé par la Révolution. Il crée l'unique Salle du Trône impérial encore conservée en France dans son décor d'origine. Des passages secrets d'acajou lui permettent de circuler entre ses bureaux et les appartements officiels.`},
-      {type:'text',content:`Le 20 avril 1814, au pied de l'escalier en Fer-à-Cheval, Napoléon prononce ses derniers mots à sa Vieille Garde avant l'exil à l'île d'Elbe. La nuit précédente, il avait tenté de s'empoisonner dans son appartement. Son médecin le sauva. L'escalier est depuis un **lieu de mémoire nationale**.`},
-    ],
-    quiz:[
-      {q:'Que signe Louis XIV à Fontainebleau en 1685 ?',choices:['Le traité de paix avec l\'Angleterre','L\'Édit révoquant l\'Édit de Nantes','L\'acte de vente de la Louisiane','La création de Versailles'],correct:1,feedback:'L\'Édit de Fontainebleau révoque l\'Édit de Nantes (1598) et interdit le protestantisme. 200 000 protestants fuiront la France.'},
-      {q:'Qu\'est-ce que l\'Escalier en Fer-à-Cheval a d\'exceptionnel géométriquement ?',choices:['Il descend en spirale','Il est creusé dans le roc','Sa double volée incurvée qui se rejoint en bas','Il n\'a pas de rampe'],correct:2,feedback:'Deux rampes courbes s\'écartent au sommet et se rejoignent en un seul palier au bas — une forme en fer à cheval. Copiée depuis à Monaco et au Louvre.'},
-      {q:'Qu\'arrive-t-il à Napoléon dans la nuit du 12 au 13 avril 1814 ?',choices:['Il signe l\'abdication finale','Il tente de s\'empoisonner','Il prépare ses Adieux à la Garde','Il reçoit le tsar de Russie'],correct:1,feedback:'Napoléon avale une dose de poison conservée depuis la campagne de Russie. Son médecin le sauve. Le lendemain, il prononce ses Adieux.'},
-    ]
-  },
-  {
-    id:'m4', icon:'🗝️', num:'Salle IV', accent:'#2a4a1a',
-    title:'Les Couloirs de l\'Ombre',
-    lyam_preview:'Lyam découvre une porte cachée derrière une tapisserie. De l\'autre côté : un passage étroit, sombre, qui sent la poussière ancienne.',
-    tag:'Secrets · Passages dérobés · À toi de jouer',
-    isLDVELH:true,
-    ldvelhId:'passages',
-  },
-  {
-    id:'m5', icon:'🌿', num:'Salle V', accent:'#1a3a5a',
-    title:'La Rivière Droite et la Forêt',
-    lyam_preview:'Le Grand Canal lui coupe le souffle — pas par sa beauté, mais par l\'idée derrière. Des hommes ont rendu une rivière droite. Pourquoi faire ça ?',
-    tag:'Jardins · Forêt · Nature royale',
-    lyam:[
-      `Lyam sort du château et voit le Canal pour la première fois. Il s'arrête.`,
-      `Ce n'est pas une rivière. Les rivières ne sont pas droites. Elles épousent le terrain, elles contournent les rochers, elles décident elles-mêmes de leur chemin. Celle-là est droite comme une lame. 1,2 kilomètre. Il compte le temps qu'il met à marcher jusqu'au bout. Quelqu'un a creusé ça dans la terre, méthodiquement, au millimètre.`,
-      `Il comprend plus tard que c'était ça, le message. La nature obéit au roi. Le paysage lui-même s'incline.`,
-      `Mais à deux cents pas du château, la forêt commence. Et là, plus rien n'obéit à personne. Les chênes font ce qu'ils veulent depuis des siècles. Les chemins se perdent. Et Lyam se sent, pour la première fois depuis l'arrivée, dans quelque chose qui ressemble à son monde.`,
-    ],
-    reality_title:'Les jardins et la forêt — nature domestiquée, nature sauvage',
-    reality:[
-      {type:'fact',title:'Le Grand Canal — précurseur de Versailles',content:`Commandé par Henri IV entre 1606 et 1609, le Grand Canal mesure 1,2 kilomètre de long. Il précède de soixante ans celui que Louis XIV fera construire à Versailles. Récemment restauré (2020-2022), il illustre la volonté des rois de "domestiquer" la nature — la plier aux formes géométriques du pouvoir.`},
-      {type:'text',content:`Le domaine dispose de **130 hectares de parcs et jardins**. Trois jardins principaux coexistent, chacun avec une logique différente. Le **Jardin de Diane** — l'ancien jardin de la reine — est orné d'une fontaine surmontée d'une statue de la déesse chasseresse. Le **Jardin Anglais**, aménagé sous Napoléon, remplace l'ancien jardin des Pins et incarne le goût romantique du XIXe siècle : allées sinueuses, rivière artificielle, "désordre" calculé.`},
-      {type:'text',content:`La forêt est la raison d'être du château. Les rois venaient d'abord chasser, et la forêt a été préservée — parfois replantée — pendant huit siècles. Louis XIV et Louis XV font planter **5 000 hectares de feuillus** entre 1720 et 1795 pour maintenir la ressource en bois de chasse et de construction. Aujourd'hui, la forêt de Fontainebleau est l'une des plus célèbres de France.`},
-      {type:'fact',title:'1948 — La forêt devient symbole mondial',content:`Le 5 octobre 1948, à Fontainebleau, est fondée l'Union Internationale pour la Protection de la Nature (UICN). La forêt royale devient le berceau symbolique des préoccupations écologiques mondiales — une ironie que n'auraient pas manquée les rois chasseurs qui l'avaient préservée pour leurs plaisirs.`},
-      {type:'text',content:`Le château et sa forêt sont inscrits au **patrimoine mondial de l'UNESCO depuis 1981**. Ce classement reconnaît non seulement le monument architectural, mais aussi l'ensemble du domaine — château, jardins, et forêt — comme un écosystème culturel unique où "la main de l'homme et la force de la forêt ont fini par se confondre dans une harmonie royale et impériale".`},
-    ],
-    quiz:[
-      {q:'Combien de temps le Grand Canal a-t-il précédé celui de Versailles ?',choices:['10 ans','30 ans','60 ans','100 ans'],correct:2,feedback:'Henri IV fait creuser le Grand Canal entre 1606 et 1609. Louis XIV crée celui de Versailles à partir de 1668 — soit environ 60 ans plus tard.'},
-      {q:'Quelle organisation mondiale est fondée à Fontainebleau en 1948 ?',choices:['L\'UNESCO','L\'Union Internationale pour la Protection de la Nature','Les Nations Unies','L\'Organisation mondiale du commerce'],correct:1,feedback:'L\'UICN (Union Internationale pour la Protection de la Nature) est fondée le 5 octobre 1948 à Fontainebleau — premier organisme mondial dédié à l\'environnement.'},
-      {q:'Pourquoi Lyam trouve-t-il le Grand Canal troublant ?',choices:['Il est trop grand pour son monde','Une rivière droite n\'existe pas dans la nature — c\'est une démonstration de pouvoir','Il ne sait pas nager','Il croit que c\'est un fossé défensif'],correct:1,feedback:'Exactement. Le Canal "droit" transgresse les lois naturelles — c\'est précisément l\'intention : montrer que le roi peut imposer sa volonté même à la géographie.'},
-    ]
-  },
+/* CATALOGUE */
+var SALLES = [
+  {id:'font_m1', file:'font_m1.html', num:'Salle I',   icon:'🗼', title:'Le Donjon Familier',           meta:'Origines medievales - 1137 a 1527', acc:'#8a6a1f',
+   exc:'Lyam reconnait la logique du donjon. Mais certains details l arretent : une plaque de metal avec des chiffres, un fil de velours rouge qui interdit l acces sans aucun garde.'},
+  {id:'font_m2', file:'font_m2.html', num:'Salle II',  icon:'🎨', title:'La Galerie des Sortileges',     meta:'Renaissance et Ecole de Fontainebleau - 1527 a 1610', acc:'#6a4a8a',
+   exc:'Des corps grandeur nature sortent des murs en relief peint. Sept ans de travail pour un seul couloir. Lyam touche le cadre. Il ne connait pas cette technique.'},
+  {id:'font_m3', file:'font_m3.html', num:'Salle III', icon:'⚜️', title:'Le Trone et les Adieux',        meta:'Bourbons et Napoleon - 1610 a 1814', acc:'#8a3a3a',
+   exc:'L escalier Fer-a-Cheval : deux rampes qui s ecartent et se retrouvent en bas sur la meme marche. Personne a Valdurne n aurait gaspille de la pierre comme ca. Lyam comprend progressivement que l inefficacite est un message.'},
+  {id:'font_m4', file:'font_m4.html', num:'Salle IV',  icon:'🌿', title:'La Riviere Droite et la Foret', meta:'Jardins, Canal et Nature royale', acc:'#3a6a3a',
+   exc:'Le Grand Canal : 1,2 km de longueur parfaitement droite. Lyam s arrete. Les rivieres ne sont jamais droites. Quelqu un a corrige la nature elle-meme.'},
+  {id:'font_m5', file:'font_m5.html', num:'Salle V',   icon:'🌍', title:'Le Chateau dans le Monde',      meta:'Fontainebleau aujourd hui et son heritage', acc:'#3a4a7a',
+   exc:'Des visiteurs de partout dans le monde levent leurs petits rectangles brillants vers les fresques. Lyam essaie de comprendre pourquoi. Rena a une theorie.'},
 ];
 
-// ══════════════════════════════════════════════════════════
-// SÉQUENCE LDVELH — Passages Secrets
-// ══════════════════════════════════════════════════════════
-const LDVELH_PASSAGES = {
-  start:'p1',
-  steps:6,
-  passages:{
-    p1:{
-      num:'§ 1 · La porte cachée',mood:'🗝️',
-      text:[
-        `La tapisserie représente une chasse royale — des chevaux bondissants, des chiens à la langue rose. Lyam la regarde depuis dix minutes quand il remarque qu'elle bouge légèrement du bas.`,
-        `Pas le vent. Il n'y a pas de fenêtre ouverte dans cette salle.`,
-        `Il soulève un coin de la tapisserie. Une porte en bois sombre, sans poignée visible, juste une légère encoche dans le bois. Il appuie. La porte s'ouvre sur un couloir étroit et sombre qui sent la pierre froide et quelque chose d'autre — de la cire ancienne, peut-être.`,
-        `Réna le rejoint. <em>« Tu vas entrer ? »</em>`,
-      ],
-      choices:[
-        {text:'Entrer seul — explorer rapidement avant que quelqu\'un remarque.',next:'p2a'},
-        {text:'Entrer tous les deux — deux paires d\'yeux valent mieux qu\'une.',next:'p2b'},
-        {text:'Refermer la tapisserie et signaler la porte à un gardien.',next:'p2c'},
-      ]
-    },
-    p2a:{
-      num:'§ 2 · L\'escalier solitaire',mood:'🕯️',
-      text:[
-        `Le couloir descend. Lyam compte les marches : onze, puis un palier, puis un autre couloir horizontal. La pierre ici est différente — plus ancienne, plus rugueuse.`,
-        `Il entend quelque chose. Pas des voix. Des pas, légers, réguliers, au-dessus de lui. Quelqu'un marche dans la salle qu'il vient de quitter.`,
-        `Il continue. Le couloir tourne à droite et débouche sur une petite pièce circulaire avec une chaise en bois, une bougie dans un chandelier de fer, et sur le mur, des marques gravées : des noms, des dates, des phrases en vieilles lettres qu'il ne reconnaît pas.`,
-        `<em>Des gens sont passés ici. Beaucoup de gens. Depuis très longtemps.</em>`,
-      ],
-      choices:[
-        {text:'Chercher à comprendre les inscriptions — les recopier pour les faire traduire.',next:'p3a'},
-        {text:'Continuer dans la pièce et chercher une autre sortie.',next:'p3b'},
-      ]
-    },
-    p2b:{
-      num:'§ 2 · Ensemble',mood:'🤝',
-      text:[
-        `Ils entrent tous les deux. La porte se referme derrière eux — pas completement, juste assez pour que l'obscurité soit totale.`,
-        `Réna sort une petite pierre lumineuse de son sac (dans leur monde, c'est courant). Dans le couloir de ce château, ça fait un effet bizarre — une lueur bleutée sur de la pierre vieille de siècles.`,
-        `<em>« Ces passages, »</em> dit Réna à voix basse, <em>« ils ne sont pas là par accident. Quelqu'un les a construits pour se déplacer sans être vu. »</em>`,
-        `<em>« Un roi ? »</em>`,
-        `<em>« Ou quelqu'un qui voulait approcher le roi sans que personne le sache. »</em>`,
-        `Deux directions s'offrent à eux.`,
-      ],
-      choices:[
-        {text:'Prendre le passage qui monte — vers les appartements royaux.',next:'p3a'},
-        {text:'Prendre le passage qui descend — vers les caves et les fondations.',next:'p3b'},
-      ]
-    },
-    p2c:{
-      num:'§ 2 · La décision sage',mood:'📋',
-      text:[
-        `Lyam referme la tapisserie et trouve un gardien — un homme en uniforme vert sombre avec un badge doré. Il lui montre la porte.`,
-        `L'homme sourit. <em>« Ah oui, les passages. Ils sont répertoriés. Certains sont accessibles en visite guidée. »</em>`,
-        `En attendant la visite guidée, Lyam apprend quelque chose : ces passages sont connus, documentés, cartographiés. Dans son monde, un passage secret qui a été découvert n'est plus secret — il est abandonné ou condamné. Ici, il est devenu une attraction. La transparence comme forme de conservation.`,
-        `La visite guidée commence vingt minutes plus tard. Lyam pose des questions pendant tout le trajet. Le guide répond à toutes.`,
-      ],
-      choices:[
-        {text:'Suivre le guide jusqu\'au bout — apprendre tout ce qu\'il a à dire.',next:'p3c'},
-      ]
-    },
-    p3a:{
-      num:'§ 3 · Les inscriptions',mood:'📜',
-      text:[
-        `Les inscriptions sur le mur circulaire sont des noms et des dates. Le plus récent qu'il peut déchiffrer : 1901. Le plus ancien, presque effacé : quelque chose qui ressemble à 1647.`,
-        `Des gens ont traversé ce passage pendant deux cent cinquante ans et ont laissé leur trace. Pas pour la gloire — juste pour dire <em>j'étais là</em>. Un page anonyme. Un domestique. Un amant peut-être, venu en secret. L'histoire officielle n'a gardé aucun de ces noms.`,
-        `Il pense à Christine de Suède, dont il ne connaît pas encore l'histoire, et à tous ceux qui ont circulé dans l'ombre pendant que les rois éclairaient les grandes salles. Et il se demande : dans le monde officiel, qui voit-on ? Qui reste invisible ?`,
-      ],
-      choices:[
-        {text:'Continuer vers le choix final.',next:'p_dilemme'},
-      ]
-    },
-    p3b:{
-      num:'§ 3 · L\'autre direction',mood:'⬇️',
-      text:[
-        `Le passage descend jusqu'à un niveau qui doit être sous la cour principale. L'air est plus humide, plus froid. Des niches dans le mur semblent avoir contenu des torches, autrefois.`,
-        `Et puis — une autre porte. Mince, en fer forgé, fermée par un cadenas moderne (métal brillant, mécanisme inconnu de Lyam). Derrière : dans l'obscurité, on devine des formes protégées sous des bâches blanches.`,
-        `Des œuvres. Protégées là, dans l'obscurité, comme des trésors enterrés. Il comprendra plus tard que c'est ici qu'on les a cachées pendant une guerre — celle qu'ils appellent Seconde Guerre mondiale — quand des envahisseurs occupaient le château.`,
-        `La beauté mise en sûreté dans l'ombre. Lyam trouve ça étrangement émouvant.`,
-      ],
-      choices:[
-        {text:'Continuer vers le choix final.',next:'p_dilemme'},
-      ]
-    },
-    p3c:{
-      num:'§ 3 · La visite guidée',mood:'🎤',
-      text:[
-        `Le guide connaît tout — les escaliers du Roi et de la Reine, les passages du Primatice, les couloirs derrière la chapelle de la Trinité.`,
-        `Il raconte comment les passages permettaient aux souverains de se déplacer sans être vus des courtisans — pour l'intimité, pour les intrigues politiques, pour les amours secrètes. Et comment, en 1657, la reine Christine de Suède s'en est servie différemment.`,
-        `Christine avait soupçonné son grand écuyer Monaldeschi de l'avoir trahie. Elle l'a fait suivre dans la Galerie des Cerfs par ses hommes. Là, malgré ses supplications, elle a ordonné son exécution. Dans une résidence royale française. Cela a choqué la cour de Louis XIV pendant des décennies.`,
-        `Lyam écoute sans dire un mot. Dans son monde, les règles d'hospitalité sont absolues. On ne tue pas un invité sous votre toit, jamais. Ce qu'a fait Christine est une transgression que son code d'honneur ne peut pas calculer.`,
-      ],
-      choices:[
-        {text:'Continuer vers le choix final.',next:'p_dilemme'},
-      ]
-    },
-    p_dilemme:{
-      num:'§ Final · La question de l\'ombre',mood:'⚖️',
-      text:[
-        `De retour dans les grandes salles, Lyam réfléchit à ce qu'il a vu.`,
-        `Les passages secrets racontent une histoire différente de celle des grandes galeries. Dans les galeries, tout est visible, magnifié, public — c'est l'histoire officielle. Dans les passages, l'invisible : les domestiques, les espions, les amants, les artistes qui travaillent la nuit, les fugitifs pendant la guerre.`,
-        `Réna lui pose la question directement : <em>« Laquelle de ces deux histoires est la vraie ? »</em>`,
-        `Lyam doit répondre.`,
-      ],
-      choices:[
-        {text:'"L\'histoire officielle. Les rois ont bâti cet endroit — c\'est leur histoire qui compte."',next:'p_echec',result:'fail'},
-        {text:'"Les deux. L\'une n\'existe pas sans l\'autre. Les passages existent parce que les grandes salles existent, et inversement."',next:'p_succes',result:'success'},
-        {text:'"L\'histoire des gens invisibles. Elle est plus vraie parce qu\'elle est moins racontée."',next:'p_succes_2',result:'success'},
-      ]
-    },
-    p_succes:{
-      num:'§ Réponse — La profondeur du regard',mood:'🌟',
-      isResult:true,resultType:'success',
-      text:[
-        `Réna hoche la tête lentement. <em>« C'est ça. »</em>`,
-        `L'histoire d'un lieu n'est pas la somme de ses grandes dates et de ses rois célèbres. C'est la tension entre ce qui est montré et ce qui est caché, entre le visible et l'ombre. Fontainebleau vaut autant par ses passages secrets que par sa Galerie François Ier — et les deux sont indissociables.`,
-        `Les historiens appellent ça l'histoire des "oubliés" ou des "sans-noms". Mais Lyam n'a pas besoin de ce mot. Il sait juste que la réalité est épaisse, qu'elle a des couloirs cachés, et que les visiter change la façon dont on regarde les grandes salles.`,
-      ],
-      endNote:'L\'histoire complète d\'un lieu intègre à la fois les grandes figures et ceux qui n\'ont pas de statues. Les deux forment l\'épaisseur de la réalité.'
-    },
-    p_succes_2:{
-      num:'§ Réponse — Le regard de l\'ombre',mood:'🌟',
-      isResult:true,resultType:'success',
-      text:[
-        `Réna sourit. <em>« Dangereux comme réponse. Mais pas faux. »</em>`,
-        `Il y a une vérité dans cette position : les histoires peu racontées méritent d'être entendues d'abord parce qu'elles sont minoritaires, pas parce qu'elles sont plus vraies. Mais Lyam a raison de les privilégier ici — parce que le château les a effacées volontairement. L'histoire officielle avait les moyens de se raconter elle-même.`,
-        `Donner une voix à ce qui a été tu, c'est aussi une forme de justice historique.`,
-      ],
-      endNote:'Valoriser les histoires oubliées, c\'est corriger un déséquilibre — pas nier l\'existence de l\'histoire officielle.'
-    },
-    p_echec:{
-      num:'§ Un angle manqué',mood:'🌫️',
-      isResult:true,resultType:'fail',
-      text:[
-        `Réna secoue la tête doucement. <em>« Tu viens de traverser des passages où des gens ont vécu, caché des œuvres pendant une guerre, et gravé leurs noms pour qu'on n'oublie pas qu'ils existaient. Et tu dis que c'est l'histoire des rois qui compte ? »</em>`,
-        `Ce n'est pas qu'il a tort — les rois ont bien bâti Fontainebleau. Mais réduire l'histoire d'un lieu à ses commanditaires officiels, c'est amputer la réalité de toute son épaisseur. L'histoire complète, c'est la tension entre la grande salle et le passage secret.`,
-        `Retente. La bonne réponse est plus complexe que le choix entre "les uns" et "les autres".`,
-      ],
-      endNote:'L\'histoire d\'un monument ne se réduit pas à ses commanditaires. Elle intègre tous ceux qui y ont vécu, travaillé, et laissé une trace — même invisible.'
-    }
-  }
-};
+var LDVELH = [
+  {id:'font_ldv', file:'font_ldv_passages.html', icon:'🗝️', title:'Les Couloirs de l Ombre',
+   meta:'Sequence LDVELH - 6 passages - Tes choix ont des consequences', acc:'#5a3a6a',
+   exc:'Lyam decouvre une porte cachee derriere une tapisserie. Passages secrets, histoires oubliees, et une question : laquelle des deux histoires du chateau est vraie ?',
+   badge:'Historien des Ombres'},
+];
 
-// ══════════════════════════════════════════════════════════
-// RENDU HUB
-// ══════════════════════════════════════════════════════════
+function makeCard(cfg){
+  var d=document.createElement('div');
+  var cls='card '+(cfg.canOpen?'ok':'nok')+(cfg.done?' done':'');
+  d.className=cls;
+  if(cfg.acc) d.style.setProperty('--ca', cfg.acc);
+  if(cfg.canOpen && cfg.file){
+    var f=cfg.file;
+    d.onclick=function(){ window.location.href=f; };
+  }
+  var h='';
+  if(cfg.num) h+='<div class="cnum">'+cfg.num+'</div>';
+  h+='<span class="cicon">'+cfg.icon+'</span>';
+  h+='<div class="ctitle">'+cfg.title+'</div>';
+  h+='<div class="cmeta">'+(cfg.meta||'')+'</div>';
+  if(cfg.exc) h+='<div class="cexc">'+cfg.exc+'</div>';
+  h+='<div class="cfooter">';
+  h+=cfg.badge ? '<span class="cbadge">'+cfg.badge+'</span>' : '<span></span>';
+  if(cfg.canOpen && cfg.file) h+='<span class="ccta">'+(cfg.done?'Revisiter':'Entrer')+'</span>';
+  h+='</div>';
+  d.innerHTML=h;
+  return d;
+}
+
 function renderHub(p){
-  const xp=xpTotal(p);
-  document.getElementById('playerName').textContent=cur;
-  document.getElementById('playerXP').textContent=xp;
-  const d=getDone();
-  document.getElementById('moduleDone').textContent=Object.keys(d).length;
-  const grid=document.getElementById('modulesGrid');
-  grid.innerHTML='';
-  MODULES.forEach(m=>{
-    const done=isDone(m.id);
-    const card=document.createElement('div');
-    card.className='module-card'+(done?' done':'');
-    card.style.setProperty('--mc-accent',m.accent||'#c9a84c');
-    if(m.isLDVELH){
-      card.innerHTML=`
-        <span class="mc-icon">${m.icon}</span>
-        <div class="mc-num">${m.num}</div>
-        <div class="mc-title">${m.title}</div>
-        <div class="mc-lyam">${m.lyam_preview}</div>
-        <div class="mc-footer"><span class="mc-tag">${m.tag}</span><span class="mc-ldvelh">⚔️ Tu joues</span></div>`;
-      card.onclick=()=>openLDVELH();
-    } else {
-      card.innerHTML=`
-        <span class="mc-icon">${m.icon}</span>
-        <div class="mc-num">${m.num}</div>
-        <div class="mc-title">${m.title}</div>
-        <div class="mc-lyam">${m.lyam_preview}</div>
-        <div class="mc-footer"><span class="mc-tag">${m.tag}</span><span class="mc-cta">${done?'Relire ▸':'Découvrir ▸'}</span></div>`;
-      card.onclick=()=>openModule(m);
-    }
-    grid.appendChild(card);
+  var xp=xg(p);
+  document.getElementById('nomJ').textContent=cur;
+  document.getElementById('xpJ').textContent=xp;
+  var done=getDone();
+  var visited=SALLES.filter(function(s){ return done[s.id]; }).length;
+  document.getElementById('nbVisites').textContent=visited;
+
+  var gS=document.getElementById('gridSalles');
+  gS.innerHTML='';
+  SALLES.forEach(function(s){
+    gS.appendChild(makeCard({
+      icon:s.icon, title:s.title, meta:s.meta, exc:s.exc, num:s.num,
+      file:s.file, acc:s.acc, canOpen:true, done:!!done[s.id],
+    }));
+  });
+
+  var gL=document.getElementById('gridLDVELH');
+  gL.innerHTML='';
+  LDVELH.forEach(function(l){
+    gL.appendChild(makeCard({
+      icon:l.icon, title:l.title, meta:l.meta, exc:l.exc,
+      file:l.file, acc:l.acc, badge:l.badge, canOpen:true, done:!!done[l.id],
+    }));
   });
 }
 
-// ══════════════════════════════════════════════════════════
-// MODULE TEXTE + QUIZ
-// ══════════════════════════════════════════════════════════
-let activeModule=null;
-function openModule(m){
-  activeModule=m;
-  document.getElementById('modalTitle').textContent=`${m.num} · ${m.title}`;
-  document.getElementById('modalContent').innerHTML=buildModuleHTML(m);
-  document.getElementById('moduleModal').classList.add('open');
-  document.getElementById('moduleModal').scrollTop=0;
-  markDone(m.id);
-  updateCounter();
-}
-function closeModule(){
-  document.getElementById('moduleModal').classList.remove('open');
-  const p=getPlayer(cur);if(p)renderHub(p);
-}
-function updateCounter(){
-  document.getElementById('moduleDone').textContent=Object.keys(getDone()).length;
-}
-
-function buildModuleHTML(m){
-  let h='';
-  // Regard de Lyam
-  h+=`<div class="lyam-block"><div class="lb-tag">👁️ Ce que voit Lyam — écuyer de Valdurne, XIe siècle</div><div class="lb-text">`;
-  m.lyam.forEach(t=>h+=`<p>${t}</p>`);
-  h+=`</div></div>`;
-  // Réalité
-  h+=`<div class="reality-block"><div class="rb-tag">📚 ${m.reality_title}</div><div class="rb-text">`;
-  m.reality.forEach(b=>{
-    if(b.type==='text') h+=`<p>${b.content}</p>`;
-    else if(b.type==='fact') h+=`<div class="fact-box"><strong>📌 ${b.title}</strong>${b.content}</div>`;
-  });
-  h+=`</div></div>`;
-  // Quiz
-  if(m.quiz&&m.quiz.length){
-    h+=`<div class="quiz-block"><div class="quiz-tag">🧠 Teste-toi — ${m.quiz.length} questions</div>`;
-    m.quiz.forEach((q,qi)=>{
-      h+=`<div class="quiz-q" id="qq_${m.id}_${qi}">
-        <div class="qq-text">${qi+1}. ${q.q}</div>
-        <div class="qq-choices">`;
-      q.choices.forEach((c,ci)=>{
-        h+=`<button class="qq-btn" onclick="answerQuiz('${m.id}',${qi},${ci},${q.correct},'${escQ(q.feedback)}')">${c}</button>`;
-      });
-      h+=`</div><div class="qq-feedback" id="qf_${m.id}_${qi}"></div></div>`;
-    });
-    h+=`<div class="quiz-result" id="qresult_${m.id}">
-      <div class="qr-title" id="qt_${m.id}"></div>
-      <div class="qr-xp" id="qxp_${m.id}"></div>
-      <div class="qr-text" id="qtxt_${m.id}"></div>
-      <button class="btn-retry-quiz" onclick="retryQuiz('${m.id}')">Recommencer le quiz</button>
-    </div></div>`;
-  }
-  return h;
-}
-function escQ(s){return s.replace(/'/g,"\\'").replace(/"/g,'\\"')}
-
-const quizState={};
-function answerQuiz(mid,qi,ci,correct,feedback){
-  if(!quizState[mid])quizState[mid]={answers:{},done:false};
-  const st=quizState[mid];
-  if(st.done||st.answers[qi]!==undefined)return;
-  st.answers[qi]=ci;
-  const btns=document.querySelectorAll(`#qq_${mid}_${qi} .qq-btn`);
-  btns.forEach((b,i)=>{
-    b.classList.add('answered');
-    b.disabled=true;
-    if(i===correct)b.classList.add('correct');
-    else if(i===ci&&ci!==correct)b.classList.add('wrong');
-  });
-  document.getElementById(`qf_${mid}_${qi}`).textContent=feedback;
-  // Vérifier si tout répondu
-  const m=MODULES.find(x=>x.id===mid);
-  if(m&&m.quiz&&Object.keys(st.answers).length===m.quiz.length){
-    finalizeQuiz(mid,m);
-  }
-}
-function finalizeQuiz(mid,m){
-  const st=quizState[mid];
-  st.done=true;
-  const correct=m.quiz.filter((q,i)=>st.answers[i]===q.correct).length;
-  const ok=correct>=Math.ceil(m.quiz.length*0.67);
-  const xp=ok?XP_BON:XP_MAL;
-  const res=document.getElementById(`qresult_${mid}`);
-  res.className='quiz-result visible '+(ok?'ok':'nok');
-  document.getElementById(`qt_${mid}`).textContent=ok?`${correct}/${m.quiz.length} — Bien joué !`:`${correct}/${m.quiz.length} — Encore un effort`;
-  document.getElementById(`qxp_${mid}`).textContent=ok?`+${xp} XP`:`${xp} XP`;
-  document.getElementById(`qtxt_${mid}`).textContent=ok
-    ?`Tu as maîtrisé l'essentiel de cette salle. Les XP sont crédités dans ton Portail.`
-    :`Il te faut au moins ${Math.ceil(m.quiz.length*0.67)} bonnes réponses. Relis et retente !`;
-  creditXP(cur,xp,`FONT_QUIZ_${mid.toUpperCase()}`);
-  showXpNotif(xp);
-}
-function retryQuiz(mid){
-  quizState[mid]={answers:{},done:false};
-  openModule(MODULES.find(x=>x.id===mid));
-}
-
-// ══════════════════════════════════════════════════════════
-// LDVELH PASSAGES SECRETS
-// ══════════════════════════════════════════════════════════
-let ldvHistory=[];
-function openLDVELH(){
-  document.getElementById('modalTitle').textContent='Salle IV · Les Couloirs de l\'Ombre';
-  ldvHistory=[];
-  renderPassage(LDVELH_PASSAGES.start);
-  document.getElementById('moduleModal').classList.add('open');
-  document.getElementById('moduleModal').scrollTop=0;
-}
-function renderPassage(pid){
-  const pass=LDVELH_PASSAGES.passages[pid];
-  if(!pass)return;
-  ldvHistory.push(pid);
-  // Barre de progression
-  let progHtml=`<div class="ldv-progress">`;
-  for(let i=0;i<LDVELH_PASSAGES.steps;i++){
-    const cls=i<ldvHistory.length-1?'ldv-step done':i===ldvHistory.length-1?'ldv-step current':'ldv-step';
-    progHtml+=`<div class="${cls}"></div>`;
-  }
-  progHtml+=`</div>`;
-  let h=`<div class="ldvelh-section">
-    <div class="ldvelh-tag">⚔️ Les Couloirs de l'Ombre — Tu incarnes Lyam</div>
-    ${progHtml}
-    <div class="passage active">
-      <div class="p-num">${pass.num}</div>
-      ${pass.mood?`<div class="p-mood">${pass.mood}</div>`:''}
-      <div class="p-text">${(pass.text||[]).map(t=>`<p>${t}</p>`).join('')}</div>
-      <hr style="border:none;border-top:1px solid rgba(201,168,76,0.15);margin:16px 0">`;
-  if(pass.isResult){
-    const ok=pass.resultType==='success';
-    const xp=ok?XP_BON:XP_MAL;
-    if(ok){markDone('m4');updateCounter()}
-    h+=`<div class="ldv-result ${ok?'success':'fail'}">
-      <span class="lr-icon">${ok?'⭐':'💭'}</span>
-      <div class="lr-title">${ok?'Bonne réponse !':'À retravailler…'}</div>
-      <div class="lr-xp">${ok?'+'+xp+' XP':''+xp+' XP'}</div>
-      <div class="lr-text">${pass.endNote||''}</div>
-      <button class="btn-close-mod" onclick="closeModule()">Fermer</button>
-      ${!ok?`<button class="btn-retry-ldv" onclick="openLDVELH()">Recommencer</button>`:''}
-    </div>`;
-    creditXP(cur,xp,ok?'FONT_PASSAGES_SUCCESS':'FONT_PASSAGES_ECHEC');
-    showXpNotif(xp);
-  } else if(pass.choices){
-    h+=`<div class="choices">`;
-    pass.choices.forEach(c=>{
-      h+=`<button class="choice-btn" onclick="renderPassage('${c.next}')">${c.text}</button>`;
-    });
-    h+=`</div>`;
-  }
-  h+=`</div></div>`;
-  document.getElementById('modalContent').innerHTML=h;
-  document.getElementById('moduleModal').scrollTop=0;
-}
-
-// ══════════════════════════════════════════════════════════
-// NOTIF XP
-// ══════════════════════════════════════════════════════════
-function showXpNotif(amount){
-  const d=document.createElement('div');
-  d.className='xp-notif '+(amount>0?'ok':'fail');
-  d.textContent=amount>0?`+${amount} XP — Bien joué !`:`${amount} XP — Retente !`;
-  document.body.appendChild(d);
-  setTimeout(()=>d.remove(),5000);
-}
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModule()});
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){ window.location.href='index.html'; return; }
+  cur=raw.trim().toUpperCase();
+  var p=getP(cur);
+  if(!p){ window.location.href='index.html'; return; }
+  renderHub(p);
+})();
 </script>
 </body>
 </html>

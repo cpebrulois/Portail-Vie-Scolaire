@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#120e0a;--p1:#1e1710;--r:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+.wrap{max-width:740px;margin:0 auto;padding:32px 24px 60px}
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc2);font-size:.8em;text-decoration:none;display:inline-block;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.chap-tag{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase}
+.chap-title{font-family:'Cinzel',serif;font-size:clamp(1.4em,4vw,2em);font-weight:700;color:var(--or2);line-height:1.2;margin-bottom:6px;margin-top:20px}
+.chap-meta{font-size:.78em;color:var(--enc2);opacity:.6;margin-bottom:24px;font-style:italic}
+.chap-icon{font-size:2.8em;text-align:center;margin:16px 0;display:block;filter:drop-shadow(0 0 14px rgba(201,168,76,.4))}
+/* DOUBLE REGARD */
+.regard-bloc{margin-bottom:28px}
+.regard-label{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:3px;text-transform:uppercase;opacity:.7;margin-bottom:12px;padding:6px 12px;border-radius:4px;display:inline-block}
+.regard-lyam .regard-label{background:rgba(139,90,43,.2);color:#c8a060;border:1px solid rgba(201,168,76,.2)}
+.regard-reel .regard-label{background:rgba(43,90,139,.2);color:#8ab0d8;border:1px solid rgba(100,150,200,.2)}
+.regard-text{font-size:1.05em;line-height:1.9}
+.regard-text p{margin-bottom:1.1em;text-align:justify}
+.regard-text em{color:var(--enc2);font-style:italic}
+.divider{border:none;border-top:1px solid rgba(201,168,76,.12);margin:28px 0}
+/* QUIZ */
+.quiz-section{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:24px;margin-top:28px}
+.quiz-title{font-family:'Cinzel',serif;font-size:.8em;letter-spacing:2px;color:var(--or);text-transform:uppercase;margin-bottom:20px}
+.question{margin-bottom:22px}
+.question p{font-size:.95em;margin-bottom:10px;color:var(--enc2)}
+.opt{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:6px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);border-radius:5px;color:var(--enc);font-family:'Crimson Text',serif;font-size:.95em;cursor:pointer;transition:all .2s}
+.opt::before{content:'◇ ';color:var(--or);opacity:.5}
+.opt:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.4)}
+.opt.correct{background:rgba(26,58,26,.5);border-color:rgba(100,180,100,.5);color:#b8e8b8}
+.opt.wrong{background:rgba(58,26,26,.5);border-color:rgba(180,80,80,.5);color:#e8b8b8}
+.opt:disabled,.opt.correct,.opt.wrong{cursor:default;pointer-events:none}
+.quiz-result{display:none;margin-top:20px;padding:20px;border-radius:8px;text-align:center}
+.quiz-result.ok{background:linear-gradient(135deg,rgba(26,58,26,.6),rgba(42,74,26,.4));border:1px solid rgba(100,180,100,.4)}
+.quiz-result.ko{background:linear-gradient(135deg,rgba(58,26,26,.6),rgba(74,42,26,.4));border:1px solid rgba(180,80,80,.4)}
+.qr-icon{font-size:2em;display:block;margin-bottom:8px}
+.qr-title{font-family:'Cinzel',serif;font-size:.9em;margin-bottom:6px}
+.quiz-result.ok .qr-title{color:#8fe888}.quiz-result.ko .qr-title{color:#e88888}
+.qr-xp{font-size:1.1em;font-weight:600;margin:6px 0}
+.quiz-result.ok .qr-xp{color:#b8e8b8}.quiz-result.ko .qr-xp{color:#e8b8b8}
+.qr-note{font-size:.84em;color:var(--enc2);font-style:italic;margin-bottom:12px;line-height:1.6}
+.btn-a{padding:9px 22px;border-radius:4px;cursor:pointer;font-size:.8em;margin:4px;transition:all .2s}
+.btn-gold{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or2);font-family:'Cinzel',serif;letter-spacing:1px}
+.btn-gold:hover{background:rgba(201,168,76,.25)}
+.btn-grey{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
+.btn-grey:hover{border-color:rgba(255,255,255,.35)}
+/* LDVELH */
+.ldv-bar{display:flex;gap:4px;margin-bottom:28px}
+.ldv-s{height:3px;flex:1;border-radius:2px;background:rgba(201,168,76,.15);transition:background .3s}
+.ldv-s.done{background:rgba(201,168,76,.7)}.ldv-s.cur{background:var(--or)}
+.pas{display:none}.pas.active{display:block;animation:pi .4s ease}
+@keyframes pi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pnum{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:3px;color:var(--or);opacity:.5;margin-bottom:16px}
+.pmood{font-size:2.6em;text-align:center;margin:14px 0}
+.ptxt{font-size:1.05em;line-height:1.9;margin-bottom:22px}
+.ptxt p{margin-bottom:1em;text-align:justify}
+.ptxt em{color:var(--enc2);font-style:italic}
+.choix{display:flex;flex-direction:column;gap:8px}
+.cbtn{width:100%;padding:12px 16px;text-align:left;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.22);border-radius:6px;color:var(--enc);font-family:'Crimson Text',serif;font-size:.97em;line-height:1.5;cursor:pointer;transition:all .2s}
+.cbtn::before{content:'▸ ';color:var(--or);opacity:.6}
+.cbtn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.5);color:var(--or2);transform:translateX(4px)}
+.res{margin-top:18px;padding:20px;border-radius:8px;text-align:center}
+.res.ok{background:linear-gradient(135deg,rgba(26,58,26,.6),rgba(42,74,26,.4));border:1px solid rgba(100,180,100,.4)}
+.res.ko{background:linear-gradient(135deg,rgba(58,26,26,.6),rgba(74,42,26,.4));border:1px solid rgba(180,80,80,.4)}
+.ri{font-size:2em;display:block;margin-bottom:8px}
+.rt{font-family:'Cinzel',serif;font-size:.88em;margin-bottom:6px}
+.res.ok .rt{color:#8fe888}.res.ko .rt{color:#e88888}
+.rxp{font-size:1.1em;font-weight:600;margin:6px 0}
+.res.ok .rxp{color:#b8e8b8}.res.ko .rxp{color:#e8b8b8}
+.rn{font-size:.84em;color:var(--enc2);font-style:italic;margin-bottom:12px;line-height:1.6}
+@media(max-width:600px){.wrap{padding:20px 14px 40px}}
+</style>
+</head>
+<body><title>Salle V - Le Chateau dans le Monde</title>
+</head><body>
+<div class="wrap">
+<div class="nav">
+    <a class="bk" href="hub_fontainebleau.html">Fontainebleau</a>
+    <a class="bk" href="hub_narration.html">Bibliotheque</a>
+    <span class="chap-tag">Salle V - Heritage et aujourd'hui</span>
+  </div>
+  <h1 class="chap-title">Le Chateau dans le Monde</h1>
+  <p class="chap-meta">Fontainebleau au XXe siecle et son rayonnement mondial</p>
+  <span class="chap-icon">🌍</span>
+
+  <div class="regard-bloc regard-lyam">
+    <div class="regard-label">Le regard de Lyam</div>
+    <div class="regard-text">
+      <p>Lyam a passe toute la journee dans le chateau. Il essaie maintenant de comprendre quelque chose qui le trouble : les visiteurs.</p>
+      <p>Ils viennent de partout. Il entend des langues qu'il ne reconnait pas - pas de la magie, juste des sons differents. Certains lisent des feuilles pliees avec des plans. D'autres lèvent leurs petits rectangles brillants vers les fresques et font <em>clic</em>. Lyam a compris maintenant que ce n'est pas pour capturer des ames - c'est pour garder une image. Une memoire portable.</p>
+      <p>Ce qui le frappe : personne ne touche. Tout le monde regarde, certains lisent, beaucoup photographient - mais personne ne touche les murs, les meubles, les tableaux. Comme si un accord tacite existait entre tous ces gens venus de partout, que personne n'a besoin d'expliquer.</p>
+      <p>Rena lui demande ce qu'il pense du chateau maintenant qu'il a tout vu. Il reflechit longtemps. <em>C'est un endroit ou les gens viennent voir ce que d'autres gens ont fait. Et le fait que ca existe encore, apres tout ce temps, c'est aussi quelque chose que des gens ont decide.</em></p>
+      <p>Rena hoche la tete. <em>C'est exactement ca.</em></p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="regard-bloc regard-reel">
+    <div class="regard-label">Ce que c'est vraiment</div>
+    <div class="regard-text">
+      <p>Le chateau de Fontainebleau a traverse le XXe siecle avec des episodes sombres : occupe par l'armee allemande de 1940 a 1944, il sert de <strong>quartier general de la Wehrmacht</strong>. Des commandants dont Rommel et Von Rundstedt y resident. Les oeuvres d'art sont cachees dans les caves et la foret pour les proteger.</p>
+      <p>De 1921 a 1961, le chateau accueille les <strong>ecoles americaines de musique et de beaux-arts</strong> de Fontainebleau - des institutions qui forment plusieurs generations d'artistes americains, dont certains compositeurs importants du XXe siecle.</p>
+      <p>Aujourd'hui, le chateau compte <strong>1 500 pieces</strong> et 130 hectares de domaine. Il a accueilli <strong>34 rois et 2 empereurs</strong> sur 800 ans. C'est la seule residence royale francaise a avoir ete habitee de facon quasi ininterrompue depuis le Moyen Age jusqu'au Second Empire - contrairement a Versailles, cree ex nihilo par Louis XIV, ou au Louvre, devenu musee apres la Revolution.</p>
+      <p>Classe au <strong>patrimoine mondial de l'UNESCO en 1981</strong>, Fontainebleau est reconnu non seulement pour son architecture mais pour l'ensemble chateau-jardins-foret comme ecosysteme culturel unique. Napoleon l'appelait <em>"la maison des siecles"</em> - une definition qui reste la plus juste.</p>
+    </div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">Quiz - Verifie ta comprehension</div>
+    <div id="quiz-zone"></div>
+    <div class="quiz-result" id="quiz-result"></div>
+  </div>
+</div>
+
+<script>
+var KEY='pvs_hof_v2'; var AKEY='pvs_current_player'; var XKEY='pvs_narration_xp'; var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60}; var CIT={representant_ca:{xp:500}};
+var cur='';
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(code){try{var S=getS();var lists=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((lists[k]||[]).indexOf(code)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadCoeff(p){try{var n=Math.min(Number(p&&p.acadDone||0),50);var c=Math.round((1+n*0.02)*100)/100;return isNaN(c)?1:c}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);var r=Math.round(base*acadCoeff(p));return isNaN(r)?0:r}catch(e){return 0}}
+function creditXP(code,amount,reason){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:reason,target:'FONTAINEBLEAU',xp:Number(amount)});
+  if(S.logs.length>700)S.logs.length=700;
+  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
+  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem(XKEY)||'[]');
+  pending.push({code:code,amount:amount,reason:reason,d:now});
+  localStorage.setItem(XKEY,JSON.stringify(pending));
+}
+function showXpNotif(amount){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9em;text-align:center;pointer-events:none';
+  if(amount>0){d.style.background='linear-gradient(135deg,#1a3a1a,#2a4a1a)';d.style.border='1px solid rgba(100,200,100,.5)';d.style.color='#b8e8b8';d.textContent='+'+amount+' XP'}
+  else{d.style.background='linear-gradient(135deg,#3a1a1a,#4a1a1a)';d.style.border='1px solid rgba(200,80,80,.5)';d.style.color='#e8b8b8';d.textContent=amount+' XP'}
+  document.body.appendChild(d);setTimeout(function(){d.remove()},4000);
+}
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_fontainebleau.html';return}
+  cur=raw.trim().toUpperCase();
+  if(!getP(cur)){window.location.href='hub_fontainebleau.html';return}
+})();
+</script>
+<script>
+var MODULE_ID = 'font_m5';
+var QUESTIONS = [
+  { q: "Qu'est-ce qui distingue Fontainebleau de Versailles et du Louvre en termes d'usage historique ?",
+    opts: ["Fontainebleau est le seul chateau a avoir une foret classee UNESCO", "Fontainebleau est la seule residence royale habitee de facon quasi ininterrompue du Moyen Age au Second Empire", "Fontainebleau est le seul chateau construit dans son entierete par un seul roi", "Fontainebleau est le seul chateau a ne jamais avoir ete pille pendant la Revolution"], correct: 1 },
+  { q: "Que se passe-t-il a Fontainebleau pendant l'occupation allemande de 1940-1944 ?",
+    opts: ["Le chateau est detruit par les bombardements et reconstruit apres-guerre", "Le chateau sert de quartier general de la Wehrmacht et les oeuvres sont cachees", "Le chateau est ferme et scelle pour etre protege des pillages", "Le chateau abrite un hopital militaire allié"], correct: 1 },
+  { q: "Pourquoi Napoleon appelle-t-il Fontainebleau 'la maison des siecles' ?",
+    opts: ["Parce que sa construction a dure plusieurs siecles", "Parce qu'il y a passe lui-meme plus de temps que n'importe quelle autre residence", "Parce qu'il a abrite 34 rois et 2 empereurs sur 800 ans d'histoire quasi ininterrompue", "Parce que ses caves contiennent des vins vieux de plusieurs siecles"], correct: 2 },
+];
+var reponses={};
+function renderQuiz(){
+  var z=document.getElementById('quiz-zone');z.innerHTML='';
+  QUESTIONS.forEach(function(q,qi){
+    var div=document.createElement('div');div.className='question';
+    var p=document.createElement('p');p.textContent=(qi+1)+'. '+q.q;div.appendChild(p);
+    q.opts.forEach(function(opt,oi){
+      var btn=document.createElement('button');btn.className='opt';btn.textContent=opt;
+      btn.id='opt_'+qi+'_'+oi;
+      btn.onclick=(function(qidx,oidx){return function(){
+        reponses[qidx]=oidx;
+        document.querySelectorAll('[id^="opt_'+qidx+'_"]').forEach(function(b){b.disabled=true;});
+        if(oidx===QUESTIONS[qidx].correct)btn.classList.add('correct');
+        else{btn.classList.add('wrong');document.getElementById('opt_'+qidx+'_'+QUESTIONS[qidx].correct).classList.add('correct');}
+        if(Object.keys(reponses).length===QUESTIONS.length)showResult();
+      };})(qi,oi);
+      div.appendChild(btn);
+    });
+    z.appendChild(div);
+  });
+}
+function showResult(){
+  var ok=0;QUESTIONS.forEach(function(q,i){if(reponses[i]===q.correct)ok++;});
+  var success=ok>=2;var xp=success?50:-25;
+  var res=document.getElementById('quiz-result');
+  res.className='quiz-result '+(success?'ok':'ko');res.style.display='block';
+  res.innerHTML='<span class="qr-icon">'+(success?'⭐':'📖')+'</span>'
+    +'<div class="qr-title">'+ok+' / '+QUESTIONS.length+' bonnes reponses</div>'
+    +'<div class="qr-xp">'+(success?'+'+xp:''+xp)+' XP</div>'
+    +'<div class="qr-note">'+(success?'800 ans, 34 rois, la Wehrmacht, et Napoleon qui resume tout. Lyam a bien compris : certains endroits existent encore parce que des gens ont decide qu ils devaient exister.':'La maison des siecles : 800 ans d usage quasi ininterrompu. L occupation allemande et les oeuvres cachees. La difference essentielle avec Versailles et le Louvre.')+'</div>'
+    +'<div><button class="btn-a btn-gold" onclick="window.location.href='hub_fontainebleau.html'">Retour au chateau</button>'
+    +(success?'':'<button class="btn-a btn-grey" onclick="location.reload()">Retenter</button>')+'</div>';
+  if(success)markDone(MODULE_ID);
+  creditXP(cur,xp,'FONT_M5_'+(success?'OK':'KO'));showXpNotif(xp);
+}
+renderQuiz();
+</script>
+</body></html>
