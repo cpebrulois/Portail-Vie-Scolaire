@@ -3,254 +3,250 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bibliothèque de Valdurne — L'Ordre des Écuyers</title>
+<title>Bibliothèque de Valdurne</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root{--or:#c9a84c;--or-clair:#e8c97a;--encre:#e8dfc8;--encre-2:#c8bfa8;--parch:#120e0a;--parch-2:#1e1710;--radius:8px}
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#120e0a;--p1:#1e1710;--r:8px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--parch);color:var(--encre);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(139,42,42,.06) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(42,42,139,.06) 0%,transparent 60%)}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--parch)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
-.hub-header{position:relative;z-index:1;padding:36px 24px 0;max-width:1100px;margin:0 auto}
-.hub-tag{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:5px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:10px}
-.hub-title{font-family:'Cinzel',serif;font-size:clamp(1.8em,5vw,2.8em);font-weight:700;color:var(--or-clair);text-shadow:0 0 40px rgba(201,168,76,.3);line-height:1.2;margin-bottom:6px}
-.hub-sub{font-style:italic;color:var(--encre-2);opacity:.7;margin-bottom:20px}
-.player-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:6px;margin-bottom:28px;font-size:.82em}
-.pb-item{color:var(--encre-2)}.pb-val{color:var(--or-clair);font-weight:600;margin-left:4px}
-.pb-sep{color:rgba(201,168,76,.3)}
-.btn-home{margin-left:auto;padding:5px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--encre-2);font-size:.82em;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
-.btn-home:hover{border-color:var(--or);color:var(--or)}
-.library{max-width:1100px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
-.pillar-section{margin-bottom:36px}
-.pillar-label{font-family:'Cinzel',serif;font-size:.7em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,.2);display:flex;align-items:center;gap:10px}
-.pillar-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.2),transparent)}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.card{background:var(--parch-2);border:1px solid rgba(201,168,76,.2);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+.hdr{max-width:1100px;margin:0 auto;padding:36px 24px 0}
+.htag{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:5px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:10px}
+.htitle{font-family:'Cinzel',serif;font-size:clamp(1.8em,5vw,2.8em);font-weight:700;color:var(--or2);line-height:1.2;margin-bottom:6px}
+.hsub{font-style:italic;color:var(--enc2);opacity:.7;margin-bottom:20px}
+.pbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:6px;margin-bottom:28px;font-size:.82em}
+.pi{color:var(--enc2)}.pv{color:var(--or2);font-weight:600;margin-left:4px}.ps{color:rgba(201,168,76,.3)}
+.bhome{margin-left:auto;padding:5px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--enc2);font-size:.82em;text-decoration:none;display:inline-block;transition:all .2s}
+.bhome:hover{border-color:var(--or);color:var(--or)}
+.lib{max-width:1100px;margin:0 auto;padding:0 24px 60px}
+.plabel{font-family:'Cinzel',serif;font-size:.7em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,.2)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:36px}
+.card{background:var(--p1);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ca,var(--or)),transparent)}
-.card.unlocked{cursor:pointer}
-.card.unlocked:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.5);box-shadow:0 8px 30px rgba(0,0,0,.4),0 0 12px rgba(201,168,76,.15)}
-.card.locked{opacity:.5}
+.card.ok{cursor:pointer}
+.card.ok:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.5);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.card.nok{opacity:.5}
 .card.done::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--or);opacity:.7;font-size:.75em;font-family:'Cinzel',serif}
-.c-icon{font-size:1.8em;margin-bottom:10px;display:block}
-.c-title{font-family:'Cinzel',serif;font-size:.9em;font-weight:600;color:var(--or-clair);line-height:1.3;margin-bottom:4px}
-.c-meta{font-size:.72em;color:var(--encre-2);opacity:.65;margin-bottom:8px}
-.c-excerpt{font-style:italic;font-size:.82em;color:var(--encre-2);line-height:1.65;border-left:2px solid rgba(201,168,76,.2);padding-left:10px;margin-bottom:14px}
-.c-lock{font-size:.75em;color:#888;font-style:italic;margin-bottom:12px}
-.c-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.c-badge{font-size:.7em;color:var(--or);opacity:.8}
-.c-cta{padding:5px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:var(--or-clair);font-size:.75em;letter-spacing:1px;display:inline-block}
-.c-soon{font-size:.75em;color:#666;font-style:italic}
-.event-tag{position:absolute;top:10px;right:12px;background:linear-gradient(135deg,#7a2020,#3a0a5a);border:1px solid var(--or);border-radius:3px;padding:2px 8px;font-size:.6em;color:var(--or-clair);letter-spacing:1px;font-family:'Cinzel',serif}
-@media(max-width:600px){.hub-header,.library{padding-left:14px;padding-right:14px}}
+.cicon{font-size:1.8em;margin-bottom:10px;display:block}
+.ctitle{font-family:'Cinzel',serif;font-size:.9em;font-weight:600;color:var(--or2);line-height:1.3;margin-bottom:4px}
+.cmeta{font-size:.72em;color:var(--enc2);opacity:.65;margin-bottom:8px}
+.cexc{font-style:italic;font-size:.82em;color:var(--enc2);line-height:1.65;border-left:2px solid rgba(201,168,76,.2);padding-left:10px;margin-bottom:14px}
+.clock{font-size:.75em;color:#888;font-style:italic;margin-bottom:10px}
+.cfooter{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cbadge{font-size:.7em;color:var(--or);opacity:.8}
+.ccta{padding:5px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:var(--or2);font-size:.75em;letter-spacing:1px}
+.csoon{font-size:.75em;color:#666;font-style:italic}
+.etag{position:absolute;top:10px;right:12px;background:linear-gradient(135deg,#7a2020,#3a0a5a);border:1px solid var(--or);border-radius:3px;padding:2px 8px;font-size:.6em;color:var(--or2);letter-spacing:1px;font-family:'Cinzel',serif}
+@media(max-width:600px){.hdr,.lib{padding-left:14px;padding-right:14px}}
 </style>
 </head>
 <body>
-<div class="hub-header">
-  <div class="hub-tag">Château-École de Valdurne · Saison I</div>
-  <h1 class="hub-title">Bibliothèque de Valdurne</h1>
-  <p class="hub-sub">L'Ordre des Écuyers — Une bibliothèque qui grandit avec toi.</p>
-  <div class="player-bar">
-    <span class="pb-item">Écuyer : <span class="pb-val" id="playerName">—</span></span>
-    <span class="pb-sep">·</span>
-    <span class="pb-item">XP : <span class="pb-val" id="playerXP">0</span></span>
-    <span class="pb-sep">·</span>
-    <span class="pb-item">Lus : <span class="pb-val" id="countRead">0</span></span>
-    <a class="btn-home" href="index.html">← Portail Vie Scolaire</a>
+
+<div class="hdr">
+  <div class="htag">Chateau-Ecole de Valdurne - Saison I</div>
+  <h1 class="htitle">Bibliotheque de Valdurne</h1>
+  <p class="hsub">L'Ordre des Ecuyers - Une bibliotheque qui grandit avec toi.</p>
+  <div class="pbar">
+    <span class="pi">Ecuyer : <span class="pv" id="nomJ">-</span></span>
+    <span class="ps">.</span>
+    <span class="pi">XP : <span class="pv" id="xpJ">-</span></span>
+    <span class="ps">.</span>
+    <span class="pi">Lus : <span class="pv" id="nbLus">0</span></span>
+    <a class="bhome" href="index.html">Portail Vie Scolaire</a>
   </div>
 </div>
 
-<div class="library">
-  <div class="pillar-section">
-    <div class="pillar-label">📚 Histoire Principale — La Première Année</div>
-    <div class="cards-grid" id="gridMain"></div>
-  </div>
-  <div class="pillar-section">
-    <div class="pillar-label">⚔️ Séquences de Valdurne — Tu es le héros</div>
-    <div class="cards-grid" id="gridSat"></div>
-  </div>
-  <div class="pillar-section">
-    <div class="pillar-label">🌀 Expéditions au-delà du Portail</div>
-    <div class="cards-grid" id="gridExp"></div>
-  </div>
+<div class="lib">
+  <div class="plabel">Histoire Principale - La Premiere Annee</div>
+  <div class="pgrid" id="gridMain"></div>
+
+  <div class="plabel">Sequences de Valdurne - Tu es le heros</div>
+  <div class="pgrid" id="gridSat"></div>
+
+  <div class="plabel">Expeditions au-dela du Portail</div>
+  <div class="pgrid" id="gridExp"></div>
 </div>
 
 <script>
-const KEY='pvs_hof_v2';const XP_KEY='pvs_narration_xp';const DONE_KEY='pvs_narration_done';
-const ACTIVE_PLAYER_KEY='pvs_current_player';
-const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
-const CIT={representant_ca:{xp:500}};
-const XP_BON=50;const XP_MAL=-25;
-function nCode(v){return String(v||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'')}
-function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}}
-function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function getPlayer(c){var S=getS();return S.players&&S.players[c]?S.players[c]:null}
-function missionXp(code){try{var S=getS();var lists=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}catch(e){return 0}}
-function socialRawG(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
-function socialValidG(p){return Number(p&&p.witnessGiven||0)>0?socialRawG(p):0}
-function citizenXp(p){try{return missionXp(p&&p.code)+socialValidG(p)}catch(e){return 0}}
-function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
-function videoXp(p){return Number(p&&p.videoG||0)}
-function acadCoeff(p){try{var n=Math.min(Number(p&&p.acadDone||0),50);var c=Math.round((1+n*0.02)*100)/100;return isNaN(c)?1:c}catch(e){return 1}}
-function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);var r=Math.round(base*acadCoeff(p));return isNaN(r)?0:r}catch(e){return 0}}
-function getDone(){try{return JSON.parse(localStorage.getItem(DONE_KEY)||'{}')}catch{return{}}}
-function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DONE_KEY,JSON.stringify(d))}
+var KEY  = 'pvs_hof_v2';
+var AKEY = 'pvs_current_player';
+var XKEY = 'pvs_narration_xp';
+var DKEY = 'pvs_narration_done';
+var W    = {pixhare:60, psc1:60, sanctuaire:60, loge:60, autres:60};
+var CIT  = {representant_ca:{xp:500}};
+var cur  = '';
+
+function getS(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+function saveS(S){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+function getP(code){ var S=getS(); return (S.players&&S.players[code]) ? S.players[code] : null; }
+function getDone(){ try{ return JSON.parse(localStorage.getItem(DKEY)||'{}'); }catch(e){ return {}; } }
+function markDone(id){ var d=getDone(); d[id]=1; localStorage.setItem(DKEY,JSON.stringify(d)); }
+
+function missionXp(code){
+  try{
+    var S=getS(); var lists=S.citizen_lists||{}; var n=0;
+    Object.keys(CIT).forEach(function(k){ if((lists[k]||[]).indexOf(code)>=0) n+=CIT[k].xp; });
+    return n;
+  }catch(e){ return 0; }
+}
+function socialRaw(p){ return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0); }
+function socialValid(p){ return Number(p&&p.witnessGiven||0)>0 ? socialRaw(p) : 0; }
+function citizenXp(p){ try{ return missionXp(p&&p.code)+socialValid(p); }catch(e){ return 0; } }
+function academyXp(p){
+  try{
+    var cp=(p&&p.cp)||{};
+    return Object.keys(W).reduce(function(a,k){ return a+Number(cp[k]||0)*W[k]; }, 0);
+  }catch(e){ return 0; }
+}
+function videoXp(p){ return Number(p&&p.videoG||0); }
+function acadCoeff(p){
+  try{ var n=Math.min(Number(p&&p.acadDone||0),50); var c=Math.round((1+n*0.02)*100)/100; return isNaN(c)?1:c; }catch(e){ return 1; }
+}
+function xg(p){
+  if(!p) return 0;
+  try{
+    var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);
+    var r=Math.round(base*acadCoeff(p));
+    return isNaN(r)?0:r;
+  }catch(e){ return 0; }
+}
+
 function creditXP(code,amount,reason){
-  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
-  var p=S.players[code];var now=new Date().toISOString();
-  if(!Array.isArray(S.logs))S.logs=[];
+  if(!code) return;
+  var S=getS(); if(!S.players||!S.players[code]) return;
+  var p=S.players[code]; var now=new Date().toISOString();
+  if(!Array.isArray(S.logs)) S.logs=[];
   S.logs.unshift({d:now,p:code,t:reason,target:'NARRATION',xp:Number(amount)});
-  if(S.logs.length>700)S.logs.length=700;
-  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
-  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
-  p.up=now;saveS(S);
-  var pending=JSON.parse(localStorage.getItem(XP_KEY)||'[]');
+  if(S.logs.length>700) S.logs.length=700;
+  if(amount>0){ p.wBonusG=(Number(p.wBonusG||0)+(amount/10)); p.wBonusW=(Number(p.wBonusW||0)+(amount/10)); }
+  else { p.malusG=(Number(p.malusG||0)+amount); p.malusW=(Number(p.malusW||0)+amount); }
+  p.up=now; saveS(S);
+  var pending=JSON.parse(localStorage.getItem(XKEY)||'[]');
   pending.push({code:code,amount:amount,reason:reason,d:now});
-  localStorage.setItem(XP_KEY,JSON.stringify(pending));
+  localStorage.setItem(XKEY,JSON.stringify(pending));
 }
-function showXpNotif(amount){
-  var d=document.createElement('div');
-  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:11px 26px;border-radius:8px;font-weight:600;font-size:.92em;text-align:center;pointer-events:none;transition:opacity .5s';
-  if(amount>0){d.style.background='linear-gradient(135deg,#1a3a1a,#2a4a1a)';d.style.border='1px solid rgba(100,200,100,.5)';d.style.color='#b8e8b8';d.textContent='+'+amount+' XP — Bien joué !'}
-  else{d.style.background='linear-gradient(135deg,#3a1a1a,#4a1a1a)';d.style.border='1px solid rgba(200,80,80,.5)';d.style.color='#e8b8b8';d.textContent=amount+' XP — Retente !'}
-  document.body.appendChild(d);setTimeout(function(){d.remove()},4500);
-}
-var cur='';
-(function(){
-  var raw=localStorage.getItem(ACTIVE_PLAYER_KEY)||'';
-  if(!raw){window.location.href='hub_narration.html';return}
-  cur=nCode(raw);
-})();
-</script>
 
-
-<script>
-// ══════════════════════════════════════════════════════════
-// CATALOGUE — modifier ici pour ajouter/retirer/modifier
-// ══════════════════════════════════════════════════════════
-
+/* CATALOGUE */
 var CHAPITRES = [
-  {id:'narr_ch0', file:'narr_ch0.html', icon:'🏰', title:'Prologue — L'Arrivée',          meta:'Accessible dès l'entrée',        excerpt:'Lyam arrive au Château-École de Valdurne. Il ne connaît personne. Dans la grande salle bruissante, un autre écuyer lui sourit depuis un coin.', minXP:0,    badge:null},
-  {id:'narr_ch1', file:'narr_ch1.html', icon:'⚔️', title:'Chapitre I — Le Témoin',         meta:'Débloqué à 100 XP',               excerpt:'Lyam voit Réna cerné par trois écuyers. Tout le monde détourne les yeux. Il a deux chemins devant lui.', minXP:100,  badge:null},
-  {id:'narr_ch2', file:'narr_ch2.html', icon:'📜', title:'Chapitre II — La Règle du Château',meta:'Débloqué à 300 XP',              excerpt:'Un conflit éclate entre deux maisons. Les règles de Valdurne sont floues — et certains le savent très bien.', minXP:300, badge:null},
-  {id:'narr_ch3', file:'narr_ch3.html', icon:'⚖️', title:"Chapitre III — L'Égale",         meta:'Débloqué à 500 XP · Événement',   excerpt:'Kira n'a pas le droit d'accéder à la Forge Haute. Lyam se retrouve face à un choix entre tradition et justice.', minXP:500, badge:"⚖️ L'Écu d'Égale", isEvent:true},
-  {id:'narr_ch4', file:null,            icon:'🏥', title:'Chapitre IV — Le Secours en Danger',meta:'Débloqué à 800 XP',             excerpt:'Un accident au terrain d'entraînement. Lyam seul sait quoi faire.', minXP:800,  badge:null, comingSoon:true},
-  {id:'narr_ch5', file:null,            icon:'🌟', title:'Chapitre V — La Fraternité des Écus',meta:'Débloqué à 1200 XP',           excerpt:'Fin de première année. Le château n'a pas changé. C'est Lyam qui a changé.', minXP:1200, badge:'🌟 Chevalier Complet', comingSoon:true},
+  {id:'narr_ch0', file:'narr_ch0.html', icon:'🏰', title:'Prologue - L Arrivee',              meta:"Accessible des l'entree",       exc:'Lyam arrive au Chateau-Ecole de Valdurne. Il ne connait personne. Un ecuyer lui sourit depuis un coin.',      minXP:0,    badge:null, event:null, soon:false},
+  {id:'narr_ch1', file:'narr_ch1.html', icon:'⚔️', title:'Chapitre I - Le Temoin',            meta:'Debloque a 100 XP',             exc:'Lyam voit Rena cerne par trois ecuyers. Tout le monde detourne les yeux. Il a deux chemins devant lui.',     minXP:100,  badge:null, event:null, soon:false},
+  {id:'narr_ch2', file:'narr_ch2.html', icon:'📜', title:'Chapitre II - La Regle du Chateau', meta:'Debloque a 300 XP',             exc:'Un conflit eclate entre deux maisons. Les regles sont floues — certains le savent tres bien.',                minXP:300,  badge:null, event:null, soon:false},
+  {id:'narr_ch3', file:'narr_ch3.html', icon:'⚖️', title:'Chapitre III - L Egale',            meta:'Debloque a 500 XP - Evenement', exc:"Kira n'a pas acces a la Forge Haute. Lyam face a un choix entre tradition et justice.",                    minXP:500,  badge:"L'Ecu d'Egale", event:'EVENEMENT', soon:false},
+  {id:'narr_ch4', file:null,            icon:'🏥', title:'Chapitre IV - Le Secours en Danger',meta:'Debloque a 800 XP',             exc:"Un accident au terrain d'entrainement. Lyam seul sait quoi faire.",                                        minXP:800,  badge:null, event:null, soon:true},
+  {id:'narr_ch5', file:null,            icon:'🌟', title:'Chapitre V - La Fraternite des Ecus',meta:'Debloque a 1200 XP',           exc:'Fin de premiere annee. Le chateau n\'a pas change. C\'est Lyam qui a change.',                             minXP:1200, badge:'Chevalier Complet', event:null, soon:true},
 ];
 
 var SATELLITES = [
-  {id:'sat_egalite',    file:'narr_sat_egalite.html', icon:'⚖️', title:"L'Épreuve de la Forge",    pilier:'Module Égalité',            excerpt:'Tu es Lyam. Kira vient d'être refoulée de la Forge Haute. Tes choix ont des conséquences.', unlock:'egalite',    accent:'#7a3a9a', badge:"⚖️ L'Écu d'Égale"},
-  {id:'sat_pixhare',   file:null,                     icon:'🛡️', title:'La Cour des Ombres',        pilier:'Pilier Groupe — PIXHARe',   excerpt:'Réna est de nouveau ciblé. Cette fois c'est subtil. Tu as des outils.', unlock:'pixhare',    accent:'#3a6a9a', badge:'🛡️ Gardien du Groupe', comingSoon:true},
-  {id:'sat_psc1',      file:null,                     icon:'🏥', title:'Le Blessé du Tournoi',      pilier:'Module PSC1',               excerpt:'Un écuyer tombe au tournoi. Tu es le seul à savoir quoi faire.', unlock:'psc1',       accent:'#9a3a3a', badge:'🏥 Gardien des Corps', comingSoon:true},
-  {id:'sat_fraternite',file:null,                     icon:'🤝', title:'Le Banquet des Maisons',    pilier:'Pilier Fraternité',         excerpt:'Maisons Argent et Bois convoquées à un banquet de réconciliation.', unlock:'fraternite', accent:'#3a9a5a', badge:'🤝 Tisserand de Liens', comingSoon:true},
-  {id:'sat_liberte',   file:null,                     icon:'🗽', title:'La Pétition',              pilier:'Hub Liberté',               excerpt:'Les écuyers de première année veulent changer une règle du château.', unlock:'liberte',    accent:'#9a8a2a', badge:"🗽 Voix du Peuple", comingSoon:true},
-  {id:'sat_delegues',  file:null,                     icon:'📣', title:'Le Conseil des Écuyers',   pilier:'Hub Délégués',              excerpt:'Lyam est élu représentant de sa maison. Son premier vrai conseil.', unlock:'delegues',   accent:'#5a7a3a', badge:'📣 Délégué de Valdurne', comingSoon:true},
+  {id:'sat_egalite',    file:'narr_sat_egalite.html', icon:'⚖️', title:"L'Epreuve de la Forge", pilier:'Module Egalite',     exc:"Tu es Lyam. Kira vient d'etre refoulee. Tes choix ont des consequences.", acc:'#7a3a9a', badge:"L'Ecu d'Egale", unlock:'egalite',    soon:false},
+  {id:'sat_pixhare',   file:null,                     icon:'🛡️', title:'La Cour des Ombres',    pilier:'Pilier PIXHARe',     exc:'Rena est de nouveau cible. Cette fois c\'est subtil.',                    acc:'#3a6a9a', badge:'Gardien',         unlock:'pixhare',    soon:true},
+  {id:'sat_psc1',      file:null,                     icon:'🏥', title:'Le Blesse du Tournoi',  pilier:'Module PSC1',        exc:'Un ecuyer tombe au tournoi. Tu es le seul a savoir quoi faire.',         acc:'#9a3a3a', badge:'Gardien des Corps',unlock:'psc1',       soon:true},
+  {id:'sat_fraternite',file:null,                     icon:'🤝', title:'Le Banquet des Maisons',pilier:'Pilier Fraternite',  exc:'Maisons Argent et Bois convoquees a un banquet de reconciliation.',       acc:'#3a9a5a', badge:'Tisserand',        unlock:'fraternite', soon:true},
+  {id:'sat_liberte',   file:null,                     icon:'🗽', title:'La Petition',           pilier:'Hub Liberte',        exc:"Les ecuyers de premiere annee veulent changer une regle.",                acc:'#9a8a2a', badge:'Voix du Peuple',   unlock:'liberte',    soon:true},
+  {id:'sat_delegues',  file:null,                     icon:'📣', title:'Le Conseil des Ecuyers',pilier:'Hub Delegues',       exc:'Lyam est elu representant de sa maison. Son premier vrai conseil.',       acc:'#5a7a3a', badge:'Delegue',          unlock:'delegues',   soon:true},
 ];
 
 var EXPEDITIONS = [
-  {id:'exp_fontainebleau', file:'hub_fontainebleau.html', icon:'🏰', title:'Château de Fontainebleau', subtitle:'Au-delà du portail de la bibliothèque', accent:'#8a6a1f', excerpt:'Lyam et Réna franchissent un portail dans un grimoire ancien. De l'autre côté : un château de huit siècles, trente-quatre rois, et des visiteurs qui lèvent de petits rectangles brillants pour capturer les âmes des fresques.', badge:'🗝️ Explorateur de Mondes'},
-  {id:'exp_prochaine',     file:null,                     icon:'🌀', title:'Prochaine Expédition',     subtitle:'Destination inconnue',                  accent:'#3a3a5a', excerpt:'Le portail s'allume parfois seul, la nuit. La bibliothèque garde ses secrets.', badge:null},
+  {id:'exp_fontainebleau', file:'hub_fontainebleau.html', icon:'🏰', title:'Chateau de Fontainebleau', sub:'Au-dela du portail', acc:'#8a6a1f', exc:"Lyam et Rena franchissent un portail dans un grimoire. 800 ans d'histoire, 34 rois, et des visiteurs qui levent de petits rectangles brillants.", badge:'Explorateur de Mondes'},
+  {id:'exp_prochaine',     file:null,                     icon:'🌀', title:'Prochaine Expedition',     sub:'Destination inconnue', acc:'#3a3a5a', exc:"Le portail s'allume parfois seul. La bibliotheque garde ses secrets.",                                                                    badge:null},
 ];
 
-// ══════════════════════════════════════════════════════════
-// RENDU
-// ══════════════════════════════════════════════════════════
-function isUnlockedSat(sat, p) {
-  if (!p) return false;
-  var cp = p.cp || {};
-  var S = getS(); var logs = (S.logs || []).filter(function(l){return l.p===cur});
-  if (sat.unlock === 'egalite')    return (cp.autres||0)>=1 || logs.some(function(l){return (l.t||'').includes('EGALITE')});
-  if (sat.unlock === 'pixhare')    return (cp.pixhare||0)>=1;
-  if (sat.unlock === 'psc1')       return (cp.psc1||0)>=1;
-  if (sat.unlock === 'fraternite') return logs.some(function(l){return (l.t||'').includes('FRATERNITE')});
-  if (sat.unlock === 'liberte')    return logs.some(function(l){return (l.t||'').includes('LIBERTE')});
-  if (sat.unlock === 'delegues')   return logs.some(function(l){return (l.t||'').includes('DELEGUES')});
+function unlockSat(sat, p){
+  if(!p) return false;
+  var cp=p.cp||{}; var S=getS();
+  var logs=(S.logs||[]).filter(function(l){ return l.p===cur; });
+  function hasLog(str){ return logs.some(function(l){ return (l.t||'').indexOf(str)>=0; }); }
+  if(sat.unlock==='egalite')    return (cp.autres||0)>=1 || hasLog('EGALITE');
+  if(sat.unlock==='pixhare')    return (cp.pixhare||0)>=1;
+  if(sat.unlock==='psc1')       return (cp.psc1||0)>=1;
+  if(sat.unlock==='fraternite') return hasLog('FRATERNITE');
+  if(sat.unlock==='liberte')    return hasLog('LIBERTE');
+  if(sat.unlock==='delegues')   return hasLog('DELEGUES');
   return false;
 }
 
-function makeCard(cfg) {
-  var d = document.createElement('div');
-  d.className = 'card' + (cfg.locked ? ' locked' : ' unlocked') + (cfg.done ? ' done' : '');
-  if (cfg.accent) d.style.setProperty('--ca', cfg.accent);
-  if (!cfg.locked && cfg.file) {
-    d.onclick = function() { window.location.href = cfg.file; };
+function makeCard(cfg){
+  var d=document.createElement('div');
+  var cls='card '+(cfg.canOpen?'ok':'nok')+(cfg.done?' done':'');
+  d.className=cls;
+  if(cfg.acc) d.style.setProperty('--ca', cfg.acc);
+  if(cfg.canOpen && cfg.file){
+    var f=cfg.file;
+    d.onclick=function(){ window.location.href=f; };
   }
-  var inner = '';
-  if (cfg.event) inner += '<div class="event-tag">' + cfg.event + '</div>';
-  inner += '<span class="c-icon">' + cfg.icon + '</span>';
-  inner += '<div class="c-title">' + cfg.title + '</div>';
-  inner += '<div class="c-meta">' + (cfg.meta || '') + '</div>';
-  if (cfg.excerpt) inner += '<div class="c-excerpt">' + cfg.excerpt + '</div>';
-  if (cfg.lockMsg) inner += '<div class="c-lock">' + cfg.lockMsg + '</div>';
-  inner += '<div class="c-footer">';
-  inner += cfg.badge ? '<span class="c-badge">' + cfg.badge + '</span>' : '<span></span>';
-  if (!cfg.locked && cfg.file) inner += '<span class="c-cta">' + (cfg.done ? 'Relire ▸' : 'Ouvrir ▸') + '</span>';
-  else if (cfg.comingSoon) inner += '<span class="c-soon">📅 À venir…</span>';
-  inner += '</div>';
-  d.innerHTML = inner;
+  var h='';
+  if(cfg.event) h+='<div class="etag">'+cfg.event+'</div>';
+  h+='<span class="cicon">'+cfg.icon+'</span>';
+  h+='<div class="ctitle">'+cfg.title+'</div>';
+  h+='<div class="cmeta">'+(cfg.meta||cfg.sub||'')+'</div>';
+  if(cfg.exc) h+='<div class="cexc">'+cfg.exc+'</div>';
+  if(cfg.lockMsg) h+='<div class="clock">'+cfg.lockMsg+'</div>';
+  h+='<div class="cfooter">';
+  h+=cfg.badge ? '<span class="cbadge">'+cfg.badge+'</span>' : '<span></span>';
+  if(cfg.canOpen && cfg.file)    h+='<span class="ccta">'+(cfg.done?'Relire':'Ouvrir')+'</span>';
+  else if(cfg.soon)              h+='<span class="csoon">A venir...</span>';
+  h+='</div>';
+  d.innerHTML=h;
   return d;
 }
 
-function renderHub(p) {
-  var xp = xg(p);
-  document.getElementById('playerName').textContent = cur;
-  document.getElementById('playerXP').textContent = xp;
-  var done = getDone();
-  var countDone = Object.keys(done).filter(function(k){return done[k]}).length;
-  document.getElementById('countRead').textContent = countDone;
+function renderHub(p){
+  var xp=xg(p);
+  document.getElementById('nomJ').textContent=cur;
+  document.getElementById('xpJ').textContent=xp;
+  var done=getDone();
+  var nb=Object.keys(done).filter(function(k){ return done[k]; }).length;
+  document.getElementById('nbLus').textContent=nb;
 
-  // Chapitres
-  var gM = document.getElementById('gridMain'); gM.innerHTML = '';
-  CHAPITRES.forEach(function(ch) {
-    var unlocked = xp >= ch.minXP;
-    var isDoneC = !!done[ch.id];
+  var gM=document.getElementById('gridMain');
+  gM.innerHTML='';
+  CHAPITRES.forEach(function(ch){
+    var canOpen = !ch.soon && !!ch.file && xp>=ch.minXP;
     gM.appendChild(makeCard({
-      icon: ch.icon, title: ch.title, meta: ch.meta, excerpt: ch.excerpt,
-      badge: ch.badge, file: ch.file,
-      locked: !unlocked || ch.comingSoon || !ch.file,
-      done: isDoneC,
-      comingSoon: ch.comingSoon,
-      event: ch.isEvent ? '✨ ÉVÉNEMENT' : null,
-      lockMsg: !unlocked ? 'Il te faut ' + (ch.minXP - xp) + ' XP de plus.' : null,
+      icon:ch.icon, title:ch.title, meta:ch.meta, exc:ch.exc,
+      badge:ch.badge, file:ch.file, event:ch.event,
+      canOpen:canOpen,
+      done:!!done[ch.id],
+      soon:ch.soon,
+      lockMsg:(!canOpen && !ch.soon && ch.file && xp<ch.minXP) ? 'Il te faut '+(ch.minXP-xp)+' XP de plus.' : null,
     }));
   });
 
-  // Satellites
-  var gS = document.getElementById('gridSat'); gS.innerHTML = '';
-  SATELLITES.forEach(function(sat) {
-    var unlocked = isUnlockedSat(sat, p);
-    var isDoneS = !!done[sat.id];
+  var gS=document.getElementById('gridSat');
+  gS.innerHTML='';
+  SATELLITES.forEach(function(sat){
+    var satUnl=unlockSat(sat,p);
+    var canOpen=satUnl && !sat.soon && !!sat.file;
     gS.appendChild(makeCard({
-      icon: sat.icon, title: sat.title, meta: sat.pilier, excerpt: sat.excerpt,
-      badge: sat.badge, file: sat.file, accent: sat.accent,
-      locked: !unlocked || sat.comingSoon || !sat.file,
-      done: isDoneS,
-      comingSoon: sat.comingSoon,
-      lockMsg: !unlocked ? 'Complète <strong>' + sat.pilier + '</strong> dans le Portail pour débloquer.' : null,
+      icon:sat.icon, title:sat.title, meta:sat.pilier, exc:sat.exc,
+      badge:sat.badge, file:sat.file, acc:sat.acc,
+      canOpen:canOpen,
+      done:!!done[sat.id],
+      soon:sat.soon,
+      lockMsg:!satUnl ? 'Complete le module dans le Portail pour debloquer.' : null,
     }));
   });
 
-  // Expéditions
-  var gE = document.getElementById('gridExp'); gE.innerHTML = '';
-  EXPEDITIONS.forEach(function(exp) {
-    var isDoneE = !!done[exp.id];
+  var gE=document.getElementById('gridExp');
+  gE.innerHTML='';
+  EXPEDITIONS.forEach(function(exp){
     gE.appendChild(makeCard({
-      icon: exp.icon, title: exp.title, meta: exp.subtitle, excerpt: exp.excerpt,
-      badge: exp.badge, file: exp.file, accent: exp.accent,
-      locked: !exp.file,
-      done: isDoneE,
-      comingSoon: !exp.file,
+      icon:exp.icon, title:exp.title, sub:exp.sub, exc:exp.exc,
+      badge:exp.badge, file:exp.file, acc:exp.acc,
+      canOpen:!!exp.file,
+      done:!!done[exp.id],
+      soon:!exp.file,
     }));
   });
 }
 
-// Init sans re-auth
-(function() {
-  var raw = localStorage.getItem('pvs_current_player') || '';
-  if (!raw) { window.location.href = 'index.html'; return; }
-  cur = raw.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
-  var p = getPlayer(cur);
-  if (!p) { window.location.href = 'index.html'; return; }
+/* INIT — lit pvs_current_player, PAS de re-auth */
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){ window.location.href='index.html'; return; }
+  cur=raw.trim().toUpperCase();
+  var p=getP(cur);
+  if(!p){ window.location.href='index.html'; return; }
   renderHub(p);
 })();
 </script>
