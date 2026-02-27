@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Gardiens de Fontainebleau — LDVELH · Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0a0806;--p1:#140e0a;--rouge:#8b2a2a;--bleu:#0d1a2e;--vert:#1a2e0d}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.12em;line-height:1.9;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 30% 20%,rgba(12,25,50,.6) 0%,transparent 55%),
+  radial-gradient(ellipse at 70% 80%,rgba(30,20,5,.5) 0%,transparent 55%),
+  radial-gradient(1px 1px at 15% 25%,rgba(201,168,76,.35),transparent),
+  radial-gradient(1px 1px at 65% 10%,rgba(201,168,76,.25),transparent),
+  radial-gradient(1px 1px at 80% 55%,rgba(201,168,76,.3),transparent),
+  radial-gradient(1px 1px at 5% 75%,rgba(201,168,76,.2),transparent),
+  radial-gradient(1px 1px at 90% 85%,rgba(201,168,76,.15),transparent)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+
+/* HEADER DÉCORATIF */
+.chateau-banner{
+  background:linear-gradient(135deg,#0a0f1a,#1a1505,#0a0f1a);
+  border-bottom:2px solid var(--or);
+  padding:14px 20px;text-align:center;
+  position:relative;z-index:10;
+  overflow:hidden;
+}
+.chateau-banner::before{content:'⚜ · · · ⚜ · · · ⚜';position:absolute;top:4px;left:0;right:0;text-align:center;color:rgba(201,168,76,.15);font-size:.7em;letter-spacing:6px}
+.chateau-banner-title{font-family:'Cinzel Decorative',serif;font-size:.9em;letter-spacing:4px;color:var(--or2);display:block}
+.chateau-banner-sub{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:3px;color:var(--enc2);opacity:.6;display:block;margin-top:4px}
+
+/* LOCK */
+.lock-screen{position:fixed;inset:0;background:rgba(5,4,2,.97);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
+.lock-box{max-width:480px;padding:48px 40px;background:var(--p1);border:1px solid rgba(201,168,76,.22);border-radius:14px}
+.lock-icon{font-size:3.2em;margin-bottom:16px;display:block}
+.lock-title{font-family:'Cinzel Decorative',serif;font-size:1.05em;color:var(--or2);margin-bottom:12px;letter-spacing:2px}
+.lock-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.75;margin-bottom:20px}
+
+/* MAIN */
+.manuscript{max-width:740px;margin:0 auto;padding:44px 24px 88px;position:relative;z-index:1}
+
+/* HEADER */
+.chapter-header{text-align:center;margin-bottom:52px;padding-bottom:32px;border-bottom:1px solid rgba(201,168,76,.22)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:14px;opacity:.75}
+.badge-module{display:inline-block;background:linear-gradient(135deg,rgba(12,25,50,.7),rgba(30,20,5,.7));border:1px solid rgba(201,168,76,.4);border-radius:4px;padding:5px 16px;font-family:'Cinzel',serif;font-size:.62em;letter-spacing:2px;color:var(--or2);margin-bottom:22px}
+h1.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,4.5vw,2.2em);color:var(--or2);line-height:1.2;margin-bottom:10px;text-shadow:0 0 50px rgba(201,168,76,.2)}
+.chapter-subtitle{font-style:italic;color:var(--enc2);font-size:.9em;opacity:.7;line-height:1.6}
+
+/* MINI-MAP ÉPOQUE */
+.epoch-map{display:flex;gap:4px;margin-bottom:28px;flex-wrap:wrap;justify-content:center}
+.epoch-dot{width:22px;height:4px;border-radius:2px;background:rgba(201,168,76,.15);transition:background .4s}
+.epoch-dot.done{background:var(--or)}
+.epoch-dot.active{background:var(--or2);box-shadow:0 0 6px rgba(201,168,76,.5)}
+
+/* SCÈNES */
+.scene{display:none}.scene.active{display:block;animation:fadeUp .55s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* TEXTE */
+p{margin-bottom:1.4em;text-align:justify;text-indent:1.5em}
+p.ni,p:first-of-type{text-indent:0}
+.drop-cap::first-letter{font-family:'Cinzel',serif;font-size:4.2em;font-weight:600;color:var(--or);float:left;line-height:.78;margin:6px 8px 0 0;text-shadow:0 0 18px rgba(201,168,76,.4)}
+em{font-style:italic;color:var(--enc2)}
+strong{color:var(--or2);font-weight:600}
+
+/* DIALOGUE / HISTOIRE */
+.dialogue{margin:1.6em 0;padding:0 0 0 22px;border-left:2px solid rgba(201,168,76,.22);text-indent:0;font-style:italic;color:var(--enc2)}
+.scene-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.12);border-radius:4px;padding:16px 22px;margin:1.6em 0;font-style:italic;color:var(--enc2);text-indent:0}
+.scene-block::before{content:'⬡ ';color:var(--or);font-style:normal;opacity:.5}
+.doc-extract{background:rgba(12,25,50,.3);border:1px solid rgba(100,130,180,.2);border-radius:4px;padding:16px 22px;margin:1.6em 0;font-style:italic;color:var(--enc2);text-indent:0;border-left:3px solid rgba(100,130,180,.4)}
+.doc-extract::before{content:'📜 ';font-style:normal}
+
+/* SÉPARATEUR */
+.sep{text-align:center;margin:2.2em 0;color:var(--or);font-size:1em;opacity:.4;letter-spacing:10px}
+
+/* SCÈNE LABELS */
+.scene-epoch{display:inline-block;font-family:'Cinzel',serif;font-size:.6em;letter-spacing:4px;color:var(--or);opacity:.55;text-transform:uppercase;margin-bottom:6px;padding:2px 10px;border:1px solid rgba(201,168,76,.2);border-radius:20px}
+.scene-title{font-family:'Cinzel',serif;font-size:1.08em;color:var(--or2);margin-bottom:20px}
+
+/* CHOIX */
+.choice-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase;margin:2.4em 0 .9em;display:block}
+.choice-btn{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.16);border-radius:5px;color:var(--enc);padding:16px 22px;margin:9px 0;cursor:pointer;transition:all .22s;font-family:'Crimson Text',Georgia,serif;font-size:1em;line-height:1.65}
+.choice-btn:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.45);transform:translateX(5px)}
+.choice-btn .ar{color:var(--or);margin-right:10px;font-style:normal}
+
+/* FEEDBACK */
+.fb{padding:14px 20px;margin:16px 0;border-radius:5px;font-style:italic;font-size:.91em;line-height:1.72;text-indent:0}
+.fb-bad{background:rgba(139,42,42,.07);border-left:3px solid #7a2a2a;color:#c09080}
+.fb-good{background:rgba(40,90,40,.07);border-left:3px solid #4a8a4a;color:#90c080}
+.fb-info{background:rgba(12,25,50,.25);border-left:3px solid rgba(100,130,180,.4);color:var(--enc2)}
+
+/* REWARD */
+.reward-block{margin:52px 0 28px;padding:28px;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(12,25,50,.12));border:1px solid var(--or);border-radius:12px;text-align:center;animation:glowPulse 3.5s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 10px rgba(201,168,76,.12)}50%{box-shadow:0 0 30px rgba(201,168,76,.4)}}
+.reward-icon{font-size:3em;display:block;margin-bottom:14px;filter:drop-shadow(0 0 12px rgba(201,168,76,.35))}
+.reward-name{font-family:'Cinzel Decorative',serif;font-size:1.15em;color:var(--or2);margin-bottom:8px;letter-spacing:2px}
+.reward-desc{font-size:.86em;color:var(--enc2);opacity:.72;font-style:italic;line-height:1.75;text-indent:0}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.22);padding:5px 16px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:14px}
+
+/* NAV */
+.nav-top{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.2);border-radius:4px;color:var(--enc2);font-size:.73em;text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block}
+.bk:hover{border-color:var(--or);color:var(--or)}
+
+.note-fin{margin-top:44px;padding-top:22px;border-top:1px solid rgba(201,168,76,.15);font-size:.83em;color:var(--enc2);opacity:.6;font-style:italic;text-indent:0;line-height:1.8}
+
+@media(max-width:600px){.manuscript{padding:24px 16px 60px}h1.chapter-title{font-size:1.4em}body{font-size:1.04em}}
+</style>
+</head>
+<body>
+
+<div id="lockScreen" class="lock-screen" style="display:none">
+  <div class="lock-box">
+    <span class="lock-icon">🏰</span>
+    <div class="lock-title">Les Gardiens de Fontainebleau</div>
+    <p class="lock-txt">Cette exploration se débloque après avoir complété le <strong>module Fontainebleau</strong> du Portail Vie Scolaire. Les portes du château sont fermées — pour l'instant.<br><br>Reviens quand tu as les clés.</p>
+    <a href="hub_narration.html" class="bk" style="margin-top:10px">← Bibliothèque</a>
+  </div>
+</div>
+
+<div class="chateau-banner">
+  <span class="chateau-banner-title">Les Gardiens de Fontainebleau</span>
+  <span class="chateau-banner-sub">Exploration narrative · Château-École de Valdurne · Module Patrimoine</span>
+</div>
+
+<div class="manuscript" id="mainContent" style="display:none">
+
+  <div class="nav-top">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <span class="bk" style="opacity:.4;pointer-events:none;cursor:default">LDVELH · Fontainebleau</span>
+  </div>
+
+  <div class="chapter-header">
+    <div class="chapter-label">Histoire Annexe · Module Patrimoine · Année I</div>
+    <div class="badge-module">⚜ Débloqué via le module Fontainebleau ⚜</div>
+    <h1 class="chapter-title">Les Gardiens<br>de Fontainebleau</h1>
+    <p class="chapter-subtitle">Huit siècles de rois, d'artistes et de secrets.<br>Tu arrives au château. La forêt te regarde entrer.</p>
+  </div>
+
+  <!-- MINI-MAP -->
+  <div class="epoch-map" id="epochMap">
+    <div class="epoch-dot active" id="dot0" title="Prologue"></div>
+    <div class="epoch-dot" id="dot1" title="Capétiens"></div>
+    <div class="epoch-dot" id="dot2" title="Renaissance"></div>
+    <div class="epoch-dot" id="dot3" title="Bourbons"></div>
+    <div class="epoch-dot" id="dot4" title="Napoléon"></div>
+    <div class="epoch-dot" id="dot5" title="Le Secret"></div>
+    <div class="epoch-dot" id="dot6" title="Épilogue"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       S0 — PROLOGUE : ARRIVÉE
+  ══════════════════════════════════════ -->
+  <div class="scene active" id="s0">
+    <div class="scene-epoch">Prologue · An I</div>
+    <div class="scene-title">Les Portes du Château</div>
+
+    <p class="drop-cap ni">Tu pousses les portes. La forêt de Fontainebleau te regarde depuis l'aube — des hêtres et des chênes qui ont vu passer trente-quatre rois et deux empereurs. Le château qui s'ouvre devant toi n'est pas comme les autres : il n'a pas été construit d'un coup par un seul souverain. Il a <em>poussé</em>, couche après couche, pendant huit siècles.</p>
+
+    <p>Le gardien-guide qui t'accueille à l'entrée de la Cour Ovale s'appelle Maître Kern. Il a des yeux qui ont vu trop d'élèves traverser ces cours en courant sans regarder.</p>
+
+    <div class="dialogue">— Avant d'entrer, une question. Le château de Fontainebleau a quelque chose que Versailles n'a pas. Quelque chose qui en fait un témoignage unique de l'histoire de France. Tu penses à quoi ?</div>
+
+    <span class="choice-label">Qu'est-ce qui rend Fontainebleau unique ?</span>
+    <button class="choice-btn" onclick="go('s1a', 1)"><span class="ar">▶</span>Sa taille — c'est l'un des plus grands châteaux de France, avec 1 500 pièces.</button>
+    <button class="choice-btn" onclick="go('s1b', 1)"><span class="ar">▶</span>Sa continuité — il a été habité sans interruption pendant huit siècles, par chaque grande dynastie.</button>
+    <button class="choice-btn" onclick="go('s1c', 1)"><span class="ar">▶</span>Ses jardins — le Grand Canal de 1,2 kilomètre, précédant celui de Versailles.</button>
+  </div>
+
+  <!-- S1A — mauvaise réponse taille -->
+  <div class="scene" id="s1a">
+    <div class="scene-epoch">Prologue · Réponse A</div>
+    <div class="scene-title">La Taille n'est pas tout</div>
+    <div class="fb fb-bad">La taille est impressionnante — 1 500 pièces, c'est vrai. Mais ce n'est pas ce qui rend Fontainebleau irremplaçable. Versailles est plus grand encore. Ce qui compte ici, c'est autre chose.</div>
+    <div class="dialogue">— La taille, dit Kern avec un sourire poli. Louvre, Versailles, Chambord. On peut toujours construire plus grand. Ce qui ne se reconstruit pas, c'est ce que Napoléon appelait la « vraie demeure des rois ». Lis ça.</div>
+    <div class="doc-extract">Contrairement à Versailles, création ex nihilo d'un seul monarque, Fontainebleau a maintenu une continuité résidentielle presque ininterrompue, servant de laboratoire architectural où chaque dynastie a laissé une empreinte indélébile.</div>
+    <span class="choice-label">Tu comprends maintenant. Kern t'ouvre la porte.</span>
+    <button class="choice-btn" onclick="go('s2', 1)"><span class="ar">▶</span>Entrer dans la première salle — les Capétiens.</button>
+  </div>
+
+  <!-- S1B — bonne réponse -->
+  <div class="scene" id="s1b">
+    <div class="scene-epoch">Prologue · Réponse B</div>
+    <div class="scene-title">La Mémoire Vivante</div>
+    <div class="fb fb-good">Kern hoche la tête avec quelque chose qui ressemble à du respect.</div>
+    <div class="dialogue">— Exactement. Versailles, c'est Louis XIV. Le Louvre, c'est la Révolution. Fontainebleau, c'est trente-quatre rois et deux empereurs — Capétiens, Valois, Bourbons, Bonaparte, Orléans. Chacun y a laissé une couche. C'est pour ça qu'on dit que c'est la « maison des siècles ».</div>
+    <div class="fb fb-info">L'UNESCO a inscrit Fontainebleau au patrimoine mondial en 1981 — précisément pour cette continuité.</div>
+    <span class="choice-label">Kern t'invite à entrer.</span>
+    <button class="choice-btn" onclick="go('s2', 1)"><span class="ar">▶</span>Entrer dans la première salle — les Capétiens.</button>
+  </div>
+
+  <!-- S1C — réponse partielle jardins -->
+  <div class="scene" id="s1c">
+    <div class="scene-epoch">Prologue · Réponse C</div>
+    <div class="scene-title">Les Jardins, mais pas seulement</div>
+    <div class="fb fb-info">Les jardins sont une partie de la réponse — et le Grand Canal d'Henri IV précède effectivement celui de Versailles de soixante ans. Mais ce n'est pas l'essentiel. Ce qui rend Fontainebleau vraiment unique, c'est ce que représentent ses murs.</div>
+    <div class="dialogue">— Les jardins sont magnifiques, reconnaît Kern. Mais imagine : une forêt qui a alimenté les chasses royales pendant huit cents ans. Un château où chaque dynastir a ajouté sa couche, sans jamais tout effacer. Une continuité que Versailles n'a pas. Voilà Fontainebleau.</div>
+    <span class="choice-label">Tu entres.</span>
+    <button class="choice-btn" onclick="go('s2', 1)"><span class="ar">▶</span>La première salle — les Capétiens.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       S2 — ÉPOQUE CAPÉTIENNE
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s2">
+    <div class="scene-epoch">XIIe – XIVe siècle · Capétiens</div>
+    <div class="scene-title">La Pierre des Rois de Fer</div>
+
+    <p>La première salle est froide et ancienne. Les murs en pierre de grès datent du XIIe siècle. Une plaque rappelle la première mention du château : 1137, sous Louis VII. Un simple donjon, une enceinte, une forêt giboyeuse autour.</p>
+
+    <p>Kern s'arrête devant un portrait austère.</p>
+
+    <div class="dialogue">— Philippe le Bel. Il est né ici en 1268, et il y est mort en 1314, des suites d'une chute de cheval. Le « roi de fer ». Mais avant lui, un autre Capétien avait marqué ces murs d'une façon très différente. Lequel, et comment ?</div>
+
+    <div class="scene-block">Louis IX — Saint Louis — aimait venir ici. Il trouvait dans ces forêts ce qu'il appelait « ses déserts ». En 1259, il y installa des religieux trinitaires, fondant un couvent-hôpital dont la mission était de racheter les captifs lors des croisades.</div>
+
+    <span class="choice-label">Qu'a fondé Saint Louis à Fontainebleau en 1259 ?</span>
+    <button class="choice-btn" onclick="go('s2a', 2)"><span class="ar">▶</span>Une école royale pour les futurs chevaliers du royaume.</button>
+    <button class="choice-btn" onclick="go('s2b', 2)"><span class="ar">▶</span>Un couvent-hôpital pour racheter les captifs des croisades.</button>
+    <button class="choice-btn" onclick="go('s2c', 2)"><span class="ar">▶</span>Un tribunal royal, pour juger les affaires d'État loin de Paris.</button>
+  </div>
+
+  <div class="scene" id="s2a">
+    <div class="scene-epoch">Capétiens · Réponse A</div>
+    <div class="scene-title">Pas tout à fait</div>
+    <div class="fb fb-bad">Une école pour chevaliers, c'est une bonne intuition — mais ce n'est pas ce que Saint Louis fonda ici. Sa préoccupation était plus spirituelle et humanitaire. Il voulait racheter les chrétiens faits prisonniers lors des croisades.</div>
+    <button class="choice-btn" onclick="go('s3', 2)"><span class="ar">▶</span>Kern t'explique, puis t'emmène vers la Renaissance.</button>
+  </div>
+
+  <div class="scene" id="s2b">
+    <div class="scene-epoch">Capétiens · Réponse B</div>
+    <div class="scene-title">Le Roi et ses Déserts</div>
+    <div class="fb fb-good">Exact. Et cette chapelle des trinitaires reste vivante aujourd'hui sous le nom de chapelle de la Trinité. Saint Louis appelait Fontainebleau « ses déserts » — un lieu de retraite spirituelle autant que de chasse.</div>
+    <div class="dialogue">— Huit cents ans après, la chapelle est toujours debout, dit Kern. C'est ça, Fontainebleau. Les murs se souviennent.</div>
+    <button class="choice-btn" onclick="go('s3', 2)"><span class="ar">▶</span>Traverser vers la Renaissance — le règne de François Ier.</button>
+  </div>
+
+  <div class="scene" id="s2c">
+    <div class="scene-epoch">Capétiens · Réponse C</div>
+    <div class="scene-title">Pas un tribunal</div>
+    <div class="fb fb-bad">Non — les grandes décisions d'État viendront plus tard, notamment sous Louis XIV. Saint Louis avait une autre préoccupation : les chrétiens pris en captivité lors des croisades, qu'il voulait racheter à travers une fondation religieuse.</div>
+    <button class="choice-btn" onclick="go('s3', 2)"><span class="ar">▶</span>Continuer vers la Renaissance.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       S3 — RENAISSANCE FRANÇAISE
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s3">
+    <div class="scene-epoch">XVIe siècle · Renaissance</div>
+    <div class="scene-title">La Galerie François Ier</div>
+
+    <p>La Galerie François Ier arrête le souffle. Longue, ornée de fresques et de stucs en haut-relief, elle ressemble à nulle autre chose en France. Les cadres débordent sur les peintures, les nymphes et les angelots se mêlent aux allégories royales.</p>
+
+    <div class="dialogue">— François Ier, dit Kern. De retour de captivité en Espagne en 1527, il décide de faire de Fontainebleau sa demeure. Il appelle des artistes italiens — Rosso en 1530, le Primatice en 1532. Ensemble, ils créent quelque chose d'inédit en Europe. Tu sais quel style ?</div>
+
+    <span class="choice-label">Quel style caractérise la Première École de Fontainebleau ?</span>
+    <button class="choice-btn" onclick="go('s3a', 3)"><span class="ar">▶</span>Le baroque — l'exubérance des formes et des couleurs au service de la grandeur royale.</button>
+    <button class="choice-btn" onclick="go('s3b', 3)"><span class="ar">▶</span>Le maniérisme — formes allongées, élégantes, et cadres de stuc qui débordent sur les peintures.</button>
+    <button class="choice-btn" onclick="go('s3c', 3)"><span class="ar">▶</span>Le néoclassicisme — retour à la sobriété et aux lignes droites de l'Antiquité.</button>
+  </div>
+
+  <div class="scene" id="s3a">
+    <div class="scene-epoch">Renaissance · Réponse A</div>
+    <div class="scene-title">Pas encore le baroque</div>
+    <div class="fb fb-bad">Le baroque arrive après — au XVIIe siècle. L'École de Fontainebleau est plus tôt, et plus complexe : c'est le maniérisme, un style qui joue sur l'élégance extrême, l'allongement des formes, la difficulté volontaire de la composition.</div>
+    <button class="choice-btn" onclick="go('s4', 3)"><span class="ar">▶</span>Continuer vers les Bourbons.</button>
+  </div>
+
+  <div class="scene" id="s3b">
+    <div class="scene-epoch">Renaissance · Réponse B</div>
+    <div class="scene-title">La « Nouvelle Rome »</div>
+    <div class="fb fb-good">Exactement. Le maniérisme — un style né en Italie, importé ici par Rosso et le Primatice, qui devient quelque chose d'entièrement français. Les dessins sont diffusés dans toute l'Europe. On appelle Fontainebleau « la nouvelle Rome ».</div>
+    <div class="doc-extract">L'École de Fontainebleau n'est pas seulement un atelier local — elle devient un foyer artistique dont l'influence s'étend à toute l'Europe. Le style gagne les cours d'Angleterre (Hampton Court) et d'Allemagne (Munich).</div>
+    <button class="choice-btn" onclick="go('s4', 3)"><span class="ar">▶</span>Traverser vers les Bourbons — Henri IV et l'escalier en Fer-à-Cheval.</button>
+  </div>
+
+  <div class="scene" id="s3c">
+    <div class="scene-epoch">Renaissance · Réponse C</div>
+    <div class="scene-title">Trop tardif</div>
+    <div class="fb fb-bad">Le néoclassicisme est une tendance du XVIIIe siècle — un siècle et demi plus tard. L'École de Fontainebleau est contemporaine de la Renaissance, et son style est à l'opposé de la sobriété : c'est le maniérisme, une esthétique de la complexité et de l'élégance extrême.</div>
+    <button class="choice-btn" onclick="go('s4', 3)"><span class="ar">▶</span>Continuer vers les Bourbons.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       S4 — BOURBONS & NAPOLÉON
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s4">
+    <div class="scene-epoch">XVIIe – XIXe siècle · Bourbons & Empire</div>
+    <div class="scene-title">L'Escalier en Fer-à-Cheval</div>
+
+    <p>Vous êtes dans la cour principale. L'escalier en Fer-à-Cheval se déploie devant toi — deux bras qui descendent en courbe, se rejoignant en un palier central. Louis XIII l'a fait construire entre 1632 et 1634. Il a servi de théâtre à la magnificence royale pendant deux siècles.</p>
+
+    <div class="dialogue">— Le 20 avril 1814, dit Kern. C'est sur ces marches que quelque chose se termine. Tu sais quoi ?</div>
+
+    <span class="choice-label">Que se passe-t-il sur cet escalier le 20 avril 1814 ?</span>
+    <button class="choice-btn" onclick="go('s4a', 4)"><span class="ar">▶</span>Louis XVIII monte pour la première fois au château, marquant le retour de la monarchie.</button>
+    <button class="choice-btn" onclick="go('s4b', 4)"><span class="ar">▶</span>Napoléon fait ses adieux à la Vieille Garde avant de partir pour l'île d'Elbe.</button>
+    <button class="choice-btn" onclick="go('s4c', 4)"><span class="ar">▶</span>Napoléon III et Eugénie inaugurent le Théâtre Impérial devant la cour assemblée.</button>
+  </div>
+
+  <div class="scene" id="s4a">
+    <div class="scene-epoch">Bourbons · Réponse A</div>
+    <div class="scene-title">Pas encore</div>
+    <div class="fb fb-bad">Le retour des Bourbons viendra, mais pas ce jour-là. Le 20 avril 1814, c'est la fin de quelque chose d'autre — quelque chose de plus dramatique. L'homme qui prononce ses adieux sur cet escalier avait tout conquis, et tout perdu.</div>
+    <button class="choice-btn" onclick="go('s4b', 4)"><span class="ar">▶</span>Kern t'explique ce qui s'est vraiment passé.</button>
+  </div>
+
+  <div class="scene" id="s4b">
+    <div class="scene-epoch">Empire · Réponse B</div>
+    <div class="scene-title">Les Adieux de Fontainebleau</div>
+    <div class="fb fb-good">Exactement. Le 20 avril 1814. Napoléon vient de signer son abdication — contraint par ses propres maréchaux. Il prononce son dernier discours devant la Vieille Garde. Depuis ce jour, cet escalier est un lieu de mémoire nationale.</div>
+
+    <div class="scene-block">Quelques jours plus tôt, dans la nuit du 12 au 13 avril, l'Empereur avait tenté de se suicider en avalant du poison. Son médecin l'avait sauvé. C'est dans ce même château qu'il avait fait restaurer la Salle du Trône — aujourd'hui le seul trône impérial conservé en France dans son décor d'origine.</div>
+
+    <span class="choice-label">Kern t'emmène vers la salle suivante.</span>
+    <button class="choice-btn" onclick="go('s5', 4)"><span class="ar">▶</span>Le secret le plus sombre du château — un meurtre en pleine galerie royale.</button>
+  </div>
+
+  <div class="scene" id="s4c">
+    <div class="scene-epoch">Réponse C</div>
+    <div class="scene-title">Un siècle trop tard</div>
+    <div class="fb fb-bad">Napoléon III et le Théâtre Impérial, c'est le Second Empire — plusieurs décennies après 1814. Ce jour d'avril 1814 appartient à une époque plus sombre : c'est la fin du Premier Empire, et l'un des moments les plus dramatiques de l'histoire française.</div>
+    <button class="choice-btn" onclick="go('s4b', 4)"><span class="ar">▶</span>Kern t'explique ce qui s'est vraiment passé.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       S5 — LE SECRET
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s5">
+    <div class="scene-epoch">1657 · Le Secret du Château</div>
+    <div class="scene-title">La Galerie des Cerfs</div>
+
+    <p>Kern te conduit dans un couloir que les touristes traversent vite. La Galerie des Cerfs. Longue, décorée de tapisseries de chasse, elle paraît apaisante.</p>
+
+    <div class="dialogue">— Le 10 novembre 1657, dit-il à mi-voix. Christine de Suède, reine en exil, séjourne ici. Son grand écuyer, un certain Monaldeschi, l'aurait trahie. Sans procès, sans attendre rien — elle ordonne son exécution dans cette galerie. Ce meurtre commis dans une résidence royale française choque profondément la cour de Louis XIV. Pourquoi ?</div>
+
+    <span class="choice-label">Pourquoi ce meurtre scandalise-t-il ?</span>
+    <button class="choice-btn" onclick="go('s5a', 5)"><span class="ar">▶</span>Parce que Christine est une femme, et les femmes n'ont pas le droit d'ordonner une exécution.</button>
+    <button class="choice-btn" onclick="go('s5b', 5)"><span class="ar">▶</span>Parce qu'elle est étrangère et agit comme souveraine sur le territoire français — une violation de la souveraineté royale.</button>
+    <button class="choice-btn" onclick="go('s5c', 5)"><span class="ar">▶</span>Parce que Monaldeschi était un noble français protégé par Louis XIV personnellement.</button>
+  </div>
+
+  <div class="scene" id="s5a">
+    <div class="scene-epoch">Le Secret · Réponse A</div>
+    <div class="scene-title">Pas le bon angle</div>
+    <div class="fb fb-bad">Le scandale n'est pas lié au genre de Christine — plusieurs reines ont exercé une autorité sanglante en Europe. Ce qui choque, c'est autre chose : qui a le droit d'ordonner une exécution sur le sol français ?</div>
+    <button class="choice-btn" onclick="go('s5b', 5)"><span class="ar">▶</span>Kern précise.</button>
+  </div>
+
+  <div class="scene" id="s5b">
+    <div class="scene-epoch">Le Secret · Réponse B</div>
+    <div class="scene-title">La Souveraineté bafouée</div>
+    <div class="fb fb-good">Voilà. Christine est hôte de Louis XIV — elle n'est pas chez elle. Ordonner une exécution sur le territoire français, c'est agir en souveraine là où un seul roi est souverain. Louis XIV ne peut pas l'en empêcher sans incident diplomatique, mais le choc est immense.</div>
+    <div class="doc-extract">Ce meurtre commis dans une résidence royale choque profondément la cour de Louis XIV et laisse une trace indélébile dans la mémoire du lieu.</div>
+    <span class="choice-label">La visite approche de sa fin.</span>
+    <button class="choice-btn" onclick="go('s6', 5)"><span class="ar">▶</span>La dernière salle — ce que Fontainebleau raconte encore aujourd'hui.</button>
+  </div>
+
+  <div class="scene" id="s5c">
+    <div class="scene-epoch">Le Secret · Réponse C</div>
+    <div class="scene-title">Pas tout à fait</div>
+    <div class="fb fb-bad">Monaldeschi était l'écuyer de Christine, pas un noble français sous protection royale. Le vrai problème est plus fondamental : une reine étrangère, hébergée par Louis XIV, exerce un pouvoir de vie et de mort sur le territoire français — comme si elle y était encore souveraine.</div>
+    <button class="choice-btn" onclick="go('s6', 5)"><span class="ar">▶</span>La dernière salle.</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       S6 — ÉPILOGUE : CE QUE FONTAINEBLEAU DIT
+  ══════════════════════════════════════ -->
+  <div class="scene" id="s6">
+    <div class="scene-epoch">Épilogue</div>
+    <div class="scene-title">Ce que les Murs Disent</div>
+
+    <p class="drop-cap ni">Tu es revenu à la Cour Ovale. La forêt de Fontainebleau est visible derrière les grilles — les mêmes arbres, ou presque, que ceux que Louis IX traversait à cheval. Kern s'arrête et te regarde.</p>
+
+    <div class="dialogue">— La plupart des gens qui visitent un château cherchent la grandeur. La Galerie François Ier, la Salle du Trône, le Grand Canal. Mais Fontainebleau raconte autre chose. Il raconte comment l'histoire se <em>sédimente</em> — comment chaque époque ajoute sa couche sans tout effacer. Valois sur Capétiens. Bourbons sur Valois. Bonaparte sur tout le monde. Et chaque couche laisse quelque chose.</div>
+
+    <p>Tu penses aux Adieux de Fontainebleau — l'escalier en Fer-à-Cheval transformé en lieu de mémoire nationale. À la chapelle de la Trinité, héritière de ce que Saint Louis avait fondé sept siècles plus tôt. À la Galerie des Cerfs et à son meurtre silencieux. À la Galerie François Ier qui avait envoyé son style jusqu'à Munich et Londres.</p>
+
+    <div class="dialogue">— Chaque mur a une mémoire, dit Kern. La forêt aussi. C'est pour ça qu'on dit que Fontainebleau n'est pas un musée — c'est une structure vivante.<br><br>Il marque une pause.<br><br>— Dans ton château aussi, j'imagine, les murs se souviennent.
+    </div>
+
+    <div class="sep">⚜ · · · ⚜ · · · ⚜</div>
+
+    <p class="note-fin">Fontainebleau est inscrit au patrimoine mondial de l'UNESCO depuis 1981 — non pour sa taille ou sa beauté, mais pour ce qu'il représente : la stratification de huit siècles d'histoire de France en un seul lieu. Trente-quatre rois et deux empereurs y ont laissé une trace. L'édit de Fontainebleau (1685) y a mis fin à la liberté religieuse protestante. Les Adieux de 1814 y ont conclu le Premier Empire. Et les Écoles d'art américaines y transmettent encore les traditions françaises depuis 1921.<br><br><em>L'histoire ne disparaît pas. Elle se dépose.</em></p>
+
+    <!-- BADGE FINAL -->
+    <div class="reward-block" id="rewardBlock">
+      <span class="reward-icon">⚜</span>
+      <div class="reward-name">Gardien de Fontainebleau</div>
+      <p class="reward-desc">Tu as traversé huit siècles — Capétiens, Renaissance, Bourbons, Empire — et tu as lu ce que les murs gardaient. Fontainebleau n'est pas un château. C'est une mémoire en pierre.</p>
+      <div class="xp-badge">⚡ +40 XP — Exploration complète</div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px">
+      <a href="hub_narration.html" class="bk">← Retour à la Bibliothèque</a>
+    </div>
+  </div>
+
+</div><!-- /manuscript -->
+
+<script>
+var KEY='pvs_hof_v2',AKEY='pvs_current_player',DKEY='pvs_narration_done';
+var MID='ldvelh_fontainebleau';var cur='';
+var visited=[];
+
+function gS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function svS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function gP(c){var S=gS();return S.players&&S.players[c]?S.players[c]:null}
+function gD(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function mD(id){var d=gD();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+
+function updateDots(epoch){
+  document.querySelectorAll('.epoch-dot').forEach(function(d,i){
+    d.classList.remove('active');
+    if(i<epoch)d.classList.add('done');
+    if(i===epoch)d.classList.add('active');
+  });
+}
+
+function go(id, epoch){
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});
+  var n=document.getElementById(id);
+  if(n){n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  if(epoch!==undefined)updateDots(epoch);
+  if(id==='s6'){
+    updateDots(6);
+    var d=gD();if(!d[MID]){mD(MID);creditXP(cur,40);}
+  }
+}
+
+function creditXP(code,amount){
+  if(!code)return;
+  var S=gS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  if(S.logs.find(function(l){return l.t==='LDVELH_FONTAINEBLEAU_DONE'}))return;
+  S.logs.unshift({d:now,p:code,t:'LDVELH_FONTAINEBLEAU_DONE',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+4);
+  p.wBonusW=(Number(p.wBonusW||0)+4);
+  p.up=now;svS(S);
+  var ev=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  ev.push({id:'LDVELH-FBL-'+code+'-'+Date.now(),type:'NARRATION_READ',player:code,module:'LDVELH_FONTAINEBLEAU',xp:amount,d:now});
+  if(ev.length>700)ev=ev.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(ev));
+}
+
+function checkUnlock(p){
+  try{
+    var cp=(p&&p.cp)||{};
+    if(Number(cp.fontainebleau||0)>0)return true;
+    var d=gD();
+    if(d['fontainebleau_done']||d['cert_fontainebleau'])return true;
+    if(localStorage.getItem('pvs_unlock_fontainebleau')==='1')return true;
+    var keys=['CERT_FBL_1','CERT_FBL_4','CERT_FONTAINEBLEAU'];
+    for(var i=0;i<keys.length;i++){if(localStorage.getItem(keys[i]))return true;}
+    return false;
+  }catch(e){return false;}
+}
+
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=gP(cur);
+  if(!p){window.location.href='hub_narration.html';return}
+  if(!checkUnlock(p)){document.getElementById('lockScreen').style.display='flex';return;}
+  document.getElementById('mainContent').style.display='block';
+  if(gD()[MID])go('s6',6);
+})();
+</script>
+</body>
+</html>
