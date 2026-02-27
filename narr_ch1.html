@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<title>Chapitre I — Le Témoin — Valdurne</title>
+<style>
+:root{--or:#c9a84c;--or-clair:#e8c97a;--encre:#e8dfc8;--encre-2:#c8bfa8;--parch:#120e0a;--parch-2:#1e1710;--radius:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--parch);color:var(--encre);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--parch)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+.page-wrap{max-width:740px;margin:0 auto;padding:32px 24px 60px}
+.chapter-nav{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.btn-back{padding:7px 16px;background:transparent;border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--encre-2);cursor:pointer;font-size:.8em;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-back:hover{border-color:var(--or);color:var(--or)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.7em;letter-spacing:3px;color:var(--or);opacity:.75;text-transform:uppercase}
+.chapter-title{font-family:'Cinzel',serif;font-size:clamp(1.4em,4vw,2em);font-weight:700;color:var(--or-clair);line-height:1.2;margin-bottom:6px;margin-top:24px;text-shadow:0 0 30px rgba(201,168,76,.3)}
+.chapter-meta{font-size:.78em;color:var(--encre-2);opacity:.6;margin-bottom:28px;font-style:italic}
+.chapter-icon{font-size:3em;text-align:center;margin:20px 0;display:block;filter:drop-shadow(0 0 16px rgba(201,168,76,.4))}
+.chapter-text{font-size:1.05em;line-height:1.9}
+.chapter-text p{margin-bottom:1.2em;text-align:justify}
+.chapter-text em{color:var(--encre-2);font-style:italic}
+.chapter-text strong{color:var(--or-clair)}
+.chapter-divider{border:none;border-top:1px solid rgba(201,168,76,.15);margin:28px 0}
+.end-note{font-style:italic;color:var(--encre-2);font-size:.88em;opacity:.75;text-align:center;line-height:1.7;padding:0 20px}
+.badge-box{text-align:center;margin:20px 0;padding:16px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:8px}
+.badge-label{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:2px;color:var(--or-clair);display:block;margin-top:4px}
+/* LDVELH */
+.ldv-progress{display:flex;gap:4px;margin-bottom:28px}
+.ldv-step{height:3px;flex:1;border-radius:2px;background:rgba(201,168,76,.15);transition:background .3s}
+.ldv-step.done{background:rgba(201,168,76,.7)}.ldv-step.current{background:var(--or)}
+.passage{display:none}.passage.active{display:block;animation:p-in .4s ease}
+@keyframes p-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.p-num{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:3px;color:var(--or);opacity:.5;margin-bottom:18px}
+.p-mood{font-size:2.8em;text-align:center;margin:16px 0;filter:drop-shadow(0 0 12px rgba(201,168,76,.4))}
+.p-text{font-size:1.05em;line-height:1.9;margin-bottom:24px}
+.p-text p{margin-bottom:1.1em;text-align:justify}
+.p-text em{color:var(--encre-2);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:9px}
+.choice-btn{width:100%;padding:13px 16px;text-align:left;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.22);border-radius:6px;color:var(--encre);font-family:'Crimson Text',serif;font-size:.97em;line-height:1.5;cursor:pointer;transition:all .2s}
+.choice-btn::before{content:'▸ ';color:var(--or);opacity:.6}
+.choice-btn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.5);color:var(--or-clair);transform:translateX(4px)}
+.result-block{margin-top:20px;padding:22px;border-radius:8px;text-align:center}
+.result-block.success{background:linear-gradient(135deg,rgba(26,58,26,.6),rgba(42,74,26,.4));border:1px solid rgba(100,180,100,.4)}
+.result-block.fail{background:linear-gradient(135deg,rgba(58,26,26,.6),rgba(74,42,26,.4));border:1px solid rgba(180,80,80,.4)}
+.r-icon{font-size:2.2em;display:block;margin-bottom:10px}
+.r-title{font-family:'Cinzel',serif;font-size:.9em;margin-bottom:6px}
+.result-block.success .r-title{color:#8fe888}.result-block.fail .r-title{color:#e88888}
+.r-xp{font-size:1.1em;font-weight:600;margin:8px 0}
+.result-block.success .r-xp{color:#b8e8b8}.result-block.fail .r-xp{color:#e8b8b8}
+.r-note{font-size:.84em;color:var(--encre-2);font-style:italic;margin-bottom:14px;line-height:1.6}
+.btn-action{padding:9px 22px;border-radius:4px;cursor:pointer;font-size:.8em;margin:4px;transition:all .2s}
+.btn-primary-a{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or-clair);font-family:'Cinzel',serif;letter-spacing:1px}
+.btn-primary-a:hover{background:rgba(201,168,76,.25)}
+.btn-sec{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--encre-2)}
+.btn-sec:hover{border-color:rgba(255,255,255,.35)}
+@media(max-width:600px){.page-wrap{padding:20px 14px 40px}}
+</style>
+
+</head>
+<body>
+<div class="page-wrap">
+  <div class="chapter-nav">
+    <a class="btn-back" href="hub_narration.html">← Bibliothèque de Valdurne</a>
+    <span class="chapter-label">Histoire Principale · Chapitre I</span>
+  </div>
+  <h1 class="chapter-title">Chapitre I — Le Témoin</h1>
+  <p class="chapter-meta">Débloqué à 100 XP</p>
+  <span class="chapter-icon">⚔️</span>
+  <div class="chapter-text">
+    <p>Ça s'est passé un mercredi, après l'entraînement aux cartes.</p>
+    <p>Lyam avait pris le couloir du bas — plus court, moins fréquenté. C'est là qu'il les avait vus : trois écuyers de deuxième année encerclant Réna contre le mur de pierre. Ils ne le frappaient pas. Ils faisaient pire : ils lui parlaient à voix basse, avec ce ton particulier qui n'est pas de la violence mais qui lui ressemble trait pour trait.</p>
+    <p>Réna regardait le sol. Il y avait une honte dans ses épaules que Lyam reconnut immédiatement — il l'avait portée lui-même, à l'école d'avant.</p>
+    <p>Il s'arrêta. Personne d'autre dans le couloir. Les trois écuyers ne l'avaient pas encore vu. Il pouvait passer par le couloir du haut, prendre dix minutes de plus, et ne jamais avoir à décider quoi que ce soit.</p>
+    <p>Il ne prit pas le couloir du haut.</p>
+    <p>Il s'avança, pas sûr de lui du tout, et dit simplement à haute voix : <em>« Hé, Réna. Maître Aldric te cherchait. »</em> C'était faux. Mais dans la seconde qui suivit, les trois écuyers s'écartèrent, et Réna put s'en aller.</p>
+    <p>Plus tard, Lyam se demanda si c'était du courage. Il conclut que non — il n'avait pas eu le temps d'avoir peur. C'était juste une décision. Rapide. Ordinaire. Comme en prendre des centaines d'autres chaque jour, sauf que celle-là comptait vraiment.</p>
+  </div>
+  <div class="chapter-divider"></div>
+  <p class="end-note">Être témoin, c'est déjà agir. La suite au Chapitre II — débloqué à 300 XP.</p>
+  
+</div>
+<script>markDone('narr_ch1');
+const KEY='pvs_hof_v2';const XP_KEY='pvs_narration_xp';const DONE_KEY='pvs_narration_done';
+const ACTIVE_PLAYER_KEY='pvs_current_player';
+const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+const CIT={representant_ca:{xp:500}};
+const XP_BON=50;const XP_MAL=-25;
+function nCode(v){return String(v||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'')}
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getPlayer(c){var S=getS();return S.players&&S.players[c]?S.players[c]:null}
+function missionXp(code){try{var S=getS();var lists=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRawG(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValidG(p){return Number(p&&p.witnessGiven||0)>0?socialRawG(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValidG(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadCoeff(p){try{var n=Math.min(Number(p&&p.acadDone||0),50);var c=Math.round((1+n*0.02)*100)/100;return isNaN(c)?1:c}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);var r=Math.round(base*acadCoeff(p));return isNaN(r)?0:r}catch(e){return 0}}
+function getDone(){try{return JSON.parse(localStorage.getItem(DONE_KEY)||'{}')}catch{return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DONE_KEY,JSON.stringify(d))}
+function creditXP(code,amount,reason){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:reason,target:'NARRATION',xp:Number(amount)});
+  if(S.logs.length>700)S.logs.length=700;
+  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
+  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem(XP_KEY)||'[]');
+  pending.push({code:code,amount:amount,reason:reason,d:now});
+  localStorage.setItem(XP_KEY,JSON.stringify(pending));
+}
+function showXpNotif(amount){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:11px 26px;border-radius:8px;font-weight:600;font-size:.92em;text-align:center;pointer-events:none;transition:opacity .5s';
+  if(amount>0){d.style.background='linear-gradient(135deg,#1a3a1a,#2a4a1a)';d.style.border='1px solid rgba(100,200,100,.5)';d.style.color='#b8e8b8';d.textContent='+'+amount+' XP — Bien joué !'}
+  else{d.style.background='linear-gradient(135deg,#3a1a1a,#4a1a1a)';d.style.border='1px solid rgba(200,80,80,.5)';d.style.color='#e8b8b8';d.textContent=amount+' XP — Retente !'}
+  document.body.appendChild(d);setTimeout(function(){d.remove()},4500);
+}
+var cur='';
+(function(){
+  var raw=localStorage.getItem(ACTIVE_PLAYER_KEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=nCode(raw);
+})();
+</script>
+
+</body>
+</html>

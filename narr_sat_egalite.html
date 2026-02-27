@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<title>L'Épreuve de la Forge — Séquence Égalité</title>
+<style>
+:root{--or:#c9a84c;--or-clair:#e8c97a;--encre:#e8dfc8;--encre-2:#c8bfa8;--parch:#120e0a;--parch-2:#1e1710;--radius:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--parch);color:var(--encre);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--parch)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+.page-wrap{max-width:740px;margin:0 auto;padding:32px 24px 60px}
+.chapter-nav{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.btn-back{padding:7px 16px;background:transparent;border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--encre-2);cursor:pointer;font-size:.8em;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-back:hover{border-color:var(--or);color:var(--or)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.7em;letter-spacing:3px;color:var(--or);opacity:.75;text-transform:uppercase}
+.chapter-title{font-family:'Cinzel',serif;font-size:clamp(1.4em,4vw,2em);font-weight:700;color:var(--or-clair);line-height:1.2;margin-bottom:6px;margin-top:24px;text-shadow:0 0 30px rgba(201,168,76,.3)}
+.chapter-meta{font-size:.78em;color:var(--encre-2);opacity:.6;margin-bottom:28px;font-style:italic}
+.chapter-icon{font-size:3em;text-align:center;margin:20px 0;display:block;filter:drop-shadow(0 0 16px rgba(201,168,76,.4))}
+.chapter-text{font-size:1.05em;line-height:1.9}
+.chapter-text p{margin-bottom:1.2em;text-align:justify}
+.chapter-text em{color:var(--encre-2);font-style:italic}
+.chapter-text strong{color:var(--or-clair)}
+.chapter-divider{border:none;border-top:1px solid rgba(201,168,76,.15);margin:28px 0}
+.end-note{font-style:italic;color:var(--encre-2);font-size:.88em;opacity:.75;text-align:center;line-height:1.7;padding:0 20px}
+.badge-box{text-align:center;margin:20px 0;padding:16px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);border-radius:8px}
+.badge-label{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:2px;color:var(--or-clair);display:block;margin-top:4px}
+/* LDVELH */
+.ldv-progress{display:flex;gap:4px;margin-bottom:28px}
+.ldv-step{height:3px;flex:1;border-radius:2px;background:rgba(201,168,76,.15);transition:background .3s}
+.ldv-step.done{background:rgba(201,168,76,.7)}.ldv-step.current{background:var(--or)}
+.passage{display:none}.passage.active{display:block;animation:p-in .4s ease}
+@keyframes p-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.p-num{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:3px;color:var(--or);opacity:.5;margin-bottom:18px}
+.p-mood{font-size:2.8em;text-align:center;margin:16px 0;filter:drop-shadow(0 0 12px rgba(201,168,76,.4))}
+.p-text{font-size:1.05em;line-height:1.9;margin-bottom:24px}
+.p-text p{margin-bottom:1.1em;text-align:justify}
+.p-text em{color:var(--encre-2);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:9px}
+.choice-btn{width:100%;padding:13px 16px;text-align:left;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.22);border-radius:6px;color:var(--encre);font-family:'Crimson Text',serif;font-size:.97em;line-height:1.5;cursor:pointer;transition:all .2s}
+.choice-btn::before{content:'▸ ';color:var(--or);opacity:.6}
+.choice-btn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.5);color:var(--or-clair);transform:translateX(4px)}
+.result-block{margin-top:20px;padding:22px;border-radius:8px;text-align:center}
+.result-block.success{background:linear-gradient(135deg,rgba(26,58,26,.6),rgba(42,74,26,.4));border:1px solid rgba(100,180,100,.4)}
+.result-block.fail{background:linear-gradient(135deg,rgba(58,26,26,.6),rgba(74,42,26,.4));border:1px solid rgba(180,80,80,.4)}
+.r-icon{font-size:2.2em;display:block;margin-bottom:10px}
+.r-title{font-family:'Cinzel',serif;font-size:.9em;margin-bottom:6px}
+.result-block.success .r-title{color:#8fe888}.result-block.fail .r-title{color:#e88888}
+.r-xp{font-size:1.1em;font-weight:600;margin:8px 0}
+.result-block.success .r-xp{color:#b8e8b8}.result-block.fail .r-xp{color:#e8b8b8}
+.r-note{font-size:.84em;color:var(--encre-2);font-style:italic;margin-bottom:14px;line-height:1.6}
+.btn-action{padding:9px 22px;border-radius:4px;cursor:pointer;font-size:.8em;margin:4px;transition:all .2s}
+.btn-primary-a{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or-clair);font-family:'Cinzel',serif;letter-spacing:1px}
+.btn-primary-a:hover{background:rgba(201,168,76,.25)}
+.btn-sec{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--encre-2)}
+.btn-sec:hover{border-color:rgba(255,255,255,.35)}
+@media(max-width:600px){.page-wrap{padding:20px 14px 40px}}
+</style>
+
+</head>
+<body>
+<div class="page-wrap">
+  <div class="chapter-nav">
+    <a class="btn-back" href="hub_narration.html">← Bibliothèque de Valdurne</a>
+    <span class="chapter-label">Séquence LDVELH · Égalité</span>
+  </div>
+  <h1 class="chapter-title">L'Épreuve de la Forge</h1>
+  <p class="chapter-meta">Tu incarnes Lyam · 6 passages · Tes choix ont des conséquences</p>
+
+  <div id="ldv-progress-bar" class="ldv-progress"></div>
+  <div id="ldv-content"></div>
+</div>
+
+<script>
+const KEY='pvs_hof_v2';const XP_KEY='pvs_narration_xp';const DONE_KEY='pvs_narration_done';
+const ACTIVE_PLAYER_KEY='pvs_current_player';
+const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+const CIT={representant_ca:{xp:500}};
+const XP_BON=50;const XP_MAL=-25;
+function nCode(v){return String(v||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'')}
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getPlayer(c){var S=getS();return S.players&&S.players[c]?S.players[c]:null}
+function missionXp(code){try{var S=getS();var lists=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRawG(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValidG(p){return Number(p&&p.witnessGiven||0)>0?socialRawG(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValidG(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadCoeff(p){try{var n=Math.min(Number(p&&p.acadDone||0),50);var c=Math.round((1+n*0.02)*100)/100;return isNaN(c)?1:c}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);var r=Math.round(base*acadCoeff(p));return isNaN(r)?0:r}catch(e){return 0}}
+function getDone(){try{return JSON.parse(localStorage.getItem(DONE_KEY)||'{}')}catch{return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DONE_KEY,JSON.stringify(d))}
+function creditXP(code,amount,reason){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:reason,target:'NARRATION',xp:Number(amount)});
+  if(S.logs.length>700)S.logs.length=700;
+  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
+  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem(XP_KEY)||'[]');
+  pending.push({code:code,amount:amount,reason:reason,d:now});
+  localStorage.setItem(XP_KEY,JSON.stringify(pending));
+}
+function showXpNotif(amount){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:11px 26px;border-radius:8px;font-weight:600;font-size:.92em;text-align:center;pointer-events:none;transition:opacity .5s';
+  if(amount>0){d.style.background='linear-gradient(135deg,#1a3a1a,#2a4a1a)';d.style.border='1px solid rgba(100,200,100,.5)';d.style.color='#b8e8b8';d.textContent='+'+amount+' XP — Bien joué !'}
+  else{d.style.background='linear-gradient(135deg,#3a1a1a,#4a1a1a)';d.style.border='1px solid rgba(200,80,80,.5)';d.style.color='#e8b8b8';d.textContent=amount+' XP — Retente !'}
+  document.body.appendChild(d);setTimeout(function(){d.remove()},4500);
+}
+var cur='';
+(function(){
+  var raw=localStorage.getItem(ACTIVE_PLAYER_KEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=nCode(raw);
+})();
+</script>
+
+
+<script>
+var STEPS = 6;
+var history_stack = [];
+
+var PASSAGES = {
+  p1: {
+    num:'§ 1 · La rencontre', mood:'⚖️',
+    text: ['Tu es Lyam. Apprenti écuyer de première année.','Ce matin, en traversant le couloir de la tour sud, tu assistes à quelque chose.','La Chancellière Maren barre le chemin à Kira — l'écuyère réputée pour ses formules d'enchantement — et lui dit froidement : <em>« La Forge Haute est réservée aux parcours forge. Ce n'est pas ton chemin. »</em>','Kira ne discute pas. Elle hoche la tête et repart. Mais tu as vu son visage une fraction de seconde avant — la façon dont elle a rangé quelque chose très loin à l'intérieur d'elle-même.','La Chancellière s'en va. Tu es seul dans le couloir avec Kira.'],
+    choices: [
+      {text:'Aller voir Kira et lui demander si elle va bien.', next:'p2a'},
+      {text:'Continuer vers ton cours. Ce n'est pas ton problème.', next:'p2b'},
+      {text:'Regarder discrètement, sans intervenir.', next:'p2c'}
+    ]
+  },
+  p2a: {
+    num:'§ 2 · Le contact', mood:'🤝',
+    text:['Tu t'approches de Kira. Elle te regarde avec un calme difficile à déchiffrer.','<em>« Je t'ai vu, »</em> dit-elle simplement. <em>« Tu n'avais pas à t'arrêter. »</em>','<em>« Je sais. »</em>','Un silence. Puis elle te montre ses parchemins — des formules de niveau trois. Tu ne comprends pas la moitié des symboles.','<em>« C'est injuste, »</em> dis-tu. Ce n'est pas malin comme réponse, mais c'est vrai.','<em>« Oui. »</em> Elle range ses parchemins. <em>« La question c'est ce qu'on fait avec une injustice qu'on a identifiée. »</em>'],
+    choices: [
+      {text:'Proposer à Kira d'aller voir Maître Aldric avec elle.', next:'p3a'},
+      {text:'Lui dire que tu poseras la question à Aldric toi-même.', next:'p3b'},
+      {text:'Lui suggérer de demander audience au Doyen directement.', next:'p3c'}
+    ]
+  },
+  p2b: {
+    num:'§ 2 · L'absence', mood:'😶',
+    text:['Tu continues vers ton cours. À la pause, Réna lève les yeux de son parchemin : <em>« Kira ? La Chancellière lui interdit la Forge Haute depuis le début de l'année. »</em>','<em>« Et personne n'a rien dit ? »</em>','Réna te regarde. <em>« Toi non plus tu n'as rien dit, apparemment. »</em>','Ce n'est pas une accusation. Juste la réalité. Tu as encore le temps d'agir.'],
+    choices: [
+      {text:'Aller trouver Kira maintenant.', next:'p3b'},
+      {text:'Parler à Maître Aldric directement.', next:'p3b'}
+    ]
+  },
+  p2c: {
+    num:'§ 2 · L'observateur', mood:'👁️',
+    text:['Tu restes en retrait. Kira repart sans se retourner.','Dans l'après-midi, tu apprends par Réna que cette situation dure depuis le début de l'année.'],
+    choices: [
+      {text:'Aller parler à Kira maintenant.', next:'p2a'},
+      {text:'Aller voir Maître Aldric directement.', next:'p3b'}
+    ]
+  },
+  p3a: {
+    num:'§ 3 · Le Maître', mood:'🔥',
+    text:['Vous trouvez Aldric à la Forge du bas. Kira explique. Aldric écoute sans interrompre.','<em>« C'est une vieille règle, »</em> dit-il. <em>« Jamais écrite nulle part. »</em>','<em>« Donc elle peut changer ? »</em> demandes-tu.','<em>« Tout peut changer. La question c'est qui décide de le faire, et comment. »</em>','Kira prend un parchemin. Elle commence à écrire. Tu cosignes.'],
+    choices: [{text:'Continuer.', next:'p4'}]
+  },
+  p3b: {
+    num:'§ 3 · La démarche', mood:'🕯️',
+    text:['Tu trouves Maître Aldric et tu lui rapportes ce que tu as vu.','<em>« C'est une vieille règle. Elle n'a jamais été écrite nulle part. »</em>','<em>« Alors elle peut changer ? »</em>','<em>« Tout peut changer, Lyam. Mais la demande doit venir de Kira — ou avec son accord. »</em>','Tu vas trouver Kira. Elle te regarde longtemps, puis : <em>« Bien. Je cosigne. »</em>'],
+    choices: [{text:'Rédiger la demande ensemble.', next:'p4'}]
+  },
+  p3c: {
+    num:'§ 3 · Le Doyen', mood:'🏛️',
+    text:['Ferraud vous reçoit. Il écoute Kira, puis te regarde. <em>« Et toi, tu es là pourquoi ? »</em>','<em>« Parce que j'ai vu quelque chose d'injuste et que je ne pouvais pas passer mon chemin. »</em>','Trois jours plus tard : la règle est abolie.'],
+    choices: [{text:'Continuer.', next:'p4'}]
+  },
+  p4: {
+    num:'§ 4 · La réponse de Valdurne', mood:'✨',
+    text:['Trois jours après la demande, la règle d'accès à la Forge Haute est révisée. Kira monte pour la première fois la semaine suivante.','Dans la cour, elle te lance ses parchemins de formules. <em>« Tu en auras besoin. »</em> — <em>« J'en suis pas sûr. »</em> — <em>« Moi si. »</em>','Ce soir-là, ton ami Tolven t'accoste. Il est agité.'],
+    choices: [{text:'Écouter Tolven.', next:'p5'}]
+  },
+  p5: {
+    num:'§ 5 · Le vrai choix', mood:'⚖️',
+    text:['<em>« C'est injuste. »</em>','Tolven est furieux. <em>« Moi, j'ai attendu deux ans pour accéder à la Forge Haute. Deux ans à faire mes preuves. Elle, ça lui prend une pétition et une semaine. T'aurais dû te taire, Lyam. »</em>','Il exprime quelque chose qu'il ressent comme une injustice. Comment lui expliques-tu que corriger une injustice ne crée pas une injustice nouvelle ?'],
+    choices: [
+      {text:'"T'as raison, j'aurais peut-être pas dû m'impliquer."', next:'p_fail', result:'fail'},
+      {text:'"Kira attendait aussi. D'une règle injuste qu'on lève enfin. Ta patience valait quelque chose — sa compétence aussi."', next:'p_ok', result:'success'},
+      {text:'"Ce qu'on a corrigé, c'est une règle qui l'empêchait d'accéder à quelque chose qu'elle méritait. Ça ne t'enlève rien."', next:'p_ok', result:'success'}
+    ]
+  },
+  p_ok: {
+    num:'§ Fin — La vérité de Tolven', mood:'🌟', isResult:true, resultType:'success',
+    text:['Tolven reste silencieux. Puis : <em>« Elle méritait vraiment ? »</em>','<em>« Tu l'as vue travailler. »</em>','<em>« ...Oui. »</em>','Il repart sans rien ajouter. Ce n'est pas une victoire. Juste une graine plantée.'],
+    endNote:"L'égalité n'est pas un jeu à somme nulle. Corriger une injustice n'en crée pas une nouvelle — elle rend le terrain plus juste pour tout le monde."
+  },
+  p_fail: {
+    num:'§ Un doute', mood:'🌫️', isResult:true, resultType:'fail',
+    text:['Tolven hoche la tête. <em>« Voilà. C'est ce que je pensais. »</em>','Mais toi, quelque chose te reste dans l'estomac. Tu viens de valider l'idée que corriger une injustice ancienne en crée une nouvelle. Mais ce n'est pas vrai. Kira attendait aussi — pas de l'entraînement, mais d'une règle injuste qu'on lève enfin.'],
+    endNote:"L'égalité n'enlève rien à ceux qui ont attendu honnêtement. Elle donne accès à ceux qui en ont été privés injustement. Retente le choix final."
+  }
+};
+
+function renderProgress(histLen) {
+  var bar = document.getElementById('ldv-progress-bar');
+  bar.innerHTML = '';
+  for (var i = 0; i < STEPS; i++) {
+    var s = document.createElement('div');
+    s.className = 'ldv-step' + (i < histLen - 1 ? ' done' : i === histLen - 1 ? ' current' : '');
+    bar.appendChild(s);
+  }
+}
+
+function renderPassage(pid) {
+  var p = PASSAGES[pid];
+  if (!p) return;
+  history_stack.push(pid);
+  renderProgress(history_stack.length);
+
+  var html = '<div class="passage active">';
+  html += '<div class="p-num">' + p.num + '</div>';
+  if (p.mood) html += '<div class="p-mood">' + p.mood + '</div>';
+  html += '<div class="p-text">';
+  (p.text || []).forEach(function(t) { html += '<p>' + t + '</p>'; });
+  html += '</div><hr style="border:none;border-top:1px solid rgba(201,168,76,.15);margin:20px 0">';
+
+  if (p.isResult) {
+    var ok = p.resultType === 'success';
+    var xp = ok ? XP_BON : XP_MAL;
+    if (ok) markDone('sat_egalite');
+    creditXP(cur, xp, ok ? 'NARRATION_EGALITE_SUCCESS' : 'NARRATION_EGALITE_ECHEC');
+    showXpNotif(xp);
+    html += '<div class="result-block ' + (ok ? 'success' : 'fail') + '">';
+    html += '<span class="r-icon">' + (ok ? '⭐' : '💭') + '</span>';
+    html += '<div class="r-title">' + (ok ? 'Réponse juste !' : 'À retravailler…') + '</div>';
+    html += '<div class="r-xp">' + (ok ? '+' + xp : '' + xp) + ' XP</div>';
+    html += '<div class="r-note">' + (p.endNote || '') + '</div>';
+    html += '<div>';
+    if (!ok) html += '<button class="btn-action btn-primary-a" onclick="restart()">Recommencer</button>';
+    html += '<button class="btn-action btn-sec" onclick="window.location.href='hub_narration.html'">Retour à la Bibliothèque</button>';
+    html += '</div></div>';
+  } else if (p.choices) {
+    html += '<div class="choices">';
+    p.choices.forEach(function(c) {
+      html += '<button class="choice-btn" onclick="renderPassage('' + c.next + '')">' + c.text + '</button>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('ldv-content').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function restart() {
+  history_stack = [];
+  renderPassage('p1');
+}
+
+renderPassage('p1');
+</script>
+</body>
+</html>
