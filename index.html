@@ -63,39 +63,6 @@
 .secret-desc{font-size:0.85em;opacity:0.85;margin-bottom:12px;line-height:1.6}
 
 /* ── NARRATION PROGRESSIVE ── */
-#narrativeSection{margin-top:16px}
-.narrative-card{background:linear-gradient(135deg,#1a1510,#221c14);border:1px solid rgba(201,168,76,0.35);border-radius:10px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;}
-.narrative-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.6),transparent);}
-.narrative-card.locked{opacity:0.45;filter:grayscale(0.5);}
-.narrative-card.unlocked{cursor:default}
-.nc-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.nc-icon{font-size:1.5em;flex-shrink:0}
-.nc-title{font-family:Cinzel,monospace;font-size:0.9em;color:#c9a84c;font-weight:600;letter-spacing:1px}
-.nc-lock{font-size:0.75em;color:#888;margin-left:auto;flex-shrink:0}
-.nc-excerpt{font-size:0.82em;line-height:1.65;color:#c8bfa8;font-style:italic;border-left:2px solid rgba(201,168,76,0.25);padding-left:10px;margin:8px 0;}
-.nc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
-.nc-badge{font-size:0.72em;color:#c9a84c;opacity:0.8}
-.nc-link{display:inline-block;padding:5px 14px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);border-radius:4px;color:#c9a84c;text-decoration:none;font-size:0.75em;letter-spacing:1px;transition:background 0.2s;}
-.nc-link:hover{background:rgba(201,168,76,0.25)}
-/* ── BADGE L'ÉCU D'ÉGALE ── */
-.badge-egalite{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(139,42,42,0.4),rgba(42,42,139,0.4));border:1px solid #c9a84c;border-radius:20px;padding:4px 12px;font-size:0.78em;color:#e8c97a;font-weight:600}
-/* ── BANDEAU ÉVÉNEMENT ── */
-#eventBanner{display:none;background:linear-gradient(135deg,#2a0a0a,#1a0a2a,#0a1a0a);border:1px solid rgba(201,168,76,0.5);border-radius:8px;padding:12px 16px;margin-bottom:16px;text-align:center;animation:event-pulse 2.5s ease-in-out infinite;}
-#eventBanner.active{display:block}
-@keyframes event-pulse{0%,100%{box-shadow:0 0 6px rgba(201,168,76,0.2)}50%{box-shadow:0 0 20px rgba(201,168,76,0.5)}}
-.eb-title{font-size:0.95em;color:#e8c97a;font-weight:600;margin-bottom:4px}
-.eb-desc{font-size:0.8em;color:#c8bfa8;opacity:0.85}
-.eb-xp{color:#ffd700;font-weight:700}
-
-/* ── Accès Hub Narratif ── */
-#narrativeAccessNotif{
-  display:none;
-  background:linear-gradient(135deg,#1a1510,#221a10,#1a1510);
-  border:1px solid rgba(201,168,76,0.5);
-  border-radius:10px;padding:18px 20px;margin-bottom:16px;
-  animation:glow-pulse 3s ease-in-out infinite;
-  position:relative;overflow:hidden;
-}
 #narrativeAccessNotif.active{display:block}
 #narrativeAccessNotif::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
@@ -230,20 +197,7 @@
   <a href="hub_narration.html" target="_blank" class="nan-link">🏰 Entrer dans la Bibliothèque de Valdurne</a>
 </div>
 
-<div id="eventBanner">
-  <div class="eb-title">⚖️ Semaine de l'Égalité — Événement actif</div>
-  <div class="eb-desc">Module Égalité complété cette semaine → <span class="eb-xp">×1.5 XP</span> · Badge <strong>L'Écu d'Égale</strong> débloqué · Chapitre III exclusif disponible</div>
-</div>
 
-<section id="narrativeSection">
-  <article class="card" style="padding:12px;margin-top:0">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <h2 style="font-size:1em;margin:0">📖 L'Ordre des Écuyers</h2>
-      <span style="font-size:0.72em;color:#888;font-style:italic">Narration progressive</span>
-    </div>
-    <div id="narrativeCards"></div>
-  </article>
-</section>
 
 <article class="card">
 <h2>Action Temoin</h2>
@@ -1081,7 +1035,7 @@ document.getElementById('pCp').textContent=cpTotal(p);const nbAcad=acadDoneCount
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=Object.keys(ADW).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
-function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial();renderRewardsSection();checkMilestones();renderNarrativeCards();checkEgaliteBadge();wrapEgaliteXP();checkNarrativeAccess();applyNarrativePendingXP()}
+function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial();renderRewardsSection();checkMilestones();checkNarrativeAccess();applyNarrativePendingXP()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
@@ -1379,216 +1333,6 @@ function skipIntro(){
     setTimeout(skipIntro, 12000);
   }
 })();
-
-
-// ══════════════════════════════════════════════════════
-// NARRATION PROGRESSIVE + ÉVÉNEMENT ÉGALITÉ
-// ══════════════════════════════════════════════════════
-
-// ── Définition des chapitres ──
-var CHAPITRES=[
-  {
-    id:'ch0', icon:'🏰', title:'Prologue — L\'Arrivée',
-    unlock:'AUTO', // débloqué à la connexion
-    excerpt:'Lyam arrive au Château-École de Valdurne. Il ne connaît personne. Dans la grande salle bruissante, un autre écuyer lui sourit depuis un coin. Ce sera son premier allié — ou peut-être son premier test.',
-    badge:null, file:null,
-    locked_hint:'Connecte-toi pour débloquer le prologue'
-  },
-  {
-    id:'ch1', icon:'⚔️', title:'Chapitre I — Le Témoin',
-    unlock:'PIXHARE_GROUPE',
-    excerpt:'Lyam voit Réna cerné par trois écuyers plus vieux. Tout le monde détourne les yeux. Lyam a deux chemins devant lui : regarder ailleurs, ou traverser la cour.',
-    badge:'⚔️ Témoin Courageux', file:null,
-    locked_hint:'Complète le pilier Groupe de PIXHARe pour débloquer'
-  },
-  {
-    id:'ch2', icon:'📜', title:'Chapitre II — La Règle du Château',
-    unlock:'JURIDIQUE',
-    excerpt:'Un conflit entre deux maisons d\'écuyers. Des règles à Valdurne — que personne ne connaît vraiment, et que certains manipulent. Lyam découvre que comprendre les règles, c\'est du pouvoir.',
-    badge:'📜 Érudit des Lois', file:null,
-    locked_hint:'Complète le module Juridique pour débloquer'
-  },
-  {
-    id:'ch3', icon:'⚖️', title:'Chapitre III — L\'Égale',
-    unlock:'EGALITE',
-    excerpt:'Kira, l\'écuyère la plus douée aux sortilèges, n\'a pas le droit d\'accéder à la Forge Haute. Lyam se retrouve face à un choix entre le confort de la tradition et la logique évidente de l\'injustice.',
-    badge:'⚖️ L\'Écu d\'Égale', file:'chapitre3_egalite_special.html',
-    locked_hint:'Complète le module Égalité pour débloquer',
-    event_week:true // exclusif semaine du 9 mars
-  },
-  {
-    id:'ch4', icon:'🏥', title:'Chapitre IV — Le Secours en Danger',
-    unlock:'PSC1',
-    excerpt:'Un accident au terrain d\'entraînement. Lyam seul sait ce qu\'il faut faire — parce qu\'il a appris. Pas de magie. Juste des mains, du calme, et ce qu\'on t\'a enseigné.',
-    badge:'🏥 Gardien des Corps', file:null,
-    locked_hint:'Complète le module PSC1 pour débloquer'
-  },
-  {
-    id:'ch5', icon:'🌟', title:'Chapitre V — La Fraternité des Écus',
-    unlock:'FRATERNITE',
-    excerpt:'Fin de première année. Lyam n\'est plus un inconnu. Le château n\'a pas changé — c\'est lui qui a changé. Une lettre qu\'il n\'envoie pas, mais qu\'il garde.',
-    badge:'🌟 Chevalier Complet', file:null,
-    locked_hint:'Complète le pilier Fraternité pour débloquer'
-  },
-];
-
-var NARRATIVE_SEEN_KEY='pvs_narrative_seen';
-function getSeenNarrative(){try{return JSON.parse(localStorage.getItem(NARRATIVE_SEEN_KEY)||'{}')}catch{return{}}}
-function markNarrativeSeen(id){var s=getSeenNarrative();s[id]=1;localStorage.setItem(NARRATIVE_SEEN_KEY,JSON.stringify(s))}
-
-// ── Vérifier si un chapitre est débloqué ──
-function isChapitreUnlocked(ch){
-  if(!cur||isVisitorCode(cur))return ch.id==='ch0'; // prologue toujours visible
-  if(ch.unlock==='AUTO')return true;
-  var p=gp(cur);if(!p)return false;
-  var cp=p.cp||{};
-  if(ch.unlock==='PIXHARE_GROUPE')return (cp.pixhare||0)>=1;
-  if(ch.unlock==='JURIDIQUE')return (p.logs||[]).some(function(l){return l.t&&l.t.indexOf('JURIDIQUE')>=0||l.act&&l.act.indexOf('JURIDIQUE')>=0;});
-  if(ch.unlock==='EGALITE')return (cp.autres||0)>=1||(p.logs||[]).some(function(l){return (l.t||'').indexOf('EGALITE')>=0||(l.act||'').indexOf('EGALITE')>=0;});
-  if(ch.unlock==='PSC1')return (cp.psc1||0)>=1;
-  if(ch.unlock==='FRATERNITE')return (p.logs||[]).some(function(l){return (l.t||'').indexOf('FRATERNITE')>=0||(l.act||'').indexOf('FRATERNITE')>=0;});
-  return false;
-}
-
-// ── Vérifier si on est dans la semaine événement ──
-function isEventWeek(){
-  var now=new Date();
-  var start=new Date('2026-03-09T00:00:00');
-  var end=new Date('2026-03-13T23:59:59');
-  return now>=start&&now<=end;
-}
-
-function getEgaliteMultiplier(){
-  return isEventWeek()?1.5:1.0;
-}
-
-// ── Rendu des cartes narratives ──
-function renderNarrativeCards(){
-  var container=document.getElementById('narrativeCards');
-  var banner=document.getElementById('eventBanner');
-  if(!container)return;
-  if(banner)banner.classList.toggle('active',isEventWeek());
-  container.innerHTML='';
-  CHAPITRES.forEach(function(ch){
-    var unlocked=isChapitreUnlocked(ch);
-    var div=document.createElement('div');
-    div.className='narrative-card '+(unlocked?'unlocked':'locked');
-    var badgeHtml=unlocked&&ch.badge?'<span class="badge-egalite">'+ch.badge+'</span>':'';
-    var linkHtml='';
-    if(unlocked&&ch.file){
-      var isEvent=ch.event_week&&isEventWeek();
-      var linkLabel=isEvent?'📖 Lire (Édition spéciale)':'📖 Lire le chapitre';
-      linkHtml='<a href="'+ch.file+'" target="_blank" class="nc-link">'+linkLabel+'</a>';
-    } else if(unlocked&&!ch.file){
-      linkHtml='<span style="font-size:0.72em;color:#666;font-style:italic">Chapitre à venir…</span>';
-    }
-    var lockHtml=unlocked?'':'<span class="nc-lock">🔒 '+ch.locked_hint+'</span>';
-    div.innerHTML=
-      '<div class="nc-header">'+
-        '<span class="nc-icon">'+ch.icon+'</span>'+
-        '<span class="nc-title">'+ch.title+'</span>'+
-        lockHtml+
-      '</div>'+
-      (unlocked?'<div class="nc-excerpt">'+ch.excerpt+'</div>':'')+
-      '<div class="nc-footer">'+
-        badgeHtml+
-        linkHtml+
-      '</div>';
-    container.appendChild(div);
-  });
-}
-
-// ── MODIFICATEUR XP ÉVÉNEMENT ── 
-// On wrappe applyXP pour multiplier si événement actif + action Égalité
-var _origApplyXP=null;
-function wrapEgaliteXP(){
-  // Chercher si la fonction bridgeApply gère EGALITE_PROGRESS
-  // → le multiplicateur s'applique dans witnessAction quand le type est lié Égalité
-  // On stocke le multiplicateur dans une variable globale accessible
-  window._egaliteMultiplier=getEgaliteMultiplier();
-}
-
-// ══════════════════════════════════════════════════════
-// BADGE L'ÉCU D'ÉGALE — logique attribution
-// ══════════════════════════════════════════════════════
-var BADGE_EGALITE_KEY='pvs_badge_egalite';
-function checkEgaliteBadge(){
-  if(!cur||isVisitorCode(cur))return;
-  if(!isEventWeek())return;
-  var p=gp(cur);if(!p)return;
-  var cp=p.cp||{};
-  var hasEgalite=(cp.autres||0)>=1||(p.logs||[]).some(function(l){
-    return (l.t||'').indexOf('EGALITE')>=0||(l.act||'').indexOf('EGALITE')>=0;
-  });
-  if(!hasEgalite)return;
-  var key=BADGE_EGALITE_KEY+'_'+cur;
-  if(localStorage.getItem(key))return;
-  localStorage.setItem(key,'1');
-  // Notification in-page
-  showBadgeNotif('⚖️ Badge débloqué : <strong>L\'Écu d\'Égale</strong>');
-}
-
-function showBadgeNotif(html){
-  var el=document.createElement('div');
-  el.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9997;background:linear-gradient(135deg,#2a0a0a,#1a0a2a);border:1px solid #c9a84c;border-radius:8px;padding:14px 24px;color:#e8c97a;font-weight:600;font-size:0.95em;text-align:center;box-shadow:0 0 24px rgba(201,168,76,0.4);animation:badge-in 0.4s ease;';
-  el.innerHTML='⚖️ &nbsp;'+html;
-  document.body.appendChild(el);
-  setTimeout(function(){el.style.transition='opacity 0.5s';el.style.opacity='0';setTimeout(function(){el.remove()},500);},4500);
-}
-
-// Intégrer dans refresh
-
-
-// ── Accès Hub Narratif ──
-var NARRATIVE_XP_THRESHOLD=200;
-var NARRATIVE_ANNOUNCED_KEY='pvs_narrative_announced';
-function checkNarrativeAccess(){
-  var notif=document.getElementById('narrativeAccessNotif');
-  if(!notif)return;
-  if(!cur||isVisitorCode(cur)){notif.classList.remove('active');return}
-  var p=gp(cur);if(!p)return;
-  var xpNow=xg(p);
-  if(xpNow>=NARRATIVE_XP_THRESHOLD){
-    notif.classList.add('active');
-    // Première fois → notif toast
-    var key=NARRATIVE_ANNOUNCED_KEY+'_'+cur;
-    if(!localStorage.getItem(key)){
-      localStorage.setItem(key,'1');
-      showBadgeNotif('📖 La Bibliothèque de Valdurne vient de s\'ouvrir pour toi !');
-    }
-  } else {
-    notif.classList.remove('active');
-  }
-}
-
-// ── Lire les XP en attente du hub narratif ──
-var XP_PENDING_KEY='pvs_narration_xp';
-function applyNarrativePendingXP(){
-  try{
-    var pending=JSON.parse(localStorage.getItem(XP_PENDING_KEY)||'[]');
-    if(!pending.length)return;
-    var toApply=pending.filter(function(ev){
-      return ev.code&&nCode(ev.code)===nCode(cur||'');
-    });
-    if(!toApply.length)return;
-    var p=gp(cur);if(!p)return;
-    toApply.forEach(function(ev){
-      if(Number(ev.amount)>0){
-        p.wBonusG=(Number(p.wBonusG||0)+(Number(ev.amount)/10));
-        p.wBonusW=(Number(p.wBonusW||0)+(Number(ev.amount)/10));
-      } else {
-        p.malusG=(Number(p.malusG||0)+Number(ev.amount));
-        p.malusW=(Number(p.malusW||0)+Number(ev.amount));
-      }
-      logEv(cur,ev.reason||'NARRATION','NARRATION',Number(ev.amount));
-    });
-    // Vider les entrées consommées
-    var remaining=pending.filter(function(ev){return nCode(ev.code||'')!==nCode(cur||'')});
-    localStorage.setItem(XP_PENDING_KEY,JSON.stringify(remaining));
-    save();
-  }catch(e){console.warn('narrativeXP',e)}
-}
-
 </script>
 </body>
 </html>
