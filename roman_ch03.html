@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch. III — L'Épreuve du Scriptorium · Les Veilleurs de Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.1em;line-height:1.9;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.05) 0%,transparent 55%)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+.wrap{max-width:700px;margin:0 auto;padding:32px 24px 80px;position:relative;z-index:1}
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--enc2);font-size:.78em;text-decoration:none;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.ctag{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase}
+.series-tag{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:4px;color:var(--or);opacity:.55;text-transform:uppercase;margin-bottom:8px}
+.ch-num{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:6px}
+.ch-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,5vw,2.2em);color:var(--or2);line-height:1.15;margin-bottom:10px}
+.ch-icon{font-size:3em;text-align:center;margin:20px 0;display:block;filter:drop-shadow(0 0 18px rgba(201,168,76,.4));animation:flicker 4s ease-in-out infinite}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 0 12px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 28px rgba(201,168,76,.6))}}
+.ch-meta{font-size:.78em;color:var(--enc2);opacity:.55;font-style:italic;margin-bottom:32px}
+hr.rune{border:none;text-align:center;margin:36px 0}
+hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Cinzel',serif;font-size:.75em;letter-spacing:4px}
+.story{font-size:1.05em;line-height:1.95}
+.story p{margin-bottom:1.4em;text-align:justify}
+.story .first-letter::first-letter{font-family:'Cinzel Decorative',serif;font-size:3.8em;float:left;line-height:.75;margin-right:.08em;color:var(--or2)}
+.story em{color:var(--enc2);font-style:italic}
+.story strong{color:var(--or2);font-weight:600}
+.dialogue{margin:0 0 1.2em 0;padding-left:22px;border-left:2px solid rgba(201,168,76,.2);font-style:italic;color:var(--enc2)}
+.pensee{padding:16px 22px;margin:20px 0;background:rgba(201,168,76,.03);border-left:3px solid rgba(201,168,76,.2);border-radius:0 6px 6px 0;font-style:italic;color:var(--enc2)}
+.section-title{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin:36px 0 18px;text-align:center}
+.end-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:28px;margin-top:48px;text-align:center}
+.end-icon{font-size:2.5em;margin-bottom:12px;display:block}
+.end-title{font-family:'Cinzel',serif;font-size:.9em;color:var(--or2);margin-bottom:8px;letter-spacing:2px}
+.end-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.7;margin-bottom:20px}
+.end-next{font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:16px}
+.btn{padding:10px 24px;border-radius:4px;cursor:pointer;font-size:.8em;margin:5px;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;text-decoration:none;display:inline-block}
+.btn-g{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or2)}
+.btn-g:hover{background:rgba(201,168,76,.25)}
+.btn-s{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
+.btn-s:hover{border-color:rgba(255,255,255,.3)}
+.xp-lock{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,8,5,.93);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
+.xp-lock-box{max-width:440px;padding:40px;background:var(--p1);border:1px solid rgba(201,168,76,.2);border-radius:12px}
+.xp-lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.xp-lock-title{font-family:'Cinzel',serif;font-size:1.1em;color:var(--or2);margin-bottom:12px}
+.xp-lock-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.7;margin-bottom:20px}
+.xp-lock-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;margin:16px 0;overflow:hidden}
+.xp-lock-fill{height:100%;background:linear-gradient(90deg,#8a2a2a,var(--or));border-radius:4px;transition:width .6s}
+.xp-flash{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.88em;background:linear-gradient(135deg,#1a3a1a,#2a4a1a);border:1px solid rgba(100,200,100,.5);color:#b8e8b8;display:none}
+@media(max-width:600px){.wrap{padding:20px 14px 60px}.story{font-size:1em}}
+</style>
+</head>
+<body>
+
+<div id="xpLock" class="xp-lock" style="display:none">
+  <div class="xp-lock-box">
+    <span class="xp-lock-icon">🔒</span>
+    <div class="xp-lock-title">Chapitre III · Non débloqué</div>
+    <p class="xp-lock-txt">Ce chapitre se débloque à <strong>1000 XP</strong>. Participe au Portail, témoigne, complète des modules — et l'épreuve du Scriptorium t'attendra.</p>
+    <div class="xp-lock-bar"><div class="xp-lock-fill" id="lockFill" style="width:0%"></div></div>
+    <p style="font-family:Cinzel,serif;font-size:.7em;color:var(--or);letter-spacing:2px;margin-bottom:16px"><span id="curXp">0</span> / 1000 XP</p>
+    <a href="hub_narration.html" class="btn btn-g">Retour à la Bibliothèque</a>
+  </div>
+</div>
+
+<div id="mainContent" style="display:none">
+<div class="wrap">
+  <div class="nav">
+    <a class="bk" href="roman_ch02.html">← Chapitre II</a>
+    <a class="bk" href="hub_narration.html">Bibliothèque</a>
+    <span class="ctag">Les Veilleurs de Valdurne</span>
+  </div>
+
+  <div class="series-tag">Roman Principal · Expédition de Valdurne</div>
+  <div class="ch-num">Chapitre Troisième</div>
+  <h1 class="ch-title">L'Épreuve du Scriptorium</h1>
+  <p class="ch-meta">Dans lequel Lyam et Réna affrontent ensemble un test qu'on est censé passer seul — et découvrent que deux façons différentes de savoir valent mieux qu'une seule façon de tout savoir.</p>
+
+  <span class="ch-icon">🔥</span>
+
+  <div class="story">
+
+    <p class="first-letter">L'épreuve du Scriptorium arriva, comme toutes les vraies épreuves selon Réna, sans prévenir. C'était un mardi matin, troisième semaine de formation, et la convocation avait simplement été glissée sous les portes des dortoirs pendant la nuit — une feuille de parchemin roulée serrée, cachetée d'un sceau de cire noir, avec un nom et une heure. Lyam trouva la sienne en se levant. Il regarda l'heure indiquée. La deuxième heure après prime. Ce qui lui laissait exactement le temps de se laver, de manger son gruau debout, et de traverser la cour est jusqu'à la tour du Scriptorium — dont il ne savait pas encore bien où elle se trouvait.</p>
+
+    <p>Ce qu'il savait, pour l'avoir appris des conversations entendues au réfectoire, c'est que le Scriptorium était l'épreuve de diagnostic du premier mois — celle qui déterminait dans quel atelier vous seriez placé. La théorie disait : quatre types de savoirs, quatre ateliers correspondants. La pratique disait : l'épreuve était conçue pour révéler ce que vous saviez vraiment faire, par opposition à ce que vous croyiez savoir faire. La tradition orale ajoutait, avec la satisfaction particulière des gens qui avaient survécu à quelque chose : <em>On n'est jamais préparé, et c'est le point.</em></p>
+
+    <p>Réna l'attendait dans la Salle des Cartes.</p>
+
+    <div class="dialogue">— Tu as ta convocation ? dit-elle.
+    <br><br>
+    — Oui. Deuxième heure après prime.
+    <br><br>
+    — Pareil. Elle lui tendit son propre parchemin. Regarde l'heure exacte.
+    </div>
+
+    <p>Lyam compara. Ils avaient la même heure, à la minute près. Dans un château qui gérait les plannings avec la précision d'une horloge mécanique — il avait vu les tables de répartition des cours, séquencées par demi-heures — ça ne pouvait pas être une coïncidence.</p>
+
+    <div class="dialogue">— Ils nous ont mis ensemble exprès, dit-il.
+    <br><br>
+    — Peut-être. Ou peut-être que tous les admis par voie d'aptitude ont la même heure, sans qu'il y ait eu de réflexion particulière. Elle replia son parchemin. Ce qui m'intéresse davantage, c'est ce qu'on fait avec le fait qu'on est au même endroit au même moment.
+    <br><br>
+    — Le règlement dit qu'on doit passer l'épreuve seul.
+    <br><br>
+    — Le règlement dit que les réponses doivent être individuelles, corrigea-t-elle immédiatement. Ce n'est pas la même chose que de passer l'épreuve seul. Elle croisa les bras. J'ai lu l'article trois fois depuis hier soir.
+    </div>
+
+    <hr class="rune">
+
+    <div class="section-title">II. Ce que le Scriptorium Évalue</div>
+
+    <p>Le Scriptorium était une pièce circulaire au deuxième étage de la tour est, avec des fenêtres trop hautes pour qu'on puisse regarder dehors assis, et six tables alignées en arc de cercle face à une estrade vide. Sur chaque table, une feuille retournée. Un stylet. Un gobelet d'eau. Rien d'autre.</p>
+
+    <p>Le Maître qui les attendait — un homme maigre avec des doigts tachés d'encre rouge, ce qui était en soi une information — leur dit sans préambule :</p>
+
+    <div class="dialogue">— Vous retournez votre feuille quand je dis. Vous avez deux heures. Vos réponses doivent être vôtres. Bonne épreuve.
+    </div>
+
+    <p>Lyam retourna sa feuille. Il lut les instructions.</p>
+
+    <p>Il y avait cinq exercices. Le premier était de logique pure : une suite de symboles à compléter, avec une notation croissante selon la complexité de la règle qu'on avait identifiée. Le deuxième était de mémoire contextuelle : on leur avait lu cinq textes lors de la cérémonie d'accueil, et on leur demandait maintenant d'en restituer les points clés, dans l'ordre et avec les nuances correctes. Le troisième était une question ouverte sur un problème pratique hypothétique. Le quatrième était une épreuve de cartographie mentale — décrire un trajet dans le château depuis la grande salle jusqu'à un bâtiment précis, en nommant les points de repère. Le cinquième était de rédaction : en vingt lignes, argumenter pour ou contre une position donnée.</p>
+
+    <div class="pensee">Lyam nota mentalement ce qu'il savait faire bien, ce qu'il savait faire moyennement, et ce qu'il savait faire mal. Logique : bien. Mémoire contextuelle : moyen — il avait écouté, mais il ne s'était pas attendu à être interrogé sur ces textes précis. Problème pratique : bien. Cartographie : il connaissait le château, mais pas depuis assez longtemps pour les nommer avec certitude. Rédaction argumentée : moyen — pas parce qu'il n'avait pas d'idées, mais parce qu'il n'était pas sûr de la façon dont on formalisait les idées ici.</div>
+
+    <p>Il regarda Réna. Elle lisait sa feuille avec une attention totale, comme si elle effaçait le reste du monde par la seule force de sa concentration. Puis elle leva les yeux et le regarda. Un regard bref, informatif. Il comprit.</p>
+
+    <p>Il prit son stylet et commença par le premier exercice.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">III. Ce qu'on Appelle Tricher</div>
+
+    <p>Ils ne parlèrent pas. Ils ne se passèrent pas de notes. Ce qu'ils firent était plus subtil et plus précis que ça : à deux moments distincts, avec un accord muet qui n'avait nécessité aucune discussion parce qu'ils avaient tous les deux compris la même chose en même temps, ils échangèrent leurs feuilles pendant les exercices où l'un des deux était bloqué.</p>
+
+    <p>Lyam eut la cartographie de Réna pendant dix minutes. Pas pour copier — elle avait laissé les cases de cet exercice vides, et lui avait rempli les siennes pendant ce temps. Quand il lui rendit sa feuille, il vit qu'elle avait compris depuis sa propre feuille ce qu'il avait fait, et qu'elle remplissait maintenant ses propres cases avec ses propres mots — correctement, parce qu'elle avait sa méthode de déduction, et que voir comment lui avait structuré le problème lui avait simplement confirmé ce qu'elle avait besoin de savoir pour commencer.</p>
+
+    <p>Réna lui donna son exercice de logique pendant sept minutes. Il avait trouvé les trois premières règles mais pas la quatrième. Elle avait trouvé les quatre, d'une façon différente de la sienne — une approche par exclusion plutôt que par construction. Quand il rendit sa feuille, il n'avait pas copié sa quatrième règle. Il avait compris comment elle l'avait approchée, et il avait trouvé la sienne.</p>
+
+    <div class="pensee">La différence entre ce qu'ils avaient fait et ce qu'on appelle tricher, Lyam y pensa pendant l'heure qui restait. Tricher, c'est prendre la réponse de quelqu'un d'autre et la faire passer pour la sienne. Ce qu'ils avaient fait, c'était montrer deux façons d'approcher le même problème, et chacun avait produit sa propre réponse depuis sa propre façon de voir. Ce n'était pas la même chose. Mais il savait aussi que la distinction serait difficile à expliquer à quelqu'un qui n'avait pas été dans la pièce.</div>
+
+    <p>En rendant sa copie, Lyam vit le Maître aux doigts rouges les regarder tous les deux avec une expression neutre — pas d'approbation, pas de désapprobation, juste de l'observation. Il nota quelque chose sur son registre. Lyam ne put pas lire ce qu'il avait écrit.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">IV. Le Lendemain des Résultats</div>
+
+    <p>Les résultats du Scriptorium étaient affichés dans le couloir de la tour est le lendemain matin. Pas les scores, juste les affectations : chaque page était placé dans un atelier selon son profil. Il y avait quatre ateliers : Stratégie, Lettres, Sciences de la Forge, et Droit & Institutions.</p>
+
+    <p>Lyam fut affecté à Droit & Institutions.</p>
+
+    <p>Réna fut affectée au même atelier.</p>
+
+    <p>Ce qui était inhabituel, expliqua Kern au petit-déjeuner avec l'air de quelqu'un qui avait fait des recherches, c'est que les admis par voie d'aptitude étaient habituellement répartis dans différents ateliers — le Scriptorium servait précisément à ça. Les affecter ensemble dans le même atelier, ça voulait soit dire que leurs profils étaient identiques, soit que quelqu'un avait pris une décision qui n'avait pas été prise sur la base des profils.</p>
+
+    <div class="dialogue">— Le Maître aux doigts rouges, dit Réna. Elle buvait son bouillon du matin avec la même économie de gestes qu'elle mettait dans tout. Il a vu ce qu'on a fait pendant l'épreuve.
+    <br><br>
+    — Et il a décidé quoi ? Qu'on avait triché ?
+    <br><br>
+    — S'il avait décidé ça, on aurait eu une convocation ce matin, pas une affectation. Elle posa son gobelet. Il a vu qu'on avait des façons complémentaires d'aborder les problèmes. Et il a décidé que c'était une information utile.
+    <br><br>
+    — Pour qui ?
+    <br><br>
+    — C'est la bonne question, dit-elle. Et je ne sais pas encore la réponse.
+    </div>
+
+    <hr class="rune">
+
+    <div class="section-title">V. L'Atelier</div>
+
+    <p>L'atelier Droit & Institutions était tenu par la Maîtresse Elowen — la même à qui Réna avait posé la question sur la deuxième liste. Petite, lente dans ses gestes mais pas dans sa pensée, avec des yeux qui donnaient l'impression de lire plusieurs pages en même temps. Elle les accueillit tous les deux sans commentaire particulier et leur assigna des places côte à côte dans la salle de travail.</p>
+
+    <p>Le premier cours fut sur les structures de pouvoir dans les institutions : qui décide, qui exécute, qui contrôle ceux qui décident. Lyam prit des notes d'une façon qui les réorganisait simultanément — les structures en colonnes, les relations en flèches, les exceptions en marges. Réna prit des notes en colonnes parallèles : la règle formelle à gauche, la règle réelle à droite, les cas où elles divergeaient au centre. Leurs méthodes étaient différentes. Leurs notes se complétaient d'une façon que ni l'un ni l'autre n'aurait obtenue seul.</p>
+
+    <p>À la fin du cours, la Maîtresse Elowen les regarda se préparer à partir et dit :</p>
+
+    <div class="dialogue">— Ferrault. Vous avez de l'instinct pour les structures. Ce n'est pas enseignable. En revanche, la façon de les formaliser, ça l'est — apprenez-la. Et vous, dit-elle en se tournant vers Réna, vous avez quelque chose de rare : vous voyez les deux faces d'une règle simultanément. Le danger, c'est qu'à force de voir les deux faces, on finit par ne plus vouloir en défendre aucune. Ne tombez pas là-dedans.
+    <br><br>
+    — Vous parlez d'expérience ? demanda Réna, et il y avait dans sa voix quelque chose qui ressemblait à une vraie question plus qu'à une insolence.
+    <br><br>
+    — Oui, dit la Maîtresse Elowen. Et c'est aussi pour ça que je vous le dis.
+    </div>
+
+    <p>Elle referma son registre. La leçon était finie. Lyam et Réna sortirent dans le couloir sans parler pendant un moment — le genre de silence qu'on garde quand quelqu'un vient de dire quelque chose qui mérite d'être transporté avec soin avant d'être posé quelque part.</p>
+
+    <div class="pensee">Lyam pensa à ce que la Maîtresse avait dit sur l'instinct. Voir les structures — comment le pouvoir circulait, où il bloquait, où il contournait. Il n'avait pas eu de mot pour ça jusqu'ici. Il avait juste fait ça depuis toujours, dans la forge, dans le village, dans la façon dont les gens parlaient et ne parlaient pas. Avoir un mot pour une chose qu'on fait sans le savoir, c'était comme allumer une bougie dans une pièce qu'on connaissait dans le noir : les meubles étaient au même endroit, mais maintenant on pouvait les nommer.</div>
+
+    <hr class="rune">
+
+    <div class="section-title">VI. Ce qui Restait</div>
+
+    <p>Ce soir-là, Lyam et Réna travaillèrent jusqu'à l'extinction des feux dans la Salle des Cartes — lui sur ses notes de l'atelier, elle sur sa carte du château qui s'était progressivement enrichie de nouvelles annotations. À un moment, sans raison particulière, il dit :</p>
+
+    <div class="dialogue">— Tu as trouvé ce qu'elle voulait dire ? Voir les deux faces et ne défendre aucune ?
+    <br><br>
+    — Je crois que ça parle d'elle, dit Réna sans lever les yeux. Elle sait que la deuxième liste est injuste. Elle l'a dit d'une façon qui nous a confirmé qu'elle le savait. Mais elle ne fait rien parce qu'elle a décidé que comprendre le système était plus important que le combattre. Elle marqua une pause. Je pense qu'elle a eu tort.
+    <br><br>
+    — Et toi tu aurais fait quoi, à sa place ?
+    <br><br>
+    — Je ne sais pas. Réna posa son fusain. C'est pour ça que je préfère ne pas être à sa place. Elle me regarda. Toi tu aurais fait quoi ?
+    <br><br>
+    — Je pense que comprendre comment un système fonctionne, dit Lyam lentement, c'est la première étape pour le changer. Pas pour l'accepter. Si tu veux déplacer un mur, tu as besoin de savoir d'abord s'il est porteur.
+    </div>
+
+    <p>Réna le regarda pendant un moment.</p>
+
+    <div class="dialogue">— C'est une image de forgeron.
+    <br><br>
+    — Oui.
+    <br><br>
+    — Elle est bonne.
+    </div>
+
+    <p>Elle reprit son fusain. La torche clignota. Dehors, le vent de novembre commençait à chercher les fissures.</p>
+
+  </div>
+
+  <div class="end-block">
+    <span class="end-icon">⚖️</span>
+    <div class="end-title">Fin du Chapitre Troisième</div>
+    <p class="end-txt">Lyam et Réna sont dans le même atelier. La Maîtresse Elowen les a mis en garde, chacun à sa façon. Et quelque chose a commencé à circuler entre eux — pas encore de l'amitié, quelque chose de plus précis : la conscience d'avoir besoin de l'autre pour être vraiment soi-même. Le chapitre suivant les oblige à choisir leur camp.</p>
+    <div class="end-next">Chapitre IV disponible à 1500 XP · <em>Le Garçon qui N'existait Pas</em></div>
+    <div>
+      <a href="roman_ch02.html" class="btn btn-s">← Chapitre II</a>
+      <a href="hub_narration.html" class="btn btn-g">Bibliothèque</a>
+      <a href="roman_ch04.html" class="btn btn-s" id="btnNext" style="display:none">Chapitre IV →</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="xp-flash" id="xpFlash">+30 XP — Chapitre lu !</div>
+
+<script>
+var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};var CIT={representant_ca:{xp:500}};
+var MODULE_ID='ch03';var XP_REQ=1000;var cur='';
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((l[k]||[]).indexOf(c)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
+function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
+function creditXP(code,amount){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:'NARRATION_READ_'+MODULE_ID.toUpperCase(),target:'NARRATION',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10));
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  pending.push({id:'NARR-'+code+'-'+MODULE_ID+'-'+Date.now(),type:'NARRATION_READ',player:code,module:'ROMAN_'+MODULE_ID.toUpperCase(),xp:amount,d:now});
+  if(pending.length>700)pending=pending.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(pending));
+}
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=getP(cur);if(!p){window.location.href='hub_narration.html';return}
+  var xp=xg(p);
+  if(xp<XP_REQ){
+    document.getElementById('xpLock').style.display='flex';
+    var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
+    if(fill)fill.style.width=Math.min(100,Math.round((xp/XP_REQ)*100))+'%';
+    if(xpEl)xpEl.textContent=xp;return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  var done=getDone();
+  if(!done[MODULE_ID]){markDone(MODULE_ID);creditXP(cur,30);var f=document.getElementById('xpFlash');if(f){f.style.display='block';setTimeout(function(){f.style.display='none'},4000);}}
+  var btn=document.getElementById('btnNext');if(btn&&xp>=1500)btn.style.display='inline-block';
+})();
+</script>
+</body>
+</html>

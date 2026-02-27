@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch. V — Sang de Forge, Sang Royal · Les Veilleurs de Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.1em;line-height:1.9;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.05) 0%,transparent 55%)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+.wrap{max-width:700px;margin:0 auto;padding:32px 24px 80px;position:relative;z-index:1}
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--enc2);font-size:.78em;text-decoration:none;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.ctag{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase}
+.series-tag{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:4px;color:var(--or);opacity:.55;text-transform:uppercase;margin-bottom:8px}
+.ch-num{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:6px}
+.ch-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,5vw,2.2em);color:var(--or2);line-height:1.15;margin-bottom:10px}
+.ch-icon{font-size:3em;text-align:center;margin:20px 0;display:block;filter:drop-shadow(0 0 18px rgba(201,168,76,.4));animation:flicker 4s ease-in-out infinite}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 0 12px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 28px rgba(201,168,76,.6))}}
+.ch-meta{font-size:.78em;color:var(--enc2);opacity:.55;font-style:italic;margin-bottom:32px}
+hr.rune{border:none;text-align:center;margin:36px 0}
+hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Cinzel',serif;font-size:.75em;letter-spacing:4px}
+.story{font-size:1.05em;line-height:1.95}
+.story p{margin-bottom:1.4em;text-align:justify}
+.story .first-letter::first-letter{font-family:'Cinzel Decorative',serif;font-size:3.8em;float:left;line-height:.75;margin-right:.08em;color:var(--or2)}
+.story em{color:var(--enc2);font-style:italic}
+.story strong{color:var(--or2);font-weight:600}
+.dialogue{margin:0 0 1.2em 0;padding-left:22px;border-left:2px solid rgba(201,168,76,.2);font-style:italic;color:var(--enc2)}
+.pensee{padding:16px 22px;margin:20px 0;background:rgba(201,168,76,.03);border-left:3px solid rgba(201,168,76,.2);border-radius:0 6px 6px 0;font-style:italic;color:var(--enc2)}
+.section-title{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin:36px 0 18px;text-align:center}
+.end-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:28px;margin-top:48px;text-align:center}
+.end-icon{font-size:2.5em;margin-bottom:12px;display:block}
+.end-title{font-family:'Cinzel',serif;font-size:.9em;color:var(--or2);margin-bottom:8px;letter-spacing:2px}
+.end-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.7;margin-bottom:20px}
+.end-next{font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:16px}
+.btn{padding:10px 24px;border-radius:4px;cursor:pointer;font-size:.8em;margin:5px;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;text-decoration:none;display:inline-block}
+.btn-g{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or2)}
+.btn-g:hover{background:rgba(201,168,76,.25)}
+.btn-s{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
+.btn-s:hover{border-color:rgba(255,255,255,.3)}
+.xp-lock{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,8,5,.93);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
+.xp-lock-box{max-width:440px;padding:40px;background:var(--p1);border:1px solid rgba(201,168,76,.2);border-radius:12px}
+.xp-lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.xp-lock-title{font-family:'Cinzel',serif;font-size:1.1em;color:var(--or2);margin-bottom:12px}
+.xp-lock-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.7;margin-bottom:20px}
+.xp-lock-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;margin:16px 0;overflow:hidden}
+.xp-lock-fill{height:100%;background:linear-gradient(90deg,#8a2a2a,var(--or));border-radius:4px}
+.xp-flash{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.88em;background:linear-gradient(135deg,#1a3a1a,#2a4a1a);border:1px solid rgba(100,200,100,.5);color:#b8e8b8;display:none}
+@media(max-width:600px){.wrap{padding:20px 14px 60px}.story{font-size:1em}}
+</style>
+</head>
+<body>
+
+<div id="xpLock" class="xp-lock" style="display:none">
+  <div class="xp-lock-box">
+    <span class="xp-lock-icon">🔒</span>
+    <div class="xp-lock-title">Chapitre V · Non débloqué</div>
+    <p class="xp-lock-txt">Ce chapitre se débloque à <strong>2000 XP</strong>. Le fer et le sang royal t'attendent.</p>
+    <div class="xp-lock-bar"><div class="xp-lock-fill" id="lockFill" style="width:0%"></div></div>
+    <p style="font-family:Cinzel,serif;font-size:.7em;color:var(--or);letter-spacing:2px;margin-bottom:16px"><span id="curXp">0</span> / 2000 XP</p>
+    <a href="hub_narration.html" class="btn btn-g">Retour à la Bibliothèque</a>
+  </div>
+</div>
+
+<div id="mainContent" style="display:none">
+<div class="wrap">
+  <div class="nav">
+    <a class="bk" href="roman_ch04.html">← Chapitre IV</a>
+    <a class="bk" href="hub_narration.html">Bibliothèque</a>
+    <span class="ctag">Les Veilleurs de Valdurne</span>
+  </div>
+
+  <div class="series-tag">Roman Principal · Expédition de Valdurne</div>
+  <div class="ch-num">Chapitre Cinquième</div>
+  <h1 class="ch-title">Sang de Forge, Sang Royal</h1>
+  <p class="ch-meta">Dans lequel Réna est confrontée à quelque chose que Lyam n'a jamais vécu — et Lyam voit quelque chose que Réna vit depuis le début.</p>
+
+  <span class="ch-icon">⚒️</span>
+
+  <div class="story">
+
+    <p class="first-letter">La Joute des Arguments était une tradition de Valdurne que personne n'avait instituée officiellement et que personne n'avait non plus jamais officiellement interdite. Elle se tenait dans la grande salle le vendredi soir, après le dîner, quand les torches baissaient et que les tables avaient été poussées sur les côtés. N'importe quel page ou écuyer pouvait lancer un défi à n'importe quel autre : un sujet, deux positions à défendre, dix minutes chacun, le public comme seul juge. Ce n'était pas noté. Ce n'était pas obligatoire. Mais tout le monde y venait, parce que c'était le seul moment de la semaine où les hiérarchies habituelles se dissolvaient et où ce qui comptait était uniquement la qualité de ce qu'on disait.</p>
+
+    <p>Lyam avait observé trois Joutes depuis son arrivée. Il avait remarqué que les participants habituels étaient presque toujours les mêmes — des écuyers de deuxième et troisième année, essentiellement des fils de familles nobles, avec une ou deux exceptions. Il avait remarqué que les sujets choisis portaient presque toujours sur des abstractions : la nature du pouvoir légitime, les obligations du suzerain envers le vassal, les conditions d'une guerre juste. Des sujets dans lesquels on pouvait être brillant sans jamais toucher à ce qui rendait l'exercice personnel.</p>
+
+    <p>Ce vendredi-là, Réna monta sur l'estrade improvisée.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">II. Le Sujet</div>
+
+    <p>Elle avait choisi le sujet elle-même — ce qui était son droit. Elle avait écrit sur une ardoise, d'une écriture nette et sans ornement : <em>L'aptitude suffit-elle à justifier l'accès au rang, indépendamment de l'origine et du sexe ?</em></p>
+
+    <p>Il y eut un silence.</p>
+
+    <p>Pas un silence de politesse — un silence de reconfiguration, le genre qu'on a quand quelqu'un vient de poser sur la table quelque chose que tout le monde pensait mais que personne n'avait dit comme ça, aussi directement, en public, avec cette ardoise dans les mains.</p>
+
+    <p>Daran de Mauren, depuis le fond de la salle, dit :</p>
+
+    <div class="dialogue">— C'est un sujet personnel, pas un sujet de réflexion institutionnelle.
+    <br><br>
+    — Tous les sujets institutionnels sont personnels pour quelqu'un, dit Réna sans se retourner. C'est pour ça qu'ils méritent d'être débattus.
+    </div>
+
+    <p>Elle posa l'ardoise. Elle regarda le public. Elle attendit un adversaire.</p>
+
+    <p>Personne ne monta pendant trente secondes. C'était le genre de silence qui dit : <em>je serais d'accord avec la position que je devrais contester, et je ne veux pas me retrouver à défendre ce que je ne crois pas devant les gens avec qui je vis.</em></p>
+
+    <p>Puis Daran de Mauren traversa la salle et monta sur l'estrade.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">III. Le Débat</div>
+
+    <p>Daran de Mauren parla bien. C'était la première chose que Lyam nota — il parlait bien, avec la fluidité de quelqu'un qui avait été entraîné à parler en public depuis l'enfance, et ses arguments n'étaient pas bêtes. Il soutint que le rang n'était pas seulement une récompense pour l'aptitude individuelle, mais un héritage collectif — que les familles nobles avaient accumulé des générations de savoir pratique sur le gouvernement, la guerre, la diplomatie, que ce savoir-faire était lui-même une forme de compétence transmise. Que l'accès au rang devait donc tenir compte de cette transmission-là, qui ne se mesurait pas dans les épreuves du Scriptorium.</p>
+
+    <p>C'était un argument défendable. Lyam nota aussi ça.</p>
+
+    <p>Réna répondit. Elle dit que l'argument de la transmission était réel mais qu'il confondait deux choses : la transmission d'un savoir-faire, et la transmission du <em>droit</em> à exercer ce savoir-faire. Elle dit que si le savoir des familles nobles était réel, il devrait être mesurable dans les épreuves — et si les épreuves ne le mesuraient pas, alors soit les épreuves étaient mauvaises et il fallait les changer, soit le savoir en question n'était pas celui qui était nécessaire pour le rang. Elle dit que l'argument de l'héritage, poussé jusqu'à sa conclusion logique, signifiait qu'un fils de noble incapable valait plus qu'un fils d'artisan capable — et qu'elle doutait que quiconque dans la salle soit prêt à défendre cette position de façon explicite.</p>
+
+    <p>Il y eut quelques rires nerveux. Daran de Mauren ne rit pas.</p>
+
+    <div class="dialogue">— Tu parles de l'aptitude comme si elle était neutre, dit-il. Mais ce qu'on mesure dans les épreuves, ça dépend de qui a conçu les épreuves. Et les épreuves ont été conçues par des gens qui savent ce qu'un écuyer doit savoir faire. Ce que tu appelles aptitude, c'est la capacité à réussir dans un système fait par et pour une certaine façon d'apprendre.
+    </div>
+
+    <p>Silence.</p>
+
+    <p>Réna le regarda. Et Lyam vit quelque chose qu'il n'avait jamais vu sur son visage : une surprise brève, presque imperceptible, suivie d'une réorganisation rapide — elle reconnaissait que l'argument était meilleur qu'elle ne l'attendait.</p>
+
+    <div class="dialogue">— C'est juste, dit-elle. Et c'est un argument que je prends au sérieux. Si les épreuves sont biaisées, il faut les réformer — pas conserver le système qui les a produites. L'un des deux arguments justifie le changement. Lequel préfères-tu ?
+    </div>
+
+    <hr class="rune">
+
+    <div class="section-title">IV. Après</div>
+
+    <p>Le public se dispersa sans désigner de vainqueur — ce n'était pas le but, et la question avait été trop réelle pour qu'on la tranche par acclamation. Lyam rejoignit Réna à la sortie de la salle. Elle marchait vite, les bras croisés, et il comprit qu'elle avait besoin de marcher un moment avant de parler.</p>
+
+    <p>Il marcha avec elle.</p>
+
+    <p>Dans la cour, le vent était froid et le ciel sans nuages. Réna s'arrêta près du puits en fer forgé et le regarda.</p>
+
+    <div class="dialogue">— Il avait partiellement raison, dit-elle. Et ça m'énerve.
+    <br><br>
+    — Pourquoi ça t'énerve s'il avait raison ?
+    <br><br>
+    — Parce que son argument justifie le statu quo. Si les épreuves sont biaisées, et je pense qu'elles le sont en partie, alors mes résultats sont à la fois une preuve et pas une preuve. Elle s'appuya contre le bord du puits. Je peux exceller dans un système biaisé parce que j'ai eu un père qui m'a appris à travailler dans tous les systèmes. Ça ne veut pas dire que le système est juste. Ça veut dire que je suis moins affectée que d'autres par son biais.
+    <br><br>
+    — Et pour le sexe ? demanda Lyam. C'était aussi dans ton sujet. Tu n'en as presque pas parlé pendant le débat.
+    </div>
+
+    <p>Réna fut silencieuse pendant un moment.</p>
+
+    <div class="dialogue">— Je ne voulais pas que ça devienne le seul sujet. Dès que tu es une fille qui parle de ce que les filles méritent, les gens n'entendent plus le fond — ils entendent une fille qui se plaint. J'ai préféré argumenter sur l'aptitude en général, parce que c'est un argument qui s'applique à tout le monde, y compris à toi. Elle marqua une pause. Mais tu as raison de nommer la chose.
+    <br><br>
+    — Six maîtres, dit Lyam doucement.
+    <br><br>
+    — Oui.
+    <br><br>
+    — Aucun d'entre eux ne t'a dit explicitement que c'était à cause de ça ?
+    <br><br>
+    — Non. Jamais. C'est ça, une discrimination directe avec formulation indirecte : on ne dit jamais la vraie raison. On dit que le profil ne correspond pas, que le nombre est atteint, que l'année prochaine peut-être. La vérité, c'est qu'une fille de quatorze ans plus compétente que leurs écuyers de dix-sept dérange quelque chose dans l'ordre des choses qu'ils ont accepté comme naturel.
+    </div>
+
+    <hr class="rune">
+
+    <div class="section-title">V. Ce que Lyam Vit Cette Nuit-Là</div>
+
+    <p>Ils restèrent dans la cour un long moment. À un certain point, Lyam dit :</p>
+
+    <div class="dialogue">— Moi, mon problème c'est l'origine. Toi, c'est les deux. Origine et sexe. Il dit ça simplement, comme une observation factuelle, pas comme une plainte. Est-ce que tu penses qu'ils se renforcent ? Les deux formes d'inégalité ?
+    <br><br>
+    — Oui. Elle n'hésita pas. Quand tu additionnes les marqueurs, tu n'additionnes pas les difficultés — tu les multiplies. Une fille noble à Valdurne a des difficultés. Une fille non-noble a d'autres difficultés. Une fille non-noble avec un an d'avance qui en sait plus que la plupart des maîtres sur leurs propres matières... elle est dans une catégorie où le système n'a simplement pas prévu de cases.
+    <br><br>
+    — Et toi, qu'est-ce qui t'a fait tenir ?
+    </div>
+
+    <p>Réna réfléchit.</p>
+
+    <div class="dialogue">— La précision, dit-elle finalement. Les règles sont floues, les intentions sont floues, les préjugés sont flous. Mais les textes sont précis. Les articles de règlement sont précis. Ce qui peut être mesuré peut être contesté. J'ai passé mon temps à apprendre à mesurer les choses. C'était plus fiable que d'attendre que les gens changent d'eux-mêmes.
+    <br><br>
+    — Et maintenant ? Depuis qu'on est alliés ?
+    </div>
+
+    <p>Elle le regarda. Et pour la première fois depuis qu'il la connaissait, il vit sur son visage quelque chose qui ressemblait, très légèrement, à du soulagement.</p>
+
+    <div class="dialogue">— Maintenant j'ai quelqu'un dans mon angle mort. Elle dit ça simplement. Ce n'est pas rien. C'est beaucoup, en réalité.
+    </div>
+
+    <hr class="rune">
+
+    <div class="section-title">VI. Ce que Lyam Décida</div>
+
+    <p>En remontant au dortoir, Lyam fit une chose à laquelle il n'avait pas réfléchi à l'avance mais qui lui semblait évidente au moment où il la fit. Il s'arrêta devant le tableau des écuyers dans le couloir — son nom y était, bien à sa place. Il le regarda pendant un moment.</p>
+
+    <p>Puis il pensa à son père, à la forge, à la façon dont le métal chauffé cède et prend la forme qu'on lui donne, mais seulement si on sait où appuyer. Il pensa à Réna dans la grande salle ce soir — la façon dont elle avait tenu l'estrade sans jamais perdre le fil, même quand Daran de Mauren avait trouvé un bon argument. La façon dont elle n'avait pas cherché à écraser, juste à convaincre.</p>
+
+    <div class="pensee">Il décida quelque chose qu'il n'aurait pas su formuler en arrivant à Valdurne, mais qu'il savait formuler maintenant : être fils de forgeron n'était pas une chose dont il fallait s'excuser ou se défendre. C'était une façon de voir le monde — pratique, précise, attentive aux structures — qui avait autant de valeur que n'importe quelle autre. Pas la même valeur. Autant de valeur.
+    <br><br>
+    Et si quelqu'un pensait le contraire, il avait maintenant les mots pour lui expliquer pourquoi il avait tort. Pas des mots empruntés — ses propres mots, que Réna l'avait aidé à aiguiser.
+    <br><br>
+    Le fer prend la forme qu'on lui donne, oui. Mais seulement si on sait qu'il peut en prendre une.</div>
+
+    <p>Il alla dormir. Le château de Valdurne souffla dans ses fissures. La cinquième semaine était terminée. Quelque chose de plus difficile commençait à se former, quelque part dans les couloirs qu'il ne connaissait pas encore.</p>
+
+  </div>
+
+  <div class="end-block">
+    <span class="end-icon">🌑</span>
+    <div class="end-title">Fin du Chapitre Cinquième</div>
+    <p class="end-txt">Lyam et Réna ont nommé les choses. Les obstacles ont des noms maintenant — discrimination d'origine, discrimination de sexe, leurs intersections. Nommer, c'est la première étape. Ce qui vient au chapitre suivant, c'est quelque chose qu'on ne peut pas dénoncer avec un texte de règlement. Quelque chose qu'on voit et qu'on doit décider de ne pas ignorer.</p>
+    <div class="end-next">Chapitre VI disponible à 2500 XP · <em>Ce que la Nuit Cache</em></div>
+    <div>
+      <a href="roman_ch04.html" class="btn btn-s">← Chapitre IV</a>
+      <a href="hub_narration.html" class="btn btn-g">Bibliothèque</a>
+      <a href="roman_ch06.html" class="btn btn-s" id="btnNext" style="display:none">Chapitre VI →</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="xp-flash" id="xpFlash">+30 XP — Chapitre lu !</div>
+
+<script>
+var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};var CIT={representant_ca:{xp:500}};
+var MODULE_ID='ch05';var XP_REQ=2000;var cur='';
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((l[k]||[]).indexOf(c)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
+function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
+function creditXP(code,amount){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:'NARRATION_READ_'+MODULE_ID.toUpperCase(),target:'NARRATION',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10));
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  pending.push({id:'NARR-'+code+'-'+MODULE_ID+'-'+Date.now(),type:'NARRATION_READ',player:code,module:'ROMAN_'+MODULE_ID.toUpperCase(),xp:amount,d:now});
+  if(pending.length>700)pending=pending.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(pending));
+}
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=getP(cur);if(!p){window.location.href='hub_narration.html';return}
+  var xp=xg(p);
+  if(xp<XP_REQ){
+    document.getElementById('xpLock').style.display='flex';
+    var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
+    if(fill)fill.style.width=Math.min(100,Math.round((xp/XP_REQ)*100))+'%';
+    if(xpEl)xpEl.textContent=xp;return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  var done=getDone();
+  if(!done[MODULE_ID]){markDone(MODULE_ID);creditXP(cur,30);var f=document.getElementById('xpFlash');if(f){f.style.display='block';setTimeout(function(){f.style.display='none'},4000);}}
+  var btn=document.getElementById('btnNext');if(btn&&xp>=2500)btn.style.display='inline-block';
+})();
+</script>
+</body>
+</html>
