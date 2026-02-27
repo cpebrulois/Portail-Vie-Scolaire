@@ -26,8 +26,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 ::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.3);border-radius:3px}
 
 /* ══════════ AUTH ══════════ */
-#authGate{position:fixed;inset:0;z-index:9000;background:var(--parchemin);display:flex;align-items:center;justify-content:center;}
-#authGate.hidden{display:none}
+
+
 .auth-card{width:min(460px,92vw);background:var(--parchemin-2);border:1px solid rgba(201,168,76,0.35);border-radius:12px;padding:36px;text-align:center;box-shadow:0 0 60px rgba(0,0,0,0.6),0 0 20px rgba(201,168,76,0.1);animation:card-in 0.6s ease;}
 @keyframes card-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 .auth-portal-img{font-size:3em;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(201,168,76,0.5))}
@@ -176,13 +176,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 </head>
 <body>
 
-<!-- AUTH -->
-<div id="authGate">
-  <div class="auth-card">
-    <div class="auth-portal-img">🏰</div>
     <h1 class="auth-title">Château de Fontainebleau</h1>
     <p class="auth-sub">Expédition au-delà du portail de la Bibliothèque de Valdurne.<br><em>Il te faut 400 XP pour traverser.</em></p>
-    <input class="auth-input" id="codeInput" placeholder="Ton code joueur" autocomplete="off">
     <button class="btn-primary" onclick="tryLogin()">Franchir le Portail ▸</button>
     <div class="auth-msg" id="authMsg"></div>
     <a class="back-link" href="hub_narration.html">← Retourner à la Bibliothèque de Valdurne</a>
@@ -190,7 +185,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 </div>
 
 <!-- HUB PRINCIPAL -->
-<div id="hubMain">
+<div id="hubMain" style="display:none">
   <div class="portal-header">
     <div class="portal-tag">Expédition au-delà du Portail · Bibliothèque de Valdurne</div>
     <h1 class="portal-title">Château de Fontainebleau</h1>
@@ -289,30 +284,22 @@ function creditXP(code,amount,reason){
 // AUTH
 // ══════════════════════════════════════════════════════════
 let cur='';
-function tryLogin(){
-  const code=nCode(document.getElementById('codeInput').value);
-  if(!code){setMsg('Entre ton code joueur.');return}
-  const p=getPlayer(code);
-  if(!p){setMsg('Code introuvable. Connecte-toi d\'abord dans le Portail Vie Scolaire.');return}
-  const xp=xpTotal(p);
-  if(xp<XP_MIN){setMsg(`Tes XP : ${xp} / ${XP_MIN} requis. Continue dans le Portail !`);return}
-  openHub(code,p);
-}
 function openHub(code,p){
   cur=code;
-  document.getElementById('authGate').classList.add('hidden');
+  
   document.getElementById('hubMain').classList.add('visible');
   renderHub(p);
 }
-function logout(){cur='';document.getElementById('authGate').classList.remove('hidden');document.getElementById('hubMain').classList.remove('visible')}
-function setMsg(m){document.getElementById('authMsg').textContent=m}
-document.getElementById('codeInput').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
+function logout(){ window.location.href='index.html'; }
+
 (function(){
-  const stored=localStorage.getItem(ACTIVE_PLAYER_KEY);
-  if(!stored)return;
-  const code=nCode(stored);const p=getPlayer(code);
-  if(p&&xpTotal(p)>=XP_MIN){openHub(code,p);return}
-  document.getElementById('codeInput').value=stored;
+  var raw = localStorage.getItem('pvs_current_player') || '';
+  if(!raw){ window.location.href='index.html'; return; }
+  cur = raw.trim().toUpperCase();
+  var p = getPlayer(cur);
+  if(!p){ window.location.href='index.html'; return; }
+  document.getElementById('hubMain').style.display='block';
+  renderHub(p);
 })();
 
 // ══════════════════════════════════════════════════════════

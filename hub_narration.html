@@ -3,884 +3,247 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>L'Ordre des Écuyers — Bibliothèque de Valdurne</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<title>Bibliothèque de Valdurne — L'Ordre des Écuyers</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════
-   VARIABLES & RESET
-═══════════════════════════════════════════ */
-:root {
-  --or:       #c9a84c;
-  --or-clair: #e8c97a;
-  --or-sombre:#8a6a1f;
-  --encre:    #e8dfc8;
-  --encre-2:  #c8bfa8;
-  --parchemin:#120e0a;
-  --parchemin-2:#1e1710;
-  --parchemin-3:#2a2218;
-  --rouge:    #7a2020;
-  --bleu-nuit:#0e1522;
-  --vert:     #1a3a1a;
-  --violet:   #2a1a3a;
-  --neon:     rgba(201,168,76,0.15);
-  --glow:     0 0 20px rgba(201,168,76,0.3);
-  --radius:   8px;
-}
+:root{--or:#c9a84c;--or-clair:#e8c97a;--encre:#e8dfc8;--encre-2:#c8bfa8;--parch:#120e0a;--parch-2:#1e1710;--radius:8px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  background:var(--parchemin);
-  color:var(--encre);
-  font-family:'Crimson Text',Georgia,serif;
-  font-size:1.05em;
-  line-height:1.75;
-  min-height:100vh;
-  overflow-x:hidden;
-}
+body{background:var(--parch);color:var(--encre);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(139,42,42,.06) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(42,42,139,.06) 0%,transparent 60%)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--parch)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+@keyframes ni-in{from{opacity:0;top:0}to{opacity:1;top:20px}}
+@keyframes ni-out{from{opacity:1}to{opacity:0}}
 
-/* ── Texture de fond ── */
-body::before{
-  content:'';
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(139,42,42,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 80% 80%, rgba(42,42,139,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(201,168,76,0.03) 0%, transparent 70%);
-}
+/* HEADER */
+.hub-header{position:relative;z-index:1;padding:36px 24px 0;max-width:1100px;margin:0 auto}
+.hub-tag{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:5px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:10px}
+.hub-title{font-family:'Cinzel',serif;font-size:clamp(1.8em,5vw,2.8em);font-weight:700;color:var(--or-clair);text-shadow:0 0 40px rgba(201,168,76,.3);line-height:1.2;margin-bottom:6px}
+.hub-sub{font-style:italic;color:var(--encre-2);opacity:.7;margin-bottom:20px}
+.player-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:6px;margin-bottom:28px;font-size:.82em}
+.pb-item{color:var(--encre-2)}.pb-val{color:var(--or-clair);font-weight:600;margin-left:4px}
+.pb-sep{color:rgba(201,168,76,.3)}
+.btn-home{margin-left:auto;padding:5px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--encre-2);font-size:.82em;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-home:hover{border-color:var(--or);color:var(--or)}
 
-/* ══════════════════════════════════════════
-   PORTAIL D'AUTHENTIFICATION
-══════════════════════════════════════════ */
-#authGate{
-  position:fixed;inset:0;z-index:9000;
-  background:var(--parchemin);
-  display:flex;align-items:center;justify-content:center;
-}
-#authGate.hidden{display:none}
+/* LIBRARY */
+.library{max-width:1100px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
+.pillar-section{margin-bottom:36px}
+.pillar-label{font-family:'Cinzel',serif;font-size:.7em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,.2);display:flex;align-items:center;gap:10px}
+.pillar-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.2),transparent)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 
-.auth-card{
-  width:min(480px,92vw);
-  background:var(--parchemin-2);
-  border:1px solid rgba(201,168,76,0.35);
-  border-radius:12px;
-  padding:40px 36px;
-  text-align:center;
-  box-shadow:0 0 60px rgba(0,0,0,0.6),0 0 20px rgba(201,168,76,0.1);
-  animation:card-appear 0.6s ease;
-}
-@keyframes card-appear{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-
-.auth-rune{
-  font-size:2.5em;margin-bottom:16px;
-  filter:drop-shadow(0 0 12px rgba(201,168,76,0.5));
-}
-.auth-title{
-  font-family:'Cinzel',serif;font-size:1.4em;font-weight:700;
-  color:var(--or-clair);letter-spacing:2px;margin-bottom:6px;
-}
-.auth-sub{
-  font-style:italic;color:var(--encre-2);font-size:0.9em;margin-bottom:28px;opacity:0.75;
-}
-.auth-locked{
-  background:rgba(122,32,32,0.15);border:1px solid rgba(122,32,32,0.4);
-  border-radius:6px;padding:14px;margin-bottom:24px;
-  font-size:0.85em;color:#e88;line-height:1.6;display:none;
-}
-.auth-locked.visible{display:block}
-
-.auth-input{
-  width:100%;padding:12px 16px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(201,168,76,0.3);
-  border-radius:6px;
-  color:var(--encre);font-family:'Crimson Text',serif;font-size:1em;
-  text-align:center;letter-spacing:2px;text-transform:uppercase;
-  outline:none;transition:border-color 0.2s,box-shadow 0.2s;
-  margin-bottom:16px;
-}
-.auth-input:focus{border-color:var(--or);box-shadow:var(--glow)}
-.auth-input::placeholder{letter-spacing:1px;text-transform:none;opacity:0.5}
-
-.btn-primary{
-  width:100%;padding:12px;
-  background:linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.1));
-  border:1px solid var(--or);border-radius:6px;
-  color:var(--or-clair);font-family:'Cinzel',serif;
-  font-size:0.85em;letter-spacing:2px;cursor:pointer;
-  transition:all 0.2s;
-}
-.btn-primary:hover{background:rgba(201,168,76,0.35);box-shadow:var(--glow)}
-.auth-msg{margin-top:12px;font-size:0.82em;min-height:1.4em;color:#e88}
-.auth-xp-missing{
-  margin-top:16px;padding:12px;
-  background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);
-  border-radius:6px;font-size:0.82em;color:var(--encre-2);
-  font-style:italic;display:none;
-}
-.auth-xp-missing.visible{display:block}
-.back-link{
-  display:inline-block;margin-top:20px;
-  color:var(--encre-2);font-size:0.8em;opacity:0.6;cursor:pointer;
-  text-decoration:none;transition:opacity 0.2s;
-}
-.back-link:hover{opacity:1;color:var(--or)}
-
-/* ══════════════════════════════════════════
-   EN-TÊTE DU HUB
-══════════════════════════════════════════ */
-#hubMain{display:none}
-#hubMain.visible{display:block}
-
-.hub-header{
-  position:relative;z-index:1;
-  padding:40px 24px 0;
-  max-width:1100px;margin:0 auto;
-}
-.hub-tag{
-  font-family:'Cinzel',serif;font-size:0.65em;letter-spacing:5px;
-  color:var(--or);opacity:0.7;text-transform:uppercase;margin-bottom:10px;
-}
-.hub-title{
-  font-family:'Cinzel',serif;font-size:clamp(1.8em,5vw,2.8em);
-  font-weight:700;color:var(--or-clair);
-  text-shadow:0 0 40px rgba(201,168,76,0.3);
-  line-height:1.2;margin-bottom:6px;
-}
-.hub-sub{
-  font-style:italic;color:var(--encre-2);opacity:0.7;
-  font-size:1em;margin-bottom:20px;
-}
-.hub-player-bar{
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-  padding:12px 16px;
-  background:rgba(201,168,76,0.04);
-  border:1px solid rgba(201,168,76,0.15);
-  border-radius:6px;margin-bottom:32px;
-  font-size:0.82em;
-}
-.hpb-item{color:var(--encre-2)}
-.hpb-val{color:var(--or-clair);font-weight:600;margin-left:4px}
-.hpb-sep{color:rgba(201,168,76,0.3)}
-.btn-logout{
-  margin-left:auto;padding:5px 14px;
-  background:transparent;border:1px solid rgba(201,168,76,0.25);
-  border-radius:4px;color:var(--encre-2);font-size:0.85em;cursor:pointer;
-  transition:all 0.2s;
-}
-.btn-logout:hover{border-color:var(--or);color:var(--or)}
-
-/* ══════════════════════════════════════════
-   GRILLE BIBLIOTHÈQUE
-══════════════════════════════════════════ */
-.library{
-  max-width:1100px;margin:0 auto;
-  padding:0 24px 60px;
-  position:relative;z-index:1;
-}
-
-.pillar-section{margin-bottom:40px}
-.pillar-label{
-  font-family:'Cinzel',serif;font-size:0.7em;letter-spacing:4px;
-  color:var(--or);text-transform:uppercase;margin-bottom:16px;
-  padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.2);
-  display:flex;align-items:center;gap:10px;
-}
-.pillar-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,0.2),transparent)}
-
-.cards-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:16px;
-}
-
-/* ── Carte chapitre/séquence ── */
-.story-card{
-  background:var(--parchemin-2);
-  border:1px solid rgba(201,168,76,0.2);
-  border-radius:var(--radius);
-  padding:20px;
-  transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s;
-  position:relative;overflow:hidden;
-  cursor:default;
-}
+/* CARTE */
+.story-card{background:var(--parch-2);border:1px solid rgba(201,168,76,.2);border-radius:var(--radius);padding:20px;transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden;cursor:default}
 .story-card.unlocked{cursor:pointer}
-.story-card.unlocked:hover{
-  transform:translateY(-3px);
-  border-color:rgba(201,168,76,0.5);
-  box-shadow:0 8px 30px rgba(0,0,0,0.4),0 0 12px rgba(201,168,76,0.15);
-}
-.story-card.locked{opacity:0.5;filter:grayscale(0.4)}
-.story-card.completed{border-color:rgba(201,168,76,0.4)}
-.story-card.completed::after{
-  content:'✓';
-  position:absolute;top:12px;right:12px;
-  font-size:0.75em;color:var(--or);opacity:0.7;
-}
-/* Ligne colorée en haut selon le pilier */
-.story-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--card-accent,var(--or)),transparent);
-}
-
+.story-card.unlocked:hover{transform:translateY(-3px);border-color:rgba(201,168,76,.5);box-shadow:0 8px 30px rgba(0,0,0,.4),0 0 12px rgba(201,168,76,.15)}
+.story-card.locked{opacity:.5;filter:grayscale(.4)}
+.story-card.completed::after{content:'✓';position:absolute;top:12px;right:12px;color:var(--or);opacity:.7;font-size:.75em}
+.story-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--card-accent,var(--or)),transparent)}
 .sc-icon{font-size:1.8em;margin-bottom:10px;display:block}
-.sc-title{
-  font-family:'Cinzel',serif;font-size:0.9em;font-weight:600;
-  color:var(--or-clair);line-height:1.3;margin-bottom:4px;
-}
-.sc-meta{font-size:0.72em;color:var(--encre-2);opacity:0.65;margin-bottom:10px}
-.sc-excerpt{
-  font-style:italic;font-size:0.82em;color:var(--encre-2);
-  line-height:1.65;border-left:2px solid rgba(201,168,76,0.2);
-  padding-left:10px;margin-bottom:14px;
-}
-.sc-locked-hint{
-  font-size:0.75em;color:#888;font-style:italic;margin-bottom:12px;
-}
-.sc-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:8px;
-}
-.sc-badge{
-  font-size:0.7em;color:var(--or);opacity:0.8;
-}
-.sc-cta{
-  display:inline-block;padding:5px 14px;
-  background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);
-  border-radius:4px;color:var(--or-clair);font-size:0.75em;
-  letter-spacing:1px;transition:background 0.2s;
-}
-.sc-cta:hover{background:rgba(201,168,76,0.25)}
+.sc-title{font-family:'Cinzel',serif;font-size:.9em;font-weight:600;color:var(--or-clair);line-height:1.3;margin-bottom:4px}
+.sc-meta{font-size:.72em;color:var(--encre-2);opacity:.65;margin-bottom:10px}
+.sc-excerpt{font-style:italic;font-size:.82em;color:var(--encre-2);line-height:1.65;border-left:2px solid rgba(201,168,76,.2);padding-left:10px;margin-bottom:14px}
+.sc-locked-hint{font-size:.75em;color:#888;font-style:italic;margin-bottom:12px}
+.sc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.sc-badge{font-size:.7em;color:var(--or);opacity:.8}
+.sc-cta{display:inline-block;padding:5px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.4);border-radius:4px;color:var(--or-clair);font-size:.75em;letter-spacing:1px;transition:background .2s}
+.sc-cta:hover{background:rgba(201,168,76,.25)}
+.event-ribbon{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#7a2020,#3a0a5a);border:1px solid var(--or);border-radius:3px;padding:2px 8px;font-size:.65em;color:var(--or-clair);letter-spacing:1px;font-family:'Cinzel',serif}
 
-/* ── Badge EVENT ── */
-.event-ribbon{
-  position:absolute;top:12px;right:12px;
-  background:linear-gradient(135deg,var(--rouge),#3a0a5a);
-  border:1px solid var(--or);border-radius:3px;
-  padding:2px 8px;font-size:0.65em;
-  color:var(--or-clair);letter-spacing:1px;
-  font-family:'Cinzel',serif;
-}
-
-/* ══════════════════════════════════════════
-   MODALE LDVELH
-══════════════════════════════════════════ */
-#ldvelhModal{
-  position:fixed;inset:0;z-index:9500;
-  background:rgba(10,8,5,0.97);
-  display:none;flex-direction:column;
-  overflow-y:auto;
-}
+/* MODALE LDVELH / LECTURE */
+#ldvelhModal{position:fixed;inset:0;z-index:9500;background:rgba(10,8,5,.97);display:none;flex-direction:column;overflow-y:auto}
 #ldvelhModal.open{display:flex}
-
-.ldvelh-header{
-  padding:20px 24px 0;
-  max-width:740px;margin:0 auto;width:100%;
-  display:flex;align-items:center;gap:16px;
-}
-.ldvelh-close{
-  margin-left:auto;padding:7px 16px;
-  background:transparent;border:1px solid rgba(201,168,76,0.3);
-  border-radius:4px;color:var(--encre-2);cursor:pointer;
-  font-size:0.8em;transition:all 0.2s;flex-shrink:0;
-}
+.ldvelh-header{padding:20px 24px 0;max-width:740px;margin:0 auto;width:100%;display:flex;align-items:center;gap:16px}
+.ldvelh-close{margin-left:auto;padding:7px 16px;background:transparent;border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--encre-2);cursor:pointer;font-size:.8em;transition:all .2s;flex-shrink:0}
 .ldvelh-close:hover{border-color:var(--or);color:var(--or)}
-.ldvelh-chapter-name{
-  font-family:'Cinzel',serif;font-size:0.8em;
-  color:var(--or);letter-spacing:2px;opacity:0.8;
-}
-
-.ldvelh-body{
-  max-width:740px;margin:0 auto;padding:32px 24px 60px;width:100%;
-  flex:1;
-}
-
-/* ── Passage LDVELH ── */
-.passage{display:none;animation:passage-in 0.4s ease}
-.passage.active{display:block}
-@keyframes passage-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-.passage-num{
-  font-family:'Cinzel',serif;font-size:0.65em;letter-spacing:3px;
-  color:var(--or);opacity:0.5;margin-bottom:20px;
-}
-.passage-text{
-  font-size:1.1em;line-height:1.9;margin-bottom:28px;
-}
+.ldvelh-chapter-name{font-family:'Cinzel',serif;font-size:.8em;color:var(--or);letter-spacing:2px;opacity:.8}
+.ldvelh-body{max-width:740px;margin:0 auto;padding:32px 24px 60px;width:100%;flex:1}
+.ldv-progress{display:flex;gap:4px;margin-bottom:28px;align-items:center}
+.ldv-step{height:3px;flex:1;border-radius:2px;background:rgba(201,168,76,.15);transition:background .3s}
+.ldv-step.done{background:rgba(201,168,76,.7)}.ldv-step.current{background:var(--or)}
+.passage{display:none;animation:p-in .4s ease}.passage.active{display:block}
+@keyframes p-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.passage-num{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:3px;color:var(--or);opacity:.5;margin-bottom:20px}
+.passage-text{font-size:1.1em;line-height:1.9;margin-bottom:28px}
 .passage-text p{margin-bottom:1.2em;text-align:justify}
 .passage-text em{font-style:italic;color:var(--encre-2)}
-
-/* Illustration mood (emoji large centré) */
-.passage-mood{
-  text-align:center;font-size:3em;margin:20px 0;
-  filter:drop-shadow(0 0 16px rgba(201,168,76,0.4));
-}
-
-.passage-divider{
-  border:none;border-top:1px solid rgba(201,168,76,0.15);
-  margin:20px 0;
-}
-
-/* ── Boutons de choix ── */
+.passage-mood{text-align:center;font-size:3em;margin:20px 0;filter:drop-shadow(0 0 16px rgba(201,168,76,.4))}
+.passage-divider{border:none;border-top:1px solid rgba(201,168,76,.15);margin:20px 0}
 .choices{display:flex;flex-direction:column;gap:10px;margin-top:24px}
-.choice-btn{
-  width:100%;padding:14px 18px;text-align:left;
-  background:rgba(201,168,76,0.05);
-  border:1px solid rgba(201,168,76,0.25);
-  border-radius:6px;
-  color:var(--encre);font-family:'Crimson Text',serif;
-  font-size:1em;line-height:1.5;cursor:pointer;
-  transition:all 0.2s;position:relative;
-}
-.choice-btn::before{
-  content:'▸';color:var(--or);margin-right:10px;opacity:0.6;
-}
-.choice-btn:hover{
-  background:rgba(201,168,76,0.12);
-  border-color:rgba(201,168,76,0.5);
-  color:var(--or-clair);
-  transform:translateX(4px);
-}
-.choice-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
-
-/* ── Résultat final ── */
-.result-block{
-  margin-top:24px;padding:24px;
-  border-radius:8px;text-align:center;
-}
-.result-block.success{
-  background:linear-gradient(135deg,rgba(26,58,26,0.6),rgba(42,74,26,0.4));
-  border:1px solid rgba(100,180,100,0.4);
-}
-.result-block.failure{
-  background:linear-gradient(135deg,rgba(58,26,26,0.6),rgba(74,42,26,0.4));
-  border:1px solid rgba(180,80,80,0.4);
-}
+.choice-btn{width:100%;padding:14px 18px;text-align:left;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.25);border-radius:6px;color:var(--encre);font-family:'Crimson Text',serif;font-size:1em;line-height:1.5;cursor:pointer;transition:all .2s}
+.choice-btn::before{content:'▸ ';color:var(--or);opacity:.6}
+.choice-btn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.5);color:var(--or-clair);transform:translateX(4px)}
+.result-block{margin-top:24px;padding:24px;border-radius:8px;text-align:center}
+.result-block.success{background:linear-gradient(135deg,rgba(26,58,26,.6),rgba(42,74,26,.4));border:1px solid rgba(100,180,100,.4)}
+.result-block.failure{background:linear-gradient(135deg,rgba(58,26,26,.6),rgba(74,42,26,.4));border:1px solid rgba(180,80,80,.4)}
 .result-icon{font-size:2.5em;margin-bottom:12px;display:block}
-.result-title{
-  font-family:'Cinzel',serif;font-size:1em;margin-bottom:8px;
-  letter-spacing:1px;
-}
-.result-block.success .result-title{color:#8fe888}
-.result-block.failure .result-title{color:#e88888}
+.result-title{font-family:'Cinzel',serif;font-size:1em;margin-bottom:8px;letter-spacing:1px}
+.result-block.success .result-title{color:#8fe888}.result-block.failure .result-title{color:#e88888}
 .result-xp{font-size:1.2em;font-weight:600;margin:10px 0}
-.result-block.success .result-xp{color:#b8e8b8}
-.result-block.failure .result-xp{color:#e8b8b8}
-.result-text{font-size:0.88em;color:var(--encre-2);line-height:1.6;margin-bottom:16px}
-.btn-retry{
-  padding:10px 24px;
-  background:rgba(201,168,76,0.1);border:1px solid var(--or);
-  border-radius:4px;color:var(--or-clair);cursor:pointer;
-  font-family:'Cinzel',serif;font-size:0.8em;letter-spacing:1px;
-  transition:all 0.2s;margin-right:8px;
-}
-.btn-retry:hover{background:rgba(201,168,76,0.25)}
-.btn-close-result{
-  padding:10px 24px;
-  background:transparent;border:1px solid rgba(255,255,255,0.15);
-  border-radius:4px;color:var(--encre-2);cursor:pointer;
-  font-size:0.8em;transition:all 0.2s;
-}
-.btn-close-result:hover{border-color:rgba(255,255,255,0.4);color:var(--encre)}
+.result-block.success .result-xp{color:#b8e8b8}.result-block.failure .result-xp{color:#e8b8b8}
+.result-text{font-size:.88em;color:var(--encre-2);line-height:1.6;margin-bottom:16px}
+.btn-retry,.btn-close-result{padding:10px 24px;border-radius:4px;cursor:pointer;font-size:.8em;transition:all .2s;margin-right:6px}
+.btn-retry{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or-clair);font-family:'Cinzel',serif;letter-spacing:1px}
+.btn-retry:hover{background:rgba(201,168,76,.25)}
+.btn-close-result{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--encre-2)}
+.btn-close-result:hover{border-color:rgba(255,255,255,.4)}
 
-/* ── Barre de progression LDVELH ── */
-.ldvelh-progress{
-  display:flex;gap:4px;margin-bottom:28px;align-items:center;
-}
-.prog-step{
-  height:3px;flex:1;border-radius:2px;
-  background:rgba(201,168,76,0.15);
-  transition:background 0.3s;
-}
-.prog-step.done{background:rgba(201,168,76,0.7)}
-.prog-step.current{background:var(--or)}
-
-/* ══════════════════════════════════════════
-   NOTIF XP
-══════════════════════════════════════════ */
-.xp-notif{
-  position:fixed;top:20px;left:50%;transform:translateX(-50%);
-  z-index:9999;padding:12px 28px;
-  border-radius:8px;font-weight:600;font-size:0.95em;
-  text-align:center;pointer-events:none;
-  animation:notif-in 0.4s ease, notif-out 0.5s ease 4s forwards;
-}
-.xp-notif.success{
-  background:linear-gradient(135deg,#1a3a1a,#2a4a1a);
-  border:1px solid rgba(100,200,100,0.5);color:#b8e8b8;
-  box-shadow:0 0 20px rgba(100,200,100,0.3);
-}
-.xp-notif.fail{
-  background:linear-gradient(135deg,#3a1a1a,#4a1a1a);
-  border:1px solid rgba(200,80,80,0.5);color:#e8b8b8;
-  box-shadow:0 0 20px rgba(200,80,80,0.3);
-}
-@keyframes notif-in{from{opacity:0;top:0}to{opacity:1;top:20px}}
-@keyframes notif-out{from{opacity:1}to{opacity:0;pointer-events:none}}
-
-/* ══════════════════════════════════════════
-   SCROLLBAR PERSONNALISÉE
-══════════════════════════════════════════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--parchemin)}
-::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.3);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,0.5)}
-
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
-@media(max-width:600px){
-  .hub-header,.library{padding-left:14px;padding-right:14px}
-  .hub-title{font-size:1.6em}
-  .ldvelh-body{padding:20px 14px 40px}
-  .passage-text{font-size:1em}
-}
+@media(max-width:600px){.hub-header,.library{padding-left:14px;padding-right:14px}.ldvelh-body{padding:20px 14px 40px}}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     PORTAIL D'AUTHENTIFICATION
-══════════════════════════════════ -->
-<div id="authGate">
-  <div class="auth-card">
-    <div class="auth-rune">📖</div>
-    <h1 class="auth-title">Bibliothèque de Valdurne</h1>
-    <p class="auth-sub">L'Ordre des Écuyers de Château-Rance</p>
-
-    <div class="auth-locked" id="authLocked">
-      <strong>Accès restreint.</strong><br>
-      Cette bibliothèque nécessite d'avoir atteint <strong>200 XP</strong> dans le Portail Vie Scolaire.<br>
-      Continue tes actions pour débloquer l'histoire de Lyam.
-    </div>
-
-    <input class="auth-input" id="codeInput" placeholder="Ton code joueur" autocomplete="off">
-    <button class="btn-primary" onclick="tryLogin()">Entrer dans la Bibliothèque ▸</button>
-    <div class="auth-msg" id="authMsg"></div>
-
-    <div class="auth-xp-missing" id="xpMissing"></div>
-
-    <a class="back-link" href="index.html">← Retourner au Portail Vie Scolaire</a>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     HUB PRINCIPAL
-══════════════════════════════════ -->
-<div id="hubMain">
-
-  <!-- En-tête -->
+<div id="hubMain" style="display:none">
   <div class="hub-header">
     <div class="hub-tag">Château-École de Valdurne · Saison I</div>
-    <h1 class="hub-title">L'Ordre des Écuyers</h1>
-    <p class="hub-sub">Une bibliothèque qui grandit avec toi. Chaque pilier résolu ouvre une nouvelle porte.</p>
-
-    <div class="hub-player-bar">
-      <span class="hpb-item">Écuyer : <span class="hpb-val" id="playerName">—</span></span>
-      <span class="hpb-sep">·</span>
-      <span class="hpb-item">XP : <span class="hpb-val" id="playerXP">0</span></span>
-      <span class="hpb-sep">·</span>
-      <span class="hpb-item">Chapitres lus : <span class="hpb-val" id="chaptersRead">0</span></span>
-      <button class="btn-logout" onclick="logout()">Quitter</button>
+    <h1 class="hub-title">Bibliothèque de Valdurne</h1>
+    <p class="hub-sub">L'Ordre des Écuyers — Une bibliothèque qui grandit avec toi.</p>
+    <div class="player-bar">
+      <span class="pb-item">Écuyer : <span class="pb-val" id="playerName">—</span></span>
+      <span class="pb-sep">·</span>
+      <span class="pb-item">XP : <span class="pb-val" id="playerXP">0</span></span>
+      <span class="pb-sep">·</span>
+      <span class="pb-item">Chapitres lus : <span class="pb-val" id="chaptersRead">0</span></span>
+      <a class="btn-home" href="index.html">← Portail Vie Scolaire</a>
     </div>
   </div>
 
   <div class="library">
-
-    <!-- ── PILIER 1 : Histoire Principale ── -->
     <div class="pillar-section">
       <div class="pillar-label">📚 Histoire Principale — La Première Année</div>
       <div class="cards-grid" id="mainStoryGrid"></div>
     </div>
-
-    <!-- ── PILIER 2 : Séquences Satellites (LDVELH) ── -->
     <div class="pillar-section">
       <div class="pillar-label">⚔️ Séquences de Valdurne — Tu es le héros</div>
       <div class="cards-grid" id="satelliteGrid"></div>
     </div>
-
-    <!-- ── PILIER 3 : Expéditions au-delà du Portail ── -->
     <div class="pillar-section">
       <div class="pillar-label">🌀 Expéditions au-delà du Portail</div>
       <div class="cards-grid" id="expeditionGrid"></div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════════════════════════════
-     MODALE LDVELH
-══════════════════════════════════ -->
+<!-- MODALE LDVELH -->
 <div id="ldvelhModal" role="dialog" aria-modal="true">
   <div class="ldvelh-header">
     <span class="ldvelh-chapter-name" id="ldvelhTitle">Séquence de Valdurne</span>
     <button class="ldvelh-close" onclick="closeLdvelh()">✕ Fermer</button>
   </div>
   <div class="ldvelh-body">
-    <div class="ldvelh-progress" id="ldvelhProgress"></div>
+    <div class="ldv-progress" id="ldvelhProgress"></div>
     <div id="ldvelhContent"></div>
   </div>
 </div>
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// CONFIGURATION — DOIT CORRESPONDRE AU SUPERHUB
+// CONFIG & UTILS — réplique exacte du superhub, PAS DE RE-AUTH
 // ══════════════════════════════════════════════════════════════
-const KEY               = 'pvs_hof_v2';          // clé localStorage S
-const ACTIVE_PLAYER_KEY = 'pvs_current_player';   // code joueur actif
-const XP_PENDING_KEY    = 'pvs_narration_xp';     // pont XP vers superhub
-const NARRATION_DONE    = 'pvs_narration_done';   // séquences terminées
-const XP_MIN_ACCESS     = 200;                    // XP pour entrer
+const KEY               = 'pvs_hof_v2';
+const ACTIVE_PLAYER_KEY = 'pvs_current_player';
+const XP_PENDING_KEY    = 'pvs_narration_xp';
+const NARRATION_DONE    = 'pvs_narration_done';
+const VISITOR_CODE      = 'VISITEUR-VIESCOLAIRE-CHATEAURANCE';
 const XP_BON_CHOIX      = 50;
 const XP_MAUVAIS_CHOIX  = -25;
-const VISITOR_CODE      = 'VISITEUR-VIESCOLAIRE-CHATEAURANCE';
 
-// ══════════════════════════════════════════════════════════════
-// UTILITAIRES
-// ══════════════════════════════════════════════════════════════
-function nCode(v){
-  return String(v||'').trim().toUpperCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/\s+/g,'');
-}
-function getS(){
-  try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}
-}
-function saveS(S){
-  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){console.warn('Save failed',e)}
-}
-function getPlayer(code){
-  const S=getS();
-  return S.players&&S.players[code]?S.players[code]:null;
-}
+const W   = {pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+const CIT = {representant_ca:{xp:500}};
 
-// ── Réplique exacte de xg() + fonctions auxiliaires du superhub ──
-// W = poids des CP (identique au superhub)
-const W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
-// CIT = missions citoyennes (identique au superhub)
-const CIT={representant_ca:{xp:500}};
+function nCode(v){return String(v||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'')}
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getPlayer(c){const S=getS();return S.players&&S.players[c]?S.players[c]:null}
 
-function missionXp(code){
-  // Lit S.citizen_lists pour savoir si le joueur est dans une mission
-  const S=getS();
-  const lists=S.citizen_lists||{};
-  let n=0;
-  Object.keys(CIT).forEach(k=>{
-    const lst=lists[k]||[];
-    if(lst.includes(code))n+=CIT[k].xp;
-  });
-  return n;
-}
+// Réplique EXACTE de xg() superhub
+function missionXp(code){const S=getS();const lists=S.citizen_lists||{};let n=0;Object.keys(CIT).forEach(k=>{if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}
 function socialRawG(p){return Number(p.socialG||0)+Number(p.wBonusG||0)}
 function socialValidG(p){return Number(p.witnessGiven||0)>0?socialRawG(p):0}
 function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
-function academyXp(p){
-  const cp=p.cp||{};
-  return Object.keys(W).reduce((a,k)=>a+Number(cp[k]||0)*W[k],0);
-}
+function academyXp(p){const cp=p.cp||{};return Object.keys(W).reduce((a,k)=>a+Number(cp[k]||0)*W[k],0)}
 function videoXp(p){return Number(p.videoG||0)}
-function acadCoeff(p){
-  const n=Math.min(Number(p.acadDone||0),50);
-  return Math.round((1+n*0.02)*100)/100;
-}
-function xpGlobal(p){
-  if(!p)return 0;
-  const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);
-  return Math.round(base*acadCoeff(p));
-}
-function getDone(){
-  try{return JSON.parse(localStorage.getItem(NARRATION_DONE)||'{}')}catch{return{}}
-}
-function markDone(id){
-  const d=getDone();d[id]=1;
-  localStorage.setItem(NARRATION_DONE,JSON.stringify(d));
-}
+function acadCoeff(p){const n=Math.min(Number(p.acadDone||0),50);return Math.round((1+n*0.02)*100)/100}
+function xg(p){if(!p)return 0;const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}
+
+function getDone(){try{return JSON.parse(localStorage.getItem(NARRATION_DONE)||'{}')}catch{return{}}}
+function markDone(id){const d=getDone();d[id]=1;localStorage.setItem(NARRATION_DONE,JSON.stringify(d))}
 function isDone(id){return !!getDone()[id]}
 
-// ── Crédit XP via le pont localStorage ──
 function creditXP(code,amount,reason){
-  if(!code||code===VISITOR_CODE)return;
-  const S=getS();
-  if(!S.players||!S.players[code])return;
-  const p=S.players[code];
-  const now=new Date().toISOString();
-  // Ajouter au log S.logs
+  if(!code)return;
+  const S=getS();if(!S.players||!S.players[code])return;
+  const p=S.players[code];const now=new Date().toISOString();
   if(!Array.isArray(S.logs))S.logs=[];
   S.logs.unshift({d:now,p:code,t:reason,target:'NARRATION',xp:Number(amount)});
   if(S.logs.length>700)S.logs.length=700;
-  // Appliquer le XP
-  if(amount>0){
-    p.wBonusG=(Number(p.wBonusG||0)+(amount/10));
-    p.wBonusW=(Number(p.wBonusW||0)+(amount/10));
-  } else {
-    // Pénalité → malus
-    p.malusG=(Number(p.malusG||0)+amount);
-    p.malusW=(Number(p.malusW||0)+amount);
-  }
-  p.up=now;
-  saveS(S);
-  // Signal pour le superhub (s'il est ouvert)
+  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
+  else{p.malusG=(Number(p.malusG||0)+amount);p.malusW=(Number(p.malusW||0)+amount)}
+  p.up=now;saveS(S);
   const pending=JSON.parse(localStorage.getItem(XP_PENDING_KEY)||'[]');
   pending.push({code,amount,reason,d:now});
   localStorage.setItem(XP_PENDING_KEY,JSON.stringify(pending));
 }
 
+function showXpNotif(amount){
+  const d=document.createElement('div');
+  d.className='xp-notif';
+  d.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;padding:11px 26px;border-radius:8px;font-weight:600;font-size:.92em;text-align:center;pointer-events:none';
+  if(amount>0){d.style.background='linear-gradient(135deg,#1a3a1a,#2a4a1a)';d.style.border='1px solid rgba(100,200,100,.5)';d.style.color='#b8e8b8';d.textContent='+'+amount+' XP — Bien joué !'}
+  else{d.style.background='linear-gradient(135deg,#3a1a1a,#4a1a1a)';d.style.border='1px solid rgba(200,80,80,.5)';d.style.color='#e8b8b8';d.textContent=amount+' XP — Retente !'}
+  document.body.appendChild(d);setTimeout(()=>d.remove(),5000);
+}
+
 // ══════════════════════════════════════════════════════════════
-// AUTHENTIFICATION
+// INIT — Lit le joueur depuis superhub, PAS DE RE-AUTH
 // ══════════════════════════════════════════════════════════════
-let currentCode='';
+var cur='';
 
-function tryLogin(){
-  const raw=document.getElementById('codeInput').value;
-  const code=nCode(raw);
-  if(!code){setMsg('Entrez votre code joueur.');return}
-
-  const p=getPlayer(code);
-  // Permettre le visiteur
-  if(code===nCode(VISITOR_CODE)){
-    openHub(code,p||{code,socialG:0,wBonusG:0,videoG:0,malusG:0,acadDone:{}});
-    return;
-  }
-  if(!p){setMsg('Code joueur introuvable. Connecte-toi d\'abord dans le Portail Vie Scolaire.');return}
-
-  const xp=xpGlobal(p);
-  if(xp<XP_MIN_ACCESS){
-    document.getElementById('xpMissing').textContent=
-      `Tes XP actuels : ${xp} / ${XP_MIN_ACCESS} requis. Continue tes actions dans le Portail !`;
-    document.getElementById('xpMissing').classList.add('visible');
-    document.getElementById('authLocked').classList.add('visible');
-    setMsg('');
-    return;
-  }
-  openHub(code,p);
-}
-
-function openHub(code,p){
-  currentCode=code;
-  document.getElementById('authGate').classList.add('hidden');
-  document.getElementById('hubMain').classList.add('visible');
-  renderHub(p);
-}
-
-function logout(){
-  currentCode='';
-  document.getElementById('authGate').classList.remove('hidden');
-  document.getElementById('hubMain').classList.remove('visible');
-  document.getElementById('codeInput').value='';
-}
-
-function setMsg(m){document.getElementById('authMsg').textContent=m}
-
-// Auto-login si code stocké
 (function(){
-  const stored=localStorage.getItem(ACTIVE_PLAYER_KEY);
-  if(stored){
-    const code=nCode(stored);
-    const p=getPlayer(code);
-    if(p&&xpGlobal(p)>=XP_MIN_ACCESS){openHub(code,p);return}
-    if(code===nCode(VISITOR_CODE)){openHub(code,p||{});return}
-    document.getElementById('codeInput').value=stored;
-  }
+  const raw=localStorage.getItem(ACTIVE_PLAYER_KEY)||'';
+  if(!raw){ window.location.href='index.html'; return; }
+  cur=nCode(raw);
+  const p=getPlayer(cur)||(nCode(raw)===nCode(VISITOR_CODE)?{code:cur,cp:{},socialG:0,wBonusG:0,videoG:0,malusG:0,acadDone:0,witnessGiven:1}:null);
+  if(!p){ window.location.href='index.html'; return; }
+  document.getElementById('hubMain').style.display='block';
+  renderHub(p);
 })();
 
 // ══════════════════════════════════════════════════════════════
-// RENDU HUB
+// DONNÉES — CHAPITRES & SATELLITES
 // ══════════════════════════════════════════════════════════════
-function renderHub(p){
-  const xp=xpGlobal(p);
-  document.getElementById('playerName').textContent=currentCode;
-  document.getElementById('playerXP').textContent=xp;
-
-  const d=getDone();
-  let chapCount=Object.values(d).filter(v=>v).length;
-  document.getElementById('chaptersRead').textContent=chapCount;
-
-  renderMainStory(p,xp);
-  renderSatellites(p);
-  renderExpeditions(p,xp);
-}
-
-// ── HISTOIRE PRINCIPALE ──
-const MAIN_CHAPTERS=[
-  {
-    id:'main_prologue',icon:'🏰',
-    title:'Prologue — L\'Arrivée',
-    meta:'Débloqué dès le début · Chapitre gratuit',
-    excerpt:'Lyam arrive au Château-École de Valdurne. Il ne connaît personne. Dans la grande salle bruissante, un autre écuyer lui sourit depuis un coin.',
-    badge:null,
-    minXP:0,
-    text:[
-      `La grande salle de Valdurne sentait la cire et la pierre ancienne.`,
-      `Lyam posa son sac contre le mur du fond — le plus loin possible de tous les autres — et regarda. Des dizaines d'écuyers de première année, certains avec des familles qui les embrassaient, d'autres qui riaient déjà en petits groupes constitués avant même d'être arrivés. Il ne reconnaissait personne.`,
-      `Il ne savait pas encore que c'était ça, le vrai enseignement de Valdurne. Pas les cours de stratégie ou les exercices au champ. L'apprentissage de <em>comment être avec les autres</em> quand personne ne te connaît encore.`,
-      `Un écuyer dans le coin opposé leva les yeux de son livre et lui fit un signe de tête. Juste ça — un signe de tête. Mais dans ce moment précis, dans cette salle trop grande et trop bruyante, ça avait suffi.`,
-      `Son nom était Réna. Ce serait son premier allié. Peut-être le plus important de tous.`,
-    ],
-    endNote:'La première année commence. D\'autres chapitres s\'ouvriront à mesure que tu progresseras dans le Portail.'
-  },
-  {
-    id:'main_ch1',icon:'⚔️',
-    title:'Chapitre I — Le Témoin',
-    meta:'Débloqué à 100 XP',
-    excerpt:'Lyam voit Réna cerné par trois écuyers. Tout le monde détourne les yeux. Il a deux chemins devant lui.',
-    badge:null,
-    minXP:100,
-    text:[
-      `Ça s'est passé un mercredi, après l'entraînement aux cartes.`,
-      `Lyam avait pris le couloir du bas — plus court, moins fréquenté. C'est là qu'il les avait vus : trois écuyers de deuxième année encerclant Réna contre le mur de pierre. Ils ne le frappaient pas. Ils faisaient pire : ils lui parlaient à voix basse, avec ce ton particulier qui n'est pas de la violence mais qui lui ressemble trait pour trait.`,
-      `Réna regardait le sol. Il y avait une honte dans ses épaules que Lyam reconnut immédiatement — il l'avait portée lui-même, à l'école d'avant.`,
-      `Il s'arrêta. Personne d'autre dans le couloir. Les trois écuyers ne l'avaient pas encore vu. Il pouvait passer par le couloir du haut, prendre dix minutes de plus, et ne jamais avoir à décider quoi que ce soit.`,
-      `Il ne prit pas le couloir du haut.`,
-      `Il s'avança, pas sûr de lui du tout, et dit simplement à haute voix : <em>« Hé, Réna. Maître Aldric te cherchait. »</em> C'était faux. Mais dans la seconde qui suivit, les trois écuyers s'écartèrent, et Réna put s'en aller.`,
-      `Plus tard, Lyam se demanda si c'était du courage. Il conclut que non — il n'avait pas eu le temps d'avoir peur. C'était juste une décision. Rapide. Ordinaire. Comme en prendre des centaines d'autres chaque jour, sauf que celle-là comptait vraiment.`,
-    ],
-    endNote:'Être témoin, c\'est déjà agir. La suite au Chapitre II — débloqué à 300 XP.'
-  },
-  {
-    id:'main_ch2',icon:'📜',
-    title:'Chapitre II — La Règle du Château',
-    meta:'Débloqué à 300 XP',
-    excerpt:'Un conflit éclate entre deux maisons. Les règles de Valdurne sont floues, et certains le savent très bien.',
-    badge:null,
-    minXP:300,
-    text:[
-      `La dispute entre la Maison Argent et la Maison Bois avait commencé pour une raison idiote — un banc dans le réfectoire — et avait escaladé jusqu'à devenir un incident officiel.`,
-      `Le Doyen Ferraud convoqua les deux maisons dans la grande salle. Lyam observait depuis le fond. Ce qui le frappa, ce n'était pas la dispute. C'était comment certains écuyers — les plus anciens, ceux qui connaissaient le Codex — manipulaient les règles avec une précision chirurgicale. Ils ne mentaient pas. Ils choisissaient quelles règles citer, et lesquelles oublier.`,
-      `<em>« Comprendre les règles, c'est du pouvoir »</em>, lui dit Réna à voix basse. <em>« Mais les utiliser pour écraser les autres, c'est de la lâcheté. »</em>`,
-      `Ce soir-là, Lyam emprunta le Codex à la bibliothèque pour la première fois. Pas pour gagner. Pour comprendre.`,
-      `Il y passa la nuit. Le lendemain matin, il savait exactement quels articles la Maison Argent avait omis de mentionner. Il ne le dit pas à voix haute — ce n'était pas à lui de trancher. Mais il le nota, soigneusement, et le remit au Doyen sans son nom dessus.`,
-      `Ferraud le regarda par-dessus ses lunettes. Il savait très bien d'où venait le parchemin. Il ne dit rien. Mais le lendemain, le jugement fut juste.`,
-    ],
-    endNote:'La connaissance des règles protège. La suite — Chapitre III — à 500 XP.'
-  },
-  {
-    id:'main_ch3_base',icon:'⚖️',
-    title:'Chapitre III — L\'Égale',
-    meta:'Débloqué à 500 XP',
-    excerpt:'Kira n\'a pas le droit d\'accéder à la Forge Haute. Lyam se retrouve face à un choix entre tradition et justice.',
-    badge:'⚖️ L\'Écu d\'Égale',
-    minXP:500,
-    isEvent:true,
-    text:[
-      `La forge haute se trouvait au sommet de la tour sud, là où la fumée rejoignait les nuages bas de février.`,
-      `Lyam y montait chaque jeudi. Ce jeudi-là, dans l'escalier étroit, il croisa Kira. Elle descendait. Lui montait. Elle portait des parchemins de formules d'enchantement avancées — le genre que les écuyers de troisième année effleuraient à peine.`,
-      `<em>« Tu n'es pas supposée monter. La Forge Haute est réservée aux écuyers du parcours forge. »</em>`,
-      `Elle le regarda avec quelque chose de plus calme et de plus lourd que la colère. La patience précise de quelqu'un qui a déjà cartographié tous les murs avant de chercher la porte.`,
-      `<em>« Je sais. On me l'a déjà dit. »</em>`,
-      `Elle continua de descendre. Lui continua de monter. Il ne put pas travailler.`,
-      `Il pensa à son <em>"je sais"</em>. Pas résignation — précision tranquille. Il redescendit, trouva Maître Aldric, et posa la question directement. <em>« Cette règle. Elle est écrite où ? »</em>`,
-      `<em>« Nulle part. »</em>`,
-      `<em>« Alors elle peut changer ? »</em>`,
-      `<em>« Tout peut changer, Lyam. La question, c'est qui décide de le faire. »</em>`,
-      `La semaine suivante, Kira monta à la Forge Haute pour la première fois. Elle ne dit rien à Lyam. Ce n'était pas à lui qu'elle devait quelque chose.`,
-      `Mais dans la cour, elle lui lança ses parchemins de formules. <em>« Tu en auras besoin pour la semaine prochaine. »</em> — <em>« J'en suis pas sûr. »</em> — <em>« Moi si. »</em>`,
-    ],
-    endNote:'L\'égalité ne se déclare pas. Elle se construit, un acte ordinaire à la fois.'
-  },
-  {
-    id:'main_ch4',icon:'🏥',
-    title:'Chapitre IV — Le Secours en Danger',
-    meta:'Débloqué à 800 XP',
-    excerpt:'Un accident au terrain d\'entraînement. Lyam seul sait ce qu\'il faut faire — parce qu\'il a appris.',
-    badge:null,
-    minXP:800,
-    locked:true,
-    comingSoon:true
-  },
-  {
-    id:'main_ch5',icon:'🌟',
-    title:'Chapitre V — La Fraternité des Écus',
-    meta:'Débloqué à 1200 XP',
-    excerpt:'Fin de première année. Le château n\'a pas changé. C\'est Lyam qui a changé. Une lettre qu\'il n\'envoie pas.',
-    badge:'🌟 Chevalier Complet',
-    minXP:1200,
-    locked:true,
-    comingSoon:true
-  },
+var MAIN_CHAPTERS=[
+  {id:'main_prologue',icon:'🏰',title:'Prologue — L\'Arrivée',meta:'Débloqué dès le début',excerpt:'Lyam arrive au Château-École de Valdurne. Il ne connaît personne. Dans la grande salle bruissante, un autre écuyer lui sourit depuis un coin.',badge:null,minXP:0,text:["La grande salle de Valdurne sentait la cire et la pierre ancienne.","Lyam posa son sac contre le mur du fond — le plus loin possible de tous les autres — et regarda. Des dizaines d'écuyers de première année, certains avec des familles qui les embrassaient, d'autres qui riaient déjà en petits groupes constitués avant même d'être arrivés. Il ne reconnaissait personne.","Il ne savait pas encore que c'était ça, le vrai enseignement de Valdurne. Pas les cours de stratégie ou les exercices au champ. L'apprentissage de <em>comment être avec les autres</em> quand personne ne te connaît encore.","Un écuyer dans le coin opposé leva les yeux de son livre et lui fit un signe de tête. Juste ça — un signe de tête. Mais dans ce moment précis, dans cette salle trop grande et trop bruyante, ça avait suffi.","Son nom était Réna. Ce serait son premier allié. Peut-être le plus important de tous."],endNote:'La première année commence. D\'autres chapitres s\'ouvriront à mesure que tu progresseras dans le Portail.'},
+  {id:'main_ch1',icon:'⚔️',title:'Chapitre I — Le Témoin',meta:'Débloqué à 100 XP',excerpt:'Lyam voit Réna cerné par trois écuyers. Tout le monde détourne les yeux. Il a deux chemins devant lui.',badge:null,minXP:100,text:["Ça s'est passé un mercredi, après l'entraînement aux cartes.","Lyam avait pris le couloir du bas — plus court, moins fréquenté. C'est là qu'il les avait vus : trois écuyers de deuxième année encerclant Réna contre le mur de pierre. Ils ne le frappaient pas. Ils faisaient pire : ils lui parlaient à voix basse, avec ce ton particulier qui n'est pas de la violence mais qui lui ressemble trait pour trait.","Réna regardait le sol. Il y avait une honte dans ses épaules que Lyam reconnut immédiatement — il l'avait portée lui-même, à l'école d'avant.","Il s'arrêta. Personne d'autre dans le couloir. Les trois écuyers ne l'avaient pas encore vu. Il pouvait passer par le couloir du haut, prendre dix minutes de plus, et ne jamais avoir à décider quoi que ce soit.","Il ne prit pas le couloir du haut.","Il s'avança, pas sûr de lui du tout, et dit simplement à haute voix : <em>« Hé, Réna. Maître Aldric te cherchait. »</em> C'était faux. Mais dans la seconde qui suivit, les trois écuyers s'écartèrent, et Réna put s'en aller.","Plus tard, Lyam se demanda si c'était du courage. Il conclut que non — il n'avait pas eu le temps d'avoir peur. C'était juste une décision. Rapide. Ordinaire. Comme en prendre des centaines d'autres chaque jour, sauf que celle-là comptait vraiment."],endNote:'Être témoin, c\'est déjà agir. La suite au Chapitre II — débloqué à 300 XP.'},
+  {id:'main_ch2',icon:'📜',title:'Chapitre II — La Règle du Château',meta:'Débloqué à 300 XP',excerpt:'Un conflit éclate entre deux maisons. Les règles de Valdurne sont floues, et certains le savent très bien.',badge:null,minXP:300,text:["La dispute entre la Maison Argent et la Maison Bois avait commencé pour une raison idiote — un banc dans le réfectoire — et avait escaladé jusqu'à devenir un incident officiel.","Le Doyen Ferraud convoqua les deux maisons dans la grande salle. Lyam observait depuis le fond. Ce qui le frappa, ce n'était pas la dispute. C'était comment certains écuyers — les plus anciens, ceux qui connaissaient le Codex — manipulaient les règles avec une précision chirurgicale. Ils ne mentaient pas. Ils choisissaient quelles règles citer, et lesquelles oublier.","<em>« Comprendre les règles, c'est du pouvoir »</em>, lui dit Réna à voix basse. <em>« Mais les utiliser pour écraser les autres, c'est de la lâcheté. »</em>","Ce soir-là, Lyam emprunta le Codex à la bibliothèque pour la première fois. Pas pour gagner. Pour comprendre.","Il y passa la nuit. Le lendemain matin, il savait exactement quels articles la Maison Argent avait omis de mentionner. Il ne le dit pas à voix haute — ce n'était pas à lui de trancher. Mais il le nota, soigneusement, et le remit au Doyen sans son nom dessus.","Ferraud le regarda par-dessus ses lunettes. Il savait très bien d'où venait le parchemin. Il ne dit rien. Mais le lendemain, le jugement fut juste."],endNote:'La connaissance des règles protège. La suite — Chapitre III — à 500 XP.'},
+  {id:'main_ch3_base',icon:'⚖️',title:'Chapitre III — L\'Égale',meta:'Débloqué à 500 XP',excerpt:'Kira n\'a pas le droit d\'accéder à la Forge Haute. Lyam se retrouve face à un choix entre tradition et justice.',badge:"⚖️ L'Écu d'Égale",minXP:500,isEvent:true,text:["La forge haute se trouvait au sommet de la tour sud, là où la fumée rejoignait les nuages bas de février.","Lyam y montait chaque jeudi. Ce jeudi-là, dans l'escalier étroit, il croisa Kira. Elle descendait. Lui montait. Elle portait des parchemins de formules d'enchantement avancées — le genre que les écuyers de troisième année effleuraient à peine.","<em>« Tu n'es pas supposée monter. La Forge Haute est réservée aux écuyers du parcours forge. »</em>","Elle le regarda avec quelque chose de plus calme et de plus lourd que la colère. La patience précise de quelqu'un qui a déjà cartographié tous les murs avant de chercher la porte.","<em>« Je sais. On me l'a déjà dit. »</em>","Elle continua de descendre. Lui continua de monter. Il ne put pas travailler.","Il pensa à son <em>\"je sais\"</em>. Pas résignation — précision tranquille. Il redescendit, trouva Maître Aldric, et posa la question directement. <em>« Cette règle. Elle est écrite où ? »</em>","<em>« Nulle part. »</em>","<em>« Alors elle peut changer ? »</em>","<em>« Tout peut changer, Lyam. La question, c'est qui décide de le faire. »</em>","La semaine suivante, Kira monta à la Forge Haute pour la première fois. Elle ne dit rien à Lyam. Ce n'était pas à lui qu'elle devait quelque chose.","Mais dans la cour, elle lui lança ses parchemins de formules. <em>« Tu en auras besoin. »</em> — <em>« J'en suis pas sûr. »</em> — <em>« Moi si. »</em>"],endNote:"L'égalité ne se déclare pas. Elle se construit, un acte ordinaire à la fois."},
+  {id:'main_ch4',icon:'🏥',title:'Chapitre IV — Le Secours en Danger',meta:'Débloqué à 800 XP',excerpt:'Un accident au terrain d\'entraînement. Lyam seul sait ce qu\'il faut faire.',badge:null,minXP:800,comingSoon:true},
+  {id:'main_ch5',icon:'🌟',title:'Chapitre V — La Fraternité des Écus',meta:'Débloqué à 1200 XP',excerpt:'Fin de première année. Le château n\'a pas changé. C\'est Lyam qui a changé.',badge:'🌟 Chevalier Complet',minXP:1200,comingSoon:true},
 ];
 
-// ── SÉQUENCES SATELLITES (LDVELH) ──
-const SATELLITES=[
-  {
-    id:'sat_egalite',
-    icon:'⚖️',
-    title:'L\'Épreuve de la Forge',
-    pilier:'Module Égalité',
-    unlock:'EGALITE',
-    accent:'#7a3a9a',
-    isEvent:true,
-    excerpt:'Tu es Lyam. Kira vient d\'être refoulée de la Forge Haute. Tu as assisté à la scène. Que fais-tu maintenant ?',
-    badge:'⚖️ L\'Écu d\'Égale',
-    ldvelhId:'egalite',
-  },
-  {
-    id:'sat_pixhare',
-    icon:'🛡️',
-    title:'La Cour des Ombres',
-    pilier:'Pilier Groupe — PIXHARe',
-    unlock:'PIXHARE',
-    accent:'#3a6a9a',
-    excerpt:'Réna est de nouveau la cible. Cette fois, c\'est plus subtil. Et cette fois, tu as des outils.',
-    badge:'🛡️ Gardien du Groupe',
-    ldvelhId:'pixhare',
-    comingSoon:true,
-  },
-  {
-    id:'sat_psc1',
-    icon:'🏥',
-    title:'Le Blessé du Tournoi',
-    pilier:'Module PSC1',
-    unlock:'PSC1',
-    accent:'#9a3a3a',
-    excerpt:'Le tournoi de printemps. Un écuyer tombe. Les adultes sont loin. Tu es le seul à savoir quoi faire.',
-    badge:'🏥 Gardien des Corps',
-    ldvelhId:'psc1',
-    comingSoon:true,
-  },
-  {
-    id:'sat_fraternite',
-    icon:'🤝',
-    title:'Le Banquet des Maisons',
-    pilier:'Pilier Fraternité',
-    unlock:'FRATERNITE',
-    accent:'#3a9a5a',
-    excerpt:'Les Maisons Argent et Bois ont été convoquées pour un banquet de réconciliation. Lyam doit les y aider.',
-    badge:'🤝 Tisserand de Liens',
-    ldvelhId:'fraternite',
-    comingSoon:true,
-  },
-  {
-    id:'sat_liberte',
-    icon:'🗽',
-    title:'La Pétition',
-    pilier:'Hub Liberté',
-    unlock:'LIBERTE',
-    accent:'#9a8a2a',
-    excerpt:'Les écuyers de première année veulent changer une règle du château. Mais comment faire entendre sa voix ?',
-    badge:'🗽 Voix du Peuple',
-    ldvelhId:'liberte',
-    comingSoon:true,
-  },
-  {
-    id:'sat_delegues',
-    icon:'📣',
-    title:'Le Conseil des Écuyers',
-    pilier:'Hub Délégués',
-    unlock:'DELEGUES',
-    accent:'#5a7a3a',
-    excerpt:'Lyam est élu représentant de sa maison. Son premier vrai conseil. Ses camarades comptent sur lui.',
-    badge:'📣 Délégué de Valdurne',
-    ldvelhId:'delegues',
-    comingSoon:true,
-  },
+var SATELLITES=[
+  {id:'sat_egalite',icon:'⚖️',title:"L'Épreuve de la Forge",pilier:'Module Égalité',unlock:'EGALITE',accent:'#7a3a9a',isEvent:true,excerpt:'Tu es Lyam. Kira vient d\'être refoulée de la Forge Haute. Tu as assisté à la scène. Que fais-tu maintenant ?',badge:"⚖️ L'Écu d'Égale",ldvelhId:'egalite'},
+  {id:'sat_pixhare',icon:'🛡️',title:'La Cour des Ombres',pilier:'Pilier Groupe — PIXHARe',unlock:'PIXHARE',accent:'#3a6a9a',excerpt:'Réna est de nouveau la cible. Cette fois, c\'est plus subtil. Et cette fois, tu as des outils.',badge:'🛡️ Gardien du Groupe',ldvelhId:'pixhare',comingSoon:true},
+  {id:'sat_psc1',icon:'🏥',title:'Le Blessé du Tournoi',pilier:'Module PSC1',unlock:'PSC1',accent:'#9a3a3a',excerpt:'Le tournoi de printemps. Un écuyer tombe. Tu es le seul à savoir quoi faire.',badge:'🏥 Gardien des Corps',ldvelhId:'psc1',comingSoon:true},
+  {id:'sat_fraternite',icon:'🤝',title:'Le Banquet des Maisons',pilier:'Pilier Fraternité',unlock:'FRATERNITE',accent:'#3a9a5a',excerpt:'Les Maisons Argent et Bois ont été convoquées pour un banquet de réconciliation.',badge:'🤝 Tisserand de Liens',ldvelhId:'fraternite',comingSoon:true},
+  {id:'sat_liberte',icon:'🗽',title:'La Pétition',pilier:'Hub Liberté',unlock:'LIBERTE',accent:'#9a8a2a',excerpt:'Les écuyers de première année veulent changer une règle du château.',badge:"🗽 Voix du Peuple",ldvelhId:'liberte',comingSoon:true},
+  {id:'sat_delegues',icon:'📣',title:'Le Conseil des Écuyers',pilier:'Hub Délégués',unlock:'DELEGUES',accent:'#5a7a3a',excerpt:'Lyam est élu représentant de sa maison. Son premier vrai conseil.',badge:'📣 Délégué de Valdurne',ldvelhId:'delegues',comingSoon:true},
 ];
 
+var EXPEDITIONS=[
+  {id:'exp_fontainebleau',icon:'🏰',title:'Château de Fontainebleau',subtitle:'Au-delà du portail de la bibliothèque',accent:'#8a6a1f',excerpt:'Lyam et Réna franchissent un portail dans un grimoire ancien. De l\'autre côté : un château de huit siècles, trente-quatre rois, et des visiteurs qui lèvent de petits rectangles brillants pour capturer les âmes des fresques.',file:'hub_fontainebleau.html',badge:'🗝️ Explorateur de Mondes'},
+  {id:'exp_prochaine',icon:'🌀',title:'Prochaine Expédition',subtitle:'Destination inconnue',accent:'#3a3a5a',excerpt:'Le portail s\'allume parfois seul, la nuit. Personne ne sait encore où il mène. La bibliothèque garde ses secrets.',file:null,badge:null},
+];
+
+// ══════════════════════════════════════════════════════════════
+// RENDU
+// ══════════════════════════════════════════════════════════════
 function isUnlocked_sat(sat,p){
   if(!p)return false;
   const cp=p.cp||{};
-  const logs=p.logs||[];
-  if(sat.unlock==='EGALITE')
-    return (cp.autres||0)>=1||logs.some(l=>(l.t||'').includes('EGALITE')||(l.act||'').includes('EGALITE'));
+  const S=getS();const logs=(S.logs||[]).filter(l=>l.p===cur);
+  if(sat.unlock==='EGALITE')return (cp.autres||0)>=1||logs.some(l=>(l.t||'').includes('EGALITE'));
   if(sat.unlock==='PIXHARE')return (cp.pixhare||0)>=1;
   if(sat.unlock==='PSC1')return (cp.psc1||0)>=1;
   if(sat.unlock==='FRATERNITE')return logs.some(l=>(l.t||'').includes('FRATERNITE'));
@@ -889,425 +252,138 @@ function isUnlocked_sat(sat,p){
   return false;
 }
 
+function renderHub(p){
+  const xp=xg(p);
+  document.getElementById('playerName').textContent=cur;
+  document.getElementById('playerXP').textContent=xp;
+  const done=getDone();
+  document.getElementById('chaptersRead').textContent=Object.values(done).filter(v=>v).length;
+  renderMainStory(p,xp);
+  renderSatellites(p);
+  renderExpeditions(p,xp);
+}
+
 function renderMainStory(p,xp){
-  const grid=document.getElementById('mainStoryGrid');
-  grid.innerHTML='';
+  const grid=document.getElementById('mainStoryGrid');grid.innerHTML='';
   MAIN_CHAPTERS.forEach(ch=>{
-    const unlocked=xp>=ch.minXP;
-    const done=isDone(ch.id);
+    const unlocked=xp>=ch.minXP;const done=isDone(ch.id);
     const card=document.createElement('div');
     card.className='story-card'+(unlocked?' unlocked':'  locked')+(done?' completed':'');
     card.style.setProperty('--card-accent','#c9a84c');
-
     if(unlocked&&!ch.comingSoon){
       card.onclick=()=>openMainChapter(ch);
-      card.innerHTML=`
-        ${ch.isEvent?'<div class="event-ribbon">✨ ÉVÉNEMENT</div>':''}
-        <span class="sc-icon">${ch.icon}</span>
-        <div class="sc-title">${ch.title}</div>
-        <div class="sc-meta">${ch.meta}</div>
-        <div class="sc-excerpt">${ch.excerpt}</div>
-        <div class="sc-footer">
-          ${ch.badge?`<span class="sc-badge">${ch.badge}</span>`:'<span></span>'}
-          <span class="sc-cta">${done?'Relire':'Lire ▸'}</span>
-        </div>`;
+      card.innerHTML=`${ch.isEvent?'<div class="event-ribbon">✨ ÉVÉNEMENT</div>':''}<span class="sc-icon">${ch.icon}</span><div class="sc-title">${ch.title}</div><div class="sc-meta">${ch.meta}</div><div class="sc-excerpt">${ch.excerpt}</div><div class="sc-footer">${ch.badge?`<span class="sc-badge">${ch.badge}</span>`:'<span></span>'}<span class="sc-cta">${done?'Relire':'Lire ▸'}</span></div>`;
     } else if(ch.comingSoon){
-      card.innerHTML=`
-        <span class="sc-icon">${ch.icon}</span>
-        <div class="sc-title">${ch.title}</div>
-        <div class="sc-meta">${ch.meta}</div>
-        <div class="sc-excerpt">${ch.excerpt}</div>
-        <div class="sc-footer"><span class="sc-locked-hint">📅 À venir…</span></div>`;
+      card.innerHTML=`<span class="sc-icon">${ch.icon}</span><div class="sc-title">${ch.title}</div><div class="sc-meta">${ch.meta}</div><div class="sc-excerpt">${ch.excerpt}</div><div class="sc-footer"><span class="sc-locked-hint">📅 À venir…</span></div>`;
     } else {
-      card.innerHTML=`
-        <span class="sc-icon">🔒</span>
-        <div class="sc-title">${ch.title}</div>
-        <div class="sc-meta">${ch.meta}</div>
-        <div class="sc-locked-hint">Il te faut ${ch.minXP-xp} XP de plus pour déverrouiller ce chapitre.</div>`;
+      card.innerHTML=`<span class="sc-icon">🔒</span><div class="sc-title">${ch.title}</div><div class="sc-meta">${ch.meta}</div><div class="sc-locked-hint">Il te faut ${ch.minXP-xp} XP de plus.</div>`;
     }
     grid.appendChild(card);
   });
 }
 
 function renderSatellites(p){
-  const grid=document.getElementById('satelliteGrid');
-  grid.innerHTML='';
+  const grid=document.getElementById('satelliteGrid');grid.innerHTML='';
   SATELLITES.forEach(sat=>{
-    const unlocked=isUnlocked_sat(sat,p);
-    const done=isDone(sat.id);
+    const unlocked=isUnlocked_sat(sat,p);const done=isDone(sat.id);
     const card=document.createElement('div');
     card.className='story-card'+(unlocked?' unlocked':'  locked')+(done?' completed':'');
     card.style.setProperty('--card-accent',sat.accent||'#c9a84c');
-
     if(unlocked&&!sat.comingSoon){
       card.onclick=()=>openLdvelh(sat.ldvelhId,sat);
-      card.innerHTML=`
-        ${sat.isEvent?'<div class="event-ribbon">🗓️ ÉVÉNEMENT</div>':''}
-        <span class="sc-icon">${sat.icon}</span>
-        <div class="sc-title">${sat.title}</div>
-        <div class="sc-meta">${sat.pilier}</div>
-        <div class="sc-excerpt">${sat.excerpt}</div>
-        <div class="sc-footer">
-          ${sat.badge?`<span class="sc-badge">${sat.badge}</span>`:'<span></span>'}
-          <span class="sc-cta">${done?'Rejouer':'▸ Incarner le héros'}</span>
-        </div>`;
+      card.innerHTML=`${sat.isEvent?'<div class="event-ribbon">🗓️ ÉVÉNEMENT</div>':''}<span class="sc-icon">${sat.icon}</span><div class="sc-title">${sat.title}</div><div class="sc-meta">${sat.pilier}</div><div class="sc-excerpt">${sat.excerpt}</div><div class="sc-footer">${sat.badge?`<span class="sc-badge">${sat.badge}</span>`:'<span></span>'}<span class="sc-cta">${done?'Rejouer':'▸ Incarner le héros'}</span></div>`;
     } else if(sat.comingSoon&&unlocked){
-      card.innerHTML=`
-        <span class="sc-icon">${sat.icon}</span>
-        <div class="sc-title">${sat.title}</div>
-        <div class="sc-meta">${sat.pilier}</div>
-        <div class="sc-excerpt">${sat.excerpt}</div>
-        <div class="sc-footer"><span class="sc-locked-hint">📅 Séquence en cours de rédaction…</span></div>`;
+      card.innerHTML=`<span class="sc-icon">${sat.icon}</span><div class="sc-title">${sat.title}</div><div class="sc-meta">${sat.pilier}</div><div class="sc-excerpt">${sat.excerpt}</div><div class="sc-footer"><span class="sc-locked-hint">📅 En cours de rédaction…</span></div>`;
     } else {
-      card.innerHTML=`
-        <span class="sc-icon">🔒</span>
-        <div class="sc-title">${sat.title}</div>
-        <div class="sc-meta">${sat.pilier}</div>
-        <div class="sc-locked-hint">Complète <strong>${sat.pilier}</strong> dans le Portail Vie Scolaire pour débloquer cette séquence.</div>`;
+      card.innerHTML=`<span class="sc-icon">🔒</span><div class="sc-title">${sat.title}</div><div class="sc-meta">${sat.pilier}</div><div class="sc-locked-hint">Complète <strong>${sat.pilier}</strong> dans le Portail pour débloquer.</div>`;
+    }
+    grid.appendChild(card);
+  });
+}
+
+function renderExpeditions(p,xp){
+  const grid=document.getElementById('expeditionGrid');grid.innerHTML='';
+  EXPEDITIONS.forEach(exp=>{
+    const unlocked=!!exp.file;const done=isDone(exp.id);
+    const card=document.createElement('div');
+    card.className='story-card'+(unlocked?' unlocked':'  locked')+(done?' completed':'');
+    card.style.setProperty('--card-accent',exp.accent||'#c9a84c');
+    if(unlocked){
+      card.onclick=()=>{window.location.href=exp.file};
+      card.innerHTML=`<span class="sc-icon">${exp.icon}</span><div class="sc-title">${exp.title}</div><div class="sc-meta">${exp.subtitle}</div><div class="sc-excerpt">${exp.excerpt}</div><div class="sc-footer">${exp.badge?`<span class="sc-badge">${exp.badge}</span>`:'<span></span>'}<span class="sc-cta">Franchir le portail ▸</span></div>`;
+    } else {
+      card.innerHTML=`<span class="sc-icon">${exp.icon}</span><div class="sc-title">${exp.title}</div><div class="sc-meta">${exp.subtitle}</div><div class="sc-excerpt">${exp.excerpt}</div><div class="sc-footer"><span class="sc-locked-hint">📅 À venir…</span></div>`;
     }
     grid.appendChild(card);
   });
 }
 
 // ══════════════════════════════════════════════════════════════
-// LECTURE CHAPITRE PRINCIPAL (texte simple)
+// LECTURE CHAPITRE
 // ══════════════════════════════════════════════════════════════
 function openMainChapter(ch){
-  const modal=document.getElementById('ldvelhModal');
-  const content=document.getElementById('ldvelhContent');
   const title=document.getElementById('ldvelhTitle');
-  const prog=document.getElementById('ldvelhProgress');
-
+  const content=document.getElementById('ldvelhContent');
+  document.getElementById('ldvelhProgress').innerHTML='';
   title.textContent=ch.title;
-  prog.innerHTML='';
-
-  const html=`
-    <div class="passage active">
-      <div class="passage-num">📚 Histoire Principale · Saison I</div>
-      <div class="passage-mood">${ch.icon}</div>
-      <div class="passage-text">
-        ${(ch.text||[]).map(t=>`<p>${t}</p>`).join('')}
-      </div>
-      <hr class="passage-divider">
-      <div style="font-style:italic;color:var(--encre-2);font-size:0.85em;opacity:0.75;text-align:center;margin-bottom:20px">${ch.endNote||''}</div>
-      ${ch.badge?`<div style="text-align:center;margin-bottom:16px"><span class="sc-badge" style="font-size:0.9em">${ch.badge}</span></div>`:''}
-      <div style="text-align:center">
-        <button class="btn-retry" onclick="closeLdvelh()">Fermer</button>
-      </div>
-    </div>`;
-  content.innerHTML=html;
-  modal.classList.add('open');
+  content.innerHTML=`<div class="passage active"><div class="passage-num">📚 Histoire Principale · Saison I</div><div class="passage-mood">${ch.icon}</div><div class="passage-text">${(ch.text||[]).map(t=>`<p>${t}</p>`).join('')}</div><hr class="passage-divider"><div style="font-style:italic;color:var(--encre-2);font-size:.85em;opacity:.75;text-align:center;margin-bottom:20px">${ch.endNote||''}</div>${ch.badge?`<div style="text-align:center;margin-bottom:16px"><span class="sc-badge" style="font-size:.9em">${ch.badge}</span></div>`:''}<div style="text-align:center"><button class="btn-close-result" onclick="closeLdvelh()">Fermer</button></div></div>`;
+  document.getElementById('ldvelhModal').classList.add('open');
   markDone(ch.id);
-  updateCounter();
+  document.getElementById('chaptersRead').textContent=Object.values(getDone()).filter(v=>v).length;
 }
 
 // ══════════════════════════════════════════════════════════════
-// MOTEUR LDVELH
+// MOTEUR LDVELH ÉGALITÉ
 // ══════════════════════════════════════════════════════════════
-function closeLdvelh(){
-  document.getElementById('ldvelhModal').classList.remove('open');
-}
+function closeLdvelh(){document.getElementById('ldvelhModal').classList.remove('open')}
 
-function updateCounter(){
-  const d=getDone();
-  document.getElementById('chaptersRead').textContent=Object.values(d).filter(v=>v).length;
-}
-
-// ── Définitions des séquences LDVELH ──
-const SEQUENCES={
-  egalite:{
-    title:'L\'Épreuve de la Forge — Séquence Égalité',
-    steps:6,
-    start:'p1',
-    passages:{
-      p1:{
-        num:'§ 1 · La rencontre',
-        mood:'⚖️',
-        text:[
-          `Tu es Lyam. Apprenti écuyer de première année.`,
-          `Ce matin, en traversant le couloir de la tour sud pour rejoindre ton cours de stratégie, tu assistes à quelque chose.`,
-          `La Chancellière Maren barre le chemin à Kira — l'écuyère que tout le monde sait être la meilleure en formules d'enchantement — et lui dit froidement : <em>« La Forge Haute est réservée aux parcours forge. Ce n'est pas ton chemin. »</em>`,
-          `Kira ne discute pas. Elle hoche la tête et repart. Mais tu as vu son visage une fraction de seconde avant — la façon dont elle a rangé quelque chose très loin à l'intérieur d'elle-même.`,
-          `La Chancellière s'en va. Tu es seul dans le couloir avec Kira.`,
-        ],
-        choices:[
-          {text:'Aller voir Kira et lui demander si elle va bien.',next:'p2a'},
-          {text:'Continuer vers ton cours. Ce n\'est pas ton problème.',next:'p2b'},
-          {text:'Regarder discrètement, sans intervenir.',next:'p2c'},
-        ]
-      },
-      p2a:{
-        num:'§ 2 · Le contact',
-        mood:'🤝',
-        text:[
-          `Tu t'approches de Kira. Elle te regarde avec un calme que tu trouves difficile à déchiffrer.`,
-          `<em>« Je t'ai vu, »</em> dit-elle simplement. <em>« Tu n'avais pas à t'arrêter. »</em>`,
-          `<em>« Je sais. »</em>`,
-          `Un silence. Puis elle te montre ses parchemins — des formules de niveau trois. Tu ne comprends pas la moitié des symboles.`,
-          `<em>« C'est injuste, »</em> dis-tu. Ce n'est pas malin comme réponse, mais c'est vrai.`,
-          `<em>« Oui. »</em> Elle range ses parchemins. <em>« La question c'est ce qu'on fait avec une injustice qu'on a identifiée. »</em>`,
-          `Tu sais que Maître Aldric gère les accès à la Forge Haute. Tu pourrais lui parler. Mais tu ne sais pas encore si tu veux te mêler de ça.`,
-        ],
-        choices:[
-          {text:'Proposer à Kira d\'aller voir Aldric avec elle.',next:'p3a'},
-          {text:'Lui dire que tu poseras la question à Aldric toi-même.',next:'p3b'},
-          {text:'Lui suggérer de demander audience au Doyen directement.',next:'p3c'},
-        ]
-      },
-      p2b:{
-        num:'§ 2 · L\'absence',
-        mood:'😶',
-        text:[
-          `Tu continues vers ton cours. Le couloir se vide. Le cours commence.`,
-          `Pendant toute la leçon, tu n'arrêtes pas de penser à la façon dont Kira a rangé quelque chose très loin en elle-même avant de repartir.`,
-          `À la pause, tu interroges Réna sur Kira. Il lève les yeux de son parchemin : <em>« Kira ? La Chancellière lui interdit la Forge Haute depuis le début de l'année. C'est une vieille règle. Pas écrite, mais bien réelle. »</em>`,
-          `<em>« Et personne n'a rien dit ? »</em>`,
-          `Réna te regarde. <em>« Toi non plus tu n'as rien dit, apparemment. »</em>`,
-          `Ce n'est pas une accusation. C'est juste la réalité. Tu as encore le temps d'agir.`,
-        ],
-        choices:[
-          {text:'Aller trouver Kira maintenant, entre deux cours.',next:'p3b'},
-          {text:'Parler à Maître Aldric directement, sans impliquer Kira.',next:'p3b'},
-          {text:'Rester en dehors. Ce n\'est vraiment pas ton rôle.',next:'p_mauvais_chemin'},
-        ]
-      },
-      p2c:{
-        num:'§ 2 · L\'observateur',
-        mood:'👁️',
-        text:[
-          `Tu restes en retrait. Tu observes.`,
-          `Kira repart sans se retourner. La Chancellière disparaît dans une salle latérale. Le couloir est vide.`,
-          `Tu as vu quelque chose. Tu ne sais pas encore quoi en faire. Mais tu n'as pas regardé ailleurs non plus — tu as choisi de <em>voir</em>. C'est un début.`,
-          `Dans l'après-midi, tu apprends par Réna que cette situation dure depuis le début de l'année. Kira ne peut pas accéder aux équipements les plus avancés simplement parce qu'une vieille règle non écrite dit que "ce n'est pas son chemin".`,
-          `Tu as plusieurs options.`,
-        ],
-        choices:[
-          {text:'Aller parler à Kira maintenant.',next:'p2a'},
-          {text:'Aller voir Maître Aldric directement.',next:'p3b'},
-          {text:'Laisser faire. Tu as vu, mais c\'est suffisant.',next:'p_mauvais_chemin'},
-        ]
-      },
-      p3a:{
-        num:'§ 3 · Le Maître',
-        mood:'🔥',
-        text:[
-          `Vous trouvez Aldric à la Forge du bas, soufflant des braises sur une lame en cours.`,
-          `Kira explique. Aldric écoute sans l'interrompre — ce qui, tu l'apprendras, est une forme de respect qu'il réserve à peu de gens.`,
-          `<em>« C'est une vieille règle, »</em> dit-il quand elle a fini. <em>« Jamais écrite nulle part. »</em>`,
-          `<em>« Donc elle peut changer ? »</em> demandes-tu.`,
-          `<em>« Tout peut changer. La question c'est qui décide de le faire, et comment. »</em>`,
-          `Il vous regarde tous les deux. <em>« Si vous voulez porter ça formellement, il vous faut une demande écrite. Je la transmettrai au Doyen. Ça ne prend pas cinq minutes — ça prend du courage. »</em>`,
-          `Kira prend un parchemin dans sa besace. Elle commence à écrire.`,
-        ],
-        choices:[
-          {text:'L\'aider à rédiger la demande, en cosignant avec elle.',next:'p4'},
-          {text:'La laisser écrire seule — c\'est son combat, pas le tien.',next:'p4_seul'},
-        ]
-      },
-      p3b:{
-        num:'§ 3 · La démarche solitaire',
-        mood:'🕯️',
-        text:[
-          `Tu trouves Maître Aldric le lendemain matin, avant que le feu soit allumé.`,
-          `Tu n'as pas préparé de discours. Tu lui dis juste ce que tu as vu, et ce que tu ne comprends pas.`,
-          `<em>« C'est une vieille règle. Elle n'a jamais été écrite nulle part. »</em>`,
-          `<em>« Alors elle peut changer ? »</em>`,
-          `<em>« Tout peut changer, Lyam. La question, c'est qui décide de le faire. »</em>`,
-          `Il marque une pause. Les braises prennent.`,
-          `<em>« Si tu veux porter ça, il faut une demande formelle. Je la ferai remonter. Mais elle doit venir de Kira — ou avec son accord. »</em>`,
-          `Tu vas trouver Kira et tu lui expliques ce que tu as fait. Elle te regarde longtemps, puis dit : <em>« Bien. Je cosigne. »</em>`,
-        ],
-        choices:[
-          {text:'Rédiger la demande ensemble et la remettre à Aldric.',next:'p4'},
-        ]
-      },
-      p3c:{
-        num:'§ 3 · Le Doyen',
-        mood:'🏛️',
-        text:[
-          `Tu proposes à Kira d\'aller directement au Doyen Ferraud.`,
-          `Elle hésite. <em>« C'est risqué. Ferraud n'aime pas qu'on contourne la hiérarchie. »</em>`,
-          `<em>« On ne contourne rien. On va là où les décisions se prennent. »</em>`,
-          `Ferraud vous reçoit le lendemain. Il écoute Kira, puis te regarde. <em>« Et toi, tu es là pourquoi ? »</em>`,
-          `<em>« Parce que j'ai vu quelque chose d'injuste et que je ne pouvais pas juste passer mon chemin. »</em>`,
-          `Un long silence. Ferraud griffonne quelque chose.`,
-          `<em>« Je vais examiner le Codex. Revenez dans trois jours. »</em>`,
-          `Trois jours plus tard : la règle est abolie. Pas d'annonce. Juste un texte affiché sur le panneau des maisons. Kira te montre son parchemin de formules en passant. <em>« Tu en auras besoin. »</em>`,
-        ],
-        choices:[
-          {text:'Passer au moment du choix final.',next:'p4_rapide'},
-        ]
-      },
-      p_mauvais_chemin:{
-        num:'§ Une voie sans issue',
-        mood:'🌫️',
-        text:[
-          `Tu passes ton chemin. Le couloir se vide. La vie continue.`,
-          `Pendant des jours, tu continues de croiser Kira dans les couloirs de Valdurne. Elle ne te regarde pas différemment — elle ne sait pas que tu as vu. Mais toi, tu sais.`,
-          `Réna te demande un soir : <em>« Tu savais que Kira ne peut toujours pas accéder à la Forge Haute ? »</em>`,
-          `Tu réponds que oui.`,
-          `<em>« Et tu n'as rien fait ? »</em>`,
-          `Il n'y a pas de jugement dans sa voix. Juste la question, posée comme un fait.`,
-          `Cette fois, c'est différent. Tu as le choix de retourner en arrière.`,
-        ],
-        choices:[
-          {text:'Retourner au début et faire autrement.',next:'p1'},
-          {text:'Fermer cette séquence.',action:'close'},
-        ]
-      },
-      p4:{
-        num:'§ 4 · La réponse de Valdurne',
-        mood:'✨',
-        text:[
-          `Trois jours après la demande, un texte apparaît sur le panneau des maisons.`,
-          `Pas d'annonce officielle. Pas de cérémonie. Juste quelques lignes : la règle d'accès à la Forge Haute est révisée — l'accès est désormais fondé sur les compétences documentées, pas sur le parcours assigné.`,
-          `La semaine suivante, Kira monte à la Forge pour la première fois. Trois heures de travail ininterrompu. Aldric ne lui dit rien de particulier — il lui montre où sont les outils, comme à n'importe quel autre écuyer.`,
-          `C'est suffisant.`,
-          `En passant dans la cour, elle te lance ses parchemins de formules. <em>« Tu en auras besoin. »</em> — <em>« J'en suis pas sûr. »</em> — <em>« Moi si. »</em>`,
-          `Et maintenant — le vrai moment de cette histoire.`,
-          `Ton ami Tolven t'accoste le soir même. Il est agité.`,
-        ],
-        choices:[
-          {text:'Écouter ce que Tolven a à dire.',next:'p5_dilemme'},
-        ]
-      },
-      p4_seul:{
-        num:'§ 4 · La décision de Kira',
-        mood:'✍️',
-        text:[
-          `Kira rédige seule. Tu assistes, un peu en retrait.`,
-          `La demande arrive sur le bureau du Doyen. Trois jours plus tard, un texte apparaît sur le panneau : la règle est révisée.`,
-          `En passant dans la cour, Kira te lance ses parchemins. <em>« Tu en auras besoin. »</em>`,
-          `Et Tolven s'approche.`,
-        ],
-        choices:[
-          {text:'Voir ce que Tolven veut dire.',next:'p5_dilemme'},
-        ]
-      },
-      p4_rapide:{
-        num:'§ 4 · Ce soir-là',
-        mood:'🌙',
-        text:[
-          `Ce soir-là, Tolven t'accoste.`,
-        ],
-        choices:[
-          {text:'Écouter.',next:'p5_dilemme'},
-        ]
-      },
-      p5_dilemme:{
-        num:'§ 5 · Le vrai choix',
-        mood:'⚖️',
-        text:[
-          `<em>« C'est injuste. »</em>`,
-          `Tolven est furieux, mais il parle bas. <em>« Moi, j'ai attendu deux ans pour accéder à la Forge Haute. Deux ans à faire mes preuves dans le parcours standard. Elle, ça lui prend une pétition et une semaine. T'aurais dû te taire, Lyam. »</em>`,
-          `Il ne t'accuse pas vraiment. Il exprime quelque chose qu'il ressent comme une injustice. Et c'est là que tu dois répondre.`,
-          `Comment lui expliques-tu que corriger une injustice, ce n'est pas en créer une nouvelle ?`,
-        ],
-        choices:[
-          {text:'"T\'as raison, j\'aurais peut-être pas dû m\'impliquer. C\'est compliqué."',next:'p_echec',result:'fail'},
-          {text:'"Kira attendait aussi. Juste d\'une règle injuste qu\'on lève enfin. Ta patience valait quelque chose — sa compétence aussi."',next:'p_succes',result:'success'},
-          {text:'"Je comprends que tu te sentes lésé. Mais ce qu\'on a corrigé, c\'est une règle qui l\'empêchait d\'accéder à quelque chose qu\'elle méritait. Ça ne t\'enlève rien."',next:'p_succes',result:'success'},
-        ]
-      },
-      p_succes:{
-        num:'§ Fin — La vérité de Tolven',
-        mood:'🌟',
-        isResult:true,
-        resultType:'success',
-        text:[
-          `Tolven reste silencieux un long moment.`,
-          `Puis : <em>« Elle méritait vraiment ? »</em>`,
-          `<em>« Tu l'as vue travailler. »</em>`,
-          `<em>« ...Oui. »</em>`,
-          `Il repart sans rien ajouter. Ce n'est pas une victoire. Juste une graine plantée. Peut-être qu'elle poussera, peut-être pas.`,
-          `Mais tu as dit ce qui était juste. Pas parce que c'était facile — parce que c'était vrai.`,
-        ],
-        endNote:`L'égalité n'est pas un jeu à somme nulle. Corriger une injustice n'en crée pas une nouvelle — elle rend le terrain plus juste pour tout le monde. Tu l'as compris.`
-      },
-      p_echec:{
-        num:'§ Un doute',
-        mood:'🌫️',
-        isResult:true,
-        resultType:'fail',
-        text:[
-          `Tolven hoche la tête. <em>« Voilà. C'est ce que je pensais. »</em>`,
-          `Il repart satisfait. Mais toi, quelque chose te reste dans l'estomac.`,
-          `Tu viens de valider l'idée que corriger une injustice ancienne crée une injustice nouvelle. Mais ce n'est pas vrai. Kira attendait aussi — pas de l'entrainement, mais d'une règle injuste qu'on lève enfin.`,
-          `Ce n'est pas grave. Les bonnes réponses s'apprennent, souvent après les fausses. Tu peux recommencer.`,
-        ],
-        endNote:`L'égalité n'enlève rien à ceux qui ont attendu honnêtement. Elle donne accès à ceux qui en ont été privés injustement. Relis le chapitre et retente le choix final.`
-      },
-    }
-  }
+var SEQUENCES={
+  egalite:{title:"L'Épreuve de la Forge — Séquence Égalité",steps:6,start:'p1',passages:{
+    p1:{num:'§ 1 · La rencontre',mood:'⚖️',text:["Tu es Lyam. Apprenti écuyer de première année.","Ce matin, en traversant le couloir de la tour sud pour rejoindre ton cours de stratégie, tu assistes à quelque chose.","La Chancellière Maren barre le chemin à Kira — l'écuyère que tout le monde sait être la meilleure en formules d'enchantement — et lui dit froidement : <em>« La Forge Haute est réservée aux parcours forge. Ce n'est pas ton chemin. »</em>","Kira ne discute pas. Elle hoche la tête et repart. Mais tu as vu son visage une fraction de seconde avant — la façon dont elle a rangé quelque chose très loin à l'intérieur d'elle-même.","La Chancellière s'en va. Tu es seul dans le couloir avec Kira."],choices:[{text:'Aller voir Kira et lui demander si elle va bien.',next:'p2a'},{text:'Continuer vers ton cours. Ce n\'est pas ton problème.',next:'p2b'},{text:'Regarder discrètement, sans intervenir.',next:'p2c'}]},
+    p2a:{num:'§ 2 · Le contact',mood:'🤝',text:["Tu t'approches de Kira. Elle te regarde avec un calme que tu trouves difficile à déchiffrer.","<em>« Je t'ai vu, »</em> dit-elle simplement. <em>« Tu n'avais pas à t'arrêter. »</em>","<em>« Je sais. »</em>","Un silence. Puis elle te montre ses parchemins — des formules de niveau trois. Tu ne comprends pas la moitié des symboles.","<em>« C'est injuste, »</em> dis-tu. Ce n'est pas malin comme réponse, mais c'est vrai.","<em>« Oui. »</em> Elle range ses parchemins. <em>« La question c'est ce qu'on fait avec une injustice qu'on a identifiée. »</em>"],choices:[{text:'Proposer à Kira d\'aller voir Aldric avec elle.',next:'p3a'},{text:'Lui dire que tu poseras la question à Aldric toi-même.',next:'p3b'},{text:'Lui suggérer de demander audience au Doyen directement.',next:'p3c'}]},
+    p2b:{num:'§ 2 · L\'absence',mood:'😶',text:["Tu continues vers ton cours. À la pause, Réna lève les yeux de son parchemin : <em>« Kira ? La Chancellière lui interdit la Forge Haute depuis le début de l'année. »</em>","<em>« Et personne n'a rien dit ? »</em>","Réna te regarde. <em>« Toi non plus tu n'as rien dit, apparemment. »</em>","Ce n'est pas une accusation. C'est juste la réalité. Tu as encore le temps d'agir."],choices:[{text:'Aller trouver Kira maintenant.',next:'p3b'},{text:'Parler à Maître Aldric directement.',next:'p3b'},{text:'Rester en dehors. Ce n\'est vraiment pas ton rôle.',next:'p_mauvais_chemin'}]},
+    p2c:{num:'§ 2 · L\'observateur',mood:'👁️',text:["Tu restes en retrait. Kira repart sans se retourner.","Dans l'après-midi, tu apprends par Réna que cette situation dure depuis le début de l'année. Tu as plusieurs options."],choices:[{text:'Aller parler à Kira maintenant.',next:'p2a'},{text:'Aller voir Maître Aldric directement.',next:'p3b'},{text:'Laisser faire.',next:'p_mauvais_chemin'}]},
+    p3a:{num:'§ 3 · Le Maître',mood:'🔥',text:["Vous trouvez Aldric à la Forge du bas. Kira explique. Aldric écoute sans l'interrompre.","<em>« C'est une vieille règle, »</em> dit-il. <em>« Jamais écrite nulle part. »</em>","<em>« Donc elle peut changer ? »</em> demandes-tu.","<em>« Tout peut changer. La question c'est qui décide de le faire, et comment. »</em>","Kira prend un parchemin. Elle commence à écrire."],choices:[{text:'L\'aider à rédiger la demande, en cosignant.',next:'p4'},{text:'La laisser écrire seule — c\'est son combat.',next:'p4_seul'}]},
+    p3b:{num:'§ 3 · La démarche',mood:'🕯️',text:["Tu trouves Maître Aldric et tu lui dis ce que tu as vu.","<em>« C'est une vieille règle. Elle n'a jamais été écrite nulle part. »</em>","<em>« Alors elle peut changer ? »</em>","<em>« Tout peut changer, Lyam. Mais la demande doit venir de Kira — ou avec son accord. »</em>","Tu vas trouver Kira. Elle te regarde longtemps, puis : <em>« Bien. Je cosigne. »</em>"],choices:[{text:'Rédiger la demande ensemble.',next:'p4'}]},
+    p3c:{num:'§ 3 · Le Doyen',mood:'🏛️',text:["Ferraud vous reçoit. Il écoute Kira, puis te regarde. <em>« Et toi, tu es là pourquoi ? »</em>","<em>« Parce que j'ai vu quelque chose d'injuste et que je ne pouvais pas juste passer mon chemin. »</em>","Trois jours plus tard : la règle est abolie."],choices:[{text:'Continuer.',next:'p4_rapide'}]},
+    p_mauvais_chemin:{num:'§ Une voie sans issue',mood:'🌫️',text:["Tu passes ton chemin. Pendant des jours, tu continues de croiser Kira. Elle ne te regarde pas différemment. Mais toi, tu sais.","Réna te demande : <em>« Et tu n'as rien fait ? »</em>","Il n'y a pas de jugement dans sa voix. Juste la question."],choices:[{text:'Retourner au début et faire autrement.',next:'p1'},{text:'Fermer cette séquence.',action:'close'}]},
+    p4:{num:'§ 4 · La réponse de Valdurne',mood:'✨',text:["Trois jours après la demande, la règle d'accès à la Forge Haute est révisée.","La semaine suivante, Kira monte à la Forge pour la première fois.","Dans la cour, elle te lance ses parchemins de formules. <em>« Tu en auras besoin. »</em> — <em>« J'en suis pas sûr. »</em> — <em>« Moi si. »</em>","Et maintenant — le vrai moment de cette histoire. Ton ami Tolven t'accoste le soir même. Il est agité."],choices:[{text:'Écouter ce que Tolven a à dire.',next:'p5_dilemme'}]},
+    p4_seul:{num:'§ 4 · La décision de Kira',mood:'✍️',text:["Kira rédige seule. Trois jours plus tard la règle change. Tolven s'approche."],choices:[{text:'Voir ce que Tolven veut dire.',next:'p5_dilemme'}]},
+    p4_rapide:{num:'§ 4 · Ce soir-là',mood:'🌙',text:["Tolven t'accoste."],choices:[{text:'Écouter.',next:'p5_dilemme'}]},
+    p5_dilemme:{num:'§ 5 · Le vrai choix',mood:'⚖️',text:["<em>« C'est injuste. »</em>","Tolven est furieux. <em>« Moi, j'ai attendu deux ans pour accéder à la Forge Haute. Deux ans à faire mes preuves. Elle, ça lui prend une pétition et une semaine. T'aurais dû te taire, Lyam. »</em>","Il ne t'accuse pas vraiment. Il exprime quelque chose qu'il ressent comme une injustice.","Comment lui expliques-tu que corriger une injustice, ce n'est pas en créer une nouvelle ?"],choices:[{text:'"T\'as raison, j\'aurais peut-être pas dû m\'impliquer."',next:'p_echec',result:'fail'},{text:'"Kira attendait aussi. D\'une règle injuste qu\'on lève enfin. Ta patience valait quelque chose — sa compétence aussi."',next:'p_succes',result:'success'},{text:'"Ce qu\'on a corrigé, c\'est une règle qui l\'empêchait d\'accéder à quelque chose qu\'elle méritait. Ça ne t\'enlève rien."',next:'p_succes',result:'success'}]},
+    p_succes:{num:'§ Fin — La vérité de Tolven',mood:'🌟',isResult:true,resultType:'success',text:["Tolven reste silencieux. Puis : <em>« Elle méritait vraiment ? »</em>","<em>« Tu l'as vue travailler. »</em>","<em>« ...Oui. »</em>","Il repart sans rien ajouter. Ce n'est pas une victoire. Juste une graine plantée."],endNote:"L'égalité n'est pas un jeu à somme nulle. Corriger une injustice n'en crée pas une nouvelle — elle rend le terrain plus juste pour tout le monde."},
+    p_echec:{num:'§ Un doute',mood:'🌫️',isResult:true,resultType:'fail',text:["Tolven hoche la tête. <em>« Voilà. C'est ce que je pensais. »</em>","Mais toi, quelque chose te reste dans l'estomac. Tu viens de valider l'idée que corriger une injustice ancienne crée une injustice nouvelle. Mais ce n'est pas vrai. Kira attendait aussi — pas de l'entraînement, mais d'une règle injuste qu'on lève enfin."],endNote:"L'égalité n'enlève rien à ceux qui ont attendu honnêtement. Elle donne accès à ceux qui en ont été privés injustement. Retente le choix final."},
+  }}
 };
 
-// ── Gestion de la progression dans le LDVELH ──
-let currentSeq=null, currentSat=null, stepHistory=[];
-
+var currentSeq=null,currentSat=null,stepHistory=[];
 function openLdvelh(seqId,sat){
-  const seq=SEQUENCES[seqId];
-  if(!seq)return;
-  currentSeq=seq;
-  currentSat=sat;
-  stepHistory=[];
-
-  const modal=document.getElementById('ldvelhModal');
+  const seq=SEQUENCES[seqId];if(!seq)return;
+  currentSeq=seq;currentSat=sat;stepHistory=[];
   document.getElementById('ldvelhTitle').textContent=seq.title;
-  modal.classList.add('open');
+  document.getElementById('ldvelhModal').classList.add('open');
   renderPassage(seq.start);
 }
-
 function renderPassage(passageId){
-  const seq=currentSeq;
-  const pass=seq.passages[passageId];
-  if(!pass)return;
+  const seq=currentSeq;const pass=seq.passages[passageId];if(!pass)return;
   stepHistory.push(passageId);
-
-  // Barre de progression
-  const prog=document.getElementById('ldvelhProgress');
-  prog.innerHTML='';
-  for(let i=0;i<seq.steps;i++){
-    const s=document.createElement('div');
-    s.className='prog-step'+(i<stepHistory.length-1?' done':i===stepHistory.length-1?' current':'');
-    prog.appendChild(s);
-  }
-
+  const prog=document.getElementById('ldvelhProgress');prog.innerHTML='';
+  for(let i=0;i<seq.steps;i++){const s=document.createElement('div');s.className='ldv-step'+(i<stepHistory.length-1?' done':i===stepHistory.length-1?' current':'');prog.appendChild(s)}
   const content=document.getElementById('ldvelhContent');
-  let html=`<div class="passage active">`;
-  html+=`<div class="passage-num">${pass.num}</div>`;
-  if(pass.mood) html+=`<div class="passage-mood">${pass.mood}</div>`;
-  html+=`<div class="passage-text">${(pass.text||[]).map(t=>`<p>${t}</p>`).join('')}</div>`;
-  html+=`<hr class="passage-divider">`;
-
+  let html=`<div class="passage active"><div class="passage-num">${pass.num}</div>${pass.mood?`<div class="passage-mood">${pass.mood}</div>`:''}<div class="passage-text">${(pass.text||[]).map(t=>`<p>${t}</p>`).join('')}</div><hr class="passage-divider">`;
   if(pass.isResult){
     const ok=pass.resultType==='success';
     const xp=ok?XP_BON_CHOIX:XP_MAUVAIS_CHOIX;
     if(ok){markDone(currentSat?.id||'ldvelh')}
-
-    html+=`<div class="result-block ${ok?'success':'failure'}">
-      <span class="result-icon">${ok?'⭐':'💭'}</span>
-      <div class="result-title">${ok?'Réponse juste !':'À retravailler…'}</div>
-      <div class="result-xp">${ok?'+'+xp+' XP':''+xp+' XP'}</div>
-      <div class="result-text">${pass.endNote||''}</div>
-      <div style="margin-top:12px">
-        ${!ok?`<button class="btn-retry" onclick="openLdvelh('${currentSeq?.passages?'egalite':'egalite'}',currentSat)">Recommencer</button>`:''}
-        <button class="btn-close-result" onclick="closeLdvelh()">Fermer</button>
-      </div>
-    </div>`;
-
-    // Créditer le XP
-    creditXP(currentCode, xp, ok?'NARRATION_EGALITE_SUCCESS':'NARRATION_EGALITE_ECHEC');
+    html+=`<div class="result-block ${ok?'success':'failure'}"><span class="result-icon">${ok?'⭐':'💭'}</span><div class="result-title">${ok?'Réponse juste !':'À retravailler…'}</div><div class="result-xp">${ok?'+'+xp+' XP':''+xp+' XP'}</div><div class="result-text">${pass.endNote||''}</div><div style="margin-top:12px">${!ok?`<button class="btn-retry" onclick="openLdvelh('egalite',currentSat)">Recommencer</button>`:''}<button class="btn-close-result" onclick="closeLdvelh()">Fermer</button></div></div>`;
+    creditXP(cur,xp,ok?'NARRATION_EGALITE_SUCCESS':'NARRATION_EGALITE_ECHEC');
     showXpNotif(xp);
-    updateCounter();
-
+    document.getElementById('chaptersRead').textContent=Object.values(getDone()).filter(v=>v).length;
   } else if(pass.choices){
     html+=`<div class="choices">`;
     pass.choices.forEach(c=>{
-      if(c.action==='close'){
-        html+=`<button class="choice-btn" onclick="closeLdvelh()">${c.text}</button>`;
-      } else {
-        html+=`<button class="choice-btn" onclick="renderPassage('${c.next}')">${c.text}</button>`;
-      }
+      if(c.action==='close') html+=`<button class="choice-btn" onclick="closeLdvelh()">${c.text}</button>`;
+      else html+=`<button class="choice-btn" onclick="renderPassage('${c.next}')">${c.text}</button>`;
     });
     html+=`</div>`;
   }
@@ -1316,95 +392,7 @@ function renderPassage(passageId){
   document.getElementById('ldvelhModal').scrollTop=0;
 }
 
-// ══════════════════════════════════════════════════════════════
-// NOTIFICATION XP
-// ══════════════════════════════════════════════════════════════
-function showXpNotif(amount){
-  const div=document.createElement('div');
-  div.className='xp-notif '+(amount>0?'success':'fail');
-  div.textContent=amount>0?`+${amount} XP — Bien joué !`:`${amount} XP — Retente le choix final.`;
-  document.body.appendChild(div);
-  setTimeout(()=>div.remove(),5000);
-}
-
-// ══════════════════════════════════════════════════════════════
-// CLAVIER
-// ══════════════════════════════════════════════════════════════
-document.getElementById('codeInput').addEventListener('keydown',e=>{
-  if(e.key==='Enter')tryLogin();
-});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')closeLdvelh();
-});
-
-// ══════════════════════════════════════════════════════════════
-// PILIER 3 — EXPÉDITIONS AU-DELÀ DU PORTAIL
-// ══════════════════════════════════════════════════════════════
-const EXPEDITIONS=[
-  {
-    id:'exp_fontainebleau',
-    icon:'🏰',
-    title:'Château de Fontainebleau',
-    subtitle:'Au-delà du portail de la bibliothèque',
-    accent:'#8a6a1f',
-    minXP:400,
-    excerpt:'Lyam et Réna franchissent un portail dans un grimoire ancien. De l'autre côté : un château de huit siècles, trente-quatre rois, et des visiteurs qui lèvent de petits rectangles brillants pour capturer les âmes des fresques.',
-    modules:'5 salles · quiz · LDVELH passges secrets',
-    file:'hub_fontainebleau.html',
-    badge:'🗝️ Explorateur de Mondes',
-  },
-  {
-    id:'exp_prochaine',
-    icon:'🌀',
-    title:'Prochaine Expédition',
-    subtitle:'Destination inconnue',
-    accent:'#3a3a5a',
-    minXP:0,
-    excerpt:'Le portail s'allume parfois seul, la nuit. Personne ne sait encore où il mène. La bibliothèque garde ses secrets.',
-    modules:'À venir…',
-    file:null,
-    badge:null,
-  },
-];
-
-function renderExpeditions(p,xp){
-  const grid=document.getElementById('expeditionGrid');
-  if(!grid)return;
-  grid.innerHTML='';
-  EXPEDITIONS.forEach(exp=>{
-    const unlocked=xp>=exp.minXP&&exp.file;
-    const card=document.createElement('div');
-    card.className='story-card'+(unlocked?' unlocked':'  locked');
-    card.style.setProperty('--card-accent',exp.accent||'#c9a84c');
-    if(unlocked){
-      card.onclick=()=>{ window.location.href=exp.file; };
-      card.innerHTML=`
-        <span class="sc-icon">${exp.icon}</span>
-        <div class="sc-title">${exp.title}</div>
-        <div class="sc-meta">${exp.subtitle}</div>
-        <div class="sc-excerpt">${exp.excerpt}</div>
-        <div class="sc-footer">
-          ${exp.badge?`<span class="sc-badge">${exp.badge}</span>`:'<span></span>'}
-          <span class="sc-cta">Franchir le portail ▸</span>
-        </div>`;
-    } else if(!exp.file){
-      card.innerHTML=`
-        <span class="sc-icon">${exp.icon}</span>
-        <div class="sc-title">${exp.title}</div>
-        <div class="sc-meta">${exp.subtitle}</div>
-        <div class="sc-excerpt">${exp.excerpt}</div>
-        <div class="sc-footer"><span class="sc-locked-hint">📅 ${exp.modules}</span></div>`;
-    } else {
-      card.innerHTML=`
-        <span class="sc-icon">🔒</span>
-        <div class="sc-title">${exp.title}</div>
-        <div class="sc-meta">${exp.subtitle}</div>
-        <div class="sc-locked-hint">Il te faut ${exp.minXP-xp} XP de plus pour franchir ce portail.</div>`;
-    }
-    grid.appendChild(card);
-  });
-}
-
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLdvelh()});
 </script>
 </body>
 </html>
