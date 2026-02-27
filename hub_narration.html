@@ -158,14 +158,14 @@ function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function getPlayer(c){const S=getS();return S.players&&S.players[c]?S.players[c]:null}
 
 // Réplique EXACTE de xg() superhub
-function missionXp(code){const S=getS();const lists=S.citizen_lists||{};let n=0;Object.keys(CIT).forEach(k=>{if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}
-function socialRawG(p){return Number(p.socialG||0)+Number(p.wBonusG||0)}
-function socialValidG(p){return Number(p.witnessGiven||0)>0?socialRawG(p):0}
-function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
-function academyXp(p){const cp=p.cp||{};return Object.keys(W).reduce((a,k)=>a+Number(cp[k]||0)*W[k],0)}
-function videoXp(p){return Number(p.videoG||0)}
-function acadCoeff(p){const n=Math.min(Number(p.acadDone||0),50);return Math.round((1+n*0.02)*100)/100}
-function xg(p){if(!p)return 0;const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}
+function missionXp(code){try{const S=getS();const lists=S.citizen_lists||{};let n=0;Object.keys(CIT).forEach(k=>{if((lists[k]||[]).includes(code))n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRawG(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValidG(p){return Number(p&&p.witnessGiven||0)>0?socialRawG(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValidG(p)}catch(e){return 0}}
+function academyXp(p){try{const cp=(p&&p.cp)||{};return Object.keys(W).reduce((a,k)=>a+Number(cp[k]||0)*W[k],0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadCoeff(p){try{const n=Math.min(Number(p&&p.acadDone||0),50);const c=Math.round((1+n*0.02)*100)/100;return isNaN(c)?1:c}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);const r=Math.round(base*acadCoeff(p));return isNaN(r)?0:r}catch(e){return 0}}
 
 function getDone(){try{return JSON.parse(localStorage.getItem(NARRATION_DONE)||'{}')}catch{return{}}}
 function markDone(id){const d=getDone();d[id]=1;localStorage.setItem(NARRATION_DONE,JSON.stringify(d))}
