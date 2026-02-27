@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch. I — Les Portes de Pierre · Les Veilleurs de Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--r:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.1em;line-height:1.9;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.05) 0%,transparent 55%)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+
+.wrap{max-width:700px;margin:0 auto;padding:32px 24px 80px;position:relative;z-index:1}
+
+/* NAV */
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--enc2);font-size:.78em;text-decoration:none;display:inline-block;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.ctag{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase}
+
+/* HEADER */
+.series-tag{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:4px;color:var(--or);opacity:.55;text-transform:uppercase;margin-bottom:8px}
+.ch-num{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:6px}
+.ch-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,5vw,2.2em);color:var(--or2);line-height:1.15;margin-bottom:10px;text-shadow:0 0 30px rgba(201,168,76,.15)}
+.ch-icon{font-size:3em;text-align:center;margin:20px 0;display:block;filter:drop-shadow(0 0 18px rgba(201,168,76,.4));animation:flicker 4s ease-in-out infinite}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 0 12px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 28px rgba(201,168,76,.6))}}
+.ch-meta{font-size:.78em;color:var(--enc2);opacity:.55;font-style:italic;margin-bottom:32px}
+
+/* DIVIDER */
+hr.rune{border:none;text-align:center;margin:36px 0;position:relative}
+hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Cinzel',serif;font-size:.75em;letter-spacing:4px}
+
+/* TEXTE */
+.story{font-size:1.05em;line-height:1.95}
+.story p{margin-bottom:1.4em;text-align:justify}
+.story .first-letter::first-letter{font-family:'Cinzel Decorative',serif;font-size:3.8em;float:left;line-height:.75;margin-right:.08em;color:var(--or2);text-shadow:0 0 20px rgba(201,168,76,.4)}
+.story em{color:var(--enc2);font-style:italic}
+.story strong{color:var(--or2);font-weight:600}
+.story .dialogue{margin:0 0 1.2em 0;padding-left:22px;border-left:2px solid rgba(201,168,76,.2);font-style:italic;color:var(--enc2)}
+.story .pensee{padding:16px 22px;margin:20px 0;background:rgba(201,168,76,.03);border-left:3px solid rgba(201,168,76,.2);border-radius:0 6px 6px 0;font-style:italic;color:var(--enc2)}
+
+/* SECTION HEADERS */
+.section-title{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin:36px 0 18px;text-align:center}
+
+/* FIN DE CHAPITRE */
+.end-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:28px;margin-top:48px;text-align:center}
+.end-icon{font-size:2.5em;margin-bottom:12px;display:block;filter:drop-shadow(0 0 12px rgba(201,168,76,.4))}
+.end-title{font-family:'Cinzel',serif;font-size:.9em;color:var(--or2);margin-bottom:8px;letter-spacing:2px}
+.end-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.7;margin-bottom:20px}
+.end-next{font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:16px}
+.btn{padding:10px 24px;border-radius:4px;cursor:pointer;font-size:.8em;margin:5px;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;text-decoration:none;display:inline-block}
+.btn-g{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or2)}
+.btn-g:hover{background:rgba(201,168,76,.25)}
+.btn-s{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
+.btn-s:hover{border-color:rgba(255,255,255,.3)}
+
+/* XP NOTIF */
+.xp-flash{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.88em;background:linear-gradient(135deg,#1a3a1a,#2a4a1a);border:1px solid rgba(100,200,100,.5);color:#b8e8b8;display:none}
+
+@media(max-width:600px){.wrap{padding:20px 14px 60px}.story{font-size:1em}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <a class="bk" href="index.html">Portail</a>
+    <span class="ctag">Les Veilleurs de Valdurne</span>
+  </div>
+
+  <div class="series-tag">Roman Principal · Expédition de Valdurne</div>
+  <div class="ch-num">Chapitre Premier</div>
+  <h1 class="ch-title">Les Portes de Pierre</h1>
+  <p class="ch-meta">Dans lequel Lyam découvre que Valdurne n'est pas du tout ce qu'on lui avait promis — et que les premières humiliations sont aussi les premières leçons.</p>
+
+  <span class="ch-icon">🗼</span>
+
+  <div class="story">
+
+    <p class="first-letter">La charrette de bois s'arrêta au sommet de la colline à l'heure exacte où le soleil se décidait à ne plus être utile. C'était la mi-octobre, et en Valdurne, la mi-octobre avait une façon particulière de vous rappeler que vous étiez vivant — principalement par le froid. Lyam sauta du siège avant que le charretier ait eu le temps de lui proposer une dernière fois de le ramener chez lui. Il n'aurait pas eu la force de refuser une deuxième fois.</p>
+
+    <p>Il vit d'abord les tours. Quatre d'entre elles, reliées par des courtines épaisses comme la main de son père mise à plat — ce qui représentait quelque chose, parce que son père avait des mains qui avaient forgé du métal toute sa vie. Les pierres étaient grises avec des reflets presque dorés là où la lumière du soir les atteignait encore, et les toits d'ardoise les surmontaient en pointe, semblables à des chapeaux de sorcier pour géants sédentaires. Le château de Valdurne. L'école de Valdurne. Le château-école de Valdurne, comme on l'appelait dans les documents officiels que son père avait lus et relus à voix haute pendant tout l'été en fronçant les sourcils.</p>
+
+    <p>On lui avait dit : <em>C'est comme une forteresse, mais pour apprendre.</em> Ce qu'on ne lui avait pas dit, c'est que depuis le sommet de la colline, la forteresse en question ressemblait exactement à une forteresse, sans la partie pour apprendre. Ce qu'on ne lui avait pas dit non plus, c'est qu'elle serait aussi grande. Ou aussi silencieuse. Ou qu'il y aurait si peu de lumière dans les fenêtres pour un soir de début d'année.</p>
+
+    <div class="pensee">Il compta les fenêtres éclairées. Douze. Pour deux cent quarante élèves, d'après la lettre d'admission. Soit une fenêtre éclairée pour vingt élèves. Soit des élèves très habitués au noir, soit des bougies très mauvaises marché, soit quelque chose que la lettre d'admission avait omis de mentionner.</div>
+
+    <p>Il descendit le sentier avec son sac sur le dos — un sac que sa mère avait cousu et recousu jusqu'à ce qu'elle soit sûre qu'il tiendrait, qu'elle avait bourré de provisions pour une semaine alors que le voyage n'en durait qu'un jour et demi, qu'elle avait finalement rempli à moitié de vêtements et à moitié de fierté maladroite. Le sac pesait autant que son propre poids. Il avait treize ans. Il s'appelait Lyam Ferrault. Son père était forgeron dans un village qui n'avait pas de nom sur les cartes officielles, et il était le premier de sa famille — le premier de son village, peut-être — à avoir reçu une convocation au château de Valdurne.</p>
+
+    <p>La convocation disait : <em>Au titre de ses aptitudes démontrées et de sa capacité à raisonner avec discernement, Lyam, fils d'Alard Ferrault, forgeron, est admis à rejoindre le corps des pages du Château de Valdurne pour l'année en cours, avec possibilité de promotion au rang d'écuyer à l'issue des épreuves du premier semestre.</em> Il avait appris ce texte par cœur. Il l'avait récité trois fois à sa grand-mère qui était devenue progressivement sourde et qui avait hoché la tête en souriant d'une façon qui suggérait qu'elle avait compris une chose complètement différente. Il l'avait récité une dernière fois sur le siège de la charrette, seul dans la nuit qui sentait la résine et la boue d'octobre, et il avait senti pour la première fois à quel point ces mots sonnaient vide sans personne pour les écouter.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">I. La Grille des Noms</div>
+
+    <p>Il y avait une liste. Naturellement. Valdurne était le genre d'endroit où il y avait une liste pour tout — pour entrer, pour s'asseoir, pour manger, pour dormir, probablement pour respirer si quelqu'un avait pris la peine de l'écrire. La liste des admis de l'année était affichée sur un panneau de chêne ciré, accroché à gauche de la grande porte ferrée, éclairé par deux torches qui sentaient le suif bon marché.</p>
+
+    <p>Lyam trouva son nom au bout de dix minutes de recherche. Il était tout en bas. Pas parce que c'était la fin de la liste alphabétique — les Ferrault auraient dû se trouver entre les Fenard et les Fessant — mais parce qu'il y avait, sous la liste normale, une deuxième section plus petite, séparée par un trait de plume horizontal, sans titre explicatif. Juste les noms, écrits dans une encre légèrement différente, plus pâle. Six noms. Le sien était le troisième.</p>
+
+    <div class="pensee">Il lut la liste du dessus. Des noms à particule pour la plupart. Des noms avec des « de » et des « du » et des « von » pour deux ou trois noms qui sonnaient étrangers. Des noms qu'il avait entendus dans les histoires — des familles connues, des fils et des filles de chevaliers, de barons, de gens qui savaient déjà exactement pourquoi ils étaient là. Puis il lut sa propre section. Pas de particule. Pas de château d'origine. Juste des noms nus, comme des outils sans manche.</div>
+
+    <p>Un garçon d'à peu près son âge s'approcha du panneau, le regarda consulter la deuxième liste, et s'éloigna sans rien dire — mais avec une expression qui disait quelque chose quand même. Ce quelque chose ressemblait à : <em>Ah, tu es dans cette section-là.</em> Ce que Lyam aurait voulu répondre, s'il avait su quoi répondre, c'est : <em>Oui. Et alors ?</em> Ce qu'il dit en réalité, c'est rien, parce que le garçon était déjà parti et que de toute façon Lyam n'avait aucune idée de ce que ça signifiait d'être dans cette section-là.</p>
+
+    <p>Il allait le découvrir assez vite.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">II. La Cour d'Armes</div>
+
+    <p>La cour d'armes de Valdurne était un rectangle de pavés gris entouré de bâtiments sur trois côtés et d'une muraille sur le quatrième. En son centre, un puits couvert d'une armature en fer forgé — et Lyam reconnut immédiatement le travail de quelqu'un qui savait ce qu'il faisait, pas de quelqu'un qui avait commandé sans comprendre. Les anneaux, les croisements, les terminaisons en spirale : c'était de la forge honnête. Ça le réconforta exactement autant qu'une boisson chaude aurait pu le faire, c'est-à-dire très peu mais quand même quelque chose.</p>
+
+    <p>Les autres pages s'étaient regroupés naturellement. Pas par ordre alphabétique, pas par région d'origine, pas selon quelque critère objectif que Lyam aurait pu identifier : ils s'étaient regroupés par <em>appartenance</em>, d'une façon qui semblait aller de soi pour tout le monde sauf pour lui. Là, un cercle de cinq filles et garçons qui échangeaient des références à des tournois récents avec la familiarité de gens qui s'étaient croisés sur d'autres terrains. Là, un autre groupe plus petit qui partageait une carte étalée sur un bahut. Là, deux garçons qui s'étaient visiblement reconnus malgré des origines différentes, parce que leurs pères avaient été écuyers ensemble, ou quelque chose comme ça.</p>
+
+    <p>Et là — légèrement à l'écart de tous les groupes, appuyé contre la muraille du fond, les bras croisés et l'air de quelqu'un qui attendait quelque chose de précis — un garçon seul. Avec des vêtements qui n'étaient pas pauvres mais pas nobles non plus. Avec des chaussures récemment réparées. Avec un regard qui calculait.</p>
+
+    <p>Lyam s'approcha de lui parce que c'était le seul qui n'était manifestement pas en train de parler à quelqu'un d'autre.</p>
+
+    <div class="dialogue">— Tu es dans la deuxième section ? demanda Lyam.
+    <br><br>
+    Le garçon le regarda. Il avait des yeux très clairs, presque gris, et une façon de regarder les gens comme s'il évaluait quelque chose.</div>
+
+    <div class="dialogue">— Oui, dit-il.
+    <br><br>
+    — Qu'est-ce que ça veut dire, la deuxième section ?
+    <br><br>
+    — Ça veut dire qu'on n'a pas payé la totalité des frais d'inscription, dit-il, ou qu'on a été admis par voie d'aptitude plutôt que par voie de lignage. Dans notre cas à tous les deux, je pense, c'est les deux. Il marqua une pause. On va être placés dans les dortoirs du nord. Moins chauffés. Et on aura les mêmes cours, mais pas les mêmes ateliers.
+    <br><br>
+    — Comment tu sais tout ça ?
+    <br><br>
+    — J'ai un frère aîné. Il est passé par Valdurne il y a huit ans. Il m'a tout expliqué avant que je parte.</div>
+
+    <p>Il s'appelait Kern. Il venait d'une famille de marchands du bois. Il n'avait pas l'air d'être du genre à avoir besoin d'encouragements, ni du genre à en donner. Mais il avait dit <em>nous</em>, en parlant de leur situation, et c'était la première fois de la soirée que quelqu'un incluait Lyam dans un pronom.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">III. Le Maître d'Accueil</div>
+
+    <p>Le Maître d'Accueil s'appelait Renauld, et il était de ces hommes dont on ne sait jamais exactement quel âge ils ont — quelque part entre cinquante et cent ans, avec une barbe entretenue au millimètre, une voix qui portait sans effort particulier sur toute la cour, et une façon de parler qui donnait l'impression que chaque phrase était légèrement plus importante que ce qu'elle contenait réellement.</p>
+
+    <p>Il fit l'appel depuis un parchemin roulé. Il appellait les pages par leur nom de famille seulement — sauf pour ceux de la deuxième liste, qu'il appelait par leur prénom suivi de leur métier paternel. <em>Lyam, fils du forgeron. Kern, fils du marchand de bois.</em> Pas de malveillance apparente dans la voix. Juste un constat. Juste une information utile pour que tout le monde sache exactement qui était qui.</p>
+
+    <p>Lyam garda les yeux droit devant lui pendant qu'on l'appelait. Il sentit le regard de plusieurs élèves se poser sur lui — pas méchant, juste curieux, juste informatif — et il fit ce qu'il avait appris à faire depuis qu'il était petit et qu'il était parfois le seul enfant du village à ne pas savoir quelque chose que les autres savaient depuis toujours : il garda le menton légèrement levé. Pas de défi. Juste la position naturelle de quelqu'un qui décide de ne pas avoir honte de ce qu'il est.</p>
+
+    <div class="pensee">Son père lui avait dit, le matin du départ, en serrant sa main avec une force qui n'était pas de la tendresse mais qui voulait dire la même chose : « Tu n'as pas à t'excuser d'exister. » C'était tout. Il n'avait pas ajouté de conseils, pas d'encouragements, pas de sagesse particulière. Juste ça. Lyam avait trouvé ça trop peu sur le moment. Maintenant, debout dans la cour de Valdurne sous le regard de cent vingt pairs qui ne savaient pas encore quoi penser de lui, il trouvait que c'était exactement assez.</div>
+
+    <p>Le Maître Renauld termina l'appel et déroula une deuxième feuille.</p>
+
+    <div class="dialogue">— Je vais vous lire le règlement général du château. Vous l'entendrez une fois. Une seule fois. Valdurne est de ces endroits où l'ignorance d'une règle ne dispense pas de son application. Je vous recommande d'écouter attentivement.
+    </div>
+
+    <p>Il lut. Le règlement était long, précis, et rédigé dans un style qui semblait conçu pour être difficile à mémoriser — beaucoup de doubles négations, beaucoup de renvois à d'autres articles non cités. Lyam nota mentalement les points qui lui semblaient importants, dans l'ordre où ils lui semblaient importants, et non dans l'ordre où ils étaient présentés. C'était quelque chose qu'il faisait depuis toujours avec les instructions de forge : il les réorganisait selon leur degré d'urgence pratique. Ce n'était pas la façon dont on lui avait appris à faire. C'était la façon dont ça marchait.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">IV. Le Dortoir du Nord</div>
+
+    <p>La chambre — le terme <em>dortoir</em> était un euphémisme poli pour une salle rectangulaire avec six lits en bois superposés et une fenêtre si étroite qu'elle semblait avoir honte d'elle-même — était effectivement moins chauffée que le reste du château. Le froid qu'on y trouvait n'était pas brutal, pas dramatique : c'était un froid patient, installé, qui avait décidé il y a longtemps qu'il vivrait là et s'était arrangé en conséquence.</p>
+
+    <p>Lyam choisit le lit du bas, près du mur. Kern prit le dessus du même lit sans discussion, parce qu'ils avaient tous les deux compris instinctivement que se retrouver dans la même section de la liste impliquait une certaine solidarité provisoire, au moins jusqu'à ce qu'on sache mieux comment les choses fonctionnaient ici.</p>
+
+    <p>Les quatre autres lits furent pris par des garçons dont Lyam apprit les noms ce soir-là et les oublia presque aussitôt — non pas par manque d'intérêt, mais parce que le moment était surchargé d'informations et que son cerveau faisait le tri de façon autonome. Il retint ceci : deux d'entre eux venaient du même village, et ils parlaient entre eux à voix basse avec la familiarité de gens qui n'ont pas besoin de s'expliquer. Les deux autres semblaient, chacun pour des raisons différentes, décidés à ne pas montrer qu'ils avaient peur.</p>
+
+    <p>Lyam éteignit sa bougie en dernier. Dans le noir, il écouta les bruits du château — des pas lointains, le vent dans une fissure quelque part, le raclement sourd de quelque chose de lourd qu'on déplaçait dans une aile qu'il n'avait pas encore visitée. Il pensa à sa mère qui avait cousu le sac. Il pensa à son père qui lui avait serré la main. Il pensa à la liste avec son nom tout en bas, dans l'encre plus pâle, dans la section sans titre.</p>
+
+    <div class="pensee">Il pensa : je ne suis pas à ma place ici.
+    <br><br>
+    Puis il pensa : personne ne l'est, la première nuit. C'est ça qui est intéressant.</div>
+
+    <p>Il s'endormit avec les deux pensées simultanément, ce qui aurait pu sembler contradictoire mais qui, dans le froid patient du dortoir du nord, avait une logique parfaite.</p>
+
+    <hr class="rune">
+
+    <div class="section-title">V. Le Lendemain Matin</div>
+
+    <p>Le lendemain matin commença à l'heure où il faisait encore nuit, parce que Valdurne était ce genre d'endroit. Une cloche sonna quelque part dans une tour — une seule note, longue, sans répétition, qui disait <em>debout</em> sans s'en excuser. Lyam était déjà assis sur son lit. Il avait l'habitude. Son père commençait la forge à l'aube et la règle non-écrite du village était que si le forgeron était debout, tout le monde pouvait l'être.</p>
+
+    <p>Il descendit dans la grande salle pour le petit-déjeuner. La salle était divisée, pas physiquement — pas de cloison, pas de séparation visible — mais par une convention invisible que tout le monde semblait avoir reçue dans les mêmes termes, y compris les nouveaux arrivants. Il y avait une partie de la salle où les tables étaient plus longues, les bancs plus confortables, et où les conversations avaient déjà le volume de gens qui se connaissaient. Et une autre partie, plus proche des cuisines, plus bruyante en termes de sons de cuisine, plus silencieuse en termes de conversations.</p>
+
+    <p>Lyam s'assit dans la partie cuisine. Il mangea son gruau. Il écouta.</p>
+
+    <p>C'était la chose que les gens sous-estimaient systématiquement chez lui : il écoutait bien. Pas la façon d'écouter qui consiste à attendre que l'autre ait fini pour répondre, mais la façon d'écouter qui consiste à vraiment entendre ce qui est dit, et ce qui n'est pas dit, et la différence entre les deux. Son grand-père lui avait appris ça. <em>Les mots sont l'emballage,</em> disait son grand-père. <em>C'est ce qu'il y a dedans qui nourrit.</em></p>
+
+    <p>Ce matin-là, en mangeant son gruau et en écoutant, Lyam apprit les choses suivantes : qu'il y avait un maître d'armes réputé sévère mais juste, et un maître des lettres réputé juste mais sévère, et que la nuance entre les deux était considérée comme importante. Qu'une des tours était condamnée depuis un incident survenu deux ans plus tôt dont personne ne connaissait les détails mais dont tout le monde connaissait les conséquences. Que les épreuves du premier semestre auraient lieu en hiver et que la date exacte n'était jamais annoncée à l'avance — elles arrivaient sans prévenir, <em>comme les vraies difficultés</em>, selon une formule que les anciens élèves répétaient avec une satisfaction légèrement agaçante.</p>
+
+    <p>Et que quelqu'un, quelque part dans le château, avait la réputation de savoir tout ça et beaucoup plus encore — une fille d'un an plus âgée que la plupart des autres pages, qui était arrivée ici il y a un an par voie d'aptitude et qui avait, selon les rumeurs contradictoires qui circulaient déjà à sept heures du matin, soit la mémoire d'une encyclopédie, soit un réseau d'informateurs, soit simplement l'habitude d'écouter aux bonnes portes.</p>
+
+    <p>Lyam déposa son bol vide.</p>
+
+    <div class="pensee">Il pensa : je voudrais rencontrer cette personne.</div>
+
+    <p>Il ne savait pas encore que c'était réciproque — et pour une raison à laquelle il n'aurait pas pensé.</p>
+
+  </div>
+
+  <!-- FIN DE CHAPITRE -->
+  <div class="end-block">
+    <span class="end-icon">📖</span>
+    <div class="end-title">Fin du Chapitre Premier</div>
+    <p class="end-txt">Lyam a posé son bol. Quelque part dans ce château, une fille qu'il ne connaît pas encore a déjà décidé qu'il pourrait lui être utile — pour une raison qu'elle n'est pas encore prête à lui expliquer. Le Chapitre II s'ouvre sur leur première rencontre : celle qui change les deux.</p>
+    <div class="end-next">Chapitre II disponible à 500 XP · <em>La Fille qui Savait Trop</em></div>
+    <div>
+      <a href="hub_narration.html" class="btn btn-g">Retour à la Bibliothèque</a>
+      <a href="roman_ch02.html" class="btn btn-s" id="btnNext" style="display:none">Chapitre II →</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="xp-flash" id="xpFlash">+30 XP — Chapitre lu !</div>
+
+<script>
+var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var XKEY='pvs_narration_xp';var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};var CIT={representant_ca:{xp:500}};
+var MODULE_ID='ch01';var cur='';
+
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((l[k]||[]).indexOf(c)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
+function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
+
+function creditXP(code,amount,reason){
+  if(!code)return;var S=getS();if(!S.players||!S.players[code])return;
+  var p=S.players[code];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:code,t:reason,target:'NARRATION',xp:Number(amount)});
+  if(S.logs.length>700)S.logs.length=700;
+  if(amount>0){p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10))}
+  p.up=now;saveS(S);
+  // Push vers bridge super-hub
+  var pending=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  pending.push({id:'NARR-'+code+'-'+MODULE_ID+'-'+Date.now(),type:'NARRATION_READ',player:code,module:'ROMAN_'+MODULE_ID.toUpperCase(),xp:Number(amount),d:now});
+  if(pending.length>700)pending=pending.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(pending));
+}
+
+function showFlash(amount){
+  var f=document.getElementById('xpFlash');
+  if(!f)return;
+  f.textContent=(amount>0?'+':'')+amount+' XP — Chapitre lu !';
+  f.style.display='block';
+  setTimeout(function(){f.style.display='none'},4000);
+}
+
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=getP(cur);
+  if(!p){window.location.href='hub_narration.html';return}
+
+  var done=getDone();
+  // XP de lecture (une seule fois par chapitre)
+  if(!done[MODULE_ID]){
+    markDone(MODULE_ID);
+    creditXP(cur,30,'NARRATION_READ_'+MODULE_ID.toUpperCase());
+    showFlash(30);
+  }
+
+  // Afficher le bouton chapitre suivant si XP suffisant
+  var xp=xg(getP(cur));
+  var btnNext=document.getElementById('btnNext');
+  if(btnNext&&xp>=500){
+    btnNext.style.display='inline-block';
+  }
+})();
+</script>
+</body>
+</html>
