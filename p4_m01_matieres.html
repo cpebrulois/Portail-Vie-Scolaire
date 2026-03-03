@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Mes nouvelles matières</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--p4:#FB7185;--p4d:#E11D48;--p4bg:#FFF1F2;--p4p:#FFE4E6;--sun:#FFD93D;--sun2:#F59E0B;--gre:#34D399;--gre2:#059669;--ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#CBD5E1;--wh:#FFFFFF;--rs:10px;--rm:18px;--rl:28px;--sh:0 6px 24px rgba(15,23,42,.12);--ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--p4bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(251,113,133,.15) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 92% 15%,rgba(255,217,61,.15) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--p4);color:var(--p4d)}
+.crumb{font-size:.8rem;font-weight:700;color:var(--ink3)}
+.mhd{text-align:center;padding:28px 20px 20px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--p4bg);border:2px solid var(--p4);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--p4d);margin-bottom:14px}
+.mtitle{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:8px}
+.msub{font-size:1rem;color:var(--ink3);font-weight:600}
+.pt{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.ps::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink4);z-index:0}
+.ps:last-child::after{display:none}
+.ps.dn::after{background:var(--gre)}
+.pd{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink4);background:var(--wh);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink3);z-index:1;position:relative;transition:all .3s}
+.ps.dn .pd{background:var(--gre);border-color:var(--gre);color:#fff}
+.ps.ac .pd{background:var(--sun);border-color:var(--sun2);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pp 2s infinite}
+@keyframes pp{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.pl{font-size:.7rem;font-weight:700;color:var(--ink3);margin-top:5px;text-align:center}
+.ps.ac .pl{color:var(--sun2)}.ps.dn .pl{color:var(--gre2)}
+.xps{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xpp{display:flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:6px 16px;font-family:var(--fm);font-size:.83rem;font-weight:700}
+.xpp.hl{border-color:var(--p4);background:var(--p4p);color:var(--p4d)}
+.card{background:rgba(255,255,255,.94);border-radius:var(--rl);box-shadow:var(--sh);border:1.5px solid rgba(255,255,255,.9);padding:22px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.qctx{background:rgba(251,113,133,.07);border:1.5px solid rgba(251,113,133,.2);border-radius:var(--rs);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink2);font-style:italic}
+.qtxt{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px;line-height:1.35}
+.qopts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.qopt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink4);border-radius:var(--rs);padding:11px 14px;cursor:pointer;font-size:.93rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.qopt:hover:not(:disabled){border-color:var(--p4);background:var(--p4p)}
+.qopt.sel{border-color:var(--p4d);background:var(--p4p)}
+.qopt.ok{border-color:var(--gre);background:#DCFCE7;color:var(--gre2)}
+.qopt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.qopt:disabled{cursor:default}
+.qlbl{width:28px;height:28px;border-radius:7px;background:var(--ink4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.qopt.sel .qlbl{background:var(--p4d);color:#fff}
+.qopt.ok .qlbl{background:var(--gre);color:#fff}
+.qopt.ko .qlbl{background:#EF4444;color:#fff}
+.qfb{border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.qfb.ok{background:#DCFCE7;border-color:var(--gre)}
+.qfb.ko{background:#FEE2E2;border-color:#EF4444}
+.qfbt{font-family:var(--ft);font-weight:800;margin-bottom:4px}
+.qfbb{font-size:.87rem;line-height:1.5;color:var(--ink2)}
+.scctx{background:var(--p4p);border:1.5px solid rgba(251,113,133,.3);border-radius:var(--rm);padding:14px;font-size:.93rem;line-height:1.65;color:var(--ink2);margin-bottom:14px}
+.scq{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px}
+.scch{display:flex;flex-direction:column;gap:8px}
+.scb{background:var(--wh);border:2px solid var(--ink4);border-radius:var(--rm);padding:12px 16px;text-align:left;cursor:pointer;font-size:.92rem;font-weight:600;transition:all .15s;font-family:var(--fb)}
+.scb:hover:not(:disabled){border-color:var(--p4);background:var(--p4p)}
+.scr{border-radius:var(--rm);padding:14px;margin-bottom:12px;border:2px solid}
+.scr.pos{background:#DCFCE7;border-color:var(--gre)}
+.scr.neg{background:#FEE2E2;border-color:#EF4444}
+.scr.neu{background:#FFF7ED;border-color:#FCD34D}
+.scrt{font-family:var(--ft);font-weight:800;font-size:1rem;margin-bottom:5px}
+.scrb{font-size:.9rem;line-height:1.55;color:var(--ink2)}
+.sctip{background:rgba(255,255,255,.7);border:1.5px solid rgba(251,113,133,.2);border-radius:var(--rs);padding:8px 12px;margin-top:9px;font-size:.85rem;font-weight:700;color:var(--p4d)}
+.scxp{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:.83rem;font-weight:700;border-radius:50px;padding:5px 14px;margin-top:8px}
+.scxp.pos{background:#DCFCE7;color:var(--gre2);border:1.5px solid var(--gre)}
+.scxp.neg{background:#FEE2E2;color:#B91C1C;border:1.5px solid #EF4444}
+.scxp.neu{background:#FFF7ED;color:#92400E;border:1.5px solid #FCD34D}
+.bdg{display:inline-flex;align-items:center;gap:10px;border-radius:var(--rm);padding:14px 22px;font-family:var(--ft);font-size:1.1rem;font-weight:800}
+.bdg.bronze{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:2px solid #F59E0B;color:#92400E}
+.bdg.silver{background:linear-gradient(135deg,#F1F5F9,#E2E8F0);border:2px solid #94A3B8;color:#475569}
+.bdg.gold{background:linear-gradient(135deg,#FFF7ED,#FBBF24);border:2px solid #F59E0B;color:#78350F}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:.95rem;font-weight:800;border:none;border-radius:50px;padding:11px 26px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btnp{background:linear-gradient(135deg,var(--p4),var(--p4d));color:#fff;box-shadow:0 4px 14px rgba(225,29,72,.3)}
+.btnp:hover{transform:translateY(-2px)}
+.btns{background:var(--wh);border:2px solid var(--ink4);color:var(--ink2)}
+.btns:hover{border-color:var(--p4);color:var(--p4d)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--fm);font-size:.85rem;font-weight:700;opacity:0;transition:all .35s;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+<nav class="topnav"><a href="index.html" class="back">&#8592; Accueil</a><span class="crumb">&#128218; Pilier 4 &middot; Module 1/3</span></nav>
+<header class="mhd"><div class="chip">&#128218; Les matières de 6e</div><h1 class="mtitle">Mes nouvelles<br>matières</h1><p class="msub">Panorama complet &mdash; ce qui change, ce qui reste, ce qui arrive</p></header>
+<div id="prog"></div><div id="xpb"></div><div id="root"></div>
+</div>
+<script>
+const MID='M4_01',NF='p4_m02_apprendre.html',NN='Comment apprendre une leçon ?',LS='ave6e_progress';
+const MAT=[
+{i:'✏️',n:'Français',h:'4h30',bg:'#EFF6FF',bd:'#93C5FD',ht:'#1E40AF',cm2:'Tu faisais déjà du français en CM2.',nv:'Grammaire plus précise (fonctions, propositions), lecture d\'œuvres complètes. Souvent 3 cahiers : vocab, conjugaison, littérature.',tip:'Les œuvres à lire sont données à l\'avance. Commence tôt — pas la veille de l\'évaluation.'},
+{i:'📐',n:'Mathématiques',h:'4h30',bg:'#F0FDF4',bd:'#6EE7B7',ht:'#065F46',cm2:'Opérations, fractions, géométrie — tu connais déjà.',nv:'Fractions avancées, symétrie, priorités opératoires. Cahier de géométrie séparé. La démonstration fait son apparition.',tip:'Garde compas, équerre et rapporteur DANS ton sac. Arriver sans matériel en géométrie = très mauvaise impression.'},
+{i:'🌍',n:'Histoire-Géographie',h:'3h',bg:'#FFF7ED',bd:'#FCD34D',ht:'#92400E',cm2:'Tu as fait de l\'histoire et géo à l\'école primaire.',nv:'Un seul prof pour les deux matières. Souvent deux cahiers séparés. 6e = Antiquité + grandes zones du monde. Cartes à légender.',tip:'En 6e, l\'histoire commence très loin dans le passé — Préhistoire, Mésopotamie. N\'attends pas la Révolution française dès septembre.'},
+{i:'🔬',n:'SVT',h:'1h30',bg:'#F0FDF4',bd:'#34D399',ht:'#065F46',cm2:'Un peu de sciences à l\'école primaire.',nv:'Matière à part entière. Observer, manipuler, rédiger des comptes-rendus. Classification du vivant, cellules, écosystèmes.',tip:'La SVT, c\'est de la curiosité organisée. Les profs apprécient les observations personnelles.'},
+{i:'⚗️',n:'Physique-Chimie',h:'1h30',bg:'#EFF6FF',bd:'#93C5FD',ht:'#1E40AF',cm2:'Probablement peu ou pas en primaire.',nv:'Vraie nouveauté. Lumière, matière, énergie. Labo, expériences, schémas précis. Rigueur de présentation très importante.',tip:'Règle d\'or : ne jamais goûter ni sentir une substance inconnue en labo, même si ça ressemble à de l\'eau.'},
+{i:'🔧',n:'Technologie',h:'1h30',bg:'#FFF1F2',bd:'#FDA4AF',ht:'#B91C1C',cm2:'Probablement peu ou pas.',nv:'Analyse d\'objets techniques, conception, fabrication. Salle info ou atelier. Très concret, souvent en groupe.',tip:'Les profs repèrent vite celui qui laisse faire les autres en travail de groupe.'},
+{i:'🎵',n:'Éducation Musicale',h:'1h',bg:'#F5F3FF',bd:'#C4B5FD',ht:'#7C3AED',cm2:'Tu as eu de la musique à l\'école primaire.',nv:'Matière évaluée à part entière. Écoute, chant, culture musicale. Évaluations de chant possibles.',tip:'Tout le monde chante — personne n\'est seul à être évalué. Participe sans te cacher.'},
+{i:'🎨',n:'Arts Plastiques',h:'1h',bg:'#FFF7ED',bd:'#FCD34D',ht:'#92400E',cm2:'Tu as fait du dessin à l\'école primaire.',nv:'Réflexion sur le sens des œuvres autant que pratique. Tu produis et tu expliques tes choix. Classeur de productions.',tip:'Ne dis jamais "je suis nul en dessin" — c\'est la démarche créative qui est évaluée, pas uniquement le talent.'},
+{i:'🏃',n:'EPS',h:'2h à 4h',bg:'#F0FDF4',bd:'#6EE7B7',ht:'#065F46',cm2:'Tu as fait du sport à l\'école primaire.',nv:'Évaluée sur des compétences précises par cycle sportif. Tenue obligatoire. Dispenses = certificat médical.',tip:'La participation active compte dans la note même si tu n\'es pas le meilleur sportif de la classe.'},
+{i:'🇬🇧',n:'Anglais (LV1)',h:'3h',bg:'#EFF6FF',bd:'#93C5FD',ht:'#1E40AF',cm2:'Tu faisais déjà de l\'anglais en CM2.',nv:'Les 4 compétences : lire, écrire, parler, écouter. Les évaluations d\'oral deviennent régulières.',tip:'Se tromper à l\'oral fait partie de l\'apprentissage. Ce qui compte, c\'est d\'essayer.'}
+];
+const QUIZ=[
+{ctx:'Léa arrive en 6e. Elle n\'a jamais eu de cours de physique-chimie à l\'école primaire.',q:'Comment qualifier la physique-chimie en 6e ?',
+opts:['Une matière déjà connue de l\'école primaire','Une matière entièrement nouvelle pour la plupart des élèves','Une matière optionnelle','Une matière sans expériences pratiques'],
+ok:1,xp:20,fb:'La physique-chimie est une vraie nouveauté pour la majorité des élèves de 6e. C\'est normal de ne pas tout comprendre du premier coup — c\'est précisément pour ça qu\'on appelle ça une découverte.'},
+{ctx:'Tom adore le foot. Il se demande si "ceux qui sont bons ont de bonnes notes" en EPS.',q:'Comment l\'EPS est-elle évaluée en 6e ?',
+opts:['Uniquement sur les performances sportives brutes','Sur des compétences précises ET la participation — pas juste le talent','Elle n\'est pas vraiment évaluée','Uniquement sur la présence aux cours'],
+ok:1,xp:25,fb:'L\'EPS évalue des compétences définies par cycle : technique, règles, engagement, stratégie. Un élève peu doué mais très impliqué peut très bien s\'en sortir.'},
+{ctx:'Emma hésite : apporter son cahier de géo ET son cahier d\'histoire pour le cours d\'HG demain ?',q:'En 6e, combien de profs enseignent l\'Histoire et la Géographie ?',
+opts:['Un prof pour l\'Histoire, un autre pour la Géo','Un seul prof pour les deux — mais souvent deux cahiers séparés','Deux profs qui alternent selon les thèmes','C\'est intégré dans une autre matière'],
+ok:1,xp:20,fb:'HG est une seule discipline enseignée par un seul professeur. Mais les deux parties ont souvent des cahiers séparés. Quand tu doutes : apporte les deux.'},
+{ctx:'Hugo pense qu\'en arts plastiques il aura forcément une mauvaise note parce qu\'il "dessine mal".',q:'Sur quoi les arts plastiques sont-ils principalement évalués ?',
+opts:['Uniquement sur la qualité du dessin et la technique','Sur la démarche créative, l\'intention, l\'originalité — pas uniquement le talent','Sur la quantité de travail produit','Sur la connaissance des peintres célèbres'],
+ok:1,xp:20,fb:'Les arts plastiques évaluent la démarche de création autant que le résultat. L\'originalité de l\'idée, la capacité à expliquer ses choix, l\'expérimentation comptent vraiment.'}
+];
+const SC=[
+{ti:'Le premier cours de SVT',ctx:'C\'est le premier cours de SVT de Lucas. Le prof distribue un document sur la classification des êtres vivants. Lucas trouve ça bizarre — il avait imaginé des dissections comme dans les films.',q:'Quelle est la meilleure attitude de Lucas ?',
+ch:[
+{t:'Décider que la SVT c\'est "ennuyeux" dès le premier cours.',r:'Lucas ne prend pas de notes sérieuses. Deux semaines plus tard, une évaluation porte sur la classification. Il réalise qu\'il a peu de repères et passe le reste du trimestre à rattraper un retard créé dès le premier jour.',ton:'neg',ico:'⚠️',tip:'Un premier cours n\'est jamais représentatif d\'une matière entière. Se forger une opinion définitive en 45 minutes, c\'est une erreur de débutant.',xp:-10,lbl:'-10 XP'},
+{t:'Rester ouvert et curieux même si c\'est différent de ce qu\'il avait imaginé.',r:'Lucas note les points clés, pose une question sur un terme inconnu. Trois semaines plus tard, il trouve la classification de plus en plus logique — et comprend que la SVT a bien plus à offrir que les dissections.',ton:'pos',ico:'✅',tip:'La 6e est une année de découverte. Les matières nouvelles demandent du temps pour révéler ce qu\'elles ont à offrir. La curiosité est l\'outil n°1.',xp:40,lbl:'+40 XP'},
+{t:'Lever la main pour dire qu\'il pensait qu\'on ferait autre chose.',r:'Le prof explique que les dissections arrivent plus tard dans l\'année. Lucas est rassuré. Sa question a montré qu\'il était attentif.',ton:'neu',ico:'🙂',tip:'Poser une question, même naïve, c\'est mieux que rester silencieux en ne comprenant pas.',xp:20,lbl:'+20 XP'}
+]},
+{ti:'La matière "inutile"',ctx:'Après deux semaines, Emma adore la techno et trouve les maths "inutiles". Elle se demande si elle peut arrêter d\'écouter en maths puisque "ce n\'est pas sa matière".',q:'Quelle est l\'erreur de raisonnement d\'Emma ?',
+ch:[
+{t:'Aucune erreur — il est normal de s\'investir moins dans les matières qu\'on n\'aime pas.',r:'Emma décroche en maths. En fin de trimestre, ses résultats sont mauvais. En conseil de classe, plusieurs profs notent son manque d\'implication. Ce qui semblait une bonne décision crée un problème général.',ton:'neg',ico:'⚠️',tip:'Avoir des matières préférées est normal. Décider de ne plus écouter dans une matière, ça coûte cher — et vite.',xp:-5,lbl:'-5 XP'},
+{t:'Les maths sont présentes dans beaucoup d\'autres matières — et deux semaines c\'est trop tôt pour décider.',r:'Emma continue d\'écouter en maths. En techno, elle réalise que les calculs de dimensions font appel à ce qu\'elle a vu en maths. Elle comprend que les matières se parlent entre elles.',ton:'pos',ico:'✅',tip:'Aucune matière de 6e n\'est vraiment "inutile". Les maths irriguent les sciences, la techno, la physique. Deux semaines, c\'est trop tôt pour juger.',xp:40,lbl:'+40 XP'},
+{t:'En parler à ses parents pour qu\'ils la dispensent de maths.',r:'Ses parents lui expliquent que les dispenses de matière n\'existent pas. Tous les cours inscrits à l\'emploi du temps sont obligatoires.',ton:'neu',ico:'🙂',tip:'L\'assiduité à tous les cours est obligatoire selon le règlement intérieur du collège.',xp:5,lbl:'+5 XP'}
+]}
+];
+let S={ph:'intro',ci:0,qi:0,qS:null,qF:false,si:0,sc:null,sr:false,xp:0};
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function gP(){try{return JSON.parse(localStorage.getItem(LS)||'{}')}catch{return{}}}
+function save(){const p=gP();if(!Array.isArray(p.modules_done))p.modules_done=[];if(!p.modules_done.includes(MID)){p.modules_done.push(MID);p.xp_total=(p.xp_total||0)+S.xp;localStorage.setItem(LS,JSON.stringify(p));}}
+const PHS=[{l:'Intro'},{l:'Matières'},{l:'Quiz'},{l:'Scénarios'},{l:'Bilan'}];
+const PI={intro:0,cards:1,quiz:2,sc:3,fin:4};
+function mk(c){const d=document.createElement('div');d.className=c;return d}
+function btn(l,c,fn){const b=document.createElement('button');b.className='btn '+c;b.innerHTML=l;if(fn)b.onclick=fn;return b}
+function prog(){const d=$('prog');d.innerHTML='';const t=mk('pt');const pi=PI[S.ph]||0;
+PHS.forEach((p,i)=>{const s=mk('ps '+(i<pi?'dn':i===pi?'ac':''));s.innerHTML='<div class="pd">'+(i<pi?'✓':i+1)+'</div><div class="pl">'+p.l+'</div>';t.appendChild(s)});d.appendChild(t)}
+function xpbar(items){const d=$('xpb');d.innerHTML='';const w=mk('xps');items.forEach(x=>{const p=mk('xpp'+(x.h?' hl':''));p.innerHTML='<span>'+x.i+'</span>'+x.v;w.appendChild(p)});d.appendChild(w)}
+function render(){prog();const r=$('root');r.innerHTML='';
+if(S.ph==='intro'){xpbar([{i:'⭐',v:S.xp+' XP'}]);intro(r)}
+if(S.ph==='cards'){xpbar([{i:'📚',v:(S.ci+1)+'/'+MAT.length},{i:'⭐',v:S.xp+' XP',h:1}]);cards(r)}
+if(S.ph==='quiz'){xpbar([{i:'❓',v:(S.qi+1)+'/'+QUIZ.length},{i:'⭐',v:S.xp+' XP',h:1}]);quiz(r)}
+if(S.ph==='sc'){xpbar([{i:'🎯',v:(S.si+1)+'/'+SC.length},{i:'⭐',v:S.xp+' XP',h:1}]);scene(r)}
+if(S.ph==='fin'){xpbar([{i:'⭐',v:S.xp+' XP',h:1}]);fin(r)}}
+function intro(r){const c=mk('card');
+c.innerHTML='<div style="font-size:3.5rem;text-align:center;margin-bottom:10px">📚</div>'+
+'<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;text-align:center;margin-bottom:10px">10 matières, un seul toi</div>'+
+'<div style="font-size:.97rem;line-height:1.7;color:var(--ink2);margin-bottom:16px">En CM2 tu avais 2-3 profs et 4-5 matières. En 6e, tu passes à <strong>10 matières différentes</strong>. Chacune a sa logique, son cahier, sa façon de t\'évaluer.<br><br>Ce module fait le tour complet pour qu\'il n\'y ait <strong>aucune mauvaise surprise</strong> le jour de la rentrée.</div>'+
+'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px">'+
+['✏️ Français','📐 Maths','🌍 Histoire-Géo','🔬 SVT','⚗️ Physique-Chimie','🔧 Techno','🎵 Musique','🎨 Arts Plastiques','🏃 EPS','🇬🇧 Anglais']
+.map(s=>'<div style="background:var(--p4p);border:1.5px solid rgba(251,113,133,.25);border-radius:8px;padding:6px 10px;font-size:.8rem;font-weight:700;color:var(--p4d)">'+s+'</div>').join('')+'</div>';
+const row=mk('row');row.appendChild(btn('Explorer les matières ➜','btnp',()=>{S.ph='cards';S.xp+=10;render()}));c.appendChild(row);r.appendChild(c)}
+function cards(r){const d=MAT[S.ci];const c=mk('card');
+c.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">'+
+'<div style="font-size:2rem">'+d.i+'</div>'+
+'<div><div style="font-family:var(--ft);font-size:1.15rem;font-weight:900">'+d.n+'</div>'+
+'<div style="display:inline-flex;align-items:center;background:'+d.bg+';color:'+d.ht+';border:1.5px solid '+d.bd+';border-radius:50px;padding:2px 10px;font-size:.78rem;font-weight:800;margin-top:3px">🕐 '+d.h+' / semaine</div></div></div>'+
+'<div style="display:flex;flex-direction:column;gap:8px">'+
+'<div style="background:'+d.bg+';border:1.5px solid '+d.bd+';border-radius:var(--rs);padding:10px 13px">'+
+'<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--ink3);margin-bottom:4px">Ce que tu connais déjà</div>'+
+'<div style="font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.5">'+d.cm2+'</div></div>'+
+'<div style="background:var(--p4p);border:1.5px solid rgba(251,113,133,.3);border-radius:var(--rs);padding:10px 13px">'+
+'<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--p4d);margin-bottom:4px">Ce qui est nouveau en 6e</div>'+
+'<div style="font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.5">'+d.nv+'</div></div>'+
+'<div style="background:rgba(255,255,255,.6);border:1.5px solid var(--ink4);border-radius:var(--rs);padding:8px 12px;font-size:.87rem;font-weight:700;color:var(--p4d)">💡 '+d.tip+'</div></div>';
+r.appendChild(c);
+const nav=document.createElement('div');nav.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:4px';
+const bk=btn('← Préc.','btns',()=>{if(S.ci>0){S.ci--;render()}});if(S.ci===0)bk.disabled=true;
+const cnt=document.createElement('span');cnt.style.cssText='font-family:var(--fm);font-size:.85rem;font-weight:700;color:var(--ink3)';cnt.textContent=(S.ci+1)+' / '+MAT.length;
+const isL=S.ci===MAT.length-1;
+const nx=btn(isL?'Passer au quiz ➜':'Suivant ➜',isL?'btnp':'btns',()=>{if(!isL){S.ci++;S.xp+=5;render()}else{S.ph='quiz';S.xp+=30;render()}});
+nav.appendChild(bk);nav.appendChild(cnt);nav.appendChild(nx);r.appendChild(nav)}
+function quiz(r){const d=QUIZ[S.qi];const c=mk('card');
+if(d.ctx){const cx=mk('qctx');cx.textContent=d.ctx;c.appendChild(cx)}
+const qt=mk('qtxt');qt.textContent=d.q;c.appendChild(qt);
+const ol=mk('qopts');const val=btn('Valider','btnp',null);val.disabled=true;
+d.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='qopt';
+b.innerHTML='<span class="qlbl">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span>';
+if(S.qF){b.disabled=true;if(i===d.ok)b.classList.add('ok');else if(i===S.qS)b.classList.add('ko')}
+else{if(i===S.qS)b.classList.add('sel');b.onclick=()=>{S.qS=i;val.disabled=false;render()}}
+ol.appendChild(b)});c.appendChild(ol);
+if(S.qF){const fb=mk('qfb '+(S.qS===d.ok?'ok':'ko'));
+fb.innerHTML='<div class="qfbt">'+(S.qS===d.ok?'✅ Bonne réponse !':'❌ Pas tout à fait…')+'</div><div class="qfbb">'+d.fb+'</div>';
+c.appendChild(fb);const row=mk('row');const isL=S.qi===QUIZ.length-1;
+row.appendChild(btn(isL?'Passer aux scénarios ➜':'Question suivante ➜','btnp',()=>{if(isL){S.ph='sc';S.xp+=20;render()}else{S.qi++;S.qS=null;S.qF=false;render()}}));c.appendChild(row)
+}else{val.onclick=()=>{if(S.qS===null){toast('Choisis une réponse !');return}S.qF=true;if(S.qS===d.ok)S.xp+=d.xp;render()};
+if(S.qS!==null)val.disabled=false;const row=mk('row');row.appendChild(val);c.appendChild(row)}
+r.appendChild(c)}
+function scene(r){const d=SC[S.si];const c=mk('card');
+const ti=document.createElement('div');ti.style.cssText='font-family:var(--ft);font-size:1.1rem;font-weight:900;color:var(--p4d);margin-bottom:8px';ti.textContent='🎯 '+d.ti;c.appendChild(ti);
+const cx=mk('scctx');cx.innerHTML=d.ctx;c.appendChild(cx);
+const q=mk('scq');q.textContent=d.q;c.appendChild(q);
+if(!S.sr){const ch=mk('scch');d.ch.forEach((x,i)=>{const b=document.createElement('button');b.className='scb';b.textContent=x.t;b.onclick=()=>{S.sc=i;S.sr=true;if(x.xp>0)S.xp+=x.xp;render()};ch.appendChild(b)});c.appendChild(ch)
+}else{const x=d.ch[S.sc];const res=mk('scr '+x.ton);
+res.innerHTML='<div class="scrt">'+x.ico+' Ce qui se passe…</div><div class="scrb">'+x.r+'</div><div class="sctip">💡 '+x.tip+'</div><div class="scxp '+x.ton+'">'+x.ico+' '+x.lbl+'</div>';
+c.appendChild(res);const row=mk('row');const isL=S.si===SC.length-1;
+row.appendChild(btn(isL?'Voir mon bilan ➜':'Scénario suivant ➜','btnp',()=>{if(isL){S.ph='fin';save();render()}else{S.si++;S.sc=null;S.sr=false;render()}}));c.appendChild(row)}
+r.appendChild(c)}
+function fin(r){save();let bd,bc;
+if(S.xp>=105){bd='🥇 Expert des matières !';bc='gold'}else if(S.xp>=65){bd='🥈 Bon panorama';bc='silver'}else{bd='🥉 Découverte amorcée';bc='bronze'}
+const c=mk('card');
+c.innerHTML='<div style="text-align:center;padding:10px 0 20px">'+
+'<div style="font-size:3rem;margin-bottom:12px">📚</div>'+
+'<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;margin-bottom:8px">Module terminé !</div>'+
+'<div class="bdg '+bc+'" style="margin:0 auto 16px;display:inline-flex">'+bd+'</div>'+
+'<div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--p4d);margin-bottom:18px">⭐ '+S.xp+' XP gagnés</div>'+
+'<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);max-width:480px;margin:0 auto 22px">Tu connais maintenant les 10 matières de 6e et ce qui est nouveau dans chacune. La 6e n\'est plus une boîte noire !</div></div>'+
+'<div style="background:var(--p4p);border:1.5px solid rgba(251,113,133,.3);border-radius:var(--rm);padding:14px;margin-bottom:14px">'+
+'<div style="font-family:var(--ft);font-weight:800;color:var(--p4d);margin-bottom:6px">👉 Module suivant</div>'+
+'<div style="font-size:.9rem;color:var(--ink2)">'+NN+' — les 5 méthodes validées par les sciences cognitives pour mémoriser vraiment.</div></div>';
+const row=mk('row');row.appendChild(btn('Module suivant ➜','btnp',()=>location.href=NF));row.appendChild(btn('🏠 Accueil','btns',()=>location.href='index.html'));c.appendChild(row);r.appendChild(c)}
+render();
+</script>
+</body>
+</html>

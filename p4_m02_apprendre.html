@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Comment apprendre une leçon ?</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--p4:#FB7185;--p4d:#E11D48;--p4bg:#FFF1F2;--p4p:#FFE4E6;--sun:#FFD93D;--sun2:#F59E0B;--gre:#34D399;--gre2:#059669;--ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#CBD5E1;--wh:#FFFFFF;--rs:10px;--rm:18px;--rl:28px;--sh:0 6px 24px rgba(15,23,42,.12);--ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--p4bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(251,113,133,.15) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 92% 15%,rgba(255,217,61,.15) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--p4);color:var(--p4d)}
+.crumb{font-size:.8rem;font-weight:700;color:var(--ink3)}
+.mhd{text-align:center;padding:28px 20px 20px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--p4bg);border:2px solid var(--p4);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--p4d);margin-bottom:14px}
+.mtitle{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:8px}
+.msub{font-size:1rem;color:var(--ink3);font-weight:600}
+.pt{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.ps::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink4);z-index:0}
+.ps:last-child::after{display:none}
+.ps.dn::after{background:var(--gre)}
+.pd{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink4);background:var(--wh);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink3);z-index:1;position:relative;transition:all .3s}
+.ps.dn .pd{background:var(--gre);border-color:var(--gre);color:#fff}
+.ps.ac .pd{background:var(--sun);border-color:var(--sun2);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pp 2s infinite}
+@keyframes pp{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.pl{font-size:.7rem;font-weight:700;color:var(--ink3);margin-top:5px;text-align:center}
+.ps.ac .pl{color:var(--sun2)}.ps.dn .pl{color:var(--gre2)}
+.xps{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xpp{display:flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:6px 16px;font-family:var(--fm);font-size:.83rem;font-weight:700}
+.xpp.hl{border-color:var(--p4);background:var(--p4p);color:var(--p4d)}
+.card{background:rgba(255,255,255,.94);border-radius:var(--rl);box-shadow:var(--sh);border:1.5px solid rgba(255,255,255,.9);padding:22px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.qctx{background:rgba(251,113,133,.07);border:1.5px solid rgba(251,113,133,.2);border-radius:var(--rs);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink2);font-style:italic}
+.qtxt{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px;line-height:1.35}
+.qopts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.qopt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink4);border-radius:var(--rs);padding:11px 14px;cursor:pointer;font-size:.93rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.qopt:hover:not(:disabled){border-color:var(--p4);background:var(--p4p)}
+.qopt.sel{border-color:var(--p4d);background:var(--p4p)}
+.qopt.ok{border-color:var(--gre);background:#DCFCE7;color:var(--gre2)}
+.qopt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.qopt:disabled{cursor:default}
+.qlbl{width:28px;height:28px;border-radius:7px;background:var(--ink4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.qopt.sel .qlbl{background:var(--p4d);color:#fff}
+.qopt.ok .qlbl{background:var(--gre);color:#fff}
+.qopt.ko .qlbl{background:#EF4444;color:#fff}
+.qfb{border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.qfb.ok{background:#DCFCE7;border-color:var(--gre)}
+.qfb.ko{background:#FEE2E2;border-color:#EF4444}
+.qfbt{font-family:var(--ft);font-weight:800;margin-bottom:4px}
+.qfbb{font-size:.87rem;line-height:1.5;color:var(--ink2)}
+.scctx{background:var(--p4p);border:1.5px solid rgba(251,113,133,.3);border-radius:var(--rm);padding:14px;font-size:.93rem;line-height:1.65;color:var(--ink2);margin-bottom:14px}
+.scq{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px}
+.scch{display:flex;flex-direction:column;gap:8px}
+.scb{background:var(--wh);border:2px solid var(--ink4);border-radius:var(--rm);padding:12px 16px;text-align:left;cursor:pointer;font-size:.92rem;font-weight:600;transition:all .15s;font-family:var(--fb)}
+.scb:hover:not(:disabled){border-color:var(--p4);background:var(--p4p)}
+.scr{border-radius:var(--rm);padding:14px;margin-bottom:12px;border:2px solid}
+.scr.pos{background:#DCFCE7;border-color:var(--gre)}
+.scr.neg{background:#FEE2E2;border-color:#EF4444}
+.scr.neu{background:#FFF7ED;border-color:#FCD34D}
+.scrt{font-family:var(--ft);font-weight:800;font-size:1rem;margin-bottom:5px}
+.scrb{font-size:.9rem;line-height:1.55;color:var(--ink2)}
+.sctip{background:rgba(255,255,255,.7);border:1.5px solid rgba(251,113,133,.2);border-radius:var(--rs);padding:8px 12px;margin-top:9px;font-size:.85rem;font-weight:700;color:var(--p4d)}
+.scxp{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:.83rem;font-weight:700;border-radius:50px;padding:5px 14px;margin-top:8px}
+.scxp.pos{background:#DCFCE7;color:var(--gre2);border:1.5px solid var(--gre)}
+.scxp.neg{background:#FEE2E2;color:#B91C1C;border:1.5px solid #EF4444}
+.scxp.neu{background:#FFF7ED;color:#92400E;border:1.5px solid #FCD34D}
+.bdg{display:inline-flex;align-items:center;gap:10px;border-radius:var(--rm);padding:14px 22px;font-family:var(--ft);font-size:1.1rem;font-weight:800}
+.bdg.bronze{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:2px solid #F59E0B;color:#92400E}
+.bdg.silver{background:linear-gradient(135deg,#F1F5F9,#E2E8F0);border:2px solid #94A3B8;color:#475569}
+.bdg.gold{background:linear-gradient(135deg,#FFF7ED,#FBBF24);border:2px solid #F59E0B;color:#78350F}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:.95rem;font-weight:800;border:none;border-radius:50px;padding:11px 26px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btnp{background:linear-gradient(135deg,var(--p4),var(--p4d));color:#fff;box-shadow:0 4px 14px rgba(225,29,72,.3)}
+.btnp:hover{transform:translateY(-2px)}
+.btns{background:var(--wh);border:2px solid var(--ink4);color:var(--ink2)}
+.btns:hover{border-color:var(--p4);color:var(--p4d)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--fm);font-size:.85rem;font-weight:700;opacity:0;transition:all .35s;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+<nav class="topnav"><a href="index.html" class="back">← Accueil</a><span class="crumb">📚 Pilier 4 · Module 2/3</span></nav>
+<header class="mhd"><div class="chip">📚 Les matières de 6e</div><h1 class="mtitle">Comment apprendre<br>une leçon ?</h1><p class="msub">5 méthodes validées par les sciences cognitives</p></header>
+<div id="prog"></div><div id="xpb"></div><div id="root"></div>
+</div>
+<script>
+const MID='M4_02',NF='p4_m03_notes.html',NN='Prendre des notes efficacement',LS='ave6e_progress';
+const METH=[
+{num:'01',i:'🔄',bg:'#EFF6FF',bd:'#93C5FD',ht:'#1E40AF',
+ti:'La récitation à voix haute',
+desc:'Après avoir lu ta leçon, ferme le cahier. Récite à voix haute ce dont tu te souviens — comme si tu expliquais à quelqu\'un. Ce que tu butes à dire, c\'est exactement ce que tu dois retravailler.',
+ex:'Leçon SVT sur les cellules. Tu fermes le cahier : "Une cellule c\'est l\'unité de base du vivant, elle a une membrane, un noyau et... euh..." Ce "euh" te dit précisément ce qu\'il faut retravailler.',
+tip:'Parler à voix haute active plus de zones du cerveau que lire en silence. Le cerveau mémorise mieux ce qu\'il a formulé lui-même.'},
+{num:'02',i:'✍️',bg:'#F0FDF4',bd:'#6EE7B7',ht:'#065F46',
+ti:'La fiche de révision',
+desc:'Après la leçon, fais une fiche d\'une demi-page maximum avec les points essentiels. PAS une recopie — une synthèse avec TES mots. Si ça ne tient pas sur une page, tu n\'as pas encore identifié l\'essentiel.',
+ex:'Structure : Titre + Date → 3 à 5 idées clés numérotées → 1 schéma si utile → 1 phrase "Ce que j\'ai compris" en bas. C\'est tout.',
+tip:'Choisir quoi mettre sur la fiche force ton cerveau à trier l\'important du secondaire. C\'est ce tri qui fait mémoriser — pas la relecture.'},
+{num:'03',i:'📅',bg:'#FFF7ED',bd:'#FCD34D',ht:'#92400E',
+ti:'La répétition espacée',
+desc:'Apprendre une leçon une seule fois = oublier 70% en 48h. Solution : revoir à J+1, J+4, J+10. À chaque repasse, le souvenir se consolide plus profondément en mémoire à long terme.',
+ex:'Lundi : tu apprends. Mardi : tu récites (2 min). Vendredi : tu relis la fiche (1 min). Lundi suivant : tu vérifies. Contrôle dans 3 semaines → tu es serein.',
+tip:'Méthode la plus validée scientifiquement. Le cerveau renforce les souvenirs chaque fois qu\'il les récupère — encore plus quand c\'est un peu difficile.'},
+{num:'04',i:'🗺️',bg:'#F5F3FF',bd:'#C4B5FD',ht:'#7C3AED',
+ti:'La carte mentale',
+desc:'Sujet principal au centre. Branches pour les idées principales. Sous-branches pour les détails. Couleurs, symboles. Ton cerveau adore visualiser les connexions entre les idées.',
+ex:'Centre : PHOTOSYNTHÈSE → Branche 1 : Qui ? (plantes) → Branche 2 : Quoi ? (lumière + CO2 → sucre + O2) → Branche 3 : Où ? (chlorophylle) → Branche 4 : Pourquoi ? (fabriquer de l\'énergie)',
+tip:'Parfaite pour les leçons avec beaucoup de connexions (SVT, HG, Histoire). Moins utile pour une poésie à apprendre par coeur.'},
+{num:'05',i:'👥',bg:'#FFF1F2',bd:'#FDA4AF',ht:'#B91C1C',
+ti:'Expliquer à quelqu\'un',
+desc:'Explique la leçon à tes parents, un ami, ton chien, une plante verte. L\'obligation d\'expliquer te force à réorganiser tes connaissances et révèle exactement les trous dans ta compréhension.',
+ex:'Règle du "prof de 5 ans" : si tu peux expliquer de façon qu\'un enfant de 5 ans comprend l\'idée principale, c\'est que toi tu l\'as vraiment intégrée.',
+tip:'Richard Feynman, prix Nobel de physique, utilisait cette technique pour tester sa propre compréhension. Si tu t\'embrouilles en expliquant, il y a encore du boulot.'}
+];
+const QUIZ=[
+{ctx:'Lola relit sa leçon trois fois le soir. Elle est sûre d\'elle. Mais le lendemain matin, elle a presque tout oublié.',
+q:'Quel est le problème de la méthode de Lola ?',
+opts:['Elle ne relit pas assez — il faudrait 5 fois','La relecture passive ne suffit pas — le cerveau mémorise en récupérant, pas en relisant','Elle doit relire le matin au lieu du soir','C\'est normal, la mémoire est capricieuse'],
+ok:1,xp:25,fb:'La relecture passive crée une illusion de maîtrise : ça paraît familier mais ce n\'est pas mémorisé. Le cerveau consolide les souvenirs quand il doit les retrouver par effort. Lire passivement, c\'est comme regarder quelqu\'un faire du vélo sans jamais essayer soi-même.'},
+{ctx:'Tom apprend sa leçon d\'histoire lundi soir. Le contrôle est dans 3 semaines. Il ne la revoit jamais.',
+q:'Selon la répétition espacée, quand devrait-il revoir cette leçon ?',
+opts:['Uniquement la veille du contrôle','Mardi (J+1), vendredi (J+4), et 10 jours après','Chaque soir jusqu\'au contrôle','Une seule fois bien apprise suffit'],
+ok:1,xp:25,fb:'Répétition espacée = revoir à intervalles croissants : J+1, J+4, J+10. Chaque repasse consolide plus profondément. Réviser uniquement la veille, c\'est bourrer à court terme — ça s\'évapore en 48h.'},
+{ctx:'Emma prépare un contrôle de SVT. Elle veut faire une fiche de révision utile.',
+q:'Quelle est la bonne approche pour une fiche de révision ?',
+opts:['Recopier intégralement le cours sur une page blanche','Synthétiser les idées clés en ses propres mots sur une demi-page max','Faire une fiche très complète avec tous les détails','Utiliser uniquement les schémas du manuel'],
+ok:1,xp:20,fb:'Une bonne fiche est une SYNTHÈSE, pas une recopie. Choisir quoi mettre dessus oblige ton cerveau à trier l\'essentiel du secondaire. Si tu ne peux pas le reformuler avec tes mots, c\'est que tu ne l\'as pas vraiment compris.'},
+{ctx:'Hugo trouve bizarre d\'expliquer ses leçons à voix haute. Il pense que ça ne sert à rien.',
+q:'Pourquoi la technique d\'expliquer à voix haute fonctionne-t-elle ?',
+opts:['Parce que le son aide la mémoire auditive uniquement','Parce qu\'elle force à réorganiser ses connaissances et révèle les lacunes','Parce que parler dépense de l\'énergie et on retient mieux après','Parce que les autres peuvent nous corriger'],
+ok:1,xp:20,fb:'Expliquer oblige à reformuler — ce qui révèle exactement ce qu\'on comprend mal ou oublié. Feynman, prix Nobel de physique, utilisait cette technique systématiquement. L\'interlocuteur importe peu : c\'est le fait d\'expliquer qui travaille ton cerveau.'}
+];
+const SC=[
+{ti:'La veille du contrôle',ctx:'Léa a un contrôle de maths demain. Il est 20h, elle n\'a pas encore révisé. Elle pense relire ses cours calmement et ça ira.',
+q:'Quelle stratégie est la plus efficace pour cette soirée ?',
+ch:[
+{t:'Relire les cours plusieurs fois jusqu\'à ce que ça paraisse familier.',r:'Léa relit trois fois. Ça lui paraît clair ce soir. Le lendemain, les exercices arrivent — et "paraître clair" et "savoir faire" sont deux choses très différentes.',ton:'neg',ico:'⚠️',tip:'La relecture crée une illusion de maîtrise. En maths, il faut FAIRE des exercices, pas juste relire. La reconnaissance passive ne suffit pas quand on doit produire.',xp:-5,lbl:'-5 XP'},
+{t:'Réciter les formules à voix haute, puis faire 2-3 exercices similaires au contrôle.',r:'Léa récite les formules, repère celles qu\'elle bute à retrouver, fait 3 exercices. Elle coince sur un type — elle revoit la méthode. Le lendemain, le contrôle se passe bien.',ton:'pos',ico:'✅',tip:'Pour les maths : réciter les formules + pratiquer des exercices = la combinaison gagnante. Les deux ensemble valent 10 relectures passives.',xp:40,lbl:'+40 XP'},
+{t:'Passer la soirée sur une carte mentale très détaillée.',r:'Léa passe 2h sur sa belle carte mentale. Mais elle n\'a pas pratiqué d\'exercices. Les formules ne sont pas assez ancrées. La carte était un beau projet — pas la meilleure stratégie la veille d\'un contrôle de maths.',ton:'neu',ico:'🙂',tip:'La carte mentale est excellente pour mémoriser un cours complexe, mais la veille d\'un contrôle de maths, pratiquer des exercices est prioritaire.',xp:15,lbl:'+15 XP'}
+]},
+{ti:'Je comprends mais j\'oublie',ctx:'Tom suit bien en classe, répond aux questions du prof. Mais deux semaines plus tard au contrôle, il a tout oublié.',
+q:'Que manque-t-il à Tom dans sa façon de travailler ?',
+ch:[
+{t:'Il n\'est pas assez intelligent — certains oublient plus vite.',r:'Tom garde cette croyance et n\'essaie aucune nouvelle méthode. Ses contrôles restent décevants. Ses camarades qui utilisent fiches et révisions espacées progressent — avec le même niveau de départ.',ton:'neg',ico:'⚠️',tip:'L\'oubli est normal et universel — pas lié à l\'intelligence. Ebbinghaus a montré en 1885 que sans révision, on oublie 70% d\'une information en 48h.',xp:-10,lbl:'-10 XP'},
+{t:'Il manque les révisions espacées — comprendre en classe ne suffit pas sans consolidation.',r:'Tom fait des fiches après chaque cours et les relit à J+1 puis J+4. Au contrôle suivant, les informations sont encore là. Il n\'a pas travaillé plus longtemps — juste différemment.',ton:'pos',ico:'✅',tip:'Comprendre en classe est une première étape, pas la dernière. La mémoire a besoin de consolidation. Les révisions espacées ancrent durablement ce qu\'on a compris.',xp:40,lbl:'+40 XP'},
+{t:'Il devrait travailler 3 heures chaque soir pour tout revoir.',r:'Tom travaille 3h chaque soir. Il est épuisé. Ses notes s\'améliorent un peu, mais travailler longtemps n\'est pas la même chose que travailler efficacement.',ton:'neu',ico:'🙂',tip:'Un cerveau fatigué apprend moins bien. Des sessions courtes mais bien structurées sont plus efficaces que des marathons de relecture.',xp:15,lbl:'+15 XP'}
+]}
+];
+let S={ph:'intro',ci:0,qi:0,qS:null,qF:false,si:0,sc:null,sr:false,xp:0};
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function gP(){try{return JSON.parse(localStorage.getItem(LS)||'{}')}catch{return{}}}
+function save(){const p=gP();if(!Array.isArray(p.modules_done))p.modules_done=[];if(!p.modules_done.includes(MID)){p.modules_done.push(MID);p.xp_total=(p.xp_total||0)+S.xp;localStorage.setItem(LS,JSON.stringify(p));}}
+const PHS=[{l:'Intro'},{l:'Méthodes'},{l:'Quiz'},{l:'Scénarios'},{l:'Bilan'}];
+const PI={intro:0,cards:1,quiz:2,sc:3,fin:4};
+function mk(c){const d=document.createElement('div');d.className=c;return d}
+function btn(l,c,fn){const b=document.createElement('button');b.className='btn '+c;b.innerHTML=l;if(fn)b.onclick=fn;return b}
+function prog(){const d=$('prog');d.innerHTML='';const t=mk('pt');const pi=PI[S.ph]||0;
+PHS.forEach((p,i)=>{const s=mk('ps '+(i<pi?'dn':i===pi?'ac':''));s.innerHTML='<div class="pd">'+(i<pi?'✓':i+1)+'</div><div class="pl">'+p.l+'</div>';t.appendChild(s)});d.appendChild(t)}
+function xpbar(items){const d=$('xpb');d.innerHTML='';const w=mk('xps');items.forEach(x=>{const p=mk('xpp'+(x.h?' hl':''));p.innerHTML='<span>'+x.i+'</span>'+x.v;w.appendChild(p)});d.appendChild(w)}
+function render(){prog();const r=$('root');r.innerHTML='';
+if(S.ph==='intro'){xpbar([{i:'⭐',v:S.xp+' XP'}]);intro(r)}
+if(S.ph==='cards'){xpbar([{i:'🧠',v:(S.ci+1)+'/'+METH.length},{i:'⭐',v:S.xp+' XP',h:1}]);cards(r)}
+if(S.ph==='quiz'){xpbar([{i:'❓',v:(S.qi+1)+'/'+QUIZ.length},{i:'⭐',v:S.xp+' XP',h:1}]);quiz(r)}
+if(S.ph==='sc'){xpbar([{i:'🎯',v:(S.si+1)+'/'+SC.length},{i:'⭐',v:S.xp+' XP',h:1}]);scene(r)}
+if(S.ph==='fin'){xpbar([{i:'⭐',v:S.xp+' XP',h:1}]);fin(r)}}
+function mk(c){const d=document.createElement('div');d.className=c;return d}
+function intro(r){const c=mk('card');
+c.innerHTML='<div style="font-size:3.5rem;text-align:center;margin-bottom:10px">🧠</div>'+
+'<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;text-align:center;margin-bottom:10px">Ton cerveau a une notice d\'utilisation</div>'+
+'<div style="font-size:.97rem;line-height:1.7;color:var(--ink2);margin-bottom:16px">La plupart des élèves "apprennent" leurs leçons en les <strong>relisant</strong>. C\'est la méthode la moins efficace qui existe.<br><br>Le cerveau mémorise en <strong>récupérant activement</strong> l\'information — pas en la regardant passivement. Ce module te donne 5 méthodes qui fonctionnent vraiment.</div>'+
+'<div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border:2px solid #FCD34D;border-radius:var(--rm);padding:12px 16px;margin-bottom:14px;font-size:.9rem;font-weight:700;color:#92400E">⚠️ Mythe à détruire : "Relire plusieurs fois = bien apprendre". FAUX. Le cerveau mémorise mieux ce qu\'il doit retrouver par effort que ce qu\'il voit passivement.</div>';
+const row=mk('row');row.appendChild(btn('Découvrir les méthodes ➜','btnp',()=>{S.ph='cards';S.xp+=10;render()}));c.appendChild(row);r.appendChild(c)}
+function cards(r){const d=METH[S.ci];const c=mk('card');
+c.innerHTML='<div style="background:'+d.bg+';border:2px solid '+d.bd+';border-radius:var(--rm);padding:16px 18px;margin-bottom:10px">'+
+'<div style="font-family:var(--fm);font-size:.75rem;font-weight:700;letter-spacing:1px;color:'+d.ht+';margin-bottom:6px">MÉTHODE '+d.num+' '+d.i+'</div>'+
+'<div style="font-family:var(--ft);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:8px">'+d.ti+'</div>'+
+'<div style="font-size:.92rem;font-weight:600;color:var(--ink2);line-height:1.6;margin-bottom:10px">'+d.desc+'</div>'+
+'<div style="background:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.9);border-radius:var(--rs);padding:9px 12px;font-size:.87rem;font-weight:700;color:var(--ink2)">'+
+'<div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:'+d.ht+';margin-bottom:4px">Exemple concret</div>'+d.ex+'</div></div>'+
+'<div style="background:rgba(255,255,255,.6);border:1.5px solid var(--ink4);border-radius:var(--rs);padding:8px 12px;font-size:.87rem;font-weight:700;color:var(--p4d)">🧠 '+d.tip+'</div>';
+r.appendChild(c);
+const nav=document.createElement('div');nav.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:4px';
+const bk=btn('← Préc.','btns',()=>{if(S.ci>0){S.ci--;render()}});if(S.ci===0)bk.disabled=true;
+const cnt=document.createElement('span');cnt.style.cssText='font-family:var(--fm);font-size:.85rem;font-weight:700;color:var(--ink3)';cnt.textContent=(S.ci+1)+' / '+METH.length;
+const isL=S.ci===METH.length-1;
+const nx=btn(isL?'Passer au quiz ➜':'Suivant ➜',isL?'btnp':'btns',()=>{if(!isL){S.ci++;S.xp+=8;render()}else{S.ph='quiz';S.xp+=40;render()}});
+nav.appendChild(bk);nav.appendChild(cnt);nav.appendChild(nx);r.appendChild(nav)}
+function quiz(r){const d=QUIZ[S.qi];const c=mk('card');
+if(d.ctx){const cx=mk('qctx');cx.textContent=d.ctx;c.appendChild(cx)}
+const qt=mk('qtxt');qt.textContent=d.q;c.appendChild(qt);
+const ol=mk('qopts');const val=btn('Valider','btnp',null);val.disabled=true;
+d.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='qopt';
+b.innerHTML='<span class="qlbl">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span>';
+if(S.qF){b.disabled=true;if(i===d.ok)b.classList.add('ok');else if(i===S.qS)b.classList.add('ko')}
+else{if(i===S.qS)b.classList.add('sel');b.onclick=()=>{S.qS=i;val.disabled=false;render()}}
+ol.appendChild(b)});c.appendChild(ol);
+if(S.qF){const fb=mk('qfb '+(S.qS===d.ok?'ok':'ko'));
+fb.innerHTML='<div class="qfbt">'+(S.qS===d.ok?'✅ Bonne réponse !':'❌ Pas tout à fait…')+'</div><div class="qfbb">'+d.fb+'</div>';
+c.appendChild(fb);const row=mk('row');const isL=S.qi===QUIZ.length-1;
+row.appendChild(btn(isL?'Passer aux scénarios ➜':'Question suivante ➜','btnp',()=>{if(isL){S.ph='sc';S.xp+=20;render()}else{S.qi++;S.qS=null;S.qF=false;render()}}));c.appendChild(row)
+}else{val.onclick=()=>{if(S.qS===null){toast('Choisis une réponse !');return}S.qF=true;if(S.qS===d.ok)S.xp+=d.xp;render()};
+if(S.qS!==null)val.disabled=false;const row=mk('row');row.appendChild(val);c.appendChild(row)}
+r.appendChild(c)}
+function scene(r){const d=SC[S.si];const c=mk('card');
+const ti=document.createElement('div');ti.style.cssText='font-family:var(--ft);font-size:1.1rem;font-weight:900;color:var(--p4d);margin-bottom:8px';ti.textContent='🎯 '+d.ti;c.appendChild(ti);
+const cx=mk('scctx');cx.innerHTML=d.ctx;c.appendChild(cx);
+const q=mk('scq');q.textContent=d.q;c.appendChild(q);
+if(!S.sr){const ch=mk('scch');d.ch.forEach((x,i)=>{const b=document.createElement('button');b.className='scb';b.textContent=x.t;b.onclick=()=>{S.sc=i;S.sr=true;if(x.xp>0)S.xp+=x.xp;render()};ch.appendChild(b)});c.appendChild(ch)
+}else{const x=d.ch[S.sc];const res=mk('scr '+x.ton);
+res.innerHTML='<div class="scrt">'+x.ico+' Ce qui se passe…</div><div class="scrb">'+x.r+'</div><div class="sctip">💡 '+x.tip+'</div><div class="scxp '+x.ton+'">'+x.ico+' '+x.lbl+'</div>';
+c.appendChild(res);const row=mk('row');const isL=S.si===SC.length-1;
+row.appendChild(btn(isL?'Voir mon bilan ➜':'Scénario suivant ➜','btnp',()=>{if(isL){S.ph='fin';save();render()}else{S.si++;S.sc=null;S.sr=false;render()}}));c.appendChild(row)}
+r.appendChild(c)}
+function fin(r){save();let bd,bc;
+if(S.xp>=115){bd='🥇 Maître des méthodes !';bc='gold'}else if(S.xp>=75){bd='🥈 Bonnes bases';bc='silver'}else{bd='🥉 En route';bc='bronze'}
+const c=mk('card');
+c.innerHTML='<div style="text-align:center;padding:10px 0 20px">'+
+'<div style="font-size:3rem;margin-bottom:12px">🧠</div>'+
+'<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;margin-bottom:8px">Module terminé !</div>'+
+'<div class="bdg '+bc+'" style="margin:0 auto 16px;display:inline-flex">'+bd+'</div>'+
+'<div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--p4d);margin-bottom:18px">⭐ '+S.xp+' XP gagnés</div>'+
+'<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);max-width:480px;margin:0 auto 22px">L\'idée clé : <strong>le cerveau mémorise en récupérant activement — pas en relisant passivement.</strong> Les 5 méthodes appliquent toutes ce principe.</div></div>'+
+'<div style="background:var(--p4p);border:1.5px solid rgba(251,113,133,.3);border-radius:var(--rm);padding:14px;margin-bottom:14px">'+
+'<div style="font-family:var(--ft);font-weight:800;color:var(--p4d);margin-bottom:6px">👉 Module suivant</div>'+
+'<div style="font-size:.9rem;color:var(--ink2)">'+NN+' — capturer l\'essentiel d\'un cours sans recopier mot à mot.</div></div>';
+const row=mk('row');row.appendChild(btn('Module suivant ➜','btnp',()=>location.href=NF));row.appendChild(btn('🏠 Accueil','btns',()=>location.href='index.html'));c.appendChild(row);r.appendChild(c)}
+render();
+</script>
+</body>
+</html>
