@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Méthodes de travail</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mt:#7C3AED;--mt-d:#5B21B6;--mt-m:#A78BFA;--mt-p:#EDE9FE;--mt-bg:#F5F3FF;
+  --ok:#34D399;--ok-d:#059669;--sun:#F59E0B;--sun-d:#B45309;--sun-p:#FEF3C7;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--inkf:#CBD5E1;
+  --w:#FFF;--panel:rgba(255,255,255,.96);
+  --rsm:10px;--rmd:18px;--rlg:28px;
+  --sh1:0 2px 8px rgba(15,23,42,.08);--sh2:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--mt-bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 35% at 4% 4%,rgba(124,58,237,.1) 0%,transparent 65%),
+             radial-gradient(ellipse 40% 30% at 96% 8%,rgba(245,158,11,.07) 0%,transparent 60%)}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--w);border:2px solid var(--inkf);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--mt);color:var(--mt-d)}
+.hero{text-align:center;padding:26px 20px 18px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--mt),var(--mt-d));color:#fff;border-radius:50px;padding:8px 22px;font-family:var(--ft);font-size:.9rem;font-weight:800;margin-bottom:14px;box-shadow:0 4px 0 var(--mt-d)}
+.hero-title{font-family:var(--ft);font-size:clamp(1.9rem,5vw,2.9rem);font-weight:900;margin-bottom:8px}
+.hero-title em{color:var(--mt);font-style:normal}
+.hero-sub{font-size:.97rem;color:var(--ink3);font-weight:600;max-width:480px;margin:0 auto 16px}
+.cm2-tag{display:inline-flex;align-items:center;gap:7px;background:var(--mt-p);border:2px solid rgba(124,58,237,.35);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.8rem;font-weight:800;color:var(--mt-d)}
+.xps{display:flex;gap:9px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.xp{display:flex;align-items:center;gap:5px;background:var(--w);border:2px solid var(--inkf);border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.8rem;font-weight:700}
+.xp.hl{border-color:var(--mt-m);background:var(--mt-p);color:var(--mt-d)}
+/* TABS */
+.tabs{display:flex;gap:0;background:var(--w);border-radius:var(--rmd);padding:6px;box-shadow:var(--sh1);border:1.5px solid var(--inkf);overflow-x:auto;margin-bottom:14px}
+.tab{flex:1;min-width:70px;padding:9px 5px;border-radius:var(--rsm);border:none;background:transparent;cursor:pointer;font-family:var(--ft);font-size:.7rem;font-weight:800;color:var(--ink3);transition:all .2s;white-space:nowrap;text-align:center;line-height:1.3}
+.tab:hover:not(.on){background:rgba(124,58,237,.08);color:var(--mt-d)}
+.tab.on{background:var(--mt);color:#fff;box-shadow:0 3px 8px rgba(124,58,237,.4)}
+.tab-ico{display:block;font-size:.95rem;margin-bottom:2px}
+/* CARDS */
+.card{background:var(--panel);border-radius:var(--rlg);box-shadow:var(--sh2);border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px;overflow:hidden;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.chead{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1.5px solid rgba(15,23,42,.07)}
+.ci{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;background:var(--mt-p)}
+.c-ok{background:#DCFCE7}.c-sun{background:var(--sun-p)}
+.ctitle{font-family:var(--ft);font-size:1rem;font-weight:800}
+.csub{font-size:.78rem;font-weight:700;color:var(--ink3);margin-top:2px}
+.cbody{padding:18px 20px}
+/* FICHE MÉTHODE */
+.fiche{background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(167,139,250,.03));border:1.5px solid rgba(124,58,237,.18);border-radius:var(--rmd);padding:17px;margin-bottom:14px}
+.fiche-title{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--mt-d);margin-bottom:10px}
+.fiche-txt{font-size:.9rem;line-height:1.72;color:var(--ink2)}
+.fiche-txt strong{color:var(--mt-d)}
+.etape{display:flex;gap:12px;align-items:flex-start;margin:8px 0;padding:10px 12px;background:var(--w);border-radius:var(--rsm);border-left:4px solid var(--mt)}
+.etape-num{width:28px;height:28px;border-radius:50%;background:var(--mt);color:#fff;font-family:var(--ft);font-size:.85rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.etape-txt{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.5}
+.etape-txt strong{color:var(--mt-d)}
+.astuce{background:var(--sun-p);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--rsm);padding:9px 13px;margin-top:10px;font-size:.84rem;color:var(--sun-d);font-weight:700}
+.astuce::before{content:'💡 '}
+.piegea{background:#FEE2E2;border:1.5px solid rgba(239,68,68,.25);border-radius:var(--rsm);padding:9px 13px;margin-top:8px;font-size:.84rem;color:#B91C1C;font-weight:700}
+.piegea::before{content:'⚠️ '}
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:7px;margin:12px 0}
+.cl-item{display:flex;align-items:center;gap:10px;background:var(--w);border:2px solid var(--inkf);border-radius:var(--rsm);padding:10px 14px;cursor:pointer;transition:all .18s;user-select:none}
+.cl-item.checked{border-color:var(--ok);background:#DCFCE7}
+.cl-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--inkf);background:var(--w);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .18s}
+.cl-item.checked .cl-box{border-color:var(--ok);background:var(--ok);color:#fff}
+.cl-txt{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.4}
+.cl-item.checked .cl-txt{color:var(--ok-d);text-decoration:line-through;text-decoration-color:rgba(5,150,105,.4)}
+/* SCÉNARIO */
+.scenario{background:linear-gradient(135deg,rgba(245,158,11,.07),rgba(254,243,199,.5));border:2px solid rgba(245,158,11,.25);border-radius:var(--rmd);padding:16px;margin-bottom:12px}
+.sc-situation{font-family:var(--ft);font-size:.95rem;font-weight:800;color:var(--ink);margin-bottom:12px;line-height:1.4}
+.sc-situation::before{content:'📖 Situation : '}
+.sc-choix{display:flex;flex-direction:column;gap:8px}
+.sc-opt{display:flex;align-items:flex-start;gap:10px;background:var(--w);border:2.5px solid var(--inkf);border-radius:var(--rsm);padding:12px 14px;cursor:pointer;font-size:.9rem;font-weight:600;text-align:left;transition:all .18s;line-height:1.45}
+.sc-opt:hover:not(:disabled){border-color:var(--mt-m);background:var(--mt-p)}
+.sc-opt.sc-ok{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.sc-opt.sc-ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.sc-opt:disabled{cursor:default}
+.sc-ico{font-size:1.3rem;flex-shrink:0;margin-top:1px}
+.sc-fb{border-radius:var(--rsm);padding:12px 14px;margin-top:10px;border:2px solid;animation:fu .3s both}
+.sc-fb.ok{background:#DCFCE7;border-color:var(--ok)}
+.sc-fb.ko{background:#FEE2E2;border-color:#EF4444}
+.sc-fbt{font-family:var(--ft);font-size:.95rem;font-weight:800;margin-bottom:5px}
+.sc-fbb{font-size:.87rem;line-height:1.55;color:var(--ink2)}
+/* QCM */
+.qctx{background:rgba(124,58,237,.07);border:1.5px solid rgba(124,58,237,.18);border-radius:var(--rsm);padding:9px 13px;margin-bottom:11px;font-size:.87rem;color:var(--ink2);font-style:italic;font-weight:600}
+.qq{font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:13px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--inkf);border-radius:var(--rsm);padding:11px 14px;cursor:pointer;font-size:.92rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.opt:hover:not(:disabled){border-color:var(--mt-m);background:var(--mt-p)}
+.opt.sel{border-color:var(--mt);background:var(--mt-p)}
+.opt.ok{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.opt:disabled{cursor:default}
+.olet{width:28px;height:28px;border-radius:7px;background:var(--inkf);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt.sel .olet{background:var(--mt);color:#fff}
+.opt.ok .olet{background:var(--ok);color:#fff}
+.opt.ko .olet{background:#EF4444;color:#fff}
+.fb{border-radius:var(--rsm);padding:11px 14px;margin-bottom:12px;border:2px solid}
+.fb.ok{background:#DCFCE7;border-color:var(--ok)}
+.fb.ko{background:#FEE2E2;border-color:#EF4444}
+.fbt{font-family:var(--ft);font-size:.92rem;font-weight:800;margin-bottom:4px}
+.fbb{font-size:.85rem;line-height:1.5}
+/* BILAN */
+.bilan{text-align:center;padding:6px 0 14px}
+.bscore{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--mt);margin-bottom:5px}
+.blbl{font-size:.88rem;color:var(--ink3);font-weight:600;margin-bottom:14px}
+.bbadge{display:inline-flex;align-items:center;gap:7px;border-radius:50px;padding:7px 18px;font-family:var(--ft);font-size:.88rem;font-weight:800;margin-bottom:14px}
+.bor{background:#FEF9C3;color:#92400E}.barg{background:#DBEAFE;color:#1E40AF}.bbr{background:#DCFCE7;color:#14532D}
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;padding:11px 24px;font-family:var(--ft);font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:all .15s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.b-mt{background:var(--mt);color:#fff}.bok{background:var(--ok-d);color:#fff}
+.bgh{background:var(--w);color:var(--ink2);border:2px solid var(--inkf);box-shadow:none}
+.bgh:hover{border-color:var(--ink2);transform:none}
+.brow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+/* MEMO */
+.memo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+@media(min-width:480px){.memo{grid-template-columns:repeat(3,1fr)}}
+.memo-item{background:var(--mt-p);border:1.5px solid rgba(124,58,237,.2);border-radius:var(--rsm);padding:10px;text-align:center}
+.memo-ico{font-size:1.5rem;margin-bottom:4px}
+.memo-lbl{font-family:var(--ft);font-size:.78rem;font-weight:800;color:var(--mt-d);line-height:1.3}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:11px 26px;border-radius:50px;font-family:var(--ft);font-weight:700;font-size:.92rem;z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:540px){.tab{min-width:58px;font-size:.65rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="topnav">
+  <a class="back" href="index.html">← Accueil</a>
+  <span style="font-size:.79rem;font-weight:700;color:var(--ink3)">Zone Révision</span>
+</nav>
+<header class="hero">
+  <div class="hero-badge">🛠️ Méthodes de travail</div>
+  <h1 class="hero-title">Mes <em>Méthodes</em></h1>
+  <p class="hero-sub">7 thèmes pour apprendre à apprendre — les outils qui font vraiment la différence en 6e.</p>
+  <div class="cm2-tag">🏫 CM2 → 6e · Compétences transversales</div>
+</header>
+<div class="tabs" id="tabs"></div>
+<div class="xps">
+  <div class="xp hl">⭐ <span id="xpTot">0</span> XP</div>
+  <div class="xp">✅ <span id="chapDone">0</span>/7 thèmes</div>
+</div>
+<div id="main"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ═══════════════════════════════════════════════════════
+   DONNÉES — 7 THÈMES MÉTHODES
+   Structure : fiche (étapes) + checklist + scénario + quiz
+═══════════════════════════════════════════════════════ */
+const DATA = [
+
+// ── M1 : ORGANISATION & AGENDA ──
+{ id:'m1', ico:'📅', label:'Agenda',
+  fiche:{
+    titre:'S\'organiser avec son agenda',
+    intro:'L\'agenda est ton meilleur allié en 6e. Au collège, tu auras plusieurs profs, plusieurs matières, des devoirs à court ET à long terme. Sans agenda, ça devient vite le chaos.',
+    etapes:[
+      {n:1, txt:'<strong>Note dès la fin du cours</strong>, pas le soir. La mémoire à court terme oublie vite — un devoir noté dans l\'heure est un devoir non oublié.'},
+      {n:2, txt:'<strong>Distingue deux types de travail</strong> : travail à faire (exercice pour demain) et travail à préparer (contrôle dans 3 jours, exposé dans 2 semaines).'},
+      {n:3, txt:'<strong>Note aussi les "apporter"</strong> : tenue EPS, livre de bibliothèque, autorisation signée. Aussi importants que les devoirs.'},
+      {n:4, txt:'<strong>Consulte ton agenda chaque soir</strong> avant de faire ton sac. Pas après — sinon tu oublies de prendre quelque chose.'},
+      {n:5, txt:'<strong>Planifie à l\'avance</strong> : si tu as un contrôle vendredi, commence à réviser mardi. Ne laisse pas tout pour jeudi soir.'},
+    ],
+    astuce:'La règle des 2 minutes : si une tâche prend moins de 2 minutes, fais-la maintenant. Si elle prend plus, note-la dans l\'agenda.',
+    piege:'Ne confonds pas "j\'ai tout dans la tête" et "j\'ai tout noté". Le cerveau n\'est pas un agenda — il oublie sélectivement, souvent les choses importantes.'
+  },
+  checklist:{
+    titre:'✅ Checklist agenda — chaque jour',
+    items:['J\'ai noté tous mes devoirs dans mon agenda','J\'ai noté les contrôles et évaluations à venir','J\'ai noté le matériel à apporter demain','J\'ai planifié les révisions pour les contrôles futurs','J\'ai vérifié mon agenda avant de faire mon sac']
+  },
+  scenario:{
+    situation:'Léa a un contrôle de géo vendredi. On est lundi. Elle se dit : "J\'ai le temps, je réviserai jeudi soir." Jeudi soir, elle a aussi un devoir de maths urgent et une leçon d\'anglais à apprendre.',
+    choix:[
+      {ico:'😬', txt:'Faire comme prévu : tout réviser jeudi soir en mode panique.', ok:false,
+       fb:'Résultat prévisible : révision bâclée, stress, sommeil court, contrôle raté. La procrastination a un coût réel — et il se paye toujours à la pire des heures.'},
+      {ico:'📅', txt:'Réviser un peu chaque jour dès lundi — 15 min par soir — et garder jeudi pour les maths et l\'anglais.', ok:true,
+       fb:'C\'est la méthode qui fonctionne. 15 min × 4 soirs = 1h de révision répartie. Le cerveau mémorise bien mieux les informations fragmentées dans le temps (effet d\'espacement).'},
+      {ico:'🤷', txt:'Ne pas réviser du tout — "les contrôles de géo ça se fait sans révisions".', ok:false,
+       fb:'Rarement vrai. Et même si ça fonctionnait en CM2 où le programme est connu depuis longtemps, en 6e, le rythme s\'accélère et le contenu est nouveau. Les révisions deviennent indispensables.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'Quand faut-il noter ses devoirs dans son agenda ?',
+     opts:['Le soir à la maison, en relisant ses cours','Dès la fin du cours, en classe','Le lendemain matin avant d\'arriver','Uniquement pour les contrôles importants'],
+     ok:1,xp:20,fb:'Dès la fin du cours, avant de passer à autre chose. La mémoire à court terme est fragile — un devoir "gardé en tête" pendant 6 heures a toutes les chances d\'être oublié.'},
+    {ctx:'Mathis a un devoir de math pour le lendemain et un exposé à rendre dans 10 jours.',q:'Que doit-il noter dans son agenda ?',
+     opts:['Seulement le devoir de math — l\'exposé c\'est dans longtemps','Seulement l\'exposé — il y a plus de travail','Les deux, avec une date de début pour l\'exposé','Rien — il s\'en souviendra'],
+     ok:2,xp:25,fb:'Les deux ! Le devoir de math va dans la case "demain". L\'exposé va dans la case de la date limite, mais aussi avec une note "commencer le..." quelques jours avant. Les travaux longs se préparent en plusieurs étapes.'},
+    {ctx:'',q:'La règle des 2 minutes, c\'est…',
+     opts:['Ne travailler que 2 minutes par matière','Si une tâche prend moins de 2 min, la faire immédiatement — sinon la noter','Réviser 2 minutes avant un contrôle','Faire une pause toutes les 2 minutes'],
+     ok:1,xp:20,fb:'La règle des 2 minutes vient des méthodes de productivité (David Allen, "Getting Things Done"). Idée simple : si ça prend moins de 2 min, autant le faire maintenant plutôt que de le noter, de l\'oublier, de le retrouver...'},
+  ]
+},
+
+// ── M2 : PRISE DE NOTES ──
+{ id:'m2', ico:'📝', label:'Prise de notes',
+  fiche:{
+    titre:'Prendre des notes efficacement',
+    intro:'En 6e, les profs parlent sans forcément dicter. Apprendre à noter vite et bien, c\'est une compétence clé — qui s\'apprend.',
+    etapes:[
+      {n:1, txt:'<strong>Note les titres, sous-titres et mots en gras</strong> en premier. Ce sont les repères du cours.'},
+      {n:2, txt:'<strong>Utilise des abréviations</strong> : → (donc/mène à), ≠ (différent), = (égal), ex. (exemple), def. (définition), imp. (important), pb (problème), qst (question).'},
+      {n:3, txt:'<strong>Saute des lignes</strong> entre les parties. Laisse une marge à gauche pour noter les mots-clés après le cours.'},
+      {n:4, txt:'<strong>Ne recopie pas mot pour mot</strong> — comprends d\'abord, reformule ensuite. Une note dans tes propres mots vaut mieux que la phrase exacte du prof.'},
+      {n:5, txt:'<strong>Relis et complète dans la demi-heure</strong> : ajoute ce que tu n\'as pas eu le temps de noter, souligne les points importants.'},
+    ],
+    astuce:'La méthode Cornell : divise ta page en 3 zones. Zone droite (large) = tes notes. Zone gauche (étroite) = mots-clés ajoutés après. Zone bas = résumé en 2-3 phrases.',
+    piege:'Piège classique : tout recopier = ne rien retenir. L\'écriture mécanique ne fait pas travailler le cerveau. C\'est la reformulation qui ancre la mémoire.'
+  },
+  checklist:{
+    titre:'✅ Checklist prise de notes',
+    items:['J\'ai noté la date et le titre du cours','J\'ai utilisé des abréviations pour aller plus vite','J\'ai sauté des lignes entre les parties','J\'ai laissé une marge pour les mots-clés','J\'ai relu et complété mes notes dans l\'heure']
+  },
+  scenario:{
+    situation:'Pendant un cours de SVT, le prof explique la photosynthèse en 10 minutes. Nina essaie de tout recopier mot pour mot. À la fin, elle a 3 pages très denses mais n\'a pas compris grand-chose.',
+    choix:[
+      {ico:'📝', txt:'Continuer à tout recopier — au moins elle n\'a rien perdu.', ok:false,
+       fb:'Le problème : recopier mécaniquement ne fait pas comprendre. Et relire 3 pages denses est décourageant. Les notes exhaustives peuvent être un faux sentiment de sécurité.'},
+      {ico:'🧠', txt:'Écouter d\'abord, noter seulement les points clés et les schémas, reformuler dans ses mots.', ok:true,
+       fb:'Exactement. Les notes efficaces ne sont pas un compte-rendu intégral mais un support de mémoire. On note ce qu\'on risque d\'oublier, pas ce qu\'on a compris — on reformule ce qu\'on a compris.'},
+      {ico:'😴', txt:'Ne rien noter — elle demandera le cours à une copine plus tard.', ok:false,
+       fb:'Risqué : la copine peut ne pas avoir mieux compris, avoir les mêmes lacunes, ou ne pas pouvoir donner ses notes. Et surtout : l\'effort de prise de notes, même imparfait, aide la mémorisation.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'À quoi sert la marge gauche dans la méthode Cornell ?',
+     opts:['À mettre les dates importantes','À noter les mots-clés après le cours pour retrouver les infos facilement','À coller les fiches de révision','Elle n\'a aucune utilité particulière'],
+     ok:1,xp:20,fb:'Dans la méthode Cornell, la marge gauche est réservée aux mots-clés qu\'on ajoute APRÈS le cours. On peut alors cacher la zone de droite et s\'interroger à partir des mots-clés — c\'est une technique de révision intégrée.'},
+    {ctx:'',q:'Laquelle de ces abréviations est correcte pour "c\'est-à-dire" ?',
+     opts:['cad','c-à-d','c\'d','ced'],
+     ok:1,xp:15,fb:'"c-à-d" est l\'abréviation standard de "c\'est-à-dire". Les abréviations sont personnelles — l\'essentiel est d\'être cohérent et de les comprendre 3 semaines plus tard.'},
+    {ctx:'Tom recopie tout le cours mot pour mot pendant 1h. Yasmine note les points clés en 20 min, puis relit et reformule en 10 min.',q:'Qui a probablement mieux appris ?',
+     opts:['Tom — il a plus travaillé longtemps','Yasmine — l\'effort de reformulation ancre mieux la mémoire','Pareil — c\'est le même volume d\'infos','Impossible à savoir'],
+     ok:1,xp:25,fb:'Yasmine. La recherche en sciences cognitives (Dunlosky, 2013) montre que la reformulation active (effort de compréhension + reformulation) est bien plus efficace que la copie passive. Le cerveau apprend quand il est actif, pas quand il transcrit mécaniquement.'},
+  ]
+},
+
+// ── M3 : APPRENDRE UNE LEÇON ──
+{ id:'m3', ico:'📖', label:'Apprendre',
+  fiche:{
+    titre:'Apprendre une leçon — mémoriser vraiment',
+    intro:'La pire façon d\'apprendre une leçon : la lire 5 fois en regardant la TV. La meilleure : se tester sans regarder le cours.',
+    etapes:[
+      {n:1, txt:'<strong>Lis la leçon une fois</strong> pour comprendre la structure. Repère les titres, les mots importants, les exemples.'},
+      {n:2, txt:'<strong>Ferme le cours. Essaie de te rappeler</strong> ce que tu viens de lire. Qu\'est-ce que tu retiens ? Note-le.'},
+      {n:3, txt:'<strong>Compare avec le cours</strong>. Qu\'as-tu oublié ? Qu\'as-tu mal compris ? Insiste sur ces points.'},
+      {n:4, txt:'<strong>Répète à voix haute</strong> — explique la leçon comme si tu étais le prof. Si tu peux l\'expliquer, tu l\'as comprise.'},
+      {n:5, txt:'<strong>Reviens sur la leçon le lendemain</strong> (et 3 jours après). L\'effet d\'espacement multiplie la rétention par 2 à 3.'},
+    ],
+    astuce:'La technique du "Feynman" : explique la notion à quelqu\'un qui n\'y connaît rien (un parent, un petit frère). Si tu butes, c\'est là que tu n\'as pas encore compris.',
+    piege:'Relire ≠ savoir. Le sentiment de familiarité qu\'on a après avoir relu plusieurs fois donne une fausse impression de maîtrise. Le vrai test : ferme le cours et récite.'
+  },
+  checklist:{
+    titre:'✅ Checklist révision de leçon',
+    items:['J\'ai lu la leçon une fois pour comprendre la structure','J\'ai fermé le cours et essayé de me rappeler','J\'ai vérifié ce que j\'avais oublié ou mal compris','J\'ai récité à voix haute (ou expliqué à quelqu\'un)','Je réviserai à nouveau demain et dans 3 jours']
+  },
+  scenario:{
+    situation:'Adam doit apprendre une leçon sur les fractions pour demain. Il lit la leçon 4 fois en soulignant avec 3 couleurs différentes. Il se sent prêt.',
+    choix:[
+      {ico:'📚', txt:'Continuer à relire — plus c\'est lu, mieux c\'est mémorisé.', ok:false,
+       fb:'Non. Les neurosciences le confirment : la relecture passive crée un sentiment de familiarité, pas une vraie mémorisation. Le cours semble "connu" mais au contrôle, rien ne sort.'},
+      {ico:'✏️', txt:'Fermer le cours, sortir une feuille blanche et se tester : refaire les exercices, réciter les définitions, expliquer à voix haute.', ok:true,
+       fb:'C\'est la méthode du "Retrieval Practice" — l\'une des techniques les plus validées par la recherche en éducation (Roediger & Karpicke, 2006). Se tester est plus efficace que relire, même si c\'est moins confortable.'},
+      {ico:'🎨', txt:'Faire une belle fiche de couleurs avec des dessins — ça aide à mémoriser.', ok:false,
+       fb:'Partiellement vrai : organiser l\'info sous forme de schéma peut aider. Mais si la fiche reste belle sans être utilisée pour se tester, c\'est du temps perdu. Une fiche a de la valeur si on s\'en sert pour se questionner.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'Qu\'est-ce que "l\'effet d\'espacement" en mémorisation ?',
+     opts:['Travailler dans un espace calme','Réviser la même leçon à des moments espacés dans le temps — ça multiplie la rétention','Laisser de l\'espace entre les lignes dans ses notes','Faire des pauses espacées toutes les heures'],
+     ok:1,xp:25,fb:'L\'effet d\'espacement (Ebbinghaus, 1885) montre qu\'on retient mieux si on révise la même chose à intervalles croissants : le lendemain, 3 jours après, 1 semaine après... Au lieu de tout réviser d\'un coup la veille.'},
+    {ctx:'',q:'La technique Feynman consiste à…',
+     opts:['Faire des fiches très détaillées','Expliquer une notion à quelqu\'un qui ne la connaît pas pour vérifier qu\'on l\'a vraiment comprise','Regarder des vidéos sur YouTube','Résoudre beaucoup d\'exercices d\'affilée'],
+     ok:1,xp:20,fb:'La technique Feynman (du physicien Richard Feynman, Prix Nobel 1965) : si tu ne peux pas expliquer quelque chose simplement, tu ne l\'as pas vraiment compris. Expliquer force à identifier les zones floues de sa compréhension.'},
+    {ctx:'Emma relit sa leçon 6 fois. Bastien la lit une fois, ferme le livre et se teste.',q:'Qui mémorisera mieux ?',
+     opts:['Emma — 6 fois c\'est forcément mieux','Bastien — se tester est plus efficace que relire','Pareil — c\'est le même temps de travail','Ça dépend de la matière'],
+     ok:1,xp:25,fb:'Bastien. Des dizaines d\'études montrent que se tester (même imparfaitement) produit une meilleure mémorisation à long terme que relire. C\'est contre-intuitif car se tester est plus difficile — mais la difficulté désirable renforce l\'apprentissage.'},
+  ]
+},
+
+// ── M4 : LIRE POUR COMPRENDRE ──
+{ id:'m4', ico:'🔍', label:'Lire',
+  fiche:{
+    titre:'Lire pour comprendre — lecture active',
+    intro:'Lire un texte et comprendre un texte, c\'est différent. La lecture active est une stratégie — pas juste un balayage des yeux de gauche à droite.',
+    etapes:[
+      {n:1, txt:'<strong>Avant de lire</strong> : survole le texte (titre, sous-titres, images, premier et dernier paragraphe). Formule une question : "De quoi parle ce texte ?"'},
+      {n:2, txt:'<strong>Pendant la lecture</strong> : souligne les mots-clés (max 5-7 par paragraphe). Entoure les mots inconnus. Note les questions que le texte soulève.'},
+      {n:3, txt:'<strong>Après chaque paragraphe</strong> : pause. "Qu\'ai-je appris ? Qu\'est-ce que ça veut dire en résumé ?"'},
+      {n:4, txt:'<strong>Les mots inconnus</strong> : essaie d\'abord de deviner avec le contexte. Si tu n\'y arrives pas, cherche dans le dictionnaire.'},
+      {n:5, txt:'<strong>En fin de texte</strong> : reformule le message principal en 1-2 phrases. Sans regarder le texte.'},
+    ],
+    astuce:'La méthode SQ3R : Survey (survoler) → Question (formuler des questions) → Read (lire) → Recite (réciter) → Review (réviser). Utilisée dans les universités depuis les années 1940.',
+    piege:'Lire vite n\'est pas lire bien. La lecture active est plus lente mais 3× plus efficace pour la compréhension et la rétention. Mieux vaut lire 2 pages bien que 10 pages mal.'
+  },
+  checklist:{
+    titre:'✅ Checklist lecture active',
+    items:['J\'ai survolé le texte avant de le lire (titre, sous-titres, images)','J\'ai formulé une question avant de commencer','J\'ai souligné les mots-clés (pas tout)','J\'ai noté les mots inconnus pour les chercher','J\'ai résumé le texte en 1-2 phrases après la lecture']
+  },
+  scenario:{
+    situation:'Inès doit lire un texte documentaire de 2 pages sur les volcans pour SVT. Elle le lit d\'une traite en 3 minutes, yeux glissant ligne par ligne. Arrivée à la fin, elle ne se souvient pas du début.',
+    choix:[
+      {ico:'🔄', txt:'Relire encore une fois, de la même façon, en espérant que ça "rentre".', ok:false,
+       fb:'La même méthode donnera le même résultat. Lire passivement plusieurs fois est l\'une des stratégies les moins efficaces selon la recherche (Dunlosky et al., 2013).'},
+      {ico:'✏️', txt:'Reprendre le texte, lire lentement par paragraphe, souligner les idées importantes, noter une question-résumé après chaque partie.', ok:true,
+       fb:'C\'est la lecture active. Elle est plus lente, mais le cerveau travaille vraiment. Les informations traitées activement s\'ancrent en mémoire à long terme — contrairement aux infos "balayées" passivement.'},
+      {ico:'📱', txt:'Chercher un résumé du texte sur internet — c\'est plus rapide.', ok:false,
+       fb:'Risqué pour plusieurs raisons : résumé potentiellement incorrect, aucun effort cognitif (donc rien mémorisé), et contourne le travail de compréhension qui est l\'objectif de la tâche.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'Que faire avec un mot inconnu dans un texte ?',
+     opts:['L\'ignorer et continuer','Le chercher immédiatement dans le dictionnaire','Essayer d\'abord de le deviner avec le contexte, puis chercher si nécessaire','Souligner et passer au suivant'],
+     ok:2,xp:20,fb:'Essayer de deviner avec le contexte est une compétence de lecteur expert. Le contexte donne souvent des indices suffisants. Si vraiment on ne comprend pas, on cherche — mais s\'interrompre pour chaque mot inconnu casse le fil de la lecture.'},
+    {ctx:'',q:'Pourquoi faut-il faire une pause après chaque paragraphe ?',
+     opts:['Pour se reposer les yeux','Pour vérifier qu\'on a bien compris avant de continuer, et ancrer l\'info en mémoire','Pour noter tous les mots difficiles','Parce que les professeurs l\'exigent'],
+     ok:1,xp:25,fb:'La pause active après chaque paragraphe oblige le cerveau à traiter l\'information — pas juste à la faire passer. "Qu\'est-ce que ça voulait dire ?" est la question clé. C\'est ce traitement actif qui produit la compréhension et la mémorisation.'},
+    {ctx:'',q:'La méthode SQ3R, c\'est…',
+     opts:['Un logiciel de prise de notes','Une technique de lecture active en 5 étapes : Survoler, Questionner, Lire, Réciter, Réviser','Une façon de classer ses classeurs','Un système de notation au collège'],
+     ok:1,xp:20,fb:'SQ3R = Survey, Question, Read, Recite, Review. Méthode développée par Francis Robinson en 1946 et toujours considérée comme une des plus efficaces pour la lecture de textes complexes. Simple mais puissante.'},
+  ]
+},
+
+// ── M5 : RÉDIGER ──
+{ id:'m5', ico:'✍️', label:'Rédiger',
+  fiche:{
+    titre:'Rédiger un texte — brouillon, structure, relecture',
+    intro:'Rédiger, ça ne commence pas en écrivant la première phrase. Ça commence par réfléchir à ce qu\'on va dire — et dans quel ordre.',
+    etapes:[
+      {n:1, txt:'<strong>Lis bien la consigne</strong> plusieurs fois. Souligne les mots importants. "Décris", "explique", "compare", "raconte" : ce ne sont pas la même chose.'},
+      {n:2, txt:'<strong>Fais un brouillon d\'idées</strong> : note tout ce qui te vient, sans ordre, sans te censurer. Carte mentale, liste, nuage de mots.'},
+      {n:3, txt:'<strong>Organise tes idées</strong> : introduction (de quoi je parle ?), développement (mes arguments/informations), conclusion (ce que ça signifie).'},
+      {n:4, txt:'<strong>Rédige en faisant des phrases complètes</strong>. Connecteurs utiles : d\'abord, ensuite, enfin, cependant, en effet, c\'est pourquoi, ainsi.'},
+      {n:5, txt:'<strong>Relis avant de rendre</strong> : orthographe, accords sujet-verbe, ponctuation, sens des phrases. Relis à voix basse — les oreilles repèrent ce que les yeux ratent.'},
+    ],
+    astuce:'Règle des 3 relectures : 1re relecture = le sens (est-ce que ça veut dire ce que je voulais ?) · 2e = les phrases (sont-elles complètes ? bien construites ?) · 3e = l\'orthographe.',
+    piege:'Écrire directement "au propre" au lieu de faire un brouillon : on perd du temps à corriger des erreurs de structure qu\'un plan aurait évitées. Le brouillon n\'est pas un luxe — c\'est un gain de temps.'
+  },
+  checklist:{
+    titre:'✅ Checklist rédaction',
+    items:['J\'ai relu et souligné les mots importants de la consigne','J\'ai noté mes idées au brouillon avant de rédiger','J\'ai organisé mon texte (intro, développement, conclusion)','J\'ai utilisé des connecteurs logiques','J\'ai relu 3 fois (sens, phrases, orthographe)']
+  },
+  scenario:{
+    situation:'Lucas doit rédiger un texte sur les effets de la Révolution française. Sans lire la consigne jusqu\'au bout, il commence immédiatement à tout écrire sur ce qu\'il sait. Au bout de 20 minutes, il réalise que la consigne demandait de "comparer avant et après 1789" — pas juste de "raconter".',
+    choix:[
+      {ico:'🔄', txt:'Continuer quand même — au moins il a beaucoup écrit.', ok:false,
+       fb:'Le travail fait ne correspond pas à la consigne. Avoir "beaucoup écrit" sur le mauvais sujet ne vaut souvent rien. Un travail hors sujet est noté 0 ou très peu, même s\'il est bien écrit.'},
+      {ico:'📋', txt:'S\'arrêter, relire la consigne, tracer un nouveau plan qui compare avant/après 1789, et rédiger à nouveau.', ok:true,
+       fb:'Difficile mais juste. Mieux vaut s\'arrêter et recommencer que de finir un travail hors sujet. La leçon : toujours lire et relire la consigne avant d\'écrire la première phrase.'},
+      {ico:'🛠️', txt:'Adapter ce qu\'il a écrit pour faire semblant de comparer — glisser quelques "avant" et "après".', ok:false,
+       fb:'Ça se voit facilement à la correction. Un texte bricolé pour ressembler à la consigne sans l\'être vraiment est moins bien noté qu\'un texte court mais vraiment dans le sujet. Mieux vaut moins mais juste.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'Pourquoi fait-on un brouillon avant de rédiger ?',
+     opts:['Pour perdre du temps','Pour organiser ses idées et éviter les erreurs de structure coûteuses à corriger plus tard','Parce que le professeur l\'exige toujours','Pour avoir quelque chose à montrer si on n\'a pas fini'],
+     ok:1,xp:20,fb:'Le brouillon est un investissement de temps qui en fait gagner. Il permet de trier les idées, d\'organiser le plan, de repérer ce qui manque — avant de rédiger "au propre". Un texte rédigé d\'un jet sans plan est souvent décousu.'},
+    {ctx:'',q:'La 3e relecture est consacrée à…',
+     opts:['Vérifier le sens global du texte','Vérifier la construction des phrases','Vérifier l\'orthographe et les accords','Ajouter des idées oubliées'],
+     ok:2,xp:20,fb:'La 3e relecture est spécifiquement dédiée à l\'orthographe et aux accords. En avoir une spécialement pour ça permet de se concentrer uniquement sur ça — sans être distrait par le sens ou la structure.'},
+    {ctx:'',q:'Dans "Décris, explique, compare, raconte" — lequel demande un point de vue critique ?',
+     opts:['Décris','Raconte','Compare','Explique'],
+     ok:2,xp:25,fb:'"Comparer" implique de mettre deux choses en regard, d\'identifier ressemblances et différences, et souvent d\'émettre un jugement argumenté. C\'est un niveau cognitif plus élevé que décrire ou raconter. En 6e, le "compare" devient fréquent — à distinguer du simple "décris".'},
+  ]
+},
+
+// ── M6 : RÉSOUDRE UN PROBLÈME ──
+{ id:'m6', ico:'🧮', label:'Problème',
+  fiche:{
+    titre:'Résoudre un problème — démarche et vérification',
+    intro:'Un problème de maths (ou de physique, ou de géo) n\'est pas une course à la réponse. C\'est un processus en étapes — chacune a son importance.',
+    etapes:[
+      {n:1, txt:'<strong>Lis le problème deux fois</strong>. La première fois pour comprendre la situation. La deuxième fois pour identifier : Qu\'est-ce qu\'on me donne ? Qu\'est-ce qu\'on me demande ?'},
+      {n:2, txt:'<strong>Schématise si possible</strong>. Un dessin, un tableau, une frise chronologique — n\'importe quoi qui rend la situation visible.'},
+      {n:3, txt:'<strong>Identifie l\'opération ou la méthode</strong>. Quelle connaissance du cours s\'applique ici ? Formule ? Règle ? Propriété ?'},
+      {n:4, txt:'<strong>Calcule proprement</strong>, étape par étape, en montrant ton raisonnement. Ne saute pas d\'étapes même si elles semblent évidentes.'},
+      {n:5, txt:'<strong>Vérifie le résultat</strong> : est-ce que ça a du sens ? (Une vitesse négative, un âge de 200 ans = erreur.) Est-ce que l\'unité est correcte ? Peut-on vérifier par une autre méthode ?'},
+    ],
+    astuce:'Technique de l\'ordre de grandeur : avant de calculer, estime grossièrement la réponse. "Ça devrait être autour de 50." Si tu trouves 5 000, il y a forcément une erreur.',
+    piege:'Donner un résultat sans unité en maths/sciences = réponse incomplète. 45 ce n\'est pas pareil que 45 km, 45 km/h ou 45 kg. L\'unité fait partie de la réponse.'
+  },
+  checklist:{
+    titre:'✅ Checklist résolution de problème',
+    items:['J\'ai lu le problème 2 fois','J\'ai identifié ce qu\'on me donne et ce qu\'on me demande','J\'ai schématisé la situation','J\'ai montré toutes les étapes de mon calcul','J\'ai vérifié que le résultat est cohérent et a la bonne unité']
+  },
+  scenario:{
+    situation:'Chloé a un problème : "Un train part de Paris à 120 km/h. Il doit parcourir 360 km. Combien de temps met-il ?" Elle calcule 360 × 120 = 43 200. Elle écrit "43 200" comme réponse.',
+    choix:[
+      {ico:'✅', txt:'Rendre la copie — 43 200 c\'est le résultat trouvé.', ok:false,
+       fb:'43 200 n\'a aucun sens pour une durée de trajet. Avant de rendre, la vérification de cohérence aurait signalé le problème : un trajet de 3h ne peut pas donner 43 200 (de quoi ?). De plus, il manque l\'unité — et l\'opération est fausse (il fallait diviser, pas multiplier).'},
+      {ico:'🔍', txt:'Relire le problème, identifier la bonne opération (durée = distance ÷ vitesse = 360 ÷ 120 = 3h), vérifier la cohérence (3h pour 360 km à 120 km/h = oui), noter l\'unité.', ok:true,
+       fb:'Bonne démarche. Durée = Distance ÷ Vitesse. 360 ÷ 120 = 3 heures. La vérification de cohérence est simple : à 120 km/h, 3h = 360 km. ✓ Et l\'unité (heures) est indispensable.'},
+      {ico:'🤷', txt:'Arrondir à 43 000 pour que ça paraisse plus "propre".', ok:false,
+       fb:'Arrondir un résultat faux donne toujours un résultat faux. Et un résultat de 43 000 heures pour un trajet en train serait encore plus incohérent. La vérification de sens aurait évité tout ça.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'Pourquoi faut-il toujours écrire l\'unité avec le résultat ?',
+     opts:['C\'est une convention inutile','"45" seul ne veut rien dire — 45 km, 45 euros, 45 minutes : ce sont des choses très différentes','Pour remplir davantage la feuille','Seulement en physique-chimie, pas en maths'],
+     ok:1,xp:20,fb:'L\'unité est partie intégrante de la réponse. "45" sans unité n\'est pas une réponse complète — et en contrôle, des points sont systématiquement retirés. En physique c\'est encore plus strict : une réponse sans unité peut être considérée comme fausse.'},
+    {ctx:'',q:'La technique de l\'ordre de grandeur consiste à…',
+     opts:['Donner une réponse approximative quand on ne sait pas','Estimer grossièrement le résultat avant de calculer pour détecter les erreurs grossières','Classer les problèmes par ordre de difficulté','Arrondir tous les résultats à la dizaine'],
+     ok:1,xp:25,fb:'Avant de calculer, on se demande : "La réponse devrait être autour de combien ?" Si on trouve ensuite un résultat 1000× plus grand ou plus petit, on sait qu\'il y a une erreur quelque part. C\'est un filet de sécurité très efficace.'},
+    {ctx:'Problème : "Un cycliste roule à 18 km/h pendant 2,5 heures. Quelle distance parcourt-il ?"',q:'Quelle est la bonne opération ?',
+     opts:['18 ÷ 2,5','18 + 2,5','18 × 2,5','2,5 ÷ 18'],
+     ok:2,xp:25,fb:'Distance = Vitesse × Temps. 18 × 2,5 = 45 km. Vérification de sens : à 18 km/h en 2h30, ça donne ~45 km — cohérent pour du vélo. Formule à retenir : D = V × T (donc V = D/T et T = D/V).'},
+  ]
+},
+
+// ── M7 : S'ORGANISER AU COLLÈGE ──
+{ id:'m7', ico:'🎒', label:'Au collège',
+  fiche:{
+    titre:'S\'organiser au collège — cahiers, classeurs, matériel',
+    intro:'Au collège, tu auras 8 à 10 matières différentes, autant de profs et de façons de travailler. Un système d\'organisation clair t\'évite les oublis, les doublons et le sac qui pèse 10 kg.',
+    etapes:[
+      {n:1, txt:'<strong>Un cahier par matière</strong> (ou un classeur avec intercalaires). Note la matière, la date et le titre en début de chaque cours — toujours au même endroit.'},
+      {n:2, txt:'<strong>Ton sac la veille, pas le matin</strong>. Le soir, tu as le temps de vérifier l\'agenda et de préparer tout ce qu\'il faut. Le matin, tu es pressé et tu oublies.'},
+      {n:3, txt:'<strong>Une trousse complète</strong> : stylo noir, stylo bleu, rouge, crayon, gomme, règle, compas, calculatrice. Pas d\'excuse "j\'avais pas mon compas".'},
+      {n:4, txt:'<strong>Fais le tri régulièrement</strong>. Une fois par semaine : vide les feuilles volantes du fond du sac, classe les documents, jette ce qui n\'est plus utile.'},
+      {n:5, txt:'<strong>Les feuilles distribuées</strong> : colle-les ou classe-les le jour même. Une feuille "qui traîne" est une feuille perdue.'},
+    ],
+    astuce:'Le système des "matières du jour" : ne mets dans ton sac que les matières prévues à ton emploi du temps. Ça divise souvent le poids du sac par deux.',
+    piege:'Le classeur "fourre-tout" : si tout est mélangé dans le même classeur sans ordre, retrouver un document prend autant de temps qu\'en refaire un. Un classeur bien organisé, c\'est du temps gagné chaque jour.'
+  },
+  checklist:{
+    titre:'✅ Checklist organisation hebdomadaire',
+    items:['J\'ai un cahier (ou intercalaire) par matière, clairement identifié','Je prépare mon sac le soir en consultant mon agenda','Ma trousse est complète et vérifiée','J\'ai classé les feuilles distribuées cette semaine','J\'ai fait le tri dans mon sac au moins une fois cette semaine']
+  },
+  scenario:{
+    situation:'Théo a tout dans un seul grand classeur sans ordre. Pendant un cours de math, il cherche la feuille de la semaine dernière pendant 5 minutes. Il en cherche une autre pendant le cours suivant. À la fin de la journée, il a perdu 15 minutes sur des recherches et raté le début de deux cours.',
+    choix:[
+      {ico:'📁', txt:'Continuer avec le même système — il finira par s\'y retrouver.', ok:false,
+       fb:'15 minutes par jour × 180 jours d\'école = 45 heures perdues sur l\'année. Un mauvais système d\'organisation a un coût réel, cumulé et invisible au quotidien.'},
+      {ico:'🗂️', txt:'Mettre en place un classeur à intercalaires par matière, et classer les feuilles le soir même quand elles sont distribuées.', ok:true,
+       fb:'C\'est le système qui fonctionne. L\'investissement (acheter des intercalaires, prendre 5 min pour classer) rapporte beaucoup : on retrouve tout immédiatement, on ne perd plus de documents, on peut réviser avec ses propres notes.'},
+      {ico:'📱', txt:'Photographier toutes les feuilles avec son téléphone — comme ça elles ne peuvent pas être perdues.', ok:false,
+       fb:'Bonne idée comme solution de secours, mais problématique comme système principal : les téléphones sont souvent interdits en classe, les photos s\'accumulent et deviennent impossibles à retrouver, et ça ne remplace pas avoir les documents physiques pour travailler.'},
+    ]
+  },
+  quiz:[
+    {ctx:'',q:'Pourquoi préparer son sac le soir plutôt que le matin ?',
+     opts:['Par habitude scolaire','Le soir, on a le temps de vérifier l\'agenda et de ne rien oublier — le matin on est pressé','Le sac est moins lourd le soir','Les professeurs préfèrent'],
+     ok:1,xp:20,fb:'Le soir, on a le temps, l\'agenda est là, on peut vérifier tranquillement. Le matin, le stress du réveil, du petit-déjeuner et du bus fait qu\'on oublie systématiquement quelque chose. La préparation du sac est une routine du soir, pas du matin.'},
+    {ctx:'',q:'Que faire avec une feuille distribuée en cours ?',
+     opts:['La mettre dans le fond du sac pour plus tard','La ranger dans le bon intercalaire ou classeur le soir même','La confier à un ami pour ne pas la perdre','La plier et la glisser dans le cahier'],
+     ok:1,xp:20,fb:'"Le soir même" est la clé. Une feuille non classée dans la journée a 80% de chances de se retrouver froissée au fond du sac ou perdue. Le classement immédiat (ou dans les 24h) est la seule méthode fiable.'},
+    {ctx:'',q:'Le "système des matières du jour", c\'est…',
+     opts:['Étudier une seule matière par jour','Ne mettre dans son sac que les matières prévues à l\'emploi du temps de la journée','Classer ses matières par ordre d\'importance','Alternation les matières préférées et les autres'],
+     ok:1,xp:25,fb:'Mettre seulement les matières du jour allège considérablement le sac — qui peut sinon peser jusqu\'à 10 kg. Un sac trop lourd = risque pour le dos et fatigue supplémentaire. L\'emploi du temps est affiché la semaine, pas en secret.'},
+  ]
+}
+];
+
+/* ═══════════════════════════════════════════════════════
+   ÉTAT
+═══════════════════════════════════════════════════════ */
+let chapIdx = 0;
+let xpTotal = 0;
+let chapDoneSet = new Set();
+let chapState = {};
+// scénario state
+let scState = {}; // {chapId: {chosen, answered}}
+
+function getCh(){ return DATA[chapIdx]; }
+function getCS(){
+  const id=getCh().id;
+  if(!chapState[id]) chapState[id]={qIdx:0,qSel:null,qDone:false,xp:0};
+  return chapState[id];
+}
+function getSC(){
+  const id=getCh().id;
+  if(!scState[id]) scState[id]={chosen:null,answered:false};
+  return scState[id];
+}
+function $(id){ return document.getElementById(id); }
+function mk(c,tag='div'){ const e=document.createElement(tag); e.className=c; return e; }
+function btn(l,c,fn){ const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=l; b.onclick=fn; return b; }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
+function addXP(n){ xpTotal+=n; $('xpTot').textContent=xpTotal; toast('⭐ +'+n+' XP !'); }
+function markDone(){
+  chapDoneSet.add(getCh().id);
+  $('chapDone').textContent=chapDoneSet.size;
+  renderTabs();
+}
+
+/* TABS */
+function renderTabs(){
+  const tabs=$('tabs'); tabs.innerHTML='';
+  DATA.forEach((ch,i)=>{
+    const t=document.createElement('button');
+    t.className='tab'+(i===chapIdx?' on':'');
+    t.innerHTML=`<span class="tab-ico">${ch.ico}</span>${ch.label}${chapDoneSet.has(ch.id)?' ✅':''}`;
+    t.onclick=()=>{ chapIdx=i; renderTabs(); renderChap(); };
+    tabs.appendChild(t);
+  });
+}
+
+/* ═══ RENDU PRINCIPAL ═══ */
+function renderChap(){
+  const ch=getCh(); const cs=getCS(); const sc=getSC(); const main=$('main'); main.innerHTML='';
+
+  // ── FICHE MÉTHODE ──
+  const fcard=mk('card'); main.appendChild(fcard);
+  const fhd=mk('chead'); fcard.appendChild(fhd);
+  const fci=mk('ci'); fci.textContent=ch.ico; fhd.appendChild(fci);
+  fhd.innerHTML+=`<div><div class="ctitle">${ch.fiche.titre}</div><div class="csub">📋 Fiche méthode</div></div>`;
+  const fb=mk('cbody'); fcard.appendChild(fb);
+  const fiche=mk('fiche'); fb.appendChild(fiche);
+  fiche.innerHTML=`<div class="fiche-title">${ch.fiche.titre}</div><div class="fiche-txt">${ch.fiche.intro}</div>`;
+  ch.fiche.etapes.forEach(e=>{
+    const et=mk('etape'); fiche.appendChild(et);
+    const en=mk('etape-num'); en.textContent=e.n; et.appendChild(en);
+    const etx=mk('etape-txt'); etx.innerHTML=e.txt; et.appendChild(etx);
+  });
+  if(ch.fiche.astuce){ const a=mk('astuce'); a.textContent=ch.fiche.astuce; fiche.appendChild(a); }
+  if(ch.fiche.piege){ const p=mk('piegea'); p.textContent=ch.fiche.piege; fiche.appendChild(p); }
+
+  // ── CHECKLIST ──
+  const clcard=mk('card'); main.appendChild(clcard);
+  const clhd=mk('chead'); clcard.appendChild(clhd);
+  const clci=mk('ci c-ok'); clci.textContent='✅'; clhd.appendChild(clci);
+  clhd.innerHTML+=`<div><div class="ctitle">${ch.checklist.titre}</div><div class="csub">Coche au fur et à mesure</div></div>`;
+  const clb=mk('cbody'); clcard.appendChild(clb);
+  let clChecked=new Set();
+  const clList=mk('checklist'); clb.appendChild(clList);
+  ch.checklist.items.forEach((item,i)=>{
+    const li=mk('cl-item'); clList.appendChild(li);
+    const box=mk('cl-box'); box.textContent=''; li.appendChild(box);
+    const txt=mk('cl-txt'); txt.textContent=item; li.appendChild(txt);
+    li.onclick=()=>{
+      if(clChecked.has(i)){ clChecked.delete(i); li.classList.remove('checked'); box.textContent=''; }
+      else { clChecked.add(i); li.classList.add('checked'); box.textContent='✓'; }
+      if(clChecked.size===ch.checklist.items.length) toast('✅ Checklist complète ! Bien joué.');
+    };
+  });
+
+  // ── SCÉNARIO ──
+  const sccard=mk('card'); main.appendChild(sccard);
+  const schd=mk('chead'); sccard.appendChild(schd);
+  const scci=mk('ci c-sun'); scci.textContent='📖'; schd.appendChild(scci);
+  schd.innerHTML+=`<div><div class="ctitle">Scénario — que ferais-tu ?</div><div class="csub">Une situation réelle, 3 choix</div></div>`;
+  const scb=mk('cbody'); sccard.appendChild(scb);
+  const scen=mk('scenario'); scb.appendChild(scen);
+  const ssit=mk('sc-situation'); ssit.textContent=ch.scenario.situation; scen.appendChild(ssit);
+  const schoix=mk('sc-choix'); scen.appendChild(schoix);
+  ch.scenario.choix.forEach((c,i)=>{
+    const opt=document.createElement('button'); opt.className='sc-opt';
+    opt.innerHTML=`<span class="sc-ico">${c.ico}</span><span>${c.txt}</span>`;
+    if(sc.answered){
+      opt.disabled=true;
+      if(i===sc.chosen) opt.classList.add(c.ok?'sc-ok':'sc-ko');
+      else if(c.ok) opt.classList.add('sc-ok');
+    } else {
+      opt.onclick=()=>{ sc.chosen=i; sc.answered=true; if(c.ok) addXP(30); renderChap(); };
+    }
+    schoix.appendChild(opt);
+  });
+  if(sc.answered){
+    const cho=ch.scenario.choix[sc.chosen];
+    const scfb=mk('sc-fb '+(cho.ok?'ok':'ko')); scen.appendChild(scfb);
+    scfb.innerHTML=`<div class="sc-fbt">${cho.ok?'✅ Bon choix !':'❌ Pas la meilleure option…'}</div><div class="sc-fbb">${cho.fb}</div>`;
+  }
+
+  // ── QCM ──
+  const qcard=mk('card'); main.appendChild(qcard);
+  const qhd=mk('chead'); qcard.appendChild(qhd);
+  const qci=mk('ci c-ok'); qci.textContent='❓'; qhd.appendChild(qci);
+  qhd.innerHTML+=`<div><div class="ctitle">Questions</div><div class="csub">${cs.qIdx+1} / ${ch.quiz.length}</div></div>`;
+  const qb=mk('cbody'); qcard.appendChild(qb);
+  renderQ(qb,ch,cs);
+}
+
+/* QCM */
+function renderQ(parent,ch,cs){
+  parent.innerHTML='';
+  if(cs.qIdx>=ch.quiz.length){ renderBilan(parent,ch,cs); return; }
+  const q=ch.quiz[cs.qIdx];
+  if(q.ctx){ const c=mk('qctx'); c.textContent=q.ctx; parent.appendChild(c); }
+  const qq=mk('qq'); qq.textContent=q.q; parent.appendChild(qq);
+  const opts=mk('opts'); parent.appendChild(opts);
+  const val=btn('Valider','b-mt',null); val.disabled=true;
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML=`<span class="olet">${String.fromCharCode(65+i)}</span><span>${o}</span>`;
+    if(cs.qDone){
+      b.disabled=true;
+      if(i===q.ok) b.classList.add('ok');
+      else if(i===cs.qSel) b.classList.add('ko');
+    } else {
+      if(i===cs.qSel) b.classList.add('sel');
+      b.onclick=()=>{ cs.qSel=i; val.disabled=false; renderQ(parent,ch,cs); };
+    }
+    opts.appendChild(b);
+  });
+  if(cs.qDone){
+    const fb=mk('fb '+(cs.qSel===q.ok?'ok':'ko'));
+    fb.innerHTML=`<div class="fbt">${cs.qSel===q.ok?'✅ Exact !':'❌ Pas tout à fait…'}</div><div class="fbb">${q.fb}</div>`;
+    parent.appendChild(fb);
+    const isL=cs.qIdx===ch.quiz.length-1;
+    const row=mk('brow');
+    row.appendChild(btn(isL?'Voir mon bilan ➜':'Question suivante →','b-mt',()=>{
+      if(cs.qSel===q.ok){ cs.xp+=q.xp; addXP(q.xp); }
+      cs.qIdx++; cs.qSel=null; cs.qDone=false; renderQ(parent,ch,cs);
+    }));
+    parent.appendChild(row);
+  } else {
+    val.onclick=()=>{
+      if(cs.qSel===null){toast('Choisis une réponse !');return;}
+      cs.qDone=true; renderQ(parent,ch,cs);
+    };
+    if(cs.qSel!==null) val.disabled=false;
+    const row=mk('brow'); row.appendChild(val); parent.appendChild(row);
+  }
+}
+
+/* BILAN */
+function renderBilan(parent,ch,cs){
+  markDone();
+  const total=ch.quiz.reduce((a,q)=>a+q.xp,0);
+  let badge,bc;
+  if(cs.xp>=total*.8){badge='🥇 Excellent !';bc='bbr';}
+  else if(cs.xp>=total*.5){badge='🥈 Bien joué';bc='barg';}
+  else{badge='🥉 Continue !';bc='bor';}
+  parent.innerHTML='';
+  const b=mk('bilan'); parent.appendChild(b);
+  b.innerHTML=`<div class="bscore">${ch.ico}</div><div class="blbl">${ch.label} — terminé !</div><div class="bbadge ${bc}">${badge}</div>`;
+  const row=mk('brow'); b.appendChild(row);
+  const ni=chapIdx+1;
+  if(ni<DATA.length) row.appendChild(btn('Thème suivant →','b-mt',()=>{ chapIdx=ni; renderTabs(); renderChap(); }));
+  row.appendChild(btn('🏠 Accueil','bgh',()=>location.href='index.html'));
+}
+
+/* INIT */
+renderTabs(); renderChap();
+</script>
+</body>
+</html>

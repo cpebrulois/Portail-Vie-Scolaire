@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Sciences CM2</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sc:#10B981;--sc-d:#065F46;--sc-m:#34D399;--sc-p:#D1FAE5;--sc-bg:#F0FDF4;
+  --bio:#8B5CF6;--bio-p:#EDE9FE;
+  --phy:#3B82F6;--phy-p:#DBEAFE;
+  --eco:#F59E0B;--eco-p:#FEF3C7;
+  --ok:#34D399;--ok-d:#059669;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--inkf:#CBD5E1;
+  --w:#FFF;--panel:rgba(255,255,255,.96);
+  --rsm:10px;--rmd:18px;--rlg:28px;
+  --sh1:0 2px 8px rgba(15,23,42,.08);--sh2:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--sc-bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 35% at 4% 4%,rgba(16,185,129,.1) 0%,transparent 65%),
+             radial-gradient(ellipse 40% 30% at 96% 8%,rgba(139,92,246,.07) 0%,transparent 60%)}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--w);border:2px solid var(--inkf);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--sc);color:var(--sc-d)}
+.hero{text-align:center;padding:26px 20px 18px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--sc),#059669);color:#fff;border-radius:50px;padding:8px 22px;font-family:var(--ft);font-size:.9rem;font-weight:800;margin-bottom:14px;box-shadow:0 4px 0 var(--sc-d)}
+.hero-title{font-family:var(--ft);font-size:clamp(1.9rem,5vw,2.9rem);font-weight:900;margin-bottom:8px;color:var(--ink)}
+.hero-title em{color:var(--sc);font-style:normal}
+.hero-sub{font-size:.97rem;color:var(--ink3);font-weight:600;max-width:480px;margin:0 auto 16px}
+.cm2-tag{display:inline-flex;align-items:center;gap:7px;background:var(--sc-p);border:2px solid rgba(16,185,129,.35);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.8rem;font-weight:800;color:var(--sc-d)}
+.xps{display:flex;gap:9px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.xp{display:flex;align-items:center;gap:5px;background:var(--w);border:2px solid var(--inkf);border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.8rem;font-weight:700}
+.xp.hl{border-color:var(--sc-m);background:var(--sc-p);color:var(--sc-d)}
+.tabs{display:flex;gap:0;background:var(--w);border-radius:var(--rmd);padding:6px;box-shadow:var(--sh1);border:1.5px solid var(--inkf);overflow-x:auto;margin-bottom:14px}
+.tab{flex:1;min-width:72px;padding:9px 5px;border-radius:var(--rsm);border:none;background:transparent;cursor:pointer;font-family:var(--ft);font-size:.72rem;font-weight:800;color:var(--ink3);transition:all .2s;white-space:nowrap;text-align:center;line-height:1.3}
+.tab:hover:not(.on){background:rgba(16,185,129,.08);color:var(--sc-d)}
+.tab.on{background:var(--sc);color:#fff;box-shadow:0 3px 8px rgba(16,185,129,.4)}
+.tab-ico{display:block;font-size:.95rem;margin-bottom:2px}
+.card{background:var(--panel);border-radius:var(--rlg);box-shadow:var(--sh2);border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px;overflow:hidden;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.chead{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1.5px solid rgba(15,23,42,.07)}
+.ci{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.c-sc{background:var(--sc-p)}.c-bio{background:var(--bio-p)}.c-phy{background:var(--phy-p)}.c-eco{background:var(--eco-p)}.c-ok{background:#DCFCE7}
+.ctitle{font-family:var(--ft);font-size:1rem;font-weight:800}
+.csub{font-size:.78rem;font-weight:700;color:var(--ink3);margin-top:2px}
+.cbody{padding:18px 20px}
+.cours{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(52,211,153,.03));border:1.5px solid rgba(16,185,129,.18);border-radius:var(--rmd);padding:17px;margin-bottom:14px}
+.ctit{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--sc-d);margin-bottom:9px}
+.ctxt{font-size:.9rem;line-height:1.72;color:var(--ink2)}
+.ctxt strong{color:var(--sc-d)}
+.ex-box{background:var(--w);border-left:4px solid var(--sc);border-radius:var(--rsm);padding:10px 14px;margin:10px 0;font-size:.88rem;line-height:1.55}
+.astuce{background:var(--sc-p);border:1.5px solid rgba(16,185,129,.3);border-radius:var(--rsm);padding:9px 13px;margin-top:9px;font-size:.84rem;color:var(--sc-d);font-weight:700}
+.astuce::before{content:'💡 '}
+.regle{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:var(--rsm);padding:9px 13px;margin-top:8px;font-size:.84rem;color:#1E40AF;font-weight:700}
+.regle::before{content:'📌 '}
+/* SCHÉMA INTERACTIF */
+.schema-wrap{background:var(--w);border:2px solid var(--inkf);border-radius:var(--rmd);padding:16px;margin-bottom:14px;text-align:center}
+.schema-title{font-family:var(--ft);font-size:.88rem;font-weight:800;color:var(--sc-d);margin-bottom:12px}
+.schema-hint{font-size:.75rem;color:var(--ink3);font-style:italic;margin-top:8px}
+/* Système solaire */
+.solar{display:flex;align-items:center;gap:0;overflow-x:auto;padding:10px 0;min-width:520px}
+.planet-wrap{display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;transition:transform .2s}
+.planet-wrap:hover{transform:scale(1.1)}
+.planet{border-radius:50%;margin-bottom:5px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.planet-name{font-family:var(--ft);font-size:.65rem;font-weight:800;color:var(--ink2);text-align:center}
+.planet-info{display:none;position:absolute;background:var(--ink);color:#fff;border-radius:12px;padding:10px 14px;font-size:.78rem;font-weight:600;line-height:1.5;z-index:10;max-width:200px;text-align:left;box-shadow:var(--sh2)}
+.planet-wrap.active .planet-info{display:block}
+/* Chaîne alimentaire drag */
+.chain-area{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.chain-slot{border:2.5px dashed var(--inkf);border-radius:var(--rmd);padding:12px 16px;min-height:50px;display:flex;align-items:center;justify-content:center;transition:border-color .2s;font-family:var(--ft);font-size:.9rem;font-weight:700;color:var(--ink3)}
+.chain-slot.filled{border-style:solid;border-color:var(--sc);color:var(--ink);background:var(--sc-p)}
+.chain-slot.ok-slot{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.chain-slot.ko-slot{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.chain-cards{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chain-card{background:var(--w);border:2px solid var(--inkf);border-radius:var(--rsm);padding:8px 14px;cursor:pointer;font-family:var(--ft);font-size:.88rem;font-weight:700;transition:all .18s}
+.chain-card:hover:not(.used){border-color:var(--sc);background:var(--sc-p);color:var(--sc-d)}
+.chain-card.selected{border-color:var(--sc);background:var(--sc-p);color:var(--sc-d)}
+.chain-card.used{opacity:.35;cursor:default}
+/* Circuit */
+.circuit-svg{width:100%;max-width:420px;height:200px}
+.circ-comp{cursor:pointer;transition:all .2s}
+.circ-comp:hover rect,.circ-comp:hover circle{filter:brightness(1.15)}
+.circ-comp.on rect{fill:#FEF9C3}.circ-comp.on circle{fill:#FDE68A}
+/* FLASHCARDS */
+.fc-hint{font-size:.74rem;color:var(--ink3);text-align:center;margin-bottom:8px;font-style:italic}
+.fcwrap{perspective:1000px;cursor:pointer;margin-bottom:12px}
+.fcinner{width:100%;min-height:148px;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--rmd)}
+.fcinner.flip{transform:rotateY(180deg)}
+.fcface{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--rmd);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.fcf{background:var(--w);border:2px solid var(--inkf);box-shadow:var(--sh1)}
+.fcb{background:linear-gradient(135deg,var(--sc-p),#ECFDF5);border:2px solid var(--sc);transform:rotateY(180deg)}
+.fctag{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:.5}
+.fcq{font-family:var(--ft);font-size:.97rem;font-weight:800;color:var(--ink);line-height:1.3}
+.fcb .fcq{font-size:.88rem;color:var(--sc-d);font-weight:700}
+.fcsub{font-size:.74rem;color:var(--ink3);font-style:italic}
+.fcnav{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.fcctr{font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink3)}
+/* QCM */
+.qctx{background:rgba(16,185,129,.07);border:1.5px solid rgba(16,185,129,.2);border-radius:var(--rsm);padding:9px 13px;margin-bottom:11px;font-size:.87rem;color:var(--ink2);font-style:italic;font-weight:600}
+.qq{font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:13px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--inkf);border-radius:var(--rsm);padding:11px 14px;cursor:pointer;font-size:.92rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.opt:hover:not(:disabled){border-color:var(--sc-m);background:var(--sc-p)}
+.opt.sel{border-color:var(--sc);background:var(--sc-p)}
+.opt.ok{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.opt:disabled{cursor:default}
+.olet{width:28px;height:28px;border-radius:7px;background:var(--inkf);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt.sel .olet{background:var(--sc);color:#fff}
+.opt.ok .olet{background:var(--ok);color:#fff}
+.opt.ko .olet{background:#EF4444;color:#fff}
+.fb{border-radius:var(--rsm);padding:11px 14px;margin-bottom:12px;border:2px solid}
+.fb.ok{background:#DCFCE7;border-color:var(--ok)}
+.fb.ko{background:#FEE2E2;border-color:#EF4444}
+.fbt{font-family:var(--ft);font-size:.92rem;font-weight:800;margin-bottom:4px}
+.fbb{font-size:.85rem;line-height:1.5}
+.bilan{text-align:center;padding:6px 0 14px}
+.bscore{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--sc);margin-bottom:5px}
+.blbl{font-size:.88rem;color:var(--ink3);font-weight:600;margin-bottom:14px}
+.bbadge{display:inline-flex;align-items:center;gap:7px;border-radius:50px;padding:7px 18px;font-family:var(--ft);font-size:.88rem;font-weight:800;margin-bottom:14px}
+.bor{background:#FEF9C3;color:#92400E}.barg{background:#DBEAFE;color:#1E40AF}.bbr{background:#DCFCE7;color:#14532D}
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;padding:11px 24px;font-family:var(--ft);font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:all .15s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.b-sc{background:var(--sc);color:#fff}.bok{background:var(--ok-d);color:#fff}
+.bgh{background:var(--w);color:var(--ink2);border:2px solid var(--inkf);box-shadow:none}
+.bgh:hover{border-color:var(--ink2);transform:none}
+.brow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:11px 26px;border-radius:50px;font-family:var(--ft);font-weight:700;font-size:.92rem;z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:540px){.tab{min-width:60px;font-size:.67rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="topnav">
+  <a class="back" href="index.html">← Accueil</a>
+  <span style="font-size:.79rem;font-weight:700;color:var(--ink3)">Zone Révision</span>
+</nav>
+<header class="hero">
+  <div class="hero-badge">🔬 Révision Sciences</div>
+  <h1 class="hero-title">Les <em>Sciences</em></h1>
+  <p class="hero-sub">6 domaines pour comprendre le vivant, la matière et l'Univers.</p>
+  <div class="cm2-tag">🏫 Niveau CM2 — raccord cycle 3 → 6e</div>
+</header>
+<div class="tabs" id="tabs"></div>
+<div class="xps">
+  <div class="xp hl">⭐ <span id="xpTot">0</span> XP</div>
+  <div class="xp">✅ <span id="chapDone">0</span>/6 domaines</div>
+</div>
+<div id="main"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ═══════════════════════════════════════════════════════
+   DONNÉES — 6 DOMAINES SCIENCES CM2
+═══════════════════════════════════════════════════════ */
+const DATA = [
+
+// ── S1 : LE VIVANT ──
+{ id:'s1', ico:'🌿', label:'Le vivant',
+  cours:{
+    titre:'Classification du vivant et cellule',
+    txt:`Tous les êtres vivants partagent des caractéristiques communes : ils se <strong>nourrissent</strong>, se <strong>reproduisent</strong>, <strong>respirent</strong> et <strong>meurent</strong>.<br><br>
+La <strong>classification du vivant</strong> regroupe les êtres vivants selon leurs caractères communs. Grandes catégories : animaux, végétaux, champignons, bactéries.<br><br>
+Au microscope, tout être vivant est composé de <strong>cellules</strong> — l'unité de base du vivant. Les cellules animales ont une membrane, un cytoplasme et un noyau. Les cellules végétales ont en plus une paroi et des chloroplastes (qui permettent la photosynthèse).`,
+    ex:'Une <strong>cellule végétale</strong> contient des chloroplastes, responsables de la couleur verte des plantes. Ces organites captent la lumière solaire pour fabriquer du sucre — c\'est la photosynthèse.',
+    astuce:'Critères du vivant à retenir : naissance · nutrition · croissance · reproduction · mort. Un caillou ne fait rien de tout ça — un virus, c\'est discuté !',
+    regle:'Virus = vivant ou non-vivant ? Débat scientifique réel. Les virus ne sont pas des cellules, ne se reproduisent qu\'à l\'intérieur d\'une cellule hôte. En 6e, on les classe souvent à part.'
+  },
+  fc:[
+    {q:'Quelles sont les 5 caractéristiques communes à tous les êtres vivants ?',
+     a:'Naissance (ou émergence), nutrition, croissance, reproduction, mort.',
+     hint:'Un caillou ne fait rien de tout ça.',
+     ah:'Certains ajoutent la respiration et la réponse aux stimuli. Mais ces 5 critères sont les plus souvent retenus en cycle 3.'},
+    {q:'Qu\'est-ce qu\'une cellule ?',
+     a:'L\'unité de base de tout être vivant. Elle contient une membrane, un cytoplasme et un noyau.',
+     hint:'Cellule = brique élémentaire du vivant.',
+     ah:'Certains êtres ne sont constitués que d\'une seule cellule : les bactéries, les amibes. On les appelle unicellulaires.'},
+    {q:'Quelle est la différence principale entre cellule animale et végétale ?',
+     a:'La cellule végétale possède une paroi rigide et des chloroplastes (permettant la photosynthèse). La cellule animale n\'en a pas.',
+     hint:'Le vert de la plante vient des chloroplastes.',
+     ah:'La chlorophylle, contenue dans les chloroplastes, absorbe la lumière rouge et bleue, et réfléchit le vert — d\'où la couleur des feuilles.'},
+    {q:'Qu\'est-ce que la photosynthèse ?',
+     a:'Le processus par lequel les végétaux utilisent la lumière solaire, l\'eau et le CO₂ pour fabriquer du sucre (glucose) et libérer de l\'oxygène.',
+     hint:'Photo = lumière / synthèse = fabrication.',
+     ah:'Formule simplifiée : eau + CO₂ + lumière → glucose + O₂. Les plantes "mangent" de la lumière !'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Lequel de ces éléments N\'est PAS un être vivant ?',
+     opts:['Un champignon','Un virus','Un caillou','Une bactérie'],ok:2,xp:20,
+     fb:'Un caillou n\'est pas vivant : il ne se nourrit pas, ne se reproduit pas, ne croît pas. Le champignon, la bactérie sont des êtres vivants. Le virus est un cas limite — il ne peut se reproduire qu\'en parasitant une cellule hôte.'},
+    {type:'qcm',ctx:'',q:'La photosynthèse produit…',
+     opts:['Du CO₂ et de l\'eau','De l\'oxygène et du glucose','De l\'azote et de l\'énergie','Des vitamines et des minéraux'],ok:1,xp:25,
+     fb:'La photosynthèse : eau + CO₂ + lumière → glucose (sucre, énergie) + O₂. Les plantes rejettent donc de l\'oxygène — indispensable à notre respiration.'},
+    {type:'qcm',ctx:'',q:'Qu\'est-ce que les chloroplastes ?',
+     opts:['Les organes de la digestion végétale','Les organites des cellules végétales qui captent la lumière pour la photosynthèse','Le squelette de la cellule','Le noyau de la cellule végétale'],ok:1,xp:25,
+     fb:'Les chloroplastes sont des organites (petits organes) présents dans les cellules végétales. Ils contiennent la chlorophylle, qui capte la lumière et permet la photosynthèse. Leur couleur verte donne aux plantes leur teinte.'},
+  ]
+},
+
+// ── S2 : CORPS HUMAIN ──
+{ id:'s2', ico:'🫀', label:'Corps humain',
+  cours:{
+    titre:'Les grands systèmes du corps humain',
+    txt:`Le corps humain est organisé en <strong>systèmes</strong> (ou appareils) qui travaillent ensemble :<br><br>
+• <strong>Système digestif</strong> : transforme les aliments en nutriments absorbables (bouche → œsophage → estomac → intestins)<br>
+• <strong>Système respiratoire</strong> : apporte l\'O₂ dans le sang et rejette le CO₂ (nez/bouche → trachée → poumons)<br>
+• <strong>Système circulatoire</strong> : distribue nutriments et O₂ à tout le corps via le sang (cœur + vaisseaux)<br>
+• <strong>Système nerveux</strong> : commande et coordonne tous les autres (cerveau + moelle épinière + nerfs)<br>
+• <strong>Système musculo-squelettique</strong> : soutient et fait bouger le corps (os + muscles)`,
+    ex:'Le cœur bat environ <strong>70 fois par minute</strong> au repos, soit plus de 100 000 fois par jour. En une vie, il bat plus de 2,5 milliards de fois — sans jamais s\'arrêter pour se reposer.',
+    astuce:'Mémo des 5 systèmes : "Digestif Respiratoire Circulatoire Nerveux Musculo" → DR CNN M.',
+    regle:'En 6e (SVT), tu étudieras chacun de ces systèmes en détail. Au CM2, l\'objectif est de savoir les nommer, les localiser et connaître leur grande fonction.'
+  },
+  fc:[
+    {q:'Quel est le rôle du système digestif ?',
+     a:'Transformer les aliments en nutriments assimilables par le sang, qui les distribue ensuite à tout le corps.',
+     hint:'Bouche → estomac → intestins.',
+     ah:'La digestion commence dès la bouche (mastication + salive). L\'intestin grêle (6-7 m !) absorbe la plupart des nutriments.'},
+    {q:'Quel est le rôle du système respiratoire ?',
+     a:'Apporter l\'oxygène (O₂) dans le sang et en rejeter le CO₂ (dioxyde de carbone).',
+     hint:'On inspire de l\'O₂, on expire du CO₂.',
+     ah:'Les poumons contiennent environ 300 millions d\'alvéoles — de minuscules sacs où se font les échanges gazeux entre l\'air et le sang.'},
+    {q:'Que fait le cœur ?',
+     a:'Il pompe le sang dans tout le corps via les vaisseaux sanguins, distribuant O₂ et nutriments à chaque cellule.',
+     hint:'Le cœur = pompe centrale du système circulatoire.',
+     ah:'Le cœur est un muscle (le myocarde). Il bat ~70 fois/min au repos et peut monter à 200 fois/min à l\'effort.'},
+    {q:'Quel système commande tous les autres ?',
+     a:'Le système nerveux (cerveau, moelle épinière, nerfs). Il reçoit les informations des sens et envoie des ordres aux muscles et organes.',
+     hint:'Sans cerveau, pas d\'action possible.',
+     ah:'Le cerveau humain contient environ 86 milliards de neurones. Ces cellules nerveuses communiquent à des vitesses allant jusqu\'à 430 km/h.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'Un enfant mange une pomme.',q:'Dans quel système commence la digestion de cette pomme ?',
+     opts:['Système circulatoire','Système respiratoire','Système digestif','Système nerveux'],ok:2,xp:20,
+     fb:'La digestion commence dans la bouche — partie du système digestif. La mastication et la salive commencent à décomposer les aliments avant même l\'estomac.'},
+    {type:'qcm',ctx:'',q:'Quel organe échange l\'O₂ et le CO₂ entre l\'air et le sang ?',
+     opts:['Le cœur','Le foie','Les poumons','Les reins'],ok:2,xp:25,
+     fb:'Les poumons sont l\'organe des échanges gazeux : l\'O₂ de l\'air passe dans le sang (pour nourrir les cellules), et le CO₂ produit par le corps passe du sang vers l\'air expiré.'},
+    {type:'qcm',ctx:'',q:'Si quelqu\'un souffre d\'une fracture (os cassé), quel système est touché ?',
+     opts:['Système nerveux','Système musculo-squelettique','Système digestif','Système respiratoire'],ok:1,xp:20,
+     fb:'Les os font partie du système musculo-squelettique (aussi appelé appareil locomoteur). Une fracture touche donc ce système. La guérison implique aussi le système circulatoire (apport de nutriments pour réparer l\'os).'},
+  ]
+},
+
+// ── S3 : MATIÈRE ──
+{ id:'s3', ico:'⚗️', label:'Matière',
+  cours:{
+    titre:'Matière et matériaux — états, mélanges, propriétés',
+    txt:`La matière peut exister sous <strong>3 états</strong> :<br>
+• <strong>Solide</strong> : forme et volume propres (glace, bois, métal)<br>
+• <strong>Liquide</strong> : volume propre mais prend la forme du récipient (eau, huile)<br>
+• <strong>Gazeux</strong> : ni forme ni volume propres (vapeur, air)<br><br>
+On peut passer d\'un état à l\'autre par changements de température :<br>
+<strong>fusion</strong> (solide→liquide) · <strong>solidification</strong> (liquide→solide) · <strong>vaporisation</strong> (liquide→gaz) · <strong>condensation</strong> (gaz→liquide) · <strong>sublimation</strong> (solide→gaz)<br><br>
+<strong>Mélanges</strong> : homogène (indissociable à l\'œil : eau salée) vs hétérogène (phases visibles : vinaigrette, eau+sable).`,
+    ex:'L\'eau pure se solidifie à <strong>0°C</strong> et se vaporise à <strong>100°C</strong> (à pression atmosphérique normale). Ces températures sont des repères universels — utilisés pour définir l\'échelle Celsius.',
+    astuce:'Mémo des changements d\'état : "Fuse Vaporise Sublime / Condense Solidifie Dépose" (dans les deux sens : chauffage / refroidissement).',
+    regle:'Lors d\'un changement d\'état, la matière change de forme mais pas de nature ni de masse. L\'eau reste de l\'eau, qu\'elle soit glace, liquide ou vapeur.'
+  },
+  fc:[
+    {q:'Quels sont les 3 états de la matière ?',
+     a:'Solide (forme et volume propres), liquide (volume propre, prend la forme du récipient), gazeux (ni forme ni volume propres).',
+     hint:'Glace / eau / vapeur d\'eau — même matière, 3 états.',
+     ah:'Il existe un 4e état : le plasma (comme dans le Soleil ou un éclair). Mais il n\'est pas au programme en CM2.'},
+    {q:'Comment s\'appelle le passage de l\'état solide à l\'état liquide ?',
+     a:'La fusion. Exemple : la glace fond à 0°C pour devenir de l\'eau liquide.',
+     hint:'Ça fond = fusion.',
+     ah:'La solidification, c\'est l\'inverse : liquide → solide. L\'eau se solidifie à 0°C.'},
+    {q:'Qu\'est-ce qu\'un mélange homogène ?',
+     a:'Un mélange où les composants ne sont pas distinguables à l\'œil nu. Exemple : eau sucrée, eau salée.',
+     hint:'Homo = même. Tout semble uniforme.',
+     ah:'Même si on ne voit pas le sucre dans l\'eau, il est bien présent — on peut le récupérer en évaporant l\'eau.'},
+    {q:'Comment séparer un mélange eau + sable ?',
+     a:'Par filtration : on verse le mélange dans un filtre (entonnoir + papier filtre) — le sable reste dans le filtre, l\'eau passe.',
+     hint:'Le sable ne se dissout pas dans l\'eau.',
+     ah:'D\'autres techniques de séparation : décantation (laisser reposer), évaporation (pour récupérer un sel dissous), distillation.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'On met un glaçon dans un verre à température ambiante.',q:'Quel changement d\'état se produit ?',
+     opts:['Vaporisation','Condensation','Fusion','Solidification'],ok:2,xp:20,
+     fb:'Le glaçon (solide) devient de l\'eau (liquide) — c\'est la fusion. Elle se produit quand la température dépasse 0°C (point de fusion de l\'eau à pression normale).'},
+    {type:'qcm',ctx:'',q:'Un mélange eau + huile est…',
+     opts:['Homogène : eau et huile se mélangent parfaitement','Hétérogène : on voit deux phases distinctes','Une solution chimique','Un changement d\'état'],ok:1,xp:25,
+     fb:'Eau et huile ne se mélangent pas — elles forment deux couches distinctes (l\'huile surnage car moins dense). C\'est un mélange hétérogène. Pour forcer le mélange : émulsifiant (comme la moutarde dans la vinaigrette).'},
+    {type:'qcm',ctx:'',q:'Lors de la solidification de l\'eau, sa masse…',
+     opts:['Diminue','Augmente légèrement','Reste identique','Dépend de la température'],ok:2,xp:25,
+     fb:'Lors d\'un changement d\'état, la masse est conservée. 100g d\'eau liquide donnent 100g de glace. (Note : le volume change — la glace est moins dense que l\'eau, elle flotte. Mais la masse ne change pas.)'},
+  ]
+},
+
+// ── S4 : FORCES ET MOUVEMENTS ──
+{ id:'s4', ico:'⚡', label:'Forces',
+  cours:{
+    titre:'Forces, mouvements et électricité',
+    txt:`Une <strong>force</strong> est une action exercée sur un objet qui peut le mettre en mouvement, l\'arrêter ou le déformer. Elle a une <strong>direction</strong>, un <strong>sens</strong> et une <strong>valeur</strong> (en Newtons, N).<br><br>
+<strong>Gravité</strong> : force exercée par la Terre sur tous les objets, dirigée vers le bas. C\'est ce qui fait tomber les objets et ce qui nous maintient au sol.<br><br>
+<strong>Circuit électrique</strong> : pour qu\'un appareil fonctionne, il faut un circuit <strong>fermé</strong> reliant une source d\'énergie (pile), des conducteurs (fils) et un récepteur (ampoule, moteur). Un <strong>interrupteur ouvert</strong> coupe le circuit.`,
+    ex:'La gravité terrestre est d\'environ <strong>9,81 N/kg</strong>. Un objet de 1 kg "pèse" donc ~10 N à la surface de la Terre. Sur la Lune (gravité 6× plus faible), ce même objet ne pèserait que ~1,6 N.',
+    astuce:'Retiens : poids ≠ masse. La masse (kg) ne change pas selon l\'endroit. Le poids (N) dépend de la gravité — il serait 6× plus faible sur la Lune.',
+    regle:'Un circuit électrique ne peut fonctionner que s\'il est fermé (boucle continue de la pile au récepteur et retour). Un seul fil coupé ou un interrupteur ouvert = plus de courant.'
+  },
+  interactif: 'circuit',
+  fc:[
+    {q:'Qu\'est-ce que la gravité ?',
+     a:'La force exercée par la Terre (ou tout astre massif) sur les objets, dirigée vers le centre de la Terre.',
+     hint:'C\'est ce qui fait tomber une pomme.',
+     ah:'Newton a formulé la loi de la gravitation universelle (vers 1687) après avoir observé (selon la légende) une pomme tomber d\'un arbre.'},
+    {q:'Quelle est la différence entre masse et poids ?',
+     a:'La masse (kg) est une propriété intrinsèque de la matière — elle ne change pas. Le poids (N) est une force due à la gravité — il varie selon l\'endroit (Terre, Lune, espace).',
+     hint:'Sur la Lune, tu pèses 6× moins mais ta masse ne change pas.',
+     ah:'C\'est pour ça qu\'on dit qu\'un astronaute est en "apesanteur" dans l\'espace — son poids est quasi nul (loin de tout astre), mais sa masse reste identique.'},
+    {q:'Quand dit-on qu\'un circuit électrique est fermé ?',
+     a:'Quand il forme une boucle continue et ininterrompue entre la borne + de la pile, le récepteur, et la borne −.',
+     hint:'Fermé = courant circule. Ouvert = courant bloqué.',
+     ah:'Un interrupteur ouvert crée une coupure dans la boucle. Un interrupteur fermé la complète. Un court-circuit, c\'est une connexion directe + vers − sans passer par le récepteur.'},
+    {q:'Qu\'est-ce qu\'un conducteur électrique ?',
+     a:'Un matériau qui laisse passer le courant électrique facilement. Exemples : métaux (cuivre, aluminium, fer), eau salée.',
+     hint:'Opposé = isolant (plastique, bois, verre).',
+     ah:'Les fils électriques sont en cuivre (conducteur) entouré de plastique (isolant). Le plastique protège contre les chocs électriques.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'Une ampoule branchée sur une pile ne s\'allume pas.',q:'Quelle est la cause la plus probable ?',
+     opts:['L\'ampoule est trop petite','Le circuit est ouvert (fil coupé ou interrupteur ouvert)','La pile est trop lourde','L\'ampoule a trop de masse'],ok:1,xp:25,
+     fb:'Pour qu\'une ampoule s\'allume, le circuit doit être fermé (boucle continue). Si elle ne s\'allume pas, il y a probablement une coupure : fil débranché, interrupteur ouvert, pile à plat ou ampoule grillée.'},
+    {type:'qcm',ctx:'',q:'Un astronaute pèse 700 N sur Terre. Sur la Lune (gravité 6× plus faible), il pèse…',
+     opts:['700 N (même poids)','~117 N','0 N (apesanteur totale)','4 200 N'],ok:1,xp:25,
+     fb:'Sur la Lune, la gravité est ~6 fois plus faible. 700 ÷ 6 ≈ 117 N. La masse de l\'astronaute ne change pas (toujours ~70 kg), mais son poids diminue. L\'apesanteur totale (0 N) n\'existe que très loin de tout astre.'},
+    {type:'qcm',ctx:'',q:'Lequel de ces matériaux est un conducteur électrique ?',
+     opts:['Plastique','Bois sec','Cuivre','Verre'],ok:2,xp:20,
+     fb:'Le cuivre est un excellent conducteur électrique — c\'est pour ça que la quasi-totalité des fils électriques en contiennent. Le plastique, le bois sec et le verre sont des isolants.'},
+  ]
+},
+
+// ── S5 : TERRE ET UNIVERS ──
+{ id:'s5', ico:'🪐', label:'Terre & Univers',
+  cours:{
+    titre:'Le système solaire et la Terre dans l\'Univers',
+    txt:`Le <strong>système solaire</strong> est composé du <strong>Soleil</strong> (étoile centrale) et de 8 planètes qui lui tournent autour (+ astéroïdes, comètes, planètes naines).<br><br>
+Ordre des planètes (de la plus proche au plus éloignée du Soleil) :<br>
+<strong>Mercure · Vénus · Terre · Mars · Jupiter · Saturne · Uranus · Neptune</strong><br><br>
+La <strong>Terre</strong> fait une révolution autour du Soleil en <strong>365,25 jours</strong> (1 an) et tourne sur elle-même en <strong>24h</strong> (1 jour). L\'inclinaison de son axe crée les <strong>saisons</strong>. La <strong>Lune</strong> tourne autour de la Terre en ~29 jours.`,
+    ex:'Le Soleil est si grand qu\'on pourrait y faire tenir <strong>1,3 million de Terres</strong>. Et pourtant, c\'est une étoile de taille moyenne ! L\'étoile la plus proche de nous (après le Soleil) : Proxima Centauri, à 4,2 années-lumière.',
+    astuce:'Mémo des 8 planètes : "<strong>M</strong>a <strong>V</strong>ieille <strong>T</strong>ante <strong>M</strong>arie <strong>J</strong>oue <strong>S</strong>ur <strong>U</strong>n <strong>N</strong>ouvel orgue."',
+    regle:'Pluton n\'est plus une planète depuis 2006 — elle a été reclassée en "planète naine". Le système solaire compte donc 8 planètes et non plus 9.'
+  },
+  interactif: 'solaire',
+  fc:[
+    {q:'Combien y a-t-il de planètes dans le système solaire ?',
+     a:'8 planètes : Mercure, Vénus, Terre, Mars, Jupiter, Saturne, Uranus, Neptune.',
+     hint:'Pluton n\'en fait plus partie depuis 2006.',
+     ah:'Moyen mémo : "Ma Vieille Tante Marie Joue Sur Un Nouvel orgue."'},
+    {q:'Pourquoi y a-t-il des saisons sur Terre ?',
+     a:'À cause de l\'inclinaison de l\'axe terrestre (~23,5°). Quand l\'hémisphère Nord est incliné vers le Soleil, c\'est l\'été. Incliné de l\'autre côté, c\'est l\'hiver.',
+     hint:'Ce n\'est pas la distance Terre-Soleil qui cause les saisons.',
+     ah:'Au contraire, la Terre est légèrement plus proche du Soleil en hiver (dans l\'hémisphère Nord) qu\'en été — et pourtant il fait plus froid ! C\'est bien l\'inclinaison axiale qui compte.'},
+    {q:'Combien de temps la Terre met-elle pour faire le tour du Soleil ?',
+     a:'365,25 jours — soit environ 1 an. Le quart de jour s\'accumule pour former une année bissextile tous les 4 ans (366 jours).',
+     hint:'365 jours + 1 jour tous les 4 ans = année bissextile.',
+     ah:'En plus de sa révolution autour du Soleil, la Terre tourne sur elle-même en 24h → c\'est le jour et la nuit.'},
+    {q:'Qu\'est-ce qu\'une étoile ? En quoi diffère-t-elle d\'une planète ?',
+     a:'Une étoile produit sa propre lumière par fusion nucléaire (ex : le Soleil). Une planète ne produit pas de lumière — elle réfléchit celle de son étoile.',
+     hint:'La nuit, les étoiles scintillent. Les planètes ont une lumière plus stable.',
+     ah:'On voit Vénus à l\'œil nu — c\'est l\'objet le plus brillant du ciel nocturne après la Lune. Mais c\'est une planète : elle réfléchit la lumière solaire.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Quelle planète est la plus proche du Soleil ?',
+     opts:['Vénus','Terre','Mars','Mercure'],ok:3,xp:20,
+     fb:'Mercure est la planète la plus proche du Soleil. Elle fait le tour du Soleil en seulement 88 jours. Paradoxalement, Vénus est plus chaude malgré sa plus grande distance — en raison de son effet de serre extrême.'},
+    {type:'qcm',ctx:'',q:'Pourquoi la Lune semble-t-elle changer de forme chaque nuit ?',
+     opts:['Elle change vraiment de taille','La Terre projette son ombre sur la Lune','On voit des portions différentes de la face éclairée de la Lune selon sa position','Des nuages cachent des parties de la Lune'],ok:2,xp:25,
+     fb:'La Lune tourne autour de la Terre en ~29 jours. Selon sa position, on voit une portion plus ou moins grande de sa face éclairée par le Soleil → ce sont les phases de la Lune (nouvelle lune, croissant, pleine lune…).'},
+    {type:'qcm',ctx:'',q:'Le Soleil est…',
+     opts:['Une planète très chaude','La plus grande planète du système solaire','Une étoile au centre du système solaire','Un satellite de la Terre'],ok:2,xp:20,
+     fb:'Le Soleil est une étoile — une immense boule de gaz (hydrogène surtout) qui produit de l\'énergie par fusion nucléaire. Il représente ~99,8% de la masse totale du système solaire.'},
+  ]
+},
+
+// ── S6 : ÉCOLOGIE ──
+{ id:'s6', ico:'🌍', label:'Écologie',
+  cours:{
+    titre:'Chaînes alimentaires, biodiversité et environnement',
+    txt:`Une <strong>chaîne alimentaire</strong> représente les relations de prédation entre les êtres vivants. Elle commence toujours par un <strong>producteur</strong> (végétal, capable de photosynthèse) suivi de <strong>consommateurs</strong>.<br><br>
+Exemple : herbe → lapin → renard → décomposeurs (champignons, bactéries)<br><br>
+La <strong>biodiversité</strong> désigne la variété des espèces vivantes dans un milieu. Elle est menacée par la déforestation, la pollution, le changement climatique et la surexploitation.<br><br>
+Un <strong>écosystème</strong> est l\'ensemble formé par un milieu (biotope) et ses êtres vivants (biocénose) en interaction.`,
+    ex:'Si on supprime les renards d\'un écosystème, la population de lapins explose → ils mangent toute l\'herbe → les autres herbivores meurent de faim → tout l\'écosystème se déséquilibre. C\'est une <strong>cascade trophique</strong>.',
+    astuce:'Dans une chaîne alimentaire, la flèche signifie "est mangé par". Herbe → lapin = "la herbe est mangée par le lapin".',
+    regle:'Un écosystème n\'est jamais une simple chaîne mais un réseau trophique complexe : chaque espèce peut manger plusieurs proies et être mangée par plusieurs prédateurs.'
+  },
+  interactif: 'chaine',
+  fc:[
+    {q:'Par quoi commence TOUJOURS une chaîne alimentaire ?',
+     a:'Par un producteur — un végétal capable de photosynthèse. Les végétaux fabriquent leur propre matière à partir de l\'énergie solaire.',
+     hint:'Sans plantes, pas de chaîne alimentaire.',
+     ah:'Les producteurs sont aussi appelés autotrophes (ils se "nourrissent eux-mêmes"). Les consommateurs sont hétérotrophes (ils mangent d\'autres êtres).'},
+    {q:'Qu\'est-ce que la biodiversité ?',
+     a:'La variété des espèces vivantes sur Terre (ou dans un milieu donné). Elle inclut la diversité génétique, des espèces et des écosystèmes.',
+     hint:'Bio = vie / diversité = variété.',
+     ah:'On estime à 8,7 millions le nombre d\'espèces sur Terre — dont seulement ~1,5 million ont été identifiées. La biodiversité disparaît ~1000 fois plus vite qu\'à l\'ère préindustrielle.'},
+    {q:'Qu\'est-ce qu\'un décomposeur ?',
+     a:'Un être vivant (champignon, bactérie, ver de terre) qui décompose les matières organiques mortes et les transforme en sels minéraux réutilisables par les plantes.',
+     hint:'Les décomposeurs "ferment" la boucle de la chaîne alimentaire.',
+     ah:'Sans décomposeurs, les cadavres et matières organiques s\'accumulerait indéfiniment. Ils sont indispensables au cycle des nutriments.'},
+    {q:'Cite 3 menaces sur la biodiversité.',
+     a:'Déforestation, pollution (eau, air, sol), changement climatique, surexploitation des espèces (pêche, chasse), espèces invasives, fragmentation des habitats.',
+     hint:'Les activités humaines sont la cause principale.',
+     ah:'On parle de "6e extinction de masse" en cours — la 5e ayant été celle des dinosaures il y a 66 millions d\'années. Mais celle-ci est causée par une seule espèce : Homo sapiens.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'Chaîne alimentaire : Herbe → Sauterelle → Grenouille → Héron',
+     q:'Que se passe-t-il si les grenouilles disparaissent de cet écosystème ?',
+     opts:['Rien, l\'écosystème s\'adapte sans problème','Les sauterelles prolifèrent et surexploitent l\'herbe; les hérons manquent de nourriture','Les hérons mangent directement les sauterelles','L\'herbe pousse encore plus vite'],ok:1,xp:25,
+     fb:'Si les grenouilles disparaissent : plus de prédateur pour les sauterelles → les sauterelles prolifèrent et surexploitent l\'herbe. En même temps, les hérons perdent leur proie principale → leur population décline. C\'est un déséquilibre en cascade.'},
+    {type:'qcm',ctx:'',q:'Dans "Herbe → Lapin → Renard", la flèche signifie…',
+     opts:['"mange"','← mange","est mangé par"','"vit avec"'],ok:2,xp:20,
+     fb:'Dans une chaîne alimentaire, la flèche signifie "est mangé par". Herbe → Lapin = "la herbe est mangée par le lapin". L\'énergie circule dans le sens des flèches.'},
+    {type:'qcm',ctx:'',q:'Qu\'est-ce qu\'un écosystème ?',
+     opts:['Uniquement l\'ensemble des animaux d\'un lieu','L\'ensemble d\'un milieu physique et de tous les êtres vivants qui y interagissent','Un territoire appartenant à une seule espèce','Un réseau de chaînes alimentaires sans milieu physique'],ok:1,xp:25,
+     fb:'Un écosystème = biotope (milieu physique : sol, eau, air, température…) + biocénose (ensemble des êtres vivants) + leurs interactions. Exemples : forêt, mare, récif corallien, prairie.'},
+  ]
+}
+];
+
+/* ═══════════════════════════════════════════════════════
+   ÉTAT
+═══════════════════════════════════════════════════════ */
+let chapIdx = 0;
+let xpTotal = 0;
+let chapDoneSet = new Set();
+let chapState = {};
+
+function getCh(){ return DATA[chapIdx]; }
+function getCS(){
+  const id=getCh().id;
+  if(!chapState[id]) chapState[id]={fcIdx:0,qIdx:0,qSel:null,qDone:false,xp:0};
+  return chapState[id];
+}
+
+function $(id){ return document.getElementById(id); }
+function mk(c,tag='div'){ const e=document.createElement(tag); e.className=c; return e; }
+function btn(l,c,fn){ const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=l; b.onclick=fn; return b; }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
+function addXP(n){ xpTotal+=n; $('xpTot').textContent=xpTotal; toast('⭐ +'+n+' XP !'); }
+function markDone(){
+  const id=getCh().id;
+  chapDoneSet.add(id);
+  $('chapDone').textContent=chapDoneSet.size;
+  renderTabs();
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════ */
+function renderTabs(){
+  const tabs=$('tabs'); tabs.innerHTML='';
+  DATA.forEach((ch,i)=>{
+    const t=document.createElement('button');
+    const done=chapDoneSet.has(ch.id);
+    t.className='tab'+(i===chapIdx?' on':'');
+    t.innerHTML=`<span class="tab-ico">${ch.ico}</span>${ch.label}${done?' ✅':''}`;
+    t.onclick=()=>{ chapIdx=i; renderTabs(); renderChap(); };
+    tabs.appendChild(t);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDU PRINCIPAL
+═══════════════════════════════════════════════════════ */
+function renderChap(){
+  const ch=getCh(); const cs=getCS(); const main=$('main'); main.innerHTML='';
+
+  // COURS
+  const ccard=mk('card'); main.appendChild(ccard);
+  const hd=mk('chead'); ccard.appendChild(hd);
+  const ci=mk('ci c-sc'); ci.textContent=ch.ico; hd.appendChild(ci);
+  const cht=mk(''); cht.innerHTML=`<div class="ctitle">${ch.cours.titre}</div><div class="csub">📖 Cours</div>`; hd.appendChild(cht);
+  const cb=mk('cbody'); ccard.appendChild(cb);
+  const co=mk('cours'); cb.appendChild(co);
+  co.innerHTML=`<div class="ctit">${ch.cours.titre}</div><div class="ctxt">${ch.cours.txt}</div>`;
+  if(ch.cours.ex){ const b=mk('ex-box'); b.innerHTML=ch.cours.ex; co.appendChild(b); }
+  if(ch.cours.astuce){ const a=mk('astuce'); a.textContent=ch.cours.astuce; co.appendChild(a); }
+  if(ch.cours.regle){ const r=mk('regle'); r.textContent=ch.cours.regle; co.appendChild(r); }
+
+  // INTERACTIF selon le chapitre
+  if(ch.interactif==='solaire') main.appendChild(buildSolaire());
+  if(ch.interactif==='circuit') main.appendChild(buildCircuit());
+  if(ch.interactif==='chaine')  main.appendChild(buildChaine());
+
+  // FLASHCARDS
+  if(ch.fc && ch.fc.length){
+    const fcard=mk('card'); main.appendChild(fcard);
+    const fhd=mk('chead'); fcard.appendChild(fhd);
+    const fci=mk('ci c-sc'); fci.textContent='🃏'; fhd.appendChild(fci);
+    fhd.innerHTML+=`<div><div class="ctitle">Flashcards</div><div class="csub">Clique pour retourner</div></div>`;
+    const fb=mk('cbody'); fcard.appendChild(fb);
+    fb.innerHTML='<div class="fc-hint">Clique pour voir la réponse</div>';
+    renderFC(fb,ch,cs);
+  }
+
+  // QCM
+  if(ch.ex && ch.ex.length){
+    const qcard=mk('card'); main.appendChild(qcard);
+    const qhd=mk('chead'); qcard.appendChild(qhd);
+    const qci=mk('ci c-ok'); qci.textContent='❓'; qhd.appendChild(qci);
+    qhd.innerHTML+=`<div><div class="ctitle">Questions</div><div class="csub">${cs.qIdx+1} / ${ch.ex.length}</div></div>`;
+    const qb=mk('cbody'); qcard.appendChild(qb);
+    renderQ(qb,ch,cs);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   INTERACTIF — SYSTÈME SOLAIRE
+═══════════════════════════════════════════════════════ */
+function buildSolaire(){
+  const card=mk('card');
+  const hd=mk('chead'); card.appendChild(hd);
+  const ci=mk('ci c-sc'); ci.textContent='🪐'; hd.appendChild(ci);
+  hd.innerHTML+=`<div><div class="ctitle">Système solaire interactif</div><div class="csub">Clique sur une planète pour en savoir plus</div></div>`;
+  const body=mk('cbody'); card.appendChild(body);
+  const sw=mk('schema-wrap'); body.appendChild(sw);
+  const planets=[
+    {n:'☀️ Soleil',col:'#FCD34D',sz:52,info:'Étoile centrale. Diamètre : 1,4 million km. Distance à la Terre : ~150 millions km.'},
+    {n:'Mercure',col:'#94A3B8',sz:14,info:'Planète 1 — La plus proche du Soleil. Tour du Soleil en 88 jours. Pas d\'atmosphère.'},
+    {n:'Vénus',col:'#FDE68A',sz:20,info:'Planète 2 — La plus chaude (462°C) grâce à son effet de serre. Visible à l\'œil nu.'},
+    {n:'Terre',col:'#3B82F6',sz:22,info:'Planète 3 — Notre maison. 1 satellite (la Lune). Seule planète connue avec de la vie.'},
+    {n:'Mars',col:'#EF4444',sz:17,info:'Planète 4 — La planète rouge. 2 lunes (Phobos, Deimos). Cible des missions Mars.'},
+    {n:'Jupiter',col:'#92400E',sz:38,info:'Planète 5 — La plus grande. 95 lunes dont Ganymède (plus grande que Mercure).'},
+    {n:'Saturne',col:'#D97706',sz:34,info:'Planète 6 — Célèbre pour ses anneaux de glace. Moins dense que l\'eau — il flotterait !'},
+    {n:'Uranus',col:'#67E8F9',sz:28,info:'Planète 7 — Tourne "couchée" (axe incliné à 98°). Apparaît bleu-vert.'},
+    {n:'Neptune',col:'#1D4ED8',sz:26,info:'Planète 8 — La plus éloignée. Vents jusqu\'à 2 100 km/h. Tour du Soleil en 165 ans !'},
+  ];
+  sw.innerHTML='<div class="schema-title">🌌 Cliquez sur un astre pour en savoir plus</div>';
+  const solar=mk('solar'); sw.appendChild(solar);
+  const info=mk(''); info.style.cssText='margin-top:12px;min-height:48px;background:var(--sc-p);border-radius:var(--rsm);padding:10px 14px;font-size:.88rem;font-weight:600;color:var(--sc-d);line-height:1.5;transition:all .2s';
+  info.textContent='👆 Clique sur un astre ci-dessus';
+  let sel=null;
+  planets.forEach((p,i)=>{
+    const pw=mk('planet-wrap'); solar.appendChild(pw);
+    const pl=document.createElement('div'); pl.className='planet';
+    pl.style.cssText=`width:${p.sz}px;height:${p.sz}px;background:${p.col}`;
+    if(i===6){ pl.style.boxShadow=`0 0 0 5px transparent,0 0 0 7px ${p.col}55,0 2px 8px rgba(0,0,0,.2)`; }
+    const nm=mk('planet-name'); nm.textContent=p.n;
+    pw.appendChild(pl); pw.appendChild(nm);
+    pw.onclick=()=>{
+      info.innerHTML=`<strong>${p.n}</strong> — ${p.info}`;
+      if(sel) sel.style.transform='';
+      pw.style.transform='scale(1.15)';
+      sel=pw;
+    };
+  });
+  sw.appendChild(info);
+  sw.innerHTML+='<div class="schema-hint">(Non à l\'échelle — les distances réelles sont gigantesques)</div>';
+  sw.appendChild(info);
+  return card;
+}
+
+/* ═══════════════════════════════════════════════════════
+   INTERACTIF — CIRCUIT ÉLECTRIQUE
+═══════════════════════════════════════════════════════ */
+function buildCircuit(){
+  const card=mk('card');
+  const hd=mk('chead'); card.appendChild(hd);
+  const ci=mk('ci c-phy'); ci.textContent='⚡'; hd.appendChild(ci);
+  hd.innerHTML+=`<div><div class="ctitle">Circuit électrique interactif</div><div class="csub">Ferme le circuit pour allumer l'ampoule</div></div>`;
+  const body=mk('cbody'); card.appendChild(body);
+  let sw1=false, sw2=true; // interrupteur 1 ouvert, pile ok
+  function drawCircuit(){
+    body.innerHTML='';
+    const sw=mk('schema-wrap'); body.appendChild(sw);
+    sw.innerHTML=`<div class="schema-title">Circuit : Pile → Interrupteur → Ampoule</div>`;
+    const lit = sw1 && sw2;
+    sw.innerHTML+=`
+    <svg class="circuit-svg" viewBox="0 0 420 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Fils -->
+      <rect x="40" y="80" width="340" height="6" rx="3" fill="${lit?'#FCD34D':'#94A3B8'}"/>
+      <rect x="40" y="80" width="6" height="60" rx="3" fill="${lit?'#FCD34D':'#94A3B8'}"/>
+      <rect x="374" y="80" width="6" height="60" rx="3" fill="${lit?'#FCD34D':'#94A3B8'}"/>
+      <rect x="40" y="134" width="340" height="6" rx="3" fill="${lit?'#FCD34D':'#94A3B8'}"/>
+      <!-- Pile -->
+      <g>
+        <rect x="55" y="90" width="48" height="50" rx="8" fill="#FEF9C3" stroke="#D97706" stroke-width="2"/>
+        <text x="79" y="111" font-family="Baloo 2" font-size="11" font-weight="800" fill="#92400E" text-anchor="middle">🔋</text>
+        <text x="79" y="127" font-family="Baloo 2" font-size="9" font-weight="700" fill="#92400E" text-anchor="middle">PILE</text>
+        <text x="67" y="99" font-family="Space Mono" font-size="10" font-weight="700" fill="#059669">+</text>
+        <text x="91" y="99" font-family="Space Mono" font-size="10" font-weight="700" fill="#DC2626">−</text>
+      </g>
+      <!-- Interrupteur -->
+      <g style="cursor:pointer" onclick="toggleSw()">
+        <rect x="168" y="92" width="72" height="46" rx="8" fill="${sw1?'#DCFCE7':'#FEE2E2'}" stroke="${sw1?'#10B981':'#EF4444'}" stroke-width="2.5"/>
+        <text x="204" y="112" font-family="Baloo 2" font-size="10" font-weight="800" fill="${sw1?'#065F46':'#991B1B'}" text-anchor="middle">${sw1?'✅ FERMÉ':'❌ OUVERT'}</text>
+        <text x="204" y="127" font-family="Baloo 2" font-size="9" font-weight="700" fill="${sw1?'#065F46':'#991B1B'}" text-anchor="middle">interrupteur</text>
+      </g>
+      <!-- Ampoule -->
+      <g>
+        <circle cx="330" cy="117" r="24" fill="${lit?'#FEF9C3':'#F8FAFC'}" stroke="${lit?'#F59E0B':'#CBD5E1'}" stroke-width="2.5"/>
+        <text x="330" y="122" font-family="Baloo 2" font-size="20" text-anchor="middle">${lit?'💡':'⚫'}</text>
+      </g>
+    </svg>`;
+    const msg=document.createElement('div');
+    msg.style.cssText='text-align:center;font-family:var(--ft);font-size:1rem;font-weight:800;margin-top:8px;padding:10px;border-radius:var(--rsm);background:'+(lit?'#DCFCE7':'#FEE2E2')+';color:'+(lit?'var(--sc-d)':'#B91C1C');
+    msg.textContent=lit?'✅ Circuit fermé — l\'ampoule s\'allume !':'❌ Circuit ouvert — l\'ampoule ne s\'allume pas.';
+    sw.appendChild(msg);
+    const btnSw=btn((sw1?'Ouvrir':'Fermer')+' l\'interrupteur','b-sc',()=>{ sw1=!sw1; drawCircuit(); });
+    const row=mk('brow'); row.appendChild(btnSw); body.appendChild(row);
+  }
+  window.toggleSw=()=>{ sw1=!sw1; drawCircuit(); };
+  drawCircuit();
+  return card;
+}
+
+/* ═══════════════════════════════════════════════════════
+   INTERACTIF — CHAÎNE ALIMENTAIRE
+═══════════════════════════════════════════════════════ */
+function buildChaine(){
+  const card=mk('card');
+  const hd=mk('chead'); card.appendChild(hd);
+  const ci=mk('ci c-eco'); ci.textContent='🌿'; hd.appendChild(ci);
+  hd.innerHTML+=`<div><div class="ctitle">Reconstitue la chaîne alimentaire</div><div class="csub">Dans le bon ordre, du producteur au prédateur final</div></div>`;
+  const body=mk('cbody'); card.appendChild(body);
+  const items=['🦅 Aigle','🌾 Herbe','🦊 Renard','🐭 Souris','🍄 Décomposeurs'];
+  const correct=['🌾 Herbe','🐭 Souris','🦊 Renard','🦅 Aigle','🍄 Décomposeurs'];
+  const labels=['Producteur','Consommateur 1','Consommateur 2','Consommateur 3','Décomposeur'];
+  let slots=Array(5).fill(null);
+  let selected=null;
+  let checked=false;
+  function drawChaine(){
+    body.innerHTML='';
+    // Cartes à placer
+    const hint=document.createElement('p'); hint.style.cssText='font-size:.82rem;color:var(--ink3);font-style:italic;margin-bottom:10px'; hint.textContent='1. Clique sur un élément · 2. Clique sur un emplacement pour le placer'; body.appendChild(hint);
+    const cards=mk('chain-cards'); body.appendChild(cards);
+    items.forEach(it=>{
+      const used=slots.includes(it);
+      const isSel=selected===it;
+      const c=document.createElement('button');
+      c.className='chain-card'+(used?' used':isSel?' selected':'');
+      c.textContent=it; c.disabled=used||checked;
+      c.onclick=()=>{ selected=it; drawChaine(); };
+      cards.appendChild(c);
+    });
+    // Slots
+    const chain=mk('chain-area'); body.appendChild(chain);
+    slots.forEach((s,i)=>{
+      const sl=mk('chain-slot'+(s?(checked?(s===correct[i]?' ok-slot':' ko-slot'):'  filled'):''));
+      sl.innerHTML=s?`${s}<span style="font-size:.72rem;opacity:.7;margin-left:8px">(${labels[i]})</span>`:
+        `<span style="opacity:.4">${labels[i]}</span>`;
+      if(!s&&selected&&!checked) sl.onclick=()=>{ slots[i]=selected; selected=null; drawChaine(); };
+      chain.appendChild(sl);
+      if(i<4){const arr=document.createElement('div');arr.style.cssText='text-align:center;font-size:1.2rem;color:var(--sc)';arr.textContent='↓ est mangé par';chain.appendChild(arr);}
+    });
+    // Boutons
+    const row=mk('brow'); body.appendChild(row);
+    const allFilled=slots.every(Boolean);
+    if(!checked){
+      const vb=btn('Vérifier ✓','b-sc',()=>{checked=true;drawChaine();});
+      vb.disabled=!allFilled; row.appendChild(vb);
+    }
+    const rb=btn('Recommencer','bgh',()=>{slots=Array(5).fill(null);selected=null;checked=false;drawChaine();});
+    row.appendChild(rb);
+    if(checked){
+      const ok=slots.every((s,i)=>s===correct[i]);
+      const fb=document.createElement('div');
+      fb.style.cssText='margin-top:10px;padding:12px;border-radius:var(--rsm);font-family:var(--ft);font-weight:800;'+(ok?'background:#DCFCE7;color:var(--sc-d)':'background:#FEE2E2;color:#B91C1C');
+      fb.textContent=ok?'✅ Parfait ! Chaîne alimentaire correcte.':'❌ Quelques erreurs — recommence ! Rappel : toujours du producteur (végétal) au prédateur final, puis les décomposeurs.';
+      body.appendChild(fb);
+      if(ok&&!chapDoneSet.has('s6_chain')){ addXP(30); }
+    }
+  }
+  drawChaine();
+  return card;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FLASHCARDS
+═══════════════════════════════════════════════════════ */
+function renderFC(parent,ch,cs){
+  parent.querySelectorAll('.fcwrap,.fcnav').forEach(e=>e.remove());
+  const fc=ch.fc[cs.fcIdx];
+  const wrap=mk('fcwrap'); parent.appendChild(wrap);
+  const inner=mk('fcinner'); wrap.appendChild(inner);
+  const front=mk('fcface fcf'); front.innerHTML=`<span class="fctag">Question</span><div class="fcq">${fc.q}</div><div class="fcsub">${fc.hint||''}</div>`; inner.appendChild(front);
+  const back=mk('fcface fcb'); back.innerHTML=`<span class="fctag">Réponse</span><div class="fcq">${fc.a}</div><div class="fcsub">${fc.ah||''}</div>`; inner.appendChild(back);
+  wrap.onclick=()=>inner.classList.toggle('flip');
+  const nav=mk('fcnav'); parent.appendChild(nav);
+  const bp=btn('← Préc.','bgh',()=>{if(cs.fcIdx>0){cs.fcIdx--;renderFC(parent,ch,cs);}});
+  if(cs.fcIdx===0) bp.disabled=true;
+  const ctr=mk('fcctr'); ctr.textContent=`${cs.fcIdx+1}/${ch.fc.length}`;
+  const bn=btn('Suiv. →','b-sc',()=>{if(cs.fcIdx<ch.fc.length-1){cs.fcIdx++;renderFC(parent,ch,cs);}});
+  if(cs.fcIdx===ch.fc.length-1) bn.disabled=true;
+  nav.appendChild(bp); nav.appendChild(ctr); nav.appendChild(bn);
+}
+
+/* ═══════════════════════════════════════════════════════
+   QCM
+═══════════════════════════════════════════════════════ */
+function renderQ(parent,ch,cs){
+  parent.innerHTML='';
+  if(cs.qIdx>=ch.ex.length){ renderBilan(parent,ch,cs); return; }
+  const q=ch.ex[cs.qIdx];
+  if(q.ctx){ const c=mk('qctx'); c.textContent=q.ctx; parent.appendChild(c); }
+  const qq=mk('qq'); qq.textContent=q.q; parent.appendChild(qq);
+  const opts=mk('opts'); parent.appendChild(opts);
+  const val=btn('Valider','b-sc',null); val.disabled=true;
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML=`<span class="olet">${String.fromCharCode(65+i)}</span><span>${o}</span>`;
+    if(cs.qDone){
+      b.disabled=true;
+      if(i===q.ok) b.classList.add('ok');
+      else if(i===cs.qSel) b.classList.add('ko');
+    } else {
+      if(i===cs.qSel) b.classList.add('sel');
+      b.onclick=()=>{ cs.qSel=i; val.disabled=false; renderQ(parent,ch,cs); };
+    }
+    opts.appendChild(b);
+  });
+  if(cs.qDone){
+    const fb=mk('fb '+(cs.qSel===q.ok?'ok':'ko'));
+    fb.innerHTML=`<div class="fbt">${cs.qSel===q.ok?'✅ Exact !':'❌ Pas tout à fait…'}</div><div class="fbb">${q.fb}</div>`;
+    parent.appendChild(fb);
+    const isL=cs.qIdx===ch.ex.length-1;
+    const row=mk('brow');
+    row.appendChild(btn(isL?'Voir mon bilan ➜':'Question suivante →','b-sc',()=>{
+      if(cs.qSel===q.ok) cs.xp+=q.xp;
+      cs.qIdx++; cs.qSel=null; cs.qDone=false; renderQ(parent,ch,cs);
+    }));
+    parent.appendChild(row);
+  } else {
+    val.onclick=()=>{
+      if(cs.qSel===null){toast('Choisis une réponse !');return;}
+      cs.qDone=true;
+      if(cs.qSel===q.ok) addXP(q.xp);
+      renderQ(parent,ch,cs);
+    };
+    if(cs.qSel!==null) val.disabled=false;
+    const row=mk('brow'); row.appendChild(val); parent.appendChild(row);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BILAN
+═══════════════════════════════════════════════════════ */
+function renderBilan(parent,ch,cs){
+  markDone();
+  const total=ch.ex.reduce((a,q)=>a+q.xp,0);
+  let badge,bc;
+  if(cs.xp>=total*.8){badge='🥇 Excellent !';bc='bbr';}
+  else if(cs.xp>=total*.5){badge='🥈 Bien joué';bc='barg';}
+  else{badge='🥉 Continue !';bc='bor';}
+  parent.innerHTML='';
+  const b=mk('bilan'); parent.appendChild(b);
+  b.innerHTML=`<div class="bscore">${ch.ico}</div><div class="blbl">${ch.label} — terminé !</div><div class="bbadge ${bc}">${badge}</div>`;
+  const row=mk('brow'); b.appendChild(row);
+  const ni=chapIdx+1;
+  if(ni<DATA.length) row.appendChild(btn('Domaine suivant →','b-sc',()=>{ chapIdx=ni; renderTabs(); renderChap(); }));
+  row.appendChild(btn('🏠 Accueil','bgh',()=>location.href='index.html'));
+}
+
+/* ═══ INIT ═══ */
+renderTabs(); renderChap();
+</script>
+</body>
+</html>
