@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Se connaître — EVAR CM2</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ev:#8B5CF6;--evd:#6D28D9;--evbg:#F5F3FF;--evp:#EDE9FE;
+  --c1:#3B82F6;--c1l:#EFF6FF;/* bleu */
+  --c2:#10B981;--c2l:#D1FAE5;/* vert */
+  --c3:#F59E0B;--c3l:#FEF3C7;/* jaune */
+  --c4:#EF4444;--c4l:#FEE2E2;/* rouge */
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#CBD5E1;
+  --wh:#FFFFFF;--sh:0 8px 32px rgba(15,23,42,.14);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--evbg);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 40% at 15% 0%,rgba(139,92,246,.13) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 35% at 85% 10%,rgba(59,130,246,.08) 0%,transparent 60%)}
+
+.app{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 14px 72px}
+
+/* NAV */
+.topnav{display:flex;align-items:center;gap:10px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--ev);color:var(--evd)}
+
+/* HEADER */
+.mhd{text-align:center;padding:24px 16px 20px}
+.mhd-chip{display:inline-flex;align-items:center;gap:7px;background:var(--evp);border:2px solid var(--ev);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--evd);margin-bottom:12px}
+.mhd h1{font-family:var(--ft);font-size:clamp(2rem,6vw,3rem);font-weight:900;line-height:1.1;margin-bottom:8px;color:var(--ink)}
+.mhd-sub{font-size:.97rem;color:var(--ink3);font-weight:600}
+
+/* PROGRESS BAR */
+.prog-wrap{background:rgba(255,255,255,.7);border-radius:50px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px rgba(139,92,246,.1)}
+.prog-bar-track{flex:1;height:12px;background:var(--ink4);border-radius:50px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--ev),var(--evd));transition:width .5s ease}
+.prog-label{font-family:var(--ft);font-size:.88rem;font-weight:800;color:var(--evd);white-space:nowrap}
+
+/* THEME SELECTOR */
+.themes-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+@media(min-width:540px){.themes-grid{grid-template-columns:repeat(3,1fr)}}
+.theme-btn{background:var(--wh);border:3px solid var(--ink4);border-radius:20px;padding:18px 12px;text-align:center;cursor:pointer;transition:all .22s;position:relative}
+.theme-btn:hover{transform:translateY(-4px);box-shadow:var(--sh)}
+.theme-btn.done{opacity:.75}
+.theme-btn.done::after{content:'✓';position:absolute;top:8px;right:10px;font-family:var(--ft);font-size:.9rem;font-weight:900;color:var(--c2);background:var(--c2l);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;line-height:22px}
+.theme-ico{font-size:2.4rem;margin-bottom:8px}
+.theme-name{font-family:var(--ft);font-size:.95rem;font-weight:800;line-height:1.25}
+.theme-count{font-size:.75rem;font-weight:700;color:var(--ink3);margin-top:4px}
+
+/* KAHOOT ZONE */
+.k-header{background:var(--wh);border-radius:24px;padding:18px 20px;margin-bottom:14px;box-shadow:var(--sh);text-align:center}
+.k-theme-badge{display:inline-flex;align-items:center;gap:7px;border-radius:50px;padding:6px 16px;font-family:var(--ft);font-size:.85rem;font-weight:800;margin-bottom:10px}
+.k-qnum{font-family:var(--ft);font-size:.83rem;font-weight:700;color:var(--ink3);margin-bottom:8px}
+.k-question{font-family:var(--ft);font-size:clamp(1.15rem,3.5vw,1.5rem);font-weight:900;line-height:1.3;color:var(--ink);min-height:60px}
+
+/* GRILLE 2x2 KAHOOT */
+.k-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.k-opt{border:none;border-radius:18px;padding:20px 14px;cursor:pointer;font-family:var(--ft);font-size:clamp(.95rem,2.5vw,1.15rem);font-weight:800;color:#fff;text-align:center;line-height:1.3;transition:all .18s;position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:90px}
+.k-opt:hover:not(:disabled){transform:scale(1.04);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.k-opt:disabled{cursor:default}
+.k-opt-ico{font-size:1.5rem;flex-shrink:0}
+.k-opt[data-color="0"]{background:linear-gradient(135deg,#3B82F6,#1D4ED8)}
+.k-opt[data-color="1"]{background:linear-gradient(135deg,#10B981,#065F46)}
+.k-opt[data-color="2"]{background:linear-gradient(135deg,#F59E0B,#B45309)}
+.k-opt[data-color="3"]{background:linear-gradient(135deg,#EF4444,#991B1B)}
+.k-opt.correct{animation:correctPulse .4s ease;box-shadow:0 0 0 5px #86EFAC,0 8px 24px rgba(16,185,129,.3)}
+.k-opt.wrong{opacity:.45;transform:scale(.96)}
+.k-opt.reveal-correct{box-shadow:0 0 0 5px #86EFAC,0 8px 24px rgba(16,185,129,.3)}
+@keyframes correctPulse{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
+
+/* FEEDBACK */
+.k-feedback{border-radius:20px;padding:16px 18px;margin-bottom:14px;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.k-feedback.ok{background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border:2.5px solid #10B981}
+.k-feedback.ko{background:linear-gradient(135deg,#FEE2E2,#FECACA);border:2.5px solid #EF4444}
+.k-fb-title{font-family:var(--ft);font-size:1.2rem;font-weight:900;margin-bottom:6px}
+.k-fb-text{font-size:.93rem;font-weight:600;color:var(--ink2);line-height:1.55}
+.k-fb-tip{background:rgba(255,255,255,.65);border-radius:12px;padding:9px 12px;margin-top:10px;font-size:.88rem;font-weight:700;color:var(--evd)}
+
+/* STARS */
+.k-stars{display:flex;gap:8px;justify-content:center;margin:10px 0 6px;font-size:1.8rem}
+
+/* BILAN THÈME */
+.bilan-card{background:var(--wh);border-radius:24px;padding:24px;box-shadow:var(--sh);text-align:center}
+.bilan-ico{font-size:4rem;margin-bottom:10px}
+.bilan-title{font-family:var(--ft);font-size:1.6rem;font-weight:900;margin-bottom:6px}
+.bilan-score{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--evd);margin:12px 0}
+.bilan-msg{font-size:.97rem;font-weight:600;color:var(--ink2);line-height:1.6;max-width:440px;margin:0 auto 18px}
+.bilan-retenir{background:var(--evp);border:2px solid rgba(139,92,246,.25);border-radius:16px;padding:14px;text-align:left;margin-bottom:16px}
+.bilan-retenir-title{font-family:var(--ft);font-weight:800;color:var(--evd);margin-bottom:5px}
+.bilan-retenir-text{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.55}
+
+/* GRAND BILAN FINAL */
+.final-card{background:linear-gradient(135deg,var(--evp),#F5F3FF);border:3px solid var(--ev);border-radius:28px;padding:28px;text-align:center;box-shadow:var(--sh)}
+.final-ico{font-size:5rem;margin-bottom:14px}
+.final-title{font-family:var(--ft);font-size:2rem;font-weight:900;margin-bottom:10px}
+.final-score{font-family:var(--ft);font-size:3rem;font-weight:900;color:var(--evd);margin:10px 0}
+.final-themes{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.final-theme-chip{display:inline-flex;align-items:center;gap:5px;background:var(--wh);border:2px solid var(--ev);border-radius:50px;padding:5px 14px;font-family:var(--ft);font-size:.83rem;font-weight:700;color:var(--evd)}
+
+/* BTNS */
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:1rem;font-weight:800;border:none;border-radius:50px;padding:12px 28px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btnp{background:linear-gradient(135deg,var(--ev),var(--evd));color:#fff;box-shadow:0 4px 16px rgba(109,40,217,.3)}
+.btnp:hover{transform:translateY(-2px)}
+.btns{background:var(--wh);border:2.5px solid var(--ink4);color:var(--ink2)}
+.btns:hover{border-color:var(--ev);color:var(--evd)}
+
+/* INTRO */
+.intro-card{background:var(--wh);border-radius:24px;padding:22px;box-shadow:var(--sh);margin-bottom:16px}
+.intro-rules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+@media(min-width:480px){.intro-rules{grid-template-columns:repeat(4,1fr)}}
+.rule{background:var(--evp);border-radius:14px;padding:12px 10px;text-align:center}
+.rule-ico{font-size:1.6rem;margin-bottom:5px}
+.rule-txt{font-family:var(--ft);font-size:.8rem;font-weight:800;color:var(--evd);line-height:1.3}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(50px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--ft);font-size:.88rem;font-weight:700;opacity:0;transition:all .3s;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+
+<nav class="topnav">
+  <a href="index.html" class="back">← Accueil</a>
+</nav>
+
+<header class="mhd">
+  <div class="mhd-chip">💜 Se connaître · CM2</div>
+  <h1>Je grandis,<br>je me respecte 💜</h1>
+  <p class="mhd-sub">5 thèmes · Questions · Bilan — tout à ton rythme</p>
+</header>
+
+<div id="prog-area"></div>
+<div id="root"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DONNÉES — 5 thèmes × 5 questions
+// ══════════════════════════════════════════════════════════
+const THEMES = [
+  {
+    id:'puberte', nom:'La puberté', ico:'🌱',
+    couleur:'#8B5CF6', couleurLight:'#EDE9FE',
+    intro:'La puberté, c\'est le moment où ton corps se prépare à devenir adulte. C\'est normal, universel et ça arrive à tout le monde — juste pas exactement au même moment.',
+    retenir:'La puberté est naturelle et différente pour chacun. Il n\'y a pas de "bonne" ou de "mauvaise" vitesse. Si tu as des questions, tu peux en parler à un adulte de confiance.',
+    questions:[
+      { q:'La puberté, c\'est quoi exactement ?',
+        opts:['Une maladie qu\'on attrape','Les changements du corps qui arrivent quand on grandit','Quelque chose qui arrive uniquement aux garçons','Un problème qu\'on peut éviter'],
+        ok:1, ico:['❓','✅','🚫','🚫'],
+        fb:'La puberté, ce sont tous les changements naturels qui transforment le corps d\'un enfant en corps d\'adulte. C\'est universel : tout le monde passe par là.',
+        tip:'💡 En France, la puberté commence en moyenne entre 9 et 14 ans chez les filles, et entre 10 et 15 ans chez les garçons.' },
+      { q:'Camille a 10 ans et son corps commence à changer, mais sa meilleure amie, elle, n\'a pas encore ces changements. Qu\'est-ce qui est vrai ?',
+        opts:['Camille est en avance, il y a sûrement un problème','Chaque personne a son propre rythme — c\'est tout à fait normal','L\'amie de Camille est malade','Camille devrait attendre que son amie la rejoigne'],
+        ok:1, ico:['⚠️','✅','🚫','🙄'],
+        fb:'Chaque corps a son propre calendrier. Certains commencent tôt, d\'autres plus tard — les deux sont normaux. Ça ne dit rien sur la santé ou la valeur d\'une personne.',
+        tip:'💡 Se comparer aux autres peut être tentant, mais ça ne sert à rien. Ton corps avance à son rythme.' },
+      { q:'La puberté arrive...',
+        opts:['Uniquement aux filles','Uniquement aux garçons','À tout le monde, filles et garçons, mais de façon différente','Seulement si on est en bonne santé'],
+        ok:2, ico:['🚫','🚫','✅','❓'],
+        fb:'Tout le monde vit la puberté — mais les changements sont différents selon le corps de chaque personne. Ce qui est commun : la croissance, les émotions qui changent, le corps qui évolue.',
+        tip:'💡 Les changements peuvent inclure : la croissance rapide, les poils, la transpiration plus forte, les sautes d\'humeur… Rien de tout ça n\'est bizarre.' },
+      { q:'Tu remarques des changements dans ton corps et tu ne sais pas si c\'est normal. Quelle est la meilleure chose à faire ?',
+        opts:['Garder ça pour toi et espérer que ça disparaisse','En parler à un adulte de confiance — parent, médecin, infirmière scolaire','Chercher des réponses sur des vidéos en ligne au hasard','Faire semblant que ça ne se passe pas'],
+        ok:1, ico:['😰','✅','⚠️','🙈'],
+        fb:'Parler à un adulte de confiance (parent, médecin, infirmière scolaire) est toujours la meilleure option. Leurs réponses seront adaptées à toi — pas comme les vidéos aléatoires sur internet.',
+        tip:'💡 L\'infirmière de l\'école est là pour ça. Pas besoin d\'attendre d\'être malade pour lui parler.' },
+      { q:'Pendant la puberté, on peut ressentir des émotions plus intenses qu\'avant. C\'est parce que...',
+        opts:['On devient capricieux et difficile','Le cerveau et le corps changent en même temps — c\'est temporaire et normal','On n\'est plus fait pour être heureux','C\'est une punition'],
+        ok:1, ico:['🙅','✅','🚫','🚫'],
+        fb:'Pendant la puberté, les hormones agissent aussi sur le cerveau. Les émotions peuvent être plus fortes ou plus changeantes. Ce n\'est pas définitif et ça n\'a rien à voir avec ton caractère.',
+        tip:'💡 Si tu te sens dépassé(e) par tes émotions, en parler aide vraiment. Un adulte de confiance ou même un ami proche peut suffire.' }
+    ]
+  },
+  {
+    id:'consentement', nom:'Le consentement', ico:'🤲',
+    couleur:'#10B981', couleurLight:'#D1FAE5',
+    intro:'Le consentement, c\'est le droit de chacun de dire oui ou non à ce qui concerne son corps. Et le "non" de quelqu\'un d\'autre se respecte toujours — sans discussion.',
+    retenir:'Mon corps m\'appartient. Le corps des autres leur appartient. On ne touche pas quelqu\'un sans sa permission, et on ne doit jamais se sentir obligé(e) d\'accepter une chose qui nous met mal à l\'aise.',
+    questions:[
+      { q:'Léa ne veut pas faire un câlin à son oncle qu\'elle voit rarement. Sa mère lui dit : "Allez, fais pas la difficile !" Qu\'est-ce qui est vrai ?',
+        opts:['Léa doit obéir, c\'est sa famille','Léa a le droit de dire non — son corps lui appartient','Léa est impolie','Léa devrait juste serrer la main'],
+        ok:1, ico:['🚫','✅','🚫','💬'],
+        fb:'Léa a tout à fait le droit de dire non à un contact physique qu\'elle ne souhaite pas, même avec un membre de la famille. Respecter les limites corporelles de quelqu\'un, c\'est du respect, pas de l\'impolitesse.',
+        tip:'💡 "Mon corps m\'appartient" est une règle qui s\'applique à tout le monde — même avec des proches.' },
+      { q:'Tom emprunte le stylo de Jade sans lui demander. Jade dit "rends-le moi". Tom répond "je l\'ai juste pris 2 minutes". C\'est quoi le problème ?',
+        opts:['Il n\'y a pas de problème, c\'est juste un stylo','Tom n\'a pas demandé la permission et n\'a pas respecté la limite de Jade','Jade est trop sensible','Tom aurait dû attendre plus longtemps'],
+        ok:1, ico:['🤔','✅','🙅','⏳'],
+        fb:'Demander la permission avant de prendre ou de toucher quelque chose qui appartient à quelqu\'un, c\'est le consentement dans la vie de tous les jours. Pas seulement pour les câlins.',
+        tip:'💡 Le consentement s\'applique partout : emprunter, toucher, photographier, taguer sur les réseaux.' },
+      { q:'Quelqu\'un dit "non" mais sourit en même temps. Est-ce que le "non" compte quand même ?',
+        opts:['Non, s\'il sourit c\'est qu\'il plaisante','Oui — le "non" compte toujours, quoi qu\'il arrive','Peut-être — il faut insister un peu pour voir','Ça dépend de qui c\'est'],
+        ok:1, ico:['❌','✅','🚫','🤔'],
+        fb:'Le "non" est toujours valable, même accompagné d\'un sourire. Le sourire peut être gêné, nerveux, ou juste une façon d\'éviter le conflit. Ce qui compte, c\'est le "non".',
+        tip:'💡 Quand c\'est flou, la bonne question à poser : "Tu es sûr(e) que tu es OK avec ça ?" Et on respecte la réponse.' },
+      { q:'Nina ne veut pas qu\'une camarade lui fasse une tresse dans les cheveux. La camarade commence quand même. Nina devrait...',
+        opts:['Supporter en silence pour ne pas vexer','Dire clairement "stop, je ne veux pas" et l\'expliquer à une adulte si ça continue','Faire la même chose à la camarade pour lui apprendre','Changer de place discrètement sans rien dire'],
+        ok:1, ico:['😶','✅','🙅','😶'],
+        fb:'Nina a le droit de dire stop clairement. Et si ça continue malgré tout, en parler à un adulte n\'est pas "cafard" — c\'est se protéger et protéger les autres.',
+        tip:'💡 Dire "stop" clairement, ça s\'apprend et ça s\'entraîne. C\'est une compétence utile toute la vie.' },
+      { q:'Le consentement, c\'est...',
+        opts:['Quelque chose qui concerne uniquement les adultes','Le droit de chaque personne de dire oui ou non à ce qui concerne son corps','Obligatoirement dire oui quand c\'est quelqu\'un qu\'on aime','Quelque chose de compliqué qu\'on ne peut pas comprendre au CM2'],
+        ok:1, ico:['🚫','✅','🚫','🚫'],
+        fb:'Le consentement, c\'est simple : chacun a le droit de dire oui ou non à ce qui touche à son corps ou à ses affaires. Et ce droit s\'applique dès maintenant, pas seulement quand on sera adulte.',
+        tip:'💡 Résumé en une phrase : "Mon corps m\'appartient, ton corps t\'appartient. On demande, on respecte."' }
+    ]
+  },
+  {
+    id:'egalite', nom:'Égalité filles-garçons', ico:'⚖️',
+    couleur:'#F59E0B', couleurLight:'#FEF3C7',
+    intro:'Certaines idées sur ce que "doivent" faire les filles ou les garçons sont des stéréotypes. Ils ne viennent pas de la nature — ils viennent des habitudes et des représentations qu\'on transmet. On peut les questionner.',
+    retenir:'Les stéréotypes de genre limitent tout le monde — filles et garçons. Chaque personne a le droit de choisir ses passions, ses métiers et sa façon d\'être sans qu\'on lui dise que c\'est réservé à l\'autre sexe.',
+    questions:[
+      { q:'Un garçon de CM2 aime tricoter. Ses camarades se moquent de lui en disant "c\'est un truc de filles". Qu\'est-ce que vous en pensez ?',
+        opts:['Ils ont raison, le tricot est féminin','C\'est un stéréotype — tricoter n\'a pas de genre','Le garçon devrait arrêter pour éviter les moqueries','C\'est bizarre effectivement'],
+        ok:1, ico:['❌','✅','🙅','❌'],
+        fb:'Associer une activité à un seul sexe, c\'est un stéréotype. Le tricot est un artisanat, pas une activité "de filles". Des millions d\'hommes tricotent dans le monde — et des femmes adorent la mécanique.',
+        tip:'💡 Exercice mental : change le genre dans la phrase. "C\'est un truc de filles" → "C\'est un truc de garçons". Si ça semble absurde, c\'est que les deux le sont.' },
+      { q:'Dans une publicité, tous les pompiers sont des hommes et toutes les infirmières sont des femmes. C\'est un problème parce que...',
+        opts:['Ce n\'est pas un problème, c\'est la réalité','Les femmes ne peuvent pas être pompières','Ça transmet l\'idée que certains métiers ne sont "pas pour" les filles ou les garçons','Les publicités font toujours ça'],
+        ok:2, ico:['🤔','❌','✅','😐'],
+        fb:'Les images qu\'on voit tous les jours influencent ce qu\'on croit possible. Si on ne voit jamais de femmes pompières ou d\'hommes infirmiers, on finit par penser que c\'est "normal" — et des enfants abandonnent des rêves à cause de ça.',
+        tip:'💡 En France, environ 17% des pompiers professionnels sont des femmes — mais dans les dessins d\'enfants, les pompiers sont quasi toujours des hommes.' },
+      { q:'"Courir comme une fille" est souvent dit comme une moquerie. Qu\'est-ce que cette expression révèle ?',
+        opts:['Que les filles courent vraiment moins bien','Un stéréotype : "comme une fille" est utilisé comme une insulte, ce qui est injuste','Que les garçons sont meilleurs en sport','Que c\'est une blague sans conséquence'],
+        ok:1, ico:['❌','✅','❌','🙅'],
+        fb:'"Courir comme une fille" comme moquerie, ça sous-entend que "être une fille" c\'est inférieur. C\'est un stéréotype qui nuit aux filles ET aux garçons — il empêche les uns et les autres d\'être simplement eux-mêmes.',
+        tip:'💡 Petite expérience : demande à quelqu\'un de "courir comme une fille". Il va probablement exagérer et faire des gestes ridicules. Ça dit quelque chose sur les représentations, pas sur la réalité.' },
+      { q:'Manon veut devenir ingénieure. Son prof dit : "Les maths et les sciences, c\'est plutôt pour les garçons." Ce prof...',
+        opts:['A raison, les statistiques le montrent','Transmet un stéréotype qui peut décourager Manon sans raison valable','Veut aider Manon en étant honnête','Dit simplement la vérité'],
+        ok:1, ico:['❌','✅','🙅','❌'],
+        fb:'Les études montrent que les filles réussissent aussi bien que les garçons en maths — parfois mieux. Le stéréotype "les sciences c\'est pour les garçons" fait que des filles renoncent à des carrières scientifiques. Ce stéréotype est démenti par les faits.',
+        tip:'💡 Marie Curie a obtenu deux prix Nobel (physique et chimie). Katherine Johnson a calculé les trajectoires des missions Apollo. Les stéréotypes n\'ont aucune base scientifique.' },
+      { q:'L\'égalité filles-garçons, ça veut dire...',
+        opts:['Que les filles et les garçons sont identiques','Que chaque personne a les mêmes droits et les mêmes possibilités, quels que soient son genre','Que les filles doivent faire tout ce que font les garçons','Que les garçons doivent faire tout ce que font les filles'],
+        ok:1, ico:['🤔','✅','🙅','🙅'],
+        fb:'L\'égalité ne signifie pas l\'identité. Elle signifie que les différences entre les personnes — de personnalité, de goûts, de choix — ne devraient pas être déterminées par le fait d\'être une fille ou un garçon.',
+        tip:'💡 Ce qui devrait guider les choix de chacun : ses propres envies et talents — pas les attentes liées à son genre.' }
+    ]
+  },
+  {
+    id:'numerique', nom:'Numérique et vie privée', ico:'📱',
+    couleur:'#3B82F6', couleurLight:'#EFF6FF',
+    intro:'Sur internet, ce qu\'on partage peut se propager très loin et très vite. Certaines informations sur soi méritent d\'être protégées — même entre amis.',
+    retenir:'Une photo partagée ne peut plus être "dépubliée" vraiment. Avant de partager quelque chose qui concerne toi ou quelqu\'un d\'autre, pose-toi une question : est-ce que cette personne serait OK si tout le monde le voyait ?',
+    questions:[
+      { q:'Hugo prend une photo de sa camarade Jade sans lui demander et la publie sur son compte. C\'est...',
+        opts:['OK, c\'est juste une photo','Un problème : Hugo n\'a pas demandé la permission de Jade','Drôle — c\'est juste pour s\'amuser','Bien, pour que Jade ait plus de visibilité'],
+        ok:1, ico:['❌','✅','🙅','🙅'],
+        fb:'Publier une photo de quelqu\'un sans sa permission, c\'est une atteinte à sa vie privée. Même si ça semble anodin, Jade aurait le droit de demander la suppression de cette photo.',
+        tip:'💡 En France, publier la photo de quelqu\'un sans son accord peut être illégal — même pour un enfant. Et en ligne, une photo peut être partagée à l\'infini.' },
+      { q:'Emma reçoit un message d\'un inconnu qui lui demande son adresse, son école et son prénom. Elle devrait...',
+        opts:['Répondre — il est peut-être sympa','Ne pas répondre et montrer le message à un adulte de confiance','Lui donner juste son prénom, ça ne risque rien','Bloquer et ne rien dire à personne'],
+        ok:1, ico:['⚠️','✅','⚠️','🤔'],
+        fb:'Un inconnu qui demande ces infos à un enfant, c\'est un signal d\'alarme. Ne jamais répondre est la bonne réflexe — et montrer le message à un adulte de confiance permet de gérer la situation en sécurité.',
+        tip:'💡 Numéro utile : 3018 — la ligne nationale contre le cyberharcèlement et les dangers en ligne. Gratuit, anonyme, disponible 7j/7.' },
+      { q:'Tom reçoit une photo gênante de son camarade Lucas. Ses copains lui disent "envoie-la à tout le monde, c\'est trop drôle". Tom devrait...',
+        opts:['Transférer la photo — c\'est juste pour rire','Ne pas transférer : ça pourrait blesser Lucas et c\'est potentiellement illégal','Transférer juste à ses meilleurs amis','Garder la photo sans la transférer'],
+        ok:1, ico:['🚫','✅','⚠️','🤔'],
+        fb:'Transférer une photo gênante de quelqu\'un sans sa permission, c\'est du partage non consenti. Ça peut avoir des conséquences graves pour Lucas — et pour ceux qui transfèrent. Ce n\'est pas "juste pour rire".',
+        tip:'💡 Avant de transférer quoi que ce soit : "Est-ce que la personne dans la photo serait OK que tout le monde la voie ?" Si tu n\'es pas sûr, ne transfère pas.' },
+      { q:'Léa joue à un jeu en ligne et quelqu\'un lui propose de continuer "en privé" sur une autre appli. Elle devrait...',
+        opts:['Accepter — c\'est peut-être juste pour mieux jouer','Refuser et en parler à un adulte','Accepter si la personne semble sympa','Demander à ses amis d\'abord'],
+        ok:1, ico:['⚠️','✅','⚠️','🤔'],
+        fb:'Passer d\'un espace de jeu collectif à une communication privée avec un inconnu, c\'est un signal qui mérite d\'en parler à un adulte. Pas de panique — mais pas de secret non plus.',
+        tip:'💡 Règle simple : en ligne, quelqu\'un qu\'on n\'a jamais vu dans la vraie vie reste un inconnu — même si on lui a "parlé" pendant des mois.' },
+      { q:'Des informations qu\'on partage sur internet peuvent...',
+        opts:['Être effacées complètement si on les supprime','Rester accessibles très longtemps et être partagées à des gens qu\'on ne connaît pas','Disparaître après 24h automatiquement','N\'être vues que par ses amis proches'],
+        ok:1, ico:['❌','✅','❌','❌'],
+        fb:'Une fois partagée, une information ou une photo peut être copiée, enregistrée, retransférée. La "supprimer" ne l\'efface pas des appareils de ceux qui l\'ont déjà vue.',
+        tip:'💡 La règle d\'or : ne partage en ligne que ce que tu accepterais que ta famille, tes profs et des inconnus voient pour toujours.' }
+    ]
+  },
+  {
+    id:'prevention', nom:'Adultes ressources', ico:'🛡️',
+    couleur:'#EF4444', couleurLight:'#FEE2E2',
+    intro:'Il existe des situations qui font peur ou qui mettent mal à l\'aise. Dans ces moments-là, il y a toujours des adultes à qui on peut parler — et demander de l\'aide n\'est jamais une trahison.',
+    retenir:'Certains secrets ne doivent pas être gardés — ceux qui font mal, qui font honte, ou qui mettent en danger. Les adultes de confiance existent exactement pour ces moments-là. Parler, c\'est se protéger.',
+    questions:[
+      { q:'Un ami te dit qu\'il vit quelque chose de difficile à la maison mais te demande de ne rien dire à personne. Tu devrais...',
+        opts:['Promettre de garder le secret et ne rien dire','L\'encourager à en parler à un adulte de confiance, et peut-être en parler toi-même si tu t\'inquiètes','Lui promettre de garder le secret puis tout raconter','L\'ignorer pour ne pas t\'impliquer'],
+        ok:1, ico:['😰','✅','🙅','🙅'],
+        fb:'Quand un ami souffre, lui promettre le secret peut l\'isoler davantage. L\'encourager à parler à un adulte, c\'est lui montrer qu\'il mérite d\'être aidé. Et si tu t\'inquiètes vraiment, en parler toi-même n\'est pas trahir — c\'est protéger.',
+        tip:'💡 Il y a des secrets qu\'on peut garder (une surprise d\'anniversaire) et des secrets qu\'on ne devrait pas garder (quelque chose qui fait du mal).' },
+      { q:'Une situation te met mal à l\'aise mais tu n\'oses pas en parler à tes parents. Qui d\'autre peut t\'aider ?',
+        opts:['Personne, si on ne peut pas en parler à ses parents, on ne peut pas en parler','L\'infirmière scolaire, le CPE, un professeur de confiance, ou le 3020','Uniquement le médecin','Chercher des réponses seul sur internet'],
+        ok:1, ico:['❌','✅','🤔','⚠️'],
+        fb:'Il existe plusieurs adultes de confiance à l\'école : l\'infirmière scolaire, le CPE, un professeur avec qui tu te sens à l\'aise. Et en dehors de l\'école : le 3020 (harcèlement), le 119 (enfants en danger).',
+        tip:'💡 Tu n\'as pas besoin d\'avoir une "grosse raison" pour parler. Si quelque chose te pèse, c\'est déjà une raison suffisante.' },
+      { q:'Quelqu\'un te touche d\'une façon qui te met mal à l\'aise. Tu ne sais pas si tu "exagères". Tu devrais...',
+        opts:['Faire comme si de rien n\'était pour ne pas faire d\'histoire','Dire stop clairement et en parler à un adulte de confiance — même si tu n\'es pas sûr(e) d\'exagérer','Attendre pour voir si ça recommence','N\'en parler qu\'à tes amis'],
+        ok:1, ico:['🙈','✅','😰','🤔'],
+        fb:'Si quelque chose te met mal à l\'aise, tes émotions sont valides. Tu n\'as pas besoin d\'être "sûr(e)" de quoi que ce soit pour en parler à un adulte. Leur rôle est justement de t\'aider à y voir plus clair.',
+        tip:'💡 "Je n\'exagère pas" — si quelque chose te met mal à l\'aise, c\'est réel. Ton ressenti est toujours valide.' },
+      { q:'Le numéro 3020, c\'est...',
+        opts:['Le numéro des pompiers','La ligne nationale contre le harcèlement scolaire — gratuite et disponible pour tous les élèves','Le numéro de la mairie','Un numéro payant réservé aux adultes'],
+        ok:1, ico:['🚒','✅','🏛️','❌'],
+        fb:'Le 3020 est la ligne nationale contre le harcèlement scolaire. Elle est gratuite, disponible 7j/7, et tu peux appeler même si tu n\'es pas sûr(e) que c\'est du harcèlement. Ils t\'écoutent et t\'orientent.',
+        tip:'💡 Autres numéros utiles : 119 (enfants en danger) et 3018 (cyberharcèlement). Tous gratuits, tous confidentiels.' },
+      { q:'Nina reçoit des messages méchants répétés de camarades sur un groupe de messagerie. C\'est...',
+        opts:['Normal, ça arrive à tout le monde','Du cyberharcèlement — elle devrait en parler à un adulte et ne pas répondre aux messages','Sa faute si elle fait partie du groupe','Quelque chose qu\'elle peut régler seule en répondant sèchement'],
+        ok:1, ico:['❌','✅','🚫','⚠️'],
+        fb:'Des messages méchants répétés, c\'est du harcèlement — même en ligne. La bonne réaction : ne pas répondre (ça n\'arrange rien), faire des captures d\'écran, et en parler à un adulte. Le 3018 existe exactement pour ça.',
+        tip:'💡 Le harcèlement se définit par 3 critères : c\'est répété, intentionnel, et il y a un déséquilibre de force. Deux messages méchants ne font pas du harcèlement — mais une série prolongée, si.' }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════════
+// ÉTAT
+// ══════════════════════════════════════════════════════════
+let STATE = {
+  phase: 'accueil',   // accueil | theme | bilan_theme | bilan_final
+  themeIdx: null,
+  qIdx: 0,
+  selected: null,
+  answered: false,
+  themeScores: {},    // { id: score }
+  doneThemes: [],
+};
+
+const $ = id => document.getElementById(id);
+function mk(c) { const d=document.createElement('div'); d.className=c; return d; }
+function btn(l, c, fn) { const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=l; b.onclick=fn; return b; }
+function toast(m) { const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+// ══════════════════════════════════════════════════════════
+// PROGRESS
+// ══════════════════════════════════════════════════════════
+function renderProg() {
+  const d = $('prog-area');
+  const done = STATE.doneThemes.length;
+  const total = THEMES.length;
+  const pct = Math.round(done/total*100);
+  d.innerHTML='';
+  if (STATE.phase === 'accueil' && done === 0) return;
+  const w = mk('prog-wrap');
+  w.innerHTML='<div class="prog-bar-track"><div class="prog-bar-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="prog-label">'+done+' / '+total+' thèmes</div>';
+  d.appendChild(w);
+}
+
+// ══════════════════════════════════════════════════════════
+// RENDU PRINCIPAL
+// ══════════════════════════════════════════════════════════
+function render() {
+  renderProg();
+  const r = $('root');
+  r.innerHTML = '';
+  if (STATE.phase === 'accueil')       renderAccueil(r);
+  if (STATE.phase === 'theme')         renderTheme(r);
+  if (STATE.phase === 'bilan_theme')   renderBilanTheme(r);
+  if (STATE.phase === 'bilan_final')   renderBilanFinal(r);
+}
+
+// ══════════════════════════════════════════════════════════
+// ACCUEIL
+// ══════════════════════════════════════════════════════════
+function renderAccueil(r) {
+  // Intro card
+  const ic = mk('intro-card');
+  ic.innerHTML='<div style="font-family:var(--ft);font-size:1.2rem;font-weight:900;color:var(--evd);margin-bottom:10px">Comment ça marche ? 🎮</div>';
+  const rules = mk('intro-rules');
+  [['🎨','4 réponses colorées'],['✅','Feedback immédiat'],['💜','5 thèmes à explorer'],['🏆','Bilan final']].forEach(([ico,txt])=>{
+    const rl = mk('rule'); rl.innerHTML='<div class="rule-ico">'+ico+'</div><div class="rule-txt">'+txt+'</div>';
+    rules.appendChild(rl);
+  });
+  ic.appendChild(rules);
+  ic.innerHTML+='<div style="font-size:.9rem;font-weight:600;color:var(--ink3);margin-top:8px">Chaque thème = 5 questions. Tu peux les faire dans l\'ordre que tu veux. 💜</div>';
+  r.appendChild(ic);
+
+  // Grille thèmes
+  const ti = document.createElement('div');
+  ti.style.cssText='font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ink3);text-align:center;margin-bottom:10px';
+  ti.textContent='👇 Choisis un thème pour commencer';
+  r.appendChild(ti);
+
+  const grid = mk('themes-grid');
+  THEMES.forEach((th, i) => {
+    const b = mk('theme-btn' + (STATE.doneThemes.includes(th.id) ? ' done' : ''));
+    b.style.borderColor = th.couleur;
+    b.innerHTML='<div class="theme-ico">'+th.ico+'</div>'+
+      '<div class="theme-name" style="color:'+th.couleur+'">'+th.nom+'</div>'+
+      '<div class="theme-count">'+( STATE.doneThemes.includes(th.id) ? '✓ Terminé · '+STATE.themeScores[th.id]+'/5' : '5 questions')+'</div>';
+    b.onclick = () => {
+      STATE.themeIdx = i;
+      STATE.qIdx = 0;
+      STATE.selected = null;
+      STATE.answered = false;
+      STATE.phase = 'theme';
+      render();
+    };
+    grid.appendChild(b);
+  });
+  r.appendChild(grid);
+
+  // Bouton bilan si tout fait
+  if (STATE.doneThemes.length === THEMES.length) {
+    const row = mk('row');
+    row.style.marginTop='18px';
+    row.appendChild(btn('🏆 Voir mon bilan final !','btnp',()=>{ STATE.phase='bilan_final'; render(); }));
+    r.appendChild(row);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// THÈME — QUESTION KAHOOT
+// ══════════════════════════════════════════════════════════
+function renderTheme(r) {
+  const th = THEMES[STATE.themeIdx];
+  const q = th.questions[STATE.qIdx];
+
+  // Header thème
+  const hd = mk('k-header');
+  hd.innerHTML='<div class="k-theme-badge" style="background:'+th.couleurLight+';color:'+th.couleur+';border:2px solid '+th.couleur+'">'+th.ico+' '+th.nom+'</div>'+
+    '<div class="k-qnum">Question '+(STATE.qIdx+1)+' / '+th.questions.length+'</div>'+
+    '<div class="k-question">'+q.q+'</div>';
+  r.appendChild(hd);
+
+  // Si première question et pas encore répondu : afficher intro du thème
+  if (STATE.qIdx === 0 && !STATE.answered) {
+    const intro = mk('');
+    intro.style.cssText='background:'+th.couleurLight+';border:2px solid '+th.couleur+';border-radius:16px;padding:12px 16px;margin-bottom:12px;font-size:.9rem;font-weight:700;color:var(--ink2);line-height:1.55';
+    intro.innerHTML='<span style="font-family:var(--ft);font-weight:900;color:'+th.couleur+'">'+th.ico+' Intro — </span>'+th.intro;
+    r.appendChild(intro);
+  }
+
+  // Grille 2×2
+  const ICONS = ['🔷','🔶','🔴','🟢'];
+  const grid = mk('k-grid');
+  q.opts.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'k-opt';
+    b.setAttribute('data-color', i);
+    b.dataset.idx = i;
+    b.innerHTML = '<span class="k-opt-ico">'+ICONS[i]+'</span><span>'+opt+'</span>';
+    if (STATE.answered) {
+      b.disabled = true;
+      if (i === q.ok) b.classList.add('reveal-correct');
+      else if (i === STATE.selected) b.classList.add('wrong');
+    } else {
+      b.onclick = () => handleAnswer(i, q);
+    }
+    grid.appendChild(b);
+  });
+  r.appendChild(grid);
+
+  // Feedback
+  if (STATE.answered) {
+    const ok = STATE.selected === q.ok;
+    const fb = mk('k-feedback ' + (ok ? 'ok' : 'ko'));
+    const stars = ok ? '⭐⭐⭐' : '💙';
+    fb.innerHTML='<div class="k-stars">'+stars+'</div>'+
+      '<div class="k-fb-title">'+(ok ? '✅ Exact !' : '❌ Pas tout à fait…')+'</div>'+
+      '<div class="k-fb-text">'+q.fb+'</div>'+
+      '<div class="k-fb-tip">'+q.tip+'</div>';
+    r.appendChild(fb);
+
+    const row = mk('row');
+    const isLast = STATE.qIdx === th.questions.length - 1;
+    row.appendChild(btn(
+      isLast ? '📊 Voir mon score ➜' : 'Question suivante ➜',
+      'btnp',
+      () => {
+        if (isLast) {
+          // Calculer score
+          if (!STATE.doneThemes.includes(th.id)) STATE.doneThemes.push(th.id);
+          STATE.phase = 'bilan_theme';
+        } else {
+          STATE.qIdx++;
+          STATE.selected = null;
+          STATE.answered = false;
+        }
+        render();
+      }
+    ));
+    r.appendChild(row);
+  }
+}
+
+let themeAnswers = {}; // { themeId: [bool, bool, ...] }
+
+function handleAnswer(idx, q) {
+  STATE.selected = idx;
+  STATE.answered = true;
+  const th = THEMES[STATE.themeIdx];
+  if (!themeAnswers[th.id]) themeAnswers[th.id] = [];
+  themeAnswers[th.id].push(idx === q.ok);
+  render();
+}
+
+// ══════════════════════════════════════════════════════════
+// BILAN THÈME
+// ══════════════════════════════════════════════════════════
+function renderBilanTheme(r) {
+  const th = THEMES[STATE.themeIdx];
+  const answers = themeAnswers[th.id] || [];
+  const score = answers.filter(Boolean).length;
+  const total = th.questions.length;
+  STATE.themeScores[th.id] = score;
+
+  const pct = Math.round(score/total*100);
+  let ico, msg;
+  if (pct >= 80) { ico='🏆'; msg='Excellente maîtrise ! Tu as bien compris ce thème.'; }
+  else if (pct >= 60) { ico='⭐'; msg='Bien ! Il y a quelques points à revoir, mais tu as les bases.'; }
+  else { ico='💪'; msg='Pas de panique ! Relis les feedbacks et n\'hésite pas à refaire ce thème.'; }
+
+  const c = mk('bilan-card');
+  c.innerHTML='<div class="bilan-ico">'+th.ico+'</div>'+
+    '<div class="bilan-title" style="color:'+th.couleur+'">'+th.nom+'</div>'+
+    '<div class="bilan-score">'+ico+' '+score+' / '+total+'</div>'+
+    '<div style="font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:10px">'+msg+'</div>';
+
+  const ret = mk('bilan-retenir');
+  ret.innerHTML='<div class="bilan-retenir-title">'+th.ico+' À retenir</div>'+
+    '<div class="bilan-retenir-text">'+th.retenir+'</div>';
+  c.appendChild(ret);
+
+  const row = mk('row');
+  row.appendChild(btn('← Choisir un autre thème','btnp',()=>{
+    STATE.phase='accueil'; STATE.themeIdx=null;
+    render();
+  }));
+  if (STATE.doneThemes.length === THEMES.length) {
+    row.appendChild(btn('🏆 Bilan final !','btns',()=>{ STATE.phase='bilan_final'; render(); }));
+  }
+  c.appendChild(row);
+  r.appendChild(c);
+}
+
+// ══════════════════════════════════════════════════════════
+// BILAN FINAL
+// ══════════════════════════════════════════════════════════
+function renderBilanFinal(r) {
+  const totalOk = Object.values(themeAnswers).flat().filter(Boolean).length;
+  const totalQ = THEMES.length * 5;
+  const pct = Math.round(totalOk/totalQ*100);
+  let ico, msg;
+  if (pct >= 80) { ico='🏆'; msg='Bravo ! Tu as de très bonnes bases sur tous ces thèmes importants.'; }
+  else if (pct >= 60) { ico='🌟'; msg='Bon travail ! Il reste quelques points à explorer — tu peux refaire les thèmes.'; }
+  else { ico='💜'; msg='Merci d\'avoir exploré ces thèmes. N\'hésite pas à en reparler avec un adulte de confiance.'; }
+
+  const c = mk('final-card');
+  c.innerHTML='<div class="final-ico">'+ico+'</div>'+
+    '<div class="final-title">Parcours terminé !</div>'+
+    '<div class="final-score">'+totalOk+' / '+totalQ+'</div>'+
+    '<div style="font-family:var(--ft);font-size:1.1rem;font-weight:800;color:var(--evd);margin-bottom:16px">'+msg+'</div>';
+
+  // Recap thèmes
+  const chips = mk('final-themes');
+  THEMES.forEach(th => {
+    const sc = STATE.themeScores[th.id] || 0;
+    const chip = mk('final-theme-chip');
+    chip.style.borderColor = th.couleur; chip.style.color = th.couleur;
+    chip.innerHTML = th.ico+' '+th.nom+' — '+sc+'/5';
+    chips.appendChild(chip);
+  });
+  c.appendChild(chips);
+
+  // Message ressources
+  const box = document.createElement('div');
+  box.style.cssText='background:rgba(255,255,255,.7);border-radius:16px;padding:14px;margin:16px 0;text-align:left;border:2px solid rgba(139,92,246,.2)';
+  box.innerHTML='<div style="font-family:var(--ft);font-weight:900;color:var(--evd);margin-bottom:8px">📞 Les numéros à connaître</div>'+
+    '<div style="font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.7">'+
+    '📱 <strong>3020</strong> — Harcèlement scolaire (gratuit, 7j/7)<br>'+
+    '📱 <strong>3018</strong> — Cyberharcèlement et dangers en ligne (gratuit, 7j/7)<br>'+
+    '📱 <strong>119</strong> — Enfance en danger (gratuit, 24h/24)<br>'+
+    '🏫 <strong>L\'infirmière, le CPE, un prof de confiance</strong> — à l\'école, ils sont là pour toi.</div>';
+  c.appendChild(box);
+
+  const row = mk('row');
+  row.appendChild(btn('↩ Refaire les thèmes','btns',()=>{
+    STATE={phase:'accueil',themeIdx:null,qIdx:0,selected:null,answered:false,themeScores:{},doneThemes:[]};
+    themeAnswers={};
+    render();
+  }));
+  row.appendChild(btn('🏠 Retour accueil','btnp',()=>location.href='index.html'));
+  c.appendChild(row);
+  r.appendChild(c);
+}
+
+// ══════════════════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>

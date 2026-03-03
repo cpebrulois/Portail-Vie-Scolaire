@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Histoire-Géographie CM2</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --hg:#D97706;--hg-d:#92400E;--hg-m:#F59E0B;--hg-p:#FEF3C7;--hg-bg:#FFFBEB;
+  --geo:#0EA5E9;--geo-d:#0369A1;--geo-p:#E0F2FE;
+  --ok:#34D399;--ok-d:#059669;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--inkf:#CBD5E1;
+  --w:#FFF;--panel:rgba(255,255,255,.96);
+  --rsm:10px;--rmd:18px;--rlg:28px;
+  --sh1:0 2px 8px rgba(15,23,42,.08);--sh2:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--hg-bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 35% at 4% 4%,rgba(217,119,6,.1) 0%,transparent 65%),
+             radial-gradient(ellipse 40% 30% at 96% 8%,rgba(14,165,233,.08) 0%,transparent 60%)}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--w);border:2px solid var(--inkf);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--hg);color:var(--hg-d)}
+.hero{text-align:center;padding:26px 20px 18px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--hg),var(--geo));color:#fff;border-radius:50px;padding:8px 22px;font-family:var(--ft);font-size:.9rem;font-weight:800;margin-bottom:14px;box-shadow:0 4px 0 var(--hg-d)}
+.hero-title{font-family:var(--ft);font-size:clamp(1.9rem,5vw,2.9rem);font-weight:900;margin-bottom:8px}
+.hero-title .eh{color:var(--hg)}.hero-title .eg{color:var(--geo)}
+.hero-sub{font-size:.97rem;color:var(--ink3);font-weight:600;max-width:480px;margin:0 auto 16px}
+.cm2-tag{display:inline-flex;align-items:center;gap:7px;background:var(--hg-p);border:2px solid rgba(217,119,6,.35);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.8rem;font-weight:800;color:var(--hg-d)}
+.xps{display:flex;gap:9px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.xp{display:flex;align-items:center;gap:5px;background:var(--w);border:2px solid var(--inkf);border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink)}
+.xp.hl-h{border-color:var(--hg-m);background:var(--hg-p);color:var(--hg-d)}
+.xp.hl-g{border-color:var(--geo);background:var(--geo-p);color:var(--geo-d)}
+/* SECTION TABS */
+.section-toggle{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.stog{font-family:var(--ft);font-size:.95rem;font-weight:800;border:2.5px solid var(--inkf);border-radius:50px;padding:9px 22px;cursor:pointer;background:var(--w);color:var(--ink3);transition:all .18s}
+.stog.on-h{background:var(--hg);border-color:var(--hg);color:#fff;box-shadow:0 3px 10px rgba(217,119,6,.3)}
+.stog.on-g{background:var(--geo);border-color:var(--geo);color:#fff;box-shadow:0 3px 10px rgba(14,165,233,.3)}
+/* CHAPITRES TABS */
+.tabs{display:flex;gap:0;background:var(--w);border-radius:var(--rmd);padding:6px;box-shadow:var(--sh1);border:1.5px solid var(--inkf);overflow-x:auto;margin-bottom:14px}
+.tab{flex:1;min-width:80px;padding:9px 6px;border-radius:var(--rsm);border:none;background:transparent;cursor:pointer;font-family:var(--ft);font-size:.75rem;font-weight:800;color:var(--ink3);transition:all .2s;white-space:nowrap;text-align:center;line-height:1.3}
+.tab:hover:not(.on){background:rgba(217,119,6,.08);color:var(--hg-d)}
+.tab.on-h{background:var(--hg);color:#fff;box-shadow:0 3px 8px rgba(217,119,6,.4)}
+.tab.on-g{background:var(--geo);color:#fff;box-shadow:0 3px 8px rgba(14,165,233,.4)}
+.tab-ico{display:block;font-size:1rem;margin-bottom:2px}
+/* CARD */
+.card{background:var(--panel);border-radius:var(--rlg);box-shadow:var(--sh2);border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px;overflow:hidden;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.chead{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1.5px solid rgba(15,23,42,.07)}
+.ci{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.c-h{background:var(--hg-p)}.c-g{background:var(--geo-p)}.c-ok{background:#DCFCE7}
+.ctitle{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ink)}
+.csub{font-size:.78rem;font-weight:700;color:var(--ink3);margin-top:2px}
+.cbody{padding:18px 20px}
+/* COURS */
+.cours{border-radius:var(--rmd);padding:17px;margin-bottom:14px}
+.cours-h{background:linear-gradient(135deg,rgba(217,119,6,.07),rgba(245,158,11,.04));border:1.5px solid rgba(217,119,6,.2)}
+.cours-g{background:linear-gradient(135deg,rgba(14,165,233,.07),rgba(56,189,248,.04));border:1.5px solid rgba(14,165,233,.2)}
+.ctit{font-family:var(--ft);font-size:1rem;font-weight:800;margin-bottom:9px}
+.ctit-h{color:var(--hg-d)}.ctit-g{color:var(--geo-d)}
+.ctxt{font-size:.9rem;line-height:1.72;color:var(--ink2)}
+.ctxt strong{color:var(--hg-d)}.ctxt.geo strong{color:var(--geo-d)}
+.ex-box{background:var(--w);border-left:4px solid var(--hg);border-radius:var(--rsm);padding:10px 14px;margin:10px 0;font-size:.88rem;color:var(--ink);line-height:1.55}
+.ex-box.geo{border-left-color:var(--geo)}
+.astuce{background:var(--hg-p);border:1.5px solid rgba(217,119,6,.3);border-radius:var(--rsm);padding:9px 13px;margin-top:9px;font-size:.84rem;color:var(--hg-d);font-weight:700}
+.astuce::before{content:'💡 '}
+.astuce.geo{background:var(--geo-p);border-color:rgba(14,165,233,.3);color:var(--geo-d)}
+.regle{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:var(--rsm);padding:9px 13px;margin-top:8px;font-size:.84rem;color:#1E40AF;font-weight:700}
+.regle::before{content:'📌 '}
+.frise{background:linear-gradient(90deg,var(--hg-p),#FFF7ED);border:1.5px solid rgba(217,119,6,.25);border-radius:var(--rmd);padding:14px;margin:12px 0;overflow-x:auto}
+.frise-title{font-family:var(--ft);font-size:.82rem;font-weight:800;color:var(--hg-d);margin-bottom:10px}
+.frise-row{display:flex;align-items:flex-start;gap:0;min-width:500px}
+.frise-item{flex:1;text-align:center;position:relative}
+.frise-item::after{content:'';position:absolute;top:14px;right:0;width:100%;height:3px;background:var(--hg-m);z-index:0}
+.frise-item:last-child::after{display:none}
+.frise-dot{width:28px;height:28px;border-radius:50%;background:var(--hg);color:#fff;font-family:var(--ft);font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;position:relative;z-index:1}
+.frise-date{font-family:var(--fm);font-size:.65rem;font-weight:700;color:var(--hg-d)}
+.frise-lbl{font-size:.7rem;font-weight:700;color:var(--ink2);line-height:1.3;padding:0 4px}
+/* FLASHCARDS */
+.fc-hint{font-size:.74rem;color:var(--ink3);text-align:center;margin-bottom:8px;font-style:italic}
+.fcwrap{perspective:1000px;cursor:pointer;margin-bottom:12px}
+.fcinner{width:100%;min-height:148px;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--rmd)}
+.fcinner.flip{transform:rotateY(180deg)}
+.fcface{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--rmd);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.fcf{background:var(--w);border:2px solid var(--inkf);box-shadow:var(--sh1)}
+.fcb-h{background:linear-gradient(135deg,var(--hg-p),#FFF7ED);border:2px solid var(--hg);transform:rotateY(180deg)}
+.fcb-g{background:linear-gradient(135deg,var(--geo-p),#F0F9FF);border:2px solid var(--geo);transform:rotateY(180deg)}
+.fctag{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:.5}
+.fcq{font-family:var(--ft);font-size:.97rem;font-weight:800;color:var(--ink);line-height:1.3}
+.fcb-h .fcq,.fcb-g .fcq{font-size:.88rem;font-weight:700}
+.fcb-h .fcq{color:var(--hg-d)}.fcb-g .fcq{color:var(--geo-d)}
+.fcsub{font-size:.74rem;color:var(--ink3);font-style:italic}
+.fcnav{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.fcctr{font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink3)}
+/* QCM */
+.qctx{border:1.5px solid;border-radius:var(--rsm);padding:9px 13px;margin-bottom:11px;font-size:.87rem;font-style:italic;font-weight:600}
+.qctx-h{background:rgba(217,119,6,.07);border-color:rgba(217,119,6,.2);color:var(--ink2)}
+.qctx-g{background:rgba(14,165,233,.07);border-color:rgba(14,165,233,.2);color:var(--ink2)}
+.qq{font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:13px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--inkf);border-radius:var(--rsm);padding:11px 14px;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--ink);text-align:left;transition:all .15s;font-family:var(--fb)}
+.opt:hover:not(:disabled){border-color:var(--hg-m);background:var(--hg-p)}
+.opt.sel-h{border-color:var(--hg);background:var(--hg-p)}
+.opt.sel-g{border-color:var(--geo);background:var(--geo-p)}
+.opt.ok{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.opt:disabled{cursor:default}
+.olet{width:28px;height:28px;border-radius:7px;background:var(--inkf);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt.sel-h .olet{background:var(--hg);color:#fff}.opt.sel-g .olet{background:var(--geo);color:#fff}
+.opt.ok .olet{background:var(--ok);color:#fff}.opt.ko .olet{background:#EF4444;color:#fff}
+.fb{border-radius:var(--rsm);padding:11px 14px;margin-bottom:12px;border:2px solid}
+.fb.ok{background:#DCFCE7;border-color:var(--ok)}.fb.ko{background:#FEE2E2;border-color:#EF4444}
+.fbt{font-family:var(--ft);font-size:.92rem;font-weight:800;margin-bottom:4px}
+.fbb{font-size:.85rem;line-height:1.5}
+/* BILAN */
+.bilan{text-align:center;padding:6px 0 14px}
+.bscore-h{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--hg);margin-bottom:5px}
+.bscore-g{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--geo);margin-bottom:5px}
+.blbl{font-size:.88rem;color:var(--ink3);font-weight:600;margin-bottom:14px}
+.bbadge{display:inline-flex;align-items:center;gap:7px;border-radius:50px;padding:7px 18px;font-family:var(--ft);font-size:.88rem;font-weight:800;margin-bottom:14px}
+.bor{background:#FEF9C3;color:#92400E}.barg{background:#DBEAFE;color:#1E40AF}.bbr{background:#DCFCE7;color:#14532D}
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;padding:11px 24px;font-family:var(--ft);font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:all .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.14)}
+.btn:active{transform:translateY(0)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.b-h{background:var(--hg);color:#fff}.b-g{background:var(--geo);color:#fff}
+.bok{background:var(--ok-d);color:#fff}
+.bgh{background:var(--w);color:var(--ink2);border:2px solid var(--inkf);box-shadow:none}
+.bgh:hover{border-color:var(--ink2);transform:none}
+.brow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:11px 26px;border-radius:50px;font-family:var(--ft);font-weight:700;font-size:.92rem;box-shadow:0 16px 48px rgba(15,23,42,.2);z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:540px){.tab{min-width:66px;font-size:.7rem}.app{padding:0 12px 48px}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="topnav">
+  <a class="back" href="index.html">← Accueil</a>
+  <span style="font-size:.79rem;font-weight:700;color:var(--ink3)">Zone Révision</span>
+</nav>
+<header class="hero">
+  <div class="hero-badge">🌍 Révision Histoire-Géo</div>
+  <h1 class="hero-title"><span class="eh">Histoire</span> &amp; <span class="eg">Géographie</span></h1>
+  <p class="hero-sub">Consolide les repères essentiels du CM2 avant d'entrer en 6e.</p>
+  <div class="cm2-tag">🏫 Niveau CM2 — raccord cycle 3 → 6e</div>
+</header>
+<div class="section-toggle">
+  <button class="stog on-h" id="btn-h" onclick="setSection('h')">📜 Histoire</button>
+  <button class="stog" id="btn-g" onclick="setSection('g')">🌍 Géographie</button>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="xps">
+  <div class="xp hl-h">⭐ <span id="xpTot">0</span> XP</div>
+  <div class="xp" id="xp-h">📜 <span id="chapH">0</span>/5 Histoire</div>
+  <div class="xp" id="xp-g">🌍 <span id="chapG">0</span>/5 Géo</div>
+</div>
+<div id="main"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DONNÉES COMPLÈTES — HISTOIRE-GÉO CM2
+═══════════════════════════════════════════════════════════ */
+const DATA = {
+h: [
+// ──────────── H1 : PRÉHISTOIRE ────────────
+{ id:'h1', ico:'🦴', label:'Préhistoire', section:'h',
+  cours:{
+    titre:'La Préhistoire — des origines à l\'écriture',
+    txt:`La Préhistoire est la période la plus longue de l'histoire humaine. Elle commence avec l'apparition des <strong>premiers êtres humains</strong> (Homo habilis, Homo erectus) il y a environ 3 millions d'années et se termine avec l'invention de l'<strong>écriture</strong> vers <strong>-3300 avant J.-C.</strong><br><br>
+On distingue deux grandes périodes : le <strong>Paléolithique</strong> (âge de la pierre taillée, chasse, cueillette, nomadisme) et le <strong>Néolithique</strong> (âge de la pierre polie, agriculture, élevage, sédentarisation).`,
+    frise:true,
+    ex:'Les grottes de <strong>Lascaux</strong> (Dordogne) et <strong>Chauvet</strong> (Ardèche) témoignent de l\'art pariétal du Paléolithique. Des peintures vieilles de plus de 36 000 ans.',
+    astuce:'Le mot "Préhistoire" signifie "avant l\'histoire écrite". Retiens : Paléo = vieux, Néo = nouveau.',
+    regle:'Préhistoire ≠ sans histoire. On sait beaucoup de choses grâce aux fouilles archéologiques, aux outils, aux ossements et aux peintures rupestres.'
+  },
+  fc:[
+    {q:'Quand se termine la Préhistoire ?',a:'Vers -3300 av. J.-C., avec l\'invention de l\'écriture en Mésopotamie.',hint:'Ce n\'est pas une date précise — c\'est l\'apparition de l\'écriture.',ah:'La Préhistoire ne finit pas partout au même moment : elle se termine quand chaque civilisation invente l\'écriture.'},
+    {q:'Qu\'est-ce qui différencie le Paléolithique du Néolithique ?',a:'Au Paléolithique : pierre taillée, nomadisme, chasse/cueillette. Au Néolithique : pierre polie, sédentarisation, agriculture et élevage.',hint:'Paléo = ancien / Néo = nouveau.',ah:'La "révolution néolithique" est l\'une des transformations les plus importantes de l\'histoire humaine.'},
+    {q:'Qu\'est-ce que l\'art pariétal ?',a:'Des peintures et gravures réalisées sur les parois des grottes, comme à Lascaux ou Chauvet.',hint:'Pariétal vient du latin "paries" = mur.',ah:'Ces œuvres avaient probablement une fonction rituelle ou magique liée à la chasse.'},
+    {q:'Qu\'est-ce qu\'un mégalithe ?',a:'Un monument construit avec de grandes pierres (menhirs, dolmens, cromlechs) par les humains du Néolithique.',hint:'Méga = grand / lithe = pierre.',ah:'Stonehenge en Angleterre et Carnac en Bretagne sont les exemples les plus célèbres d\'Europe.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Qu\'est-ce que la sédentarisation ?',
+      opts:['Le fait de se déplacer en suivant les animaux','Le fait de s\'installer de façon permanente dans un lieu','L\'invention de l\'écriture','La domestication du cheval'],
+      ok:1,xp:25,fb:'Se sédentariser, c\'est s\'installer durablement au même endroit. C\'est une révolution du Néolithique : les humains construisent des villages, cultivent des champs et élèvent des animaux.'},
+    {type:'qcm',ctx:'',q:'Quel outil caractérise le Paléolithique ?',
+      opts:['La hache en métal','La charrue en bois','L\'outil en pierre taillée','Le vase en argile cuit'],
+      ok:2,xp:25,fb:'Au Paléolithique ("vieille pierre"), les outils sont fabriqués en taillant le silex. Au Néolithique, on polit la pierre pour la rendre plus efficace.'},
+    {type:'qcm',ctx:'',q:'Quelle est la bonne chronologie ?',
+      opts:['Néolithique puis Paléolithique','Paléolithique puis Néolithique','Les deux sont simultanés','Aucune des deux n\'est exacte'],
+      ok:1,xp:20,fb:'Le Paléolithique (ancienne pierre) précède le Néolithique (nouvelle pierre). Bonne mémoire : PAL-ÉO avant NÉO, comme "paléo" = vieux.'},
+  ]
+},
+// ──────────── H2 : ANTIQUITÉ ────────────
+{ id:'h2', ico:'🏛️', label:'Antiquité', section:'h',
+  cours:{
+    titre:'L\'Antiquité — les premières grandes civilisations',
+    txt:`L'Antiquité commence avec l'<strong>invention de l\'écriture</strong> (vers -3300) et se termine avec la <strong>chute de Rome</strong> en <strong>476 après J.-C.</strong><br><br>
+Quatre civilisations majeures à connaître :<br>
+• <strong>Mésopotamie</strong> (entre le Tigre et l'Euphrate) : première écriture cunéiforme, premières villes, Code d'Hammurabi<br>
+• <strong>Égypte ancienne</strong> : pharaons, pyramides, hiéroglyphes, Nil<br>
+• <strong>Grèce antique</strong> : démocratie, philosophie, Jeux olympiques, Zeus et l'Olympe<br>
+• <strong>Rome antique</strong> : République puis Empire, droit romain, conquêtes, christianisme`,
+    ex:'<strong>-3300</strong> : écriture cunéiforme (Mésopotamie) · <strong>-2560</strong> : Grande pyramide de Gizeh · <strong>-776</strong> : premiers Jeux olympiques · <strong>-27</strong> : Auguste, premier empereur romain · <strong>+476</strong> : chute de l\'Empire romain d\'Occident',
+    astuce:'Truc pour retenir : Meso-Egypte-Grèce-Rome = "Mon Éléphant Grignote des Raisins".',
+    regle:'L\'Antiquité ≠ l\'Antiquité grecque uniquement. En 6e, vous étudierez en détail toutes ces civilisations — commencer à les distinguer maintenant vous donnera une longueur d\'avance.'
+  },
+  fc:[
+    {q:'Qu\'est-ce que la Mésopotamie ?',a:'La région entre le Tigre et l\'Euphrate (actuel Irak), berceau de la première écriture et des premières villes.',hint:'Méso = entre / potamos = fleuve.',ah:'Les Sumériens y inventent l\'écriture cunéiforme vers -3300 pour comptabiliser les richesses.'},
+    {q:'Qu\'est-ce qu\'un pharaon ?',a:'Le roi-dieu de l\'Égypte ancienne. Il est à la fois chef politique, militaire et religieux.',hint:'Pharaon vient de "per-aâ" = grande maison.',ah:'Les pharaons les plus célèbres : Ramsès II, Toutankhamon, Cléopâtre.'},
+    {q:'Qu\'est-ce que la démocratie athénienne ?',a:'Un système politique inventé à Athènes (Grèce) où les citoyens participent aux décisions. Mais attention : femmes, esclaves et étrangers en sont exclus.',hint:'Démo = peuple / cratos = pouvoir.',ah:'C\'est une démocratie directe : les citoyens votent eux-mêmes les lois, sans représentants.'},
+    {q:'Quand tombe l\'Empire romain d\'Occident ?',a:'En 476 après J.-C., sous les coups des invasions barbares (prise de Rome par Odoacre).',hint:'476 = date de fin de l\'Antiquité par convention.',ah:'L\'Empire romain d\'Orient (Byzance) survivra jusqu\'en 1453 — mais ça, c\'est le Moyen Âge.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'L\'écriture cunéiforme est liée à quelle civilisation ?',
+      opts:['L\'Égypte ancienne','La Grèce antique','La Mésopotamie (Sumériens)','L\'Empire romain'],
+      ok:2,xp:25,fb:'L\'écriture cunéiforme (en forme de clous) est inventée en Mésopotamie par les Sumériens vers -3300. Les hiéroglyphes, eux, viennent d\'Égypte.'},
+    {type:'qcm',ctx:'',q:'Les premiers Jeux olympiques de l\'Antiquité ont lieu…',
+      opts:['À Rome en -27','À Athènes en -490','À Olympie en -776','En Égypte en -1000'],
+      ok:2,xp:25,fb:'Les premiers Jeux olympiques antiques ont lieu à Olympie (Grèce) en -776. Ils se tiennent tous les 4 ans en l\'honneur de Zeus. Les Jeux modernes sont réinventés en 1896 par Pierre de Coubertin.'},
+    {type:'qcm',ctx:'',q:'Quelle est la bonne chronologie de fin de l\'Antiquité ?',
+      opts:['Chute de Jérusalem en -70','Mort de Jules César en -44','Chute de Rome en 476 apr. J.-C.','Naissance de Jésus en l\'an 0'],
+      ok:2,xp:25,fb:'Par convention, l\'Antiquité se termine en 476 apr. J.-C. avec la chute de l\'Empire romain d\'Occident. C\'est la date qui marque le début du Moyen Âge.'},
+  ]
+},
+// ──────────── H3 : MOYEN ÂGE ────────────
+{ id:'h3', ico:'⚔️', label:'Moyen Âge', section:'h',
+  cours:{
+    titre:'Le Moyen Âge — de 476 à 1492',
+    txt:`Le Moyen Âge va de la <strong>chute de Rome (476)</strong> à la <strong>découverte des Amériques (1492)</strong>.<br><br>
+Société organisée en <strong>trois ordres</strong> : ceux qui prient (le clergé), ceux qui combattent (les seigneurs et chevaliers), ceux qui travaillent (les paysans — la grande majorité).<br><br>
+Moments clés : le règne de <strong>Charlemagne</strong> (800, sacré empereur), les <strong>Croisades</strong> (XIe-XIIIe s.), la <strong>Peste Noire</strong> (1347-1351, tue ⅓ de l'Europe), la <strong>Guerre de Cent Ans</strong> (1337-1453) et <strong>Jeanne d'Arc</strong>.`,
+    ex:'En 800, Charlemagne est sacré <strong>Empereur d\'Occident</strong> par le pape Léon III à Rome. C\'est la première tentative de réunifier l\'Europe depuis la chute de Rome.',
+    astuce:'476 → 1492 : "Pour mémoriser les dates, pense aux 4 saisons de 476 siècles..." ou plus simplement : 476 (chute de Rome) + 1492 (Colomb en Amérique).',
+    regle:'Le Moyen Âge = environ 1 000 ans. C\'est très long et très varié. En 6e, on commence par les débuts du Moyen Âge. En 5e, on poursuit.'
+  },
+  fc:[
+    {q:'Qui est Charlemagne ?',a:'Roi des Francs sacré Empereur d\'Occident en 800. Il unifie une grande partie de l\'Europe et développe l\'éducation.',hint:'Charles le Grand = Charlemagne.',ah:'Charlemagne ne savait pas lire. Il a pourtant lancé une grande réforme de l\'éducation — ce qui prouve qu\'on peut soutenir l\'éducation sans être lui-même lettré.'},
+    {q:'Qu\'est-ce que le système féodal ?',a:'Une organisation de la société médiévale basée sur des liens de loyauté entre seigneurs et vassaux, en échange de terres (fiefs).',hint:'Le seigneur protège, le vassal sert.',ah:'En bas de la pyramide : les serfs, paysans liés à la terre du seigneur et quasi privés de liberté.'},
+    {q:'Qu\'est-ce que la Peste Noire ?',a:'Une épidémie de peste bubonique (1347-1351) qui tue entre 1/3 et la moitié de la population européenne.',hint:'Noire = taches noires sur la peau, signe de la maladie.',ah:'La Peste Noire transforme l\'Europe : elle affaiblit le système féodal et pousse à des remises en question religieuses.'},
+    {q:'Quel est le rôle de Jeanne d\'Arc ?',a:'Jeune paysanne lorraine qui, se réclamant d\'une mission divine, aide le roi Charles VII à reconquérir la France pendant la Guerre de Cent Ans.',hint:'Orléans, 1429.',ah:'Jeanne d\'Arc est capturée par les Anglais, brûlée en 1431 à Rouen, puis réhabilitée et canonisée en 1920.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Quelles sont les dates du Moyen Âge par convention ?',
+      opts:['300 → 1300','476 → 1492','500 → 1500','800 → 1400'],
+      ok:1,xp:25,fb:'Le Moyen Âge va de 476 (chute de l\'Empire romain d\'Occident) à 1492 (découverte des Amériques par Christophe Colomb). Ces dates sont des conventions — le Moyen Âge ne s\'est pas "arrêté" le même jour partout.'},
+    {type:'qcm',ctx:'',q:'Les trois ordres de la société médiévale, c\'est…',
+      opts:['Roi, chevaliers, marchands','Clergé, noblesse, paysans','Empereurs, évêques, serfs','Francs, Normands, Maures'],
+      ok:1,xp:25,fb:'La société médiévale est théoriquement divisée en : ceux qui prient (clergé), ceux qui combattent (noblesse, chevaliers), ceux qui travaillent (paysans). Cette vision est un idéal — la réalité était plus complexe.'},
+    {type:'qcm',ctx:'',q:'La Guerre de Cent Ans oppose…',
+      opts:['La France et l\'Espagne','L\'Angleterre et l\'Allemagne','La France et l\'Angleterre','Les Francs et les Vikings'],
+      ok:2,xp:25,fb:'La Guerre de Cent Ans (1337-1453) oppose le Royaume de France au Royaume d\'Angleterre pour la succession au trône de France. Elle dure en réalité 116 ans — et Jeanne d\'Arc joue un rôle décisif.'},
+  ]
+},
+// ──────────── H4 : GRANDES DÉCOUVERTES ────────────
+{ id:'h4', ico:'⛵', label:'Découvertes', section:'h',
+  cours:{
+    titre:'Les Grandes Découvertes et la Renaissance (XV-XVIe s.)',
+    txt:`À partir du XVe siècle, les Européens explorent de nouvelles routes vers l'Asie et découvrent un "Nouveau Monde".<br><br>
+Dates clés : <strong>1492</strong> : Christophe Colomb débarque aux Amériques (il cherchait l'Inde) · <strong>1498</strong> : Vasco de Gama atteint l'Inde par le Cap de Bonne-Espérance · <strong>1519-1522</strong> : Magellan/Elcano, premier tour du monde.<br><br>
+La <strong>Renaissance</strong> est un mouvement culturel contemporain : retour aux arts et savoirs de l'Antiquité, invention de l'<strong>imprimerie</strong> par Gutenberg (1455), grands artistes comme Léonard de Vinci.`,
+    ex:'Colomb ne savait pas qu\'il avait découvert un nouveau continent. Il croyait avoir atteint l\'Asie. C\'est <strong>Amerigo Vespucci</strong> qui comprendra qu\'il s\'agit d\'un nouveau continent — d\'où le nom "Amérique".',
+    astuce:'1492 : Colomb. 1498 : Vasco de Gama. 1522 : Tour du monde de Magellan. Une seule date vraiment indispensable : 1492.',
+    regle:'Les Grandes Découvertes ne sont pas "la découverte de territoires vierges" — des millions de personnes y vivaient déjà. C\'est la rencontre (souvent violente) entre des civilisations.'
+  },
+  fc:[
+    {q:'Qui est Christophe Colomb et que fait-il en 1492 ?',a:'Navigateur génois au service de l\'Espagne. En 1492, il débarque aux Antilles pensant atteindre l\'Asie. Il "découvre" l\'Amérique pour les Européens.',hint:'Il cherchait une route vers l\'Inde en allant vers l\'Ouest.',ah:'Colomb fera 4 voyages en tout. Il moutra convaincu d\'avoir atteint l\'Asie.'},
+    {q:'Qu\'invente Gutenberg vers 1455 ?',a:'L\'imprimerie à caractères mobiles en métal, qui permet de reproduire des textes rapidement et à moindre coût.',hint:'Avant Gutenberg, chaque livre était copié à la main.',ah:'En 50 ans, des millions de livres circulent en Europe. L\'information se démocratise — c\'est une révolution comparable à internet.'},
+    {q:'Qui réalise le premier tour du monde ?',a:'L\'expédition de Magellan (1519-1522). Magellan meurt aux Philippines — c\'est Elcano qui achève le voyage.',hint:'Parti en 1519, arrivé en 1522.',ah:'Sur les 270 marins du départ, seulement 18 reviennent. Le premier tour du monde est une épopée meurtrière.'},
+    {q:'Qu\'est-ce que la Renaissance ?',a:'Mouvement culturel et artistique (XVe-XVIe s.) marqué par le retour aux idéaux de l\'Antiquité, l\'humanisme et de grandes avancées scientifiques et artistiques.',hint:'Re-naissance = nouvelle naissance de l\'art et de la pensée.',ah:'Léonard de Vinci, Michel-Ange, Raphaël en Italie. En France : François Ier invite des artistes italiens.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Pourquoi Christophe Colomb part-il vers l\'Ouest en 1492 ?',
+      opts:['Pour découvrir l\'Amérique','Pour trouver une route directe vers l\'Inde et l\'Asie','Pour fuir l\'Espagne','Pour gagner un pari'],
+      ok:1,xp:25,fb:'Colomb cherche une route vers l\'Inde et l\'Asie en naviguant vers l\'Ouest — convaincu que la Terre est ronde. Il tombe sur les Antilles, qu\'il prend pour l\'Asie. La "découverte" de l\'Amérique est un accident.'},
+    {type:'qcm',ctx:'',q:'L\'imprimerie de Gutenberg (v. 1455) révolutionne quoi ?',
+      opts:['La navigation en mer','La reproduction et diffusion des livres et des idées','La fabrication des armes','Les techniques agricoles'],
+      ok:1,xp:25,fb:'L\'imprimerie permet de multiplier les livres rapidement et à faible coût. La Bible, les idées humanistes, les thèses de Luther... tout se diffuse à une vitesse sans précédent. L\'information ne peut plus être contrôlée par une élite.'},
+    {type:'qcm',ctx:'',q:'Quel grand artiste de la Renaissance est aussi scientifique, ingénieur et philosophe ?',
+      opts:['Christophe Colomb','Magellan','Léonard de Vinci','Gutenberg'],
+      ok:2,xp:20,fb:'Léonard de Vinci (1452-1519) est la figure emblématique de "l\'Homme de la Renaissance" : peintre (La Joconde, La Cène), sculpteur, architecte, ingénieur, anatomiste, musicien… L\'idéal humaniste incarné.'},
+  ]
+},
+// ──────────── H5 : RÉVOLUTION FRANÇAISE ────────────
+{ id:'h5', ico:'🇫🇷', label:'Révolution', section:'h',
+  cours:{
+    titre:'La Révolution française (1789-1799)',
+    txt:`En 1789, la France est une monarchie absolue : le roi <strong>Louis XVI</strong> règne sans partage, la société est divisée en <strong>3 ordres</strong> inégaux (clergé, noblesse, Tiers État qui représente 97% de la population).<br><br>
+Dates essentielles : <strong>5 mai 1789</strong> : réunion des États généraux · <strong>14 juillet 1789</strong> : prise de la Bastille · <strong>26 août 1789</strong> : Déclaration des Droits de l'Homme et du Citoyen (DDHC) · <strong>1793</strong> : exécution de Louis XVI · <strong>1799</strong> : coup d'État de Napoléon (fin de la Révolution).<br><br>
+La devise <strong>Liberté, Égalité, Fraternité</strong> naît de cette période.`,
+    ex:'La <strong>DDHC</strong> du 26 août 1789 pose les bases de la démocratie moderne : "Les hommes naissent et demeurent libres et égaux en droits." Elle inspire encore aujourd\'hui les constitutions du monde entier.',
+    astuce:'La date à retenir absolument : <strong>14 juillet 1789</strong> — prise de la Bastille, fête nationale française depuis 1880.',
+    regle:'La Révolution n\'est pas un long fleuve tranquille : elle alterne espoirs démocratiques et Terreur (1793-1794, des milliers d\'exécutions). C\'est une période complexe.'
+  },
+  fc:[
+    {q:'Qu\'est-ce que la prise de la Bastille (14 juillet 1789) ?',a:'Le peuple de Paris prend d\'assaut la prison de la Bastille, symbole du pouvoir royal absolu. C\'est le début de la Révolution.',hint:'La Bastille ne contenait que 7 prisonniers — mais c\'est un symbole.',ah:'Le 14 juillet est aujourd\'hui la fête nationale française. Il commémore cet événement fondateur.'},
+    {q:'Que proclame la DDHC du 26 août 1789 ?',a:'La Déclaration des Droits de l\'Homme et du Citoyen pose les principes de liberté, d\'égalité et de souveraineté du peuple.',hint:'Article 1 : "Les hommes naissent libres et égaux en droits."',ah:'La DDHC est toujours valable en France — elle fait partie du bloc de constitutionnalité.'},
+    {q:'Qu\'est-ce que les trois ordres sous l\'Ancien Régime ?',a:'Le clergé (1er ordre), la noblesse (2e ordre) et le Tiers État — paysans, bourgeois, artisans (97% de la population).',hint:'Seuls les deux premiers ordres sont privilégiés.',ah:'Le Tiers État paie les impôts, contrairement au clergé et à la noblesse. C\'est une source majeure d\'injustice.'},
+    {q:'Comment la Révolution se termine-t-elle en 1799 ?',a:'Par le coup d\'État du 18 Brumaire de Napoléon Bonaparte, qui prend le pouvoir et finit par devenir Empereur en 1804.',hint:'Napoléon met fin à la République.',ah:'La Révolution a duré 10 ans et connu de nombreux régimes : monarchie constitutionnelle, Ire République, Terreur, Directoire… avant Napoléon.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Que représente la prise de la Bastille du 14 juillet 1789 ?',
+      opts:['La fin de la guerre contre l\'Angleterre','Le début de la Révolution française, révolte contre le pouvoir royal absolu','L\'exécution du roi Louis XVI','La signature de la Constitution'],
+      ok:1,xp:25,fb:'La prise de la Bastille symbolise la révolte du peuple contre la monarchie absolue. La Bastille est une prison royale associée à l\'arbitraire du roi. Sa chute marque le début de la Révolution.'},
+    {type:'qcm',ctx:'',q:'La devise "Liberté, Égalité, Fraternité" vient…',
+      opts:['Du règne de Louis XIV','De la Révolution française (fin XVIIIe s.)','De Napoléon Bonaparte en 1804','De la IIIe République en 1880'],
+      ok:1,xp:25,fb:'"Liberté, Égalité, Fraternité" émerge pendant la Révolution française. Elle devient officiellement la devise de la République française en 1880. C\'est aussi la devise qu\'on lit sur les frontons des mairies.'},
+    {type:'qcm',ctx:'',q:'Qui est Louis XVI par rapport à la Révolution ?',
+      opts:['Le général qui mène la Révolution','Le roi renversé, emprisonné et guillotiné en 1793','Le philosophe qui inspire la DDHC','Le pape qui soutient le peuple'],
+      ok:1,xp:25,fb:'Louis XVI est le roi de France renversé par la Révolution. Arrêté en 1792, jugé et guillotiné le 21 janvier 1793, il est le seul roi de France à avoir été exécuté.'},
+  ]
+},
+],
+// ══════════════════════════════════════════════════════════
+g: [
+// ──────────── G1 : CONTINENTS ET OCÉANS ────────────
+{ id:'g1', ico:'🗺️', label:'Continents', section:'g',
+  cours:{
+    titre:'Les continents et océans — les grands repères',
+    txt:`La Terre est couverte à <strong>71% d\'eau</strong> et à 29% de terres. On distingue <strong>5 océans</strong> et <strong>6 continents</strong> (selon la classification française).<br><br>
+<strong>Les 5 océans</strong> (du plus grand au plus petit) : Pacifique · Atlantique · Indien · Arctique · Antarctique<br>
+<strong>Les 6 continents</strong> : Afrique · Amérique · Antarctique · Asie · Europe · Océanie<br><br>
+Repères essentiels : <strong>équateur</strong> (0°, ligne imaginaire entre les deux hémisphères) · <strong>tropiques</strong> (Cancer au Nord, Capricorne au Sud) · <strong>méridien de Greenwich</strong> (0° de longitude, passage par Londres).`,
+    ex:'L\'Océan Pacifique est le plus grand : il couvre à lui seul plus de surface que toutes les terres émergées réunies. L\'Océan Arctique est le plus petit et le plus froid.',
+    astuce:'Pour retenir les 6 continents : "A-A-A-A-E-O" → Afrique, Amérique, Antarctique, Asie, Europe, Océanie.',
+    regle:'Attention : selon les pays, on compte 5, 6 ou 7 continents ! En France, on en compte 6 (Amérique = un seul continent). Aux États-Unis, on distingue Amérique du Nord et du Sud (7 continents).'
+  },
+  fc:[
+    {q:'Combien y a-t-il d\'océans et de continents ?',a:'5 océans et 6 continents (classification française).',hint:'A-A-A-A-E-O pour les continents.',ah:'Attention : d\'autres pays (USA, Espagne) comptent 7 continents en séparant les Amériques.'},
+    {q:'Qu\'est-ce que l\'équateur ?',a:'Ligne imaginaire à 0° de latitude qui partage la Terre en deux hémisphères égaux : Nord et Sud.',hint:'Équateur vient de "égal".',ah:'Les pays proches de l\'équateur ont un climat équatorial chaud et humide toute l\'année (ex : Brésil, Congo, Indonésie).'},
+    {q:'Qu\'est-ce que le méridien de Greenwich ?',a:'Ligne imaginaire à 0° de longitude qui passe par Greenwich (Angleterre) et sert de référence pour mesurer les longitudes.',hint:'Il passe par Londres.',ah:'C\'est aussi la référence pour les fuseaux horaires : chaque 15° = 1 heure de décalage.'},
+    {q:'Quel est l\'océan le plus grand ?',a:'L\'océan Pacifique — il couvre environ un tiers de la surface terrestre et dépasse en superficie toutes les terres réunies.',hint:'Pacifique = calme, en latin.',ah:'Magellan l\'a nommé Pacifique car il y a trouvé des vents favorables après les tempêtes du Cap Horn.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Quelle est la proportion d\'eau sur Terre ?',
+      opts:['29%','50%','71%','85%'],
+      ok:2,xp:20,fb:'La Terre est couverte à environ 71% d\'eau. C\'est pour ça qu\'on l\'appelle parfois la "planète bleue". Les 29% restants sont les terres émergées.'},
+    {type:'qcm',ctx:'',q:'L\'équateur partage la Terre en…',
+      opts:['Est et Ouest','Nord et Sud','Froid et Chaud','Zones habitées et inhabitées'],
+      ok:1,xp:20,fb:'L\'équateur est la ligne à 0° de latitude qui partage la Terre en hémisphère Nord et hémisphère Sud. Le méridien de Greenwich (0° de longitude) partage lui la Terre en Est et Ouest.'},
+    {type:'qcm',ctx:'',q:'Combien de continents compte-t-on en France à l\'école ?',
+      opts:['5','6','7','8'],
+      ok:1,xp:25,fb:'En France, on compte 6 continents : Afrique, Amérique (en un seul), Antarctique, Asie, Europe, Océanie. Dans d\'autres systèmes (américain, espagnol), on sépare Amérique du Nord et du Sud → 7 continents.'},
+  ]
+},
+// ──────────── G2 : PLANÈTE TERRE ────────────
+{ id:'g2', ico:'🌏', label:'Planète Terre', section:'g',
+  cours:{
+    titre:'La planète Terre — structure et relief',
+    txt:`La Terre est une sphère légèrement aplatie aux pôles (géoïde). Son diamètre : environ <strong>12 750 km</strong>.<br><br>
+<strong>Structure interne</strong> (de l\'extérieur vers l\'intérieur) : croûte terrestre (solide, 5-70 km) → manteau (rocheux, très chaud, 2 900 km) → noyau externe (liquide) → noyau interne (solide, ~5 500°C).<br><br>
+<strong>Reliefs principaux</strong> : montagne, plaine, plateau, colline, vallée, littoral. Les plus hautes montagnes : <strong>Himalaya</strong> (Everest 8 849 m) en Asie · <strong>Andes</strong> en Amérique du Sud · <strong>Alpes</strong> en Europe.`,
+    ex:'La plus haute montagne du monde : l\'<strong>Everest</strong> (8 849 m), dans l\'Himalaya, à la frontière entre le Népal et la Chine. La plus profonde fosse océanique : la <strong>fosse des Mariannes</strong> (-11 034 m), dans le Pacifique.',
+    astuce:'Pour retenir la structure de la Terre : C-M-N = Croûte, Manteau, Noyau — comme "Commence Ma Nuit".',
+    regle:'Les plaques tectoniques sont des morceaux de la croûte terrestre qui bougent lentement. C\'est elles qui créent les montagnes, les volcans et les tremblements de terre — sur des millions d\'années.'
+  },
+  fc:[
+    {q:'Quelles sont les 3 grandes couches de la Terre ?',a:'La croûte (surface solide), le manteau (roche très chaude), et le noyau (externe liquide + interne solide).',hint:'De l\'extérieur vers l\'intérieur : croûte → manteau → noyau.',ah:'La croûte terrestre est comme la coquille d\'un œuf : très fine par rapport à l\'ensemble.'},
+    {q:'Qu\'est-ce qu\'une plaque tectonique ?',a:'Un fragment rigide de la croûte terrestre qui se déplace lentement. Le mouvement des plaques provoque séismes, volcans et formation des montagnes.',hint:'Les plaques "flottent" sur le manteau chaud.',ah:'L\'Himalaya s\'est formé par la collision entre la plaque indienne et la plaque eurasienne, il y a ~50 millions d\'années.'},
+    {q:'Comment s\'appelle la plus haute montagne du monde ?',a:'L\'Everest (8 849 m), dans l\'Himalaya, à la frontière entre le Népal et la Chine.',hint:'E comme Everest, H comme Himalaya.',ah:'L\'Everest grandit encore de quelques millimètres par an ! Les plaques tectoniques continuent de se rapprocher.'},
+    {q:'Qu\'est-ce que le relief ?',a:'L\'ensemble des formes du terrain : montagnes, plaines, plateaux, vallées, collines, littoraux.',hint:'Relief = ce qui "dépasse" ou "creuse" la surface.',ah:'La France a tous les types de reliefs : montagnes (Alpes, Pyrénées), plaines (Bassin parisien), massifs anciens (Massif central, Vosges), côtes...'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Dans quel ordre se trouvent les couches de la Terre (de l\'extérieur vers l\'intérieur) ?',
+      opts:['Noyau → Manteau → Croûte','Croûte → Manteau → Noyau','Manteau → Noyau → Croûte','Croûte → Noyau → Manteau'],
+      ok:1,xp:25,fb:'De l\'extérieur vers l\'intérieur : Croûte (là où l\'on vit) → Manteau (roche très chaude, en mouvement lent) → Noyau (externe liquide + interne solide, ~5 500°C).'},
+    {type:'qcm',ctx:'',q:'Quelle chaîne de montagnes contient l\'Everest ?',
+      opts:['Les Andes','Les Alpes','Le Massif central','L\'Himalaya'],
+      ok:3,xp:20,fb:'L\'Everest (8 849 m) se trouve dans l\'Himalaya, à la frontière entre le Népal et la Chine. C\'est la plus haute montagne du monde. Les Andes sont en Amérique du Sud, les Alpes en Europe.'},
+    {type:'qcm',ctx:'',q:'Qu\'est-ce qui provoque les séismes et les éruptions volcaniques ?',
+      opts:['Les vents très forts','Le mouvement des plaques tectoniques','Les marées','La rotation de la Terre'],
+      ok:1,xp:25,fb:'Les plaques tectoniques se déplacent lentement. Quand elles se frottent, se heurtent ou s\'écartent, elles provoquent séismes et volcans. C\'est la tectonique des plaques.'},
+  ]
+},
+// ──────────── G3 : PAYSAGES ────────────
+{ id:'g3', ico:'🏔️', label:'Paysages', section:'g',
+  cours:{
+    titre:'Les paysages du monde — diversité et climats',
+    txt:`Un <strong>paysage</strong> est ce qu\'on observe dans un espace : il porte des informations sur le relief, le climat, la végétation et l\'activité humaine.<br><br>
+Grands types de paysages :<br>
+• <strong>Paysages équatoriaux</strong> : forêt dense, chaleur et humidité toute l\'année (Amazonie, Congo, Bornéo)<br>
+• <strong>Paysages désertiques</strong> : chaud et sec (Sahara) ou froid (Antarctique, Gobi)<br>
+• <strong>Paysages méditerranéens</strong> : été chaud et sec, hiver doux et humide (pourtour méditerranéen)<br>
+• <strong>Paysages polaires</strong> : froid extrême, glace permanente<br>
+• <strong>Paysages tempérés</strong> : 4 saisons marquées (Europe de l\'Ouest, dont la France)`,
+    ex:'La forêt amazonienne couvre 5,5 millions de km² au Brésil — c\'est la plus grande forêt tropicale du monde. Elle produit environ 20% de l\'oxygène de la planète et abrite 10% des espèces vivantes connues.',
+    astuce:'Un paysage = relief + climat + végétation + traces humaines. Ces quatre éléments s\'influencent mutuellement.',
+    regle:'En CM2/6e, l\'objectif n\'est pas d\'apprendre par cœur tous les types de paysages, mais d\'apprendre à "lire" un paysage : reconnaître ses éléments et comprendre leur logique.'
+  },
+  fc:[
+    {q:'Quelles sont les caractéristiques d\'un paysage équatorial ?',a:'Forêt dense, chaleur et humidité toute l\'année, grande biodiversité. Exemples : Amazonie, bassin du Congo.',hint:'Équatorial = proche de l\'équateur.',ah:'La forêt équatoriale est surnommée "poumon de la planète" mais elle est menacée par la déforestation.'},
+    {q:'Qu\'est-ce qu\'un paysage méditerranéen ?',a:'Été chaud et sec, hiver doux et humide. Végétation adaptée à la sécheresse (garrigue, maquis, oliviers, chênes-lièges).',hint:'Pense au sud de la France, à l\'Espagne, à la Grèce.',ah:'Le climat méditerranéen touche aussi la Californie, le Chili, l\'Afrique du Sud et l\'Australie du Sud-Ouest.'},
+    {q:'Qu\'est-ce qu\'un désert froid ?',a:'Un désert est défini par la faiblesse des précipitations (moins de 250 mm/an). Un désert froid est sec ET glacial : l\'Antarctique est le plus grand désert froid du monde.',hint:'Désert ≠ forcément chaud et sableux.',ah:'Le Groenland et l\'Antarctique contiennent environ 70% de l\'eau douce de la planète sous forme de glace.'},
+    {q:'Qu\'est-ce que la déforestation ?',a:'La destruction des forêts, principalement tropicales, pour l\'agriculture, l\'élevage ou l\'exploitation du bois. Elle menace la biodiversité et le climat.',hint:'Forêts → cultures ou pâturages.',ah:'Chaque minute, environ 40 hectares de forêt tropicale sont détruits. C\'est l\'équivalent de 40 terrains de football.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Quel paysage caractérise le sud de la France et le pourtour méditerranéen ?',
+      opts:['Paysage polaire','Paysage équatorial','Paysage méditerranéen','Paysage désertique'],
+      ok:2,xp:20,fb:'Le pourtour méditerranéen (sud de la France, Espagne, Italie, Grèce, Maroc…) a un climat méditerranéen : été chaud et sec, hiver doux et humide. Végétation caractéristique : oliviers, garrigue, vignes.'},
+    {type:'qcm',ctx:'',q:'L\'Amazonie est un exemple de quel type de paysage ?',
+      opts:['Désert chaud','Paysage polaire','Paysage méditerranéen','Forêt équatoriale'],
+      ok:3,xp:20,fb:'L\'Amazonie (Brésil et pays voisins) est la plus grande forêt équatoriale du monde. Climat chaud et humide toute l\'année, biodiversité exceptionnelle. Elle est menacée par la déforestation.'},
+    {type:'qcm',ctx:'',q:'Qu\'est-ce qui définit un désert, qu\'il soit chaud ou froid ?',
+      opts:['Une température très élevée','Une absence totale de végétation','Très peu de précipitations (moins de 250 mm/an)','Un sol entièrement sableux'],
+      ok:2,xp:25,fb:'Un désert se définit par sa faiblesse en précipitations (moins de 250 mm/an), pas par la chaleur. L\'Antarctique est le plus grand désert du monde — il est froid mais reçoit très peu de pluie ou de neige.'},
+  ]
+},
+// ──────────── G4 : POPULATION MONDIALE ────────────
+{ id:'g4', ico:'👥', label:'Population', section:'g',
+  cours:{
+    titre:'La population mondiale — répartition et dynamiques',
+    txt:`La population mondiale est d\'environ <strong>8 milliards d\'habitants</strong> (2024). Elle a doublé en 50 ans.<br><br>
+La population n\'est <strong>pas uniformément répartie</strong> : certaines régions sont très densément peuplées (<strong>foyers de peuplement</strong>) et d\'autres quasiment vides (<strong>déserts humains</strong>).<br><br>
+<strong>Grands foyers de peuplement</strong> : Asie du Sud (Inde, Bangladesh), Asie de l\'Est (Chine, Japon), Europe, est des États-Unis.<br>
+<strong>Déserts humains</strong> : Sahara, Sibérie, Antarctique, Amazonie, grandes chaînes de montagnes.<br><br>
+La <strong>densité</strong> mesure le nombre d\'habitants par km² (hab/km²).`,
+    ex:'L\'Inde a dépassé la Chine en 2023 pour devenir le pays le plus peuplé du monde avec plus de 1,4 milliard d\'habitants. Le pays le moins dense du monde : la Mongolie (~2 hab/km²).',
+    astuce:'Densité = nombre d\'habitants ÷ superficie. La France a environ 120 hab/km² en moyenne — mais Paris dépasse 20 000 hab/km² !',
+    regle:'Un "désert humain" n\'est pas forcément un désert au sens géographique. C\'est juste une zone très peu peuplée (montagne, zone arctique, grande forêt…).'
+  },
+  fc:[
+    {q:'Combien y a-t-il d\'habitants sur Terre en 2024 ?',a:'Environ 8 milliards d\'habitants. La population a doublé en 50 ans.',hint:'8 milliards = 8 000 000 000.',ah:'En 1800, la Terre n\'avait qu\'1 milliard d\'habitants. En 1960 : 3 milliards. En 2011 : 7 milliards. La croissance ralentit progressivement.'},
+    {q:'Qu\'est-ce qu\'un foyer de peuplement ?',a:'Une région où la population est très dense et concentrée. Exemples : Asie du Sud, Asie de l\'Est, Europe de l\'Ouest.',hint:'Foyer = endroit de concentration.',ah:'Les 3 plus grands foyers : Asie du Sud (Inde, Bangladesh), Asie de l\'Est (Chine, Japon), Europe.'},
+    {q:'Qu\'est-ce que la densité de population ?',a:'Le nombre d\'habitants par km². Se calcule : nombre d\'habitants ÷ superficie (en km²).',hint:'Paris : 20 000 hab/km² · Mongolie : 2 hab/km².',ah:'La densité nationale est une moyenne. Elle masque des écarts énormes entre villes et campagnes.'},
+    {q:'Cite 3 déserts humains (zones très peu peuplées).',a:'Sahara, Sibérie, Antarctique (ou : Amazonie, Himalaya, Grand Nord canadien…)',hint:'Zones trop froides, trop chaudes, trop humides ou trop montagneuses.',ah:'Ces zones sont peu peuplées car les conditions naturelles y rendent la vie difficile — froid extrême, désert, forêt dense.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Quel est le pays le plus peuplé du monde en 2024 ?',
+      opts:['La Chine','Les États-Unis','L\'Inde','L\'Indonésie'],
+      ok:2,xp:25,fb:'L\'Inde a dépassé la Chine en 2023 pour devenir le pays le plus peuplé avec ~1,44 milliard d\'habitants. La Chine est 2e. Les États-Unis sont 3e avec ~340 millions d\'habitants.'},
+    {type:'qcm',ctx:'',q:'Comment calcule-t-on la densité de population ?',
+      opts:['Superficie ÷ habitants','Habitants × superficie','Habitants ÷ superficie (en km²)','Superficie + habitants'],
+      ok:2,xp:25,fb:'Densité = nombre d\'habitants ÷ superficie (en km²). Exemple : France = 68 millions d\'habitants ÷ 551 000 km² ≈ 123 hab/km². Une densité élevée = territoire très peuplé.'},
+    {type:'qcm',ctx:'',q:'Pourquoi la Sibérie est-elle un désert humain ?',
+      opts:['Elle est trop proche de l\'équateur','Le froid extrême rend la vie et les activités très difficiles','Elle est totalement interdite d\'accès','Elle n\'a pas d\'eau'],
+      ok:1,xp:20,fb:'La Sibérie (nord de la Russie) est un désert humain en raison de son climat extrêmement froid. Températures pouvant descendre à -60°C. L\'agriculture et la construction y sont très difficiles.'},
+  ]
+},
+// ──────────── G5 : LA FRANCE DANS LE MONDE ────────────
+{ id:'g5', ico:'🇫🇷', label:'France', section:'g',
+  cours:{
+    titre:'La France dans le monde',
+    txt:`La France est un pays à la fois <strong>européen</strong> et <strong>mondial</strong> :<br><br>
+• <strong>France métropolitaine</strong> : hexagone en Europe de l\'Ouest, 67 millions d\'habitants, capitale Paris<br>
+• <strong>Outre-mer (DROM-COM)</strong> : Guadeloupe, Martinique, Guyane, La Réunion, Mayotte (DROM) + Saint-Pierre-et-Miquelon, Polynésie française, Nouvelle-Calédonie… Ces territoires donnent à la France le <strong>2e espace maritime mondial</strong>.<br><br>
+La France est membre de l\'<strong>Union européenne</strong> (depuis 1957) et fondatrice de l\'<strong>OTAN</strong>. Elle siège au <strong>Conseil de sécurité de l\'ONU</strong> (membre permanent).`,
+    ex:'Grâce à ses territoires ultramarins, la France est présente sur tous les océans et dans tous les fuseaux horaires. Son espace maritime (Zone Économique Exclusive) couvre 11 millions de km² — le 2e mondial après les États-Unis.',
+    astuce:'Les DROM : Guadeloupe · Martinique · Guyane · La Réunion · Mayotte. Mémo : "Guade-Marti-Guy-Réu-May".',
+    regle:'La France n\'est pas seulement un "hexagone". Ses territoires d\'outre-mer la rendent présente sur tous les continents et lui donnent une importance géopolitique mondiale majeure.'
+  },
+  fc:[
+    {q:'Combien y a-t-il de DROM (Départements et Régions d\'Outre-Mer) ?',a:'5 DROM : Guadeloupe, Martinique, Guyane, La Réunion, Mayotte.',hint:'"Guade-Marti-Guy-Réu-May"',ah:'Ils ont le même statut que les départements métropolitains. Les habitants sont citoyens français et européens.'},
+    {q:'Pourquoi la France a-t-elle le 2e espace maritime mondial ?',a:'Grâce à ses nombreux territoires ultramarins répartis sur tous les océans, la ZEE (Zone Économique Exclusive) française couvre 11 millions de km².',hint:'Sans les DOM-TOM, la France serait bien plus petite maritimement.',ah:'La ZEE s\'étend à 200 miles nautiques des côtes françaises — y compris les côtes de tous les territoires ultramarins.'},
+    {q:'Qu\'est-ce que l\'Union européenne ?',a:'Une organisation de 27 pays européens (2024) qui partagent des règles communes, une monnaie (l\'euro pour la plupart) et un marché commun.',hint:'La France est membre fondateur depuis 1957.',ah:'Le drapeau européen : cercle de 12 étoiles dorées sur fond bleu. Le nombre d\'étoiles ne change pas selon le nombre de pays membres.'},
+    {q:'Quel est le rôle de la France à l\'ONU ?',a:'La France est membre permanent du Conseil de sécurité de l\'ONU, avec droit de veto. Elle peut bloquer toute résolution.',hint:'5 membres permanents : France, Royaume-Uni, USA, Russie, Chine.',ah:'Le droit de veto est une puissance considérable. Chacun des 5 membres peut seul bloquer une décision du Conseil de sécurité.'},
+  ],
+  ex:[
+    {type:'qcm',ctx:'',q:'Lequel de ces territoires est un DROM français ?',
+      opts:['La Nouvelle-Zélande','Le Québec','La Guadeloupe','Les îles Canaries'],
+      ok:2,xp:25,fb:'La Guadeloupe est un DROM (Département et Région d\'Outre-Mer) français. La Nouvelle-Zélande est un pays indépendant, le Québec est canadien, les îles Canaries sont espagnoles.'},
+    {type:'qcm',ctx:'',q:'Combien de pays composent l\'Union européenne en 2024 ?',
+      opts:['15','27','33','50'],
+      ok:1,xp:25,fb:'L\'UE compte 27 membres depuis le Brexit (sortie du Royaume-Uni en 2020). Elle en comptait 28 auparavant. La France est membre fondateur depuis le Traité de Rome en 1957.'},
+    {type:'qcm',ctx:'',q:'Pourquoi dit-on que la France est une puissance mondiale malgré sa petite taille en Europe ?',
+      opts:['Parce qu\'elle a la plus grande armée du monde','Grâce à ses territoires ultramarins, son siège à l\'ONU et son espace maritime mondial','Parce qu\'elle est le pays le plus peuplé d\'Europe','Parce qu\'elle possède le plus grand territoire en Europe'],
+      ok:1,xp:25,fb:'La France est une puissance mondiale grâce à : ses DROM-COM sur tous les continents, le 2e espace maritime mondial, son siège permanent au Conseil de sécurité de l\'ONU avec droit de veto, et son rôle dans l\'UE et l\'OTAN.'},
+  ]
+}
+]};
+
+/* ═══════════════════════════════════════════════════════════
+   ÉTAT
+═══════════════════════════════════════════════════════════ */
+let section = 'h';
+let chapIdx = { h:0, g:0 };
+let xpTotal = 0;
+let chapDone = { h:new Set(), g:new Set() };
+// Par chapitre : {qIdx, qSel, qDone, fcIdx, xp}
+let chapState = {};
+
+function getChap() { return DATA[section][chapIdx[section]]; }
+function getCS() {
+  const id = getChap().id;
+  if (!chapState[id]) chapState[id] = {qIdx:0,qSel:null,qDone:false,fcIdx:0,xp:0};
+  return chapState[id];
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════════ */
+function $(id){ return document.getElementById(id); }
+function mk(c,tag='div'){ const e=document.createElement(tag); e.className=c; return e; }
+function btn(lbl,cls,fn){
+  const b=document.createElement('button'); b.className='btn '+cls; b.innerHTML=lbl;
+  b.onclick=fn; return b;
+}
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+function addXP(n){
+  xpTotal+=n; $('xpTot').textContent=xpTotal;
+  toast('⭐ +'+n+' XP !');
+}
+function markDone(){
+  const id=getChap().id;
+  chapDone[section].add(id);
+  $('chap'+section.toUpperCase()).textContent=chapDone[section].size;
+  renderTabs();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION TOGGLE
+═══════════════════════════════════════════════════════════ */
+function setSection(s){
+  section=s;
+  $('btn-h').className='stog'+(s==='h'?' on-h':'');
+  $('btn-g').className='stog'+(s==='g'?' on-g':'');
+  renderTabs(); renderChap();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════ */
+function renderTabs(){
+  const tabs=$('tabs'); tabs.innerHTML='';
+  DATA[section].forEach((ch,i)=>{
+    const t=document.createElement('button');
+    const done=chapDone[section].has(ch.id);
+    const active=i===chapIdx[section];
+    const cls=active?(section==='h'?'tab on-h':'tab on-g'):'tab';
+    t.className=cls;
+    t.innerHTML=`<span class="tab-ico">${ch.ico}</span>${ch.label}${done?' ✅':''}`;
+    t.onclick=()=>{ chapIdx[section]=i; renderTabs(); renderChap(); };
+    tabs.appendChild(t);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDU CHAPITRE
+═══════════════════════════════════════════════════════════ */
+function renderChap(){
+  const ch=getChap(); const cs=getCS(); const main=$('main'); main.innerHTML='';
+  const col=section==='h'?'h':'g';
+
+  // ── COURS ──
+  const ccard=mk('card'); main.appendChild(ccard);
+  const hd=mk('chead'); ccard.appendChild(hd);
+  const ci=mk('ci c-'+col); ci.textContent=ch.ico; hd.appendChild(ci);
+  const ct=mk(''); ct.innerHTML=`<div class="ctitle">${ch.cours.titre}</div><div class="csub">📖 Cours</div>`; hd.appendChild(ct);
+  const cb=mk('cbody'); ccard.appendChild(cb);
+  const cours=mk('cours cours-'+col); cb.appendChild(cours);
+  cours.innerHTML=`<div class="ctit ctit-${col}">${ch.cours.titre}</div><div class="ctxt${col==='g'?' geo':''}">${ch.cours.txt}</div>`;
+  if(ch.cours.frise){ cours.appendChild(buildFrise(ch)); }
+  if(ch.cours.ex){ const b=mk('ex-box'+(col==='g'?' geo':'')); b.innerHTML=ch.cours.ex; cours.appendChild(b); }
+  if(ch.cours.astuce){ const a=mk('astuce'+(col==='g'?' geo':'')); a.textContent=ch.cours.astuce; cours.appendChild(a); }
+  if(ch.cours.regle){ const r=mk('regle'); r.textContent=ch.cours.regle; cours.appendChild(r); }
+
+  // ── FLASHCARDS ──
+  if(ch.fc && ch.fc.length){
+    const fcard=mk('card'); main.appendChild(fcard);
+    const fhd=mk('chead'); fcard.appendChild(fhd);
+    const fci=mk('ci c-'+col); fci.textContent='🃏'; fhd.appendChild(fci);
+    fhd.innerHTML+=`<div><div class="ctitle">Flashcards</div><div class="csub">Clique pour retourner</div></div>`;
+    const fbody=mk('cbody'); fcard.appendChild(fbody);
+    fbody.innerHTML=`<div class="fc-hint">Clique sur la carte pour voir la réponse</div>`;
+    renderFC(fbody, ch, cs, col);
+  }
+
+  // ── QCM ──
+  if(ch.ex && ch.ex.length){
+    const qcard=mk('card'); main.appendChild(qcard);
+    const qhd=mk('chead'); qcard.appendChild(qhd);
+    const qci=mk('ci c-ok'); qci.textContent='❓'; qhd.appendChild(qci);
+    qhd.innerHTML+=`<div><div class="ctitle">Questions</div><div class="csub">${cs.qIdx+1} / ${ch.ex.length}</div></div>`;
+    const qbody=mk('cbody'); qcard.appendChild(qbody);
+    renderQ(qbody, ch, cs, col);
+  }
+}
+
+/* ── FRISE ── */
+function buildFrise(ch){
+  if(ch.id!=='h1') return document.createTextNode('');
+  const items=[
+    {dot:'1',date:'-3M ans',lbl:'Premiers humains'},
+    {dot:'2',date:'-400 000',lbl:'Maîtrise du feu'},
+    {dot:'3',date:'-40 000',lbl:'Art pariétal'},
+    {dot:'4',date:'-10 000',lbl:'Néolithique'},
+    {dot:'5',date:'-3300',lbl:'Écriture → fin Préhistoire'},
+  ];
+  const fr=mk('frise'); fr.innerHTML='<div class="frise-title">📅 Frise chronologique simplifiée</div>';
+  const row=mk('frise-row'); fr.appendChild(row);
+  items.forEach(it=>{
+    const fi=mk('frise-item');
+    fi.innerHTML=`<div class="frise-dot">${it.dot}</div><div class="frise-date">${it.date}</div><div class="frise-lbl">${it.lbl}</div>`;
+    row.appendChild(fi);
+  });
+  return fr;
+}
+
+/* ── FLASHCARDS ── */
+function renderFC(parent, ch, cs, col){
+  parent.querySelectorAll('.fcwrap').forEach(e=>e.remove());
+  const fc=ch.fc[cs.fcIdx];
+  const wrap=mk('fcwrap'); parent.appendChild(wrap);
+  const inner=mk('fcinner'); wrap.appendChild(inner);
+  const front=mk('fcface fcf'); front.innerHTML=`<span class="fctag">Question</span><div class="fcq">${fc.q}</div><div class="fcsub">${fc.hint||''}</div>`; inner.appendChild(front);
+  const back=mk(`fcface fcb-${col}`); back.innerHTML=`<span class="fctag">Réponse</span><div class="fcq">${fc.a}</div><div class="fcsub">${fc.ah||''}</div>`; inner.appendChild(back);
+  wrap.onclick=()=>inner.classList.toggle('flip');
+  // nav
+  parent.querySelectorAll('.fcnav').forEach(e=>e.remove());
+  const nav=mk('fcnav'); parent.appendChild(nav);
+  const bprev=btn('← Préc.','bgh',()=>{if(cs.fcIdx>0){cs.fcIdx--;renderFC(parent,ch,cs,col);}});
+  if(cs.fcIdx===0) bprev.disabled=true;
+  const ctr=mk('fcctr'); ctr.textContent=`${cs.fcIdx+1} / ${ch.fc.length}`; 
+  const bnext=btn('Suiv. →','b-'+col,()=>{if(cs.fcIdx<ch.fc.length-1){cs.fcIdx++;renderFC(parent,ch,cs,col);}});
+  if(cs.fcIdx===ch.fc.length-1) bnext.disabled=true;
+  nav.appendChild(bprev); nav.appendChild(ctr); nav.appendChild(bnext);
+}
+
+/* ── QCM ── */
+function renderQ(parent, ch, cs, col){
+  parent.innerHTML='';
+  if(cs.qIdx>=ch.ex.length){ renderBilan(parent,ch,cs,col); return; }
+  const q=ch.ex[cs.qIdx];
+  if(q.ctx){ const ctx=mk(`qctx qctx-${col}`); ctx.textContent=q.ctx; parent.appendChild(ctx); }
+  const qq=mk('qq'); qq.textContent=q.q; parent.appendChild(qq);
+  const opts=mk('opts'); parent.appendChild(opts);
+  const valBtn=btn('Valider','b-'+col,null); valBtn.disabled=true;
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='opt';
+    b.innerHTML=`<span class="olet">${String.fromCharCode(65+i)}</span><span>${o}</span>`;
+    if(cs.qDone){
+      b.disabled=true;
+      if(i===q.ok) b.classList.add('ok');
+      else if(i===cs.qSel) b.classList.add('ko');
+    } else {
+      if(i===cs.qSel) b.classList.add(`sel-${col}`);
+      b.onclick=()=>{ cs.qSel=i; valBtn.disabled=false; renderQ(parent,ch,cs,col); };
+    }
+    opts.appendChild(b);
+  });
+  if(cs.qDone){
+    const fb=mk('fb '+(cs.qSel===q.ok?'ok':'ko'));
+    fb.innerHTML=`<div class="fbt">${cs.qSel===q.ok?'✅ Bonne réponse !':'❌ Pas tout à fait…'}</div><div class="fbb">${q.fb}</div>`;
+    parent.appendChild(fb);
+    const row=mk('brow');
+    const isLast=cs.qIdx===ch.ex.length-1;
+    row.appendChild(btn(isLast?'Voir mon bilan ➜':'Question suivante →','b-'+col,()=>{
+      cs.qIdx++; cs.qSel=null; cs.qDone=false; renderQ(parent,ch,cs,col);
+    }));
+    parent.appendChild(row);
+  } else {
+    valBtn.onclick=()=>{
+      if(cs.qSel===null){toast('Choisis une réponse !');return;}
+      cs.qDone=true;
+      if(cs.qSel===q.ok){ addXP(q.xp); }
+      renderQ(parent,ch,cs,col);
+    };
+    if(cs.qSel!==null) valBtn.disabled=false;
+    const row=mk('brow'); row.appendChild(valBtn); parent.appendChild(row);
+  }
+}
+
+/* ── BILAN ── */
+function renderBilan(parent, ch, cs, col){
+  markDone();
+  const total=ch.ex.reduce((a,q)=>a+q.xp,0);
+  const pct=Math.round(cs.xp/total*100)||Math.round(xpTotal/1);
+  let badge, bc;
+  if(cs.xp>=total*.8){badge='🥇 Excellent !';bc='bbr';}
+  else if(cs.xp>=total*.5){badge='🥈 Bien joué';bc='barg';}
+  else{badge='🥉 Continue !';bc='bor';}
+  const bilan=mk('bilan'); parent.appendChild(bilan);
+  bilan.innerHTML=`
+    <div class="b${col==='h'?'score-h':'score-g'}">${ch.ico}</div>
+    <div class="blbl">${ch.label} — terminé !</div>
+    <div class="bbadge ${bc}">${badge}</div>
+    <div class="blbl">Passe au chapitre suivant ou explore les flashcards.</div>`;
+  const row=mk('brow'); bilan.appendChild(row);
+  const nextIdx=chapIdx[section]+1;
+  if(nextIdx<DATA[section].length){
+    row.appendChild(btn('Chapitre suivant →','b-'+col,()=>{
+      chapIdx[section]=nextIdx; renderTabs(); renderChap();
+    }));
+  }
+  row.appendChild(btn('🏠 Accueil','bgh',()=>location.href='index.html'));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+$('chapTot') && ($('chapTot').textContent=DATA.h.length+DATA.g.length);
+document.getElementById('chapH') && (document.getElementById('chapH').textContent='0');
+document.getElementById('chapG') && (document.getElementById('chapG').textContent='0');
+renderTabs(); renderChap();
+</script>
+</body>
+</html>
