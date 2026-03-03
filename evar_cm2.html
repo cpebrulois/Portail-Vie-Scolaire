@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVAR CM2 — Programme officiel 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ev:#8B5CF6;--evd:#6D28D9;--evbg:#F5F3FF;--evp:#EDE9FE;
+--sun:#FFD93D;--sun2:#F59E0B;--gre:#34D399;--gre2:#059669;
+--ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#CBD5E1;--wh:#FFFFFF;
+--rs:10px;--rm:18px;--rl:28px;--sh:0 6px 24px rgba(15,23,42,.12);
+--ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--evbg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(139,92,246,.12) 0%,transparent 65%),
+radial-gradient(ellipse 45% 30% at 92% 12%,rgba(109,40,217,.08) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--ev);color:var(--evd)}
+.crumb{font-size:.8rem;font-weight:700;color:var(--ink3)}
+.mhd{text-align:center;padding:28px 20px 20px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--evbg);border:2px solid var(--ev);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--evd);margin-bottom:14px}
+.mtitle{font-family:var(--ft);font-size:clamp(1.7rem,5vw,2.4rem);font-weight:900;line-height:1.15;margin-bottom:8px}
+.msub{font-size:.97rem;color:var(--ink3);font-weight:600;line-height:1.5}
+.legalbadge{display:inline-flex;align-items:center;gap:6px;background:rgba(5,150,105,.1);border:1.5px solid rgba(5,150,105,.3);border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.75rem;font-weight:700;color:#065F46;margin-top:10px}
+/* NAVIGATION PAR ONGLET */
+.tabnav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 16px;justify-content:center}
+.tab{font-family:var(--ft);font-size:.88rem;font-weight:800;border:2px solid var(--ink4);border-radius:50px;padding:8px 18px;cursor:pointer;background:var(--wh);color:var(--ink3);transition:all .2s}
+.tab:hover{border-color:var(--ev);color:var(--evd)}
+.tab.active{background:var(--ev);border-color:var(--ev);color:#fff;box-shadow:0 4px 12px rgba(139,92,246,.3)}
+/* CARDS GÉNÉRIQUES */
+.card{background:rgba(255,255,255,.94);border-radius:var(--rl);box-shadow:var(--sh);border:1.5px solid rgba(255,255,255,.9);padding:22px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.stitle{font-family:var(--ft);font-size:1.2rem;font-weight:900;color:var(--evd);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+/* AXES */
+.axe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:16px}
+.axe{border-radius:var(--rm);padding:16px;border:2px solid}
+.axe-num{font-family:var(--fm);font-size:.72rem;font-weight:700;margin-bottom:6px;opacity:.8}
+.axe-title{font-family:var(--ft);font-size:1rem;font-weight:800;margin-bottom:6px}
+.axe-desc{font-size:.87rem;font-weight:600;color:var(--ink2);line-height:1.5}
+/* THEMATIQUES */
+.them-row{display:flex;flex-direction:column;gap:10px}
+.them{border-radius:var(--rm);padding:14px 16px;border:2px solid;cursor:pointer;transition:all .2s}
+.them-head{display:flex;align-items:center;gap:10px}
+.them-ico{font-size:1.6rem;flex-shrink:0}
+.them-info{flex:1}
+.them-title{font-family:var(--ft);font-size:.97rem;font-weight:800}
+.them-obj{font-size:.82rem;font-weight:700;margin-top:2px;opacity:.8}
+.them-chevron{font-size:1rem;transition:transform .2s;flex-shrink:0}
+.them.open .them-chevron{transform:rotate(90deg)}
+.them-body{display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.08)}
+.them.open .them-body{display:block}
+.them-body-text{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.6;margin-bottom:8px}
+.them-example{background:rgba(255,255,255,.7);border-radius:var(--rs);padding:9px 12px;font-size:.85rem;font-weight:700;color:var(--evd);border:1.5px solid rgba(139,92,246,.2)}
+/* POSTURE PE */
+.principe{background:var(--evp);border:2px solid rgba(139,92,246,.25);border-radius:var(--rm);padding:14px 16px;margin-bottom:10px}
+.principe-title{font-family:var(--ft);font-size:.97rem;font-weight:800;color:var(--evd);margin-bottom:5px}
+.principe-text{font-size:.89rem;font-weight:600;color:var(--ink2);line-height:1.55}
+.alerte{background:#FFF7ED;border:2px solid #FCD34D;border-radius:var(--rm);padding:12px 16px;margin-bottom:10px}
+.alerte-title{font-family:var(--ft);font-weight:800;color:#92400E;margin-bottom:4px}
+.alerte-text{font-size:.88rem;font-weight:600;color:#78350F;line-height:1.5}
+/* RESSOURCES */
+.ressource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.ressource{background:var(--wh);border:2px solid var(--ink4);border-radius:var(--rm);padding:14px;transition:all .2s}
+.ressource:hover{border-color:var(--ev);box-shadow:0 4px 14px rgba(139,92,246,.15)}
+.ressource a{text-decoration:none;color:inherit}
+.ressource-nom{font-family:var(--ft);font-size:.93rem;font-weight:800;color:var(--evd);margin-bottom:4px}
+.ressource-mission{font-size:.82rem;font-weight:600;color:var(--ink2);line-height:1.45;margin-bottom:8px}
+.ressource-contact{font-family:var(--fm);font-size:.73rem;font-weight:700;color:var(--ink3)}
+/* QUIZ */
+.qctx{background:rgba(139,92,246,.07);border:1.5px solid rgba(139,92,246,.2);border-radius:var(--rs);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink2);font-style:italic}
+.qtxt{font-family:var(--ft);font-size:1.05rem;font-weight:800;margin-bottom:14px;line-height:1.35}
+.qopts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.qopt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink4);border-radius:var(--rs);padding:11px 14px;cursor:pointer;font-size:.92rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.qopt:hover:not(:disabled){border-color:var(--ev);background:var(--evp)}
+.qopt.sel{border-color:var(--evd);background:var(--evp)}
+.qopt.ok{border-color:var(--gre);background:#DCFCE7;color:var(--gre2)}
+.qopt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.qopt:disabled{cursor:default}
+.qlbl{width:28px;height:28px;border-radius:7px;background:var(--ink4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0}
+.qopt.sel .qlbl{background:var(--evd);color:#fff}.qopt.ok .qlbl{background:var(--gre);color:#fff}.qopt.ko .qlbl{background:#EF4444;color:#fff}
+.qfb{border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.qfb.ok{background:#DCFCE7;border-color:var(--gre)}.qfb.ko{background:#FEE2E2;border-color:#EF4444}
+.qfbt{font-family:var(--ft);font-weight:800;margin-bottom:4px}.qfbb{font-size:.87rem;line-height:1.5;color:var(--ink2)}
+/* QUIZ NAV */
+.qnav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.qdots{display:flex;gap:6px}
+.qdot{width:10px;height:10px;border-radius:50%;background:var(--ink4);transition:all .2s}
+.qdot.done-ok{background:var(--gre)}.qdot.done-ko{background:#EF4444}.qdot.current{background:var(--ev);transform:scale(1.3)}
+/* SCORE FINAL */
+.score-card{text-align:center;padding:20px 10px}
+.score-big{font-family:var(--fm);font-size:3rem;font-weight:700;color:var(--evd);margin:12px 0}
+.score-label{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:16px}
+/* BTNS */
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:.93rem;font-weight:800;border:none;border-radius:50px;padding:10px 24px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btnp{background:linear-gradient(135deg,var(--ev),var(--evd));color:#fff;box-shadow:0 4px 14px rgba(109,40,217,.3)}
+.btnp:hover{transform:translateY(-2px)}
+.btns{background:var(--wh);border:2px solid var(--ink4);color:var(--ink2)}
+.btns:hover{border-color:var(--ev);color:var(--evd)}
+/* PROGRESS STEPPER */
+.pt{display:flex;align-items:center;padding:0 4px;margin:16px 0 14px}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.ps::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink4);z-index:0}
+.ps:last-child::after{display:none}
+.ps.dn::after{background:var(--ev)}
+.pd{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink4);background:var(--wh);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink3);z-index:1;position:relative;transition:all .3s}
+.ps.dn .pd{background:var(--ev);border-color:var(--ev);color:#fff}
+.ps.ac .pd{background:var(--sun);border-color:var(--sun2);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pp 2s infinite}
+@keyframes pp{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.pl{font-size:.68rem;font-weight:700;color:var(--ink3);margin-top:5px;text-align:center}
+.ps.ac .pl{color:var(--sun2)}.ps.dn .pl{color:var(--evd)}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--fm);font-size:.85rem;font-weight:700;opacity:0;transition:all .35s;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+<nav class="topnav">
+  <a href="index.html" class="back">← Accueil</a>
+  <span class="crumb">🍀 Coin PE · EVAR CM2</span>
+</nav>
+
+<header class="mhd">
+  <div class="chip">🍀 Professeurs des écoles · Conseil école-collège</div>
+  <h1 class="mtitle">EVAR CM2<br>Programme officiel 2025</h1>
+  <p class="msub">Éducation à la Vie Affective et Relationnelle<br>Arrêté du 3 février 2025 · Circulaire du 4 février 2025</p>
+  <div class="legalbadge">⚖️ Validé par le Conseil d'État · Juin 2025 · Obligatoire dès septembre 2025</div>
+</header>
+
+<!-- ONGLETS -->
+<div class="tabnav">
+  <button class="tab active" onclick="showTab('axes')">📐 Les 3 axes</button>
+  <button class="tab" onclick="showTab('thematiques')">🗂️ 5 thématiques</button>
+  <button class="tab" onclick="showTab('posture')">🧑‍🏫 Posture PE</button>
+  <button class="tab" onclick="showTab('quiz')">❓ Quiz PE</button>
+  <button class="tab" onclick="showTab('ressources')">🔗 Ressources locales</button>
+</div>
+
+<div id="root"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DONNÉES
+// ══════════════════════════════════════════════════
+
+const AXES = [
+  { n:'Axe 1', title:'Connaissance de soi et de son corps',
+    ico:'🪞', bg:'#F5F3FF', bd:'#C4B5FD', ht:'#7C3AED',
+    desc:'Comprendre et accepter les changements corporels à l\'approche de la puberté. Normaliser ces évolutions pour réduire l\'anxiété et favoriser une image corporelle positive. Identifier ses propres émotions et savoir les exprimer de façon constructive.' },
+  { n:'Axe 2', title:'Rencontrer l\'autre, construire des relations respectueuses',
+    ico:'🤝', bg:'#F0FDF4', bd:'#6EE7B7', ht:'#065F46',
+    desc:'Le CM2 est une année charnière où les interactions sociales se complexifient. L\'accent est mis sur l\'empathie, le respect des différences et la compréhension du consentement dans les interactions quotidiennes. Distinguer amitié, camaraderie et premiers sentiments.' },
+  { n:'Axe 3', title:'Être un sujet libre et responsable dans la société',
+    ico:'⚖️', bg:'#FFF7ED', bd:'#FCD34D', ht:'#92400E',
+    desc:'Sensibiliser aux stéréotypes de genre pour promouvoir l\'égalité entre les sexes dès le plus jeune âge. Prévenir les violences : apprendre à repérer une situation de danger, à dire "non", et à distinguer les secrets que l\'on peut garder de ceux qui doivent être signalés.' }
+];
+
+const THEMATIQUES = [
+  { ico:'🌱', title:'Puberté', obj:'Connaître et comprendre les changements de son corps et celui des autres',
+    bg:'#F5F3FF', bd:'#C4B5FD', ht:'#7C3AED',
+    body:'L\'enseignement aborde les changements physiques et hormonaux de manière simple, neutre et dédramatisée. L\'objectif est que chaque élève comprenne que ces transformations sont normales et universelles — qu\'il les vive déjà ou les attende encore.',
+    ex:'💡 Activité type : étude des changements à travers des schémas simples et neutres, distinction filles/garçons sans hiérarchie, vocabulaire scientifique adapté.' },
+  { ico:'🤲', title:'Consentement', obj:'Inculquer les notions de respect, de droit et de limite personnelle',
+    bg:'#F0FDF4', bd:'#6EE7B7', ht:'#065F46',
+    body:'Le consentement est abordé à partir de situations quotidiennes, pas de situations intimes. L\'idée directrice est que chaque personne a le droit de définir ses propres limites corporelles et que le "non" de l\'autre se respecte sans négociation.',
+    ex:'💡 Activité type : analyse de situations ("Est-ce que je peux te prendre dans les bras ?"). Jeux de rôle sur le respect des espaces personnels en récréation.' },
+  { ico:'⚖️', title:'Égalité filles-garçons', obj:'Déconstruire les stéréotypes de genre et promouvoir le respect mutuel',
+    bg:'#FFF7ED', bd:'#FCD34D', ht:'#92400E',
+    body:'Les stéréotypes de genre sont abordés de façon concrète, à partir de représentations que les élèves connaissent (jouets, métiers, sports). L\'objectif n\'est pas de nier les différences mais de montrer qu\'elles ne justifient pas les inégalités.',
+    ex:'💡 Activité type : débat "Courir comme une fille, courir comme un garçon" pour déconstruire les préjugés sportifs. Analyse d\'images publicitaires.' },
+  { ico:'📱', title:'Numérique et vie privée', obj:'Prévenir les risques liés à Internet et protéger sa vie privée',
+    bg:'#EFF6FF', bd:'#93C5FD', ht:'#1E40AF',
+    body:'À 10-11 ans, les élèves sont déjà très exposés aux réseaux sociaux. La séquence porte sur ce qu\'on peut ou non partager en ligne, la notion de réputation numérique, et les conséquences durables d\'une photo partagée sans réflexion.',
+    ex:'💡 Activité type : discussion sur le partage de photos et les informations rendues publiques. Mise en situation "Et si quelqu\'un transmettait cette photo à tes parents ?"' },
+  { ico:'🛡️', title:'Prévention des violences', obj:'Apprendre à repérer et se protéger des violences sexistes et sexuelles',
+    bg:'#FFF1F2', bd:'#FDA4AF', ht:'#B91C1C',
+    body:'Cette thématique est abordée avec la plus grande bienveillance. L\'objectif est de donner aux élèves des repères clairs : il existe des adultes de confiance, certains secrets ne doivent pas être gardés, et demander de l\'aide n\'est jamais une trahison.',
+    ex:'💡 Activité type : distinction entre les "bons secrets" (surprise d\'anniversaire) et les "mauvais secrets" (quelque chose qui fait mal ou qui fait honte). Identification des adultes ressources à l\'école et à la maison.' }
+];
+
+const PRINCIPES = [
+  { title:'Neutralité et bienveillance',
+    ico:'🤝',
+    text:'Garantir un climat de confiance où chaque élève se sent libre de s\'exprimer sans crainte de jugement. Mettre à distance ses propres représentations, croyances et vécus personnels. L\'École est le lieu de la transmission de valeurs universelles, pas du témoignage intime de l\'adulte.' },
+  { title:'Respect de la vie privée',
+    ico:'🔒',
+    text:'Veiller à ce que les élèves ne s\'engagent pas dans des confidences personnelles qui pourraient les fragiliser. En cas de révélation de faits graves (violences, sévices), suivre immédiatement les protocoles de protection de l\'enfance.' },
+  { title:'Franchise et précision scientifique',
+    ico:'🔬',
+    text:'Répondre aux questions délicates avec exactitude scientifique et sans gêne, en adaptant le vocabulaire à l\'âge. Il est légitime de différer une réponse pour s\'appuyer sur une ressource ultérieure ou orienter l\'élève vers un personnel de santé.' },
+  { title:'Cadrage légal à maîtriser',
+    ico:'⚖️',
+    text:'L\'EVAR/EVARS est une obligation légale depuis la loi du 4 juillet 2001 (3 séances annuelles min.). Le programme 2025 a été validé par le Conseil d\'État en juin 2025. Les familles ne peuvent pas dispenser leurs enfants de cet enseignement — le dialogue avec elles doit porter sur les objectifs pédagogiques.' }
+];
+
+const ALERTES = [
+  { title:'⚠️ Ce que l\'EVAR n\'est PAS au CM2',
+    text:'Le programme CM2 ne traite PAS de sexualité biologique explicite — ce niveau est réservé au collège. EVAR = vie Affective et Relationnelle. La dimension "sexualité" (EVARS) n\'est introduite qu\'à partir de la 6e. Cela peut rassurer les collègues et les familles hésitants.' },
+  { title:'💬 Gérer les réactions des familles',
+    text:'En cas de contestation parentale : rappeler que c\'est une obligation légale, expliquer que le contenu CM2 porte sur les émotions, le respect et la prévention des violences. Proposer une réunion d\'information avec le document officiel du ministère. Ne pas improviser seul — le principal ou le CPE du collège peut intervenir en conseil école-collège.' }
+];
+
+const QUIZ_DATA = [
+  { ctx:'Une PE doit organiser ses séances EVAR. Elle se demande combien sont obligatoires dans l\'année.',
+    q:'Quel est le minimum légal de séances EVAR par an depuis la loi de 2001 ?',
+    opts:['1 séance par an','2 séances par an','3 séances par an','5 séances par an'],
+    ok:2,
+    fb:'La loi du 4 juillet 2001 impose au moins 3 séances annuelles d\'éducation à la vie affective, relationnelle et à la sexualité — de la maternelle à la terminale. Cette obligation s\'applique donc aussi en CM2.' },
+  { ctx:'Un parent demande à ce que son enfant ne participe pas aux séances EVAR. Il invoque ses convictions religieuses.',
+    q:'Quelle est la posture institutionnelle correcte de la PE ?',
+    opts:['Accepter la dispense pour maintenir une bonne relation famille-école','Refuser : l\'EVAR est une obligation légale, il n\'existe pas de droit de retrait parental','Demander l\'autorisation à l\'IEN avant de décider','Proposer une séance séparée à l\'enfant'],
+    ok:1,
+    fb:'Il n\'existe pas de droit de retrait parental pour l\'EVAR. C\'est une obligation légale validée par le Conseil d\'État (juin 2025). La bonne posture est d\'informer la famille des objectifs pédagogiques et de rassurer sur les contenus — pas d\'accorder une dispense.' },
+  { ctx:'En séance, un élève de CM2 fait une révélation qui laisse penser qu\'il est victime de violences à la maison.',
+    q:'Que doit faire la PE en priorité ?',
+    opts:['Interroger l\'élève en détail pour avoir le maximum d\'informations','Appeler les parents pour vérifier les faits','Suivre le protocole de protection de l\'enfance : informer le directeur et rédiger un signalement','Attendre d\'avoir plus de certitudes avant d\'agir'],
+    ok:2,
+    fb:'En cas de révélation d\'un élève sur des faits graves, le protocole de protection de l\'enfance s\'applique immédiatement : informer le directeur d\'école, rédiger un document de signalement. On ne contacte PAS les parents si on suspecte que la violence vient du foyer.' },
+  { ctx:'La PE se demande si elle peut aborder la biologie de la reproduction avec ses CM2 dans le cadre de l\'EVAR.',
+    q:'La sexualité biologique explicite est-elle au programme de l\'EVAR en CM2 ?',
+    opts:['Oui, c\'est exactement le cœur du programme CM2','Non, ce niveau est réservé au collège — CM2 = vie affective et relationnelle uniquement','Oui, mais uniquement pour les élèves qui posent la question','Cela dépend de l\'accord des familles'],
+    ok:1,
+    fb:'Le programme CM2 se concentre exclusivement sur l\'éducation à la VIE AFFECTIVE ET RELATIONNELLE (EVAR). Les questions liées à la sexualité biologique explicite ne sont pas abordées à ce stade, pour respecter la maturité psychologique des enfants. C\'est à partir de la 6e que le "S" de sexualité est intégré (EVARS).' },
+  { ctx:'Lors d\'une séance sur les stéréotypes de genre, un élève dit : "De toute façon les filles courent moins vite que les garçons, c\'est scientifique."',
+    q:'Quelle est la meilleure posture pédagogique de la PE ?',
+    opts:['Valider la remarque pour ne pas créer de conflit','Faire taire l\'élève pour ne pas gêner les filles','Exploiter cette remarque comme entrée dans un débat sur les stéréotypes et les représentations sociales','Demander à l\'élève de s\'excuser auprès des filles de la classe'],
+    ok:2,
+    fb:'Cette remarque est une porte d\'entrée idéale pour l\'axe "égalité". La PE peut rebondir : "D\'où vient cette idée ? Est-ce qu\'on peut vérifier ? Et même si c\'était vrai en moyenne, est-ce que ça change quoi que ce soit pour chaque individu ?" — L\'objectif est la réflexion, pas la censure ni la validation.' }
+];
+
+const RESSOURCES_LOCALES = [
+  { nom:'DSDEN 70', mission:'Pilotage départemental EVARS, accompagnement pédagogique et formation des équipes. Interlocuteur pour les questions institutionnelles.', contact:'5 place Beauchamp — Vesoul', lien:null },
+  { nom:'CIDFF 70', mission:'Centre d\'Information sur les Droits des Femmes et des Familles. Information juridique, lutte contre les violences et promotion de l\'égalité.', contact:'20 rue Didon — Vesoul', lien:'https://www.helloasso.com/associations/cidff-de-la-haute-saone' },
+  { nom:'Planning Familial', mission:'Éducation à la vie affective et sexuelle, contraception, entretiens. Peut intervenir en établissement sur convention.', contact:'Antenne départementale', lien:'https://ivg.gouv.fr/annuaire-des-espaces-vie-affective-relationnelle-et-sexuelle-evars' },
+  { nom:'Réseau Canopé', mission:'Accompagnement enseignants, ressources numériques et physiques pour l\'EVARS. Formations disponibles dès 2025.', contact:'Atelier Canopé Besançon · canotech.fr', lien:'https://www.canotech.fr/s/39937/premiers-reperes-sur-les-nouveaux-programmes-evars' },
+  { nom:'Éduscol', mission:'Ressources officielles du Ministère : programme complet, vade-mecum, FAQ pour les familles.', contact:'eduscol.education.fr', lien:'https://eduscol.education.fr/2083/mettre-en-oeuvre-le-programme-evarevars' },
+  { nom:'Santé publique France', mission:'Catalogue outils santé sexuelle jeunes 2025. Site "Questions d\'ados" pour les élèves.', contact:'santepubliquefrance.fr', lien:'https://www.santepubliquefrance.fr/content/download/770565/4863087' }
+];
+
+// ══════════════════════════════════════════════════
+// ÉTAT QUIZ
+// ══════════════════════════════════════════════════
+let QS = { idx:0, sel:null, done:false, results:[] };
+
+// ══════════════════════════════════════════════════
+// RENDU
+// ══════════════════════════════════════════════════
+let currentTab = 'axes';
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function render() {
+  const r = document.getElementById('root');
+  r.innerHTML = '';
+  if (currentTab === 'axes')        renderAxes(r);
+  if (currentTab === 'thematiques') renderThematiques(r);
+  if (currentTab === 'posture')     renderPosture(r);
+  if (currentTab === 'quiz')        renderQuiz(r);
+  if (currentTab === 'ressources')  renderRessources(r);
+}
+
+function mk(c) { const d=document.createElement('div'); d.className=c; return d; }
+function btn(l,c,fn) { const b=document.createElement('button'); b.className='btn '+c; b.innerHTML=l; if(fn) b.onclick=fn; return b; }
+function toast(m) { const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+function renderAxes(r) {
+  const c = mk('card');
+  const ti = mk('stitle'); ti.innerHTML = '📐 Les 3 axes fondamentaux — EVAR CM2';
+  c.appendChild(ti);
+  const p = document.createElement('p');
+  p.style.cssText = 'font-size:.92rem;color:var(--ink2);font-weight:600;line-height:1.6;margin-bottom:16px';
+  p.innerHTML = 'Le programme EVAR pour le CM2 s\'articule autour de <strong>3 axes</strong> qui structurent l\'ensemble de la scolarité, adaptés ici à la maturité des élèves de cycle 3. La sexualité biologique <em>n\'est pas abordée</em> à ce niveau — uniquement la vie affective, relationnelle et citoyenne.';
+  c.appendChild(p);
+  const grid = mk('axe-grid');
+  AXES.forEach(a => {
+    const ax = mk('axe');
+    ax.style.background = a.bg; ax.style.borderColor = a.bd;
+    ax.innerHTML = '<div class="axe-num" style="color:'+a.ht+'">'+a.n+'</div>'+
+      '<div class="axe-title">'+a.ico+' '+a.title+'</div>'+
+      '<div class="axe-desc">'+a.desc+'</div>';
+    grid.appendChild(ax);
+  });
+  c.appendChild(grid);
+  // encart volume horaire
+  const vh = mk('principe');
+  vh.innerHTML = '<div class="principe-title">⏱️ Volume horaire et cadre légal</div>'+
+    '<div class="principe-text">Minimum <strong>3 séances par an</strong> (loi 2001). Chaque séance : environ <strong>1h à 2h</strong>. Pas de discipline dédiée : l\'EVAR irrigue le français, l\'EMC, les sciences et l\'EPS. Elle peut aussi s\'intégrer dans les heures de "vie de classe" ou de conseil d\'élèves.</div>';
+  c.appendChild(vh);
+  r.appendChild(c);
+}
+
+function renderThematiques(r) {
+  const c = mk('card');
+  const ti = mk('stitle'); ti.innerHTML = '🗂️ Les 5 thématiques — séquences et activités';
+  c.appendChild(ti);
+  const intro = document.createElement('p');
+  intro.style.cssText = 'font-size:.9rem;color:var(--ink2);font-weight:600;line-height:1.6;margin-bottom:14px';
+  intro.textContent = 'Cliquez sur chaque thématique pour voir l\'objectif d\'apprentissage, la description et une activité type.';
+  c.appendChild(intro);
+  const rows = mk('them-rows');
+  THEMATIQUES.forEach((th, i) => {
+    const t = mk('them');
+    t.style.background = th.bg; t.style.borderColor = th.bd;
+    t.dataset.idx = i;
+    t.innerHTML = '<div class="them-head">'+
+      '<div class="them-ico">'+th.ico+'</div>'+
+      '<div class="them-info">'+
+        '<div class="them-title" style="color:'+th.ht+'">'+th.title+'</div>'+
+        '<div class="them-obj" style="color:'+th.ht+'">🎯 '+th.obj+'</div>'+
+      '</div>'+
+      '<div class="them-chevron">›</div>'+
+    '</div>'+
+    '<div class="them-body">'+
+      '<div class="them-body-text">'+th.body+'</div>'+
+      '<div class="them-example">'+th.ex+'</div>'+
+    '</div>';
+    t.onclick = function() { this.classList.toggle('open'); };
+    rows.appendChild(t);
+  });
+  c.appendChild(rows);
+  r.appendChild(c);
+}
+
+function renderPosture(r) {
+  const c = mk('card');
+  const ti = mk('stitle'); ti.innerHTML = '🧑‍🏫 Posture professionnelle du PE';
+  c.appendChild(ti);
+  const intro = document.createElement('p');
+  intro.style.cssText = 'font-size:.9rem;color:var(--ink2);font-weight:600;line-height:1.6;margin-bottom:14px';
+  intro.textContent = 'L\'enseignant n\'est pas un expert en morale, mais un garant des valeurs de la République et de la santé publique. Quatre principes directeurs issus de la circulaire d\'application.';
+  c.appendChild(intro);
+  PRINCIPES.forEach(p => {
+    const pr = mk('principe');
+    pr.innerHTML = '<div class="principe-title">'+p.ico+' '+p.title+'</div>'+
+      '<div class="principe-text">'+p.text+'</div>';
+    c.appendChild(pr);
+  });
+  ALERTES.forEach(a => {
+    const al = mk('alerte');
+    al.innerHTML = '<div class="alerte-title">'+a.title+'</div>'+
+      '<div class="alerte-text">'+a.text+'</div>';
+    c.appendChild(al);
+  });
+  const lien = document.createElement('div');
+  lien.style.cssText='text-align:center;margin-top:14px';
+  lien.innerHTML='<a href="https://eduscol.education.fr/document/64469/download?attachment" target="_blank" style="font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--evd);text-decoration:none;border:1.5px solid rgba(139,92,246,.3);border-radius:50px;padding:7px 16px;display:inline-block">📥 FAQ officielle Éduscol (PDF) →</a>';
+  c.appendChild(lien);
+  r.appendChild(c);
+}
+
+function renderQuiz(r) {
+  if (QS.results.length === QUIZ_DATA.length) { renderScore(r); return; }
+  const d = QUIZ_DATA[QS.idx];
+  // stepper
+  const st = mk('pt');
+  QUIZ_DATA.forEach((_, i) => {
+    const ps = mk('ps ' + (i < QS.idx ? 'dn' : i === QS.idx ? 'ac' : ''));
+    ps.innerHTML = '<div class="pd">'+(i < QS.idx ? '✓' : i+1)+'</div><div class="pl">Q'+(i+1)+'</div>';
+    st.appendChild(ps);
+  });
+  r.appendChild(st);
+  const c = mk('card');
+  // badge PE
+  const badge = document.createElement('div');
+  badge.style.cssText='display:inline-flex;align-items:center;gap:6px;background:var(--evp);border:1.5px solid rgba(139,92,246,.3);border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.73rem;font-weight:700;color:var(--evd);margin-bottom:12px';
+  badge.textContent = '🧑‍🏫 Quiz réservé aux PE — '+QS.idx+'/'+QUIZ_DATA.length+' questions répondues';
+  c.appendChild(badge);
+  if (d.ctx) { const cx = mk('qctx'); cx.textContent = d.ctx; c.appendChild(cx); }
+  const qt = mk('qtxt'); qt.textContent = d.q; c.appendChild(qt);
+  const ol = mk('qopts');
+  const val = btn('Valider','btnp',null); val.disabled = true;
+  d.opts.forEach((o,i) => {
+    const b = document.createElement('button'); b.className = 'qopt';
+    b.innerHTML = '<span class="qlbl">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span>';
+    if (QS.done) {
+      b.disabled=true;
+      if(i===d.ok) b.classList.add('ok');
+      else if(i===QS.sel) b.classList.add('ko');
+    } else {
+      if(i===QS.sel) b.classList.add('sel');
+      b.onclick=()=>{ QS.sel=i; val.disabled=false; render(); };
+    }
+    ol.appendChild(b);
+  });
+  c.appendChild(ol);
+  if (QS.done) {
+    const fb = mk('qfb '+(QS.sel===d.ok?'ok':'ko'));
+    fb.innerHTML='<div class="qfbt">'+(QS.sel===d.ok?'✅ Exact !':'❌ Pas tout à fait…')+'</div><div class="qfbb">'+d.fb+'</div>';
+    c.appendChild(fb);
+    const isL = QS.idx === QUIZ_DATA.length-1;
+    const row = mk('row');
+    row.appendChild(btn(isL?'Voir mon score ➜':'Question suivante ➜','btnp',()=>{
+      if(isL){ QS.results.push(QS.sel===d.ok); render(); }
+      else { QS.results.push(QS.sel===d.ok); QS.idx++; QS.sel=null; QS.done=false; render(); }
+    }));
+    c.appendChild(row);
+  } else {
+    val.onclick=()=>{ if(QS.sel===null){toast('Choisissez une réponse !');return;} QS.done=true; render(); };
+    if(QS.sel!==null) val.disabled=false;
+    const row=mk('row'); row.appendChild(val); c.appendChild(row);
+  }
+  r.appendChild(c);
+}
+
+function renderScore(r) {
+  const ok = QS.results.filter(Boolean).length;
+  const total = QUIZ_DATA.length;
+  const pct = Math.round(ok/total*100);
+  const c = mk('card');
+  c.innerHTML='<div class="score-card">'+
+    '<div style="font-size:3rem">'+( pct>=80?'🏆':pct>=60?'🌟':'📚')+'</div>'+
+    '<div class="score-big">'+ok+' / '+total+'</div>'+
+    '<div class="score-label">'+(pct>=80?'Maîtrise solide du programme EVAR 2025 !':pct>=60?'Bonne connaissance — quelques points à revoir':'Prenez le temps de relire les onglets Axes et Posture')+'</div>'+
+    '<div style="background:var(--evp);border-radius:var(--rm);padding:14px;margin:14px 0;font-size:.9rem;font-weight:600;color:var(--evd);line-height:1.6">'+
+    '💡 Rappel clé : l\'EVAR CM2 porte sur la vie affective et relationnelle uniquement. La dimension sexualité (EVARS) commence en 6e. 3 séances minimum/an, obligation légale, pas de droit de retrait parental.'+
+    '</div></div>';
+  const row = mk('row');
+  row.style.justifyContent='center';
+  row.appendChild(btn('Refaire le quiz','btns',()=>{ QS={idx:0,sel:null,done:false,results:[]}; render(); }));
+  row.appendChild(btn('🏠 Retour accueil','btnp',()=>location.href='index.html'));
+  c.appendChild(row);
+  r.appendChild(c);
+}
+
+function renderRessources(r) {
+  const c = mk('card');
+  const ti = mk('stitle'); ti.innerHTML = '🔗 Ressources locales — Haute-Saône et académie de Besançon';
+  c.appendChild(ti);
+  const intro = document.createElement('p');
+  intro.style.cssText='font-size:.9rem;color:var(--ink2);font-weight:600;line-height:1.6;margin-bottom:14px';
+  intro.textContent='Acteurs identifiés comme ressources clés pour l\'EVAR/EVARS dans l\'académie de Besançon et le département de la Haute-Saône (70). Clicables si lien disponible.';
+  c.appendChild(intro);
+  const grid = mk('ressource-grid');
+  RESSOURCES_LOCALES.forEach(res => {
+    const r2 = mk('ressource');
+    if (res.lien) {
+      const a = document.createElement('a');
+      a.href = res.lien; a.target='_blank';
+      a.innerHTML = '<div class="ressource-nom">'+res.nom+' ↗</div>'+
+        '<div class="ressource-mission">'+res.mission+'</div>'+
+        '<div class="ressource-contact">📍 '+res.contact+'</div>';
+      r2.appendChild(a);
+    } else {
+      r2.innerHTML='<div class="ressource-nom">'+res.nom+'</div>'+
+        '<div class="ressource-mission">'+res.mission+'</div>'+
+        '<div class="ressource-contact">📍 '+res.contact+'</div>';
+    }
+    grid.appendChild(r2);
+  });
+  c.appendChild(grid);
+  // Note finale
+  const note = mk('principe');
+  note.style.marginTop='16px';
+  note.innerHTML='<div class="principe-title">📋 Pour le conseil école-collège</div>'+
+    '<div class="principe-text">Ce module peut être présenté tel quel lors du conseil école-collège. Le CPE et/ou l\'infirmier(e) du collège peuvent être des relais naturels pour co-animer des séances EVAR avec les PE de CM2, notamment sur les thématiques puberté et prévention des violences.</div>';
+  c.appendChild(note);
+  r.appendChild(c);
+}
+
+// ══════════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>

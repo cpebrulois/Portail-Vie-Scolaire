@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Les bureaux des adultes</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--p2:#34D399;--p2d:#059669;--p2bg:#F0FDF4;--p2p:#DCFCE7;--sun:#FFD93D;--sun2:#F59E0B;--gre:#34D399;--gre2:#059669;--ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#CBD5E1;--wh:#FFFFFF;--rs:10px;--rm:18px;--rl:28px;--sh:0 6px 24px rgba(15,23,42,.12);--ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--p2bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(52,211,153,.15) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--p2);color:var(--p2d)}
+.crumb{font-size:.8rem;font-weight:700;color:var(--ink3)}
+.mhd{text-align:center;padding:28px 20px 20px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--p2bg);border:2px solid var(--p2);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--p2d);margin-bottom:14px}
+.mtitle{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:8px}
+.msub{font-size:1rem;color:var(--ink3);font-weight:600}
+.pt{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.ps::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink4);z-index:0}
+.ps:last-child::after{display:none}
+.ps.dn::after{background:var(--gre)}
+.pd{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink4);background:var(--wh);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink3);z-index:1;position:relative;transition:all .3s}
+.ps.dn .pd{background:var(--gre);border-color:var(--gre);color:#fff}
+.ps.ac .pd{background:var(--sun);border-color:var(--sun2);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pp 2s infinite}
+@keyframes pp{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.pl{font-size:.7rem;font-weight:700;color:var(--ink3);margin-top:5px;text-align:center}
+.ps.ac .pl{color:var(--sun2)}.ps.dn .pl{color:var(--gre2)}
+.xps{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xpp{display:flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:6px 16px;font-family:var(--fm);font-size:.83rem;font-weight:700}
+.xpp.hl{border-color:var(--p2);background:var(--p2p);color:var(--p2d)}
+.card{background:rgba(255,255,255,.94);border-radius:var(--rl);box-shadow:var(--sh);border:1.5px solid rgba(255,255,255,.9);padding:22px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.photo-wrap{border-radius:var(--rm);overflow:hidden;margin-bottom:10px;background:var(--p2p);border:2px solid rgba(52,211,153,.3);min-height:160px;display:flex;align-items:center;justify-content:center}
+.photo-wrap img{width:100%;object-fit:cover;display:block}
+.photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:8px;padding:28px;color:var(--p2d);opacity:.6}
+.photo-placeholder .ico{font-size:2.2rem}.photo-placeholder .txt{font-family:var(--fm);font-size:.73rem;font-weight:700}
+.photo-caption{font-size:.78rem;font-weight:700;color:var(--ink3);text-align:center;margin-bottom:12px;font-family:var(--fm)}
+.bureau-card{border-radius:var(--rm);padding:14px 16px;margin-bottom:10px;border:2px solid}
+.bureau-title{font-family:var(--ft);font-size:1rem;font-weight:800;margin-bottom:6px}
+.bureau-role{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.bureau-desc{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.55}
+.bureau-when{font-size:.83rem;font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08)}
+.qctx{background:rgba(52,211,153,.08);border:1.5px solid rgba(52,211,153,.25);border-radius:var(--rs);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink2);font-style:italic}
+.qtxt{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px;line-height:1.35}
+.qopts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.qopt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink4);border-radius:var(--rs);padding:11px 14px;cursor:pointer;font-size:.93rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.qopt:hover:not(:disabled){border-color:var(--p2);background:var(--p2p)}
+.qopt.sel{border-color:var(--p2d);background:var(--p2p)}
+.qopt.ok{border-color:var(--gre);background:#DCFCE7;color:var(--gre2)}
+.qopt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.qopt:disabled{cursor:default}
+.qlbl{width:28px;height:28px;border-radius:7px;background:var(--ink4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0}
+.qopt.sel .qlbl{background:var(--p2d);color:#fff}.qopt.ok .qlbl{background:var(--gre);color:#fff}.qopt.ko .qlbl{background:#EF4444;color:#fff}
+.qfb{border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.qfb.ok{background:#DCFCE7;border-color:var(--gre)}.qfb.ko{background:#FEE2E2;border-color:#EF4444}
+.qfbt{font-family:var(--ft);font-weight:800;margin-bottom:4px}.qfbb{font-size:.87rem;line-height:1.5;color:var(--ink2)}
+.scctx{background:var(--p2p);border:1.5px solid rgba(52,211,153,.3);border-radius:var(--rm);padding:14px;font-size:.93rem;line-height:1.65;color:var(--ink2);margin-bottom:14px}
+.scq{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px}
+.scch{display:flex;flex-direction:column;gap:8px}
+.scb{background:var(--wh);border:2px solid var(--ink4);border-radius:var(--rm);padding:12px 16px;text-align:left;cursor:pointer;font-size:.92rem;font-weight:600;transition:all .15s;font-family:var(--fb)}
+.scb:hover{border-color:var(--p2);background:var(--p2p)}
+.scr{border-radius:var(--rm);padding:14px;margin-bottom:12px;border:2px solid}
+.scr.pos{background:#DCFCE7;border-color:var(--gre)}.scr.neg{background:#FEE2E2;border-color:#EF4444}.scr.neu{background:#FFF7ED;border-color:#FCD34D}
+.scrt{font-family:var(--ft);font-weight:800;font-size:1rem;margin-bottom:5px}.scrb{font-size:.9rem;line-height:1.55;color:var(--ink2)}
+.sctip{background:rgba(255,255,255,.7);border:1.5px solid rgba(52,211,153,.2);border-radius:var(--rs);padding:8px 12px;margin-top:9px;font-size:.85rem;font-weight:700;color:var(--p2d)}
+.scxp{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:.83rem;font-weight:700;border-radius:50px;padding:5px 14px;margin-top:8px}
+.scxp.pos{background:#DCFCE7;color:var(--gre2);border:1.5px solid var(--gre)}.scxp.neg{background:#FEE2E2;color:#B91C1C;border:1.5px solid #EF4444}.scxp.neu{background:#FFF7ED;color:#92400E;border:1.5px solid #FCD34D}
+.bdg{display:inline-flex;align-items:center;gap:10px;border-radius:var(--rm);padding:14px 22px;font-family:var(--ft);font-size:1.1rem;font-weight:800}
+.bdg.bronze{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:2px solid #F59E0B;color:#92400E}
+.bdg.silver{background:linear-gradient(135deg,#F1F5F9,#E2E8F0);border:2px solid #94A3B8;color:#475569}
+.bdg.gold{background:linear-gradient(135deg,#FFF7ED,#FBBF24);border:2px solid #F59E0B;color:#78350F}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:.95rem;font-weight:800;border:none;border-radius:50px;padding:11px 26px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btnp{background:linear-gradient(135deg,var(--p2),var(--p2d));color:#fff;box-shadow:0 4px 14px rgba(5,150,105,.3)}
+.btnp:hover{transform:translateY(-2px)}.btns{background:var(--wh);border:2px solid var(--ink4);color:var(--ink2)}.btns:hover{border-color:var(--p2);color:var(--p2d)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--fm);font-size:.85rem;font-weight:700;opacity:0;transition:all .35s;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+<nav class="topnav"><a href="index.html" class="back">← Accueil</a><span class="crumb">🗺️ Pilier 2 · Module 4/4</span></nav>
+<header class="mhd"><div class="chip">🗺️ Les lieux du collège</div><h1 class="mtitle">Les bureaux<br>des adultes</h1><p class="msub">Où frapper quand j'en ai besoin ?</p></header>
+<div id="prog"></div><div id="xpb"></div><div id="root"></div>
+</div>
+<script>
+const MID='M2_04',LS='ave6e_progress';
+
+// ── PHOTOS RÉFÉRENCÉES ──────────────────────────────────────
+//   bureau_cpe.jpeg        — bureau du CPE (porte ou intérieur)
+//   bureau_vie_scolaire.jpeg — accueil vie scolaire / loge AED
+//   infirmerie.jpeg        — infirmerie (porte ou salle de soins)
+//   bureau_direction.jpeg  — secrétariat / bureau de direction
+//   bureau_po.jpeg         — bureau de la PO / psychologue scolaire (si existant)
+// ────────────────────────────────────────────────────────────
+
+const BUREAUX=[
+  {img:'bureau_vie_scolaire.jpeg',caption:'Vie scolaire — ton premier point de contact',
+   ico:'🛎️',bg:'#F0FDF4',bd:'#6EE7B7',ht:'#065F46',
+   titre:'La vie scolaire',
+   role:'AED — Assistants d\'Éducation',
+   desc:'La vie scolaire, c\'est le point de contact quotidien pour tout ce qui concerne ta présence, tes absences, tes retards. Les AED (assistants d\'éducation) y sont en permanence. C\'est ici qu\'on signale une arrivée tardive, un problème de transport, un document à transmettre.',
+   when:'📌 Y aller pour : retard à signaler · oubli de matériel · problème de transport · objet perdu · toute urgence du quotidien'},
+  {img:'bureau_cpe.jpeg',caption:'Bureau du CPE — Conseiller Principal d\'Éducation',
+   ico:'🧑‍💼',bg:'#EFF6FF',bd:'#93C5FD',ht:'#1E40AF',
+   titre:'Le bureau du CPE',
+   role:'CPE — Conseiller Principal d\'Éducation',
+   desc:'Le CPE coordonne la vie scolaire et veille au bien-être des élèves. C\'est lui (ou elle) qu\'on voit pour les questions de comportement, de relations difficiles avec des camarades, de harcèlement ressenti, ou quand quelque chose ne va pas de façon plus sérieuse. Le CPE travaille avec les familles et les professeurs.',
+   when:'📌 Y aller pour : problème avec un camarade · situation de harcèlement · difficulté personnelle sérieuse · convocation'},
+  {img:'infirmerie.jpeg',caption:'Infirmerie — soins et écoute',
+   ico:'🩺',bg:'#FFF1F2',bd:'#FDA4AF',ht:'#B91C1C',
+   titre:'L\'infirmerie',
+   desc:'L\'infirmier(e) scolaire soigne les bobos du quotidien (mal de tête, douleur, blessure légère) mais peut aussi être une oreille attentive si tu traverses quelque chose de difficile. C\'est un espace confidentiel. Pour y aller pendant un cours, tu dois demander l\'autorisation au professeur.',
+   when:'📌 Y aller pour : douleur physique · médicament à prendre (ordonnance obligatoire déposée en début d\'année) · besoin de parler en confiance'},
+  {img:'bureau_direction.jpeg',caption:'Secrétariat et direction',
+   ico:'🏛️',bg:'#FFF7ED',bd:'#FCD34D',ht:'#92400E',
+   titre:'La direction et le secrétariat',
+   desc:'La principale (ou le principal) dirige l\'établissement. Le secrétariat gère les inscriptions, les documents administratifs, les certificats de scolarité. On ne va pas en direction pour des problèmes quotidiens — mais c\'est là qu\'on s\'adresse pour des questions d\'inscription, de dossier, ou de convocation officielle.',
+   when:'📌 Y aller pour : document administratif · convocation officielle · demande de certificat de scolarité'},
+  {img:'bureau_po.jpeg',caption:'Psychologue de l\'Éducation Nationale',
+   ico:'💬',bg:'#F5F3FF',bd:'#C4B5FD',ht:'#7C3AED',
+   titre:'La Psy-EN',
+   desc:'La psychologue de l\'Éducation Nationale (Psy-EN) accompagne les élèves sur l\'orientation et les questions personnelles ou scolaires plus profondes. Elle intervient sur rendez-vous, en lien avec les familles. Son rôle est d\'écouter et d\'aider à trouver des solutions adaptées.',
+   when:'📌 Y aller pour : questions d\'orientation · difficultés scolaires persistantes · besoin d\'accompagnement psychologique'}
+];
+
+const QUIZ=[
+  {ctx:'Emma a un problème avec un groupe de camarades qui l\'excluent depuis 2 semaines. Elle ne sait pas à qui en parler.',
+   q:'Quel adulte est le plus indiqué pour cette situation ?',
+   opts:['Le professeur de sa matière préférée','Le CPE — c\'est exactement son rôle','La principale directement','Le documentaliste du CDI'],
+   ok:1,xp:25,
+   fb:'Le CPE est l\'interlocuteur privilégié pour tout ce qui touche aux relations entre élèves, à l\'exclusion, au harcèlement. C\'est sa mission principale.'},
+  {ctx:'Tom a un fort mal de tête depuis le début du cours. Le prof lui a donné l\'autorisation de sortir.',
+   q:'Où Tom doit-il aller ?',
+   opts:['Directement chez lui si c\'est trop fort','À la vie scolaire pour prévenir puis à l\'infirmerie','En salle de permanence attendre que ça passe','Appeler ses parents depuis la cour'],
+   ok:1,xp:20,
+   fb:'On passe toujours par la vie scolaire pour signaler qu\'on sort d\'un cours, puis on va à l\'infirmerie. L\'infirmier(e) évaluera si un retour chez toi est nécessaire et contactera tes parents.'},
+  {ctx:'Léa doit obtenir un certificat de scolarité pour son dossier de cantine municipale.',
+   q:'Où Léa doit-elle s\'adresser ?',
+   opts:['Au CPE','À son professeur principal','Au secrétariat de direction','À la vie scolaire'],
+   ok:2,xp:20,
+   fb:'Les documents administratifs (certificats de scolarité, attestations) sont délivrés par le secrétariat de direction. Le CPE et la vie scolaire ne gèrent pas ces documents.'}
+];
+
+const SC=[
+  {ti:'Quelque chose ne va pas',
+   ctx:'Depuis quelques jours, Lucas se sent mal. Il est la cible de moqueries dans la cour et ça commence à affecter son envie de venir au collège. Il ne veut pas en parler à ses parents.',
+   q:'Vers quel adulte du collège Lucas devrait-il se tourner en premier ?',
+   ch:[
+     {t:'Ne rien dire à personne et attendre que ça passe.',
+      r:'Lucas attend. Les moqueries continuent, s\'intensifient. Après trois semaines, sa mère remarque son comportement et contacte le collège. La situation a eu le temps de s\'installer.',
+      ton:'neg',ico:'⚠️',tip:'Ce qui n\'est pas dit ne peut pas être aidé. Les adultes du collège ne peuvent intervenir que s\'ils sont informés — et ils gardent la confidence.',
+      xp:-10,lbl:'-10 XP'},
+     {t:'Aller voir le CPE ou l\'infirmier(e) — deux adultes formés à écouter ce type de situation.',
+      r:'Lucas choisit d\'abord l\'infirmière, qui l\'écoute sans jugement. Elle propose d\'impliquer le CPE avec son accord. En une semaine, une médiation est organisée. La situation se désamorce.',
+      ton:'pos',ico:'✅',tip:'CPE et infirmier(e) sont formés pour ces situations. Ils ne divulguent pas tout immédiatement — mais ils peuvent agir. Parler est le premier acte de protection.',
+      xp:40,lbl:'+40 XP'},
+     {t:'En parler à son professeur principal lors de la prochaine heure de vie de classe.',
+      r:'Le PP écoute Lucas. Il contacte le CPE le lendemain. La chaîne se met en place — mais c\'est plus long que d\'aller directement au CPE. Lucas doit attendre encore quelques jours.',
+      ton:'neu',ico:'🙂',tip:'Le PP est un bon interlocuteur — mais le CPE est l\'interlocuteur direct pour ces situations. Aller au CPE directement gagne du temps.',
+      xp:20,lbl:'+20 XP'}
+   ]},
+  {ti:'Le médicament oublié',
+   ctx:'Emma doit prendre un médicament chaque jour à midi. Sa mère l\'a toujours déposée à l\'école primaire. Au collège, Emma ne sait pas comment ça fonctionne.',
+   q:'Comment Emma peut-elle prendre son médicament au collège ?',
+   ch:[
+     {t:'Le prendre seule dans les toilettes sans le dire à personne.',
+      r:'Emma prend son médicament seule. Personne n\'est informé de son traitement. Si un problème survient (mauvaise dose, effet secondaire), aucun adulte n\'est au courant.',
+      ton:'neg',ico:'⚠️',tip:'La prise de médicament au collège doit toujours passer par l\'infirmerie — avec une ordonnance déposée au début de l\'année. C\'est pour ta sécurité.',
+      xp:-10,lbl:'-10 XP'},
+     {t:'Faire déposer l\'ordonnance et le médicament à l\'infirmerie en début d\'année — la prise se fait sous supervision.',
+      r:'Les parents d\'Emma déposent l\'ordonnance à l\'infirmerie dès la rentrée. Chaque midi, Emma passe à l\'infirmerie, l\'infirmière note la prise. Tout est traçable et sécurisé.',
+      ton:'pos',ico:'✅',tip:'Protocole d\'accueil individualisé (PAI) pour les traitements réguliers. Le médecin scolaire peut aussi être impliqué. Toujours passer par les voies officielles.',
+      xp:40,lbl:'+40 XP'},
+     {t:'Rentrer chez elle à midi pour prendre son médicament.',
+      r:'Emma n\'est pas externe — elle est demi-pensionnaire. Rentrer chez elle n\'est pas possible sans autorisation de sortie spécifique accordée par la direction.',
+      ton:'neg',ico:'⚠️',tip:'Quitter l\'enceinte du collège sans autorisation = absence non justifiée, même pour une raison valable.',
+      xp:-5,lbl:'-5 XP'}
+   ]}
+];
+
+let S={ph:'intro',ci:0,qi:0,qS:null,qF:false,si:0,sc:null,sr:false,xp:0};
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function gP(){try{return JSON.parse(localStorage.getItem(LS)||'{}')}catch{return{}}}
+function save(){const p=gP();if(!Array.isArray(p.modules_done))p.modules_done=[];if(!p.modules_done.includes(MID)){p.modules_done.push(MID);p.xp_total=(p.xp_total||0)+S.xp;localStorage.setItem(LS,JSON.stringify(p));window.dispatchEvent(new StorageEvent('storage',{key:LS}));}}
+const PHS=[{l:'Intro'},{l:'Bureaux'},{l:'Quiz'},{l:'Scénarios'},{l:'Bilan'}];
+const PI={intro:0,cards:1,quiz:2,sc:3,fin:4};
+function mk(c){const d=document.createElement('div');d.className=c;return d}
+function btn(l,c,fn){const b=document.createElement('button');b.className='btn '+c;b.innerHTML=l;if(fn)b.onclick=fn;return b}
+function photo(src,cap){const w=mk('photo-wrap');const img=document.createElement('img');img.src=src;img.alt=cap;img.onerror=function(){this.parentNode.innerHTML='<div class="photo-placeholder"><div class="ico">📷</div><div class="txt">'+src+'</div></div>';};w.appendChild(img);const c=mk('photo-caption');c.textContent=cap;return[w,c]}
+function prog(){const d=$('prog');d.innerHTML='';const t=mk('pt');const pi=PI[S.ph]||0;PHS.forEach((p,i)=>{const s=mk('ps '+(i<pi?'dn':i===pi?'ac':''));s.innerHTML='<div class="pd">'+(i<pi?'✓':i+1)+'</div><div class="pl">'+p.l+'</div>';t.appendChild(s)});d.appendChild(t)}
+function xpbar(items){const d=$('xpb');d.innerHTML='';const w=mk('xps');items.forEach(x=>{const p=mk('xpp'+(x.h?' hl':''));p.innerHTML='<span>'+x.i+'</span>'+x.v;w.appendChild(p)});d.appendChild(w)}
+function render(){prog();const r=$('root');r.innerHTML='';
+if(S.ph==='intro'){xpbar([{i:'⭐',v:S.xp+' XP'}]);intro(r)}
+if(S.ph==='cards'){xpbar([{i:'🗺️',v:(S.ci+1)+'/'+BUREAUX.length},{i:'⭐',v:S.xp+' XP',h:1}]);cards(r)}
+if(S.ph==='quiz'){xpbar([{i:'❓',v:(S.qi+1)+'/'+QUIZ.length},{i:'⭐',v:S.xp+' XP',h:1}]);quiz(r)}
+if(S.ph==='sc'){xpbar([{i:'🎯',v:(S.si+1)+'/'+SC.length},{i:'⭐',v:S.xp+' XP',h:1}]);scene(r)}
+if(S.ph==='fin'){xpbar([{i:'⭐',v:S.xp+' XP',h:1}]);fin(r)}}
+function intro(r){const c=mk('card');
+const[pw,pc]=photo('bureau_vie_scolaire.jpeg','La vie scolaire — ton point de contact au quotidien');
+c.appendChild(pw);c.appendChild(pc);
+c.innerHTML+='<div style="font-family:var(--ft);font-size:1.3rem;font-weight:900;margin-bottom:8px">Savoir où aller, c\'est déjà une solution</div>'+
+'<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);margin-bottom:16px">Au collège, plusieurs adultes ont des rôles très différents. Savoir à qui s\'adresser selon le problème, c\'est gagner du temps — et surtout ne pas rester seul face à une difficulté.<br><br>Ce module te présente <strong>5 lieux clés</strong> et le rôle précis de chacun.</div>';
+const row=mk('row');row.appendChild(btn('Découvrir les bureaux ➜','btnp',()=>{S.ph='cards';S.xp+=10;render()}));c.appendChild(row);r.appendChild(c)}
+function cards(r){const d=BUREAUX[S.ci];const c=mk('card');
+const[pw,pc]=photo(d.img,d.caption);c.appendChild(pw);c.appendChild(pc);
+const bc=document.createElement('div');
+bc.className='bureau-card';
+bc.style.background=d.bg; bc.style.borderColor=d.bd;
+bc.innerHTML='<div class="bureau-title" style="color:'+d.ht+'">'+d.ico+' '+d.titre+'</div>'+
+'<div class="bureau-role" style="color:'+d.ht+'">'+d.role+'</div>'+
+'<div class="bureau-desc">'+d.desc+'</div>'+
+'<div class="bureau-when" style="color:'+d.ht+'">'+d.when+'</div>';
+c.appendChild(bc);r.appendChild(c);
+const nav=document.createElement('div');nav.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:4px';
+const bk=btn('← Préc.','btns',()=>{if(S.ci>0){S.ci--;render()}});if(S.ci===0)bk.disabled=true;
+const cnt=document.createElement('span');cnt.style.cssText='font-family:var(--fm);font-size:.85rem;font-weight:700;color:var(--ink3)';cnt.textContent=(S.ci+1)+' / '+BUREAUX.length;
+const isL=S.ci===BUREAUX.length-1;
+const nx=btn(isL?'Passer au quiz ➜':'Suivant ➜',isL?'btnp':'btns',()=>{if(!isL){S.ci++;S.xp+=6;render()}else{S.ph='quiz';S.xp+=25;render()}});
+nav.appendChild(bk);nav.appendChild(cnt);nav.appendChild(nx);r.appendChild(nav)}
+function quiz(r){const d=QUIZ[S.qi];const c=mk('card');
+if(d.ctx){const cx=mk('qctx');cx.textContent=d.ctx;c.appendChild(cx)}
+const qt=mk('qtxt');qt.textContent=d.q;c.appendChild(qt);
+const ol=mk('qopts');const val=btn('Valider','btnp',null);val.disabled=true;
+d.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='qopt';
+b.innerHTML='<span class="qlbl">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span>';
+if(S.qF){b.disabled=true;if(i===d.ok)b.classList.add('ok');else if(i===S.qS)b.classList.add('ko')}
+else{if(i===S.qS)b.classList.add('sel');b.onclick=()=>{S.qS=i;val.disabled=false;render()}}
+ol.appendChild(b)});c.appendChild(ol);
+if(S.qF){const fb=mk('qfb '+(S.qS===d.ok?'ok':'ko'));
+fb.innerHTML='<div class="qfbt">'+(S.qS===d.ok?'✅ Bonne réponse !':'❌ Pas tout à fait…')+'</div><div class="qfbb">'+d.fb+'</div>';
+c.appendChild(fb);const row=mk('row');const isL=S.qi===QUIZ.length-1;
+row.appendChild(btn(isL?'Passer aux scénarios ➜':'Question suivante ➜','btnp',()=>{if(isL){S.ph='sc';S.xp+=15;render()}else{S.qi++;S.qS=null;S.qF=false;render()}}));c.appendChild(row)
+}else{val.onclick=()=>{if(S.qS===null){toast('Choisis une réponse !');return}S.qF=true;if(S.qS===d.ok)S.xp+=d.xp;render()};
+if(S.qS!==null)val.disabled=false;const row=mk('row');row.appendChild(val);c.appendChild(row)}
+r.appendChild(c)}
+function scene(r){const d=SC[S.si];const c=mk('card');
+const ti=document.createElement('div');ti.style.cssText='font-family:var(--ft);font-size:1.1rem;font-weight:900;color:var(--p2d);margin-bottom:8px';ti.textContent='🎯 '+d.ti;c.appendChild(ti);
+const cx=mk('scctx');cx.innerHTML=d.ctx;c.appendChild(cx);
+const q=mk('scq');q.textContent=d.q;c.appendChild(q);
+if(!S.sr){const ch=mk('scch');d.ch.forEach(x=>{const b=document.createElement('button');b.className='scb';b.textContent=x.t;b.onclick=()=>{S.sc=d.ch.indexOf(x);S.sr=true;if(x.xp>0)S.xp+=x.xp;render()};ch.appendChild(b)});c.appendChild(ch)
+}else{const x=d.ch[S.sc];const res=mk('scr '+x.ton);
+res.innerHTML='<div class="scrt">'+x.ico+' Ce qui se passe…</div><div class="scrb">'+x.r+'</div><div class="sctip">💡 '+x.tip+'</div><div class="scxp '+x.ton+'">'+x.ico+' '+x.lbl+'</div>';
+c.appendChild(res);const row=mk('row');const isL=S.si===SC.length-1;
+row.appendChild(btn(isL?'Voir mon bilan ➜':'Scénario suivant ➜','btnp',()=>{if(isL){S.ph='fin';save();render()}else{S.si++;S.sc=null;S.sr=false;render()}}));c.appendChild(row)}
+r.appendChild(c)}
+function fin(r){save();let bd,bc;
+if(S.xp>=100){bd='🥇 Tu sais où aller !';bc='gold'}else if(S.xp>=65){bd='🥈 Bon repérage';bc='silver'}else{bd='🥉 À mémoriser encore';bc='bronze'}
+const c=mk('card');
+c.innerHTML='<div style="text-align:center;padding:10px 0 20px">'+
+'<div style="font-size:3rem;margin-bottom:12px">🗺️</div>'+
+'<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;margin-bottom:8px">Pilier 2 terminé !</div>'+
+'<div class="bdg '+bc+'" style="margin:0 auto 16px;display:inline-flex">'+bd+'</div>'+
+'<div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--p2d);margin-bottom:18px">⭐ '+S.xp+' XP gagnés</div>'+
+'<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);max-width:480px;margin:0 auto 22px">Tu as visité tout le collège. Tu sais où sont les lieux, qui sont les adultes, et vers qui te tourner selon la situation. <strong>Château Rance n\'a plus de secrets pour toi.</strong></div></div>'+
+'<div style="background:linear-gradient(135deg,var(--p2p),#F0FDF4);border:2px solid var(--p2);border-radius:var(--rm);padding:16px;margin-bottom:14px;text-align:center">'+
+'<div style="font-size:2rem;margin-bottom:8px">🎉</div>'+
+'<div style="font-family:var(--ft);font-weight:900;font-size:1.1rem;color:var(--p2d);margin-bottom:6px">Pilier 2 complet !</div>'+
+'<div style="font-size:.9rem;color:var(--ink2)">Retourne à l\'accueil pour explorer les autres piliers.</div></div>';
+const row=mk('row');row.appendChild(btn('🏠 Retour accueil','btnp',()=>location.href='index.html'));c.appendChild(row);r.appendChild(c)}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Les lieux d'apprentissage</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--p2:#34D399;--p2d:#059669;--p2bg:#F0FDF4;--p2p:#DCFCE7;--sun:#FFD93D;--sun2:#F59E0B;--gre:#34D399;--gre2:#059669;--ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#CBD5E1;--wh:#FFFFFF;--rs:10px;--rm:18px;--rl:28px;--sh:0 6px 24px rgba(15,23,42,.12);--ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--p2bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(52,211,153,.15) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--p2);color:var(--p2d)}
+.crumb{font-size:.8rem;font-weight:700;color:var(--ink3)}
+.mhd{text-align:center;padding:28px 20px 20px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--p2bg);border:2px solid var(--p2);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--p2d);margin-bottom:14px}
+.mtitle{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:8px}
+.msub{font-size:1rem;color:var(--ink3);font-weight:600}
+.pt{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.ps::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink4);z-index:0}
+.ps:last-child::after{display:none}
+.ps.dn::after{background:var(--gre)}
+.pd{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink4);background:var(--wh);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink3);z-index:1;position:relative;transition:all .3s}
+.ps.dn .pd{background:var(--gre);border-color:var(--gre);color:#fff}
+.ps.ac .pd{background:var(--sun);border-color:var(--sun2);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pp 2s infinite}
+@keyframes pp{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.pl{font-size:.7rem;font-weight:700;color:var(--ink3);margin-top:5px;text-align:center}
+.ps.ac .pl{color:var(--sun2)}.ps.dn .pl{color:var(--gre2)}
+.xps{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xpp{display:flex;align-items:center;gap:6px;background:var(--wh);border:2px solid var(--ink4);border-radius:50px;padding:6px 16px;font-family:var(--fm);font-size:.83rem;font-weight:700}
+.xpp.hl{border-color:var(--p2);background:var(--p2p);color:var(--p2d)}
+.card{background:rgba(255,255,255,.94);border-radius:var(--rl);box-shadow:var(--sh);border:1.5px solid rgba(255,255,255,.9);padding:22px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.photo-wrap{border-radius:var(--rm);overflow:hidden;margin-bottom:10px;background:var(--p2p);border:2px solid rgba(52,211,153,.3);min-height:160px;display:flex;align-items:center;justify-content:center}
+.photo-wrap img{width:100%;object-fit:cover;display:block}
+.photo-placeholder{display:flex;flex-direction:column;align-items:center;gap:8px;padding:28px;color:var(--p2d);opacity:.6}
+.photo-placeholder .ico{font-size:2.2rem}.photo-placeholder .txt{font-family:var(--fm);font-size:.73rem;font-weight:700}
+.photo-caption{font-size:.78rem;font-weight:700;color:var(--ink3);text-align:center;margin-bottom:12px;font-family:var(--fm)}
+.zone-card{background:var(--p2p);border:2px solid rgba(52,211,153,.3);border-radius:var(--rm);padding:14px 16px;margin-bottom:10px}
+.zone-title{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--p2d);margin-bottom:6px}
+.zone-desc{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.55}
+.zone-tip{font-size:.83rem;font-weight:700;color:var(--p2d);margin-top:6px;padding-top:6px;border-top:1px solid rgba(52,211,153,.25)}
+.qctx{background:rgba(52,211,153,.08);border:1.5px solid rgba(52,211,153,.25);border-radius:var(--rs);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink2);font-style:italic}
+.qtxt{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px;line-height:1.35}
+.qopts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.qopt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink4);border-radius:var(--rs);padding:11px 14px;cursor:pointer;font-size:.93rem;font-weight:600;text-align:left;transition:all .15s;font-family:var(--fb)}
+.qopt:hover:not(:disabled){border-color:var(--p2);background:var(--p2p)}
+.qopt.sel{border-color:var(--p2d);background:var(--p2p)}
+.qopt.ok{border-color:var(--gre);background:#DCFCE7;color:var(--gre2)}
+.qopt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.qopt:disabled{cursor:default}
+.qlbl{width:28px;height:28px;border-radius:7px;background:var(--ink4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0}
+.qopt.sel .qlbl{background:var(--p2d);color:#fff}.qopt.ok .qlbl{background:var(--gre);color:#fff}.qopt.ko .qlbl{background:#EF4444;color:#fff}
+.qfb{border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.qfb.ok{background:#DCFCE7;border-color:var(--gre)}.qfb.ko{background:#FEE2E2;border-color:#EF4444}
+.qfbt{font-family:var(--ft);font-weight:800;margin-bottom:4px}.qfbb{font-size:.87rem;line-height:1.5;color:var(--ink2)}
+.scctx{background:var(--p2p);border:1.5px solid rgba(52,211,153,.3);border-radius:var(--rm);padding:14px;font-size:.93rem;line-height:1.65;color:var(--ink2);margin-bottom:14px}
+.scq{font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:14px}
+.scch{display:flex;flex-direction:column;gap:8px}
+.scb{background:var(--wh);border:2px solid var(--ink4);border-radius:var(--rm);padding:12px 16px;text-align:left;cursor:pointer;font-size:.92rem;font-weight:600;transition:all .15s;font-family:var(--fb)}
+.scb:hover{border-color:var(--p2);background:var(--p2p)}
+.scr{border-radius:var(--rm);padding:14px;margin-bottom:12px;border:2px solid}
+.scr.pos{background:#DCFCE7;border-color:var(--gre)}.scr.neg{background:#FEE2E2;border-color:#EF4444}.scr.neu{background:#FFF7ED;border-color:#FCD34D}
+.scrt{font-family:var(--ft);font-weight:800;font-size:1rem;margin-bottom:5px}.scrb{font-size:.9rem;line-height:1.55;color:var(--ink2)}
+.sctip{background:rgba(255,255,255,.7);border:1.5px solid rgba(52,211,153,.2);border-radius:var(--rs);padding:8px 12px;margin-top:9px;font-size:.85rem;font-weight:700;color:var(--p2d)}
+.scxp{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:.83rem;font-weight:700;border-radius:50px;padding:5px 14px;margin-top:8px}
+.scxp.pos{background:#DCFCE7;color:var(--gre2);border:1.5px solid var(--gre)}.scxp.neg{background:#FEE2E2;color:#B91C1C;border:1.5px solid #EF4444}.scxp.neu{background:#FFF7ED;color:#92400E;border:1.5px solid #FCD34D}
+.bdg{display:inline-flex;align-items:center;gap:10px;border-radius:var(--rm);padding:14px 22px;font-family:var(--ft);font-size:1.1rem;font-weight:800}
+.bdg.bronze{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:2px solid #F59E0B;color:#92400E}
+.bdg.silver{background:linear-gradient(135deg,#F1F5F9,#E2E8F0);border:2px solid #94A3B8;color:#475569}
+.bdg.gold{background:linear-gradient(135deg,#FFF7ED,#FBBF24);border:2px solid #F59E0B;color:#78350F}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:.95rem;font-weight:800;border:none;border-radius:50px;padding:11px 26px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btnp{background:linear-gradient(135deg,var(--p2),var(--p2d));color:#fff;box-shadow:0 4px 14px rgba(5,150,105,.3)}
+.btnp:hover{transform:translateY(-2px)}.btns{background:var(--wh);border:2px solid var(--ink4);color:var(--ink2)}.btns:hover{border-color:var(--p2);color:var(--p2d)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--fm);font-size:.85rem;font-weight:700;opacity:0;transition:all .35s;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+<nav class="topnav"><a href="index.html" class="back">← Accueil</a><span class="crumb">🗺️ Pilier 2 · Module 3/4</span></nav>
+<header class="mhd"><div class="chip">🗺️ Les lieux du collège</div><h1 class="mtitle">Les lieux<br>d'apprentissage</h1><p class="msub">Salles de cours, CDI, labo sciences, gymnase</p></header>
+<div id="prog"></div><div id="xpb"></div><div id="root"></div>
+</div>
+<script>
+const MID='M2_03',NF='p2_m04_bureaux.html',NN='Les bureaux des adultes',LS='ave6e_progress';
+
+// ── PHOTOS RÉFÉRENCÉES ──────────────────────────────────────
+//   salle_cours.jpeg       — salle de cours standard (tables, tableau)
+//   cdi.jpeg               — CDI / bibliothèque (rayons, tables de lecture)
+//   labo_sciences.jpeg     — salle de sciences (paillasses, équipements)
+//   salle_techno.jpeg      — salle de technologie (établis, matériel)
+//   salle_arts.jpeg        — salle d'arts plastiques
+//   gymnase.jpeg           — gymnase / salle de sport
+//   salle_musique.jpeg     — salle d'éducation musicale
+//   salle_informatique.jpeg — salle informatique (si distincte)
+// ────────────────────────────────────────────────────────────
+
+const LIEUX=[
+  {img:'salle_cours.jpeg',caption:'Salle de cours — organisation type',ico:'🏫',
+   titre:'Les salles de cours',
+   desc:'Contrairement à l\'école primaire, tu n\'as plus UNE salle — tu changes de salle à chaque matière. L\'emploi du temps indique le numéro de salle. Chaque salle appartient à un professeur qui y a ses habitudes.',
+   tip:'Note le numéro de salle de chaque matière sur ton agenda dès la première semaine. Perdre 5 minutes à chercher sa salle à chaque cours, c\'est beaucoup sur une année.'},
+  {img:'cdi.jpeg',caption:'CDI — Centre de Documentation et d\'Information',ico:'📖',
+   titre:'Le CDI',
+   desc:'Le CDI n\'est pas une bibliothèque ordinaire. Tu peux y emprunter des livres, faire des recherches documentaires, travailler au calme. La documentaliste (ou le documentaliste) peut t\'aider à trouver des sources pour tes exposés.',
+   tip:'Le CDI est ouvert aux heures affichées à son entrée. On peut venir seul ou avec sa classe. On n\'y mange pas, on n\'y fait pas de bruit — mais on peut y rester un moment à lire ou travailler.'},
+  {img:'labo_sciences.jpeg',caption:'Salle de sciences — SVT et Physique-Chimie',ico:'🔬',
+   titre:'Le laboratoire de sciences',
+   desc:'SVT et physique-chimie se font souvent en salle spécialisée avec des paillasses et du matériel d\'expérimentation. Les règles de sécurité y sont strictes : blouse obligatoire selon les cours, interdiction formelle de toucher le matériel avant autorisation.',
+   tip:'La règle absolue du labo : on ne touche rien, on ne goûte rien, on ne sent rien sans que le prof l\'ait dit. Même si ça ressemble à de l\'eau.'},
+  {img:'salle_techno.jpeg',caption:'Salle de technologie — espace de conception',ico:'🔧',
+   titre:'La salle de technologie',
+   desc:'Cours de technologie dans une salle avec îlots de travail, ordinateurs et matériel de fabrication. Le travail en groupe y est fréquent. Chaque poste de travail a ses propres outils — on ne prend pas ceux du voisin.',
+   tip:'En techno, le travail de groupe est évalué sur l\'implication de chacun. Celui qui laisse faire les autres est repéré rapidement par le professeur.'},
+  {img:'gymnase.jpeg',caption:'Gymnase — EPS et activités sportives',ico:'🏃',
+   titre:'Le gymnase',
+   desc:'Les cours d\'EPS se font au gymnase ou en extérieur selon le cycle sportif. La tenue sportive est obligatoire — pas d\'excuse acceptée sauf certificat médical. On se change dans les vestiaires avant et après le cours.',
+   tip:'Oublier sa tenue régulièrement = pénalité sur la note. Garde toujours une tenue de rechange dans ton casier au cas où.'},
+  {img:'salle_musique.jpeg',caption:'Salle de musique — éducation musicale',ico:'🎵',
+   titre:'La salle de musique',
+   desc:'Cours d\'éducation musicale dans une salle dédiée avec équipement audio et instruments. On y travaille l\'écoute, le chant et la culture musicale. Les évaluations de chant se font souvent en petits groupes.',
+   tip:'Personne ne chante seul devant la classe sans préparation. Les évaluations vocales se font en groupe pour réduire le stress — participe sans te cacher.'}
+];
+
+const QUIZ=[
+  {ctx:'Tom cherche sa salle de maths. Son emploi du temps dit "Salle 14" mais il ne la trouve pas.',
+   q:'Quelle est la meilleure chose à faire ?',
+   opts:['Attendre devant n\'importe quelle salle libre','Demander à un AED ou un élève plus âgé de lui indiquer la salle','Rentrer dans la première salle qu\'il voit','Retourner à l\'accueil et attendre'],
+   ok:1,xp:20,
+   fb:'Demander à un AED ou à un élève de 4e/3e est la solution la plus rapide. Ils connaissent le plan par cœur et tu seras en salle en moins de 2 minutes.'},
+  {ctx:'En SVT, le prof distribue des éprouvettes remplies d\'un liquide transparent. Emma est curieuse et penche pour sentir.',
+   q:'Que doit faire Emma ?',
+   opts:['Sentir doucement — si c\'est transparent c\'est sûr','Attendre que le prof explique ce que c\'est et donne les consignes','Demander à son voisin s\'il sait ce que c\'est','Goûter discrètement pour identifier'],
+   ok:1,xp:25,
+   fb:'Règle absolue en labo : on ne touche, goûte ou sent rien avant autorisation. Un liquide transparent peut être de l\'acide dilué, un solvant ou un réactif dangereux. La curiosité doit attendre les consignes.'},
+  {ctx:'Léa adore lire. Elle veut emprunter un roman au CDI mais ne sait pas comment ça marche.',
+   q:'À qui Léa doit-elle s\'adresser au CDI ?',
+   opts:['Au principal du collège','À son professeur de français','Au documentaliste / à la documentaliste qui gère le CDI','Aux délégués de classe'],
+   ok:2,xp:20,
+   fb:'Le ou la documentaliste gère les emprunts, les recherches documentaires et peut conseiller des lectures. C\'est leur rôle et ils apprécient les élèves qui viennent chercher des livres.'}
+];
+
+const SC=[
+  {ti:'La tenue EPS oubliée',
+   ctx:'C\'est le troisième cours d\'EPS de l\'année. Lucas a encore oublié sa tenue sportive. Il pense dire au prof qu\'il a mal au ventre pour être dispensé.',
+   q:'Quelle est la meilleure attitude de Lucas ?',
+   ch:[
+     {t:'Prétendre être malade pour obtenir une dispense sans certificat.',
+      r:'Le prof a l\'habitude. Il demande à Lucas d\'aller à l\'infirmerie si c\'est vraiment grave. Lucas se retrouve coincé — soit il avoue, soit il passe à l\'infirmerie et perd tout le cours. Le troisième oubli est noté.',
+      ton:'neg',ico:'⚠️',tip:'Les professeurs d\'EPS repèrent très vite les stratégies d\'évitement. Et un troisième oubli consécutif peut avoir des conséquences sur la note de participation.',
+      xp:-10,lbl:'-10 XP'},
+     {t:'Dire la vérité au prof, s\'excuser, et demander si on peut quand même observer et noter les règles du sport.',
+      r:'Lucas dit la vérité. Le prof apprécie l\'honnêteté. Lucas observe le cours, note les règles du jeu et peut répondre aux questions techniques. C\'est moins bien que de participer — mais infiniment mieux qu\'un mensonge raté.',
+      ton:'pos',ico:'✅',tip:'L\'honnêteté avec un oubli, ça se gère. Un mensonge raté crée un problème de confiance beaucoup plus difficile à réparer.',
+      xp:35,lbl:'+35 XP'},
+     {t:'Faire le cours en chaussures de ville — tant pis pour les règles.',
+      r:'Le prof interdit à Lucas de participer pour des raisons de sécurité. Faire du sport avec des chaussures non adaptées peut provoquer des chutes ou des blessures. Lucas reste assis pendant tout le cours.',
+      ton:'neu',ico:'🙂',tip:'Les règles de tenue en EPS existent pour ta sécurité — pas pour t\'embêter. Chaussures lisses + parquet de gymnase = risque réel de chute.',
+      xp:0,lbl:'0 XP'}
+   ]},
+  {ti:'Au CDI sans but précis',
+   ctx:'Emma a une heure de permanence. Elle ne veut pas rester en salle d\'étude. Elle va au CDI mais n\'a pas de devoir à faire ni de livre à chercher.',
+   q:'Comment Emma peut-elle bien utiliser ce temps au CDI ?',
+   ch:[
+     {t:'Sortir son téléphone et regarder des vidéos discrètement.',
+      r:'La documentaliste remarque immédiatement. Elle demande à Emma de ranger le téléphone — le CDI est un espace de travail et de lecture, pas de divertissement. Deuxième fois, elle est renvoyée en permanence.',
+      ton:'neg',ico:'⚠️',tip:'Le CDI a ses propres règles. Le téléphone y est aussi interdit qu\'en classe — parfois plus strictement.',
+      xp:-5,lbl:'-5 XP'},
+     {t:'Demander à la documentaliste de lui recommander un roman selon ses goûts.',
+      r:'La documentaliste est ravie. Elle propose 3 titres à Emma selon ce qu\'elle lui décrit. Emma passe une heure à lire le premier chapitre d\'un roman qu\'elle finira en deux semaines.',
+      ton:'pos',ico:'✅',tip:'Les documentalistes adorent recommander des lectures. C\'est leur passion — n\'hésite pas à leur demander.',
+      xp:40,lbl:'+40 XP'},
+     {t:'S\'asseoir et attendre que l\'heure passe en regardant les gens.',
+      r:'Emma s\'ennuie ferme. La documentaliste finit par lui demander si elle cherche quelque chose. La conversation s\'engage et Emma repart avec un livre qu\'elle n\'aurait pas trouvé seule.',
+      ton:'neu',ico:'🙂',tip:'Même sans objectif précis, le CDI recèle des découvertes — encore faut-il lever la tête et regarder les rayons.',
+      xp:15,lbl:'+15 XP'}
+   ]}
+];
+
+let S={ph:'intro',ci:0,qi:0,qS:null,qF:false,si:0,sc:null,sr:false,xp:0};
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function gP(){try{return JSON.parse(localStorage.getItem(LS)||'{}')}catch{return{}}}
+function save(){const p=gP();if(!Array.isArray(p.modules_done))p.modules_done=[];if(!p.modules_done.includes(MID)){p.modules_done.push(MID);p.xp_total=(p.xp_total||0)+S.xp;localStorage.setItem(LS,JSON.stringify(p));window.dispatchEvent(new StorageEvent('storage',{key:LS}));}}
+const PHS=[{l:'Intro'},{l:'Lieux'},{l:'Quiz'},{l:'Scénarios'},{l:'Bilan'}];
+const PI={intro:0,cards:1,quiz:2,sc:3,fin:4};
+function mk(c){const d=document.createElement('div');d.className=c;return d}
+function btn(l,c,fn){const b=document.createElement('button');b.className='btn '+c;b.innerHTML=l;if(fn)b.onclick=fn;return b}
+function photo(src,cap){const w=mk('photo-wrap');const img=document.createElement('img');img.src=src;img.alt=cap;img.onerror=function(){this.parentNode.innerHTML='<div class="photo-placeholder"><div class="ico">📷</div><div class="txt">'+src+'</div></div>';};w.appendChild(img);const c=mk('photo-caption');c.textContent=cap;return[w,c]}
+function render(){prog();const r=$('root');r.innerHTML='';
+if(S.ph==='intro'){xpbar([{i:'⭐',v:S.xp+' XP'}]);intro(r)}
+if(S.ph==='cards'){xpbar([{i:'🗺️',v:(S.ci+1)+'/'+LIEUX.length},{i:'⭐',v:S.xp+' XP',h:1}]);cards(r)}
+if(S.ph==='quiz'){xpbar([{i:'❓',v:(S.qi+1)+'/'+QUIZ.length},{i:'⭐',v:S.xp+' XP',h:1}]);quiz(r)}
+if(S.ph==='sc'){xpbar([{i:'🎯',v:(S.si+1)+'/'+SC.length},{i:'⭐',v:S.xp+' XP',h:1}]);scene(r)}
+if(S.ph==='fin'){xpbar([{i:'⭐',v:S.xp+' XP',h:1}]);fin(r)}}
+function prog(){const d=$('prog');d.innerHTML='';const t=mk('pt');const pi=PI[S.ph]||0;PHS.forEach((p,i)=>{const s=mk('ps '+(i<pi?'dn':i===pi?'ac':''));s.innerHTML='<div class="pd">'+(i<pi?'✓':i+1)+'</div><div class="pl">'+p.l+'</div>';t.appendChild(s)});d.appendChild(t)}
+function xpbar(items){const d=$('xpb');d.innerHTML='';const w=mk('xps');items.forEach(x=>{const p=mk('xpp'+(x.h?' hl':''));p.innerHTML='<span>'+x.i+'</span>'+x.v;w.appendChild(p)});d.appendChild(w)}
+function intro(r){const c=mk('card');
+const[pw,pc]=photo('salle_cours.jpeg','Une salle de cours — ton environnement de travail quotidien');
+c.appendChild(pw);c.appendChild(pc);
+c.innerHTML+='<div style="font-family:var(--ft);font-size:1.3rem;font-weight:900;margin-bottom:8px">Tu changes de salle à chaque matière</div>'+
+'<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);margin-bottom:14px">En primaire, tu avais une salle. Au collège, chaque matière a son espace dédié — avec ses règles, son matériel, son atmosphère. Ce module te présente chaque lieu d\'apprentissage pour que tu saches à quoi t\'attendre.</div>';
+const row=mk('row');row.appendChild(btn('Explorer les salles ➜','btnp',()=>{S.ph='cards';S.xp+=10;render()}));c.appendChild(row);r.appendChild(c)}
+function cards(r){const d=LIEUX[S.ci];const c=mk('card');
+const[pw,pc]=photo(d.img,d.caption);c.appendChild(pw);c.appendChild(pc);
+const zc=mk('zone-card');
+zc.innerHTML='<div class="zone-title">'+d.ico+' '+d.titre+'</div><div class="zone-desc">'+d.desc+'</div><div class="zone-tip">💡 '+d.tip+'</div>';
+c.appendChild(zc);r.appendChild(c);
+const nav=document.createElement('div');nav.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:4px';
+const bk=btn('← Préc.','btns',()=>{if(S.ci>0){S.ci--;render()}});if(S.ci===0)bk.disabled=true;
+const cnt=document.createElement('span');cnt.style.cssText='font-family:var(--fm);font-size:.85rem;font-weight:700;color:var(--ink3)';cnt.textContent=(S.ci+1)+' / '+LIEUX.length;
+const isL=S.ci===LIEUX.length-1;
+const nx=btn(isL?'Passer au quiz ➜':'Suivant ➜',isL?'btnp':'btns',()=>{if(!isL){S.ci++;S.xp+=6;render()}else{S.ph='quiz';S.xp+=25;render()}});
+nav.appendChild(bk);nav.appendChild(cnt);nav.appendChild(nx);r.appendChild(nav)}
+function quiz(r){const d=QUIZ[S.qi];const c=mk('card');
+if(d.ctx){const cx=mk('qctx');cx.textContent=d.ctx;c.appendChild(cx)}
+const qt=mk('qtxt');qt.textContent=d.q;c.appendChild(qt);
+const ol=mk('qopts');const val=btn('Valider','btnp',null);val.disabled=true;
+d.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='qopt';
+b.innerHTML='<span class="qlbl">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span>';
+if(S.qF){b.disabled=true;if(i===d.ok)b.classList.add('ok');else if(i===S.qS)b.classList.add('ko')}
+else{if(i===S.qS)b.classList.add('sel');b.onclick=()=>{S.qS=i;val.disabled=false;render()}}
+ol.appendChild(b)});c.appendChild(ol);
+if(S.qF){const fb=mk('qfb '+(S.qS===d.ok?'ok':'ko'));
+fb.innerHTML='<div class="qfbt">'+(S.qS===d.ok?'✅ Bonne réponse !':'❌ Pas tout à fait…')+'</div><div class="qfbb">'+d.fb+'</div>';
+c.appendChild(fb);const row=mk('row');const isL=S.qi===QUIZ.length-1;
+row.appendChild(btn(isL?'Passer aux scénarios ➜':'Question suivante ➜','btnp',()=>{if(isL){S.ph='sc';S.xp+=15;render()}else{S.qi++;S.qS=null;S.qF=false;render()}}));c.appendChild(row)
+}else{val.onclick=()=>{if(S.qS===null){toast('Choisis une réponse !');return}S.qF=true;if(S.qS===d.ok)S.xp+=d.xp;render()};
+if(S.qS!==null)val.disabled=false;const row=mk('row');row.appendChild(val);c.appendChild(row)}
+r.appendChild(c)}
+function scene(r){const d=SC[S.si];const c=mk('card');
+const ti=document.createElement('div');ti.style.cssText='font-family:var(--ft);font-size:1.1rem;font-weight:900;color:var(--p2d);margin-bottom:8px';ti.textContent='🎯 '+d.ti;c.appendChild(ti);
+const cx=mk('scctx');cx.innerHTML=d.ctx;c.appendChild(cx);
+const q=mk('scq');q.textContent=d.q;c.appendChild(q);
+if(!S.sr){const ch=mk('scch');d.ch.forEach(x=>{const b=document.createElement('button');b.className='scb';b.textContent=x.t;b.onclick=()=>{S.sc=d.ch.indexOf(x);S.sr=true;if(x.xp>0)S.xp+=x.xp;render()};ch.appendChild(b)});c.appendChild(ch)
+}else{const x=d.ch[S.sc];const res=mk('scr '+x.ton);
+res.innerHTML='<div class="scrt">'+x.ico+' Ce qui se passe…</div><div class="scrb">'+x.r+'</div><div class="sctip">💡 '+x.tip+'</div><div class="scxp '+x.ton+'">'+x.ico+' '+x.lbl+'</div>';
+c.appendChild(res);const row=mk('row');const isL=S.si===SC.length-1;
+row.appendChild(btn(isL?'Voir mon bilan ➜':'Scénario suivant ➜','btnp',()=>{if(isL){S.ph='fin';save();render()}else{S.si++;S.sc=null;S.sr=false;render()}}));c.appendChild(row)}
+r.appendChild(c)}
+function fin(r){save();let bd,bc;
+if(S.xp>=100){bd='🥇 Expert des salles !';bc='gold'}else if(S.xp>=65){bd='🥈 Bon repérage';bc='silver'}else{bd='🥉 À explorer encore';bc='bronze'}
+const c=mk('card');
+c.innerHTML='<div style="text-align:center;padding:10px 0 20px">'+
+'<div style="font-size:3rem;margin-bottom:12px">🏫</div>'+
+'<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;margin-bottom:8px">Module terminé !</div>'+
+'<div class="bdg '+bc+'" style="margin:0 auto 16px;display:inline-flex">'+bd+'</div>'+
+'<div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--p2d);margin-bottom:18px">⭐ '+S.xp+' XP gagnés</div>'+
+'<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);max-width:480px;margin:0 auto 22px">Tu connais maintenant tous les lieux d\'apprentissage. Dernier module : les bureaux des adultes — savoir où frapper quand tu en as besoin.</div></div>'+
+'<div style="background:var(--p2p);border:1.5px solid rgba(52,211,153,.3);border-radius:var(--rm);padding:14px;margin-bottom:14px">'+
+'<div style="font-family:var(--ft);font-weight:800;color:var(--p2d);margin-bottom:6px">👉 Dernier module</div>'+
+'<div style="font-size:.9rem;color:var(--ink2)">'+NN+' — direction, vie scolaire, infirmerie, CPE.</div></div>';
+const row=mk('row');row.appendChild(btn('Module suivant ➜','btnp',()=>location.href=NF));row.appendChild(btn('🏠 Accueil','btns',()=>location.href='index.html'));c.appendChild(row);r.appendChild(c)}
+render();
+</script>
+</body>
+</html>

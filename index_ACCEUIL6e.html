@@ -521,6 +521,81 @@ body::before{
 .modal-body{font-size:.88rem;color:var(--ink-mid);text-align:center;line-height:1.6;margin-bottom:18px}
 .modal-body strong{color:var(--sun-deep)}
 .modal-btns{display:flex;gap:10px;justify-content:center}
+
+/* ═══ SECTION EVAR / COIN PE ═══ */
+:root {
+  --ev:#8B5CF6; --evd:#6D28D9; --evbg:#F5F3FF; --evp:#EDE9FE;
+}
+.evar-section {
+  background: linear-gradient(135deg, rgba(139,92,246,.07), rgba(109,40,217,.04));
+  border: 2px solid rgba(139,92,246,.2);
+  border-radius: 28px;
+  padding: 22px 20px 26px;
+  margin-bottom: 24px;
+}
+.evar-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 6px;
+}
+.evar-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--ev); color: #fff;
+  border-radius: 50px; padding: 5px 14px;
+  font-family: var(--font-head); font-size: .8rem; font-weight: 800;
+  letter-spacing: .5px;
+}
+.evar-title {
+  font-family: var(--font-head);
+  font-size: 1.25rem; font-weight: 900; color: var(--evd);
+}
+.evar-sub {
+  font-size: .88rem; color: #7C3AED; font-weight: 600;
+  margin-bottom: 18px; padding-left: 2px;
+}
+.evar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.evar-card {
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(139,92,246,.2);
+  border-radius: 18px;
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  display: block;
+}
+.evar-card:hover {
+  border-color: var(--ev);
+  box-shadow: 0 6px 20px rgba(139,92,246,.18);
+  transform: translateY(-3px);
+}
+.evar-card-ico { font-size: 2rem; margin-bottom: 8px; }
+.evar-card-title {
+  font-family: var(--font-head); font-size: .97rem; font-weight: 800;
+  color: var(--evd); margin-bottom: 4px; line-height: 1.3;
+}
+.evar-card-desc {
+  font-size: .8rem; color: #64748B; font-weight: 600; line-height: 1.45;
+}
+.evar-card-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 10px; font-family: var(--font-mono);
+  font-size: .72rem; font-weight: 700;
+  background: var(--evp); color: var(--evd);
+  border: 1.5px solid rgba(139,92,246,.3);
+  border-radius: 50px; padding: 3px 10px;
+}
+.evar-card.soon { opacity: .6; cursor: default; }
+.evar-card.soon:hover { transform: none; box-shadow: none; border-color: rgba(139,92,246,.2); }
+.evar-note {
+  margin-top: 14px;
+  font-size: .8rem; color: #7C3AED; font-weight: 600;
+  text-align: center; font-style: italic;
+}
+
 </style>
 </head>
 <body>
@@ -633,6 +708,29 @@ body::before{
 
   <div class="revision-grid" id="revision-grid">
     <!-- Généré par JS -->
+  </div>
+
+
+  <!-- ═══ COIN DES PE / EVAR CM2 ═══ -->
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">🍀 Coin des professeurs des écoles — Liaison CM2-6e</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="evar-section">
+    <div class="evar-header">
+      <div class="evar-badge">🍀 PE · Conseil école-collège</div>
+    </div>
+    <div class="evar-title">Préparer la 6e avec vos CM2</div>
+    <div class="evar-sub">Trois outils clé en main pour le conseil école-collège : visite virtuelle du collège, révisions de cycle 3 et cadrage EVAR officiel 2025.</div>
+
+    <div class="evar-grid" id="evar-grid">
+      <!-- Généré par JS -->
+    </div>
+    <div class="evar-note">
+      💡 Ces ressources sont conçues pour être utilisées en classe de CM2, en séance collective ou en autonomie sur poste.
+    </div>
   </div>
 
   <div class="footer-note">
@@ -956,28 +1054,28 @@ const PILIERS = [
         titre: 'Plan général — je me repère',
         sub: 'Bâtiments, cours, accès',
         unlockAfter: null,
-        file: null
+        file: 'p2_m01_plan.html'
       },
       {
         id: 'M2_02',
         titre: 'Les lieux de vie quotidienne',
         sub: 'Cour, réfectoire, casiers…',
         unlockAfter: 'M2_01',
-        file: null
+        file: 'p2_m02_lieux_vie.html'
       },
       {
         id: 'M2_03',
         titre: 'Les lieux d\'apprentissage',
         sub: 'Salles, CDI, labo sciences…',
         unlockAfter: 'M2_02',
-        file: null
+        file: 'p2_m03_apprentissage.html'
       },
       {
         id: 'M2_04',
         titre: 'Les bureaux des adultes',
         sub: 'Où frapper quand j\'en ai besoin ?',
         unlockAfter: 'M2_03',
-        file: null
+        file: 'p2_m04_bureaux.html'
       }
     ]
   },
@@ -1219,10 +1317,60 @@ function showToast(msg) {
 /* ═══════════════════════════════════════════════════════════
    INIT + ÉCOUTE PROGRESSION (modules → hub)
 ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
+   COIN DES PE — EVAR CM2
+═══════════════════════════════════════════════════════════ */
+const EVAR_CARDS = [
+  {
+    ico: '🗺️',
+    titre: 'Visite virtuelle du collège',
+    desc: 'Pilier 2 complet — plan, lieux de vie, salles, bureaux des adultes. À faire en classe avant la rentrée.',
+    tag: '4 modules · accès libre',
+    file: 'p2_m01_plan.html',
+    dispo: true
+  },
+  {
+    ico: '📚',
+    titre: 'Révisions cycle 3',
+    desc: 'Fiches de révision Français, Maths, HG, Sciences — raccords CM2/6e selon les progressions officielles.',
+    tag: 'Bientôt disponible',
+    file: null,
+    dispo: false
+  },
+  {
+    ico: '💬',
+    titre: 'EVAR CM2 — programme 2025',
+    desc: 'Les 3 axes officiels, 5 thématiques, posture PE, ressources locales Haute-Saône. Arrêté du 3 fév. 2025.',
+    tag: '1 module interactif',
+    file: 'evar_cm2.html',
+    dispo: true
+  }
+];
+
+function renderEvar() {
+  const grid = document.getElementById('evar-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  EVAR_CARDS.forEach(c => {
+    const el = document.createElement(c.dispo && c.file ? 'a' : 'div');
+    el.className = 'evar-card' + (c.dispo ? '' : ' soon');
+    if (c.dispo && c.file) el.href = c.file;
+    el.innerHTML = `
+      <div class="evar-card-ico">${c.ico}</div>
+      <div class="evar-card-title">${c.titre}</div>
+      <div class="evar-card-desc">${c.desc}</div>
+      <div class="evar-card-tag">${c.dispo ? '✅' : '🔜'} ${c.tag}</div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
 function init() {
   initPlayer();
   renderPiliers();
   renderRevision();
+  renderEvar();
   updateStats();
 }
 
