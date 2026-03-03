@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Le grand saut</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#EAF6FF;--sky2:#D6EDFF;
+  --sun:#FFD93D;--sun-deep:#F59E0B;
+  --grass:#34D399;--grass-deep:#059669;
+  --water:#38BDF8;--water-deep:#0284C7;
+  --coral:#FB7185;--coral-deep:#E11D48;
+  --violet:#A78BFA;
+  --amber:#FCD34D;--amber-deep:#D97706;
+  --ink:#0F172A;--ink-mid:#334155;--ink-light:#64748B;--ink-faint:#CBD5E1;
+  --white:#FFFFFF;--panel:rgba(255,255,255,0.94);
+  --p1-color:#38BDF8;--p1-deep:#0284C7;--p1-bg:#EFF6FF;
+  --radius-sm:10px;--radius-md:18px;--radius-lg:28px;
+  --shadow-sm:0 2px 8px rgba(15,23,42,0.08);
+  --shadow-md:0 6px 24px rgba(15,23,42,0.12);
+  --font-title:'Baloo 2',cursive;--font-body:'Nunito',sans-serif;--font-mono:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--sky);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 35% at 10% 5%,rgba(56,189,248,0.18) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 40% at 90% 15%,rgba(255,217,61,0.18) 0%,transparent 65%),
+    radial-gradient(ellipse 55% 55% at 50% 105%,rgba(52,211,153,0.13) 0%,transparent 65%);
+  pointer-events:none}
+
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+
+/* NAV */
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back-btn{display:inline-flex;align-items:center;gap:6px;
+  background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;
+  padding:7px 16px;font-family:var(--font-title);font-size:0.88rem;font-weight:700;
+  color:var(--ink-mid);cursor:pointer;text-decoration:none;
+  transition:all 0.15s}
+.back-btn:hover{border-color:var(--p1-color);color:var(--p1-deep)}
+.module-crumb{font-size:0.8rem;font-weight:700;color:var(--ink-light)}
+
+/* HEADER MODULE */
+.mod-header{text-align:center;padding:28px 20px 20px}
+.pilier-chip{display:inline-flex;align-items:center;gap:7px;
+  background:var(--p1-bg);border:2px solid var(--p1-color);border-radius:50px;
+  padding:6px 18px;font-family:var(--font-title);font-size:0.85rem;font-weight:800;
+  color:var(--p1-deep);margin-bottom:14px}
+.mod-title{font-family:var(--font-title);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;
+  color:var(--ink);line-height:1.15;margin-bottom:8px}
+.mod-sub{font-size:1rem;color:var(--ink-light);font-weight:600}
+
+/* BARRE PROGRESSION */
+.prog-track{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.prog-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.prog-step::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);
+  width:calc(100% - 36px);height:3px;background:var(--ink-faint);z-index:0}
+.prog-step:last-child::after{display:none}
+.prog-step.s-done::after{background:var(--grass)}
+.prog-dot{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink-faint);
+  background:var(--white);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-weight:800;font-size:0.9rem;color:var(--ink-light);
+  z-index:1;position:relative;transition:all 0.3s}
+.prog-step.s-done .prog-dot{background:var(--grass);border-color:var(--grass);color:white}
+.prog-step.s-active .prog-dot{background:var(--sun);border-color:var(--sun-deep);color:var(--ink);
+  box-shadow:0 0 0 5px rgba(245,158,11,0.25);animation:pdot 2s infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,0.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,0.1)}}
+.prog-lbl{font-size:0.7rem;font-weight:700;color:var(--ink-light);margin-top:5px;text-align:center}
+.prog-step.s-active .prog-lbl{color:var(--sun-deep)}
+.prog-step.s-done   .prog-lbl{color:var(--grass-deep)}
+
+/* XP STRIP */
+.xp-strip{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--white);
+  border:2px solid var(--ink-faint);border-radius:50px;padding:6px 16px;
+  font-family:var(--font-mono);font-size:0.83rem;font-weight:700;color:var(--ink);
+  box-shadow:var(--shadow-sm)}
+.xp-pill.hl{border-color:var(--sun);background:#FFFBEB;color:var(--sun-deep)}
+
+/* CARD */
+.card{background:var(--panel);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);border:1.5px solid rgba(255,255,255,0.9);margin-bottom:16px;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:12px;padding:18px 20px;
+  border-bottom:1.5px solid rgba(15,23,42,0.07);background:rgba(239,246,255,0.7)}
+.card-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:1.5rem;flex-shrink:0}
+.ci-blue{background:#DBEAFE} .ci-green{background:#DCFCE7} .ci-sun{background:#FEF3C7}
+.ci-violet{background:#EDE9FE} .ci-rose{background:#FCE7F3}
+.card-head-text .title{font-family:var(--font-title);font-size:1.05rem;font-weight:800;color:var(--ink)}
+.card-head-text .sub{font-size:0.8rem;font-weight:700;color:var(--ink-light);margin-top:2px}
+.card-body{padding:20px}
+
+/* INTRO */
+.intro-hero{text-align:center;padding:8px 0 22px}
+.float-emoji{font-size:3.8rem;display:block;margin-bottom:14px;
+  animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--font-title);font-size:1.5rem;font-weight:800;color:var(--ink);margin-bottom:10px}
+.intro-text{font-size:0.97rem;color:var(--ink-mid);line-height:1.7;max-width:520px;margin:0 auto 22px}
+.obj-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;text-align:left}
+.obj-item{display:flex;align-items:flex-start;gap:9px;background:rgba(239,246,255,0.8);
+  border:1.5px solid rgba(56,189,248,0.25);border-radius:var(--radius-sm);
+  padding:10px 14px;font-size:0.93rem;font-weight:600}
+.obj-ico{font-size:1.1rem;flex-shrink:0}
+
+/* CARTES COMPARAISON (flashcards visuelles) */
+.compare-card{border-radius:var(--radius-md);overflow:hidden;border:2px solid var(--ink-faint);
+  box-shadow:var(--shadow-sm);margin-bottom:8px}
+.compare-header{padding:16px 18px 12px;font-family:var(--font-title);font-size:1.05rem;
+  font-weight:800;display:flex;align-items:center;gap:10px}
+.compare-body{padding:0 18px 18px;display:flex;flex-direction:column;gap:8px}
+.compare-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.compare-col{border-radius:var(--radius-sm);padding:12px 14px}
+.col-cm2{background:#FEF9C3;border:1.5px solid #FDE68A}
+.col-6e {background:#DCFCE7;border:1.5px solid #A7F3D0}
+.col-label{font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.label-cm2{color:#92400E} .label-6e{color:#14532D}
+.col-content{font-size:0.9rem;font-weight:600;color:var(--ink);line-height:1.4}
+.compare-note{background:var(--sky2);border-radius:var(--radius-sm);
+  padding:10px 14px;font-size:0.87rem;color:var(--ink-mid);font-style:italic;
+  border-left:3px solid var(--p1-color);font-weight:600}
+
+/* NAV FLASHCARD */
+.fn-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.fn-counter{font-family:var(--font-mono);font-size:0.83rem;font-weight:700;
+  color:var(--ink-light);background:rgba(15,23,42,0.05);padding:6px 14px;border-radius:50px}
+
+/* QUIZ */
+.quiz-ctx{background:var(--sky2);border:1.5px solid var(--p1-color);border-radius:var(--radius-sm);
+  padding:13px 16px;margin-bottom:14px;font-size:0.88rem;color:var(--ink-mid);
+  font-style:italic;font-weight:600}
+.quiz-q{font-family:var(--font-title);font-size:1.15rem;font-weight:800;
+  color:var(--ink);margin-bottom:16px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.8);
+  border:2px solid var(--ink-faint);border-radius:var(--radius-sm);padding:12px 15px;
+  cursor:pointer;font-size:0.93rem;font-weight:600;color:var(--ink);
+  text-align:left;transition:all 0.15s;font-family:var(--font-body)}
+.opt:hover:not(:disabled){border-color:var(--p1-color);background:#F0F9FF}
+.opt.sel{border-color:var(--water-deep);background:#E0F2FE}
+.opt.ok {border-color:var(--grass);background:#DCFCE7;color:var(--grass-deep)}
+.opt.ko {border-color:var(--coral);background:#FEE2E2;color:var(--coral-deep)}
+.opt:disabled{cursor:default}
+.opt-let{width:30px;height:30px;border-radius:8px;background:var(--ink-faint);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:0.82rem;font-weight:700;flex-shrink:0;transition:background 0.15s}
+.opt.sel .opt-let{background:var(--water-deep);color:white}
+.opt.ok  .opt-let{background:var(--grass);color:white}
+.opt.ko  .opt-let{background:var(--coral);color:white}
+.fb{border-radius:var(--radius-sm);padding:13px 16px;margin-bottom:13px;border:2px solid transparent}
+.fb.ok{background:#DCFCE7;border-color:var(--grass)}
+.fb.ko{background:#FEE2E2;border-color:var(--coral)}
+.fb-title{font-family:var(--font-title);font-size:0.97rem;font-weight:800;margin-bottom:5px}
+.fb-text{font-size:0.88rem;line-height:1.55}
+
+/* SCÉNARIOS */
+.sc-ctx{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:2px solid #BFDBFE;
+  border-radius:var(--radius-sm);padding:15px 17px;margin-bottom:14px}
+.sc-ctx-lbl{font-size:0.72rem;font-weight:800;color:var(--p1-deep);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.sc-story{font-size:0.95rem;line-height:1.65;color:var(--ink)}
+.sc-q{font-family:var(--font-title);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:13px}
+.choices{display:flex;flex-direction:column;gap:9px}
+.choice{display:flex;align-items:flex-start;gap:9px;background:var(--white);
+  border:2px solid var(--ink-faint);border-radius:var(--radius-sm);padding:13px 16px;
+  cursor:pointer;font-size:0.93rem;font-weight:600;color:var(--ink);
+  text-align:left;transition:all 0.15s;font-family:var(--font-body)}
+.choice:hover{border-color:var(--violet);background:#F5F3FF;transform:translateX(3px)}
+.ch-arr{color:var(--violet);flex-shrink:0;margin-top:1px}
+.res-box{border-radius:var(--radius-sm);padding:16px;margin-bottom:13px;border:2px solid transparent}
+.res-box.pos{background:#F0FDF4;border-color:var(--grass)}
+.res-box.neu{background:#FFFBEB;border-color:var(--sun)}
+.res-box.neg{background:#FEF2F2;border-color:var(--coral)}
+.res-emoji{font-size:1.8rem;margin-bottom:9px;display:block}
+.res-title{font-family:var(--font-title);font-size:1rem;font-weight:800;margin-bottom:7px}
+.res-tip{margin-top:10px;padding:9px 12px;background:rgba(255,255,255,0.7);
+  border-radius:8px;font-size:0.83rem;font-style:italic;color:var(--ink-light)}
+.impact{display:inline-flex;align-items:center;gap:5px;border-radius:50px;
+  padding:3px 12px;font-family:var(--font-mono);font-size:0.78rem;font-weight:700;margin-top:9px}
+.impact.pos{background:#DCFCE7;color:var(--grass-deep)}
+.impact.neu{background:#FEF9C3;color:#92400E}
+.impact.neg{background:#FEE2E2;color:var(--coral-deep)}
+
+/* COMPLETION */
+.completion{text-align:center;padding:10px 0 16px}
+.trophy{font-size:5rem;display:block;margin-bottom:14px;
+  animation:tbounce 0.6s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both}
+@keyframes tbounce{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.comp-title{font-family:var(--font-title);font-size:2rem;font-weight:900;color:var(--ink);margin-bottom:6px}
+.comp-sub{font-size:1rem;color:var(--ink-light);font-weight:600;margin-bottom:24px}
+.stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.stat-tile{background:rgba(255,255,255,0.9);border:2px solid var(--ink-faint);
+  border-radius:var(--radius-md);padding:14px 18px;min-width:90px;text-align:center}
+.stat-v{font-family:var(--font-title);font-size:1.9rem;font-weight:900;color:var(--ink)}
+.stat-l{font-size:0.75rem;font-weight:700;color:var(--ink-light);margin-top:3px;
+  text-transform:uppercase;letter-spacing:0.5px}
+.mastery{display:inline-flex;align-items:center;gap:8px;border-radius:50px;
+  padding:8px 20px;font-family:var(--font-title);font-size:0.95rem;font-weight:800;
+  margin-bottom:20px;box-shadow:var(--shadow-sm)}
+.m-exp{background:#DBEAFE;color:#1D4ED8}
+.m-col{background:#DCFCE7;color:#14532D}
+.m-champ{background:#FEF9C3;color:#92400E}
+.next-hint{background:#FFFBEB;border:2px solid var(--sun);border-radius:var(--radius-sm);
+  padding:13px 16px;margin-bottom:18px;font-size:0.9rem;font-weight:600;color:var(--ink-mid)}
+.next-hint strong{color:var(--sun-deep)}
+.unlock-banner{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);
+  border:2px solid var(--grass);border-radius:var(--radius-md);
+  padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
+.unlock-ico{font-size:2rem;flex-shrink:0}
+.unlock-text{font-size:0.95rem;font-weight:700;color:var(--grass-deep)}
+.unlock-text strong{display:block;font-family:var(--font-title);font-size:1.05rem;margin-bottom:3px}
+
+/* BOUTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:50px;
+  padding:13px 28px;font-family:var(--font-title);font-size:1rem;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,0.16);transition:all 0.15s;letter-spacing:0.2px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,0.16)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,0.16)}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-blue  {background:var(--water-deep);color:white}
+.btn-sun   {background:var(--sun-deep);color:white}
+.btn-grass {background:var(--grass-deep);color:white}
+.btn-ghost {background:var(--white);color:var(--ink-mid);border:2px solid var(--ink-faint);
+  box-shadow:none}
+.btn-ghost:hover{border-color:var(--ink-mid)}
+.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--ink);color:white;padding:12px 28px;border-radius:50px;
+  font-family:var(--font-title);font-weight:700;font-size:0.95rem;
+  box-shadow:0 16px 48px rgba(15,23,42,0.2);z-index:9999;
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:520px){.compare-row{grid-template-columns:1fr}.app{padding:0 12px 48px}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- NAV RETOUR -->
+  <nav class="topnav">
+    <a class="back-btn" href="index.html">← Hub principal</a>
+    <span class="module-crumb">Pilier 1 • Module 1</span>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="mod-header">
+    <div class="pilier-chip">🧑‍🤝‍🧑 Les gens qui vont prendre soin de toi</div>
+    <h1 class="mod-title" id="mod-title">Le grand saut</h1>
+    <p class="mod-sub">CM2 → 6e : comprendre ce qui change (et ce qui reste pareil)</p>
+  </header>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div id="root"></div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONFIG MODULE
+═══════════════════════════════════════════════════ */
+const MODULE_ID  = 'M1_01';
+const MODULE_XP  = 120;
+const LS_KEY     = 'ave6e_progress';
+const NEXT_FILE  = 'p1_m02_equipe.html';
+const NEXT_NAME  = "L'équipe qui prend soin de toi";
+
+/* ─────────────────────────────────────────────────
+   DONNÉES : COMPARAISONS CM2 → 6e (Niveau 1)
+───────────────────────────────────────────────── */
+const COMPARAISONS = [
+  {
+    theme: '🧑‍🏫 Les professeurs',
+    bg: 'linear-gradient(135deg,#EFF6FF,#DBEAFE)',
+    borderColor: '#93C5FD',
+    rangees: [
+      { lbl:'Organisation', cm2:'1 seul maître/maîtresse pour presque tout', sixe:'Entre 8 et 12 professeurs différents, chacun spécialisé dans une matière' },
+      { lbl:'Relation', cm2:'Ton maître/maîtresse te connaît très bien, tu le/la vois toute la journée', sixe:'Chaque prof te connaît moins au début — mais il y a un Prof Principal pour faire le lien' },
+      { lbl:'Comment ça se passe', cm2:'Le même adulte gère ta classe, tes notes, ton comportement…', sixe:'Les profs se réunissent en conseil de classe pour parler de toi ensemble' }
+    ],
+    note: 'C\'est déroutant au début — et c\'est tout à fait normal ! Le Prof Principal est là pour coordonner et être ton référent principal.'
+  },
+  {
+    theme: '🏫 L\'espace et le temps',
+    bg: 'linear-gradient(135deg,#F0FDF4,#DCFCE7)',
+    borderColor: '#6EE7B7',
+    rangees: [
+      { lbl:'Les locaux', cm2:'Une salle de classe principale où tu restes', sixe:'Tu changes de salle à chaque cours — parfois d\'un bâtiment à l\'autre !' },
+      { lbl:'Les horaires', cm2:'Journée continue avec la même classe', sixe:'Un emploi du temps variable selon les jours — avec des heures de permanence' },
+      { lbl:'Les récréations', cm2:'Récré au milieu de la matinée et l\'après-midi', sixe:'Récré de 10 min entre certains cours + une grande pause déjeuner (parfois 1h30)' }
+    ],
+    note: 'Avoir un emploi du temps bien lu et un plan du collège dans sa tête les premières semaines, c\'est le secret numéro 1 pour ne pas se perdre.'
+  },
+  {
+    theme: '📝 Le travail et les notes',
+    bg: 'linear-gradient(135deg,#FFF7ED,#FEF3C7)',
+    borderColor: '#FCD34D',
+    rangees: [
+      { lbl:'Les devoirs', cm2:'Souvent donnés et rappelés par ton instit en direct', sixe:'Chaque prof donne ses propres devoirs — tu dois tout noter dans ton agenda' },
+      { lbl:'Les évaluations', cm2:'Des évals régulières notées par ton instit', sixe:'Des contrôles et interrogations dans chaque matière, pas toujours annoncés' },
+      { lbl:'Le bulletin', cm2:'Bulletin trimestriel vu par ton maître', sixe:'Bulletin trimestriel avec les appréciations de TOUS tes profs + Conseil de classe' }
+    ],
+    note: 'L\'agenda devient ton meilleur allié au collège. En CM2, ton instit pouvait rappeler. Au collège, c\'est toi le/la responsable — et tu en es capable !'
+  },
+  {
+    theme: '👥 La vie sociale',
+    bg: 'linear-gradient(135deg,#F5F3FF,#EDE9FE)',
+    borderColor: '#C4B5FD',
+    rangees: [
+      { lbl:'Ta classe', cm2:'Un groupe stable que tu connais depuis longtemps', sixe:'Une nouvelle classe avec des élèves de différentes écoles primaires' },
+      { lbl:'Les "grands"', cm2:'Des CM1 et CE2 au maximum', sixe:'Des élèves jusqu\'en 3e (14-15 ans) — les 6e sont les plus jeunes du collège' },
+      { lbl:'Les adultes', cm2:'Ton instit + la direction + l\'ATSEM', sixe:'Une équipe entière : profs, CPE, surveillants, infirmière, principal, gestionnaire…' }
+    ],
+    note: 'Être les plus jeunes du collège, ça peut intimider. Mais les 6e ont tous les mêmes questions — et les adultes le savent. Tu n\'es jamais seul(e).'
+  },
+  {
+    theme: '🎒 Ce qui ne change PAS',
+    bg: 'linear-gradient(135deg,#FFF1F2,#FFE4E6)',
+    borderColor: '#FDA4AF',
+    rangees: [
+      { lbl:'L\'essentiel', cm2:'Venir apprendre, travailler, progresser', sixe:'Exactement pareil — c\'est juste organisé différemment' },
+      { lbl:'Le droit à l\'erreur', cm2:'On a le droit de se tromper et d\'apprendre', sixe:'Toujours vrai ! Les profs savent que la 6e est une année d\'adaptation' },
+      { lbl:'Les amis', cm2:'Tu as des amis, tu en feras de nouveaux', sixe:'Tu garderas tes anciens amis ET tu en feras de nouveaux — garanti !' }
+    ],
+    note: '✨ Le plus important : tout le monde a vécu ce saut. Et tout le monde s\'en est sorti. Dans quelques mois, toi aussi tu seras "un vrai collégien".'
+  }
+];
+
+/* ─────────────────────────────────────────────────
+   DONNÉES : QUIZ (Niveau 2)
+───────────────────────────────────────────────── */
+const QUIZ = [
+  {
+    ctx: 'En 6e, tu as un emploi du temps différent chaque jour.',
+    q: 'Si tu ne notes pas tes devoirs, que se passe-t-il probablement ?',
+    opts: ['Ton prof te rappellera tout', 'Tu risques d\'oublier — chaque prof donne les siens sans coordination', 'Tes parents recevront un SMS automatique', 'Ça n\'a aucune importance'],
+    ok: 1,
+    fb: 'Au collège, chaque professeur gère ses propres devoirs de façon indépendante. L\'agenda est ton outil principal pour ne rien rater — c\'est toi qui prends en charge ton organisation !',
+    xp: 25
+  },
+  {
+    ctx: 'Tu arrives au collège et tu ne connais personne de ta nouvelle classe.',
+    q: 'Quel adulte est spécialement là pour faire le lien entre toi et tous tes professeurs ?',
+    opts: ['Le professeur de sport (il voit tout le monde)', 'Le professeur principal', 'Le principal du collège', 'Le gardien'],
+    ok: 1,
+    fb: 'Le Professeur Principal est ton référent pédagogique. Il connaît ton emploi du temps complet, peut parler en ton nom aux autres profs, et organise les réunions avec tes parents. C\'est ton premier interlocuteur pour les questions scolaires.',
+    xp: 25
+  },
+  {
+    ctx: 'En récréation, un élève de 3e (15 ans) te bouscule et te fait tomber.',
+    q: 'Tu as le droit de… ?',
+    opts: ['Faire comme si rien ne s\'était passé', 'Te venger plus tard', 'En parler à un adulte de la vie scolaire (surveillant ou CPE)', 'Appeler la police'],
+    ok: 2,
+    fb: 'Au collège, les adultes de la Vie Scolaire (CPE et surveillants) sont spécialement formés pour gérer ce type de situations. Signaler, ce n\'est pas "cafarder" — c\'est faire confiance aux adultes pour faire leur travail.',
+    xp: 25
+  },
+  {
+    ctx: 'Ton agenda du collège, c\'est…',
+    q: 'À quoi ça sert VRAIMENT ?',
+    opts: ['Un cahier pour dessiner pendant les cours', 'L\'outil principal pour noter devoirs, contrôles et informations aux parents', 'Juste pour les profs — pas vraiment pour toi', 'À rien, on peut tout retenir par cœur'],
+    ok: 1,
+    fb: 'L\'agenda est littéralement ta mémoire extérieure au collège. Devoirs, dates de contrôles, sorties scolaires, messages aux parents, récupération… Tout passe par lui. Un agenda bien tenu = une tête plus libre pour apprendre.',
+    xp: 25
+  }
+];
+
+/* ─────────────────────────────────────────────────
+   DONNÉES : SCÉNARIOS (Niveau 3)
+───────────────────────────────────────────────── */
+const SCENARIOS = [
+  {
+    titre: 'Le premier jour de cours',
+    ctx: 'C\'est ton premier cours de maths au collège. Tu arrives dans la salle, mais tu ne reconnais personne de ton ancienne école. Tu t\'assieds seul(e) dans le fond. Le prof commence à parler des "bases de l\'année" — mais il va vraiment vite, et tu ne comprends pas tout.',
+    q: 'Que fais-tu ?',
+    choix: [
+      { t:'Tu restes silencieux(se) et tu espères comprendre plus tard — "les autres ont l\'air de suivre".',
+        r:'Tu finis le cours sans avoir tout compris. Le problème risque de se répéter. En gardant ça pour toi, le retard peut s\'accumuler rapidement.', ton:'neg', ico:'😬',
+        tip:'Au collège, les profs ne savent pas automatiquement ce que tu comprends ou pas. Un signe de main discret ou "je n\'ai pas compris cette partie" à la fin du cours suffit souvent.',
+        impact:-5,lbl:'-5 XP'},
+      { t:'À la fin du cours, tu demandes au prof de t\'expliquer la partie que tu n\'as pas suivie.',
+        r:'Le prof prend 3 minutes pour te réexpliquer. Il apprécie que tu aies posé la question — et d\'autres élèves qui n\'avaient pas compris viennent écouter.', ton:'pos', ico:'✅',
+        tip:'Les profs préfèrent largement qu\'on leur pose des questions plutôt que de rester bloqué. "Je n\'ai pas compris la partie sur…" est la phrase la plus utile du collège.',
+        impact:40,lbl:'+40 XP'},
+      { t:'Tu notes d\'écrire à ta mère de te trouver un prof particulier ce soir.',
+        r:'Ta mère cherche, en vain, un prof particulier disponible en urgence. Le problème du cours de maths reste entier. Et le lendemain, il y a cours de français, puis d\'histoire…', ton:'neu', ico:'😐',
+        tip:'Les profs particuliers peuvent aider sur le long terme, mais la première ressource c\'est le prof lui-même. Et c\'est gratuit, disponible immédiatement, et ça le/la connaît ton niveau.',
+        impact:5,lbl:'+5 XP'}
+    ]
+  },
+  {
+    titre: 'La question qu\'on n\'ose pas poser',
+    ctx: 'C\'est la deuxième semaine. Tu as cours de SVT dans le "bâtiment sciences" mais tu n\'as jamais su où c\'était exactement. La sonnerie sonne. Tout le monde part vite. Tu es dans la cour, seul(e), et tu ne sais pas où aller.',
+    q: 'Qu\'est-ce que tu fais ?',
+    choix: [
+      { t:'Tu suis un groupe d\'élèves en espérant qu\'ils vont au même endroit.',
+        r:'Le groupe va en permanence. Tu te retrouves dans la mauvaise salle, puis tu erres dans les couloirs. Tu arrives en retard au cours de SVT — et le prof demande une explication.', ton:'neg', ico:'😅',
+        tip:'Suivre un groupe inconnu est un pari risqué. Au collège, les élèves vont dans des dizaines d\'endroits différents à chaque sonnerie.',
+        impact:0,lbl:'±0 XP'},
+      { t:'Tu repères le surveillant ou l\'adulte le plus proche et tu lui demandes "où est le bâtiment sciences ?".',
+        r:'En 30 secondes, tu sais exactement où aller. Le surveillant t\'accompagne même jusqu\'à l\'entrée. Tu arrives à l\'heure.', ton:'pos', ico:'🗺️',
+        tip:'Les surveillants connaissent le collège par cœur — c\'est littéralement leur job. Demander son chemin n\'a rien de gênant, même la 10e fois.',
+        impact:40,lbl:'+40 XP'},
+      { t:'Tu rentres à la salle de vie scolaire pour expliquer que tu t\'es perdu(e).',
+        r:'La vie scolaire note ton absence justifiée et t\'accompagne. Tu rates le début du cours mais tu as pris la bonne décision : aller vers les adultes plutôt que d\'errer.', ton:'neu', ico:'🙂',
+        tip:'C\'est une bonne décision — même si la solution directe (demander à un surveillant dans la cour) aurait été encore plus rapide.',
+        impact:25,lbl:'+25 XP'}
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════
+   ÉTAT & UTILITAIRES
+═══════════════════════════════════════════════════ */
+let state = {
+  phase: 'intro',
+  cardIdx: 0,
+  quizIdx: 0, selected: null, showFb: false,
+  scenIdx: 0, choiceIdx: null, showRes: false,
+  xp: 0, quizScore: 0, scenScore: 0
+};
+
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { return {}; }
+}
+function markDone() {
+  const p = getProgress();
+  if (!Array.isArray(p.modules_done)) p.modules_done = [];
+  if (!p.modules_done.includes(MODULE_ID)) {
+    p.modules_done.push(MODULE_ID);
+    p.xp_total = (p.xp_total || 0) + state.xp;
+    p.last_update = new Date().toISOString();
+    localStorage.setItem(LS_KEY, JSON.stringify(p));
+    // Notifier le hub
+    window.dispatchEvent(new StorageEvent('storage', { key: LS_KEY }));
+  }
+}
+function getMastery(score) {
+  if (score >= 200) return { lbl:'🏆 Champion du grand saut !', cls:'m-champ' };
+  if (score >= 110) return { lbl:'🎓 Futur(e) Collégien(ne)', cls:'m-col' };
+  return { lbl:'🗺️ Explorateur curieux', cls:'m-exp' };
+}
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function render() { document.getElementById('root').innerHTML=''; build(); }
+
+/* ── Barre de progression ── */
+function buildProgress(active) {
+  const steps = [{k:'cardIdx',l:'Découverte'},{k:'quiz',l:'Quiz'},{k:'scenarios',l:'Mise en scène'},{k:'fin',l:'Bilan'}];
+  const order = ['cardIdx','quiz','scenarios','fin'];
+  const ai = order.indexOf(active);
+  const div = document.createElement('div');
+  div.className='prog-track';
+  steps.forEach((s,i)=>{
+    const st=document.createElement('div');
+    st.className='prog-step' + (i<ai?' s-done':i===ai?' s-active':'');
+    st.innerHTML=`<div class="prog-dot">${i<ai?'✓':i+1}</div><div class="prog-lbl">${s.l}</div>`;
+    div.appendChild(st);
+  });
+  return div;
+}
+
+/* ── XP strip ── */
+function buildXP(extra=[]) {
+  const div=document.createElement('div');div.className='xp-strip';
+  div.innerHTML=`<div class="xp-pill hl"><span>⭐</span>${state.xp} XP</div>`;
+  extra.forEach(e=>{ div.innerHTML+=`<div class="xp-pill"><span>${e.ico}</span>${e.val}</div>`; });
+  return div;
+}
+
+/* ── Card helper ── */
+function card(headIco,headClass,title,sub) {
+  const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<div class="card-head">
+    <div class="card-ico ${headClass}">${headIco}</div>
+    <div class="card-head-text">
+      <div class="title">${title}</div>
+      ${sub?`<div class="sub">${sub}</div>`:''}
+    </div>
+  </div>`;
+  const body=document.createElement('div');body.className='card-body';
+  d.appendChild(body);
+  return {card:d, body};
+}
+
+/* ═══════════════════════════════════════════════════
+   BUILD PHASES
+═══════════════════════════════════════════════════ */
+function build() {
+  const root=document.getElementById('root');
+  if (state.phase==='intro')      buildIntro(root);
+  if (state.phase==='cardIdx')    buildCards(root);
+  if (state.phase==='quiz')       buildQuiz(root);
+  if (state.phase==='scenarios')  buildScenarios(root);
+  if (state.phase==='fin')        buildFin(root);
+}
+
+/* ── INTRO ── */
+function buildIntro(root) {
+  const {card:c,body} = card('🚀','ci-blue','Module 1 — Niveau facile','~20 minutes');
+  body.innerHTML=`
+    <div class="intro-hero">
+      <span class="float-emoji">🏫</span>
+      <h2 class="intro-title">Le grand saut — de l'école au collège</h2>
+      <p class="intro-text">
+        Passer en 6e, c'est une vraie aventure. Beaucoup de choses changent — et c'est
+        normal d'avoir des questions, des doutes, ou même un peu d'appréhension.
+        Ce module t'explique <strong>exactement ce qui change</strong>
+        et te donne les clés pour aborder ça sereinement.
+      </p>
+      <div class="obj-list">
+        <div class="obj-item"><span class="obj-ico">🔄</span>Comparer l'organisation de l'école primaire et du collège</div>
+        <div class="obj-item"><span class="obj-ico">🗓️</span>Comprendre les nouvelles règles du jeu (emploi du temps, agenda, pluralité des profs…)</div>
+        <div class="obj-item"><span class="obj-ico">💡</span>Repartir rassuré(e) et équipé(e) pour démarrer du bon pied</div>
+      </div>
+    </div>
+  `;
+  const btnRow=document.createElement('div');btnRow.className='btn-row';
+  const btn=document.createElement('button');
+  btn.className='btn btn-blue';btn.textContent='🚀 C\'est parti !';
+  btn.onclick=()=>{ state.phase='cardIdx'; render(); };
+  btnRow.appendChild(btn);body.appendChild(btnRow);
+  root.appendChild(c);
+}
+
+/* ── CARTES COMPARAISON ── */
+function buildCards(root) {
+  root.appendChild(buildProgress('cardIdx'));
+  root.appendChild(buildXP([{ico:'🃏',val:`${state.cardIdx+1}/${COMPARAISONS.length}`}]));
+
+  const data = COMPARAISONS[state.cardIdx];
+  const {card:c,body} = card('🔄','ci-blue','Niveau 1 — Comparaison','Fais glisser pour découvrir chaque différence');
+  const cc=document.createElement('div');
+  cc.className='compare-card';
+  cc.style.cssText=`background:${data.bg};border-color:${data.borderColor}`;
+  let html=`<div class="compare-header" style="background:${data.bg}">${data.theme}</div>
+    <div class="compare-body">`;
+  data.rangees.forEach(r=>{
+    html+=`<div class="compare-row">
+      <div class="compare-col col-cm2">
+        <div class="col-label label-cm2">🏫 École primaire</div>
+        <div class="col-content">${r.cm2}</div>
+      </div>
+      <div class="compare-col col-6e">
+        <div class="col-label label-6e">🏛️ Collège (6e)</div>
+        <div class="col-content">${r.sixe}</div>
+      </div>
+    </div>`;
+  });
+  html+=`<div class="compare-note">💡 ${data.note}</div></div>`;
+  cc.innerHTML=html;
+  body.appendChild(cc);
+
+  const nav=document.createElement('div');nav.className='fn-nav';
+  const prev=document.createElement('button');
+  prev.className='btn btn-ghost';prev.textContent='← Préc';
+  prev.disabled=state.cardIdx===0;
+  prev.onclick=()=>{ state.cardIdx--; render(); };
+  const ctr=document.createElement('div');
+  ctr.className='fn-counter';ctr.textContent=`${state.cardIdx+1} / ${COMPARAISONS.length}`;
+  const next=document.createElement('button');
+  next.className='btn btn-blue';
+  next.textContent=state.cardIdx<COMPARAISONS.length-1?'Suivant →':'Quiz →';
+  next.onclick=()=>{
+    if (state.cardIdx<COMPARAISONS.length-1) { state.cardIdx++; render(); }
+    else { state.xp+=50; toast('⭐ +50 XP — Niveau 1 terminé !'); state.phase='quiz'; render(); }
+  };
+  nav.append(prev,ctr,next);body.appendChild(nav);
+  root.appendChild(c);
+}
+
+/* ── QUIZ ── */
+function buildQuiz(root) {
+  root.appendChild(buildProgress('quiz'));
+  root.appendChild(buildXP([{ico:'❓',val:`${state.quizIdx+1}/${QUIZ.length}`},{ico:'🏅',val:state.quizScore}]));
+
+  const q=QUIZ[state.quizIdx];
+  const {card:c,body}=card('🧩','ci-sun','Niveau 2 — Quiz','Lis bien la situation avant de répondre');
+
+  if (q.ctx) body.innerHTML=`<div class="quiz-ctx">📌 ${q.ctx}</div>`;
+  const qDiv=document.createElement('div');qDiv.className='quiz-q';qDiv.textContent=q.q;body.appendChild(qDiv);
+
+  const opts=document.createElement('div');opts.className='opts';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    let cls='opt';
+    if (state.showFb) { if(i===q.ok) cls+=' ok'; else if(i===state.selected) cls+=' ko'; }
+    else if(i===state.selected) cls+=' sel';
+    btn.className=cls;btn.disabled=state.showFb;
+    btn.innerHTML=`<span class="opt-let">${String.fromCharCode(65+i)}</span>${o}`;
+    btn.onclick=()=>{ if(!state.showFb){ state.selected=i; render(); } };
+    opts.appendChild(btn);
+  });
+  body.appendChild(opts);
+
+  if (state.showFb) {
+    const ok=state.selected===q.ok;
+    const fb=document.createElement('div');
+    fb.className=`fb ${ok?'ok':'ko'}`;
+    fb.innerHTML=`<div class="fb-title">${ok?'✅ Bonne réponse ! +'+q.xp+' XP':'❌ Pas tout à fait…'}</div>
+      <div class="fb-text">${q.fb}</div>`;
+    body.appendChild(fb);
+  }
+
+  const btnRow=document.createElement('div');btnRow.className='btn-row';
+  if (!state.showFb) {
+    const v=document.createElement('button');v.className='btn btn-sun';v.textContent='Valider';
+    v.disabled=state.selected===null;
+    v.onclick=()=>{
+      if(state.selected===q.ok){ state.xp+=q.xp; state.quizScore+=q.xp; toast(`⭐ +${q.xp} XP`); }
+      state.showFb=true; render();
+    };
+    btnRow.appendChild(v);
+  } else {
+    const n=document.createElement('button');n.className='btn btn-blue';
+    n.textContent=state.quizIdx<QUIZ.length-1?'Question suivante →':'Mise en scène →';
+    n.onclick=()=>{
+      state.selected=null;state.showFb=false;
+      if(state.quizIdx<QUIZ.length-1){ state.quizIdx++; render(); }
+      else { state.xp+=20; toast('🎭 Niveau 3 débloqué !'); state.phase='scenarios'; render(); }
+    };
+    btnRow.appendChild(n);
+  }
+  body.appendChild(btnRow);
+  root.appendChild(c);
+}
+
+/* ── SCÉNARIOS ── */
+function buildScenarios(root) {
+  root.appendChild(buildProgress('scenarios'));
+  root.appendChild(buildXP([{ico:'🎭',val:`Scène ${state.scenIdx+1}/${SCENARIOS.length}`},{ico:'🏅',val:state.scenScore}]));
+
+  const sc=SCENARIOS[state.scenIdx];
+  const {card:c,body}=card('🎭','ci-violet',`Niveau 3 — ${sc.titre}`,'Que ferais-tu dans cette situation ?');
+
+  body.innerHTML=`<div class="sc-ctx"><div class="sc-ctx-lbl">📖 La situation</div><div class="sc-story">${sc.ctx}</div></div>`;
+  const scQ=document.createElement('div');scQ.className='sc-q';scQ.textContent=sc.q;body.appendChild(scQ);
+
+  if (!state.showRes) {
+    const choices=document.createElement('div');choices.className='choices';
+    sc.choix.forEach((ch,i)=>{
+      const btn=document.createElement('button');btn.className='choice';
+      btn.innerHTML=`<span class="ch-arr">→</span>${ch.t}`;
+      btn.onclick=()=>{ state.choiceIdx=i; state.showRes=true; render(); };
+      choices.appendChild(btn);
+    });
+    body.appendChild(choices);
+  } else {
+    const ch=sc.choix[state.choiceIdx];
+    const res=document.createElement('div');
+    res.className=`res-box ${ch.ton}`;
+    res.innerHTML=`<span class="res-emoji">${ch.ico}</span>
+      <div class="res-title">${ch.r}</div>
+      <div class="res-tip">💡 ${ch.tip}</div>
+      <div class="impact ${ch.ton==='pos'?'pos':ch.ton==='neg'?'neg':'neu'}">${ch.lbl}</div>`;
+    body.appendChild(res);
+    const btnRow=document.createElement('div');btnRow.className='btn-row';
+    const n=document.createElement('button');n.className='btn btn-grass';
+    n.textContent=state.scenIdx<SCENARIOS.length-1?'Scène suivante →':'🏁 Voir mon bilan !';
+    n.onclick=()=>{
+      const imp=sc.choix[state.choiceIdx].impact;
+      state.xp+=Math.max(0,imp); state.scenScore+=Math.max(0,imp);
+      state.choiceIdx=null; state.showRes=false;
+      if(state.scenIdx<SCENARIOS.length-1){ state.scenIdx++; render(); }
+      else { markDone(); state.phase='fin'; render(); }
+    };
+    btnRow.appendChild(n);body.appendChild(btnRow);
+  }
+  root.appendChild(c);
+}
+
+/* ── BILAN FINAL ── */
+function buildFin(root) {
+  const mastery=getMastery(state.xp);
+  const {card:c,body}=card('🏁','ci-green','Module terminé !',MODULE_ID+' · Pilier 1');
+  body.innerHTML=`
+    <div class="completion">
+      <span class="trophy">🎉</span>
+      <h2 class="comp-title">Bravo !</h2>
+      <p class="comp-sub">Tu sais maintenant ce qui t'attend en 6e — et tu es prêt(e) à y faire face.</p>
+      <div class="mastery ${mastery.cls}">${mastery.lbl}</div>
+      <div class="stats-row">
+        <div class="stat-tile"><div class="stat-v">${state.xp}</div><div class="stat-l">XP Total</div></div>
+        <div class="stat-tile"><div class="stat-v">${state.quizScore}</div><div class="stat-l">Quiz</div></div>
+        <div class="stat-tile"><div class="stat-v">${state.scenScore}</div><div class="stat-l">Scènes</div></div>
+      </div>
+      <div class="unlock-banner">
+        <div class="unlock-ico">🔓</div>
+        <div class="unlock-text">
+          <strong>Module suivant débloqué !</strong>
+          ${NEXT_NAME} — découvre l'équipe qui va prendre soin de toi au collège.
+        </div>
+      </div>
+      <div class="next-hint">
+        💡 Tu retrouveras toute ta progression sur le <strong>Hub principal</strong>.
+        Tes données sont sauvegardées automatiquement dans ce navigateur.
+      </div>
+    </div>
+  `;
+  const btnRow=document.createElement('div');btnRow.className='btn-row';
+  const hub=document.createElement('button');hub.className='btn btn-blue';
+  hub.textContent='← Retour au Hub';
+  hub.onclick=()=>window.location.href='index.html';
+  const nxt=document.createElement('button');nxt.className='btn btn-grass';
+  nxt.textContent='Module suivant →';
+  nxt.onclick=()=>window.location.href=NEXT_FILE;
+  const rel=document.createElement('button');rel.className='btn btn-ghost';
+  rel.textContent='↺ Recommencer';
+  rel.onclick=()=>{ state={phase:'intro',cardIdx:0,quizIdx:0,selected:null,showFb:false,scenIdx:0,choiceIdx:null,showRes:false,xp:0,quizScore:0,scenScore:0}; render(); };
+  btnRow.append(hub,nxt,rel);
+  body.appendChild(btnRow);
+  root.appendChild(c);
+}
+
+render();
+</script>
+</body>
+</html>

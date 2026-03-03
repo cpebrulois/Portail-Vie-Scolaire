@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — L'équipe qui prend soin de toi</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#EAF6FF;--sky2:#D6EDFF;
+  --sun:#FFD93D;--sun-deep:#F59E0B;
+  --grass:#34D399;--grass-deep:#059669;
+  --water:#38BDF8;--water-deep:#0284C7;
+  --coral:#FB7185;--coral-deep:#E11D48;
+  --violet:#A78BFA;--violet-deep:#7C3AED;
+  --amber:#FCD34D;
+  --ink:#0F172A;--ink-mid:#334155;--ink-light:#64748B;--ink-faint:#CBD5E1;
+  --white:#FFFFFF;--panel:rgba(255,255,255,0.94);
+  --p1-color:#38BDF8;--p1-deep:#0284C7;--p1-bg:#EFF6FF;
+  --radius-sm:10px;--radius-md:18px;--radius-lg:28px;
+  --shadow-sm:0 2px 8px rgba(15,23,42,0.08);
+  --shadow-md:0 6px 24px rgba(15,23,42,0.12);
+  --font-title:'Baloo 2',cursive;--font-body:'Nunito',sans-serif;--font-mono:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--sky);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 35% at 5% 8%,rgba(56,189,248,0.16) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 45% at 95% 10%,rgba(52,211,153,0.15) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 110%,rgba(255,217,61,0.12) 0%,transparent 65%);
+  pointer-events:none}
+
+.app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 16px 64px}
+
+/* NAV */
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--white);
+  border:2px solid var(--ink-faint);border-radius:50px;padding:7px 16px;
+  font-family:var(--font-title);font-size:0.88rem;font-weight:700;color:var(--ink-mid);
+  cursor:pointer;text-decoration:none;transition:all 0.15s}
+.back-btn:hover{border-color:var(--p1-color);color:var(--p1-deep)}
+.module-crumb{font-size:0.8rem;font-weight:700;color:var(--ink-light)}
+
+/* HEADER */
+.mod-header{text-align:center;padding:26px 20px 18px}
+.pilier-chip{display:inline-flex;align-items:center;gap:7px;background:var(--p1-bg);
+  border:2px solid var(--p1-color);border-radius:50px;padding:6px 18px;
+  font-family:var(--font-title);font-size:0.85rem;font-weight:800;color:var(--p1-deep);margin-bottom:12px}
+.mod-title{font-family:var(--font-title);font-size:clamp(1.7rem,5vw,2.5rem);font-weight:900;
+  color:var(--ink);line-height:1.15;margin-bottom:7px}
+.mod-sub{font-size:1rem;color:var(--ink-light);font-weight:600}
+
+/* BARRE */
+.prog-track{display:flex;align-items:center;padding:0 4px;margin:16px 0 10px}
+.prog-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.prog-step::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);
+  width:calc(100% - 36px);height:3px;background:var(--ink-faint);z-index:0}
+.prog-step:last-child::after{display:none}
+.prog-step.s-done::after{background:var(--grass)}
+.prog-dot{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink-faint);
+  background:var(--white);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-weight:800;font-size:0.9rem;color:var(--ink-light);
+  z-index:1;position:relative;transition:all 0.3s}
+.prog-step.s-done .prog-dot{background:var(--grass);border-color:var(--grass);color:white}
+.prog-step.s-active .prog-dot{background:var(--sun);border-color:var(--sun-deep);color:var(--ink);
+  box-shadow:0 0 0 5px rgba(245,158,11,0.25);animation:pdot 2s infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,0.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,0.1)}}
+.prog-lbl{font-size:0.68rem;font-weight:700;color:var(--ink-light);margin-top:5px;text-align:center}
+.prog-step.s-active .prog-lbl{color:var(--sun-deep)}
+.prog-step.s-done   .prog-lbl{color:var(--grass-deep)}
+
+/* XP */
+.xp-strip{display:flex;gap:9px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--white);
+  border:2px solid var(--ink-faint);border-radius:50px;padding:5px 14px;
+  font-family:var(--font-mono);font-size:0.82rem;font-weight:700;color:var(--ink)}
+.xp-pill.hl{border-color:var(--sun);background:#FFFBEB;color:var(--sun-deep)}
+
+/* CARD */
+.card{background:var(--panel);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
+  border:1.5px solid rgba(255,255,255,0.9);margin-bottom:16px;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1.5px solid rgba(15,23,42,0.07);background:rgba(239,246,255,0.7)}
+.card-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:1.45rem;flex-shrink:0}
+.ci-blue{background:#DBEAFE}.ci-green{background:#DCFCE7}.ci-sun{background:#FEF3C7}
+.ci-violet{background:#EDE9FE}.ci-rose{background:#FCE7F3}
+.card-head .title{font-family:var(--font-title);font-size:1rem;font-weight:800;color:var(--ink)}
+.card-head .sub  {font-size:0.78rem;font-weight:700;color:var(--ink-light);margin-top:2px}
+.card-body{padding:18px 20px}
+
+/* ═══ PERSONA CARD ═══ */
+.persona-wrap{
+  border-radius:var(--radius-md);
+  overflow:hidden;
+  border:2px solid var(--ink-faint);
+  box-shadow:var(--shadow-sm);
+  margin-bottom:6px;
+}
+.persona-top{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:0;
+}
+
+/* Photo */
+.persona-photo-zone{
+  width:100px;
+  min-height:120px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.persona-photo{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
+.persona-photo-placeholder{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:8px;text-align:center;
+}
+.pp-emoji{font-size:2.2rem}
+.pp-label{font-size:0.65rem;font-weight:700;color:rgba(255,255,255,0.75);
+  text-transform:uppercase;letter-spacing:0.5px;line-height:1.3}
+
+.persona-info{
+  padding:14px 16px 10px;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+.persona-badge{
+  position:absolute;top:10px;right:10px;
+  border-radius:50px;padding:3px 10px;
+  font-size:0.7rem;font-weight:800;letter-spacing:0.3px;
+  white-space:nowrap;
+}
+.persona-nom{
+  font-family:var(--font-title);font-size:1.1rem;font-weight:800;
+  margin-bottom:2px;padding-right:72px;
+}
+.persona-role{
+  font-size:0.82rem;font-weight:700;opacity:0.75;margin-bottom:10px;
+}
+.persona-citation{
+  font-size:0.9rem;font-weight:700;font-style:italic;
+  line-height:1.45;padding:8px 10px;
+  background:rgba(255,255,255,0.6);border-radius:8px;
+  border-left:3px solid currentColor;
+}
+
+.persona-facts-zone{
+  padding:12px 16px 14px;
+  display:flex;flex-direction:column;gap:7px;
+  background:rgba(255,255,255,0.4);
+  border-top:1px solid rgba(15,23,42,0.06);
+}
+.fact-item{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:0.87rem;background:rgba(255,255,255,0.55);
+  border-radius:8px;padding:8px 11px;
+}
+.fact-ico{font-size:0.95rem;flex-shrink:0}
+.fact-txt{color:var(--ink);line-height:1.4;font-weight:600}
+.fact-txt strong{color:inherit}
+
+/* Nav persona */
+.pn-nav{display:flex;align-items:center;justify-content:space-between;margin-top:13px}
+.pn-counter{font-family:var(--font-mono);font-size:0.82rem;font-weight:700;
+  color:var(--ink-light);background:rgba(15,23,42,0.05);padding:5px 13px;border-radius:50px}
+
+/* TABS GROUPES */
+.group-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.gtab{padding:7px 16px;border-radius:50px;font-family:var(--font-title);
+  font-size:0.85rem;font-weight:800;cursor:pointer;border:2px solid var(--ink-faint);
+  background:var(--white);color:var(--ink-light);transition:all 0.15s}
+.gtab.active{border-color:var(--p1-color);background:var(--p1-bg);color:var(--p1-deep)}
+.gtab:hover:not(.active){border-color:var(--p1-color);color:var(--p1-deep)}
+
+/* QUIZ */
+.quiz-ctx{background:var(--sky2);border:1.5px solid var(--p1-color);border-radius:var(--radius-sm);
+  padding:12px 15px;margin-bottom:13px;font-size:0.87rem;color:var(--ink-mid);font-style:italic;font-weight:600}
+.quiz-q{font-family:var(--font-title);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:14px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:13px}
+.opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.8);
+  border:2px solid var(--ink-faint);border-radius:var(--radius-sm);padding:11px 14px;
+  cursor:pointer;font-size:0.92rem;font-weight:600;color:var(--ink);text-align:left;
+  transition:all 0.15s;font-family:var(--font-body)}
+.opt:hover:not(:disabled){border-color:var(--p1-color);background:#F0F9FF}
+.opt.sel{border-color:var(--water-deep);background:#E0F2FE}
+.opt.ok{border-color:var(--grass);background:#DCFCE7;color:var(--grass-deep)}
+.opt.ko{border-color:var(--coral);background:#FEE2E2;color:var(--coral-deep)}
+.opt:disabled{cursor:default}
+.opt-let{width:28px;height:28px;border-radius:7px;background:var(--ink-faint);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:0.8rem;font-weight:700;flex-shrink:0}
+.opt.sel .opt-let{background:var(--water-deep);color:white}
+.opt.ok  .opt-let{background:var(--grass);color:white}
+.opt.ko  .opt-let{background:var(--coral);color:white}
+.fb{border-radius:var(--radius-sm);padding:12px 15px;margin-bottom:12px;border:2px solid}
+.fb.ok{background:#DCFCE7;border-color:var(--grass)}
+.fb.ko{background:#FEE2E2;border-color:var(--coral)}
+.fb-t{font-family:var(--font-title);font-size:0.95rem;font-weight:800;margin-bottom:5px}
+.fb-b{font-size:0.87rem;line-height:1.5}
+
+/* SCÉNARIOS */
+.sc-ctx{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:2px solid #BFDBFE;
+  border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:13px}
+.sc-lbl{font-size:0.7rem;font-weight:800;color:var(--p1-deep);letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:7px}
+.sc-story{font-size:0.93rem;line-height:1.6;color:var(--ink)}
+.sc-q{font-family:var(--font-title);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:12px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:8px;background:var(--white);
+  border:2px solid var(--ink-faint);border-radius:var(--radius-sm);padding:12px 15px;
+  cursor:pointer;font-size:0.92rem;font-weight:600;color:var(--ink);
+  text-align:left;transition:all 0.15s;font-family:var(--font-body)}
+.choice:hover{border-color:var(--violet);background:#F5F3FF;transform:translateX(3px)}
+.ch-arr{color:var(--violet);flex-shrink:0;margin-top:1px}
+.res-box{border-radius:var(--radius-sm);padding:15px;margin-bottom:12px;border:2px solid}
+.res-box.pos{background:#F0FDF4;border-color:var(--grass)}
+.res-box.neu{background:#FFFBEB;border-color:var(--sun)}
+.res-box.neg{background:#FEF2F2;border-color:var(--coral)}
+.res-emoji{font-size:1.7rem;margin-bottom:8px;display:block}
+.res-t{font-family:var(--font-title);font-size:0.97rem;font-weight:800;margin-bottom:6px}
+.res-tip{margin-top:9px;padding:8px 11px;background:rgba(255,255,255,0.7);
+  border-radius:8px;font-size:0.82rem;font-style:italic;color:var(--ink-light)}
+.impact{display:inline-flex;align-items:center;gap:5px;border-radius:50px;
+  padding:3px 11px;font-family:var(--font-mono);font-size:0.77rem;font-weight:700;margin-top:8px}
+.impact.pos{background:#DCFCE7;color:var(--grass-deep)}
+.impact.neu{background:#FEF9C3;color:#92400E}
+.impact.neg{background:#FEE2E2;color:var(--coral-deep)}
+
+/* COMPLETION */
+.completion{text-align:center;padding:8px 0 14px}
+.trophy{font-size:4.5rem;display:block;margin-bottom:12px;
+  animation:tbounce 0.6s cubic-bezier(0.36,0.07,0.19,0.97) 0.2s both}
+@keyframes tbounce{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.comp-title{font-family:var(--font-title);font-size:1.9rem;font-weight:900;color:var(--ink);margin-bottom:6px}
+.comp-sub{font-size:0.97rem;color:var(--ink-light);font-weight:600;margin-bottom:20px}
+.stats-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.stat-tile{background:rgba(255,255,255,0.9);border:2px solid var(--ink-faint);
+  border-radius:var(--radius-md);padding:12px 16px;min-width:80px;text-align:center}
+.stat-v{font-family:var(--font-title);font-size:1.8rem;font-weight:900;color:var(--ink)}
+.stat-l{font-size:0.72rem;font-weight:700;color:var(--ink-light);margin-top:3px;
+  text-transform:uppercase;letter-spacing:0.5px}
+.mastery{display:inline-flex;align-items:center;gap:8px;border-radius:50px;
+  padding:7px 18px;font-family:var(--font-title);font-size:0.92rem;font-weight:800;margin-bottom:18px}
+.m-exp{background:#DBEAFE;color:#1D4ED8}
+.m-col{background:#DCFCE7;color:#14532D}
+.m-champ{background:#FEF9C3;color:#92400E}
+.unlock-banner{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid var(--grass);
+  border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px;
+  display:flex;align-items:center;gap:12px}
+.unlock-ico{font-size:1.8rem;flex-shrink:0}
+.unlock-text{font-size:0.92rem;font-weight:700;color:var(--grass-deep)}
+.unlock-text strong{display:block;font-family:var(--font-title);font-size:1rem;margin-bottom:3px}
+.next-hint{background:#FFFBEB;border:2px solid var(--sun);border-radius:var(--radius-sm);
+  padding:11px 15px;margin-bottom:16px;font-size:0.88rem;font-weight:600;color:var(--ink-mid)}
+.next-hint strong{color:var(--sun-deep)}
+
+/* BOUTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:50px;
+  padding:12px 26px;font-family:var(--font-title);font-size:0.97rem;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,0.15);transition:all 0.15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,0.15)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,0.15)}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-blue{background:var(--water-deep);color:white}
+.btn-sun{background:var(--sun-deep);color:white}
+.btn-grass{background:var(--grass-deep);color:white}
+.btn-ghost{background:var(--white);color:var(--ink-mid);border:2px solid var(--ink-faint);box-shadow:none}
+.btn-ghost:hover{border-color:var(--ink-mid)}
+.btn-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--ink);color:white;padding:11px 26px;border-radius:50px;
+  font-family:var(--font-title);font-weight:700;font-size:0.92rem;
+  box-shadow:0 16px 48px rgba(15,23,42,0.2);z-index:9999;
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:560px){
+  .persona-top{grid-template-columns:80px 1fr}
+  .persona-photo-zone{width:80px}
+  .app{padding:0 12px 48px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <nav class="topnav">
+    <a class="back-btn" href="index.html">← Hub principal</a>
+    <span class="module-crumb">Pilier 1 • Module 2</span>
+  </nav>
+
+  <header class="mod-header">
+    <div class="pilier-chip">🧑‍🤝‍🧑 Les gens qui vont prendre soin de toi</div>
+    <h1 class="mod-title">L'équipe qui prend soin de toi</h1>
+    <p class="mod-sub">Découvre les adultes qui t'entourent au collège — leur rôle, leur bureau, leur visage</p>
+  </header>
+
+  <div id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════ */
+const MODULE_ID = 'M1_02';
+const LS_KEY    = 'ave6e_progress';
+const NEXT_FILE = 'p1_m03_profs.html';   // à créer
+const NEXT_NAME = 'Tes professeurs';
+
+/* ────────────────────────────────────────────────────
+   PHOTOS — noms de fichiers prédéfinis
+   Placer les .jpg dans le même dossier que ce fichier.
+   Si absent → avatar emoji automatique.
+   Pour supprimer une photo → laisser le champ photo vide.
+────────────────────────────────────────────────────── */
+const PHOTO_DIR = 'photos/';  // ← sous-dossier photos/ (ou '' si même dossier)
+
+/* ────────────────────────────────────────────────────
+   PERSONNELS — éditable sans toucher au code React
+   photo : nom de fichier ('' = pas de photo, emoji affiché)
+   Pour ajouter un personnel : dupliquer un objet dans le groupe
+────────────────────────────────────────────────────── */
+const GROUPES = [
+  {
+    id: 'viesco',
+    label: '🏫 Vie Scolaire',
+    couleur: '#38BDF8', couleurDeep: '#0284C7', couleurBg: '#EFF6FF',
+    personnels: [
+      {
+        nom: '[Prénom NOM]',
+        role: 'Conseiller Principal d\'Éducation (CPE)',
+        photo: 'CPE.jpg',
+        emoji: '🧑‍💼',
+        badgeTxt: 'Vie Scolaire',
+        badgeBg: '#DBEAFE', badgeColor: '#1E40AF',
+        couleurCarte: 'linear-gradient(135deg,#EFF6FF,#DBEAFE)',
+        couleurNom: '#1E40AF',
+        citation: '"Mon rôle ? Que ton quotidien se passe bien — pas seulement t\'aider quand ça va pas."',
+        faits: [
+          { ico:'🤝', txt:'Tu peux venir me voir <strong>n\'importe quand</strong>, pour n\'importe quelle raison.' },
+          { ico:'🌿', txt:'Je coordonne le programme <strong>pHARe</strong> contre le harcèlement.' },
+          { ico:'📍', txt:'Mon bureau : <strong>[emplacement exact à compléter]</strong>' },
+          { ico:'🎯', txt:'J\'aime : <strong>[une passion réelle à compléter]</strong>' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Assistant(e) d\'Éducation (AED)',
+        photo: 'AED1.jpg', emoji: '🧑‍🏫',
+        badgeTxt: 'Surveillance', badgeBg: '#E0F2FE', badgeColor: '#075985',
+        couleurCarte: 'linear-gradient(135deg,#F0F9FF,#E0F2FE)', couleurNom: '#0369A1',
+        citation: '"Je suis dans la cour, les couloirs, la permanence — si tu es perdu(e) ou que tu as besoin d\'aide, je suis là."',
+        faits: [
+          { ico:'👀', txt:'Je <strong>surveille</strong> la cour, les couloirs et la permanence.' },
+          { ico:'🔑', txt:'Je gère les <strong>entrées et sorties</strong> et les appels de présence.' },
+          { ico:'🙋', txt:'Tu peux m\'interpeller <strong>directement</strong> si tu as un problème dans la cour.' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Assistant(e) d\'Éducation (AED)',
+        photo: 'AED2.jpg', emoji: '🧑‍🏫',
+        badgeTxt: 'Surveillance', badgeBg: '#E0F2FE', badgeColor: '#075985',
+        couleurCarte: 'linear-gradient(135deg,#F0F9FF,#E0F2FE)', couleurNom: '#0369A1',
+        citation: '"Je suis souvent en permanence — si t\'as du travail en avance ou un souci, passe me voir."',
+        faits: [
+          { ico:'📚', txt:'Je t\'accompagne en <strong>permanence</strong> pendant tes heures libres.' },
+          { ico:'✅', txt:'Je peux <strong>signer ton carnet</strong> pour certaines informations pratiques.' },
+          { ico:'🤗', txt:'Je suis là aussi pour <strong>écouter</strong> si ça ne va pas.' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Assistant(e) d\'Éducation (AED)',
+        photo: 'AED3.jpg', emoji: '🧑‍🏫',
+        badgeTxt: 'Surveillance', badgeBg: '#E0F2FE', badgeColor: '#075985',
+        couleurCarte: 'linear-gradient(135deg,#F0F9FF,#E0F2FE)', couleurNom: '#0369A1',
+        citation: '"Les couloirs, la cantine, le portail… je suis partout pour que tout se passe bien."',
+        faits: [
+          { ico:'🚪', txt:'Je gère les <strong>flux de circulation</strong> entre les cours.' },
+          { ico:'🍽️', txt:'Je peux être présent(e) <strong>au réfectoire</strong> pour les repas.' },
+          { ico:'📋', txt:'Je note les <strong>absences et retards</strong> pour informer les familles.' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Assistant(e) d\'Éducation (AED)',
+        photo: 'AED4.jpg', emoji: '🧑‍🏫',
+        badgeTxt: 'Surveillance', badgeBg: '#E0F2FE', badgeColor: '#075985',
+        couleurCarte: 'linear-gradient(135deg,#F0F9FF,#E0F2FE)', couleurNom: '#0369A1',
+        citation: '"Si tu vois quelque chose qui ne va pas dans la cour ou les couloirs, dis-le moi sans hésiter."',
+        faits: [
+          { ico:'🛡️', txt:'Je contribue à la <strong>sécurité</strong> de tous les élèves.' },
+          { ico:'🔔', txt:'Je surveille les <strong>sonneries et transitions</strong> entre les cours.' },
+          { ico:'💬', txt:'Je suis <strong>disponible pour écouter</strong> tes petits soucis du quotidien.' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Assistant(e) d\'Éducation (AED)',
+        photo: 'AED5.jpg', emoji: '🧑‍🏫',
+        badgeTxt: 'Surveillance', badgeBg: '#E0F2FE', badgeColor: '#075985',
+        couleurCarte: 'linear-gradient(135deg,#F0F9FF,#E0F2FE)', couleurNom: '#0369A1',
+        citation: '"Cinq AED au total — on se connaît tous et on travaille en équipe pour votre bien-être."',
+        faits: [
+          { ico:'👥', txt:'Nous formons une <strong>équipe de 5 AED</strong> qui se relaient toute la journée.' },
+          { ico:'🗓️', txt:'Nos <strong>plannings varient</strong> — l\'un d\'entre nous est toujours présent.' },
+          { ico:'🤝', txt:'On travaille <strong>directement sous la responsabilité du CPE</strong>.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'direction',
+    label: '🎓 Direction & Administration',
+    couleur: '#F59E0B', couleurDeep: '#B45309', couleurBg: '#FFFBEB',
+    personnels: [
+      {
+        nom: '[Prénom NOM]', role: 'Principal(e) du collège',
+        photo: 'Principal.jpg', emoji: '🏛️',
+        badgeTxt: 'Direction', badgeBg: '#FEF3C7', badgeColor: '#92400E',
+        couleurCarte: 'linear-gradient(135deg,#FFFBEB,#FEF3C7)', couleurNom: '#92400E',
+        citation: '"Je dirige le collège, mais surtout je veille à ce qu\'il soit un endroit où chacun peut apprendre en se sentant bien."',
+        faits: [
+          { ico:'🏛️', txt:'Je prends les <strong>décisions importantes</strong> pour le fonctionnement du collège.' },
+          { ico:'⚖️', txt:'Je défends les valeurs de <strong>respect, bienveillance et égalité</strong>.' },
+          { ico:'📬', txt:'Mon bureau : <strong>[emplacement]</strong> — les familles peuvent prendre rendez-vous.' },
+          { ico:'🌍', txt:'Je travaille en lien avec <strong>toute l\'équipe éducative</strong> pour votre réussite.' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Principal(e) Adjoint(e)',
+        photo: 'Principaladjoint.jpg', emoji: '📋',
+        badgeTxt: 'Direction', badgeBg: '#FEF3C7', badgeColor: '#92400E',
+        couleurCarte: 'linear-gradient(135deg,#FFFBEB,#FEF3C7)', couleurNom: '#92400E',
+        citation: '"Je seconde le/la principal(e) et je m\'occupe notamment de l\'organisation pédagogique du collège."',
+        faits: [
+          { ico:'🗓️', txt:'Je gère les <strong>emplois du temps</strong> et l\'organisation des classes.' },
+          { ico:'📊', txt:'Je suis en contact avec les <strong>profs pour le suivi pédagogique</strong>.' },
+          { ico:'📍', txt:'Mon bureau : <strong>[emplacement]</strong>' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Gestionnaire / Intendant(e)',
+        photo: 'gestionnaire.jpg', emoji: '📊',
+        badgeTxt: 'Intendance', badgeBg: '#FEF9C3', badgeColor: '#713F12',
+        couleurCarte: 'linear-gradient(135deg,#FFFDE7,#FEF9C3)', couleurNom: '#713F12',
+        citation: '"La cantine, les commandes, les finances du collège… c\'est moi qui veille à ce que tout fonctionne dans les coulisses."',
+        faits: [
+          { ico:'🍽️', txt:'Je gère tout ce qui concerne le <strong>service de restauration</strong>.' },
+          { ico:'💰', txt:'Je m\'occupe des <strong>finances</strong> et des achats du collège.' },
+          { ico:'📍', txt:'Mon bureau : <strong>[emplacement — souvent "intendance"]</strong>' },
+          { ico:'👪', txt:'Les <strong>familles me contactent</strong> pour les questions de cantine et de facturation.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sante',
+    label: '💊 Santé & Accompagnement',
+    couleur: '#EC4899', couleurDeep: '#BE185D', couleurBg: '#FDF2F8',
+    personnels: [
+      {
+        nom: '[Prénom NOM]', role: 'Infirmier(ère) scolaire',
+        photo: 'infirmiere.jpg', emoji: '🏥',
+        badgeTxt: 'Santé', badgeBg: '#FCE7F3', badgeColor: '#9D174D',
+        couleurCarte: 'linear-gradient(135deg,#FFF1F2,#FCE7F3)', couleurNom: '#BE185D',
+        citation: '"Tu n\'as pas besoin d\'être malade pour venir me voir. Si ça ne va pas — même juste dans la tête — ma porte est ouverte."',
+        faits: [
+          { ico:'🩺', txt:'Je m\'occupe de ta <strong>santé physique ET morale</strong>. Les deux comptent.' },
+          { ico:'🔒', txt:'Ce que tu me confies est <strong>confidentiel</strong>.' },
+          { ico:'🆘', txt:'En cas d\'urgence, je suis <strong>immédiatement disponible</strong>.' },
+          { ico:'📍', txt:'Mon cabinet : <strong>[emplacement à compléter]</strong>' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Assistant(e) Social(e) (AS)',
+        photo: 'AS.jpg', emoji: '🤲',
+        badgeTxt: 'Social', badgeBg: '#FBCFE8', badgeColor: '#9D174D',
+        couleurCarte: 'linear-gradient(135deg,#FDF2F8,#FBCFE8)', couleurNom: '#BE185D',
+        citation: '"Mon rôle, c\'est d\'aider quand des difficultés de vie compliquent ta scolarité — les problèmes personnels, ça compte aussi."',
+        faits: [
+          { ico:'🏠', txt:'J\'accompagne les familles dans les <strong>difficultés sociales et matérielles</strong>.' },
+          { ico:'🔒', txt:'Tout ce que tu me confies est <strong>strictement confidentiel</strong>.' },
+          { ico:'🔗', txt:'Je fais le lien entre le <strong>collège et les services sociaux</strong> si nécessaire.' },
+          { ico:'📅', txt:'Je suis présent(e) <strong>[jours à compléter]</strong> au collège.' }
+        ]
+      },
+      {
+        nom: '[Prénom NOM]', role: 'Psychologue de l\'Éducation Nationale (PsyEN)',
+        photo: 'PsyEN.jpg', emoji: '🧠',
+        badgeTxt: 'Psy-EN', badgeBg: '#EDE9FE', badgeColor: '#6D28D9',
+        couleurCarte: 'linear-gradient(135deg,#F5F3FF,#EDE9FE)', couleurNom: '#6D28D9',
+        citation: '"Je peux t\'aider à mieux comprendre comment tu apprends, ce qui te motive, et t\'orienter si tu en as besoin."',
+        faits: [
+          { ico:'🧩', txt:'Je peux faire un bilan sur tes <strong>modes d\'apprentissage</strong>.' },
+          { ico:'🗣️', txt:'Je reçois les élèves en <strong>entretien individuel</strong>, sur demande.' },
+          { ico:'🗓️', txt:'Je travaille sur <strong>plusieurs collèges</strong> — présent(e) [jours à compléter].' },
+          { ico:'🔒', txt:'Nos échanges sont <strong>confidentiels</strong>.' }
+        ]
+      }
+    ]
+  }
+];
+
+/* ─── QUIZ ─── */
+const QUIZ = [
+  {
+    ctx: 'Pendant la récré, tu tombes et tu te fais mal au genou — pas grave, mais ça saigne un peu.',
+    q: 'Vers qui tu vas EN PREMIER ?',
+    opts: ['Le professeur de maths — il est sympa', 'L\'infirmier(ère) scolaire', 'Tu rentres chez toi', 'Le principal'],
+    ok: 1,
+    fb: 'L\'infirmier(ère) est là exactement pour ça : les bobos physiques mais aussi les petites douleurs morales. Son cabinet est ouvert pendant toute la journée scolaire.',
+    xp: 25
+  },
+  {
+    ctx: 'Tu arrives le matin mais tu ne trouves pas ton carnet de correspondance pour te faire signer.',
+    q: 'Qui peut t\'aider à gérer ce problème administratif pratique ?',
+    opts: ['Un AED ou la vie scolaire', 'Le gestionnaire (intendance)', 'La PsyEN', 'Le prof de français'],
+    ok: 0,
+    fb: 'Les AED et la vie scolaire gèrent les situations quotidiennes pratiques : carnet perdu, retard, sortie anticipée… Ils connaissent les procédures sur le bout des doigts.',
+    xp: 25
+  },
+  {
+    ctx: 'Tu as entendu dire que ta famille pourrait avoir droit à des aides pour la cantine ou les fournitures.',
+    q: 'Quel adulte est spécialement formé pour aider les familles dans ce genre de démarches ?',
+    opts: ['Le principal', 'L\'assistant(e) social(e)', 'Un AED', 'Le prof principal'],
+    ok: 1,
+    fb: 'L\'assistant(e) social(e) est spécialisé(e) pour accompagner les familles dans les démarches liées aux difficultés matérielles. Tout est confidentiel — aucune honte à demander !',
+    xp: 25
+  },
+  {
+    ctx: 'Tu n\'arrives pas à te concentrer en classe depuis quelques semaines. Tu ne sais pas trop pourquoi.',
+    q: 'Quel adulte peut t\'aider à comprendre comment TU fonctionnes en tant qu\'élève ?',
+    opts: ['Le gestionnaire', 'La PsyEN (psychologue de l\'Éducation Nationale)', 'Le principal adjoint', 'L\'AED de permanence'],
+    ok: 1,
+    fb: 'La PsyEN est exactement là pour ça : comprendre les modes d\'apprentissage, les difficultés d\'attention, de motivation. Ce n\'est pas "aller chez le psy" au sens stigmatisé — c\'est un accompagnement scolaire.',
+    xp: 25
+  },
+  {
+    ctx: 'Il y a un problème de facturation pour la cantine — tes parents ont reçu une facture bizarre.',
+    q: 'Quel adulte contacter en priorité ?',
+    opts: ['Le CPE', 'Le professeur principal', 'Le/la gestionnaire (intendance)', 'Un AED'],
+    ok: 2,
+    fb: 'Le/la gestionnaire gère tout ce qui concerne les finances du collège : cantine, facturation, aides financières. C\'est lui/elle qu\'il faut contacter pour toute question de ce type.',
+    xp: 25
+  }
+];
+
+/* ─── SCÉNARIOS ─── */
+const SCENARIOS = [
+  {
+    titre: 'La confusion de l\'adulte',
+    ctx: 'Tu arrives en cours le lundi matin. Ton prof de français n\'est pas là. Personne ne t\'a prévenu. Tu attends 10 minutes dans le couloir avec ta classe. Tu ne sais pas si vous devez aller en permanence ou attendre encore.',
+    q: 'Que fais-tu ?',
+    choix: [
+      { t: 'Tu restes dans le couloir avec tout le monde en espérant que quelqu\'un vient.',
+        r: 'Au bout de 20 minutes, un AED passe et vous dit d\'aller en permanence. Tu as perdu du temps mais rien de grave.', ton:'neu', ico:'😐',
+        tip: 'Attendre passivement, c\'est souvent la solution la moins efficace. Un AED passe souvent dans les couloirs — l\'interpeller directement aurait été plus rapide.',
+        impact: 10, lbl: '+10 XP'
+      },
+      { t: 'Tu repères un AED ou un adulte et tu demandes : "Le prof de français est absent — qu\'est-ce qu\'on fait ?"',
+        r: 'L\'AED vérifie, confirme l\'absence et vous accompagne directement en permanence. Efficace, rapide, tout le monde est en ordre.', ton:'pos', ico:'✅',
+        tip: 'C\'est le réflexe parfait : repérer l\'adulte compétent et lui poser la question clairement. Tu as économisé du temps pour toute la classe.',
+        impact: 40, lbl: '+40 XP'
+      },
+      { t: 'Tu rentres directement à la maison — "si le prof est pas là, c\'est pas cours".',
+        r: 'Tu seras noté absent non justifié. Tes parents seront contactés. Et ce n\'était pas une heure libre officielle.', ton:'neg', ico:'😬',
+        tip: 'Au collège, une absence de professeur ne signifie JAMAIS qu\'on peut rentrer chez soi. Les AED et la vie scolaire s\'occupent de la prise en charge.',
+        impact: -10, lbl: '-10 XP'
+      }
+    ]
+  },
+  {
+    titre: 'Le problème qu\'on garde pour soi',
+    ctx: 'Depuis deux semaines, un élève de ta classe te dit des choses blessantes sur ton look à chaque pause. Ce n\'est pas violent physiquement, mais tu n\'as plus envie de venir au collège. Tu n\'en as pas parlé à tes parents.',
+    q: 'Quel adulte peux-tu aller voir en PREMIER pour en parler en toute confiance ?',
+    choix: [
+      { t: 'Tu continues à te taire — "c\'est nul de se plaindre pour ça".',
+        r: 'La situation continue. Tu évites de plus en plus la cour. Ça commence à affecter ta concentration en classe. Les petites choses qui s\'accumulent deviennent des grandes choses.',
+        ton:'neg', ico:'😞',
+        tip: 'Garder ça pour soi, c\'est laisser le problème grossir. Ce que tu décris — des remarques répétées, blessantes, qui donnent envie d\'éviter le collège — c\'est exactement ce que les adultes sont là pour entendre et traiter.',
+        impact: -5, lbl: '-5 XP'
+      },
+      { t: 'Tu vas voir l\'infirmier(ère) ou le CPE — tu dis juste "ça ne va pas, j\'ai besoin d\'en parler".',
+        r: 'L\'adulte t\'écoute sans te juger. Il/elle prend ça au sérieux et met en place une démarche discrète. Tu te sens déjà moins seul(e) après avoir parlé.',
+        ton:'pos', ico:'🌟',
+        tip: 'C\'est exactement pour ça qu\'ils/elles existent. Pas besoin d\'un drame ou d\'une urgence physique — "ça ne va pas" est suffisant pour ouvrir une porte. Et tout est confidentiel.',
+        impact: 45, lbl: '+45 XP'
+      },
+      { t: 'Tu en parles à un AED que tu croises dans les couloirs.',
+        r: 'L\'AED t\'écoute avec attention et t\'accompagne vers le CPE qui est mieux placé pour traiter ce type de situation. C\'est le bon réflexe de passer par un adulte.',
+        ton:'pos', ico:'👍',
+        tip: 'Aller vers n\'importe quel adulte de confiance, c\'est toujours la bonne décision. L\'AED a bien fait de t\'orienter vers le CPE — c\'est comme ça que l\'équipe fonctionne.',
+        impact: 30, lbl: '+30 XP'
+      }
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════
+   GESTION PHOTOS
+═══════════════════════════════════════════════════ */
+function buildPhotoElement(persona) {
+  const zone = document.createElement('div');
+  zone.className = 'persona-photo-zone';
+  zone.style.background = persona.couleurCarte;
+
+  if (persona.photo) {
+    const img = document.createElement('img');
+    img.className = 'persona-photo';
+    img.alt = persona.nom;
+    img.src = PHOTO_DIR + persona.photo;
+    img.onerror = function() {
+      // Fallback : placeholder emoji si photo absente
+      this.parentNode.innerHTML = `
+        <div class="persona-photo-placeholder" style="background:${persona.couleurCarte}">
+          <span class="pp-emoji">${persona.emoji}</span>
+          <span class="pp-label">${persona.role.split('(')[0].trim()}</span>
+        </div>`;
+    };
+    zone.appendChild(img);
+  } else {
+    zone.innerHTML = `
+      <div class="persona-photo-placeholder" style="background:${persona.couleurCarte}">
+        <span class="pp-emoji">${persona.emoji}</span>
+        <span class="pp-label">${persona.role.split('(')[0].trim()}</span>
+      </div>`;
+  }
+  return zone;
+}
+
+/* ═══════════════════════════════════════════════════
+   ÉTAT
+═══════════════════════════════════════════════════ */
+let state = {
+  phase: 'intro',
+  groupeIdx: 0,
+  personaIdx: 0,
+  quizIdx: 0, selected: null, showFb: false,
+  scenIdx: 0, choiceIdx: null, showRes: false,
+  xp: 0, quizScore: 0, scenScore: 0
+};
+
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { return {}; }
+}
+function markDone() {
+  const p = getProgress();
+  if (!Array.isArray(p.modules_done)) p.modules_done = [];
+  if (!p.modules_done.includes(MODULE_ID)) {
+    p.modules_done.push(MODULE_ID);
+    p.xp_total = (p.xp_total || 0) + state.xp;
+    p.last_update = new Date().toISOString();
+    localStorage.setItem(LS_KEY, JSON.stringify(p));
+    window.dispatchEvent(new StorageEvent('storage', { key: LS_KEY }));
+  }
+}
+function getMastery(s) {
+  if (s >= 200) return { lbl:'🏆 Tu connais toute l\'équipe !', cls:'m-champ' };
+  if (s >= 110) return { lbl:'🎓 Bien équipé(e)', cls:'m-col' };
+  return { lbl:'🗺️ En route !', cls:'m-exp' };
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+function render() { document.getElementById('root').innerHTML = ''; build(); }
+
+/* ── helpers ── */
+function buildProgress(active) {
+  const steps = ['personas','quiz','scenarios','fin'];
+  const lbls  = ['Découverte','Quiz','Scénarios','Bilan'];
+  const ai = steps.indexOf(active);
+  const div = document.createElement('div'); div.className = 'prog-track';
+  steps.forEach((s,i) => {
+    const st = document.createElement('div');
+    st.className = 'prog-step' + (i<ai?' s-done':i===ai?' s-active':'');
+    st.innerHTML = `<div class="prog-dot">${i<ai?'✓':i+1}</div><div class="prog-lbl">${lbls[i]}</div>`;
+    div.appendChild(st);
+  });
+  return div;
+}
+function buildXP(extras=[]) {
+  const d = document.createElement('div'); d.className = 'xp-strip';
+  d.innerHTML = `<div class="xp-pill hl"><span>⭐</span>${state.xp} XP</div>`;
+  extras.forEach(e => { d.innerHTML += `<div class="xp-pill"><span>${e.ico}</span>${e.val}</div>`; });
+  return d;
+}
+function cardEl(headIco, headCls, title, sub) {
+  const c = document.createElement('div'); c.className = 'card';
+  c.innerHTML = `<div class="card-head">
+    <div class="card-ico ${headCls}">${headIco}</div>
+    <div class="card-head-text">
+      <div class="title">${title}</div>
+      ${sub ? `<div class="sub">${sub}</div>` : ''}
+    </div>
+  </div>`;
+  const body = document.createElement('div'); body.className = 'card-body';
+  c.appendChild(body);
+  return { card:c, body };
+}
+
+/* ═══════════════════════════════════════════════════
+   BUILD
+═══════════════════════════════════════════════════ */
+function build() {
+  const root = document.getElementById('root');
+  if (state.phase === 'intro')     buildIntro(root);
+  if (state.phase === 'personas')  buildPersonas(root);
+  if (state.phase === 'quiz')      buildQuiz(root);
+  if (state.phase === 'scenarios') buildScenarios(root);
+  if (state.phase === 'fin')       buildFin(root);
+}
+
+/* ── INTRO ── */
+function buildIntro(root) {
+  const {card:c, body} = cardEl('👋','ci-blue','Module 2 — L\'équipe','~25 minutes • 3 niveaux');
+  body.innerHTML = `
+    <div class="intro-hero" style="text-align:center;padding:8px 0 20px">
+      <span style="font-size:3.6rem;display:block;margin-bottom:14px;animation:float 3s ease-in-out infinite">🧑‍🤝‍🧑</span>
+      <h2 style="font-family:var(--font-title);font-size:1.45rem;font-weight:800;color:var(--ink);margin-bottom:10px">
+        Des gens formidables t'attendent
+      </h2>
+      <p style="font-size:0.97rem;color:var(--ink-mid);line-height:1.7;max-width:500px;margin:0 auto 20px">
+        Au collège, tu ne seras <strong>jamais seul(e)</strong>. Une équipe entière est là — des adultes dont le
+        métier est de veiller sur toi, chacun avec un rôle précis.
+        Apprendre à les connaître avant la rentrée, c'est se donner une longueur d'avance.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:8px;text-align:left;margin-bottom:22px">
+        ${[
+          ['👥','Découvrir les différents adultes et leurs rôles réels'],
+          ['🏷️','Savoir exactement vers qui aller dans chaque situation'],
+          ['🎭','Mettre en pratique dans des situations concrètes']
+        ].map(([ico,txt])=>`<div style="display:flex;align-items:flex-start;gap:8px;background:rgba(239,246,255,0.9);border:1.5px solid rgba(56,189,248,0.25);border-radius:10px;padding:9px 13px;font-size:0.92rem;font-weight:600"><span>${ico}</span>${txt}</div>`).join('')}
+      </div>
+    </div>
+  `;
+  const br = document.createElement('div'); br.className = 'btn-row';
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-blue'; btn.textContent = '👀 Découvrir l\'équipe';
+  btn.onclick = () => { state.phase = 'personas'; render(); };
+  br.appendChild(btn); body.appendChild(br);
+  root.appendChild(c);
+}
+
+/* ── PERSONAS ── */
+function buildPersonas(root) {
+  root.appendChild(buildProgress('personas'));
+
+  const groupe = GROUPES[state.groupeIdx];
+  const persona = groupe.personnels[state.personaIdx];
+
+  // Compteur global
+  let totalPersonas = 0, globalIdx = 0;
+  for (let g = 0; g < GROUPES.length; g++) {
+    for (let p = 0; p < GROUPES[g].personnels.length; p++) {
+      if (g === state.groupeIdx && p === state.personaIdx) globalIdx = totalPersonas;
+      totalPersonas++;
+    }
+  }
+  root.appendChild(buildXP([{ico:'👥',val:`${globalIdx+1}/${totalPersonas}`}]));
+
+  const {card:c, body} = cardEl('👥','ci-blue','Niveau 1 — L\'équipe','Navigue entre les groupes et les personnels');
+
+  // Tabs groupes
+  const tabs = document.createElement('div'); tabs.className = 'group-tabs';
+  GROUPES.forEach((g, gi) => {
+    const tab = document.createElement('button');
+    tab.className = 'gtab' + (gi === state.groupeIdx ? ' active' : '');
+    tab.innerHTML = g.label;
+    tab.onclick = () => { state.groupeIdx = gi; state.personaIdx = 0; render(); };
+    tabs.appendChild(tab);
+  });
+  body.appendChild(tabs);
+
+  // Carte persona
+  const wrap = document.createElement('div');
+  wrap.className = 'persona-wrap';
+  wrap.style.cssText = `background:${persona.couleurCarte};border-color:${groupe.couleur}44`;
+
+  const top = document.createElement('div'); top.className = 'persona-top';
+
+  // Photo
+  top.appendChild(buildPhotoElement(persona));
+
+  // Infos
+  const info = document.createElement('div'); info.className = 'persona-info';
+  info.innerHTML = `
+    <div class="persona-badge" style="background:${persona.badgeBg};color:${persona.badgeColor}">${persona.badgeTxt}</div>
+    <div class="persona-nom" style="color:${persona.couleurNom}">${persona.nom}</div>
+    <div class="persona-role" style="color:${persona.couleurNom}">${persona.role}</div>
+    <div class="persona-citation" style="color:${persona.couleurNom};border-left-color:${groupe.couleur}">${persona.citation}</div>
+  `;
+  top.appendChild(info);
+  wrap.appendChild(top);
+
+  // Faits
+  const facts = document.createElement('div'); facts.className = 'persona-facts-zone';
+  persona.faits.forEach(f => {
+    facts.innerHTML += `<div class="fact-item">
+      <span class="fact-ico">${f.ico}</span>
+      <div class="fact-txt" style="font-weight:600">${f.txt}</div>
+    </div>`;
+  });
+  wrap.appendChild(facts);
+  body.appendChild(wrap);
+
+  // Navigation
+  const nav = document.createElement('div'); nav.className = 'pn-nav';
+  const prevBtn = document.createElement('button'); prevBtn.className = 'btn btn-ghost'; prevBtn.textContent = '← Préc';
+  const nextBtn = document.createElement('button'); nextBtn.className = 'btn btn-blue';
+
+  // Calcul suivant
+  const isLastInGroupe = state.personaIdx >= groupe.personnels.length - 1;
+  const isLastGroupe   = state.groupeIdx >= GROUPES.length - 1;
+  const isVeryLast     = isLastInGroupe && isLastGroupe;
+
+  nextBtn.textContent = isVeryLast ? 'Quiz →' : 'Suivant →';
+
+  // prev
+  const isVeryFirst = state.groupeIdx === 0 && state.personaIdx === 0;
+  prevBtn.disabled = isVeryFirst;
+  prevBtn.onclick = () => {
+    if (state.personaIdx > 0) { state.personaIdx--; }
+    else if (state.groupeIdx > 0) { state.groupeIdx--; state.personaIdx = GROUPES[state.groupeIdx].personnels.length - 1; }
+    render();
+  };
+
+  nextBtn.onclick = () => {
+    if (!isLastInGroupe) { state.personaIdx++; render(); }
+    else if (!isLastGroupe) { state.groupeIdx++; state.personaIdx = 0; render(); }
+    else { state.xp += 50; toast('⭐ +50 XP — Toute l\'équipe découverte !'); state.phase = 'quiz'; render(); }
+  };
+
+  const ctr = document.createElement('div'); ctr.className = 'pn-counter';
+  ctr.textContent = `${state.personaIdx+1}/${groupe.personnels.length} (groupe ${state.groupeIdx+1}/${GROUPES.length})`;
+
+  nav.append(prevBtn, ctr, nextBtn);
+  body.appendChild(nav);
+  root.appendChild(c);
+}
+
+/* ── QUIZ ── */
+function buildQuiz(root) {
+  root.appendChild(buildProgress('quiz'));
+  root.appendChild(buildXP([{ico:'❓',val:`${state.quizIdx+1}/${QUIZ.length}`},{ico:'🏅',val:state.quizScore}]));
+
+  const q = QUIZ[state.quizIdx];
+  const {card:c, body} = cardEl('🧩','ci-sun','Niveau 2 — Vers qui aller ?','Lis la situation, choisis le bon adulte');
+
+  if (q.ctx) body.innerHTML = `<div class="quiz-ctx">📌 ${q.ctx}</div>`;
+  body.innerHTML += `<div class="quiz-q">${q.q}</div>`;
+  const opts = document.createElement('div'); opts.className = 'opts';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    let cls = 'opt';
+    if (state.showFb) { if(i===q.ok) cls+=' ok'; else if(i===state.selected) cls+=' ko'; }
+    else if (i === state.selected) cls += ' sel';
+    btn.className = cls; btn.disabled = state.showFb;
+    btn.innerHTML = `<span class="opt-let">${String.fromCharCode(65+i)}</span>${o}`;
+    btn.onclick = () => { if (!state.showFb) { state.selected = i; render(); } };
+    opts.appendChild(btn);
+  });
+  body.appendChild(opts);
+
+  if (state.showFb) {
+    const ok = state.selected === q.ok;
+    const fb = document.createElement('div');
+    fb.className = `fb ${ok?'ok':'ko'}`;
+    fb.innerHTML = `<div class="fb-t">${ok?'✅ Bonne réponse ! +'+q.xp+' XP':'❌ Pas tout à fait…'}</div><div class="fb-b">${q.fb}</div>`;
+    body.appendChild(fb);
+  }
+
+  const br = document.createElement('div'); br.className = 'btn-row';
+  if (!state.showFb) {
+    const v = document.createElement('button'); v.className = 'btn btn-sun'; v.textContent = 'Valider';
+    v.disabled = state.selected === null;
+    v.onclick = () => {
+      if (state.selected === q.ok) { state.xp += q.xp; state.quizScore += q.xp; toast(`⭐ +${q.xp} XP`); }
+      state.showFb = true; render();
+    };
+    br.appendChild(v);
+  } else {
+    const n = document.createElement('button'); n.className = 'btn btn-blue';
+    n.textContent = state.quizIdx < QUIZ.length-1 ? 'Question suivante →' : 'Mise en scène →';
+    n.onclick = () => {
+      state.selected = null; state.showFb = false;
+      if (state.quizIdx < QUIZ.length-1) { state.quizIdx++; render(); }
+      else { state.xp += 20; toast('🎭 Niveau 3 débloqué !'); state.phase = 'scenarios'; render(); }
+    };
+    br.appendChild(n);
+  }
+  body.appendChild(br);
+  root.appendChild(c);
+}
+
+/* ── SCÉNARIOS ── */
+function buildScenarios(root) {
+  root.appendChild(buildProgress('scenarios'));
+  root.appendChild(buildXP([{ico:'🎭',val:`${state.scenIdx+1}/${SCENARIOS.length}`},{ico:'🏅',val:state.scenScore}]));
+
+  const sc = SCENARIOS[state.scenIdx];
+  const {card:c, body} = cardEl('🎭','ci-violet',`Niveau 3 — ${sc.titre}`,'Que ferais-tu dans cette situation ?');
+
+  body.innerHTML = `<div class="sc-ctx"><div class="sc-lbl">📖 La situation</div><div class="sc-story">${sc.ctx}</div></div>`;
+  body.innerHTML += `<div class="sc-q">${sc.q}</div>`;
+
+  if (!state.showRes) {
+    const choices = document.createElement('div'); choices.className = 'choices';
+    sc.choix.forEach((ch, i) => {
+      const btn = document.createElement('button'); btn.className = 'choice';
+      btn.innerHTML = `<span class="ch-arr">→</span>${ch.t}`;
+      btn.onclick = () => { state.choiceIdx = i; state.showRes = true; render(); };
+      choices.appendChild(btn);
+    });
+    body.appendChild(choices);
+  } else {
+    const ch = sc.choix[state.choiceIdx];
+    const res = document.createElement('div'); res.className = `res-box ${ch.ton}`;
+    res.innerHTML = `<span class="res-emoji">${ch.ico}</span>
+      <div class="res-t">${ch.r}</div>
+      <div class="res-tip">💡 ${ch.tip}</div>
+      <div class="impact ${ch.ton==='pos'?'pos':ch.ton==='neg'?'neg':'neu'}">${ch.lbl}</div>`;
+    body.appendChild(res);
+    const br = document.createElement('div'); br.className = 'btn-row';
+    const n = document.createElement('button'); n.className = 'btn btn-grass';
+    n.textContent = state.scenIdx < SCENARIOS.length-1 ? 'Scène suivante →' : '🏁 Mon bilan !';
+    n.onclick = () => {
+      const imp = sc.choix[state.choiceIdx].impact;
+      state.xp += Math.max(0, imp); state.scenScore += Math.max(0, imp);
+      state.choiceIdx = null; state.showRes = false;
+      if (state.scenIdx < SCENARIOS.length-1) { state.scenIdx++; render(); }
+      else { markDone(); state.phase = 'fin'; render(); }
+    };
+    br.appendChild(n); body.appendChild(br);
+  }
+  root.appendChild(c);
+}
+
+/* ── BILAN FINAL ── */
+function buildFin(root) {
+  const mastery = getMastery(state.xp);
+  const {card:c, body} = cardEl('🏁','ci-green','Module terminé !','Pilier 1 • Module 2');
+  body.innerHTML = `
+    <div class="completion">
+      <span class="trophy">🎉</span>
+      <h2 class="comp-title">Tu connais ton équipe !</h2>
+      <p class="comp-sub">Ces adultes seront là pour toi dès le premier jour. Tu les connais maintenant.</p>
+      <div class="mastery ${mastery.cls}">${mastery.lbl}</div>
+      <div class="stats-row">
+        <div class="stat-tile"><div class="stat-v">${state.xp}</div><div class="stat-l">XP Total</div></div>
+        <div class="stat-tile"><div class="stat-v">${state.quizScore}</div><div class="stat-l">Quiz</div></div>
+        <div class="stat-tile"><div class="stat-v">${state.scenScore}</div><div class="stat-l">Scènes</div></div>
+      </div>
+      <div class="unlock-banner">
+        <div class="unlock-ico">🔓</div>
+        <div class="unlock-text">
+          <strong>Module suivant débloqué !</strong>
+          ${NEXT_NAME} — comprends comment fonctionnent tes futurs profs.
+        </div>
+      </div>
+      <div class="next-hint">
+        💡 Tes progrès sont sauvegardés. Retrouve tout sur le <strong>Hub principal</strong>.
+      </div>
+    </div>
+  `;
+  const br = document.createElement('div'); br.className = 'btn-row';
+  const hub = document.createElement('button'); hub.className = 'btn btn-blue'; hub.textContent = '← Hub principal';
+  hub.onclick = () => window.location.href = 'index.html';
+  const nxt = document.createElement('button'); nxt.className = 'btn btn-grass'; nxt.textContent = 'Module suivant →';
+  nxt.onclick = () => window.location.href = NEXT_FILE;
+  const rel = document.createElement('button'); rel.className = 'btn btn-ghost'; rel.textContent = '↺ Recommencer';
+  rel.onclick = () => {
+    state = {phase:'intro',groupeIdx:0,personaIdx:0,quizIdx:0,selected:null,showFb:false,
+             scenIdx:0,choiceIdx:null,showRes:false,xp:0,quizScore:0,scenScore:0};
+    render();
+  };
+  br.append(hub, nxt, rel);
+  body.appendChild(br);
+  root.appendChild(c);
+}
+
+render();
+</script>
+</body>
+</html>

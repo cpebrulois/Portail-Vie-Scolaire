@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Hub Principal</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   VARIABLES
+══════════════════════════════════════════ */
+:root {
+  --sky:        #EAF6FF;
+  --sky2:       #D6EDFF;
+  --sun:        #FFD93D;
+  --sun-deep:   #F59E0B;
+  --grass:      #34D399;
+  --grass-deep: #059669;
+  --water:      #38BDF8;
+  --water-deep: #0284C7;
+  --coral:      #FB7185;
+  --coral-deep: #E11D48;
+  --violet:     #A78BFA;
+  --violet-deep:#7C3AED;
+  --amber:      #FCD34D;
+  --amber-deep: #D97706;
+  --ink:        #0F172A;
+  --ink-mid:    #334155;
+  --ink-light:  #64748B;
+  --ink-faint:  #CBD5E1;
+  --white:      #FFFFFF;
+  --panel:      rgba(255,255,255,0.92);
+  --radius-sm:  10px;
+  --radius-md:  18px;
+  --radius-lg:  28px;
+  --radius-xl:  40px;
+  --shadow-sm:  0 2px 8px rgba(15,23,42,0.08);
+  --shadow-md:  0 6px 24px rgba(15,23,42,0.12);
+  --shadow-lg:  0 16px 48px rgba(15,23,42,0.16);
+  --font-title: 'Baloo 2', cursive;
+  --font-body:  'Nunito', sans-serif;
+  --font-mono:  'Space Mono', monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--sky);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── FOND ANIMÉ ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 40% at 15% 0%, rgba(255,217,61,0.22) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 50% at 90% 10%, rgba(56,189,248,0.18) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 60% at 50% 110%, rgba(52,211,153,0.14) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(167,139,250,0.12) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+/* ── WRAPPER ── */
+.wrap{
+  position:relative;z-index:1;
+  max-width:1040px;
+  margin:0 auto;
+  padding:0 20px 80px;
+}
+
+/* ══════════════════════════════════════════
+   HERO HEADER
+══════════════════════════════════════════ */
+.hero{
+  text-align:center;
+  padding:52px 20px 36px;
+}
+.hero-logo{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--white);
+  border-radius:50px;
+  padding:10px 28px;
+  font-family:var(--font-title);
+  font-size:1rem;font-weight:800;
+  color:var(--ink-mid);
+  box-shadow:var(--shadow-md);
+  margin-bottom:24px;
+  border:2px solid var(--ink-faint);
+  letter-spacing:0.3px;
+}
+.hero-logo .rkt{font-size:1.4rem}
+.hero-title{
+  font-family:var(--font-title);
+  font-size:clamp(2.4rem,6vw,3.8rem);
+  font-weight:900;
+  line-height:1.1;
+  color:var(--ink);
+  margin-bottom:14px;
+}
+.hero-title .accent-sky  {color:var(--water-deep)}
+.hero-title .accent-sun  {color:var(--sun-deep)}
+.hero-desc{
+  font-size:1.1rem;
+  color:var(--ink-mid);
+  max-width:580px;
+  margin:0 auto 30px;
+  line-height:1.7;
+  font-weight:600;
+}
+/* XP Banner */
+.xp-banner{
+  display:inline-flex;align-items:center;gap:18px;
+  background:var(--white);
+  border-radius:50px;
+  padding:12px 28px;
+  box-shadow:var(--shadow-md);
+  border:2px solid var(--amber);
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.xp-stat{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--font-title);
+  font-size:1rem;font-weight:800;
+  color:var(--ink);
+}
+.xp-stat .ico{font-size:1.2rem}
+.xp-divider{width:1px;height:22px;background:var(--ink-faint)}
+/* Global progress bar */
+.global-bar-wrap{
+  margin-top:18px;
+  background:var(--white);
+  border-radius:50px;
+  padding:10px 20px;
+  box-shadow:var(--shadow-sm);
+  max-width:440px;
+  margin:18px auto 0;
+}
+.global-bar-label{
+  font-size:0.78rem;font-weight:700;
+  color:var(--ink-light);
+  text-transform:uppercase;letter-spacing:0.8px;
+  margin-bottom:7px;text-align:left;
+}
+.global-bar-track{
+  height:10px;background:var(--sky2);
+  border-radius:50px;overflow:hidden;
+}
+.global-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--grass) 0%,var(--water) 100%);
+  border-radius:50px;
+  transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* ══════════════════════════════════════════
+   SECTION TITRE
+══════════════════════════════════════════ */
+.section-label{
+  display:flex;align-items:center;gap:10px;
+  margin:44px 0 18px;
+}
+.section-label-line{flex:1;height:2px;background:var(--ink-faint)}
+.section-label-text{
+  font-family:var(--font-title);
+  font-size:0.85rem;font-weight:800;
+  color:var(--ink-light);
+  text-transform:uppercase;letter-spacing:1.5px;
+  white-space:nowrap;
+}
+
+/* ══════════════════════════════════════════
+   GRILLE PILIERS
+══════════════════════════════════════════ */
+.piliers-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:16px;
+}
+
+.pilier-card{
+  background:var(--panel);
+  border-radius:var(--radius-lg);
+  border:2px solid rgba(255,255,255,0.8);
+  box-shadow:var(--shadow-md);
+  overflow:hidden;
+  transition:transform 0.2s,box-shadow 0.2s;
+  cursor:pointer;
+  text-decoration:none;
+  display:flex;flex-direction:column;
+}
+.pilier-card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow-lg);
+}
+.pilier-card.locked{
+  opacity:0.55;
+  cursor:not-allowed;
+  filter:grayscale(0.4);
+}
+.pilier-card.locked:hover{transform:none;box-shadow:var(--shadow-md)}
+
+.pilier-header{
+  padding:22px 22px 16px;
+  position:relative;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.pilier-emoji-wrap{
+  width:58px;height:58px;
+  border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.9rem;
+  flex-shrink:0;
+  box-shadow:var(--shadow-sm);
+}
+.pilier-info{flex:1}
+.pilier-name{
+  font-family:var(--font-title);
+  font-size:1.05rem;font-weight:800;
+  color:var(--ink);line-height:1.2;
+  margin-bottom:4px;
+}
+.pilier-sub{
+  font-size:0.78rem;font-weight:700;
+  color:var(--ink-light);
+}
+.pilier-status-badge{
+  position:absolute;top:14px;right:14px;
+  border-radius:50px;
+  padding:3px 10px;
+  font-size:0.72rem;font-weight:800;
+  letter-spacing:0.5px;
+}
+.badge-new    {background:#FEF3C7;color:#92400E}
+.badge-active {background:#DCFCE7;color:#14532D}
+.badge-locked {background:#F1F5F9;color:#94A3B8}
+.badge-done   {background:#E0F2FE;color:#075985}
+
+.pilier-modules{
+  padding:0 16px 16px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.module-chip{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.7);
+  border:1.5px solid rgba(15,23,42,0.08);
+  border-radius:10px;
+  padding:7px 10px;
+  font-size:0.82rem;font-weight:700;
+  color:var(--ink-mid);
+  text-decoration:none;
+  transition:all 0.15s;
+  cursor:pointer;
+}
+.module-chip:hover:not(.chip-locked){
+  background:white;
+  border-color:rgba(15,23,42,0.18);
+  transform:translateX(3px);
+}
+.module-chip.chip-locked{
+  opacity:0.5;cursor:not-allowed;
+}
+.module-chip.chip-done{
+  color:var(--grass-deep);
+  border-color:rgba(52,211,153,0.3);
+  background:rgba(52,211,153,0.08);
+}
+.chip-dot{
+  width:8px;height:8px;border-radius:50%;
+  flex-shrink:0;
+}
+.chip-dot.done  {background:var(--grass)}
+.chip-dot.active{background:var(--sun-deep);box-shadow:0 0 0 3px rgba(245,158,11,0.25)}
+.chip-dot.locked{background:var(--ink-faint)}
+.chip-soon{
+  margin-left:auto;
+  font-size:0.7rem;
+  color:var(--ink-faint);
+  font-style:italic;
+}
+
+.pilier-footer{
+  padding:10px 16px 16px;
+  border-top:1.5px solid rgba(15,23,42,0.06);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pilier-progress-mini{
+  flex:1;margin-right:10px;
+}
+.mini-bar{
+  height:5px;background:var(--sky2);
+  border-radius:50px;overflow:hidden;
+}
+.mini-bar-fill{
+  height:100%;border-radius:50px;
+  transition:width 0.6s ease;
+}
+.pilier-xp{
+  font-family:var(--font-mono);
+  font-size:0.8rem;font-weight:700;
+  color:var(--ink-light);
+  white-space:nowrap;
+}
+
+/* ══════════════════════════════════════════
+   GRILLE HUBS RÉVISION
+══════════════════════════════════════════ */
+.revision-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+  gap:12px;
+}
+.revision-hub{
+  background:var(--panel);
+  border-radius:var(--radius-md);
+  border:2px solid rgba(255,255,255,0.8);
+  box-shadow:var(--shadow-sm);
+  padding:18px 16px;
+  text-align:center;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all 0.2s;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.revision-hub:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-md);
+}
+.revision-hub.hub-soon{
+  opacity:0.5;cursor:default;
+}
+.revision-hub.hub-soon:hover{transform:none;box-shadow:var(--shadow-sm)}
+.rev-ico{font-size:2rem}
+.rev-name{
+  font-family:var(--font-title);
+  font-size:0.95rem;font-weight:800;
+  color:var(--ink);
+}
+.rev-count{
+  font-size:0.75rem;font-weight:700;
+  color:var(--ink-light);
+}
+.rev-tag{
+  border-radius:50px;
+  padding:2px 10px;
+  font-size:0.7rem;font-weight:800;
+  margin-top:2px;
+}
+.tag-dispo   {background:#DCFCE7;color:#14532D}
+.tag-bientot {background:#F1F5F9;color:#94A3B8}
+
+/* ══════════════════════════════════════════
+   FOOTER NOTE
+══════════════════════════════════════════ */
+.footer-note{
+  text-align:center;
+  margin-top:48px;
+  padding:22px;
+  background:var(--white);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-sm);
+  border:2px solid var(--ink-faint);
+  font-size:0.88rem;
+  color:var(--ink-light);
+  line-height:1.6;
+}
+.footer-note strong{color:var(--ink-mid)}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(90px);
+  background:var(--ink);color:white;
+  padding:12px 28px;border-radius:50px;
+  font-family:var(--font-title);font-weight:700;font-size:0.95rem;
+  box-shadow:var(--shadow-lg);z-index:9999;
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ══════════════════════════════════════════
+   ANIMATIONS ENTRÉE
+══════════════════════════════════════════ */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+.pilier-card{animation:fadeUp 0.5s both}
+.pilier-card:nth-child(1){animation-delay:.05s}
+.pilier-card:nth-child(2){animation-delay:.12s}
+.pilier-card:nth-child(3){animation-delay:.19s}
+.pilier-card:nth-child(4){animation-delay:.26s}
+.revision-hub{animation:fadeUp 0.5s both}
+.revision-hub:nth-child(1){animation-delay:.1s}
+.revision-hub:nth-child(2){animation-delay:.16s}
+.revision-hub:nth-child(3){animation-delay:.22s}
+.revision-hub:nth-child(4){animation-delay:.28s}
+.revision-hub:nth-child(5){animation-delay:.34s}
+.revision-hub:nth-child(6){animation-delay:.40s}
+
+@media(max-width:520px){
+  .piliers-grid{grid-template-columns:1fr}
+  .revision-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-title{font-size:2rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-logo">
+      <span class="rkt">🚀</span>
+      Collège Château Rance — Scey-sur-Saône
+    </div>
+    <h1 class="hero-title">
+      Mon Aventure<br>
+      <span class="accent-sky">6</span><span class="accent-sun">ème</span>
+    </h1>
+    <p class="hero-desc">
+      Ton guide interactif pour préparer ta rentrée au collège —
+      à ton rythme, cet été, depuis chez toi.
+    </p>
+    <div class="xp-banner">
+      <div class="xp-stat"><span class="ico">⭐</span><span id="xp-total">0</span> XP</div>
+      <div class="xp-divider"></div>
+      <div class="xp-stat"><span class="ico">✅</span><span id="modules-done">0</span> modules</div>
+      <div class="xp-divider"></div>
+      <div class="xp-stat"><span class="ico">🏅</span><span id="badge-label">Explorateur</span></div>
+    </div>
+    <div class="global-bar-wrap">
+      <div class="global-bar-label">Progression générale</div>
+      <div class="global-bar-track">
+        <div class="global-bar-fill" id="global-bar" style="width:0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ PILIERS PRINCIPAUX ═══ -->
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">🗺️ Les piliers de ton aventure</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="piliers-grid" id="piliers-grid">
+    <!-- Généré par JS -->
+  </div>
+
+  <!-- ═══ HUBS RÉVISION ═══ -->
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <div class="section-label-text">📚 Révision par discipline — accès libre</div>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="revision-grid" id="revision-grid">
+    <!-- Généré par JS -->
+  </div>
+
+  <div class="footer-note">
+    🔒 <strong>Tes progrès sont sauvegardés automatiquement</strong> dans ce navigateur.
+    Tu peux fermer et revenir — tout sera là où tu l'as laissé.<br>
+    À la rentrée, ton CPE pourra valider tes badges directement depuis le portail du collège.
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CONFIG — tout éditable ici
+═══════════════════════════════════════════════════════════ */
+const COLLEGE = "Collège Château Rance";
+
+/* Clé localStorage partagée avec tous les modules */
+const LS_KEY = 'ave6e_progress';
+
+function getProgress() {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  } catch(e) { return {}; }
+}
+function saveProgress(p) {
+  localStorage.setItem(LS_KEY, JSON.stringify(p));
+}
+function isDone(moduleId) {
+  const p = getProgress();
+  return Array.isArray(p.modules_done) && p.modules_done.includes(moduleId);
+}
+
+/* ──────────────────────────────────────────────────────────
+   DÉFINITION DES PILIERS ET MODULES
+   Pour ajouter un pilier : ajouter un objet dans PILIERS
+   Pour ajouter un module : ajouter dans sa liste modules[]
+   unlockAfter : null = toujours dispo, sinon id du module requis
+────────────────────────────────────────────────────────── */
+const PILIERS = [
+  {
+    id: 'P1',
+    emoji: '🧑‍🤝‍🧑',
+    nom: 'Les gens qui vont\nprendre soin de toi',
+    sub: 'Équipe éducative & personnels',
+    couleur: '#38BDF8',
+    couleurDeep: '#0284C7',
+    couleurBg: '#EFF6FF',
+    file: null, // hub de pilier (futur)
+    modules: [
+      {
+        id: 'M1_01',
+        titre: 'Le grand saut — CM2 → 6e',
+        sub: 'Comprendre ce qui change',
+        unlockAfter: null,
+        file: 'p1_m01_grand_saut.html'
+      },
+      {
+        id: 'M1_02',
+        titre: 'L\'équipe qui prend soin de toi',
+        sub: 'CPE, AED, direction, infirmière…',
+        unlockAfter: 'M1_01',
+        file: 'p1_m02_equipe.html'
+      },
+      {
+        id: 'M1_03',
+        titre: 'Tes professeurs',
+        sub: 'La pluralité des profs, le PP…',
+        unlockAfter: 'M1_02',
+        file: null // à venir
+      },
+      {
+        id: 'M1_04',
+        titre: 'Le personnel d\'entretien',
+        sub: 'Ceux qu\'on voit mais oublie de remercier',
+        unlockAfter: 'M1_03',
+        file: null
+      }
+    ]
+  },
+  {
+    id: 'P2',
+    emoji: '🗺️',
+    nom: 'Les lieux\ndu collège',
+    sub: 'Visite virtuelle & repères',
+    couleur: '#34D399',
+    couleurDeep: '#059669',
+    couleurBg: '#F0FDF4',
+    file: null,
+    modules: [
+      {
+        id: 'M2_01',
+        titre: 'Plan général — je me repère',
+        sub: 'Bâtiments, cours, accès',
+        unlockAfter: 'M1_01',
+        file: null
+      },
+      {
+        id: 'M2_02',
+        titre: 'Les lieux de vie quotidienne',
+        sub: 'Cour, réfectoire, casiers…',
+        unlockAfter: 'M2_01',
+        file: null
+      },
+      {
+        id: 'M2_03',
+        titre: 'Les lieux d\'apprentissage',
+        sub: 'Salles, CDI, labo sciences…',
+        unlockAfter: 'M2_02',
+        file: null
+      },
+      {
+        id: 'M2_04',
+        titre: 'Les bureaux des adultes',
+        sub: 'Où frapper quand j\'en ai besoin ?',
+        unlockAfter: 'M2_03',
+        file: null
+      }
+    ]
+  },
+  {
+    id: 'P3',
+    emoji: '🤝',
+    nom: 'La vie en\ncollectivité',
+    sub: 'Règlement, droits, pHARe',
+    couleur: '#A78BFA',
+    couleurDeep: '#7C3AED',
+    couleurBg: '#F5F3FF',
+    file: null,
+    modules: [
+      {
+        id: 'M3_01',
+        titre: 'Les règles — pourquoi elles existent',
+        sub: 'Le sens du règlement intérieur',
+        unlockAfter: 'M1_01',
+        file: null
+      },
+      {
+        id: 'M3_02',
+        titre: 'Mes droits et mes devoirs',
+        sub: 'Élève, citoyen, membre d\'une communauté',
+        unlockAfter: 'M3_01',
+        file: null
+      },
+      {
+        id: 'M3_03',
+        titre: 'Quand ça se passe mal — pHARe',
+        sub: 'Harcèlement, ambassadeurs, signalement',
+        unlockAfter: 'M3_02',
+        file: null
+      },
+      {
+        id: 'M3_04',
+        titre: 'Mon organisation au quotidien',
+        sub: 'Agenda, emploi du temps, matériel',
+        unlockAfter: 'M3_03',
+        file: null
+      }
+    ]
+  },
+  {
+    id: 'P4',
+    emoji: '📚',
+    nom: 'Les matières\nde 6e',
+    sub: 'Panorama & méthodes',
+    couleur: '#FB7185',
+    couleurDeep: '#E11D48',
+    couleurBg: '#FFF1F2',
+    file: null,
+    modules: [
+      {
+        id: 'M4_01',
+        titre: 'Mes nouvelles matières',
+        sub: 'Panorama complet, horaires types',
+        unlockAfter: 'M1_01',
+        file: null
+      },
+      {
+        id: 'M4_02',
+        titre: 'Comment apprendre une leçon ?',
+        sub: 'Méthodes de mémorisation efficaces',
+        unlockAfter: 'M4_01',
+        file: null
+      },
+      {
+        id: 'M4_03',
+        titre: 'Gérer son agenda de collégien',
+        sub: 'Organisation, devoirs, révisions',
+        unlockAfter: 'M4_02',
+        file: null
+      }
+    ]
+  }
+];
+
+/* Hubs de révision (toujours accessibles) */
+const HUBS_REVISION = [
+  { nom:'Français',      ico:'🖊️', file:'hub_francais.html',   count:'bientôt', dispo:false },
+  { nom:'Mathématiques', ico:'📐', file:'hub_maths.html',       count:'bientôt', dispo:false },
+  { nom:'Histoire-Géo',  ico:'🌍', file:'hub_histoire.html',    count:'bientôt', dispo:false },
+  { nom:'Sciences',      ico:'🔬', file:'hub_sciences.html',    count:'bientôt', dispo:false },
+  { nom:'Anglais',       ico:'🇬🇧', file:'hub_anglais.html',    count:'bientôt', dispo:false },
+  { nom:'Méthodes',      ico:'🛠️', file:'hub_methodes.html',    count:'bientôt', dispo:false }
+];
+
+/* Couleurs des piliers pour barres */
+const PILIER_COLORS = {
+  P1:'#38BDF8', P2:'#34D399', P3:'#A78BFA', P4:'#FB7185'
+};
+
+/* ═══════════════════════════════════════════════════════════
+   CALCUL STATS
+═══════════════════════════════════════════════════════════ */
+function computeStats() {
+  const p = getProgress();
+  const done = p.modules_done || [];
+  const totalModules = PILIERS.reduce((a,pi) => a + pi.modules.length, 0);
+  const doneCnt = done.length;
+  const xp = p.xp_total || 0;
+  let badge = 'Explorateur 🗺️';
+  if (doneCnt >= totalModules)      badge = 'Champion du Collège 🏆';
+  else if (doneCnt >= Math.ceil(totalModules * 0.6)) badge = 'Futur Collégien 🎓';
+  else if (doneCnt >= Math.ceil(totalModules * 0.25)) badge = 'Aventurier 🌟';
+  return { done, doneCnt, totalModules, xp, badge, pct: Math.round(doneCnt/totalModules*100) };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDU PILIERS
+═══════════════════════════════════════════════════════════ */
+function renderPiliers() {
+  const { done } = computeStats();
+  const grid = document.getElementById('piliers-grid');
+  grid.innerHTML = '';
+
+  PILIERS.forEach(pi => {
+    const pilierDoneCount = pi.modules.filter(m => done.includes(m.id)).length;
+    const pilierTotal = pi.modules.length;
+    const pct = pilierTotal > 0 ? Math.round(pilierDoneCount / pilierTotal * 100) : 0;
+    const allDone = pilierDoneCount === pilierTotal;
+
+    // Statut global du pilier
+    let statusClass='badge-new', statusTxt='Nouveau';
+    if (allDone) { statusClass='badge-done'; statusTxt='Terminé ✓'; }
+    else if (pilierDoneCount > 0) { statusClass='badge-active'; statusTxt='En cours'; }
+
+    const card = document.createElement('div');
+    card.className = 'pilier-card';
+    card.style.borderColor = pi.couleur + '55';
+
+    card.innerHTML = `
+      <div class="pilier-header" style="background:${pi.couleurBg}">
+        <div class="pilier-emoji-wrap" style="background:${pi.couleur}22">${pi.emoji}</div>
+        <div class="pilier-info">
+          <div class="pilier-name">${pi.nom.replace('\n','<br>')}</div>
+          <div class="pilier-sub">${pi.sub}</div>
+        </div>
+        <div class="pilier-status-badge ${statusClass}">${statusTxt}</div>
+      </div>
+      <div class="pilier-modules" id="modules-${pi.id}"></div>
+      <div class="pilier-footer">
+        <div class="pilier-progress-mini">
+          <div class="mini-bar">
+            <div class="mini-bar-fill" style="width:${pct}%;background:${pi.couleur}"></div>
+          </div>
+        </div>
+        <div class="pilier-xp">${pilierDoneCount}/${pilierTotal}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    const modContainer = card.querySelector(`#modules-${pi.id}`);
+    pi.modules.forEach(mod => {
+      const modDone = done.includes(mod.id);
+      const modUnlocked = mod.unlockAfter === null || done.includes(mod.unlockAfter);
+      const chip = document.createElement('div');
+      let chipClass = 'module-chip';
+      let dotClass = 'chip-dot locked';
+      let dotLabel = '';
+      let extra = '';
+
+      if (modDone) {
+        chipClass += ' chip-done'; dotClass = 'chip-dot done'; dotLabel = '';
+      } else if (modUnlocked) {
+        dotClass = 'chip-dot active'; dotLabel = '';
+      } else {
+        chipClass += ' chip-locked';
+        extra = `<span class="chip-soon">🔒</span>`;
+      }
+
+      chip.className = chipClass;
+      chip.innerHTML = `
+        <span class="${dotClass}"></span>
+        <span>${mod.titre}</span>
+        ${modDone ? '<span class="chip-soon">✓</span>' : extra}
+      `;
+
+      if (modUnlocked && mod.file && !modDone) {
+        chip.addEventListener('click', () => { window.location.href = mod.file; });
+        chip.title = mod.sub;
+      } else if (modDone) {
+        chip.style.cursor = 'default';
+        chip.title = '✓ ' + mod.sub;
+      } else if (mod.file === null && modUnlocked) {
+        chip.classList.add('chip-locked');
+        chip.title = 'Module en cours de création…';
+        chip.innerHTML += `<span class="chip-soon">bientôt</span>`;
+      }
+
+      modContainer.appendChild(chip);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDU HUBS RÉVISION
+═══════════════════════════════════════════════════════════ */
+function renderRevision() {
+  const grid = document.getElementById('revision-grid');
+  grid.innerHTML = '';
+  HUBS_REVISION.forEach(h => {
+    const div = document.createElement('div');
+    div.className = 'revision-hub' + (h.dispo ? '' : ' hub-soon');
+    div.innerHTML = `
+      <div class="rev-ico">${h.ico}</div>
+      <div class="rev-name">${h.nom}</div>
+      <div class="rev-count">${h.count}</div>
+      <div class="rev-tag ${h.dispo ? 'tag-dispo' : 'tag-bientot'}">
+        ${h.dispo ? 'Disponible' : 'Bientôt'}
+      </div>
+    `;
+    if (h.dispo) div.addEventListener('click', () => window.location.href = h.file);
+    grid.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MISE À JOUR STATS
+═══════════════════════════════════════════════════════════ */
+function updateStats() {
+  const s = computeStats();
+  document.getElementById('xp-total').textContent     = s.xp;
+  document.getElementById('modules-done').textContent = s.doneCnt;
+  document.getElementById('badge-label').textContent  = s.badge;
+  document.getElementById('global-bar').style.width   = s.pct + '%';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT + ÉCOUTE PROGRESSION (modules → hub)
+═══════════════════════════════════════════════════════════ */
+function init() {
+  renderPiliers();
+  renderRevision();
+  updateStats();
+}
+
+/* Écouter les changements localStorage depuis les modules */
+window.addEventListener('storage', (e) => {
+  if (e.key === LS_KEY) {
+    renderPiliers();
+    updateStats();
+  }
+});
+
+init();
+</script>
+</body>
+</html>
