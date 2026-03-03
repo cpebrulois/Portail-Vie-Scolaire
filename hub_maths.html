@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Révision Maths CM2</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ma:#6366F1;--ma-d:#4338CA;--ma-m:#818CF8;--ma-p:#EEF2FF;--ma-bg:#F5F5FF;
+  --sun:#F59E0B;--sun-d:#B45309;--sun-p:#FEF3C7;
+  --ok:#34D399;--ok-d:#059669;
+  --coral:#F43F5E;--coral-d:#BE123C;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--inkf:#CBD5E1;
+  --w:#FFF;--panel:rgba(255,255,255,.96);
+  --rsm:10px;--rmd:18px;--rlg:28px;
+  --sh1:0 2px 8px rgba(15,23,42,.08);--sh2:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--ma-bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 35% at 4% 4%,rgba(99,102,241,.1) 0%,transparent 65%),
+             radial-gradient(ellipse 40% 35% at 96% 8%,rgba(245,158,11,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 45% at 50% 108%,rgba(52,211,153,.07) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 16px 64px}
+
+/* NAV */
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--w);border:2px solid var(--inkf);
+  border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;
+  color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--ma);color:var(--ma-d)}
+
+/* HERO */
+.hero{text-align:center;padding:26px 20px 18px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--ma);color:#fff;
+  border-radius:50px;padding:8px 22px;font-family:var(--ft);font-size:.9rem;font-weight:800;
+  margin-bottom:14px;box-shadow:0 4px 0 var(--ma-d)}
+.hero-title{font-family:var(--ft);font-size:clamp(1.9rem,5vw,2.9rem);font-weight:900;margin-bottom:8px}
+.hero-title em{color:var(--ma);font-style:normal}
+.hero-sub{font-size:.97rem;color:var(--ink3);font-weight:600;max-width:480px;margin:0 auto 16px}
+.cm2-tag{display:inline-flex;align-items:center;gap:7px;background:var(--sun-p);
+  border:2px solid rgba(245,158,11,.35);border-radius:50px;padding:6px 18px;
+  font-family:var(--ft);font-size:.8rem;font-weight:800;color:var(--sun-d)}
+
+/* XP */
+.xps{display:flex;gap:9px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.xp{display:flex;align-items:center;gap:5px;background:var(--w);border:2px solid var(--inkf);
+  border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink)}
+.xp.hl{border-color:var(--ma-m);background:var(--ma-p);color:var(--ma-d)}
+
+/* ONGLETS */
+.tabs{display:flex;gap:0;background:var(--w);border-radius:var(--rmd);padding:6px;
+  box-shadow:var(--sh1);border:1.5px solid var(--inkf);overflow-x:auto;margin-bottom:14px}
+.tab{flex:1;min-width:88px;padding:10px 7px;border-radius:var(--rsm);border:none;background:transparent;
+  cursor:pointer;font-family:var(--ft);font-size:.79rem;font-weight:800;color:var(--ink3);
+  transition:all .2s;white-space:nowrap;text-align:center;line-height:1.3}
+.tab:hover:not(.on){background:rgba(99,102,241,.08);color:var(--ma-d)}
+.tab.on{background:var(--ma);color:#fff;box-shadow:0 3px 8px rgba(99,102,241,.4)}
+.tab-ico{display:block;font-size:1.05rem;margin-bottom:2px}
+.tab-ok{font-size:.62rem;background:rgba(255,255,255,.3);border-radius:50px;padding:1px 5px;margin-left:3px}
+
+/* CARD */
+.card{background:var(--panel);border-radius:var(--rlg);box-shadow:var(--sh2);
+  border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px;overflow:hidden;
+  animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.chead{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1.5px solid rgba(15,23,42,.07)}
+.ci{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.c-ma{background:var(--ma-p)}.c-fc{background:var(--sun-p)}.c-ex{background:#DCFCE7}.c-ok{background:#DBEAFE}
+.ctitle{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ink)}
+.csub{font-size:.78rem;font-weight:700;color:var(--ink3);margin-top:2px}
+.cbody{padding:18px 20px}
+
+/* COURS */
+.cours{background:linear-gradient(135deg,rgba(99,102,241,.05),rgba(245,158,11,.04));
+  border:1.5px solid rgba(99,102,241,.18);border-radius:var(--rmd);padding:17px;margin-bottom:14px}
+.ctit{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ma-d);margin-bottom:9px}
+.ctxt{font-size:.9rem;line-height:1.7;color:var(--ink2)}
+.ctxt strong{color:var(--ma-d)}
+.ex-box{background:var(--w);border-left:4px solid var(--ma);border-radius:var(--rsm);
+  padding:10px 14px;margin:10px 0;font-size:.88rem;color:var(--ink);line-height:1.6;font-family:var(--fm)}
+.astuce{background:var(--sun-p);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--rsm);
+  padding:9px 13px;margin-top:9px;font-size:.84rem;color:var(--sun-d);font-weight:700}
+.astuce::before{content:'💡 '}
+.regle{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:var(--rsm);
+  padding:9px 13px;margin-top:8px;font-size:.84rem;color:#1E40AF;font-weight:700}
+.regle::before{content:'📌 '}
+
+/* FLASHCARDS */
+.fc-hint{font-size:.74rem;color:var(--ink3);text-align:center;margin-bottom:8px;font-style:italic}
+.fcwrap{perspective:1000px;cursor:pointer;margin-bottom:12px}
+.fcinner{width:100%;min-height:155px;position:relative;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--rmd)}
+.fcinner.flip{transform:rotateY(180deg)}
+.fcface{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--rmd);
+  padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.fcf{background:var(--w);border:2px solid var(--ma-m);box-shadow:var(--sh1)}
+.fcb{background:linear-gradient(135deg,var(--ma-p),#E8EAFF);border:2px solid var(--ma);transform:rotateY(180deg)}
+.fctag{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:.55}
+.fcq{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ink);line-height:1.3}
+.fcb .fcq{color:var(--ma-d)}
+.fcsub{font-size:.74rem;color:var(--ink3);font-style:italic}
+.fcb .fcsub{color:var(--ma-m);font-style:normal;font-weight:700}
+.fcnav{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.fcctr{font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink3)}
+
+/* QCM */
+.qctx{background:rgba(99,102,241,.07);border:1.5px solid rgba(99,102,241,.18);border-radius:var(--rsm);
+  padding:9px 13px;margin-bottom:11px;font-size:.87rem;color:var(--ink2);font-weight:600;font-family:var(--fm)}
+.qq{font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:13px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--inkf);
+  border-radius:var(--rsm);padding:11px 14px;cursor:pointer;font-size:.92rem;font-weight:600;
+  color:var(--ink);text-align:left;transition:all .15s;font-family:var(--fb)}
+.opt:hover:not(:disabled){border-color:var(--ma-m);background:var(--ma-p)}
+.opt.sel{border-color:var(--ma);background:var(--ma-p)}
+.opt.ok{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.opt:disabled{cursor:default}
+.olet{width:28px;height:28px;border-radius:7px;background:var(--inkf);display:flex;align-items:center;
+  justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt.sel .olet{background:var(--ma);color:#fff}
+.opt.ok  .olet{background:var(--ok);color:#fff}
+.opt.ko  .olet{background:#EF4444;color:#fff}
+.fb{border-radius:var(--rsm);padding:11px 14px;margin-bottom:12px;border:2px solid}
+.fb.ok{background:#DCFCE7;border-color:var(--ok)}
+.fb.ko{background:#FEE2E2;border-color:#EF4444}
+.fbt{font-family:var(--ft);font-size:.92rem;font-weight:800;margin-bottom:4px}
+.fbb{font-size:.85rem;line-height:1.5}
+
+/* TROUS */
+.tbloc{background:var(--w);border:2px solid var(--inkf);border-radius:var(--rmd);padding:16px;margin-bottom:10px}
+.tphrase{font-size:.97rem;line-height:2.2;color:var(--ink);font-weight:600}
+.ti{border:none;border-bottom:2px solid var(--ma);background:transparent;
+  min-width:80px;padding:2px 6px;font-family:var(--fm);font-size:.95rem;
+  font-weight:700;color:var(--ma-d);outline:none;text-align:center;transition:border-color .2s}
+.ti.ok{border-bottom-color:var(--ok-d);color:var(--ok-d)}
+.ti.ko{border-bottom-color:#EF4444;color:#B91C1C}
+.taide{font-size:.76rem;color:var(--ink3);margin-top:6px;font-style:italic}
+.tres{margin-top:8px;font-size:.85rem;font-weight:700;min-height:20px}
+
+/* Calcul visuel */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.calc-card{background:var(--w);border:2px solid var(--inkf);border-radius:var(--rsm);
+  padding:12px;text-align:center}
+.calc-op{font-family:var(--fm);font-size:1.3rem;font-weight:700;color:var(--ma);margin-bottom:4px}
+.calc-ex{font-size:.82rem;color:var(--ink3);line-height:1.5}
+@media(max-width:400px){.calc-grid{grid-template-columns:1fr}}
+
+/* BILAN */
+.bilan{text-align:center;padding:6px 0 14px}
+.bscore{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--ma);margin-bottom:5px}
+.blbl{font-size:.88rem;color:var(--ink3);font-weight:600;margin-bottom:14px}
+.bbadge{display:inline-flex;align-items:center;gap:7px;border-radius:50px;padding:7px 18px;
+  font-family:var(--ft);font-size:.88rem;font-weight:800;margin-bottom:14px}
+.bor{background:#FEF9C3;color:#92400E}
+.barg{background:var(--ma-p);color:var(--ma-d)}
+.bbr{background:#DCFCE7;color:#14532D}
+
+/* BOUTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;
+  padding:11px 24px;font-family:var(--ft);font-size:.95rem;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:all .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.14)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,.14)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.bma{background:var(--ma);color:#fff}
+.bsun{background:var(--sun-d);color:#fff}
+.bok{background:var(--ok-d);color:#fff}
+.bgh{background:var(--w);color:var(--ink2);border:2px solid var(--inkf);box-shadow:none}
+.bgh:hover{border-color:var(--ink2);transform:none}
+.brow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--ink);color:#fff;padding:11px 26px;border-radius:50px;font-family:var(--ft);
+  font-weight:700;font-size:.92rem;box-shadow:0 16px 48px rgba(15,23,42,.2);z-index:9999;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:540px){.tab{min-width:70px;font-size:.73rem}.app{padding:0 12px 48px}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="topnav">
+  <a class="back" href="index_ACCEUIL6e.html">← Hub principal</a>
+  <span style="font-size:.79rem;font-weight:700;color:var(--ink3)">Zone Révision</span>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">🔢 Révision Maths</div>
+  <h1 class="hero-title">Les <em>Maths</em></h1>
+  <p class="hero-sub">Solidifie tes bases de CM2 avant d'entrer en 6e — calcul, géométrie, fractions et problèmes.</p>
+  <div class="cm2-tag">🏫 Niveau CM2 — bases à solidifier avant la rentrée</div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+<div class="xps">
+  <div class="xp hl">⭐ <span id="xpTot">0</span> XP</div>
+  <div class="xp">✅ <span id="chapDone">0</span>/<span id="chapTot">5</span> chapitres</div>
+</div>
+
+<div id="main"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   DONNÉES — MATHS CM2 PUR
+   5 chapitres : Numération · Calcul · Fractions · Géométrie · Problèmes
+══════════════════════════════════════════════════════════ */
+const DATA = [
+
+// ─────────────── 1. NUMÉRATION ───────────────
+{ id:'num', ico:'🔢', label:'Numération',
+  cours:{
+    titre:'Lire, écrire et comparer les grands nombres',
+    txt:`En CM2, tu travailles avec des nombres jusqu'au <strong>milliard</strong>.
+    Pour lire un grand nombre, on le découpe en <strong>tranches de 3 chiffres</strong>
+    en partant de la droite. Chaque tranche a un nom : unités, milliers, millions, milliards.`,
+    ex:'8 204 375 = huit millions deux cent quatre mille trois cent soixante-quinze\n\nTableau : Mil. · C.mill · D.mill · U.mill · C · D · U\n           8  ·    2    ·   0    ·   4   · 3 · 7 · 5',
+    astuce:'Pour comparer deux grands nombres : regarde d\'abord combien ils ont de chiffres. Plus de chiffres = plus grand. Si même nombre de chiffres, compare chiffre par chiffre de gauche à droite.',
+    regle:'Ordre des chiffres de droite à gauche : unités · dizaines · centaines · milliers · dizaines de milliers · centaines de milliers · millions…'
+  },
+  fc:[
+    { q:'Comment lit-on le nombre 3 050 200 ?',
+      a:'Trois millions cinquante mille deux cents.',
+      hint:'Découpe : 3 | 050 | 200. Trois millions / cinquante mille / deux cents.',
+      ah:'Attention aux zéros : 3 050 200 ≠ 3 500 200. Le zéro tient la place mais ne se lit pas (sauf "cent zéro").' },
+    { q:'Quelle est la valeur du chiffre 7 dans 4 725 038 ?',
+      a:'7 est en position des centaines de milliers → sa valeur est 700 000.',
+      hint:'Compte les positions depuis la droite : U D C Umil Dmil Cmil Mil…',
+      ah:'La valeur d\'un chiffre dépend de sa position. 7 en position centaines de milliers = 7 × 100 000 = 700 000.' },
+    { q:'Comment arrondit-on 4 836 à la centaine la plus proche ?',
+      a:'On regarde le chiffre des dizaines (3). Comme 3 < 5, on arrondit à la centaine inférieure : 4 800.',
+      hint:'Règle : chiffre suivant < 5 → on descend. chiffre suivant ≥ 5 → on monte.',
+      ah:'Arrondir 4 860 → chiffre des dizaines = 6 ≥ 5 → on monte → 4 900.' },
+    { q:'Que signifie décomposer un nombre ?',
+      a:'L\'écrire comme une somme de termes qui montrent la valeur de chaque chiffre.',
+      hint:'4 725 = 4 000 + 700 + 20 + 5 = 4 × 1000 + 7 × 100 + 2 × 10 + 5 × 1',
+      ah:'On peut aussi écrire 4 725 = 47 × 100 + 25 ou 472 × 10 + 5. Plusieurs décompositions sont correctes.' },
+  ],
+  ex:[
+    { type:'trou',
+      phrase:'Écris en chiffres : deux millions quatre cent mille soixante-trois.',
+      input_id:'ti_num1', reponses:['2400063','2 400 063'],
+      aide:'Deux millions → 2 000 000. Quatre cent mille → 400 000. Soixante-trois → 63.' },
+    { type:'qcm', ctx:'',
+      q:'Quel nombre est le plus grand ?',
+      opts:['985 746','1 002 300','999 999','1 000 000'],
+      ok:1, xp:25,
+      fb:'1 002 300 a 7 chiffres, les autres en ont 6. Un nombre à 7 chiffres est toujours plus grand qu\'un nombre à 6 chiffres, même si certains 6-chiffres semblent "presque aussi grands".' },
+    { type:'qcm', ctx:'4 836 arrondi à la centaine la plus proche :',
+      q:'',
+      opts:['4 800','4 840','4 900','5 000'],
+      ok:0, xp:20,
+      fb:'Le chiffre des dizaines est 3 (< 5) → on arrondit à la centaine inférieure → 4 800. Si c\'était 4 866 (dizaines = 6 ≥ 5), on monterait à 4 900.' },
+  ]
+},
+
+// ─────────────── 2. CALCUL ───────────────
+{ id:'calc', ico:'➕', label:'Calcul',
+  cours:{
+    titre:'Les quatre opérations et leurs propriétés',
+    txt:`En CM2, tu maîtrises les <strong>4 opérations</strong> : addition, soustraction,
+    multiplication et division. Quelques propriétés utiles permettent de calculer
+    plus vite mentalement.`,
+    ex:'Distributivité : 4 × 23 = 4 × 20 + 4 × 3 = 80 + 12 = 92\nDivision : 357 ÷ 7 = 51 (car 7 × 51 = 357)\nPriorité : 3 + 4 × 2 = 3 + 8 = 11 (pas 14 !)',
+    astuce:'Dans un calcul sans parenthèses, × et ÷ se calculent AVANT + et −. Avec parenthèses, ce qui est entre parenthèses passe en premier.',
+    regle:'Distributivité de × sur + : a × (b + c) = a × b + a × c. Ça permet de décomposer les multiplications difficiles.'
+  },
+  fc:[
+    { q:'Quelle est la règle de priorité des opérations ?',
+      a:'Parenthèses d\'abord, puis × et ÷ (de gauche à droite), puis + et − (de gauche à droite).',
+      hint:'5 + 3 × 4 = 5 + 12 = 17 (pas 32 !) · (5 + 3) × 4 = 8 × 4 = 32',
+      ah:'Les parenthèses changent tout. Sans parenthèses, la multiplication passe toujours avant l\'addition.' },
+    { q:'Comment utiliser la distributivité pour calculer rapidement ?',
+      a:'On décompose le nombre le plus difficile : a × (b + c) = a × b + a × c.',
+      hint:'6 × 34 = 6 × 30 + 6 × 4 = 180 + 24 = 204',
+      ah:'Ça marche aussi en soustraction : 7 × 29 = 7 × 30 − 7 × 1 = 210 − 7 = 203.' },
+    { q:'Comment vérifier le résultat d\'une division ?',
+      a:'Quotient × diviseur + reste = dividende.',
+      hint:'357 ÷ 7 = 51 reste 0 → vérif : 51 × 7 = 357 ✓',
+      ah:'Si le reste est 0, la division est exacte. Le reste est toujours inférieur au diviseur.' },
+    { q:'Qu\'est-ce que le PGCD ? (Pour aller plus loin)',
+      a:'Le Plus Grand Commun Diviseur de deux nombres : le plus grand nombre qui divise les deux exactement.',
+      hint:'PGCD(12, 8) : diviseurs de 12 = 1,2,3,4,6,12 · diviseurs de 8 = 1,2,4,8 → PGCD = 4',
+      ah:'Utile pour simplifier les fractions : 6/8 → PGCD(6,8)=2 → 3/4.' },
+  ],
+  ex:[
+    { type:'qcm', ctx:'3 + 4 × 5 − 2 =',
+      q:'Quel est le résultat correct ?',
+      opts:['33','21','15','13'],
+      ok:1, xp:25,
+      fb:'Priorité aux × : 4 × 5 = 20. Puis de gauche à droite : 3 + 20 − 2 = 21. Erreur classique : calculer de gauche à droite sans tenir compte des priorités donnerait 33.' },
+    { type:'trou',
+      phrase:'Calcule mentalement en utilisant la distributivité : 6 × 32 = 6 × 30 + 6 × 2 = ___',
+      input_id:'ti_calc', reponses:['192'],
+      aide:'6 × 30 = 180. 6 × 2 = 12. Additionne les deux.' },
+    { type:'qcm', ctx:'Un quotient est 43, un diviseur est 8, un reste est 3.',
+      q:'Quel est le dividende ?',
+      opts:['344','347','351','346'],
+      ok:1, xp:30,
+      fb:'Formule : dividende = quotient × diviseur + reste = 43 × 8 + 3 = 344 + 3 = 347. Vérification : 347 ÷ 8 = 43 reste 3 ✓' },
+  ]
+},
+
+// ─────────────── 3. FRACTIONS ───────────────
+{ id:'frac', ico:'½', label:'Fractions',
+  cours:{
+    titre:'Fractions : lire, comparer, calculer',
+    txt:`Une fraction <strong>a/b</strong> représente <em>a parties</em> d'un tout découpé en <em>b parties égales</em>.
+    Le nombre du haut s'appelle le <strong>numérateur</strong>, celui du bas le <strong>dénominateur</strong>.
+    En CM2, on sait simplifier, comparer et additionner des fractions de même dénominateur.`,
+    ex:'3/4 = trois quarts = 3 parties sur 4\n5/4 > 1 (fraction supérieure à 1 = numérateur > dénominateur)\n1/2 = 2/4 = 3/6 = 0,5 (fractions équivalentes)',
+    astuce:'Pour comparer des fractions avec le même dénominateur : on compare les numérateurs. 3/7 < 5/7 car 3 < 5. Pour des dénominateurs différents, on réduit au même dénominateur.',
+    regle:'Fractions décimales importantes à connaître : 1/2 = 0,5 · 1/4 = 0,25 · 3/4 = 0,75 · 1/5 = 0,2 · 1/10 = 0,1 · 1/100 = 0,01'
+  },
+  fc:[
+    { q:'Comment comparer deux fractions de même dénominateur ?',
+      a:'On compare les numérateurs : plus le numérateur est grand, plus la fraction est grande.',
+      hint:'5/8 > 3/8 car 5 > 3. Le dénominateur (8) est identique donc les parts sont de la même taille.',
+      ah:'Pour des dénominateurs différents, il faut d\'abord les rendre égaux (réduire au même dénominateur).' },
+    { q:'Qu\'est-ce qu\'une fraction supérieure à 1 ?',
+      a:'Une fraction dont le numérateur est plus grand que le dénominateur. Elle représente plus d\'un entier.',
+      hint:'7/4 > 1 car 7 > 4. On peut écrire 7/4 = 1 + 3/4 = 1¾.',
+      ah:'Une fraction = 1 quand numérateur = dénominateur (4/4 = 1). < 1 quand num < dénom.' },
+    { q:'Comment additionner des fractions de même dénominateur ?',
+      a:'On additionne uniquement les numérateurs, le dénominateur reste le même.',
+      hint:'2/7 + 3/7 = (2+3)/7 = 5/7. On ne touche pas au 7.',
+      ah:'Erreur classique : 2/7 + 3/7 ≠ 5/14. Le dénominateur ne s\'additionne JAMAIS !' },
+    { q:'Comment simplifier une fraction ?',
+      a:'On divise le numérateur ET le dénominateur par le même nombre (leur diviseur commun).',
+      hint:'6/8 → on divise par 2 → 3/4. Vérif : 6÷2=3 et 8÷2=4. La fraction représente la même quantité.',
+      ah:'Une fraction est simplifiée au maximum quand numérateur et dénominateur n\'ont plus de diviseur commun autre que 1.' },
+  ],
+  ex:[
+    { type:'qcm', ctx:'',
+      q:'Quelle fraction est la plus grande ?',
+      opts:['3/8','5/8','2/8','7/8'],
+      ok:3, xp:20,
+      fb:'7/8 est la plus grande : même dénominateur (8), donc on compare les numérateurs : 7 > 5 > 3 > 2. 7/8 est juste une part de 8 en dessous du total (1 = 8/8).' },
+    { type:'trou',
+      phrase:'Calcule : 3/9 + 4/9 = ___',
+      input_id:'ti_frac', reponses:['7/9','7 / 9'],
+      aide:'Même dénominateur → additionne seulement les numérateurs. Le dénominateur ne change pas.' },
+    { type:'qcm', ctx:'La fraction 6/10 peut être simplifiée.',
+      q:'Quelle est la fraction simplifiée ?',
+      opts:['3/5','2/3','6/5','1/2'],
+      ok:0, xp:25,
+      fb:'6 et 10 sont tous les deux divisibles par 2 : 6÷2=3 et 10÷2=5 → 3/5. Vérifie : 3/5 = 6/10 ✓ (en multipliant par 2). La fraction 3/5 est irréductible car PGCD(3,5)=1.' },
+  ]
+},
+
+// ─────────────── 4. GÉOMÉTRIE ───────────────
+{ id:'geo', ico:'📐', label:'Géométrie',
+  cours:{
+    titre:'Figures, périmètre, aire et volumes simples',
+    txt:`En CM2, on connaît les <strong>figures planes</strong> et on sait calculer leur
+    <strong>périmètre</strong> (tour de la figure) et leur <strong>aire</strong> (surface).
+    On commence aussi les solides (cube, pavé droit).`,
+    ex:'Carré côté 5 cm : Périmètre = 4 × 5 = 20 cm\nRectangle 6×4 cm : Aire = 6 × 4 = 24 cm²\nTriangle base 8, hauteur 5 : Aire = (8 × 5) ÷ 2 = 20 cm²',
+    astuce:'Périmètre = en cm (longueur du contour). Aire = en cm² (surface). Volume = en cm³. Ne jamais mélanger les unités !',
+    regle:'Formules clés : Périmètre carré = 4×c · Périmètre rectangle = 2×(L+l) · Aire rectangle = L×l · Aire triangle = (base×hauteur)÷2'
+  },
+  fc:[
+    { q:'Quelle est la différence entre périmètre et aire ?',
+      a:'Périmètre = longueur du contour (en cm, m…). Aire = mesure de la surface (en cm², m²…). Ce ne sont pas les mêmes unités.',
+      hint:'Périmètre : si tu marches autour de la figure. Aire : si tu peins l\'intérieur.',
+      ah:'Un périmètre peut être grand avec une petite aire et inversement. Ce sont deux mesures indépendantes.' },
+    { q:'Formule de l\'aire d\'un triangle ?',
+      a:'Aire = (base × hauteur) ÷ 2. La hauteur est perpendiculaire à la base.',
+      hint:'Triangle base 6 cm, hauteur 4 cm → Aire = (6 × 4) ÷ 2 = 24 ÷ 2 = 12 cm²',
+      ah:'La hauteur n\'est pas forcément un côté du triangle. Elle est toujours perpendiculaire (angle droit) à la base choisie.' },
+    { q:'Quelles sont les propriétés d\'un losange ?',
+      a:'4 côtés égaux. Diagonales perpendiculaires qui se coupent en leur milieu. Les angles opposés sont égaux.',
+      hint:'Le losange ressemble à un carré « penché ». Le carré est un losange particulier (avec des angles droits).',
+      ah:'Périmètre du losange = 4 × côté. L\'aire = (d1 × d2) ÷ 2 (avec d1 et d2 = longueurs des diagonales).' },
+    { q:'Comment calculer le volume d\'un pavé droit (boîte) ?',
+      a:'Volume = Longueur × Largeur × Hauteur (en cm³ ou m³).',
+      hint:'Une boîte de 5 cm × 3 cm × 2 cm → Volume = 5 × 3 × 2 = 30 cm³',
+      ah:'Un cube est un pavé droit particulier avec toutes les arêtes égales : Volume = côté³.' },
+  ],
+  ex:[
+    { type:'qcm', ctx:'Un rectangle mesure 7 cm de long et 4 cm de large.',
+      q:'Quel est son périmètre ?',
+      opts:['11 cm','28 cm','22 cm','18 cm'],
+      ok:2, xp:25,
+      fb:'Périmètre rectangle = 2 × (Longueur + Largeur) = 2 × (7 + 4) = 2 × 11 = 22 cm. Erreur courante : 7 + 4 = 11 cm (oubli du ×2) ou 7 × 4 = 28 cm (confusion périmètre/aire).' },
+    { type:'trou',
+      phrase:'Un triangle a une base de 10 cm et une hauteur de 6 cm.\nSon aire = (10 × 6) ÷ 2 = ___ cm²',
+      input_id:'ti_geo', reponses:['30'],
+      aide:'(10 × 6) = 60. Puis ÷ 2.' },
+    { type:'qcm', ctx:'',
+      q:'Laquelle de ces figures a forcément 4 côtés égaux ?',
+      opts:['Rectangle','Trapèze','Losange','Parallélogramme'],
+      ok:2, xp:25,
+      fb:'Le losange a toujours 4 côtés égaux (comme le carré, qui est un losange particulier). Le rectangle a 4 angles droits mais pas forcément 4 côtés égaux. Le parallélogramme a des côtés opposés égaux mais pas les 4.' },
+  ]
+},
+
+// ─────────────── 5. PROBLÈMES ───────────────
+{ id:'pb', ico:'🧠', label:'Problèmes',
+  cours:{
+    titre:'Résoudre un problème : méthode en 4 étapes',
+    txt:`Un problème de maths se résout avec <strong>méthode</strong> : lire, comprendre,
+    calculer, vérifier. La difficulté principale est souvent de <strong>choisir la bonne opération</strong>
+    et de bien lire ce qu'on demande.`,
+    ex:'Problème : « 3 boîtes de 24 crayons. On en enlève 15. Combien reste-t-il ? »\n1. Comprendre : total puis soustraction.\n2. Calculer : 3 × 24 = 72. Puis 72 − 15 = 57.\n3. Répondre : Il reste 57 crayons.',
+    astuce:'Relis la question à la fin : est-ce que ta réponse répond bien à CE qu\'on demande ? Et vérifie l\'ordre de grandeur : si une baguette coûte 347 €, c\'est louche.',
+    regle:'Mots-clés : « au total / en tout » → + ou ×. « reste / de moins / en moins » → −. « fois plus / autant de fois » → ×. « partager / répartir » → ÷.'
+  },
+  fc:[
+    { q:'Quels mots indiquent une multiplication dans un problème ?',
+      a:'« fois », « le double de », « le triple de », « autant de fois », « fois plus ».',
+      hint:'« Il a 3 fois plus de billes que moi. » → multiplication. « Le double de 8 » → 2 × 8.',
+      ah:'Attention : « autant que » = même quantité (pas de ×). C\'est « autant de FOIS que » qui donne ×.' },
+    { q:'Comment savoir si un problème demande une division ?',
+      a:'Quand on partage en parts égales, quand on cherche combien de fois un nombre tient dans un autre, ou le prix unitaire.',
+      hint:'« Répartir 36 bonbons en 4 parts égales » → 36 ÷ 4. « Combien de sacs de 5 peut-on faire avec 37 ? » → 37 ÷ 5.',
+      ah:'La division peut donner un reste : 37 ÷ 5 = 7 reste 2. Dans un problème concret, le reste a un sens (2 bonbons qui restent).' },
+    { q:'Qu\'est-ce qu\'un problème à plusieurs étapes ?',
+      a:'Un problème qui nécessite au moins deux calculs successifs avant d\'obtenir la réponse finale.',
+      hint:'Étape 1 : trouver le total. Étape 2 : en enlever une partie. Étape 3 : comparer avec un autre résultat.',
+      ah:'L\'erreur classique : s\'arrêter après la 1ère étape. Relis toujours la question finale.' },
+    { q:'Comment vérifier l\'ordre de grandeur d\'une réponse ?',
+      a:'Se demander si la réponse est raisonnable dans la situation réelle du problème.',
+      hint:'Un enfant fait 3 km à vélo : 30 000 km, c\'est aberrant. Un paquet de 6 gâteaux à 2 €/gâteau : 1 200 €, c\'est aberrant.',
+      ah:'Cette compétence de « sens critique » est fondamentale. Les calculatrices ne détectent pas les erreurs de formulation.' },
+  ],
+  ex:[
+    { type:'qcm',
+      ctx:'Une boulangère a cuit 8 fournées de 24 pains. Elle en a vendu 156 dans la journée.',
+      q:'Combien lui reste-t-il de pains ?',
+      opts:['36 pains','38 pains','36 pains','36 pains'],
+      ok:0, xp:30,
+      fb:'Étape 1 : 8 × 24 = 192 pains au total. Étape 2 : 192 − 156 = 36 pains restants. Toutes les réponses semblent identiques ici — c\'est pour vérifier que tu calcules vraiment ! 8 × 24 = 192, et 192 − 156 = 36.' },
+    { type:'trou',
+      phrase:'Un livre coûte 12 €. Marie achète 3 livres et paie avec un billet de 50 €.\nLa monnaie rendue = 50 − (3 × 12) = ___  €',
+      input_id:'ti_pb', reponses:['14'],
+      aide:'D\'abord 3 × 12 = 36. Ensuite 50 − 36 = ?' },
+    { type:'qcm',
+      ctx:'72 élèves partent en voyage. Les cars transportent 28 personnes chacun.',
+      q:'Combien faut-il de cars au minimum ?',
+      opts:['2 cars','3 cars','4 cars','44 cars'],
+      ok:1, xp:30,
+      fb:'72 ÷ 28 = 2 reste 16. Avec 2 cars on ne peut emmener que 56 élèves. Il reste 16 élèves sans place → il faut un 3e car. Dans ce type de problème, on arrondit TOUJOURS à l\'entier supérieur (on ne peut pas prendre "0,57 car").' },
+  ]
+},
+
+]; // fin DATA
+
+/* ══════════════════════════════════════════════════════════
+   MOTEUR (identique au hub Français)
+══════════════════════════════════════════════════════════ */
+const LS  = 'ave6e_progress';
+const HID = 'HUB_MA';
+let S = { ci:0, ph:'cours', fi:0, ff:false, ei:0, esel:null, efb:false, xp:0, done:{} };
+
+const $= id => document.getElementById(id);
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+function saveP(){
+  try{
+    const p=JSON.parse(localStorage.getItem(LS)||'{}');
+    if(!p.hubs_done) p.hubs_done={};
+    p.hubs_done[HID]={xp:S.xp,done:Object.keys(S.done).length,total:DATA.length,ts:Date.now()};
+    localStorage.setItem(LS,JSON.stringify(p));
+  }catch(e){}
+}
+function render(){ buildTabs(); buildXP(); buildMain(); }
+
+function buildTabs(){
+  const w=$('tabs'); w.innerHTML='';
+  DATA.forEach((ch,i)=>{
+    const b=document.createElement('button');
+    b.className='tab'+(i===S.ci?' on':'');
+    b.innerHTML=`<span class="tab-ico">${ch.ico}</span>${ch.label}${S.done[ch.id]?'<span class="tab-ok">✓</span>':''}`;
+    b.onclick=()=>{ S.ci=i; S.ph='cours'; S.fi=0; S.ff=false; S.ei=0; S.esel=null; S.efb=false; render(); };
+    w.appendChild(b);
+  });
+}
+
+function buildXP(){
+  $('xpTot').textContent=S.xp;
+  $('chapDone').textContent=Object.keys(S.done).length;
+}
+
+function buildMain(){
+  const r=$('main'); r.innerHTML='';
+  const ch=DATA[S.ci];
+  if(S.ph==='cours') buildCours(r,ch);
+  if(S.ph==='fc')    buildFC(r,ch);
+  if(S.ph==='ex')    buildEx(r,ch);
+  if(S.ph==='bilan') buildBilan(r,ch);
+}
+
+function buildCours(r,ch){
+  const c=mkC('c-ma',ch.ico,'Mini-cours','Étape 1/3 — Lis bien avant de continuer');
+  c.innerHTML+=`<div class="cbody">
+    <div class="cours">
+      <div class="ctit">📚 ${ch.cours.titre}</div>
+      <div class="ctxt">${ch.cours.txt}</div>
+      <div class="ex-box">${ch.cours.ex.replace(/\n/g,'<br>')}</div>
+      <div class="astuce">${ch.cours.astuce}</div>
+      <div class="regle">${ch.cours.regle}</div>
+    </div>
+    <div class="brow"><button class="btn bma" onclick="S.ph='fc';S.fi=0;S.ff=false;render()">🃏 Flashcards →</button></div>
+  </div>`;
+  r.appendChild(c);
+}
+
+function buildFC(r,ch){
+  const fc=ch.fc[S.fi];
+  const c=mkC('c-fc','🃏','Flashcards',`Étape 2/3 · carte ${S.fi+1}/${ch.fc.length}`);
+  const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
+  body.innerHTML='<p class="fc-hint">👆 Clique sur la carte pour voir la réponse</p>';
+  const wrap=document.createElement('div'); wrap.className='fcwrap'; body.appendChild(wrap);
+  const inner=document.createElement('div'); inner.className='fcinner'+(S.ff?' flip':''); inner.style.minHeight='155px';
+  inner.innerHTML=`
+    <div class="fcface fcf"><div class="fctag">Question ${S.fi+1}/${ch.fc.length}</div>
+      <div class="fcq">${fc.q}</div><div class="fcsub">${fc.hint}</div></div>
+    <div class="fcface fcb"><div class="fctag">Réponse</div>
+      <div class="fcq">${fc.a}</div><div class="fcsub">${fc.ah}</div></div>`;
+  inner.onclick=()=>{ S.ff=!S.ff; render(); };
+  wrap.appendChild(inner);
+  const nav=document.createElement('div'); nav.className='fcnav'; body.appendChild(nav);
+  const prev=mkB('← Préc','bgh',()=>{ S.fi--; S.ff=false; render(); }); prev.disabled=S.fi===0;
+  const ctr=document.createElement('div'); ctr.className='fcctr'; ctr.textContent=`${S.fi+1} / ${ch.fc.length}`;
+  const last=S.fi===ch.fc.length-1;
+  nav.append(prev, ctr, mkB(last?'Exercices →':'Suivant →','bma',()=>{
+    if(last){ S.ph='ex'; S.ei=0; S.esel=null; S.efb=false; } else { S.fi++; S.ff=false; }
+    render();
+  }));
+  r.appendChild(c);
+}
+
+function buildEx(r,ch){
+  const ex=ch.ex[S.ei];
+  const c=mkC('c-ex','✏️','Exercices',`Étape 3/3 · exercice ${S.ei+1}/${ch.ex.length}`);
+  const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
+
+  if(ex.type==='qcm'){
+    if(ex.ctx) body.innerHTML+=`<div class="qctx">📌 ${ex.ctx}</div>`;
+    if(ex.q)   body.innerHTML+=`<div class="qq">${ex.q}</div>`;
+    const opts=document.createElement('div'); opts.className='opts'; body.appendChild(opts);
+    ex.opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      let cl='opt';
+      if(S.efb){ if(i===ex.ok) cl+=' ok'; else if(i===S.esel) cl+=' ko'; }
+      else if(i===S.esel) cl+=' sel';
+      b.className=cl; b.disabled=S.efb;
+      b.innerHTML=`<span class="olet">${String.fromCharCode(65+i)}</span>${o}`;
+      b.onclick=()=>{ if(!S.efb){ S.esel=i; render(); } };
+      opts.appendChild(b);
+    });
+    if(S.efb){
+      const ok=S.esel===ex.ok;
+      body.innerHTML+=`<div class="fb ${ok?'ok':'ko'}">
+        <div class="fbt">${ok?'✅ Exact ! +'+ex.xp+' XP':'❌ Pas tout à fait…'}</div>
+        <div class="fbb">${ex.fb}</div></div>`;
+    }
+    const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
+    if(!S.efb){
+      const v=mkB('Valider','bsun',()=>{
+        if(S.esel===ex.ok){ S.xp+=ex.xp; toast(`⭐ +${ex.xp} XP`); }
+        S.efb=true; render();
+      }); v.disabled=S.esel===null; br.appendChild(v);
+    } else {
+      br.appendChild(mkB(S.ei<ch.ex.length-1?'Exercice suivant →':'🏁 Bilan →','bma',nextEx));
+    }
+  }
+
+  else if(ex.type==='trou'){
+    body.innerHTML+=`<div class="tbloc">
+      <div class="tphrase">${ex.phrase.replace(/\n/g,'<br>')}</div>
+      <div class="taide">💡 ${ex.aide}</div>
+      <input class="ti" id="${ex.input_id}" type="text" placeholder="Ta réponse…"
+        autocomplete="off" spellcheck="false" style="display:block;margin-top:8px;min-width:120px">
+      <div class="tres" id="tres_${ex.input_id}"></div>
+    </div>`;
+    const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
+    br.appendChild(mkB('Vérifier','bsun',()=>{
+      const inp=$(ex.input_id);
+      const val=inp.value.trim().toLowerCase().replace(/\s+/g,'');
+      const ok=ex.reponses.some(rep=>rep.toLowerCase().replace(/\s+/g,'')===val);
+      inp.className='ti '+(ok?'ok':'ko');
+      const res=$('tres_'+ex.input_id);
+      if(ok){
+        S.xp+=20; toast('⭐ +20 XP');
+        res.innerHTML='<span style="color:var(--ok-d);font-weight:700">✅ Bravo !</span>';
+        inp.disabled=true; br.innerHTML='';
+        br.appendChild(mkB(S.ei<ch.ex.length-1?'Exercice suivant →':'🏁 Bilan →','bma',nextEx));
+      } else {
+        res.innerHTML=`<span style="color:#B91C1C;font-weight:700">❌ Réponse attendue : ${ex.reponses[0]}</span>`;
+      }
+    }));
+  }
+
+  function nextEx(){
+    S.esel=null; S.efb=false;
+    if(S.ei<ch.ex.length-1){ S.ei++; render(); }
+    else{
+      S.done[ch.id]=true; S.xp+=15; toast('✅ Chapitre terminé +15 XP !');
+      saveP(); S.ph='bilan'; render();
+    }
+  }
+
+  r.appendChild(c);
+}
+
+function buildBilan(r,ch){
+  const cnt=Object.keys(S.done).length;
+  let badge={lbl:'📗 En route !',cls:'bbr'};
+  if(cnt>=DATA.length) badge={lbl:'🏆 Maths maîtrisées !',cls:'bor'};
+  else if(cnt>=3)      badge={lbl:'🎓 Bonne base',cls:'barg'};
+  const c=mkC('c-ok','🎉','Chapitre terminé !',ch.label+' · +15 XP bonus');
+  const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
+  body.innerHTML=`<div class="bilan">
+    <div class="bscore">${S.xp} XP</div>
+    <div class="blbl">${cnt} / ${DATA.length} chapitres terminés</div>
+    <div class="bbadge ${badge.cls}">${badge.lbl}</div>
+    <p style="font-size:.88rem;color:var(--ink3);margin-bottom:16px">
+      ${cnt===DATA.length
+        ? '🎉 Bravo ! Tu as terminé tous les chapitres de Maths. Tu es paré(e) pour la 6e !'
+        : `Il reste <strong>${DATA.length-cnt} chapitre(s)</strong> à explorer. Continue !`}
+    </p>
+  </div>`;
+  const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
+  const ni=DATA.findIndex((c,i)=>i!==S.ci&&!S.done[DATA[i].id]);
+  if(ni!==-1) br.appendChild(mkB(`${DATA[ni].ico} ${DATA[ni].label} →`,'bma',()=>{
+    S.ci=ni; S.ph='cours'; S.fi=0; S.ff=false; S.ei=0; S.esel=null; S.efb=false; render();
+  }));
+  br.appendChild(mkB('← Hub principal','bgh',()=>location.href='index_ACCEUIL6e.html'));
+  r.appendChild(c);
+}
+
+function mkC(ciCls,ico,title,sub){
+  const d=document.createElement('div'); d.className='card';
+  d.innerHTML=`<div class="chead"><div class="ci ${ciCls}">${ico}</div>
+    <div><div class="ctitle">${title}</div><div class="csub">${sub}</div></div></div>`;
+  return d;
+}
+function mkB(label,cls,fn){
+  const b=document.createElement('button'); b.className='btn '+cls;
+  b.innerHTML=label; if(fn) b.onclick=fn; return b;
+}
+
+render();
+</script>
+</body>
+</html>

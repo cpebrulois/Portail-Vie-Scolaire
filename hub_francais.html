@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Révision Français CM2</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fr:#F43F5E;--fr-d:#BE123C;--fr-m:#FB7185;--fr-p:#FFE4E6;--fr-bg:#FFF5F7;
+  --sun:#F59E0B;--sun-d:#B45309;--sun-p:#FEF3C7;
+  --ok:#34D399;--ok-d:#059669;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--inkf:#CBD5E1;
+  --w:#FFF;--panel:rgba(255,255,255,.96);
+  --rsm:10px;--rmd:18px;--rlg:28px;
+  --sh1:0 2px 8px rgba(15,23,42,.08);--sh2:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--fr-bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 35% at 4% 4%,rgba(244,63,94,.1) 0%,transparent 65%),
+             radial-gradient(ellipse 40% 35% at 96% 8%,rgba(245,158,11,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 45% at 50% 108%,rgba(52,211,153,.07) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 16px 64px}
+
+/* NAV */
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back{display:inline-flex;align-items:center;gap:6px;background:var(--w);border:2px solid var(--inkf);
+  border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;
+  color:var(--ink2);cursor:pointer;text-decoration:none;transition:all .15s}
+.back:hover{border-color:var(--fr);color:var(--fr-d)}
+
+/* HERO */
+.hero{text-align:center;padding:26px 20px 18px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--fr);color:#fff;
+  border-radius:50px;padding:8px 22px;font-family:var(--ft);font-size:.9rem;font-weight:800;
+  margin-bottom:14px;box-shadow:0 4px 0 var(--fr-d)}
+.hero-title{font-family:var(--ft);font-size:clamp(1.9rem,5vw,2.9rem);font-weight:900;margin-bottom:8px}
+.hero-title em{color:var(--fr);font-style:normal}
+.hero-sub{font-size:.97rem;color:var(--ink3);font-weight:600;max-width:480px;margin:0 auto 16px}
+.cm2-tag{display:inline-flex;align-items:center;gap:7px;background:var(--sun-p);
+  border:2px solid rgba(245,158,11,.35);border-radius:50px;padding:6px 18px;
+  font-family:var(--ft);font-size:.8rem;font-weight:800;color:var(--sun-d)}
+
+/* XP */
+.xps{display:flex;gap:9px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.xp{display:flex;align-items:center;gap:5px;background:var(--w);border:2px solid var(--inkf);
+  border-radius:50px;padding:5px 14px;font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink)}
+.xp.hl{border-color:var(--fr-m);background:var(--fr-p);color:var(--fr-d)}
+
+/* ONGLETS */
+.tabs{display:flex;gap:0;background:var(--w);border-radius:var(--rmd);padding:6px;
+  box-shadow:var(--sh1);border:1.5px solid var(--inkf);overflow-x:auto;margin-bottom:14px}
+.tab{flex:1;min-width:88px;padding:10px 7px;border-radius:var(--rsm);border:none;background:transparent;
+  cursor:pointer;font-family:var(--ft);font-size:.79rem;font-weight:800;color:var(--ink3);
+  transition:all .2s;white-space:nowrap;text-align:center;line-height:1.3}
+.tab:hover:not(.on){background:rgba(244,63,94,.08);color:var(--fr-d)}
+.tab.on{background:var(--fr);color:#fff;box-shadow:0 3px 8px rgba(244,63,94,.4)}
+.tab-ico{display:block;font-size:1.05rem;margin-bottom:2px}
+.tab-ok{font-size:.62rem;background:rgba(255,255,255,.3);border-radius:50px;padding:1px 5px;margin-left:3px}
+
+/* CARD */
+.card{background:var(--panel);border-radius:var(--rlg);box-shadow:var(--sh2);
+  border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px;overflow:hidden;
+  animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.chead{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1.5px solid rgba(15,23,42,.07)}
+.ci{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.c-fr{background:var(--fr-p)}.c-fc{background:var(--sun-p)}.c-ex{background:#DCFCE7}.c-ok{background:#DBEAFE}
+.ctitle{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ink)}
+.csub{font-size:.78rem;font-weight:700;color:var(--ink3);margin-top:2px}
+.cbody{padding:18px 20px}
+
+/* COURS */
+.cours{background:linear-gradient(135deg,rgba(244,63,94,.05),rgba(245,158,11,.04));
+  border:1.5px solid rgba(244,63,94,.18);border-radius:var(--rmd);padding:17px;margin-bottom:14px}
+.ctit{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--fr-d);margin-bottom:9px}
+.ctxt{font-size:.9rem;line-height:1.7;color:var(--ink2)}
+.ctxt strong{color:var(--fr-d)}
+.ex-box{background:var(--w);border-left:4px solid var(--fr);border-radius:var(--rsm);
+  padding:10px 14px;margin:10px 0;font-size:.88rem;color:var(--ink);line-height:1.55}
+.astuce{background:var(--sun-p);border:1.5px solid rgba(245,158,11,.3);border-radius:var(--rsm);
+  padding:9px 13px;margin-top:9px;font-size:.84rem;color:var(--sun-d);font-weight:700}
+.astuce::before{content:'💡 '}
+.regle{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:var(--rsm);
+  padding:9px 13px;margin-top:8px;font-size:.84rem;color:#1E40AF;font-weight:700}
+.regle::before{content:'📌 '}
+
+/* FLASHCARDS */
+.fc-hint{font-size:.74rem;color:var(--ink3);text-align:center;margin-bottom:8px;font-style:italic}
+.fcwrap{perspective:1000px;cursor:pointer;margin-bottom:12px}
+.fcinner{width:100%;min-height:155px;position:relative;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--rmd)}
+.fcinner.flip{transform:rotateY(180deg)}
+.fcface{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--rmd);
+  padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.fcf{background:var(--w);border:2px solid var(--fr-m);box-shadow:var(--sh1)}
+.fcb{background:linear-gradient(135deg,var(--fr-p),#FFF0F2);border:2px solid var(--fr);transform:rotateY(180deg)}
+.fctag{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:.55}
+.fcq{font-family:var(--ft);font-size:1rem;font-weight:800;color:var(--ink);line-height:1.3}
+.fcb .fcq{color:var(--fr-d)}
+.fcsub{font-size:.74rem;color:var(--ink3);font-style:italic}
+.fcb .fcsub{color:var(--fr-m);font-style:normal;font-weight:700}
+.fcnav{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.fcctr{font-family:var(--fm);font-size:.8rem;font-weight:700;color:var(--ink3)}
+
+/* QCM */
+.qctx{background:rgba(244,63,94,.07);border:1.5px solid rgba(244,63,94,.18);border-radius:var(--rsm);
+  padding:9px 13px;margin-bottom:11px;font-size:.87rem;color:var(--ink2);font-style:italic;font-weight:600}
+.qq{font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:13px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--inkf);
+  border-radius:var(--rsm);padding:11px 14px;cursor:pointer;font-size:.92rem;font-weight:600;
+  color:var(--ink);text-align:left;transition:all .15s;font-family:var(--fb)}
+.opt:hover:not(:disabled){border-color:var(--fr-m);background:var(--fr-p)}
+.opt.sel{border-color:var(--fr);background:var(--fr-p)}
+.opt.ok{border-color:var(--ok);background:#DCFCE7;color:var(--ok-d)}
+.opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.opt:disabled{cursor:default}
+.olet{width:28px;height:28px;border-radius:7px;background:var(--inkf);display:flex;align-items:center;
+  justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.opt.sel .olet{background:var(--fr);color:#fff}
+.opt.ok  .olet{background:var(--ok);color:#fff}
+.opt.ko  .olet{background:#EF4444;color:#fff}
+.fb{border-radius:var(--rsm);padding:11px 14px;margin-bottom:12px;border:2px solid}
+.fb.ok{background:#DCFCE7;border-color:var(--ok)}
+.fb.ko{background:#FEE2E2;border-color:#EF4444}
+.fbt{font-family:var(--ft);font-size:.92rem;font-weight:800;margin-bottom:4px}
+.fbb{font-size:.85rem;line-height:1.5}
+
+/* TROUS */
+.tbloc{background:var(--w);border:2px solid var(--inkf);border-radius:var(--rmd);padding:16px;margin-bottom:10px}
+.tphrase{font-size:.97rem;line-height:2.1;color:var(--ink);font-weight:600}
+.ti{border:none;border-bottom:2px solid var(--fr);background:transparent;
+  min-width:80px;width:auto;padding:2px 6px;font-family:var(--fb);font-size:.95rem;
+  font-weight:700;color:var(--fr-d);outline:none;text-align:center;transition:border-color .2s}
+.ti.ok{border-bottom-color:var(--ok-d);color:var(--ok-d)}
+.ti.ko{border-bottom-color:#EF4444;color:#B91C1C}
+.taide{font-size:.76rem;color:var(--ink3);margin-top:5px;font-style:italic}
+.tres{margin-top:8px;font-size:.85rem;font-weight:700;min-height:20px}
+
+/* BILAN */
+.bilan{text-align:center;padding:6px 0 14px}
+.bscore{font-family:var(--ft);font-size:2.4rem;font-weight:900;color:var(--fr);margin-bottom:5px}
+.blbl{font-size:.88rem;color:var(--ink3);font-weight:600;margin-bottom:14px}
+.bbadge{display:inline-flex;align-items:center;gap:7px;border-radius:50px;padding:7px 18px;
+  font-family:var(--ft);font-size:.88rem;font-weight:800;margin-bottom:14px}
+.bor{background:#FEF9C3;color:#92400E}
+.barg{background:#DBEAFE;color:#1E40AF}
+.bbr{background:#DCFCE7;color:#14532D}
+
+/* BOUTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;
+  padding:11px 24px;font-family:var(--ft);font-size:.95rem;font-weight:800;
+  cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:all .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.14)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,.14)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.bfr{background:var(--fr);color:#fff}
+.bsun{background:var(--sun-d);color:#fff}
+.bok{background:var(--ok-d);color:#fff}
+.bgh{background:var(--w);color:var(--ink2);border:2px solid var(--inkf);box-shadow:none}
+.bgh:hover{border-color:var(--ink2);transform:none}
+.brow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--ink);color:#fff;padding:11px 26px;border-radius:50px;font-family:var(--ft);
+  font-weight:700;font-size:.92rem;box-shadow:0 16px 48px rgba(15,23,42,.2);z-index:9999;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:540px){.tab{min-width:72px;font-size:.74rem}.app{padding:0 12px 48px}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="topnav">
+  <a class="back" href="index_ACCEUIL6e.html">← Hub principal</a>
+  <span style="font-size:.79rem;font-weight:700;color:var(--ink3)">Zone Révision</span>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">🖊️ Révision Français</div>
+  <h1 class="hero-title">Le <em>Français</em></h1>
+  <p class="hero-sub">Consolide ce que tu dois maîtriser à la sortie du CM2, avant d'entrer en 6e.</p>
+  <div class="cm2-tag">🏫 Niveau CM2 — bases à solidifier avant la rentrée</div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+<div class="xps">
+  <div class="xp hl">⭐ <span id="xpTot">0</span> XP</div>
+  <div class="xp">✅ <span id="chapDone">0</span>/<span id="chapTot">5</span> chapitres</div>
+</div>
+
+<div id="main"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   DONNÉES — FRANÇAIS CM2 PUR
+   Structure par chapitre : cours · flashcards (fc) · exercices (ex)
+══════════════════════════════════════════════════════════ */
+const DATA = [
+
+// ─────────────── 1. GRAMMAIRE ───────────────
+{ id:'gr', ico:'📐', label:'Grammaire',
+  cours:{
+    titre:'La phrase : sujet, verbe, compléments',
+    txt:`Une phrase correcte contient toujours un <strong>sujet</strong> et un <strong>verbe conjugué</strong>.
+    Le sujet indique <em>qui fait l'action</em>. Le verbe dit <em>ce qui se passe</em>.
+    Les compléments ajoutent des informations utiles mais souvent facultatives.`,
+    ex:'<em>« Le chat roux attrape une souris dans le jardin. »</em><br>Sujet : <strong>Le chat roux</strong> — Verbe : <strong>attrape</strong> — COD : <strong>une souris</strong> — CC lieu : <strong>dans le jardin</strong>',
+    astuce:'Pour trouver le sujet : pose « Qui est-ce qui… ? » avant le verbe. Qui est-ce qui attrape ? → Le chat roux.',
+    regle:'Le complément circonstanciel (CC) peut être supprimé ou déplacé sans casser la phrase. Le COD, lui, ne peut pas être déplacé en début de phrase facilement.'
+  },
+  fc:[
+    { q:'Comment identifier le sujet d\'un verbe ?',
+      a:'On pose la question « Qui est-ce qui… ? » (personnes) ou « Qu\'est-ce qui… ? » (choses) devant le verbe.',
+      hint:'« … court ? » → « Qui est-ce qui court ? » → La biche.',
+      ah:'Le sujet peut être un nom propre, un groupe nominal ou un pronom (je, il, nous…).' },
+    { q:'Qu\'est-ce qu\'un COD ?',
+      a:'Complément d\'Objet Direct. Il répond à la question « Verbe + quoi ? ou qui ? » sans préposition.',
+      hint:'Il mange quoi ? → une pomme. Il appelle qui ? → son ami.',
+      ah:'Le COD ne peut pas être supprimé sans changer le sens. Il est directement lié au verbe.' },
+    { q:'Comment reconnaître un complément circonstanciel (CC) ?',
+      a:'Un CC peut être supprimé ou déplacé en début de phrase sans que la phrase devienne incorrecte.',
+      hint:'« Le soir, je lis dans ma chambre. » → « Je lis le soir dans ma chambre. » → Ça marche.',
+      ah:'Il peut indiquer le lieu (où ?), le temps (quand ?), la manière (comment ?), la cause (pourquoi ?).' },
+    { q:'Différence entre phrase simple et phrase complexe ?',
+      a:'Phrase simple = un seul verbe conjugué. Phrase complexe = deux verbes conjugués ou plus.',
+      hint:'« Le chien aboie. » (simple) ≠ « Le chien aboie quand il entend du bruit. » (complexe)',
+      ah:'En CM2, on repère et compte les propositions dans une phrase complexe.' },
+  ],
+  ex:[
+    { type:'qcm', ctx:'« La petite fille dessine un château sur sa feuille. »',
+      q:'Quel est le sujet du verbe « dessine » ?',
+      opts:['un château','sur sa feuille','La petite fille','dessine'],
+      ok:2, xp:25,
+      fb:'« Qui est-ce qui dessine ? » → La petite fille. ✓  « un château » est le COD (dessine quoi ?) et « sur sa feuille » est un CC de lieu.' },
+    { type:'qcm', ctx:'',
+      q:'Laquelle de ces phrases est complexe ?',
+      opts:['Les oiseaux chantent.','Mon frère mange une glace.','Je dors quand il fait chaud.','Le vent souffle fort.'],
+      ok:2, xp:25,
+      fb:'« Je dors quand il fait chaud » contient deux verbes conjugués : dors et fait. C\'est une phrase complexe avec deux propositions.' },
+    { type:'trou',
+      avant:'Dans la phrase « ', phrase:'Les enfants jouent dans la cour après la cantine.',
+      apres:' », le sujet est :', input_id:'ti_gr', reponses:['Les enfants','les enfants'],
+      aide:'Pose la question : « Qui est-ce qui joue ? »' },
+  ]
+},
+
+// ─────────────── 2. CONJUGAISON ───────────────
+{ id:'conj', ico:'⏱️', label:'Conjugaison',
+  cours:{
+    titre:'Les 5 temps essentiels du CM2',
+    txt:`À la fin du CM2, tu dois maîtriser <strong>5 temps</strong> : présent, imparfait,
+    passé composé, futur simple et passé simple. Chaque temps a sa propre utilité dans un texte.`,
+    ex:'<em>Je mange</em> (présent) · <em>Je mangeais</em> (imparfait) · <em>J\'ai mangé</em> (passé composé)<br><em>Je mangerai</em> (futur) · <em>Je mangeai</em> (passé simple)',
+    astuce:'Passé composé = auxiliaire AVOIR ou ÊTRE + participe passé. Teste : « j\'ai couru » / « je suis parti(e) ». Avec ÊTRE, le participe s\'accorde avec le sujet !',
+    regle:'Pour les verbes en -er du 1er groupe au présent : -e, -es, -e, -ons, -ez, -ent. Je chante, tu chantes, il chante, nous chantons, vous chantez, ils chantent.'
+  },
+  fc:[
+    { q:'Quelles sont les terminaisons du présent pour un verbe en -ER ?',
+      a:'-e · -es · -e · -ons · -ez · -ent',
+      hint:'chante, chantes, chante, chantons, chantez, chantent',
+      ah:'Attention : « je » ne prend pas de -s pour les verbes en -er (je chante, pas « je chantes »).' },
+    { q:'Comment former le futur simple ?',
+      a:'Infinitif + terminaisons : -ai, -as, -a, -ons, -ez, -ont.',
+      hint:'chanter → je chanterai · finir → je finirai · prendre → je prendrai',
+      ah:'Verbes irréguliers à connaître : être → serai, avoir → aurai, aller → irai, faire → ferai, voir → verrai.' },
+    { q:'Passé composé vs imparfait : quelle différence ?',
+      a:'Passé composé = action terminée, ponctuelle. Imparfait = action qui durait, se répétait, ou décrivait une situation.',
+      hint:'« J\'ai mangé une pomme. » (ponctuel) ≠ « Je mangeais souvent des pommes. » (habitude)',
+      ah:'Dans un récit, l\'imparfait plante le décor et le passé composé fait avancer l\'histoire.' },
+    { q:'Avec quels verbes utilise-t-on « être » au passé composé ?',
+      a:'Les verbes de mouvement et changement d\'état : aller, venir, partir, arriver, naître, mourir, rester, tomber, monter, descendre… + tous les verbes pronominaux.',
+      hint:'Je suis allé(e), elle est partie, ils sont nés, il s\'est levé.',
+      ah:'Avec être, le participe passé s\'accorde avec le sujet : Elle est arrivée (e) · Ils sont partis (s).' },
+  ],
+  ex:[
+    { type:'trou',
+      avant:'', phrase:'Conjugue ALLER au futur : demain, nous _____ au cinéma.',
+      apres:'', input_id:'ti_conj', reponses:['irons'],
+      aide:'Aller est irrégulier au futur. Radical : ir-' },
+    { type:'qcm', ctx:'« Hier, je ___ mes devoirs puis je ___ dehors jouer. »',
+      q:'Quelle combinaison de temps est correcte pour deux actions successives du passé ?',
+      opts:['ai fait / suis sorti(e)','faisais / sortais','ferai / sortirai','fis / sortis'],
+      ok:0, xp:30,
+      fb:'Deux actions ponctuelles et terminées qui se suivent → passé composé dans les deux cas. « J\'ai fait puis je suis sorti(e). » L\'imparfait décrirait une habitude, pas une suite d\'actions précises.' },
+    { type:'qcm', ctx:'',
+      q:'Quelle terminaison prend TOUJOURS « vous » au présent de l\'indicatif ?',
+      opts:['-ez','-es','-ons','-ent'],
+      ok:0, xp:20,
+      fb:'Vous prend toujours -ez au présent : chantEZ, finissEZ, prenEZ… sauf deux exceptions à connaître : vous ÊTES et vous FAITES.' },
+  ]
+},
+
+// ─────────────── 3. ORTHOGRAPHE ───────────────
+{ id:'orth', ico:'✏️', label:'Orthographe',
+  cours:{
+    titre:'Homophones et accords — les pièges classiques',
+    txt:`Deux grandes familles de difficultés en CM2 : les <strong>homophones grammaticaux</strong>
+    (mots qui sonnent pareil mais s'écrivent différemment selon leur rôle) et les <strong>accords</strong>
+    (sujet-verbe, nom-adjectif).`,
+    ex:'<em>a / à</em> : « Il <strong>a</strong> faim » (verbe avoir) / « Il va <strong>à</strong> l\'école » (préposition)<br><em>son / sont</em> : « <strong>Son</strong> sac » (déterminant) / « Ils <strong>sont</strong> là » (verbe être)',
+    astuce:'Truc pour a/à : remplace par « avait ». Si ça marche → a sans accent. « Il avait faim » ✓ → c\'est « a ». Pour son/sont : remplace par « étaient ». Si ça marche → « sont ».',
+    regle:'L\'adjectif qualificatif s\'accorde en GENRE (masc./fém.) et en NOMBRE (sing./plur.) avec le nom qu\'il qualifie. Un grand chat → une grande chatte → de grands chats → de grandes chattes.'
+  },
+  fc:[
+    { q:'Comment distinguer « son » et « sont » ?',
+      a:'« son » = déterminant possessif → remplaçable par « mon » ou « ton ». « sont » = verbe être → remplaçable par « étaient ».',
+      hint:'« Son chat. » → « mon chat » ✓  |  « Ils sont là. » → « Ils étaient là. » ✓',
+      ah:'Pluriel de « son » : ses. Pluriel de « ma/ta/sa » : mes/tes/ses. Ça aide à vérifier.' },
+    { q:'Comment distinguer « ou » et « où » ?',
+      a:'« ou » = conjonction de choix (= ou bien). « où » avec accent = lieu ou moment.',
+      hint:'« Tu veux du thé ou du café ? » / « Où es-tu ? » / « La ville où je vis. »',
+      ah:'Mémo rapide : « où » avec accent = adverbe de lieu ou relatif. Sans accent = choix.' },
+    { q:'Règle d\'accord : adjectif qualificatif',
+      a:'L\'adjectif s\'accorde en genre et en nombre avec le NOM qu\'il qualifie (pas avec le verbe ni avec n\'importe quel nom).',
+      hint:'« une jolie fleur rouge » → jolie et rouge s\'accordent avec fleur (féminin singulier).',
+      ah:'Adjectifs de couleur composés (bleu clair, vert foncé) ou issus d\'un nom (orange, marron) sont invariables.' },
+    { q:'Comment accorder le verbe avec son sujet ?',
+      a:'Le verbe s\'accorde toujours avec son sujet. Si le sujet est au pluriel, le verbe prend la terminaison du pluriel.',
+      hint:'« Le chat dort. » / « Les chats dorment. » / « Toi et moi courons. »',
+      ah:'Attention aux sujets inversés (dans les questions) et aux sujets éloignés du verbe : retrouve toujours le vrai sujet.' },
+  ],
+  ex:[
+    { type:'qcm', ctx:'« Les enfants ___ partis tôt. ___ sac est resté dans la classe. »',
+      q:'Quelle combinaison est correcte ?',
+      opts:['sont / Son','son / Sont','sont / Sont','son / Son'],
+      ok:0, xp:30,
+      fb:'« sont » = verbe être (ils étaient partis ✓). « Son » = déterminant possessif (mon sac ✓). Si on avait « leurs sacs » au pluriel, ce serait possible aussi.' },
+    { type:'qcm', ctx:'',
+      q:'Laquelle de ces phrases contient une faute d\'accord ?',
+      opts:['Les fleurs sont jolies.','Le grand chien noir aboie.','Les filles semblent contentes.','Les garçon joue dans la cour.'],
+      ok:3, xp:25,
+      fb:'« Les garçon joue » → deux fautes : « garçons » (pluriel sans s) et « jouent » (le verbe doit s\'accorder avec « les garçons », pluriel). Correct : « Les garçons jouent dans la cour. »' },
+    { type:'trou',
+      avant:'', phrase:'Complète avec a ou à : Il ___ rangé son cartable ___ la maison.',
+      apres:'', input_id:'ti_orth', reponses:['a / à','a/à'],
+      aide:'Teste chaque blanc avec « avait ». « Il avait rangé » ✓ (verbe) → a. « avait la maison » ✗ (préposition) → à.' },
+  ]
+},
+
+// ─────────────── 4. VOCABULAIRE ───────────────
+{ id:'vocab', ico:'💬', label:'Vocabulaire',
+  cours:{
+    titre:'Familles de mots, préfixes et suffixes',
+    txt:`On peut <strong>fabriquer des mots</strong> en ajoutant des éléments au radical :
+    un <strong>préfixe</strong> (avant) modifie le sens, un <strong>suffixe</strong> (après) peut
+    changer la nature du mot. Connaître ces outils aide à comprendre des mots inconnus.`,
+    ex:'<em>in + croyable = incroyable</em> (préfixe in- = contraire)<br><em>chant + eur = chanteur</em> (suffixe -eur = celui qui fait l\'action)',
+    astuce:'Face à un mot inconnu : 1) cherche le radical, 2) reconnais le préfixe/suffixe, 3) lis le contexte. Tu trouveras souvent le sens sans dictionnaire.',
+    regle:'Famille de mots = tous les mots partageant le même radical. Ex : terre → terrain, terrestre, enterrer, déterrer, atterrir, terrier, territoire…'
+  },
+  fc:[
+    { q:'Que signifient les préfixes dé-/des- et re-/r- ?',
+      a:'dé-/des- = action inverse ou séparation. re-/r- = répétition ou retour en arrière.',
+      hint:'défaire, désagréable, décoller / revenir, rouvrir, recommencer',
+      ah:'Ces préfixes très courants permettent de comprendre de nombreux mots sans les avoir appris.' },
+    { q:'Que signifient les suffixes -eur/-euse et -tion/-sion ?',
+      a:'-eur/-euse = personne qui fait l\'action (métier ou habitude). -tion/-sion = action ou résultat d\'une action.',
+      hint:'chanteur, coiffeuse, nageur / libération, décision, construction',
+      ah:'Le suffixe change souvent la classe du mot : un verbe (chanter) devient un nom (chanteur).' },
+    { q:'Synonyme vs antonyme : quelle différence ?',
+      a:'Synonyme = mot de sens proche. Antonyme = mot de sens contraire.',
+      hint:'Synonymes de « rapide » : vif, prompt, agile. Antonyme : lent.',
+      ah:'Deux synonymes ne sont jamais totalement identiques — le contexte guide le meilleur choix.' },
+    { q:'Comment deviner le sens d\'un mot inconnu grâce au contexte ?',
+      a:'Lire la phrase entière, repérer ce qui se passe autour du mot, et proposer un sens cohérent.',
+      hint:'« Il avançait à pas feutrés, silencieux comme une ombre. » → feutrés = discrets/silencieux.',
+      ah:'C\'est la compétence de lecture la plus utile. Tu peux souvent comprendre sans dictionnaire.' },
+  ],
+  ex:[
+    { type:'qcm', ctx:'« Le préfixe in- dans invisible signifie… »',
+      q:'',
+      opts:['à l\'intérieur de','de nouveau','contraire / absence de','très, beaucoup'],
+      ok:2, xp:20,
+      fb:'in- + visible = qu\'on ne peut PAS voir. Le préfixe in-/im-/il-/ir- exprime le contraire ou l\'absence. Exemples : incroyable, impossible, illisible, irrégulier.' },
+    { type:'qcm', ctx:'« Le chien semblait apeuré : il tremblait et se cachait sous la table. »',
+      q:'Que signifie « apeuré » dans ce contexte ?',
+      opts:['fatigué','malade','qui a peur','en colère'],
+      ok:2, xp:25,
+      fb:'Le contexte (tremblement + se cacher) confirme : apeuré = mis en état de peur. La construction a + peur + é crée l\'adjectif. Le radical « peur » est facilement reconnaissable.' },
+    { type:'trou',
+      avant:'', phrase:'Donne un synonyme du mot COURAGEUX :',
+      apres:'', input_id:'ti_vocab', reponses:['brave','vaillant','intrépide','audacieux','hardi','téméraire'],
+      aide:'Plusieurs réponses possibles. Un synonyme a un sens proche mais pas identique.' },
+  ]
+},
+
+// ─────────────── 5. LECTURE ───────────────
+{ id:'lect', ico:'📖', label:'Lecture',
+  cours:{
+    titre:'Comprendre un texte : méthode en 3 étapes',
+    txt:`Bien lire, c'est comprendre <strong>ce qui est écrit</strong> (l'explicite) mais aussi
+    <strong>ce qui est sous-entendu</strong> (l'implicite). En CM2, on apprend à répondre
+    avec précision en s'appuyant sur le texte.`,
+    ex:'<em>« Léa ferma son livre d\'un coup sec et fixa le mur. »</em><br>Explicite : elle ferme le livre et regarde le mur.<br>Implicite : elle semble déçue ou contrariée — le texte ne le dit pas mais on le comprend.',
+    astuce:'Méthode réponse : 1) Trouve où se trouve la réponse dans le texte. 2) Cite le passage. 3) Explique. « D\'après le texte, … car il est écrit que… »',
+    regle:'3 types de questions : 1) réponse mot pour mot dans le texte, 2) il faut reformuler, 3) il faut déduire (implicite). Les questions de type 3 sont les plus difficiles.'
+  },
+  fc:[
+    { q:'Explicite vs implicite : quelle différence ?',
+      a:'L\'explicite est clairement écrit. L\'implicite doit être déduit à partir des indices du texte.',
+      hint:'« Il pleurait. » (explicite) / « Ses yeux brillaient et sa voix tremblait. » (implicite : il allait pleurer)',
+      ah:'Les questions sur l\'implicite commencent souvent par : « Que peut-on comprendre de… » ou « D\'après le texte, comment se sent… »' },
+    { q:'Qu\'est-ce qu\'un texte narratif ?',
+      a:'Un texte qui raconte une histoire avec des personnages, des lieux, des événements qui se succèdent dans le temps.',
+      hint:'Roman, conte, fable, nouvelle. Les temps utilisés : souvent imparfait + passé composé (ou passé simple).',
+      ah:'On distingue le narrateur (qui raconte) des personnages (qui agissent). Le narrateur peut dire « je » ou « il ».' },
+    { q:'Comment identifier le thème principal d\'un texte ?',
+      a:'Observer les mots qui reviennent souvent (champ lexical), le sujet des actions principales, et le titre.',
+      hint:'Beaucoup de mots liés à la mer (vague, bateau, horizon, sel, plonger) → thème : la mer / le voyage.',
+      ah:'Commence toujours par lire le titre attentivement. Il donne presque toujours un indice fort sur le thème.' },
+    { q:'Qu\'est-ce qu\'un connecteur logique ?',
+      a:'Un mot qui relie des idées en indiquant un lien logique : cause, conséquence, opposition, temps, addition.',
+      hint:'Cause : car, parce que / Opposition : mais, pourtant / Conséquence : donc, alors / Addition : et, de plus',
+      ah:'Repérer les connecteurs aide à comprendre la structure d\'un texte et les liens entre les idées.' },
+  ],
+  ex:[
+    { type:'qcm',
+      ctx:'« Thomas regarda l\'examen sur son bureau. Il prit son stylo, le reposa, le reprit. Sa main tremblait légèrement. »',
+      q:'Comment Thomas se sent-il ? (réponse implicite)',
+      opts:['Il est en colère contre le professeur','Il est nerveux et stressé','Il est fatigué et a envie de dormir','Il est confiant et serein'],
+      ok:1, xp:30,
+      fb:'Le texte ne dit jamais « Thomas était stressé » — mais les gestes hésitants (prend/repose/reprend) et la main qui tremble sont des indices clairs de nervosité. C\'est une réponse implicite : on déduit l\'émotion à partir des actions.' },
+    { type:'qcm', ctx:'« Il était épuisé, pourtant il continua à marcher. »',
+      q:'Quel lien logique est exprimé par « pourtant » ?',
+      opts:['Une cause','Une conséquence','Une opposition','Une addition'],
+      ok:2, xp:25,
+      fb:'« Pourtant » marque une opposition : on s\'attendrait à ce qu\'il s\'arrête vu qu\'il est épuisé — mais non, il continue malgré tout. Autres connecteurs d\'opposition : mais, cependant, or, néanmoins, toutefois.' },
+    { type:'trou',
+      avant:'', phrase:'Dans un récit au passé, l\'imparfait sert à ___ et le passé composé sert à ___.',
+      apres:'', input_id:'ti_lect',
+      reponses:['décrire / raconter','décrire/raconter','la description / les actions','décrire et donner le contexte / raconter les actions'],
+      aide:'L\'imparfait plante le décor, le passé composé fait avancer l\'histoire.' },
+  ]
+},
+
+]; // fin DATA
+
+
+/* ══════════════════════════════════════════════════════════
+   MOTEUR
+══════════════════════════════════════════════════════════ */
+const LS = 'ave6e_progress';
+const HID = 'HUB_FR';
+let S = { ci:0, ph:'cours', fi:0, ff:false, ei:0, esel:null, efb:false, xp:0, done:{} };
+
+const $= id => document.getElementById(id);
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600) }
+function saveP(){
+  try{
+    const p=JSON.parse(localStorage.getItem(LS)||'{}');
+    if(!p.hubs_done) p.hubs_done={};
+    p.hubs_done[HID]={xp:S.xp, done:Object.keys(S.done).length, total:DATA.length, ts:Date.now()};
+    localStorage.setItem(LS,JSON.stringify(p));
+  }catch(e){}
+}
+function render(){ buildTabs(); buildXP(); buildMain(); }
+
+/* ── ONGLETS ── */
+function buildTabs(){
+  const w=$('tabs'); w.innerHTML='';
+  DATA.forEach((ch,i)=>{
+    const b=document.createElement('button');
+    b.className='tab'+(i===S.ci?' on':'');
+    b.innerHTML=`<span class="tab-ico">${ch.ico}</span>${ch.label}${S.done[ch.id]?'<span class="tab-ok">✓</span>':''}`;
+    b.onclick=()=>{ S.ci=i; S.ph='cours'; S.fi=0; S.ff=false; S.ei=0; S.esel=null; S.efb=false; render(); };
+    w.appendChild(b);
+  });
+}
+
+/* ── XP ── */
+function buildXP(){
+  $('xpTot').textContent=S.xp;
+  $('chapDone').textContent=Object.keys(S.done).length;
+}
+
+/* ── MAIN ── */
+function buildMain(){
+  const r=$('main'); r.innerHTML='';
+  const ch=DATA[S.ci];
+  if(S.ph==='cours')  buildCours(r,ch);
+  if(S.ph==='fc')     buildFC(r,ch);
+  if(S.ph==='ex')     buildEx(r,ch);
+  if(S.ph==='bilan')  buildBilan(r,ch);
+}
+
+/* ────── COURS ────── */
+function buildCours(r,ch){
+  const c=mkC('c-fr',ch.ico,'Mini-cours','Étape 1/3 — Lis bien avant de continuer');
+  c.innerHTML+=`<div class="cbody">
+    <div class="cours">
+      <div class="ctit">📚 ${ch.cours.titre}</div>
+      <div class="ctxt">${ch.cours.txt}</div>
+      <div class="ex-box">${ch.cours.ex}</div>
+      <div class="astuce">${ch.cours.astuce}</div>
+      <div class="regle">${ch.cours.regle}</div>
+    </div>
+    <div class="brow"><button class="btn bfr" onclick="S.ph='fc';S.fi=0;S.ff=false;render()">🃏 Flashcards →</button></div>
+  </div>`;
+  r.appendChild(c);
+}
+
+/* ────── FLASHCARDS ────── */
+function buildFC(r,ch){
+  const fc=ch.fc[S.fi];
+  const c=mkC('c-fc','🃏','Flashcards',`Étape 2/3 · carte ${S.fi+1}/${ch.fc.length}`);
+  const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
+  body.innerHTML=`<p class="fc-hint">👆 Clique sur la carte pour voir la réponse</p>`;
+  const wrap=document.createElement('div'); wrap.className='fcwrap'; body.appendChild(wrap);
+  const inner=document.createElement('div'); inner.className='fcinner'+(S.ff?' flip':''); inner.style.minHeight='155px';
+  inner.innerHTML=`
+    <div class="fcface fcf"><div class="fctag">Question ${S.fi+1}/${ch.fc.length}</div>
+      <div class="fcq">${fc.q}</div><div class="fcsub">${fc.hint}</div></div>
+    <div class="fcface fcb"><div class="fctag">Réponse</div>
+      <div class="fcq">${fc.a}</div><div class="fcsub">${fc.ah}</div></div>`;
+  inner.onclick=()=>{ S.ff=!S.ff; render(); };
+  wrap.appendChild(inner);
+  const nav=document.createElement('div'); nav.className='fcnav'; body.appendChild(nav);
+  const prev=mkB('← Préc','bgh',()=>{ S.fi--; S.ff=false; render(); }); prev.disabled=S.fi===0;
+  const ctr=document.createElement('div'); ctr.className='fcctr'; ctr.textContent=`${S.fi+1} / ${ch.fc.length}`;
+  const last=S.fi===ch.fc.length-1;
+  nav.append(prev, ctr, mkB(last?'Exercices →':'Suivant →','bfr',()=>{
+    if(last){ S.ph='ex'; S.ei=0; S.esel=null; S.efb=false; } else { S.fi++; S.ff=false; }
+    render();
+  }));
+  r.appendChild(c);
+}
+
+/* ────── EXERCICES ────── */
+function buildEx(r,ch){
+  const ex=ch.ex[S.ei];
+  const c=mkC('c-ex','✏️','Exercices',`Étape 3/3 · exercice ${S.ei+1}/${ch.ex.length}`);
+  const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
+
+  if(ex.type==='qcm'){
+    if(ex.ctx) body.innerHTML+=`<div class="qctx">📌 ${ex.ctx}</div>`;
+    if(ex.q)   body.innerHTML+=`<div class="qq">${ex.q}</div>`;
+    const opts=document.createElement('div'); opts.className='opts'; body.appendChild(opts);
+    ex.opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      let cl='opt';
+      if(S.efb){ if(i===ex.ok) cl+=' ok'; else if(i===S.esel) cl+=' ko'; }
+      else if(i===S.esel) cl+=' sel';
+      b.className=cl; b.disabled=S.efb;
+      b.innerHTML=`<span class="olet">${String.fromCharCode(65+i)}</span>${o}`;
+      b.onclick=()=>{ if(!S.efb){ S.esel=i; render(); } };
+      opts.appendChild(b);
+    });
+    if(S.efb){
+      const ok=S.esel===ex.ok;
+      body.innerHTML+=`<div class="fb ${ok?'ok':'ko'}">
+        <div class="fbt">${ok?'✅ Exact ! +'+ex.xp+' XP':'❌ Pas tout à fait…'}</div>
+        <div class="fbb">${ex.fb}</div></div>`;
+    }
+    const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
+    if(!S.efb){
+      const v=mkB('Valider','bsun',()=>{
+        if(S.esel===ex.ok){ S.xp+=ex.xp; toast(`⭐ +${ex.xp} XP`); }
+        S.efb=true; render();
+      }); v.disabled=S.esel===null; br.appendChild(v);
+    } else {
+      br.appendChild(mkB(S.ei<ch.ex.length-1?'Exercice suivant →':'🏁 Bilan →','bfr',nextEx));
+    }
+  }
+
+  else if(ex.type==='trou'){
+    body.innerHTML+=`<div class="tbloc">
+      <div class="tphrase">${ex.phrase}</div>
+      <div class="taide">💡 ${ex.aide}</div>
+      <input class="ti" id="${ex.input_id}" type="text" placeholder="Ta réponse…" autocomplete="off" spellcheck="false"
+        style="display:block;margin-top:8px;min-width:150px">
+      <div class="tres" id="tres_${ex.input_id}"></div>
+    </div>`;
+    const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
+    br.appendChild(mkB('Vérifier','bsun',()=>{
+      const inp=$(ex.input_id);
+      const val=inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+      const ok=ex.reponses.some(rep=>rep.toLowerCase()===val);
+      inp.className='ti '+(ok?'ok':'ko');
+      const res=$('tres_'+ex.input_id);
+      if(ok){
+        S.xp+=20; toast('⭐ +20 XP');
+        res.innerHTML='<span style="color:var(--ok-d);font-weight:700">✅ Bravo !</span>';
+        inp.disabled=true; br.innerHTML='';
+        br.appendChild(mkB(S.ei<ch.ex.length-1?'Exercice suivant →':'🏁 Bilan →','bfr',nextEx));
+      } else {
+        res.innerHTML=`<span style="color:#B91C1C;font-weight:700">❌ Réponse(s) possible(s) : ${ex.reponses.slice(0,3).join(' / ')}</span>`;
+      }
+    }));
+  }
+
+  function nextEx(){
+    S.esel=null; S.efb=false;
+    if(S.ei<ch.ex.length-1){ S.ei++; render(); }
+    else{
+      S.done[ch.id]=true; S.xp+=15; toast('✅ Chapitre terminé +15 XP !');
+      saveP(); S.ph='bilan'; render();
+    }
+  }
+
+  r.appendChild(c);
+}
+
+/* ────── BILAN ────── */
+function buildBilan(r,ch){
+  const cnt=Object.keys(S.done).length;
+  let badge={lbl:'📗 En route !',cls:'bbr'};
+  if(cnt>=DATA.length) badge={lbl:'🏆 Français maîtrisé !',cls:'bor'};
+  else if(cnt>=3)      badge={lbl:'🎓 Bonne base',cls:'barg'};
+  const c=mkC('c-ok','🎉','Chapitre terminé !',ch.label+' · +15 XP bonus complétion');
+  const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
+  body.innerHTML=`<div class="bilan">
+    <div class="bscore">${S.xp} XP</div>
+    <div class="blbl">${cnt} / ${DATA.length} chapitres terminés</div>
+    <div class="bbadge ${badge.cls}">${badge.lbl}</div>
+    <p style="font-size:.88rem;color:var(--ink3);margin-bottom:16px">
+      ${cnt===DATA.length
+        ? '🎉 Tu as terminé tous les chapitres ! Tu es paré(e) pour le Français en 6e.'
+        : `Il reste <strong>${DATA.length-cnt} chapitre(s)</strong> à explorer. Continue !`}
+    </p>
+  </div>`;
+  const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
+  const ni=DATA.findIndex((_,i)=>i!==S.ci&&!S.done[DATA[i].id]);
+  if(ni!==-1) br.appendChild(mkB(`${DATA[ni].ico} ${DATA[ni].label} →`,'bfr',()=>{
+    S.ci=ni; S.ph='cours'; S.fi=0; S.ff=false; S.ei=0; S.esel=null; S.efb=false; render();
+  }));
+  br.appendChild(mkB('← Hub principal','bgh',()=>location.href='index_ACCEUIL6e.html'));
+  r.appendChild(c);
+}
+
+/* ────── HELPERS ────── */
+function mkC(ciCls,ico,title,sub){
+  const d=document.createElement('div'); d.className='card';
+  d.innerHTML=`<div class="chead"><div class="ci ${ciCls}">${ico}</div>
+    <div><div class="ctitle">${title}</div><div class="csub">${sub}</div></div></div>`;
+  return d;
+}
+function mkB(label,cls,fn){
+  const b=document.createElement('button'); b.className='btn '+cls;
+  b.innerHTML=label; if(fn)b.onclick=fn; return b;
+}
+
+render();
+</script>
+</body>
+</html>
