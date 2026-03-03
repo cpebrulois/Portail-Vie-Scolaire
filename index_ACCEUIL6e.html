@@ -409,6 +409,118 @@ body::before{
   .revision-grid{grid-template-columns:repeat(2,1fr)}
   .hero-title{font-size:2rem}
 }
+
+/* ══════════════════════════════════════════
+   CARTE IDENTIFICATION
+══════════════════════════════════════════ */
+.id-card{
+  background:linear-gradient(135deg,#FFF9F0,#FFF5E8);
+  border:2px solid rgba(245,158,11,.35);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  padding:20px;
+  margin-bottom:18px;
+  overflow:hidden;
+  position:relative;
+}
+.id-card::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,.12),transparent 70%);
+  pointer-events:none;
+}
+.id-card-head{
+  display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;
+}
+.id-avatar{
+  width:52px;height:52px;border-radius:16px;
+  background:linear-gradient(135deg,var(--sun),var(--sun-deep));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(245,158,11,.35);
+}
+.id-welcome{flex:1}
+.id-welcome-title{
+  font-family:var(--font-title);font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:2px
+}
+.id-welcome-sub{font-size:.8rem;font-weight:700;color:var(--ink-light)}
+
+/* Badge identifiant */
+.id-badge-wrap{
+  display:flex;align-items:center;gap:10px;
+  background:var(--white);border:2px solid rgba(245,158,11,.4);
+  border-radius:var(--radius-md);padding:12px 16px;margin-bottom:14px;
+}
+.id-badge-code{
+  font-family:var(--font-mono);font-size:1.05rem;font-weight:700;
+  color:var(--sun-deep);flex:1;letter-spacing:.5px;
+}
+.id-badge-copy{
+  background:none;border:1.5px solid rgba(245,158,11,.4);border-radius:8px;
+  padding:5px 10px;cursor:pointer;font-size:.78rem;font-weight:700;
+  color:var(--sun-deep);transition:all .15s;font-family:var(--font-title);
+}
+.id-badge-copy:hover{background:var(--sun-pale,#FEF3C7);border-color:var(--sun-deep)}
+
+/* Sauvegarde */
+.save-section{
+  background:rgba(255,255,255,.7);border:1.5px solid rgba(245,158,11,.2);
+  border-radius:var(--radius-md);padding:14px;
+}
+.save-title{
+  font-family:var(--font-title);font-size:.88rem;font-weight:800;
+  color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.save-msg{
+  font-size:.82rem;line-height:1.6;color:var(--ink-mid);margin-bottom:12px;
+  background:rgba(245,158,11,.08);border-left:3px solid var(--sun-deep);
+  border-radius:0 8px 8px 0;padding:8px 12px;font-weight:600;
+}
+.save-msg strong{color:var(--sun-deep)}
+.save-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.save-btn{
+  display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;
+  padding:9px 18px;font-family:var(--font-title);font-size:.85rem;font-weight:800;
+  cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .15s;
+}
+.save-btn:hover{transform:translateY(-1px);box-shadow:0 5px 0 rgba(0,0,0,.12)}
+.save-btn:active{transform:translateY(0);box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.save-btn-dl{background:var(--sun-deep);color:#fff}
+.save-btn-up{background:var(--white);color:var(--ink-mid);border:2px solid var(--ink-faint);box-shadow:none}
+.save-btn-up:hover{border-color:var(--sun-deep);color:var(--sun-deep);transform:none}
+.save-drop{
+  border:2px dashed rgba(245,158,11,.4);border-radius:var(--radius-md);
+  padding:14px;text-align:center;font-size:.82rem;font-weight:700;
+  color:var(--ink-light);transition:all .2s;cursor:pointer;
+  background:rgba(255,255,255,.5);
+}
+.save-drop.drag-over{border-color:var(--sun-deep);background:rgba(245,158,11,.08);color:var(--sun-deep)}
+.save-status{
+  margin-top:8px;font-size:.8rem;font-weight:700;min-height:18px;
+  padding:0 4px;
+}
+.save-status.ok{color:var(--grass-deep)}
+.save-status.ko{color:#B91C1C}
+
+/* MODAL confirmation import */
+.modal-overlay{
+  position:fixed;inset:0;z-index:2000;background:rgba(15,23,42,.55);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal-box{
+  background:var(--white);border-radius:var(--radius-lg);padding:28px 24px;
+  max-width:420px;width:100%;box-shadow:0 24px 64px rgba(15,23,42,.25);
+  transform:translateY(12px);transition:transform .25s;
+}
+.modal-overlay.show .modal-box{transform:translateY(0)}
+.modal-ico{font-size:2.2rem;text-align:center;margin-bottom:10px}
+.modal-title{font-family:var(--font-title);font-size:1.1rem;font-weight:900;
+  color:var(--ink);text-align:center;margin-bottom:8px}
+.modal-body{font-size:.88rem;color:var(--ink-mid);text-align:center;line-height:1.6;margin-bottom:18px}
+.modal-body strong{color:var(--sun-deep)}
+.modal-btns{display:flex;gap:10px;justify-content:center}
 </style>
 </head>
 <body>
@@ -443,6 +555,64 @@ body::before{
     </div>
   </header>
 
+  <!-- ═══ CARTE IDENTIFICATION & SAUVEGARDE ═══ -->
+  <div class="id-card" id="idCard">
+    <div class="id-card-head">
+      <div class="id-avatar" id="idAnimalEmoji">🦊</div>
+      <div class="id-welcome">
+        <div class="id-welcome-title" id="idWelcomeTitle">Ton identifiant unique</div>
+        <div class="id-welcome-sub" id="idWelcomeSub">Noté-le bien — il te permet de retrouver tes progrès</div>
+      </div>
+    </div>
+
+    <div class="id-badge-wrap">
+      <span class="id-badge-code" id="idCode">—</span>
+      <button class="id-badge-copy" onclick="copyId()" title="Copier">📋 Copier</button>
+    </div>
+
+    <div class="save-section">
+      <div class="save-title">💾 Ma sauvegarde</div>
+      <div class="save-msg">
+        Même si <strong>ce navigateur garde tes progrès</strong>, il suffit d'effacer les données
+        pour tout perdre — et sur un autre poste, tu repartirais de zéro.
+        <br><br>
+        <strong>Avant d'éteindre</strong>, télécharge ta sauvegarde. Sur n'importe quel autre ordinateur,
+        tu n'auras qu'à la recharger pour retrouver exactement là où tu en étais. 🎒
+      </div>
+      <div class="save-btns">
+        <button class="save-btn save-btn-dl" onclick="downloadSave()">⬇️ Télécharger ma sauvegarde</button>
+        <label class="save-btn save-btn-up" style="cursor:pointer">
+          📂 Charger une sauvegarde
+          <input type="file" id="saveFileInput" accept=".json" style="display:none" onchange="loadSaveFile(this)">
+        </label>
+      </div>
+      <div class="save-drop" id="saveDrop"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        📂 … ou glisse ta sauvegarde ici
+      </div>
+      <div class="save-status" id="saveStatus"></div>
+    </div>
+  </div>
+
+  <!-- MODAL confirmation import -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal-box">
+      <div class="modal-ico">🔄</div>
+      <div class="modal-title">Charger cette sauvegarde ?</div>
+      <div class="modal-body" id="importModalBody">
+        Cette sauvegarde appartient à <strong id="importModalId">—</strong>.<br>
+        Tes progrès actuels seront <strong>remplacés</strong>.<br>
+        Es-tu sûr(e) ?
+      </div>
+      <div class="modal-btns">
+        <button class="save-btn save-btn-dl" onclick="confirmImport()">✅ Oui, charger</button>
+        <button class="save-btn save-btn-up" onclick="cancelImport()">✗ Annuler</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ PILIERS PRINCIPAUX ═══ -->
   <div class="section-label">
     <div class="section-label-line"></div>
@@ -467,8 +637,8 @@ body::before{
 
   <div class="footer-note">
     🔒 <strong>Tes progrès sont sauvegardés automatiquement</strong> dans ce navigateur.
-    Tu peux fermer et revenir — tout sera là où tu l'as laissé.<br>
-    À la rentrée, ton CPE pourra valider tes badges directement depuis le portail du collège.
+    Mais pour ne jamais rien perdre et retrouver ton aventure sur n'importe quel poste,
+    <strong>télécharge ta sauvegarde</strong> avant d'éteindre (voir l'encart en haut de cette page).
   </div>
 
 </div>
@@ -483,6 +653,233 @@ const COLLEGE = "Collège Château Rance";
 
 /* Clé localStorage partagée avec tous les modules */
 const LS_KEY = 'ave6e_progress';
+const ID_KEY  = 'ave6e_player_id';   // identifiant de l'élève
+
+/* ═══════════════════════════════════════════════════════════
+   GÉNÉRATEUR DE 1000 IDENTIFIANTS ANIMAUX
+   Format : Adjectif-Animal-NNN (ex: Renard-Bleu-742)
+═══════════════════════════════════════════════════════════ */
+const ANIMAUX = [
+  'Renard','Lynx','Loutre','Herisson','Castor','Hibou','Faucon','Aigle',
+  'Dauphin','Baleine','Pingouin','Perroquet','Flamant','Panda','Koala','Tigre',
+  'Jaguar','Guepard','Elephant','Girafe','Zebre','Rhinoceros','Gorille','Loup',
+  'Ours','Cerf','Ecureuil','Lapin','Hamster','Fennec','Axolotl','Capybara',
+  'Okapi','Tapir','Puma','Serval','Caracal','Kinkajou','Binturong','Narval',
+  'Beluga','Orque','Lamentin','Dugong','Manchot','Albatros','Toucan','Colibri'
+];
+const ADJECTIFS = [
+  'Bleu','Rouge','Vert','Violet','Orange','Doré','Argent','Turquoise',
+  'Ecarlate','Indigo','Corail','Ambre','Jade','Rubis','Saphir','Topaze',
+  'Rapide','Malin','Curieux','Hardi','Calme','Vif','Sage','Brave',
+  'Futé','Doux','Fort','Agile','Discret','Jovial','Ardent','Serein'
+];
+const ANIMAL_EMOJIS = {
+  'Renard':'🦊','Lynx':'🐱','Loutre':'🦦','Herisson':'🦔','Castor':'🦫',
+  'Hibou':'🦉','Faucon':'🦅','Aigle':'🦅','Dauphin':'🐬','Baleine':'🐋',
+  'Pingouin':'🐧','Perroquet':'🦜','Flamant':'🦩','Panda':'🐼','Koala':'🐨',
+  'Tigre':'🐯','Jaguar':'🐆','Guepard':'🐆','Elephant':'🐘','Girafe':'🦒',
+  'Zebre':'🦓','Rhinoceros':'🦏','Gorille':'🦍','Loup':'🐺','Ours':'🐻',
+  'Cerf':'🦌','Ecureuil':'🐿️','Lapin':'🐰','Hamster':'🐹','Fennec':'🦊',
+  'Axolotl':'🐸','Capybara':'🐹','Okapi':'🦒','Tapir':'🐾','Puma':'🐱',
+  'Serval':'🐱','Caracal':'🐱','Kinkajou':'🦝','Binturong':'🐾',
+  'Narval':'🦄','Beluga':'🐳','Orque':'🐋','Lamentin':'🐾','Dugong':'🐾',
+  'Manchot':'🐧','Albatros':'🦅','Toucan':'🦜','Colibri':'🐦'
+};
+
+/* Génère tous les 1000 identifiants de façon déterministe */
+function buildIdPool() {
+  const pool = [];
+  let n = 100;
+  // On tourne sur adjectifs × animaux × suffixe numérique pour avoir 1000 entrées uniques
+  outer: for (let ai = 0; ai < ADJECTIFS.length; ai++) {
+    for (let an = 0; an < ANIMAUX.length; an++) {
+      pool.push(`${ANIMAUX[an]}-${ADJECTIFS[ai]}-${n}`);
+      n++;
+      if (pool.length >= 1000) break outer;
+    }
+  }
+  return pool;
+}
+
+/* Pioche aléatoire parmi les identifiants non encore utilisés localement */
+function pickRandomId() {
+  const pool = buildIdPool();
+  // On essaie de prendre un qui n'est pas déjà dans le localStorage local
+  // (très improbable qu'il y en ait un conflit côté client, mais c'est propre)
+  const used = [];
+  try { const p = JSON.parse(localStorage.getItem(LS_KEY)||'{}'); if(p.player_id) used.push(p.player_id); } catch(e){}
+  const available = pool.filter(id => !used.includes(id));
+  const src = available.length > 0 ? available : pool;
+  return src[Math.floor(Math.random() * src.length)];
+}
+
+function getAnimalName(id) {
+  // id = "Animal-Adjectif-NNN" → extrait "Animal"
+  return (id || '').split('-')[0] || 'Renard';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GESTION IDENTIFIANT
+═══════════════════════════════════════════════════════════ */
+function initPlayer() {
+  let progress;
+  try { progress = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { progress = {}; }
+
+  // Si déjà un identifiant en mémoire
+  if (progress.player_id) {
+    renderIdCard(progress.player_id, false);
+    return;
+  }
+
+  // Nouveau visiteur → attribution d'un identifiant
+  const newId = pickRandomId();
+  progress.player_id = newId;
+  progress.id_created = new Date().toISOString();
+  localStorage.setItem(LS_KEY, JSON.stringify(progress));
+  renderIdCard(newId, true);
+}
+
+function renderIdCard(id, isNew) {
+  document.getElementById('idCode').textContent = id;
+  const animal = getAnimalName(id);
+  document.getElementById('idAnimalEmoji').textContent = ANIMAL_EMOJIS[animal] || '🐾';
+  if (isNew) {
+    document.getElementById('idWelcomeTitle').textContent = '✨ Ton identifiant vient d\'être créé !';
+    document.getElementById('idWelcomeSub').textContent = 'Note-le ou télécharge ta sauvegarde — il est à toi pour toute l\'aventure.';
+    // Flash d'animation sur le badge
+    setTimeout(() => document.getElementById('idCard').style.borderColor = 'rgba(245,158,11,.7)', 100);
+    setTimeout(() => document.getElementById('idCard').style.borderColor = '', 1200);
+  } else {
+    document.getElementById('idWelcomeTitle').textContent = `Bon retour, ${animal} !`;
+    document.getElementById('idWelcomeSub').textContent = 'Tes progrès sont là — tu reprends là où tu t\'es arrêté(e).';
+  }
+}
+
+function copyId() {
+  const id = document.getElementById('idCode').textContent;
+  if (!id || id === '—') return;
+  navigator.clipboard.writeText(id).then(() => {
+    const btn = document.querySelector('.id-badge-copy');
+    const orig = btn.textContent; btn.textContent = '✅ Copié !';
+    setTimeout(() => btn.textContent = orig, 1800);
+  }).catch(() => {
+    // Fallback pour les navigateurs sans clipboard API
+    const el = document.createElement('textarea');
+    el.value = id; document.body.appendChild(el); el.select(); document.execCommand('copy');
+    document.body.removeChild(el);
+    setStatus('✅ Identifiant copié !','ok');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SAUVEGARDE — EXPORT
+═══════════════════════════════════════════════════════════ */
+function downloadSave() {
+  let progress;
+  try { progress = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { progress = {}; }
+
+  const saveData = {
+    _app: 'MonAventure6e',
+    _version: 1,
+    _exported: new Date().toISOString(),
+    player_id: progress.player_id || '—',
+    ...progress
+  };
+
+  const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const id = (progress.player_id || 'joueur').replace(/[^a-zA-Z0-9\-]/g, '_');
+  const d = new Date();
+  const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  a.download = `sauvegarde_aventure6e_${id}_${stamp}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus('✅ Sauvegarde téléchargée avec succès !', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SAUVEGARDE — IMPORT
+═══════════════════════════════════════════════════════════ */
+let _pendingImportData = null;
+
+function loadSaveFile(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  readSaveFile(file);
+  input.value = ''; // reset pour permettre rechargement du même fichier
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('saveDrop').classList.remove('drag-over');
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) readSaveFile(file);
+}
+
+function readSaveFile(file) {
+  if (!file.name.endsWith('.json')) {
+    setStatus('❌ Le fichier doit être un .json (sauvegarde Aventure 6e)', 'ko'); return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data._app !== 'MonAventure6e') {
+        setStatus('❌ Ce fichier ne provient pas de l\'Aventure 6e.', 'ko'); return;
+      }
+      // Demander confirmation si on a déjà un identifiant différent
+      let current;
+      try { current = JSON.parse(localStorage.getItem(LS_KEY)||'{}'); } catch(err){ current={}; }
+      const currentId = current.player_id;
+      const newId = data.player_id;
+      _pendingImportData = data;
+
+      if (currentId && newId && currentId !== newId) {
+        document.getElementById('importModalId').textContent = newId;
+        document.getElementById('importModalBody').innerHTML =
+          `Cette sauvegarde appartient à <strong>${newId}</strong>.<br>
+          Ton identifiant actuel est <strong>${currentId}</strong>.<br>
+          Tes progrès actuels seront <strong>remplacés</strong>. Es-tu sûr(e) ?`;
+        document.getElementById('importModal').classList.add('show');
+      } else {
+        applyImport(data);
+      }
+    } catch(err) {
+      setStatus('❌ Fichier corrompu ou illisible.', 'ko');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function confirmImport() {
+  document.getElementById('importModal').classList.remove('show');
+  if (_pendingImportData) { applyImport(_pendingImportData); _pendingImportData = null; }
+}
+function cancelImport() {
+  document.getElementById('importModal').classList.remove('show');
+  _pendingImportData = null;
+  setStatus('Import annulé.', '');
+}
+
+function applyImport(data) {
+  // Nettoyer les métadonnées d'export avant de stocker
+  const { _app, _version, _exported, ...progress } = data;
+  localStorage.setItem(LS_KEY, JSON.stringify(progress));
+  renderIdCard(progress.player_id || '—', false);
+  renderPiliers();
+  renderRevision();
+  updateStats();
+  setStatus(`✅ Sauvegarde de ${progress.player_id || '—'} chargée ! Tes progrès sont restaurés.`, 'ok');
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = msg;
+  el.className = 'save-status ' + (type || '');
+  if (msg) setTimeout(() => { if(el.textContent === msg) el.textContent = ''; }, 5000);
+}
+
 
 function getProgress() {
   try {
@@ -661,8 +1058,8 @@ const PILIERS = [
 
 /* Hubs de révision (toujours accessibles) */
 const HUBS_REVISION = [
-  { nom:'Français',      ico:'🖊️', file:'hub_francais.html',   count:'bientôt', dispo:false },
-  { nom:'Mathématiques', ico:'📐', file:'hub_maths.html',       count:'bientôt', dispo:false },
+  { nom:'Français',      ico:'🖊️', file:'hub_francais.html',   count:'5 chapitres', dispo:true },
+  { nom:'Mathématiques', ico:'🔢', file:'hub_maths.html',       count:'5 chapitres', dispo:true },
   { nom:'Histoire-Géo',  ico:'🌍', file:'hub_histoire.html',    count:'bientôt', dispo:false },
   { nom:'Sciences',      ico:'🔬', file:'hub_sciences.html',    count:'bientôt', dispo:false },
   { nom:'Anglais',       ico:'🇬🇧', file:'hub_anglais.html',    count:'bientôt', dispo:false },
@@ -823,6 +1220,7 @@ function showToast(msg) {
    INIT + ÉCOUTE PROGRESSION (modules → hub)
 ═══════════════════════════════════════════════════════════ */
 function init() {
+  initPlayer();
   renderPiliers();
   renderRevision();
   updateStats();
