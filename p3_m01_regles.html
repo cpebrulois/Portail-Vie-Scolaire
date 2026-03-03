@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Les règles, pourquoi elles existent</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#EAF6FF;--sky2:#D6EDFF;--sun:#FFD93D;--sun-deep:#F59E0B;
+  --grass:#34D399;--grass-deep:#059669;--water:#38BDF8;--water-deep:#0284C7;
+  --coral:#FB7185;--coral-deep:#E11D48;--violet:#A78BFA;
+  --ink:#0F172A;--ink-mid:#334155;--ink-light:#64748B;--ink-faint:#CBD5E1;
+  --white:#FFFFFF;--panel:rgba(255,255,255,0.94);
+  --p3:#A78BFA;--p3d:#7C3AED;--p3bg:#F5F3FF;--p3pale:#EDE9FE;
+  --rs:10px;--rm:18px;--rl:28px;
+  --ss:0 2px 8px rgba(15,23,42,.08);--sm:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--p3bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(167,139,250,.2) 0%,transparent 65%),
+             radial-gradient(ellipse 55% 40% at 92% 12%,rgba(255,217,61,.15) 0%,transparent 65%),
+             radial-gradient(ellipse 55% 55% at 50% 108%,rgba(52,211,153,.12) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink-mid);cursor:pointer;text-decoration:none;transition:all .15s}
+.back-btn:hover{border-color:var(--p3);color:var(--p3d)}
+.module-crumb{font-size:.8rem;font-weight:700;color:var(--ink-light)}
+.mod-header{text-align:center;padding:28px 20px 20px}
+.pilier-chip{display:inline-flex;align-items:center;gap:7px;background:var(--p3bg);border:2px solid var(--p3);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--p3d);margin-bottom:14px}
+.mod-title{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;color:var(--ink);line-height:1.15;margin-bottom:8px}
+.mod-sub{font-size:1rem;color:var(--ink-light);font-weight:600}
+.prog-track{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.prog-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.prog-step::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink-faint);z-index:0}
+.prog-step:last-child::after{display:none}
+.prog-step.s-done::after{background:var(--grass)}
+.prog-dot{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink-faint);background:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink-light);z-index:1;position:relative;transition:all .3s}
+.prog-step.s-done .prog-dot{background:var(--grass);border-color:var(--grass);color:white}
+.prog-step.s-active .prog-dot{background:var(--sun);border-color:var(--sun-deep);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pdot 2s infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.prog-lbl{font-size:.7rem;font-weight:700;color:var(--ink-light);margin-top:5px;text-align:center}
+.prog-step.s-active .prog-lbl{color:var(--sun-deep)}
+.prog-step.s-done .prog-lbl{color:var(--grass-deep)}
+.xp-strip{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;padding:6px 16px;font-family:var(--fm);font-size:.83rem;font-weight:700;color:var(--ink);box-shadow:var(--ss)}
+.xp-pill.hl{border-color:var(--sun);background:#FFFBEB;color:var(--sun-deep)}
+.card{background:var(--panel);border-radius:var(--rl);box-shadow:var(--sm);border:1.5px solid rgba(255,255,255,.9);margin-bottom:16px;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1.5px solid rgba(15,23,42,.07);background:rgba(245,243,255,.8)}
+.card-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.ci-v{background:#EDE9FE} .ci-s{background:#FEF3C7} .ci-g{background:#DCFCE7} .ci-b{background:#DBEAFE}
+.card-head-text .title{font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink)}
+.card-head-text .sub{font-size:.8rem;font-weight:700;color:var(--ink-light);margin-top:2px}
+.card-body{padding:20px}
+.intro-hero{text-align:center;padding:8px 0 22px}
+.float-emoji{font-size:3.8rem;display:block;margin-bottom:14px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.intro-title{font-family:var(--ft);font-size:1.5rem;font-weight:800;color:var(--ink);margin-bottom:10px}
+.intro-text{font-size:.97rem;color:var(--ink-mid);line-height:1.7;max-width:520px;margin:0 auto 22px}
+.obj-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;text-align:left}
+.obj-item{display:flex;align-items:flex-start;gap:9px;background:var(--p3pale);border:1.5px solid rgba(167,139,250,.3);border-radius:var(--rs);padding:10px 14px;font-size:.93rem;font-weight:600;color:var(--p3d)}
+.obj-ico{font-size:1.1rem;flex-shrink:0}
+.regle-card{border-radius:var(--rm);overflow:hidden;border:2px solid var(--ink-faint);box-shadow:var(--ss);margin-bottom:8px}
+.regle-header{padding:16px 18px 12px;font-family:var(--ft);font-size:1.05rem;font-weight:800}
+.regle-body{padding:0 18px 18px;display:flex;flex-direction:column;gap:10px}
+.regle-what{background:#EFF6FF;border:1.5px solid rgba(56,189,248,.3);border-radius:var(--rs);padding:10px 14px}
+.regle-what-lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--water-deep);margin-bottom:5px}
+.regle-why{background:var(--p3pale);border:1.5px solid rgba(167,139,250,.35);border-radius:var(--rs);padding:10px 14px}
+.regle-why-lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--p3d);margin-bottom:5px}
+.regle-txt{font-size:.9rem;font-weight:600;color:var(--ink-mid);line-height:1.55}
+.ri-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(15,23,42,.05);border:1.5px solid var(--ink-faint);border-radius:6px;padding:4px 10px;font-size:.75rem;font-weight:700;color:var(--ink-light);margin-top:4px}
+.fn-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.fn-counter{font-family:var(--fm);font-size:.83rem;font-weight:700;color:var(--ink-light);background:rgba(15,23,42,.05);padding:6px 14px;border-radius:50px}
+.quiz-ctx{background:var(--p3pale);border:1.5px solid var(--p3);border-radius:var(--rs);padding:13px 16px;margin-bottom:14px;font-size:.88rem;color:var(--ink-mid);font-style:italic;font-weight:600}
+.quiz-q{font-family:var(--ft);font-size:1.15rem;font-weight:800;color:var(--ink);margin-bottom:16px;line-height:1.35}
+.opts{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.8);border:2px solid var(--ink-faint);border-radius:var(--rs);padding:12px 15px;cursor:pointer;font-size:.93rem;font-weight:600;color:var(--ink);text-align:left;transition:all .15s;font-family:var(--fb)}
+.opt:hover:not(:disabled){border-color:var(--p3);background:var(--p3pale)}
+.opt.sel{border-color:var(--p3d);background:var(--p3pale)}
+.opt.ok{border-color:var(--grass);background:#DCFCE7;color:var(--grass-deep)}
+.opt.ko{border-color:var(--coral);background:#FEE2E2;color:var(--coral-deep)}
+.opt:disabled{cursor:default}
+.opt-let{width:30px;height:30px;border-radius:8px;background:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.82rem;font-weight:700;flex-shrink:0;transition:background .15s}
+.opt.sel .opt-let{background:var(--p3d);color:white}
+.opt.ok .opt-let{background:var(--grass);color:white}
+.opt.ko .opt-let{background:var(--coral);color:white}
+.fb{border-radius:var(--rs);padding:13px 16px;margin-bottom:13px;border:2px solid transparent}
+.fb.ok{background:#DCFCE7;border-color:var(--grass)}
+.fb.ko{background:#FEE2E2;border-color:var(--coral)}
+.fb-title{font-family:var(--ft);font-size:.97rem;font-weight:800;margin-bottom:5px}
+.fb-text{font-size:.88rem;line-height:1.55}
+.sc-ctx{background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:2px solid rgba(167,139,250,.4);border-radius:var(--rs);padding:15px 17px;margin-bottom:14px}
+.sc-ctx-lbl{font-size:.72rem;font-weight:800;color:var(--p3d);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.sc-story{font-size:.95rem;line-height:1.65;color:var(--ink)}
+.sc-q{font-family:var(--ft);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:13px}
+.choices{display:flex;flex-direction:column;gap:9px}
+.choice{display:flex;align-items:flex-start;gap:9px;background:var(--white);border:2px solid var(--ink-faint);border-radius:var(--rs);padding:13px 16px;cursor:pointer;font-size:.93rem;font-weight:600;color:var(--ink);text-align:left;transition:all .15s;font-family:var(--fb)}
+.choice:hover{border-color:var(--p3);background:var(--p3pale);transform:translateX(3px)}
+.ch-arr{color:var(--p3d);flex-shrink:0;margin-top:1px}
+.res-box{border-radius:var(--rs);padding:16px;margin-bottom:13px;border:2px solid transparent}
+.res-box.pos{background:#F0FDF4;border-color:var(--grass)}
+.res-box.neu{background:#FFFBEB;border-color:var(--sun)}
+.res-box.neg{background:#FEF2F2;border-color:var(--coral)}
+.res-emoji{font-size:1.8rem;margin-bottom:9px;display:block}
+.res-title{font-family:var(--ft);font-size:1rem;font-weight:800;margin-bottom:7px}
+.res-tip{margin-top:10px;padding:9px 12px;background:rgba(255,255,255,.7);border-radius:8px;font-size:.83rem;font-style:italic;color:var(--ink-light)}
+.impact{display:inline-flex;align-items:center;gap:5px;border-radius:50px;padding:3px 12px;font-family:var(--fm);font-size:.78rem;font-weight:700;margin-top:9px}
+.impact.pos{background:#DCFCE7;color:var(--grass-deep)} .impact.neu{background:#FEF9C3;color:#92400E} .impact.neg{background:#FEE2E2;color:var(--coral-deep)}
+.completion{text-align:center;padding:10px 0 16px}
+.trophy{font-size:5rem;display:block;margin-bottom:14px;animation:tbounce .6s cubic-bezier(.36,.07,.19,.97) .2s both}
+@keyframes tbounce{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.15) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.comp-title{font-family:var(--ft);font-size:2rem;font-weight:900;color:var(--ink);margin-bottom:6px}
+.comp-sub{font-size:1rem;color:var(--ink-light);font-weight:600;margin-bottom:24px}
+.stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.stat-tile{background:rgba(255,255,255,.9);border:2px solid var(--ink-faint);border-radius:var(--rm);padding:14px 18px;min-width:90px;text-align:center}
+.stat-v{font-family:var(--ft);font-size:1.9rem;font-weight:900;color:var(--ink)}
+.stat-l{font-size:.75rem;font-weight:700;color:var(--ink-light);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.mastery{display:inline-flex;align-items:center;gap:8px;border-radius:50px;padding:8px 20px;font-family:var(--ft);font-size:.95rem;font-weight:800;margin-bottom:20px;box-shadow:var(--ss)}
+.m-exp{background:var(--p3pale);color:var(--p3d)} .m-col{background:#DCFCE7;color:#14532D} .m-champ{background:#FEF9C3;color:#92400E}
+.unlock-banner{background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border:2px solid var(--grass);border-radius:var(--rm);padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
+.unlock-ico{font-size:2rem;flex-shrink:0}
+.unlock-text{font-size:.95rem;font-weight:700;color:var(--grass-deep)}
+.unlock-text strong{display:block;font-family:var(--ft);font-size:1.05rem;margin-bottom:3px}
+.next-hint{background:#FFFBEB;border:2px solid var(--sun);border-radius:var(--rs);padding:13px 16px;margin-bottom:18px;font-size:.9rem;font-weight:600;color:var(--ink-mid)}
+.next-hint strong{color:var(--sun-deep)}
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:50px;padding:13px 28px;font-family:var(--ft);font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.16);transition:all .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.16)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,.16)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-v{background:var(--p3d);color:white} .btn-s{background:var(--sun-deep);color:white}
+.btn-g{background:var(--grass-deep);color:white}
+.btn-ghost{background:var(--white);color:var(--ink-mid);border:2px solid var(--ink-faint);box-shadow:none}
+.btn-ghost:hover{border-color:var(--ink-mid)}
+.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:white;padding:12px 28px;border-radius:50px;font-family:var(--ft);font-weight:700;font-size:.95rem;box-shadow:0 16px 48px rgba(15,23,42,.2);z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:520px){.app{padding:0 12px 48px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="topnav">
+    <a class="back-btn" href="index.html">← Hub principal</a>
+    <span class="module-crumb">Pilier 3 · Module 1</span>
+  </nav>
+  <header class="mod-header">
+    <div class="pilier-chip">🤝 La vie en collectivité</div>
+    <h1 class="mod-title">Les règles —<br>pourquoi elles existent</h1>
+    <p class="mod-sub">Comprendre le sens du règlement intérieur</p>
+  </header>
+  <div id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const MODULE_ID='M3_01',MODULE_XP=130,LS_KEY='ave6e_progress',NEXT_FILE='p3_m02_droits.html',NEXT_NAME='Mes droits et mes devoirs';
+
+const REGLES=[
+  {bg:'linear-gradient(135deg,#F5F3FF,#EDE9FE)',border:'#C4B5FD',ico:'📜',theme:'Le règlement intérieur — c\'est quoi ?',
+   quoi:'Le collège Château Rance a son propre <b>règlement intérieur</b>, voté par le conseil d\'administration en <b>avril 2025</b>. Des élèves délégués, des parents, des profs et la direction l\'ont construit ensemble.',
+   pourquoi:'Il fixe les règles communes pour que tout le monde puisse apprendre et vivre ensemble dans le respect mutuel. Ce n\'est pas une liste d\'interdits tombée du ciel : c\'est un <b>contrat collectif</b>.',
+   ri:'Il s\'applique dans l\'établissement et à ses abords immédiats, lors de toutes les activités scolaires et périscolaires.'},
+  {bg:'linear-gradient(135deg,#FFFBEB,#FEF3C7)',border:'#FDE68A',ico:'⏰',theme:'Les horaires — 8h05 à 16h50',
+   quoi:'Cours de <b>8h05 à 12h05</b> le matin, <b>13h45 à 16h50</b> l\'après-midi (lundi, mardi, jeudi, vendredi). Mercredi : matin uniquement. Trois sonneries au début de chaque demi-journée. Récréations à <b>9h55</b> et <b>15h35</b> (15 min chacune, à l\'extérieur).',
+   pourquoi:'Ces horaires organisent la journée de 400 personnes simultanément. Arriver en retard, c\'est perturber un cours déjà commencé — et rater du contenu que personne ne répètera.',
+   ri:'Les élèves se rendent en cours à la 2e sonnerie. La 3e marque le début du cours.'},
+  {bg:'linear-gradient(135deg,#F0FDF4,#DCFCE7)',border:'#6EE7B7',ico:'🚪',theme:'Entrer et sortir — les règles d\'accès',
+   quoi:'Élèves en <b>bus</b> : portail côté place principale. <b>Externes et piétons</b> : portail côté gymnase. Le matin, présentation du carnet de liaison à l\'entrée. <b>Aucun élève ne peut quitter l\'établissement entre deux cours</b>, quel que soit son statut.',
+   pourquoi:'En cas d\'accident ou d\'urgence, les adultes doivent pouvoir localiser chaque élève immédiatement. Cette règle est une question de sécurité, pas de méfiance.',
+   ri:'Tout élève qui quitte l\'établissement sans autorisation commet une faute grave et engage la responsabilité de sa famille.'},
+  {bg:'linear-gradient(135deg,#EFF6FF,#DBEAFE)',border:'#93C5FD',ico:'🍽️',theme:'La cantine — règles et sens',
+   quoi:'Le restaurant fonctionne lundi, mardi, jeudi, vendredi. <b>Denrées extérieures interdites</b>. Rien ne sort du réfectoire (sauf régime médical). Pause méridienne de <b>11h45/12h05</b> à <b>13h40</b>.',
+   pourquoi:'300 élèves doivent pouvoir déjeuner correctement en moins de 2 heures. Le réfectoire est un service collectif, pas un restaurant individuel. Les règles garantissent que tout le monde y trouve sa place.',
+   ri:'En cas de manquement, un élève peut être soumis à l\'obligation de manger seul en fin de service.'},
+  {bg:'linear-gradient(135deg,#FFF1F2,#FFE4E6)',border:'#FDA4AF',ico:'📱',theme:'Le téléphone — éteint et rangé',
+   quoi:'<b>Obligatoirement éteint et rangé dans le sac</b> pendant tout le temps dans l\'établissement. Modes avion, vibreur et silencieux non acceptés. Toute <b>photo ou vidéo</b> sans autorisation explicite d\'un adulte est strictement interdite.',
+   pourquoi:'Deux raisons : 1) Le droit à l\'image protège chacun d\'une publication non consentie, potentiellement destructrice. 2) Un téléphone qui sonne ou un écran regardé pendant un cours perturbe toute la classe.',
+   ri:'La diffusion de photos ou films sans autorisation est constitutive d\'un délit réprimé par la loi.'},
+  {bg:'linear-gradient(135deg,#F5F3FF,#F0F0FF)',border:'#A78BFA',ico:'🤝',theme:'Le sens profond des règles',
+   quoi:'Toutes les règles du RI partagent une logique commune : garantir à <b>chaque personne</b> — élève, prof, AED, agent de service — de pouvoir travailler dans le respect de ses droits.',
+   pourquoi:'Sans règles communes, il n\'y a pas de liberté réelle — il y a la loi du plus fort. Les règles protègent les plus fragiles autant que les plus à l\'aise. <b>Même les adultes les respectent.</b>',
+   ri:'L\'inscription dans un établissement scolaire est indissociable de l\'engagement à respecter le règlement intérieur.'}
+];
+
+const QUIZ=[
+  {ctx:'Mardi matin, récréation de 9h55. Karim a froid et reste dans le couloir.',
+   q:'Karim est-il en conformité avec le règlement intérieur ?',
+   opts:['Oui, le couloir est dans l\'établissement','Non — pendant la récréation, les élèves doivent être à l\'extérieur des bâtiments','Oui s\'il ne gêne personne','Ça dépend de l\'autorisation d\'un prof'],ok:1,xp:25,
+   fb:'Le RI précise que pendant les récréations, les élèves ne stationnent pas dans les couloirs. La cour est l\'espace prévu. Exception : autorisation médicale ou accord d\'un adulte.'},
+  {ctx:'Sofia est demi-pensionnaire transportée. Ses cours finissent à 15h30 au lieu de 16h50 car un prof est absent.',
+   q:'Que peut-elle faire légitimement ?',
+   opts:['Prendre le bus en avance','Faire appeler ses parents pour être récupérée et rentrer à la maison','Sortir seule puisqu\'elle a terminé ses cours','Rien — elle doit attendre 16h50 sans exception'],ok:1,xp:30,
+   fb:'Le RI prévoit un assouplissement : un parent ou une personne désignée peut venir la chercher. Mais elle ne peut jamais prendre le bus en avance ni sortir seule. La demande se fait au CPE à l\'avance pour les absences prévues, ou via un billet de sortie ponctuelle.'},
+  {ctx:'Tom a son téléphone en mode vibreur dans sa poche pendant le cours.',
+   q:'Est-il en règle selon le RI du collège Château Rance ?',
+   opts:['Oui, mode vibreur = silencieux, donc acceptable','Non — le RI exige que le téléphone soit éteint ET rangé dans le sac','Oui s\'il ne l\'utilise pas','Oui s\'il ne le montre pas'],ok:1,xp:25,
+   fb:'Le RI est explicite : "Les modes avion, vibreur et silencieux ne sont pas acceptés." Le téléphone doit être ÉTEINT et dans le sac. En cas de manquement, il peut être confisqué et restitué aux parents sur rendez-vous.'},
+  {ctx:'Le conseil d\'administration du collège Château Rance a voté le RI le 7 avril 2025.',
+   q:'Qui siège dans ce conseil d\'administration ?',
+   opts:['Uniquement le principal et les professeurs','Uniquement les parents d\'élèves','Des représentants des élèves, parents, profs, personnels et de la collectivité','Uniquement les adultes de l\'établissement'],ok:2,xp:20,
+   fb:'Le CA réunit élèves délégués, parents élus, représentants des profs, personnels non enseignants, direction et représentants du département. Le RI est donc une règle co-construite — pas imposée unilatéralement.'}
+];
+
+const SCENARIOS=[
+  {titre:'La sortie entre deux cours',
+   ctx:'Mercredi matin, entre son cours de maths à 10h et son cours de français à 11h, Luca a une heure de permanence. Son copain Enzo lui dit : "Viens, on sort acheter des trucs à la boulangerie, on revient avant 11h." Luca hésite.',
+   q:'Que devrait faire Luca ?',
+   choix:[
+    {t:'Sortir avec Enzo — une heure c\'est court, les surveillants ne verront rien.',r:'En sortant par le portail, le surveillant repère les deux élèves et signale l\'absence non autorisée. Le CPE appelle les familles. Luca et Enzo écopent d\'un avertissement et d\'une retenue.',ico:'⚠️',ton:'neg',tip:'Quitter l\'établissement sans autorisation est une "faute grave" selon le RI, qui engage la responsabilité de la famille. L\'entrée/sortie est surveillée.',impact:-10,lbl:'-10 XP'},
+    {t:'Refuser et rester en permanence — ils peuvent grignoter un goûter du sac.',r:'Luca et Enzo font un peu de révision, mangent quelques biscuits. À 11h, ils sont en cours comme prévu. Personne n\'est convoqué.',ico:'✅',ton:'pos',tip:'La permanence est faite pour ça : espace calme entre deux cours. Les AED peuvent aider sur les devoirs.',impact:40,lbl:'+40 XP'},
+    {t:'Aller au CDI pendant l\'heure de permanence.',r:'Luca profite du CDI pour avancer un exposé. Il y trouve un livre qui l\'intéresse. À 11h, les deux se retrouvent en cours.',ico:'✅',ton:'pos',tip:'Le CDI est ouvert aux élèves sans cours pour faire des recherches ou lire. Une bonne alternative à la permanence classique.',impact:40,lbl:'+40 XP'}
+   ]},
+  {titre:'La photo sans consentement',
+   ctx:'Pendant la récré du matin, Yasmine sort son téléphone et prend une photo de son groupe d\'amies. L\'une d\'elles, Jade, dit clairement "je veux pas être sur la photo". Yasmine la prend quand même et la publie sur sa story Instagram.',
+   q:'Combien de règles Yasmine a-t-elle enfreintes, et lesquelles ?',
+   choix:[
+    {t:'Une seule : elle a utilisé son téléphone en récré.',r:'C\'est une faute, mais incomplet. Il y a aussi le droit à l\'image de Jade qui a été violé — elle a refusé explicitement. Une règle identifiée sur deux.',ico:'😐',ton:'neu',tip:'Usage du téléphone ET publication sans consentement sont deux infractions distinctes. Le RI les mentionne séparément.',impact:10,lbl:'+10 XP'},
+    {t:'Deux règles : usage du téléphone + publication d\'une photo sans le consentement de Jade.',r:'Exactement. 1) Téléphone éteint et rangé (RI). 2) Publier une photo de quelqu\'un sans son accord est un délit pénal (droit à l\'image, Code Pénal). Yasmine risque une convocation au CPE ET une plainte des parents de Jade.',ico:'✅',ton:'pos',tip:'Le RI rappelle explicitement que la diffusion de photos sans autorisation est "constitutive d\'un délit réprimé par la loi". Une story à 24h peut être capturée en 10 secondes.',impact:40,lbl:'+40 XP'},
+    {t:'Aucune — c\'est la récré, le téléphone est autorisé à ce moment.',r:'Faux. Le téléphone doit être éteint et rangé dans le sac PENDANT TOUT LE TEMPS dans l\'établissement — récréations comprises. Il n\'y a pas d\'exception "récré".',ico:'❌',ton:'neg',tip:'Le RI ne prévoit aucune fenêtre d\'utilisation libre. L\'exception n\'existe que dans le cadre d\'une activité pédagogique avec autorisation explicite d\'un adulte.',impact:-5,lbl:'-5 XP'}
+   ]}
+];
+
+let state={phase:'intro',cardIdx:0,quizIdx:0,selected:null,showFb:false,scenIdx:0,choiceIdx:null,showRes:false,xp:0,quizScore:0,scenScore:0};
+
+function getP(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){return{}}}
+function markDone(){const p=getP();if(!Array.isArray(p.modules_done))p.modules_done=[];if(!p.modules_done.includes(MODULE_ID)){p.modules_done.push(MODULE_ID);p.xp_total=(p.xp_total||0)+state.xp;p.last_update=new Date().toISOString();localStorage.setItem(LS_KEY,JSON.stringify(p));window.dispatchEvent(new StorageEvent('storage',{key:LS_KEY}))}}
+function mastery(xp){if(xp>=180)return{lbl:'🏆 Citoyen(ne) du collège !',cls:'m-champ'};if(xp>=110)return{lbl:'🎓 Bon(ne) connaisseur(se)',cls:'m-col'};return{lbl:'🗺️ En apprentissage',cls:'m-exp'}}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function render(){document.getElementById('root').innerHTML='';build()}
+
+function prog(active){const steps=[{l:'Règles'},{l:'Quiz'},{l:'Scènes'},{l:'Bilan'}],order=['cardIdx','quiz','scenarios','fin'],ai=order.indexOf(active);const d=document.createElement('div');d.className='prog-track';steps.forEach((s,i)=>{const st=document.createElement('div');st.className='prog-step'+(i<ai?' s-done':i===ai?' s-active':'');st.innerHTML=`<div class="prog-dot">${i<ai?'✓':i+1}</div><div class="prog-lbl">${s.l}</div>`;d.appendChild(st)});return d}
+function xpbar(extra=[]){const d=document.createElement('div');d.className='xp-strip';d.innerHTML=`<div class="xp-pill hl"><span>⭐</span>${state.xp} XP</div>`;extra.forEach(e=>{d.innerHTML+=`<div class="xp-pill"><span>${e.i}</span>${e.v}</div>`});return d}
+function mkCard(ico,cls,title,sub){const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="card-head"><div class="card-ico ${cls}">${ico}</div><div class="card-head-text"><div class="title">${title}</div>${sub?`<div class="sub">${sub}</div>`:''}</div></div>`;const b=document.createElement('div');b.className='card-body';d.appendChild(b);return{d,b}}
+
+function build(){const r=document.getElementById('root');const ph=state.phase;if(ph==='intro')bIntro(r);else if(ph==='cardIdx')bCards(r);else if(ph==='quiz')bQuiz(r);else if(ph==='scenarios')bScenes(r);else bFin(r)}
+
+function bIntro(r){const{d,b}=mkCard('📜','ci-v','Module 1 — Les règles, pourquoi elles existent','~20 minutes');b.innerHTML=`<div class="intro-hero"><span class="float-emoji">📜</span><h2 class="intro-title">Comprendre le sens des règles</h2><p class="intro-text">Le collège a un <strong>règlement intérieur</strong> voté en avril 2025. Ce n'est pas une liste d'interdits arbitraires — c'est un contrat de vie commune pour que tout le monde puisse apprendre et vivre ensemble. Tu vas comprendre le <strong>pourquoi</strong> de chaque règle.</p><div class="obj-list"><div class="obj-item"><span class="obj-ico">📋</span>Les principales règles de vie au collège Château Rance</div><div class="obj-item"><span class="obj-ico">🧠</span>Pourquoi chaque règle existe — le sens profond</div><div class="obj-item"><span class="obj-ico">🎭</span>Situations réelles pour tester ta compréhension</div></div></div>`;const br=document.createElement('div');br.className='btn-row';const btn=document.createElement('button');btn.className='btn btn-v';btn.textContent='🚀 C\'est parti !';btn.onclick=()=>{state.phase='cardIdx';render()};br.appendChild(btn);b.appendChild(br);r.appendChild(d)}
+
+function bCards(r){
+  r.appendChild(prog('cardIdx'));r.appendChild(xpbar([{i:'📋',v:`${state.cardIdx+1}/${REGLES.length}`}]));
+  const data=REGLES[state.cardIdx];const{d,b}=mkCard(data.ico,'ci-v','Niveau 1 — Les règles','Règle + pourquoi elle existe');
+  const rc=document.createElement('div');rc.className='regle-card';rc.style.cssText=`background:${data.bg};border-color:${data.border}`;
+  rc.innerHTML=`<div class="regle-header" style="background:${data.bg}">${data.ico} ${data.theme}</div><div class="regle-body"><div class="regle-what"><div class="regle-what-lbl">📌 La règle</div><div class="regle-txt">${data.quoi}</div></div><div class="regle-why"><div class="regle-why-lbl">💡 Pourquoi cette règle ?</div><div class="regle-txt">${data.pourquoi}</div></div><span class="ri-tag">📜 RI : ${data.ri}</span></div>`;
+  b.appendChild(rc);const nav=document.createElement('div');nav.className='fn-nav';
+  const prev=document.createElement('button');prev.className='btn btn-ghost';prev.textContent='← Préc';prev.disabled=state.cardIdx===0;prev.onclick=()=>{state.cardIdx--;render()};
+  const ctr=document.createElement('div');ctr.className='fn-counter';ctr.textContent=`${state.cardIdx+1} / ${REGLES.length}`;
+  const next=document.createElement('button');next.className='btn btn-v';next.textContent=state.cardIdx<REGLES.length-1?'Suivant →':'Quiz →';
+  next.onclick=()=>{if(state.cardIdx<REGLES.length-1){state.cardIdx++;render()}else{state.xp+=50;toast('⭐ +50 XP — Niveau 1 terminé !');state.phase='quiz';render()}};
+  nav.append(prev,ctr,next);b.appendChild(nav);r.appendChild(d)
+}
+
+function bQuiz(r){
+  r.appendChild(prog('quiz'));r.appendChild(xpbar([{i:'❓',v:`${state.quizIdx+1}/${QUIZ.length}`},{i:'🏅',v:state.quizScore}]));
+  const q=QUIZ[state.quizIdx];const{d,b}=mkCard('🧩','ci-s','Niveau 2 — Quiz','Lis bien la situation avant de répondre');
+  if(q.ctx)b.innerHTML=`<div class="quiz-ctx">📌 ${q.ctx}</div>`;
+  const qd=document.createElement('div');qd.className='quiz-q';qd.textContent=q.q;b.appendChild(qd);
+  const ol=document.createElement('div');ol.className='opts';
+  q.opts.forEach((o,i)=>{const btn=document.createElement('button');let c='opt';if(state.showFb){if(i===q.ok)c+=' ok';else if(i===state.selected)c+=' ko';}else if(i===state.selected)c+=' sel';btn.className=c;btn.disabled=state.showFb;btn.innerHTML=`<span class="opt-let">${String.fromCharCode(65+i)}</span>${o}`;btn.onclick=()=>{if(!state.showFb){state.selected=i;render()}};ol.appendChild(btn)});
+  b.appendChild(ol);
+  if(state.showFb){const ok=state.selected===q.ok;const fb=document.createElement('div');fb.className=`fb ${ok?'ok':'ko'}`;fb.innerHTML=`<div class="fb-title">${ok?'✅ Bonne réponse ! +'+q.xp+' XP':'❌ Pas tout à fait…'}</div><div class="fb-text">${q.fb}</div>`;b.appendChild(fb)}
+  const br=document.createElement('div');br.className='btn-row';
+  if(!state.showFb){const v=document.createElement('button');v.className='btn btn-s';v.textContent='Valider';v.disabled=state.selected===null;v.onclick=()=>{if(state.selected===q.ok){state.xp+=q.xp;state.quizScore+=q.xp;toast(`⭐ +${q.xp} XP`)}state.showFb=true;render()};br.appendChild(v)}
+  else{const n=document.createElement('button');n.className='btn btn-v';n.textContent=state.quizIdx<QUIZ.length-1?'Question suivante →':'Mise en scène →';n.onclick=()=>{state.selected=null;state.showFb=false;if(state.quizIdx<QUIZ.length-1){state.quizIdx++;render()}else{state.xp+=20;toast('🎭 Niveau 3 débloqué !');state.phase='scenarios';render()}};br.appendChild(n)}
+  b.appendChild(br);r.appendChild(d)
+}
+
+function bScenes(r){
+  r.appendChild(prog('scenarios'));r.appendChild(xpbar([{i:'🎭',v:`Scène ${state.scenIdx+1}/${SCENARIOS.length}`},{i:'🏅',v:state.scenScore}]));
+  const sc=SCENARIOS[state.scenIdx];const{d,b}=mkCard('🎭','ci-v',`Niveau 3 — ${sc.titre}`,'Que ferais-tu dans cette situation ?');
+  b.innerHTML=`<div class="sc-ctx"><div class="sc-ctx-lbl">📖 La situation</div><div class="sc-story">${sc.ctx}</div></div>`;
+  const sq=document.createElement('div');sq.className='sc-q';sq.textContent=sc.q;b.appendChild(sq);
+  if(!state.showRes){
+    const ch=document.createElement('div');ch.className='choices';
+    sc.choix.forEach((c,i)=>{const btn=document.createElement('button');btn.className='choice';btn.innerHTML=`<span class="ch-arr">→</span>${c.t}`;btn.onclick=()=>{state.choiceIdx=i;state.showRes=true;render()};ch.appendChild(btn)});
+    b.appendChild(ch);
+  }else{
+    const ch=sc.choix[state.choiceIdx];const res=document.createElement('div');res.className=`res-box ${ch.ton}`;
+    res.innerHTML=`<span class="res-emoji">${ch.ico}</span><div class="res-title">${ch.r}</div><div class="res-tip">💡 ${ch.tip}</div><div class="impact ${ch.ton==='pos'?'pos':ch.ton==='neg'?'neg':'neu'}">${ch.lbl}</div>`;
+    b.appendChild(res);
+    const br=document.createElement('div');br.className='btn-row';const n=document.createElement('button');n.className='btn btn-g';n.textContent=state.scenIdx<SCENARIOS.length-1?'Scène suivante →':'🏁 Voir mon bilan !';
+    n.onclick=()=>{state.xp+=Math.max(0,sc.choix[state.choiceIdx].impact);state.scenScore+=Math.max(0,sc.choix[state.choiceIdx].impact);state.choiceIdx=null;state.showRes=false;if(state.scenIdx<SCENARIOS.length-1){state.scenIdx++;render()}else{markDone();state.phase='fin';render()}};
+    br.appendChild(n);b.appendChild(br);
+  }
+  r.appendChild(d)
+}
+
+function bFin(r){
+  const m=mastery(state.xp);const{d,b}=mkCard('🏁','ci-g','Module terminé !','M3_01 · Pilier 3 — La vie en collectivité');
+  b.innerHTML=`<div class="completion"><span class="trophy">🤝</span><h2 class="comp-title">Bravo !</h2><p class="comp-sub">Tu comprends maintenant le sens des règles du collège — pas juste leur liste.</p><div class="mastery ${m.cls}">${m.lbl}</div><div class="stats-row"><div class="stat-tile"><div class="stat-v">${state.xp}</div><div class="stat-l">XP Total</div></div><div class="stat-tile"><div class="stat-v">${state.quizScore}</div><div class="stat-l">Quiz</div></div><div class="stat-tile"><div class="stat-v">${state.scenScore}</div><div class="stat-l">Scènes</div></div></div><div class="unlock-banner"><div class="unlock-ico">🔓</div><div class="unlock-text"><strong>Module suivant débloqué !</strong>${NEXT_NAME} — tes droits ET tes devoirs d'élève.</div></div><div class="next-hint">💡 À retenir : les règles ne sont pas là pour contraindre — elles sont là pour <strong>protéger tout le monde</strong>, y compris toi.</div></div>`;
+  const br=document.createElement('div');br.className='btn-row';
+  const hub=document.createElement('button');hub.className='btn btn-v';hub.textContent='← Retour au Hub';hub.onclick=()=>location.href='index.html';
+  const nxt=document.createElement('button');nxt.className='btn btn-g';nxt.textContent='Module suivant →';nxt.onclick=()=>location.href=NEXT_FILE;
+  const rel=document.createElement('button');rel.className='btn btn-ghost';rel.textContent='↺ Recommencer';rel.onclick=()=>{state={phase:'intro',cardIdx:0,quizIdx:0,selected:null,showFb:false,scenIdx:0,choiceIdx:null,showRes:false,xp:0,quizScore:0,scenScore:0};render()};
+  br.append(hub,nxt,rel);b.appendChild(br);r.appendChild(d)
+}
+
+render();
+</script>
+</body>
+</html>

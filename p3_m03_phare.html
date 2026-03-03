@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Quand ça se passe mal</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#EAF6FF;--sun:#FFD93D;--sun-deep:#F59E0B;
+  --grass:#34D399;--grass-deep:#059669;
+  --violet:#A78BFA;--violet-deep:#7C3AED;--violet-bg:#F5F3FF;--violet-pale:#EDE9FE;
+  --coral:#FB7185;--coral-deep:#E11D48;
+  --ink:#0F172A;--ink-mid:#334155;--ink-light:#64748B;--ink-faint:#CBD5E1;
+  --white:#FFFFFF;
+  --p3-color:#A78BFA;--p3-deep:#7C3AED;--p3-bg:#F5F3FF;
+  --radius-sm:10px;--radius-md:18px;--radius-lg:28px;
+  --shadow-sm:0 2px 8px rgba(15,23,42,.08);--shadow-md:0 6px 24px rgba(15,23,42,.12);
+  --font-title:'Baloo 2',cursive;--font-body:'Nunito',sans-serif;--font-mono:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--violet-bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(167,139,250,.18) 0%,transparent 65%),
+             radial-gradient(ellipse 50% 40% at 92% 15%,rgba(251,113,133,.12) 0%,transparent 65%),
+             radial-gradient(ellipse 55% 55% at 50% 108%,rgba(52,211,153,.12) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;padding:7px 16px;font-family:var(--font-title);font-size:.88rem;font-weight:700;color:var(--ink-mid);cursor:pointer;text-decoration:none;transition:all .15s}
+.back-btn:hover{border-color:var(--p3-color);color:var(--p3-deep)}
+.module-crumb{font-size:.8rem;font-weight:700;color:var(--ink-light)}
+.mod-header{text-align:center;padding:28px 20px 20px}
+.pilier-chip{display:inline-flex;align-items:center;gap:7px;background:var(--p3-bg);border:2px solid var(--p3-color);border-radius:50px;padding:6px 18px;font-family:var(--font-title);font-size:.85rem;font-weight:800;color:var(--p3-deep);margin-bottom:14px}
+.mod-title{font-family:var(--font-title);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;color:var(--ink);line-height:1.15;margin-bottom:8px}
+.mod-sub{font-size:1rem;color:var(--ink-light);font-weight:600}
+.prog-track{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.prog-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.prog-step::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink-faint);z-index:0}
+.prog-step:last-child::after{display:none}
+.prog-step.s-done::after{background:var(--grass)}
+.prog-dot{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink-faint);background:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--font-title);font-weight:800;font-size:.9rem;color:var(--ink-light);z-index:1;position:relative;transition:all .3s}
+.prog-step.s-done .prog-dot{background:var(--grass);border-color:var(--grass);color:white}
+.prog-step.s-active .prog-dot{background:var(--sun);border-color:var(--sun-deep);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pdot 2s infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.prog-lbl{font-size:.7rem;font-weight:700;color:var(--ink-light);margin-top:5px;text-align:center}
+.prog-step.s-active .prog-lbl{color:var(--sun-deep)}
+.prog-step.s-done   .prog-lbl{color:var(--grass-deep)}
+.xp-strip{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;padding:6px 16px;font-family:var(--font-mono);font-size:.83rem;font-weight:700;color:var(--ink);box-shadow:var(--shadow-sm)}
+.xp-pill.hl{border-color:var(--p3-color);background:var(--violet-pale);color:var(--p3-deep)}
+.fn-card{background:rgba(255,255,255,.94);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);border:1.5px solid rgba(255,255,255,.9);padding:22px 22px 20px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fn-card-title{font-family:var(--font-title);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:10px}
+.fn-counter{font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--ink-light)}
+/* CARTES PHARE */
+.phare-card{border-radius:var(--radius-lg);box-shadow:var(--shadow-md);border-left:5px solid;padding:20px 22px;margin-bottom:14px;animation:fu .35s both}
+.phare-tag{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.phare-title{font-family:var(--font-title);font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:10px}
+.phare-body{font-size:.93rem;line-height:1.7;color:var(--ink-mid)}
+.phare-body strong{color:var(--ink)}
+.phare-note{border-radius:var(--radius-sm);padding:9px 13px;margin-top:11px;font-size:.87rem;font-weight:700;background:rgba(255,255,255,.6);border:1.5px solid rgba(167,139,250,.2);color:var(--p3-deep)}
+/* Triangle harcèlement */
+.triangle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+@media(max-width:500px){.triangle-grid{grid-template-columns:1fr}}
+.tri-col{border-radius:var(--radius-md);padding:12px;border:2px solid;text-align:center}
+.tri-col-ico{font-size:1.8rem;margin-bottom:6px}
+.tri-col-title{font-family:var(--font-title);font-size:.9rem;font-weight:800;margin-bottom:5px}
+.tri-col-body{font-size:.8rem;line-height:1.5;color:var(--ink-mid);font-weight:600}
+/* Alerte / quote */
+.alerte{background:linear-gradient(135deg,#FFF1F2,#FFE4E6);border:2px solid #FDA4AF;border-radius:var(--radius-md);padding:12px 16px;margin:10px 0;font-size:.9rem;font-weight:700;color:#B91C1C}
+.alerte::before{content:'⚠️ '}
+.loi-box{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:2px solid #93C5FD;border-radius:var(--radius-md);padding:12px 16px;margin:10px 0;font-size:.9rem;font-weight:700;color:#1E40AF}
+.loi-box::before{content:'⚖️ '}
+/* Quiz */
+.q-ctx{background:rgba(167,139,250,.08);border:1.5px solid rgba(167,139,250,.2);border-radius:var(--radius-sm);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink-mid);font-style:italic}
+.q-text{font-family:var(--font-title);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:14px;line-height:1.35}
+.q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.q-opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink-faint);border-radius:var(--radius-sm);padding:11px 14px;cursor:pointer;font-size:.93rem;font-weight:600;color:var(--ink);text-align:left;transition:all .15s;font-family:var(--font-body)}
+.q-opt:hover:not(:disabled){border-color:var(--p3-color);background:var(--violet-pale)}
+.q-opt.sel{border-color:var(--p3-deep);background:var(--violet-pale)}
+.q-opt.ok{border-color:var(--grass);background:#DCFCE7;color:var(--grass-deep)}
+.q-opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.q-opt:disabled{cursor:default}
+.q-lbl{width:28px;height:28px;border-radius:7px;background:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.q-opt.sel .q-lbl{background:var(--p3-deep);color:#fff}
+.q-opt.ok  .q-lbl{background:var(--grass);color:#fff}
+.q-opt.ko  .q-lbl{background:#EF4444;color:#fff}
+.q-fb{border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.q-fb.ok{background:#DCFCE7;border-color:var(--grass)}
+.q-fb.ko{background:#FEE2E2;border-color:#EF4444}
+.q-fb-title{font-family:var(--font-title);font-weight:800;margin-bottom:4px;font-size:.95rem}
+.q-fb-body{font-size:.87rem;line-height:1.5}
+/* Scénarios */
+.sc-ctx{background:var(--violet-pale);border:1.5px solid rgba(167,139,250,.3);border-radius:var(--radius-md);padding:14px;font-size:.93rem;line-height:1.65;color:var(--ink-mid);margin-bottom:14px}
+.sc-q{font-family:var(--font-title);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:14px}
+.sc-choix{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.sc-btn{background:var(--white);border:2px solid var(--ink-faint);border-radius:var(--radius-md);padding:12px 16px;text-align:left;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--ink);transition:all .15s;font-family:var(--font-body)}
+.sc-btn:hover:not(:disabled){border-color:var(--p3-color);background:var(--violet-pale)}
+.sc-btn.chosen{border-color:var(--p3-deep);background:var(--violet-pale)}
+.sc-res{border-radius:var(--radius-md);padding:14px;margin-bottom:12px;border:2px solid}
+.sc-res.pos{background:#DCFCE7;border-color:var(--grass)}
+.sc-res.neg{background:#FEE2E2;border-color:#EF4444}
+.sc-res.neu{background:#FFF7ED;border-color:var(--sun-deep)}
+.sc-res-title{font-family:var(--font-title);font-size:1rem;font-weight:800;margin-bottom:6px}
+.sc-res-body{font-size:.88rem;line-height:1.55;margin-bottom:8px}
+.sc-tip{font-size:.83rem;font-weight:700;color:var(--p3-deep);background:var(--violet-pale);border-radius:6px;padding:6px 10px}
+.sc-tip::before{content:'💡 '}
+/* Fin */
+.fin-card{text-align:center;padding:16px 20px 20px}
+.fin-ico{font-size:3.5rem;margin-bottom:10px}
+.fin-title{font-family:var(--font-title);font-size:1.5rem;font-weight:900;color:var(--ink);margin-bottom:6px}
+.fin-sub{font-size:.95rem;color:var(--ink-light);font-weight:600;margin-bottom:20px}
+.fin-xp{font-family:var(--font-mono);font-size:2rem;font-weight:700;color:var(--p3-deep);margin-bottom:6px}
+.fin-badge{display:inline-flex;align-items:center;background:var(--violet-pale);border:2px solid var(--p3-color);border-radius:50px;padding:7px 18px;font-family:var(--font-title);font-size:.88rem;font-weight:800;color:var(--p3-deep);margin-bottom:18px}
+/* Boutons */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:50px;padding:12px 26px;font-family:var(--font-title);font-size:.97rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.14);transition:all .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,.14)}
+.btn:active{transform:translateY(0);box-shadow:0 2px 0 rgba(0,0,0,.14)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-p3{background:var(--p3-deep);color:#fff}
+.btn-sun{background:var(--sun-deep);color:#fff}
+.btn-ghost{background:var(--white);color:var(--ink-mid);border:2px solid var(--ink-faint);box-shadow:none}
+.btn-ghost:hover{border-color:var(--ink);transform:none}
+.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:11px 26px;border-radius:50px;font-family:var(--font-title);font-weight:700;font-size:.92rem;box-shadow:0 16px 48px rgba(15,23,42,.2);z-index:9999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:520px){.app{padding:0 12px 48px}.mod-title{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="topnav">
+  <a class="back-btn" href="index_ACCEUIL6e.html">← Hub principal</a>
+  <span class="module-crumb">Pilier 3 · Module 3</span>
+</nav>
+<header class="mod-header">
+  <div class="pilier-chip">🤝 La vie en collectivité</div>
+  <h1 class="mod-title">Quand ça se passe mal —<br>le programme pHARe</h1>
+  <p class="mod-sub">Harcèlement, témoins, ambassadeurs, signalement</p>
+</header>
+<div id="prog"></div>
+<div id="xpbar"></div>
+<div id="root"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const MODULE_ID = 'M3_03';
+const MODULE_XP = 140;
+const LS_KEY    = 'ave6e_progress';
+const NEXT_FILE = 'p3_m04_organisation.html';
+const NEXT_NAME = 'Mon organisation au quotidien';
+
+/* ════════════════════════════════════════════════
+   NIVEAU 1 — 6 CARTES pHARe adaptées CM2/6e
+   Sources : modules NEURO_01, HISTOIRE_01,
+             JURIDIQUE_01, GROUPE_01
+════════════════════════════════════════════════ */
+const CARTES = [
+  {
+    theme:'🔤 Le mot qui change tout', bg:'linear-gradient(135deg,#F5F3FF,#EDE9FE)', border:'#A78BFA',
+    titre:'Avant 1970, le harcèlement n\'existait pas — faute de mot',
+    corps:`Pendant des siècles, la violence entre élèves était invisible : pas de nom = pas de problème reconnu. Les années 1970 voient les premières recherches (Olweus en Norvège). En France, le terme "harcèlement scolaire" n'entre dans la loi qu'en <strong>2010</strong> — puis est renforcé en <strong>2022</strong> avec une loi pénale dédiée.\n\nLe collège Château Rance applique le programme <strong>pHARe</strong> (Programme de prévention du Harcèlement et de soutien aux élèves), dispositif national obligatoire depuis 2021.`,
+    note:'Nommer les choses, c\'est la première étape pour les combattre. Aujourd\'hui tu as les mots. Et derrière les mots, des adultes formés et des lois.',
+    source:'Source : Module HISTOIRE_01 — pHARe Château Rance'
+  },
+  {
+    theme:'🔺 Le triangle du harcèlement', bg:'linear-gradient(135deg,#FFF1F2,#FFE4E6)', border:'#FDA4AF',
+    titre:'Trois rôles, une seule responsabilité collective',
+    corps:`Le harcèlement ne se passe jamais entre deux personnes seulement. Il y a toujours trois rôles en jeu — et le rôle le plus puissant est celui qu\'on voit le moins.`,
+    note:'Sans public, pas de spectacle. Les TÉMOINS sont la clé. Le harcèlement vit grâce à leur silence — et meurt grâce à leur action.',
+    source:'Source : Module GROUPE_01 — pHARe Château Rance',
+    triangle:true
+  },
+  {
+    theme:'⚖️ Ce que dit la loi — exactement', bg:'linear-gradient(135deg,#EFF6FF,#DBEAFE)', border:'#93C5FD',
+    titre:'Harcèlement scolaire = délit pénal depuis 2022',
+    corps:`L'article <strong>222-33-2-3 du Code Pénal</strong> (Loi du 2 mars 2022) définit le harcèlement scolaire. Il faut 3 conditions obligatoires :\n1. Un <strong>acte</strong> (moquerie, exclusion, violence, humiliation)\n2. La <strong>répétition</strong> dans le temps — OU plusieurs auteurs même si chacun n'agit qu'une fois (effet de meute)\n3. Une <strong>conséquence</strong> : isolement, anxiété, chute des notes, souffrance\n\nSi quelqu'un se suicide ou tente de le faire à cause du harcèlement : jusqu'à <strong>10 ans de prison</strong>. Les autres cas graves : jusqu'à <strong>3 ans de prison et 45 000 € d'amende</strong>. Les mineurs peuvent être jugés.`,
+    note:'10 élèves qui envoient chacun 1 seul message d\'insulte à la même personne = les 10 sont coupables de harcèlement. L\'effet de meute est maintenant dans la loi.',
+    source:'Source : Module JURIDIQUE_01 — pHARe Château Rance'
+  },
+  {
+    theme:'🧠 Comprendre sans excuser', bg:'linear-gradient(135deg,#F0FDF4,#DCFCE7)', border:'#6EE7B7',
+    titre:'Empathie : comprendre l\'autre sans le juger',
+    corps:`Notre cerveau peut faire deux choses différentes face à quelqu\'un qui souffre :\n<strong>Comprendre</strong> ce qu'il vit (empathie cognitive — circuits du raisonnement)\n<strong>Ressentir</strong> ce qu'il ressent (empathie affective — circuits émotionnels)\nCes deux capacités peuvent fonctionner séparément. Un harceleur peut "comprendre" qu'il fait souffrir — sans le ressentir. C'est pourquoi l'éducation aux émotions est importante : elle développe le côté "ressentir".`,
+    note:'Comprendre ≠ excuser. Comprendre pourquoi quelqu\'un harcèle ne le dédouane pas. Mais comprendre permet d\'agir plus efficacement pour arrêter le cycle.',
+    source:'Source : Module NEURO_01 — pHARe Château Rance'
+  },
+  {
+    theme:'🛡️ Les ambassadeurs pHARe', bg:'linear-gradient(135deg,#FFF7ED,#FEF3C7)', border:'#FCD34D',
+    titre:'Au collège, des élèves sont formés pour aider',
+    corps:`Le programme pHARe forme des <strong>élèves ambassadeurs</strong> dans chaque collège. Leur rôle : ne pas ignorer, ne pas se taire, agir.\nCe n'est pas le rôle d'un "délateur" ni d'un "cafard". C'est le rôle d'un <strong>témoin actif</strong> — la personne la plus efficace pour interrompre un cycle de harcèlement.\n\nAu collège Château Rance, le programme est coordonné par le CPE. En 6e, tu pourras peut-être devenir ambassadeur pHARe dans les années suivantes.`,
+    note:'Signaler n\'est pas trahir. C\'est protéger quelqu\'un — et souvent, c\'est aussi se protéger soi-même du rôle de complice.',
+    source:'Programme pHARe — Château Rance'
+  },
+  {
+    theme:'📞 Que faire — concrètement', bg:'linear-gradient(135deg,#F5F3FF,#F0F0FF)', border:'#C4B5FD',
+    titre:'Si ça arrive : les bons gestes, dans l\'ordre',
+    corps:`<strong>Tu es victime :</strong>\n1. Ne pas rester seul(e) — en parler à un adulte de confiance (CPE, prof, infirmière, parent)\n2. Garder des preuves (captures d\'écran, dates, témoins)\n3. Ne pas répondre aux provocations en ligne\n4. Numéro national : <strong>3018</strong> (cyberharcèlement) et <strong>3020</strong> (harcèlement scolaire)\n\n<strong>Tu es témoin :</strong>\n1. Ne pas filmer, ne pas partager\n2. Ne pas rire ni encourager\n3. Soutenir la personne visée dès que possible\n4. En parler à un adulte — au CPE ou à la vie scolaire`,
+    note:'Au collège Château Rance : le CPE est ton premier interlocuteur pHARe. Tu peux aussi passer par la boîte à signalements de la vie scolaire.',
+    source:'Programme pHARe — Ministère de l\'Éducation Nationale'
+  }
+];
+
+/* ════════════════════════════════════════════════
+   NIVEAU 2 — QUIZ
+════════════════════════════════════════════════ */
+const QUIZ = [
+  {
+    ctx:'Louis insulte Sara tous les lundis depuis 3 semaines. Ses amis rient et partagent parfois les messages sur WhatsApp.',
+    q:'Parmi les affirmations suivantes, laquelle est VRAIE selon la loi de 2022 ?',
+    opts:['Seul Louis est coupable — ses amis n\'ont rien fait','Les amis qui partagent les messages peuvent aussi être considérés comme coupables de harcèlement','C\'est du conflit normal, pas du harcèlement','C\'est du harcèlement seulement si Sara a des notes qui baissent'],
+    ok:1, xp:30,
+    fb:'La loi de 2022 introduit l\'"effet de meute" : si plusieurs personnes commettent chacune un acte contre la même victime, c\'est considéré comme une répétition. Les amis qui partagent participent au harcèlement et peuvent être poursuivis. Et les 3 critères sont réunis : acte + répétition + conséquences (isolement de Sara).'
+  },
+  {
+    ctx:'Emma remarque depuis deux semaines qu\'une élève de sa classe mange seule, a les yeux rouges tous les matins et ne répond plus en cours.',
+    q:'En tant que témoin, quelle est la meilleure action pour Emma ?',
+    opts:['Ne rien faire — c\'est leur problème','Filmer pour avoir des preuves et poster sur Instagram','Aller parler à la fille seule d\'abord, puis en informer le CPE si elle confirme','En parler à ses amis pour savoir ce qu\'ils en pensent'],
+    ok:2, xp:25,
+    fb:'Le témoin actif agit directement : parler à la personne visée pour lui montrer qu\'elle n\'est pas seule, puis informer un adulte si nécessaire. Filmer et poster aggrave la situation. Attendre l\'avis des amis = inaction habillée en réflexion.'
+  },
+  {
+    ctx:'Le numéro 3020 est affiché dans le collège.',
+    q:'À quoi sert ce numéro ?',
+    opts:['C\'est le numéro du principal','C\'est le numéro national de signalement du harcèlement scolaire — gratuit, anonyme','C\'est le numéro d\'urgence médical','C\'est la hotline de la police scolaire'],
+    ok:1, xp:20,
+    fb:'3020 est le numéro national "Stop harcèlement" — gratuit, disponible du lundi au vendredi, anonyme. Le 3018 est son équivalent pour le cyberharcèlement (disponible 7j/7). Ces deux numéros sont à retenir : ils permettent de parler à des professionnels sans passer par le collège si on n\'ose pas.'
+  },
+  {
+    ctx:'Karim est en conflit avec Baptiste depuis une semaine à cause d\'un ballon cassé. Ils se chamaillent souvent dans la cour.',
+    q:'Est-ce du harcèlement ?',
+    opts:['Oui — dès qu\'il y a conflit répété c\'est du harcèlement','Non — un conflit a une cause identifiable et les deux parties peuvent défendre leur position ; ce n\'est pas un rapport de domination unilatéral','Oui si ça dure plus de 3 jours','Non seulement si un adulte l\'a décidé'],
+    ok:1, xp:25,
+    fb:'La différence fondamentale entre conflit et harcèlement : dans un conflit, les deux parties ont des forces équivalentes et peuvent se défendre. Dans le harcèlement, il y a un rapport de domination, une cible qui ne peut pas se défendre seule, et une répétition sans cause légitime. Karim et Baptiste sont en conflit — un médiateur peut les aider, ce n\'est pas pHARe.'
+  }
+];
+
+/* ════════════════════════════════════════════════
+   NIVEAU 3 — SCÉNARIOS
+════════════════════════════════════════════════ */
+const SCENARIOS = [
+  {
+    titre:'Le groupe WhatsApp',
+    ctx:'Depuis la rentrée, un groupe WhatsApp s\'est formé dans la classe de Hugo. Des élèves y envoient régulièrement des photos modifiées de Léa pour se moquer de son physique. Hugo est dans le groupe mais n\'a encore rien envoyé. Ce soir il reçoit un nouveau message qui le met mal à l\'aise.',
+    q:'Que devrait faire Hugo ?',
+    choix:[
+      { t:'Ne rien faire — il n\'a envoyé aucun message, il n\'est pas responsable.',
+        r:'Hugo reste dans le groupe. Les messages continuent. Léa tente de contacter ses parents désespérée. Une enquête est ouverte. Hugo est entendu — son appartenance au groupe et son silence sont notés. Rester sans réagir, c\'est cautionner.',
+        ton:'neg', ico:'⚠️',
+        tip:'Appartenir à un groupe qui harcèle et rester silencieux, c\'est légalement ambigu depuis 2022. Surtout si tu as vu les messages et ne les as pas signalés. L\'inaction est une forme de complicité.',
+        impact:-5, lbl:'-5 XP'},
+      { t:'Quitter le groupe et en parler au CPE le lendemain matin.',
+        r:'Hugo quitte le groupe. Le lendemain il explique la situation au CPE en montrant les captures d\'écran qu\'il a gardées. Une procédure pHARe est engagée. Les élèves impliqués sont reçus séparément. Léa n\'est plus seule.',
+        ton:'pos', ico:'✅',
+        tip:'Quitter le groupe coupe ta participation. Garder des preuves et informer le CPE actionne la mécanique de protection. C\'est le schéma du témoin actif.',
+        impact:40, lbl:'+40 XP'},
+      { t:'Envoyer un message dans le groupe pour dire que c\'est pas bien.',
+        r:'Le message de Hugo déclenche des moqueries contre lui. Plusieurs membres l\'insultent. La situation pour Léa ne change pas — mais Hugo devient lui-même une cible.',
+        ton:'neu', ico:'😐',
+        tip:'Affronter seul un groupe en ligne est rarement efficace. L\'action la plus utile reste de documenter et d\'informer un adulte — pas de se sacrifier en solitaire dans le groupe.',
+        impact:5, lbl:'+5 XP'}
+    ]
+  },
+  {
+    titre:'Tu es la cible',
+    ctx:'Depuis deux semaines, chaque jour à la cantine, un groupe d\'élèves de 5e s\'assoit à ta table et te fait les poches, prend ta nourriture et te dit "si tu parles, ça va mal se passer pour toi". Tu as peur.',
+    q:'Qu\'est-ce qui est le plus important à faire en premier ?',
+    choix:[
+      { t:'Ne rien dire pour l\'instant — attendre que ça passe.',
+        r:'Ça ne passe pas. Deux semaines de plus. Tu ne manges plus à la cantine. Tes notes chutent. Tes parents remarquent que tu refuses d\'aller au collège certains jours. La situation s\'est aggravée.',
+        ton:'neg', ico:'⚠️',
+        tip:'Le harcèlement ne "passe" jamais seul. Sans intervention extérieure, les statistiques montrent qu\'il s\'intensifie. Attendre protège les agresseurs, pas toi.',
+        impact:-10, lbl:'-10 XP'},
+      { t:'En parler à un adulte de confiance — CPE, infirmière, parent — dès aujourd\'hui.',
+        r:'Tu en parles à l\'infirmière au passage. Elle alerte le CPE. Le CPE convoque séparément les élèves de 5e. Leurs parents sont contactés. Une procédure disciplinaire est engagée pour ce qui s\'apparente à du racket — une faute très grave.',
+        ton:'pos', ico:'✅',
+        tip:'Parler n\'est pas une faiblesse. C\'est l\'acte le plus courageux et le plus efficace. L\'adulte de confiance n\'a pas besoin d\'être le CPE — ça peut être n\'importe quel adulte de l\'établissement.',
+        impact:40, lbl:'+40 XP'},
+      { t:'En parler à tes amis pour qu\'ils t\'accompagnent à la cantine.',
+        r:'Tes amis t\'accompagnent. Les 5e s\'en vont ce jour-là. Mais ils reviennent le lendemain quand tu es seul(e). Le problème n\'est pas réglé — il est juste déplacé.',
+        ton:'neu', ico:'😐',
+        tip:'Avoir des soutiens est important et protecteur. Mais seule la voie adulte peut mettre fin à la situation de façon durable. Les deux peuvent se combiner.',
+        impact:15, lbl:'+15 XP'}
+    ]
+  }
+];
+
+/* ════════════════════════════════════════════════
+   MOTEUR
+════════════════════════════════════════════════ */
+let S={phase:'intro',cardIdx:0,quizIdx:0,qSel:null,qFb:false,scIdx:0,scChoice:null,scRes:false,xp:0};
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function getP(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){return{}}}
+function finish(){
+  const p=getP();
+  if(!Array.isArray(p.modules_done))p.modules_done=[];
+  if(!p.modules_done.includes(MODULE_ID)){
+    p.modules_done.push(MODULE_ID);
+    p.xp_total=(p.xp_total||0)+S.xp;
+    localStorage.setItem(LS_KEY,JSON.stringify(p));
+    window.dispatchEvent(new StorageEvent('storage',{key:LS_KEY}));
+  }
+}
+const PHASES=[{lbl:'Intro'},{lbl:'pHARe'},{lbl:'Quiz'},{lbl:'Scénarios'},{lbl:'Bilan'}];
+const phaseIdx={intro:0,cards:1,quiz:2,scenarios:3,fin:4};
+function buildProg(){
+  const d=$('prog');d.innerHTML='';
+  const t=document.createElement('div');t.className='prog-track';
+  const pi=phaseIdx[S.phase]||0;
+  PHASES.forEach((ph,i)=>{
+    const s=document.createElement('div');
+    s.className='prog-step '+(i<pi?'s-done':i===pi?'s-active':'');
+    s.innerHTML=`<div class="prog-dot">${i<pi?'✓':i+1}</div><div class="prog-lbl">${ph.lbl}</div>`;
+    t.appendChild(s);
+  });
+  d.appendChild(t);
+}
+function buildXPBar(items){
+  const d=$('xpbar');d.innerHTML='';
+  const s=document.createElement('div');s.className='xp-strip';
+  items.forEach(it=>{const p=document.createElement('div');p.className='xp-pill'+(it.hl?' hl':'');p.innerHTML=`<span>${it.ico}</span>${it.val}`;s.appendChild(p)});
+  d.appendChild(s);
+}
+function render(){
+  buildProg();
+  const r=$('root');r.innerHTML='';
+  if(S.phase==='intro')    {buildXPBar([{ico:'⭐',val:S.xp+' XP'}]);buildIntro(r)}
+  if(S.phase==='cards')    {buildXPBar([{ico:'🛡️',val:`${S.cardIdx+1}/${CARTES.length}`},{ico:'⭐',val:S.xp+' XP',hl:true}]);buildCards(r)}
+  if(S.phase==='quiz')     {buildXPBar([{ico:'❓',val:`${S.quizIdx+1}/${QUIZ.length}`},{ico:'⭐',val:S.xp+' XP',hl:true}]);buildQuiz(r)}
+  if(S.phase==='scenarios'){buildXPBar([{ico:'🎭',val:`${S.scIdx+1}/${SCENARIOS.length}`},{ico:'⭐',val:S.xp+' XP',hl:true}]);buildScenario(r)}
+  if(S.phase==='fin')      {buildXPBar([{ico:'⭐',val:S.xp+' XP',hl:true}]);buildFin(r)}
+}
+function mkCard(){const d=document.createElement('div');d.className='fn-card';return d}
+function mkRow(){const d=document.createElement('div');d.className='btn-row';return d}
+function mkBtn(l,cls,fn){const b=document.createElement('button');b.className='btn '+cls;b.innerHTML=l;if(fn)b.onclick=fn;return b}
+
+function buildIntro(r){
+  const c=mkCard();
+  c.innerHTML=`
+    <div style="font-size:3.5rem;text-align:center;margin-bottom:10px">🛡️</div>
+    <div style="font-family:var(--font-title);font-size:1.5rem;font-weight:900;color:var(--ink);text-align:center;margin-bottom:10px">pHARe — Le programme qui protège</div>
+    <div style="font-size:.97rem;line-height:1.7;color:var(--ink-mid);margin-bottom:16px">
+      Le collège Château Rance applique le programme national <strong>pHARe</strong>. Ce n'est pas juste une affiche dans le couloir — c'est une approche complète avec des élèves formés, des adultes référents, et des procédures précises.<br><br>
+      Ce module te donne les connaissances et les réflexes pour ne pas rester paralysé(e) si ça arrive — que tu sois victime, témoin, ou simplement curieux(se) de comprendre.
+    </div>
+    <div class="alerte">Ce module aborde des situations difficiles. Si tu te sens concerné(e) maintenant, parle-en à un adulte avant de continuer.</div>
+    <div class="loi-box">Numéros utiles : <strong>3020</strong> (harcèlement scolaire) — <strong>3018</strong> (cyberharcèlement) — gratuits, disponibles</div>`;
+  const br=mkRow();br.appendChild(mkBtn('Commencer →','btn-p3',()=>{S.phase='cards';render()}));
+  c.appendChild(br);r.appendChild(c);
+}
+
+function buildCards(r){
+  const data=CARTES[S.cardIdx];
+  const c=document.createElement('div');
+  c.className='phare-card';
+  c.style.cssText=`background:${data.bg};border-left-color:${data.border}`;
+  c.innerHTML=`<div class="phare-tag" style="color:var(--p3-deep)">${data.theme}</div>
+    <div class="phare-title">${data.titre}</div>
+    <div class="phare-body">${data.corps.replace(/\n/g,'<br>')}</div>`;
+
+  // Triangle spécial
+  if(data.triangle){
+    const tri=document.createElement('div');tri.className='triangle-grid';
+    tri.innerHTML=`
+      <div class="tri-col" style="background:linear-gradient(135deg,#FFF1F2,#FFE4E6);border-color:#FDA4AF">
+        <div class="tri-col-ico">😠</div>
+        <div class="tri-col-title" style="color:#B91C1C">L'auteur</div>
+        <div class="tri-col-body">Celui qui agit. Rarement "méchant pur" — souvent insécurité, besoin de domination, pression du groupe.</div>
+      </div>
+      <div class="tri-col" style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-color:#6EE7B7">
+        <div class="tri-col-ico">😔</div>
+        <div class="tri-col-title" style="color:#059669">La cible</div>
+        <div class="tri-col-body">Celui qui subit. N'importe qui peut devenir cible. Ce n'est PAS de sa faute.</div>
+      </div>
+      <div class="tri-col" style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-color:#FCD34D">
+        <div class="tri-col-ico">👁️</div>
+        <div class="tri-col-title" style="color:#D97706">Les témoins</div>
+        <div class="tri-col-body"><strong>La clé du système.</strong> Sans public, le harcèlement perd sa raison d'être. Le témoin actif peut tout changer.</div>
+      </div>`;
+    c.appendChild(tri);
+  }
+
+  c.innerHTML+=`<div class="phare-note">💡 ${data.note}</div>
+    <div style="font-size:.75rem;font-weight:600;color:var(--ink-faint);margin-top:8px">${data.source}</div>`;
+  r.appendChild(c);
+
+  const nav=mkCard();
+  const row=mkRow();
+  const prev=mkBtn('← Préc','btn-ghost',()=>{S.cardIdx--;render()});
+  prev.disabled=S.cardIdx===0;
+  const ctr=document.createElement('span');ctr.className='fn-counter';ctr.textContent=`${S.cardIdx+1} / ${CARTES.length}`;
+  const isLast=S.cardIdx===CARTES.length-1;
+  const next=mkBtn(isLast?'Quiz →':'Suivant →','btn-p3',()=>{
+    if(isLast){S.xp+=50;toast('⭐ +50 XP — pHARe assimilé !');S.phase='quiz';S.cardIdx=0;}
+    else S.cardIdx++;
+    render();
+  });
+  row.append(prev,ctr,next);nav.appendChild(row);r.appendChild(nav);
+}
+
+function buildQuiz(r){
+  const q=QUIZ[S.quizIdx];
+  const c=mkCard();
+  if(q.ctx)c.innerHTML+=`<div class="q-ctx">📌 ${q.ctx}</div>`;
+  c.innerHTML+=`<div class="q-text">${q.q}</div>`;
+  const ol=document.createElement('div');ol.className='q-opts';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    let cl='q-opt';
+    if(S.qFb){if(i===q.ok)cl+=' ok';else if(i===S.qSel)cl+=' ko';}
+    else if(i===S.qSel)cl+=' sel';
+    b.className=cl;b.disabled=S.qFb;
+    b.innerHTML=`<span class="q-lbl">${String.fromCharCode(65+i)}</span>${o}`;
+    b.onclick=()=>{if(!S.qFb){S.qSel=i;render()}};
+    ol.appendChild(b);
+  });
+  c.appendChild(ol);
+  if(S.qFb){
+    const ok=S.qSel===q.ok;
+    const fb=document.createElement('div');fb.className='q-fb '+(ok?'ok':'ko');
+    fb.innerHTML=`<div class="q-fb-title">${ok?'✅ Exact ! +'+q.xp+' XP':'❌ Pas tout à fait…'}</div><div class="q-fb-body">${q.fb}</div>`;
+    c.appendChild(fb);
+  }
+  const br=mkRow();
+  if(!S.qFb){
+    const v=mkBtn('Valider','btn-sun',()=>{
+      if(S.qSel===q.ok){S.xp+=q.xp;toast('⭐ +'+q.xp+' XP')}
+      S.qFb=true;render();
+    });v.disabled=S.qSel===null;br.appendChild(v);
+  }else{
+    br.appendChild(mkBtn(S.quizIdx<QUIZ.length-1?'Question suivante →':'Scénarios →','btn-p3',()=>{
+      S.qFb=false;S.qSel=null;
+      if(S.quizIdx<QUIZ.length-1)S.quizIdx++;
+      else{S.xp+=30;toast('⭐ +30 XP — Quiz terminé !');S.phase='scenarios';}
+      render();
+    }));
+  }
+  c.appendChild(br);r.appendChild(c);
+}
+
+function buildScenario(r){
+  const sc=SCENARIOS[S.scIdx];
+  const c=mkCard();
+  c.innerHTML+=`<div class="fn-card-title">🎭 ${sc.titre}</div>
+    <div class="sc-ctx">${sc.ctx}</div>
+    <div class="sc-q">${sc.q}</div>`;
+  const bl=document.createElement('div');bl.className='sc-choix';
+  sc.choix.forEach((ch,i)=>{
+    const b=document.createElement('button');
+    b.className='sc-btn'+(S.scChoice===i?' chosen':'');
+    b.disabled=S.scRes;b.textContent=ch.t;
+    b.onclick=()=>{S.scChoice=i;render()};
+    bl.appendChild(b);
+  });
+  c.appendChild(bl);
+  if(S.scRes&&S.scChoice!==null){
+    const ch=sc.choix[S.scChoice];
+    const res=document.createElement('div');res.className='sc-res '+ch.ton;
+    res.innerHTML=`<div class="sc-res-title">${ch.ico} ${ch.lbl}</div>
+      <div class="sc-res-body">${ch.r}</div>
+      <div class="sc-tip">${ch.tip}</div>`;
+    c.appendChild(res);
+  }
+  const br=mkRow();
+  if(!S.scRes){
+    const v=mkBtn('Voir la conséquence','btn-sun',()=>{
+      if(S.scChoice===null)return;
+      const ch=sc.choix[S.scChoice];
+      const gain=Math.max(0,ch.impact);
+      if(gain>0){S.xp+=gain;toast('⭐ +'+gain+' XP')}
+      S.scRes=true;render();
+    });v.disabled=S.scChoice===null;br.appendChild(v);
+  }else{
+    br.appendChild(mkBtn(S.scIdx<SCENARIOS.length-1?'Scénario suivant →':'Bilan →','btn-p3',()=>{
+      S.scChoice=null;S.scRes=false;
+      if(S.scIdx<SCENARIOS.length-1)S.scIdx++;
+      else{finish();S.phase='fin';}
+      render();
+    }));
+  }
+  c.appendChild(br);r.appendChild(c);
+}
+
+function buildFin(r){
+  const c=mkCard();
+  let badge='🥉 Sensibilisé(e)';
+  if(S.xp>=110)badge='🥇 Ambassadeur(rice) en devenir !';
+  else if(S.xp>=75)badge='🥈 Témoin actif / active';
+  c.innerHTML=`<div class="fin-card">
+    <div class="fin-ico">🛡️</div>
+    <div class="fin-title">Module terminé !</div>
+    <div class="fin-sub">Tu connais le programme pHARe, la loi, le triangle et les bons réflexes.</div>
+    <div class="fin-xp">⭐ ${S.xp} XP</div>
+    <div class="fin-badge">${badge}</div>
+    <div class="loi-box" style="text-align:left">À retenir : <strong>3020</strong> (harcèlement scolaire) · <strong>3018</strong> (cyberharcèlement) · CPE du collège</div>
+    <p style="font-size:.9rem;color:var(--ink-light);font-weight:600;margin-top:14px">
+      Dernier module du pilier : comment t'organiser au quotidien pour que tout ça se passe bien.
+    </p>
+  </div>`;
+  const br=mkRow();
+  br.appendChild(mkBtn('Module suivant : '+NEXT_NAME+' →','btn-p3',()=>location.href=NEXT_FILE));
+  br.appendChild(mkBtn('← Hub principal','btn-ghost',()=>location.href='index_ACCEUIL6e.html'));
+  c.appendChild(br);r.appendChild(c);
+}
+
+render();
+</script>
+</body>
+</html>

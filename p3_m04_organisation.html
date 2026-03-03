@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Aventure 6e — Mon organisation au quotidien</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sun:#FFD93D;--sun-deep:#F59E0B;
+  --grass:#34D399;--grass-deep:#059669;--water-deep:#0284C7;
+  --p3:#A78BFA;--p3d:#7C3AED;--p3bg:#F5F3FF;--p3pale:#EDE9FE;
+  --ink:#0F172A;--ink-mid:#334155;--ink-light:#64748B;--ink-faint:#CBD5E1;
+  --white:#FFFFFF;
+  --rs:10px;--rm:18px;--rl:28px;
+  --ss:0 2px 8px rgba(15,23,42,.08);--sm:0 6px 24px rgba(15,23,42,.12);
+  --ft:'Baloo 2',cursive;--fb:'Nunito',sans-serif;--fm:'Space Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--fb);background:var(--p3bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 8% 5%,rgba(167,139,250,.18) 0%,transparent 65%),
+             radial-gradient(ellipse 50% 40% at 92% 15%,rgba(255,217,61,.15) 0%,transparent 65%),
+             radial-gradient(ellipse 55% 55% at 50% 108%,rgba(52,211,153,.12) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 16px 64px}
+.topnav{display:flex;align-items:center;gap:12px;padding:14px 0 0}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;padding:7px 16px;font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--ink-mid);cursor:pointer;text-decoration:none;transition:all .15s}
+.back-btn:hover{border-color:var(--p3);color:var(--p3d)}
+.module-crumb{font-size:.8rem;font-weight:700;color:var(--ink-light)}
+.mod-header{text-align:center;padding:28px 20px 20px}
+.pilier-chip{display:inline-flex;align-items:center;gap:7px;background:var(--p3bg);border:2px solid var(--p3);border-radius:50px;padding:6px 18px;font-family:var(--ft);font-size:.85rem;font-weight:800;color:var(--p3d);margin-bottom:14px}
+.mod-title{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;color:var(--ink);line-height:1.15;margin-bottom:8px}
+.mod-sub{font-size:1rem;color:var(--ink-light);font-weight:600}
+.prog-track{display:flex;align-items:center;padding:0 4px;margin:18px 0 12px}
+.prog-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.prog-step::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:3px;background:var(--ink-faint);z-index:0}
+.prog-step:last-child::after{display:none}
+.prog-step.s-done::after{background:var(--grass)}
+.prog-dot{width:36px;height:36px;border-radius:50%;border:3px solid var(--ink-faint);background:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:800;font-size:.9rem;color:var(--ink-light);z-index:1;position:relative;transition:all .3s}
+.prog-step.s-done .prog-dot{background:var(--grass);border-color:var(--grass);color:white}
+.prog-step.s-active .prog-dot{background:var(--sun);border-color:var(--sun-deep);color:var(--ink);box-shadow:0 0 0 5px rgba(245,158,11,.25);animation:pdot 2s infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 5px rgba(245,158,11,.25)}50%{box-shadow:0 0 0 9px rgba(245,158,11,.1)}}
+.prog-lbl{font-size:.7rem;font-weight:700;color:var(--ink-light);margin-top:5px;text-align:center}
+.prog-step.s-active .prog-lbl{color:var(--sun-deep)}
+.prog-step.s-done .prog-lbl{color:var(--grass-deep)}
+.xp-strip{display:flex;gap:10px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--white);border:2px solid var(--ink-faint);border-radius:50px;padding:6px 16px;font-family:var(--fm);font-size:.83rem;font-weight:700;color:var(--ink);box-shadow:var(--ss)}
+.xp-pill.hl{border-color:var(--p3);background:var(--p3pale);color:var(--p3d)}
+.fn-card{background:rgba(255,255,255,.94);border-radius:var(--rl);box-shadow:var(--sm);border:1.5px solid rgba(255,255,255,.9);padding:22px 22px 20px;margin-bottom:14px;animation:fu .35s both}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.orga-card{border-radius:var(--rm);box-shadow:var(--ss);border:2px solid var(--ink-faint);margin-bottom:10px;overflow:hidden}
+.orga-head{display:flex;align-items:center;gap:12px;padding:14px 18px;font-family:var(--ft);font-size:1.05rem;font-weight:800}
+.orga-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;background:rgba(255,255,255,.8)}
+.orga-body{padding:0 18px 18px;display:flex;flex-direction:column;gap:9px}
+.orga-quoi{background:#EFF6FF;border:1.5px solid rgba(56,189,248,.3);border-radius:var(--rs);padding:10px 13px}
+.orga-quoi-lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--water-deep);margin-bottom:4px}
+.orga-astuce{background:var(--p3pale);border:1.5px solid rgba(167,139,250,.35);border-radius:var(--rs);padding:10px 13px}
+.orga-astuce-lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--p3d);margin-bottom:4px}
+.orga-txt{font-size:.9rem;font-weight:600;color:var(--ink-mid);line-height:1.55}
+.fn-counter{font-family:var(--fm);font-size:.85rem;font-weight:700;color:var(--ink-light)}
+.q-ctx{background:rgba(167,139,250,.08);border:1.5px solid rgba(167,139,250,.2);border-radius:var(--rs);padding:9px 14px;margin-bottom:12px;font-size:.9rem;font-weight:600;color:var(--ink-mid);font-style:italic}
+.q-text{font-family:var(--ft);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:14px;line-height:1.35}
+.q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.q-opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.8);border:2px solid var(--ink-faint);border-radius:var(--rs);padding:11px 14px;cursor:pointer;font-size:.93rem;font-weight:600;color:var(--ink);text-align:left;transition:all .15s;font-family:var(--fb)}
+.q-opt:hover:not(:disabled){border-color:var(--p3);background:var(--p3pale)}
+.q-opt.sel{border-color:var(--p3d);background:var(--p3pale)}
+.q-opt.ok{border-color:var(--grass);background:#DCFCE7;color:var(--grass-deep)}
+.q-opt.ko{border-color:#EF4444;background:#FEE2E2;color:#B91C1C}
+.q-opt:disabled{cursor:default}
+.q-lbl{width:28px;height:28px;border-radius:7px;background:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .15s}
+.q-opt.sel .q-lbl{background:var(--p3d);color:#fff}
+.q-opt.ok .q-lbl{background:var(--grass);color:#fff}
+.q-opt.ko .q-lbl{background:#EF4444;color:#fff}
+.q-fb{border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;border:2px solid}
+.q-fb.ok{background:#DCFCE7;border-color:var(--grass)}
+.q-fb.ko{background:#FEE2E2;border-color:#EF4444}
+.q-fb-title{font-family:var(--ft);font-weight:800;margin-bottom:4px;font-size:.95rem}
+.q-fb-body{font-size:.87rem;line-height:1.5;color:var(--ink-mid)}
+.sc-ctx{background:var(--p3pale);border:1.5px solid rgba(167,139,250,.3);border-radius:var(--rm);padding:14px;font-size:.93rem;line-height:1.65;color:var(--ink-mid);margin-bottom:14px}
+.sc-q{font-family:var(--ft);font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:14px}
+.sc-choix{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.sc-btn{background:var(--white);border:2px solid var(--ink-faint);border-radius:var(--rm);padding:12px 16px;text-align:left;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--ink);transition:all .15s;font-family:var(--fb)}
+.sc-btn:hover:not(:disabled){border-color:var(--p3);background:var(--p3pale)}
+.sc-res{border-radius:var(--rm);padding:14px;margin-bottom:12px;border:2px solid}
+.sc-res.pos{background:#DCFCE7;border-color:var(--grass)}
+.sc-res.neg{background:#FEE2E2;border-color:#EF4444}
+.sc-res.neu{background:#FFF7ED;border-color:#FCD34D}
+.sc-res-title{font-family:var(--ft);font-weight:800;font-size:1rem;margin-bottom:5px}
+.sc-res-body{font-size:.9rem;line-height:1.55;color:var(--ink-mid)}
+.sc-tip{background:rgba(255,255,255,.7);border:1.5px solid rgba(167,139,250,.25);border-radius:var(--rs);padding:8px 12px;margin-top:9px;font-size:.85rem;font-weight:700;color:var(--p3d)}
+.sc-xp{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:.83rem;font-weight:700;border-radius:50px;padding:5px 14px;margin-top:8px}
+.sc-xp.pos{background:#DCFCE7;color:var(--grass-deep);border:1.5px solid var(--grass)}
+.sc-xp.neg{background:#FEE2E2;color:#B91C1C;border:1.5px solid #EF4444}
+.sc-xp.neu{background:#FFF7ED;color:#92400E;border:1.5px solid #FCD34D}
+.fin-badge{display:inline-flex;align-items:center;gap:10px;border-radius:var(--rm);padding:14px 22px;font-family:var(--ft);font-size:1.1rem;font-weight:800;margin-bottom:16px}
+.fin-badge.bronze{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:2px solid #F59E0B;color:#92400E}
+.fin-badge.silver{background:linear-gradient(135deg,#F1F5F9,#E2E8F0);border:2px solid #94A3B8;color:#475569}
+.fin-badge.gold{background:linear-gradient(135deg,#FFF7ED,#FBBF24);border:2px solid #F59E0B;color:#78350F}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font-family:var(--ft);font-size:.95rem;font-weight:800;border:none;border-radius:50px;padding:11px 26px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-p3{background:linear-gradient(135deg,var(--p3),var(--p3d));color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35)}
+.btn-p3:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.45)}
+.btn-sec{background:var(--white);border:2px solid var(--ink-faint);color:var(--ink-mid)}
+.btn-sec:hover{border-color:var(--p3);color:var(--p3d)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:50px;font-family:var(--fm);font-size:.85rem;font-weight:700;opacity:0;transition:all .35s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="app">
+  <nav class="topnav">
+    <a href="index.html" class="back-btn">&#8592; Accueil</a>
+    <span class="module-crumb">&#129309; Pilier 3 &middot; Module 4</span>
+  </nav>
+  <header class="mod-header">
+    <div class="pilier-chip">&#129309; La vie en collectivité</div>
+    <h1 class="mod-title">Mon organisation<br>au quotidien</h1>
+    <p class="mod-sub">Agenda, emploi du temps, matériel, carnet de liaison — prêt(e) pour la 6e !</p>
+  </header>
+  <div id="prog"></div>
+  <div id="xpbar"></div>
+  <div id="root"></div>
+</div>
+<script>
+const MODULE_ID='M3_04';
+const MODULE_XP=120;
+const LS_KEY='ave6e_progress';
+
+const CARTES=[
+  {ico:'&#128197;',couleur:'#EFF6FF',bordure:'#93C5FD',
+   titre:"L'emploi du temps : ta carte du territoire",
+   quoi:"L'emploi du temps (EDT) est affiché sur l'ENT Éclair et noté dans ton carnet de liaison dès la rentrée. Il peut changer en cours d'année — une absence de professeur, une sortie scolaire. Le BVS (Bureau de la Vie Scolaire) et le tableau d'affichage t'informent des modifications.",
+   astuce:"Dès la rentrée : recopie ton EDT dans ton agenda. Repère tes jours chargés et les jours où tu as EPS. Note aussi tes horaires de bus si tu es transporté(e).",
+   ri:'RI : "L\'emploi du temps est porté à la connaissance des parents par l\'ENT Eclair et le carnet de correspondance."'},
+  {ico:'&#128211;',couleur:'#F0FDF4',bordure:'#6EE7B7',
+   titre:"L'agenda : ton outil n°1",
+   quoi:"Le RI précise que l'agenda personnel reste indispensable — l'ENT Éclair n'est qu'un outil complémentaire. Dans ton agenda, tu notes les devoirs, les contrôles à préparer, les documents à rapporter. Les professeurs et les parents peuvent y inscrire des messages.",
+   astuce:"Méthode : note les devoirs pour chaque matière. Coche ce que tu as fait. Relis l'agenda le soir avant de préparer ton sac — tu éviteras 90 % des oublis. Un agenda vide = une mauvaise surprise garantie.",
+   ri:'RI : "L\'utilisation de l\'agenda personnel pour noter les devoirs reste indispensable, Eclair n\'étant qu\'un outil complémentaire."'},
+  {ico:'&#128203;',couleur:'#FFF7ED',bordure:'#FCD34D',
+   titre:"Le carnet de liaison : le canal officiel",
+   quoi:"Le carnet de correspondance voyage entre toi, le collège et ta famille. Tu l'as en permanence dans ton cartable. Le matin en entrant dans l'établissement, tu le présentes. Il sert à communiquer les absences, les retards, les informations importantes.",
+   astuce:"Ne l'oublie jamais chez toi. Si un adulte écrit dedans, montre-le à tes parents le jour même. Si tes parents doivent signer quelque chose, fais-le le soir — pas à 22h en catastrophe.",
+   ri:'RI : "En entrant dans l\'établissement le matin les élèves présentent leur carnet de correspondance."'},
+  {ico:'&#127890;',couleur:'#F5F3FF',bordure:'#C4B5FD',
+   titre:"Préparer son sac : le rituel du soir",
+   quoi:"Chaque soir, tu prépares ton sac pour le lendemain : vérifier l'EDT + les devoirs dans l'agenda + les documents à rapporter. Tu peux laisser ton cartable dans la salle du prochain cours — sauf dans les vestiaires du gymnase.",
+   astuce:"Les casiers du collège permettent de ne pas tout trimballer. Identifie les livres qui restent au collège et ceux qui rentrent à la maison. Ton dos t'en remerciera.",
+   ri:'RI : "Les élèves ont la possibilité de laisser leur cartable dans la salle où ils auront cours en première heure l\'après-midi sauf dans les vestiaires du gymnase."'},
+  {ico:'&#128138;',couleur:'#FFF1F2',bordure:'#FDA4AF',
+   titre:"En cas de maladie ou de blessure",
+   quoi:"Si tu te sens mal : tu te rends à l'infirmerie (quand l'infirmière est présente) ou au BVS. En cas d'absence, ta famille doit prévenir le collège. Si tu prends des médicaments, ils doivent être déposés à l'infirmerie avec une ordonnance — pas dans ton sac.",
+   astuce:"Note le numéro du collège quelque part. Pour une absence de plus de 5 jours à la demi-pension avec certificat médical, un remboursement peut être demandé.",
+   ri:'RI : "Toute prise de médicaments fera l\'objet d\'une demande des parents accompagnée d\'une ordonnance déposée à l\'infirmerie."'},
+  {ico:'&#128336;',couleur:'#ECFEFF',bordure:'#67E8F9',
+   titre:"La journée type — les moments clés",
+   quoi:"8h05 : arrivée. 9h55–10h10 : récré matin. 12h05–13h40 : pause méridienne. 15h35–15h50 : récré après-midi. 16h50 : sortie. Entre ces moments : cours ou permanence/CDI.",
+   astuce:"Repère dès la rentrée où sont les toilettes, le CDI, l'infirmerie et le BVS. Et mémorise les 3 sonneries : 1re = on entre, 2e = direction les cours, 3e = c'est parti.",
+   ri:'RI : "Au début de chaque demi-journée il y a 3 sonneries rythmant la vie du collège."'}
+];
+
+const QUIZ=[
+  {ctx:"Mia a EPS demain matin. Elle regarde son EDT sur Éclair mais oublie de noter les devoirs dans son agenda.",
+   q:"Quel outil manque à Mia pour ne rien oublier ?",
+   opts:["Son téléphone — elle aurait dû tout prendre en photo","Son agenda personnel — Éclair est utile mais ne suffit pas pour noter ses devoirs soir par soir","Une meilleure mémoire — pas besoin d'agenda","Elle a tout ce qu'il faut, Éclair est suffisant"],
+   ok:1,xp:25,
+   fb:"Le RI est clair : l'agenda personnel reste indispensable, Éclair n'est qu'un outil complémentaire. Éclair montre les devoirs notés par les profs — mais ne remplace pas la préparation du sac. Et la tenue EPS ! Mia risque d'y penser trop tard."},
+  {ctx:"Tom a un traitement médical à prendre tous les midis. Sa mère a mis les médicaments dans sa trousse.",
+   q:"Est-ce correct selon le règlement intérieur ?",
+   opts:["Oui — tant que personne ne le voit","Non — les médicaments doivent être déposés à l'infirmerie avec une ordonnance des parents","Oui — tant que c'est prescrit par un médecin","Non — les médicaments sont totalement interdits au collège"],
+   ok:1,xp:20,
+   fb:"Le RI précise que les médicaments doivent être rangés à l'infirmerie avec une ordonnance des parents. C'est un protocole de sécurité, pas une interdiction totale. L'infirmière s'occupe de la prise à l'heure prévue. Médicaments dans la trousse = risque de confusion ou d'oubli."},
+  {ctx:"Léa est demi-pensionnaire transportée. Son dernier cours du mardi est annulé (absence prévue). Il est 15h30.",
+   q:"Que peut-elle faire ?",
+   opts:["Prendre le bus plus tôt — un cours annulé = on peut partir avant","Rester en étude ou CDI jusqu'à l'heure du bus, OU ses parents viennent la chercher avec autorisation préalable","Appeler ses parents pour qu'ils viennent — aucune autorisation nécessaire","Demander à partir avec un ami externe"],
+   ok:1,xp:30,
+   fb:"Un demi-pensionnaire transporté est présent de l'arrivée au départ de son bus. Pour partir plus tôt, les parents doivent avoir rempli un billet 'autorisation de sortie ponctuelle' présenté au BVS avant la récré du matin. Et dans ce cas, l'élève NE prend pas le bus plus tôt — il rentre au domicile par ses propres moyens."},
+  {ctx:"Hugo a oublié son carnet de liaison chez lui ce matin.",
+   q:"Quelle est la conséquence la plus probable ?",
+   opts:["Il ne peut pas entrer dans l'établissement","Il doit appeler ses parents immédiatement","Le manque de carnet peut être noté — c'est un matériel obligatoire à avoir en permanence","Aucune conséquence — le carnet n'est pas si important"],
+   ok:2,xp:20,
+   fb:"Le RI demande aux élèves de présenter leur carnet en entrant et de l'avoir en permanence. Ce n'est pas un simple cahier — c'est le canal officiel entre la famille et le collège. Un oubli peut générer une remarque. Et si un adulte avait besoin d'écrire quelque chose d'urgent ?"}
+];
+
+const SCENARIOS=[
+  {titre:"La veille de la grande semaine",
+   ctx:"C'est dimanche soir. Lucas doit rendre un exposé lundi matin, a un contrôle de maths mercredi, EPS jeudi et une autorisation à faire signer pour vendredi. Il regarde une série et se dit qu'il verra demain.",
+   q:"Qu'est-ce qui risque de se passer ?",
+   choix:[
+     {t:"Pas grand-chose — il gèrera tout ça lundi matin.",
+      r:"Lundi matin, Lucas cherche l'exposé : le fichier est corrompu. Il n'a pas son carnet pour faire signer l'autorisation. Il a oublié sa tenue EPS. La semaine commence mal — et ça se cumule.",
+      ton:"neg",ico:"⚠️",
+      tip:"Un problème du lundi matin se règle le dimanche soir. 'Je verrai demain' transforme une petite anticipation en grosse panique.",
+      impact:-10,lbl:"-10 XP"},
+     {t:"Il risque d'oublier des choses importantes — mieux vaut ouvrir l'agenda maintenant.",
+      r:"Lucas ouvre son agenda, note ce qu'il a à faire pour chaque jour, prépare son sac, trouve l'autorisation et la tend à ses parents pour signature. Il se couche organisé. Lundi, il est prêt.",
+      ton:"pos",ico:"✅",
+      tip:"5 minutes d'organisation le soir = une semaine sans stress. Le rituel 'vérifier sac + agenda' chaque soir, c'est l'outil n°1 des élèves qui s'en sortent bien.",
+      impact:40,lbl:"+40 XP"},
+     {t:"Il va demander à ses parents de tout gérer à sa place.",
+      r:"Ses parents signent l'autorisation mais ne peuvent pas faire son exposé ni se souvenir du contrôle de maths — Lucas ne l'avait pas noté dans son agenda.",
+      ton:"neu",ico:"😐",
+      tip:"Les parents peuvent aider mais ne peuvent pas se souvenir à ta place. L'agenda, c'est TON outil.",
+      impact:5,lbl:"+5 XP"}
+   ]},
+  {titre:"La tenue de sport oubliée",
+   ctx:"Emma arrive au collège. Elle a EPS en 3e heure. En ouvrant son sac elle réalise qu'elle a oublié sa tenue. Son cours de sport est dans 2 heures.",
+   q:"Quelle est la meilleure chose à faire ?",
+   choix:[
+     {t:"Appeler ses parents depuis son téléphone pour qu'ils apportent la tenue.",
+      r:"Emma sort son téléphone. Un surveillant passe et le confisque immédiatement. Ses parents récupèrent le téléphone sur rendez-vous. Et Emma n'a toujours pas sa tenue EPS.",
+      ton:"neg",ico:"⚠️",
+      tip:"Le téléphone est éteint et rangé dans le sac pendant les heures de cours ET de permanence. Pour contacter sa famille, l'élève passe par le BVS — pas par son téléphone.",
+      impact:-15,lbl:"-15 XP"},
+     {t:"Passer par le BVS pour appeler ses parents, ou voir le prof d'EPS pour expliquer.",
+      r:"Emma va au BVS entre deux cours. Elle peut appeler depuis le téléphone du collège. Si ce n'est pas possible, elle explique au prof d'EPS qui lui confie une tâche adaptée.",
+      ton:"pos",ico:"✅",
+      tip:"Le BVS est là pour ça. Le prof d'EPS préfère un élève honnête qui explique. La transparence est toujours mieux que la débrouille.",
+      impact:35,lbl:"+35 XP"},
+     {t:"Ne rien faire et prétendre être dispensée pendant le cours.",
+      r:"Le prof d'EPS demande le certificat médical. Emma n'en a pas. Elle doit rester assise sans tâche adaptée. C'est noté dans le carnet.",
+      ton:"neg",ico:"⚠️",
+      tip:"Une dispense sans certificat médical n'existe pas. Mentir transforme un simple oubli en problème disciplinaire.",
+      impact:-5,lbl:"-5 XP"}
+   ]}
+];
+
+let S={phase:'intro',cardIdx:0,quizIdx:0,qSel:null,qFb:false,scIdx:0,scChoice:null,scRes:false,xp:0};
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function getP(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch(e){return{}}}
+function finish(){
+  const p=getP();
+  if(!Array.isArray(p.modules_done))p.modules_done=[];
+  if(!p.modules_done.includes(MODULE_ID)){
+    p.modules_done.push(MODULE_ID);
+    p.xp_total=(p.xp_total||0)+S.xp;
+    localStorage.setItem(LS_KEY,JSON.stringify(p));
+    window.dispatchEvent(new StorageEvent('storage',{key:LS_KEY}));
+  }
+}
+const PHASES=[{lbl:'Intro'},{lbl:'Outils'},{lbl:'Quiz'},{lbl:'Scénarios'},{lbl:'Bilan'}];
+const phaseIdx={intro:0,cards:1,quiz:2,scenarios:3,fin:4};
+function buildProg(){
+  const d=$('prog');d.innerHTML='';
+  const t=document.createElement('div');t.className='prog-track';
+  const pi=phaseIdx[S.phase]||0;
+  PHASES.forEach((ph,i)=>{
+    const s=document.createElement('div');
+    s.className='prog-step '+(i<pi?'s-done':i===pi?'s-active':'');
+    s.innerHTML='<div class="prog-dot">'+(i<pi?'&#10003;':i+1)+'</div><div class="prog-lbl">'+ph.lbl+'</div>';
+    t.appendChild(s);
+  });
+  d.appendChild(t);
+}
+function buildXPBar(items){
+  const d=$('xpbar');d.innerHTML='';
+  const s=document.createElement('div');s.className='xp-strip';
+  items.forEach(it=>{const p=document.createElement('div');p.className='xp-pill'+(it.hl?' hl':'');p.innerHTML='<span>'+it.ico+'</span>'+it.val;s.appendChild(p)});
+  d.appendChild(s);
+}
+function render(){
+  buildProg();
+  const r=$('root');r.innerHTML='';
+  if(S.phase==='intro'){buildXPBar([{ico:'&#11088;',val:S.xp+' XP'}]);buildIntro(r)}
+  if(S.phase==='cards'){buildXPBar([{ico:'&#128193;',val:(S.cardIdx+1)+'/'+CARTES.length},{ico:'&#11088;',val:S.xp+' XP',hl:true}]);buildCards(r)}
+  if(S.phase==='quiz'){buildXPBar([{ico:'&#10067;',val:(S.quizIdx+1)+'/'+QUIZ.length},{ico:'&#11088;',val:S.xp+' XP',hl:true}]);buildQuiz(r)}
+  if(S.phase==='scenarios'){buildXPBar([{ico:'&#127917;',val:(S.scIdx+1)+'/'+SCENARIOS.length},{ico:'&#11088;',val:S.xp+' XP',hl:true}]);buildScenario(r)}
+  if(S.phase==='fin'){buildXPBar([{ico:'&#11088;',val:S.xp+' XP',hl:true}]);buildFin(r)}
+}
+function mkCard(){const d=document.createElement('div');d.className='fn-card';return d}
+function mkRow(){const d=document.createElement('div');d.className='btn-row';return d}
+function mkBtn(l,cls,fn){const b=document.createElement('button');b.className='btn '+cls;b.innerHTML=l;if(fn)b.onclick=fn;return b}
+
+function buildIntro(r){
+  const c=mkCard();
+  c.innerHTML='<div style="font-size:3.5rem;text-align:center;margin-bottom:10px">&#128193;</div>'+
+    '<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;color:var(--ink);text-align:center;margin-bottom:10px">S\'organiser, c\'est se libérer</div>'+
+    '<div style="font-size:.97rem;line-height:1.7;color:var(--ink-mid);margin-bottom:16px">La 6e, ça change tout par rapport au CM2 : plusieurs professeurs, plusieurs salles, un emploi du temps qui peut bouger. Sans organisation, tu passes ton temps à chercher.<br><br>Ce module te donne les outils pour que <strong>l\'organisation devienne un réflexe</strong>, pas un effort.</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">'+
+    '<div style="background:var(--p3pale);border:1.5px solid rgba(167,139,250,.3);border-radius:var(--rs);padding:10px;text-align:center;font-size:.88rem;font-weight:700;color:var(--p3d)">&#128197; EDT et agenda</div>'+
+    '<div style="background:#F0FDF4;border:1.5px solid rgba(110,231,183,.3);border-radius:var(--rs);padding:10px;text-align:center;font-size:.88rem;font-weight:700;color:var(--grass-deep)">&#128203; Carnet de liaison</div>'+
+    '<div style="background:#FFF7ED;border:1.5px solid rgba(252,211,77,.3);border-radius:var(--rs);padding:10px;text-align:center;font-size:.88rem;font-weight:700;color:#92400E">&#127890; Préparer son sac</div>'+
+    '<div style="background:#ECFEFF;border:1.5px solid rgba(103,232,249,.3);border-radius:var(--rs);padding:10px;text-align:center;font-size:.88rem;font-weight:700;color:var(--water-deep)">&#128138; Santé et absences</div>'+
+    '</div>';
+  const br=mkRow();br.appendChild(mkBtn('Découvrir les outils &#8594;','btn-p3',()=>{S.phase='cards';S.xp+=10;render()}));
+  c.appendChild(br);r.appendChild(c);
+}
+
+function buildCards(r){
+  const data=CARTES[S.cardIdx];
+  const c=document.createElement('div');
+  c.className='orga-card';
+  c.style.cssText='border-color:'+data.bordure+';background:'+data.couleur;
+  c.innerHTML='<div class="orga-head" style="background:'+data.couleur+'"><div class="orga-ico">'+data.ico+'</div><div style="font-family:var(--ft);font-size:1.05rem;font-weight:800;color:var(--ink)">'+data.titre+'</div></div>'+
+    '<div class="orga-body">'+
+    '<div class="orga-quoi"><div class="orga-quoi-lbl">Ce que c\'est</div><div class="orga-txt">'+data.quoi+'</div></div>'+
+    '<div class="orga-astuce"><div class="orga-astuce-lbl">&#128161; Astuce organisation</div><div class="orga-txt">'+data.astuce+'</div></div>'+
+    '<div style="background:rgba(255,255,255,.5);border:1.5px solid rgba(167,139,250,.2);border-radius:var(--rs);padding:8px 12px;font-size:.8rem;font-weight:700;color:var(--p3d)">&#128220; '+data.ri+'</div>'+
+    '</div>';
+  r.appendChild(c);
+  const nav=document.createElement('div');
+  nav.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:4px';
+  const back=mkBtn('&#8592; Précédent','btn-sec',()=>{if(S.cardIdx>0){S.cardIdx--;render()}});
+  if(S.cardIdx===0)back.disabled=true;
+  const cnt=document.createElement('span');cnt.className='fn-counter';cnt.textContent=(S.cardIdx+1)+' / '+CARTES.length;
+  const isLast=S.cardIdx===CARTES.length-1;
+  const next=mkBtn(isLast?'Passer au quiz &#8594;':'Suivant &#8594;',isLast?'btn-p3':'btn-sec',()=>{
+    if(!isLast){S.cardIdx++;S.xp+=8;render()}
+    else{S.phase='quiz';S.xp+=40;render()}
+  });
+  nav.appendChild(back);nav.appendChild(cnt);nav.appendChild(next);
+  r.appendChild(nav);
+}
+
+function buildQuiz(r){
+  const data=QUIZ[S.quizIdx];
+  const c=mkCard();
+  if(data.ctx)c.innerHTML='<div class="q-ctx">&#128218; '+data.ctx+'</div>';
+  const qtxt=document.createElement('div');qtxt.className='q-text';qtxt.textContent=data.q;c.appendChild(qtxt);
+  const opts=document.createElement('div');opts.className='q-opts';
+  const valBtn=mkBtn('Valider','btn-p3',null);
+  valBtn.disabled=true;
+  data.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='q-opt';
+    b.innerHTML='<span class="q-lbl">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span>';
+    if(S.qFb){
+      b.disabled=true;
+      if(i===data.ok)b.classList.add('ok');
+      else if(i===S.qSel)b.classList.add('ko');
+    } else {
+      if(i===S.qSel)b.classList.add('sel');
+      b.onclick=()=>{S.qSel=i;valBtn.disabled=false;render()};
+    }
+    opts.appendChild(b);
+  });
+  c.appendChild(opts);
+  if(S.qFb){
+    const fb=document.createElement('div');
+    fb.className='q-fb '+(S.qSel===data.ok?'ok':'ko');
+    fb.innerHTML='<div class="q-fb-title">'+(S.qSel===data.ok?'&#9989; Bonne réponse !':'&#10060; Pas tout à fait…')+'</div><div class="q-fb-body">'+data.fb+'</div>';
+    c.appendChild(fb);
+    const br=mkRow();
+    const isLast=S.quizIdx===QUIZ.length-1;
+    br.appendChild(mkBtn(isLast?'Passer aux scénarios &#8594;':'Question suivante &#8594;','btn-p3',()=>{
+      if(isLast){S.phase='scenarios';S.xp+=20;render()}
+      else{S.quizIdx++;S.qSel=null;S.qFb=false;render()}
+    }));
+    c.appendChild(br);
+  } else {
+    valBtn.onclick=()=>{
+      if(S.qSel===null){toast('Choisis une réponse !');return}
+      S.qFb=true;
+      if(S.qSel===data.ok)S.xp+=data.xp;
+      render();
+    };
+    if(S.qSel!==null)valBtn.disabled=false;
+    const br=mkRow();br.appendChild(valBtn);c.appendChild(br);
+  }
+  r.appendChild(c);
+}
+
+function buildScenario(r){
+  const data=SCENARIOS[S.scIdx];
+  const c=mkCard();
+  c.innerHTML='<div style="font-family:var(--ft);font-size:1.1rem;font-weight:900;color:var(--p3d);margin-bottom:8px">&#127917; '+data.titre+'</div>';
+  const ctx=document.createElement('div');ctx.className='sc-ctx';ctx.innerHTML=data.ctx;c.appendChild(ctx);
+  const q=document.createElement('div');q.className='sc-q';q.textContent=data.q;c.appendChild(q);
+  if(!S.scRes){
+    const choix=document.createElement('div');choix.className='sc-choix';
+    data.choix.forEach((ch,i)=>{
+      const b=document.createElement('button');b.className='sc-btn';b.textContent=ch.t;
+      b.onclick=()=>{S.scChoice=i;S.scRes=true;if(ch.impact>0)S.xp+=ch.impact;render()};
+      choix.appendChild(b);
+    });
+    c.appendChild(choix);
+  } else {
+    const ch=data.choix[S.scChoice];
+    const res=document.createElement('div');res.className='sc-res '+ch.ton;
+    res.innerHTML='<div class="sc-res-title">'+ch.ico+' Ce qui se passe…</div><div class="sc-res-body">'+ch.r+'</div><div class="sc-tip">&#128161; '+ch.tip+'</div><div class="sc-xp '+ch.ton+'">'+ch.ico+' '+ch.lbl+'</div>';
+    c.appendChild(res);
+    const br=mkRow();
+    const isLast=S.scIdx===SCENARIOS.length-1;
+    br.appendChild(mkBtn(isLast?'Voir mon bilan &#8594;':'Scénario suivant &#8594;','btn-p3',()=>{
+      if(isLast){S.phase='fin';finish();render()}
+      else{S.scIdx++;S.scChoice=null;S.scRes=false;render()}
+    }));
+    c.appendChild(br);
+  }
+  r.appendChild(c);
+}
+
+function buildFin(r){
+  finish();
+  let badge,badgeClass;
+  if(S.xp>=100){badge='&#127942; Super organisé(e) !';badgeClass='gold'}
+  else if(S.xp>=60){badge='&#129351; Bonne prise en main';badgeClass='silver'}
+  else{badge='&#129352; En route pour la 6e';badgeClass='bronze'}
+  const c=mkCard();
+  c.innerHTML='<div style="text-align:center;padding:10px 0 20px">'+
+    '<div style="font-size:3rem;margin-bottom:12px">&#128193;</div>'+
+    '<div style="font-family:var(--ft);font-size:1.5rem;font-weight:900;color:var(--ink);margin-bottom:8px">Module terminé !</div>'+
+    '<div class="fin-badge '+badgeClass+'" style="margin:0 auto 16px;display:inline-flex">'+badge+'</div>'+
+    '<div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:var(--p3d);margin-bottom:18px">&#11088; '+S.xp+' XP gagnés</div>'+
+    '<div style="font-size:.95rem;line-height:1.7;color:var(--ink-mid);max-width:480px;margin:0 auto 22px">Tu connais maintenant les outils essentiels pour bien démarrer en 6e. La clé ? <strong>Préparer son sac le soir, vérifier son agenda chaque jour.</strong></div>'+
+    '</div>'+
+    '<div style="background:var(--p3pale);border:1.5px solid rgba(167,139,250,.3);border-radius:var(--rm);padding:14px;margin-bottom:14px">'+
+    '<div style="font-family:var(--ft);font-weight:800;color:var(--p3d);margin-bottom:8px">&#127942; Pilier 3 — La vie en collectivité : complété !</div>'+
+    '<div style="font-size:.9rem;color:var(--ink-mid);line-height:1.6">Tu as traversé les 4 modules du pilier. Tu connais les règles, tes droits et devoirs, le programme pHARe, et les outils d\'organisation. Le collège Château Rance n\'a plus de secrets !</div>'+
+    '</div>';
+  const br=mkRow();
+  br.appendChild(mkBtn('&#127968; Retour à l\'accueil','btn-p3',()=>location.href='index.html'));
+  br.appendChild(mkBtn('&#8635; Revoir ce module','btn-sec',()=>{S={phase:'intro',cardIdx:0,quizIdx:0,qSel:null,qFb:false,scIdx:0,scChoice:null,scRes:false,xp:0};render()}));
+  c.appendChild(br);r.appendChild(c);
+}
+
+render();
+</script>
+</body>
+</html>
