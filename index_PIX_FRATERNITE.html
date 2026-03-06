@@ -66,7 +66,7 @@ h1{font-family:'Playfair Display';font-size:clamp(2rem,6vw,3.4rem);margin-bottom
   border:1px solid rgba(255,255,255,0.07);position:relative;overflow:hidden;
   background:rgba(255,255,255,0.03)}
 .mod-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.55)}
-.mod-card.done{cursor:default}
+.mod-card.done{cursor:pointer;opacity:.85}
 .mod-card.done::after{content:'✓';position:absolute;top:12px;right:12px;
   width:26px;height:26px;border-radius:50%;background:rgba(0,200,100,0.12);
   border:1px solid rgba(0,200,100,0.4);color:#4ade80;font-size:.85rem;
@@ -227,12 +227,12 @@ function Hub(){
             key:mod.id,
             className:'mod-card'+(isDone?' done':''),
             style:{background:pillar.glow,borderColor:isDone?pillar.color+'55':'rgba(255,255,255,0.07)'},
-            onClick:()=>!isDone&&openModule(mod.file)
+            onClick:()=>openModule(mod.file)
           },
             mod.cert&&e('div',{className:'cert-badge',style:{background:pillar.color+'22',border:'1px solid '+pillar.color+'55',color:pillar.color}},'✦ CERTIFICATION'),
             e('div',{className:'mod-num',style:{color:pillar.color}},mod.id),
             e('div',{className:'mod-title'},mod.title),
-            e('div',{className:'mod-xp',style:{color:pillar.color}},'⚡ +'+mod.xp+' XP'+(isDone?' — Validé':''))
+            e('div',{className:'mod-xp',style:{color:pillar.color}},'⚡ +'+mod.xp+' XP'+(isDone?' ✅ Validé — Rejouer':''))
           );
         })
       )
