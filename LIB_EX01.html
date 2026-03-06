@@ -90,7 +90,7 @@ function awardXP(){
       player:getPlayer(),
       module:MODULE_ID,
       cpTotal:countCerts(),
-      label:'LIBERTÉ : La liberté d'expression : origines et fondements',
+      label:"LIBERTÉ : La liberté d'expression : origines et fondements",
       d:new Date().toISOString()
     });
     if(evts.length>700)evts.splice(0,evts.length-700);
@@ -127,7 +127,6 @@ function App(){
     e('p',{className:'quote'},"« La libre communication des pensées et des opinions est un des droits les plus précieux de l'homme. » — DDHC, Article 11"),
     e('p',null,"En 1789, l'Article 11 de la DDHC pose la liberté d'expression comme un droit 'précieux'. Ce n'est pas un accident de formulation — sous l'Ancien Régime, publier sans censure royale pouvait mener en prison. Voltaire y est passé. Diderot aussi."),
     e('p',null,"Aujourd'hui, la liberté d'expression est garantie en France par la DDHC, la CEDH (Article 10), et encadrée par la loi du 29 juillet 1881 sur la liberté de la presse — l'un des textes fondateurs de la République."),
-,
     e('div',{style:{textAlign:'center'}},
       e('div',{className:'xp-badge'},'⚡ +50 XP à la clé')),
     e('button',{className:'btn',onClick:()=>setStep('quiz')},'Prendre la parole')
@@ -144,7 +143,7 @@ function App(){
         key:i,className:'opt',
         onClick:()=>{
           if(i===q.c){if(qIdx<QUESTIONS.length-1)setQIdx(qIdx+1);else setStep('scenario');}
-          else alert(q.wrong||'La liberté d'expression a une histoire précise. Réessaie.');
+          else alert(q.wrong||"La liberté d'expression a une histoire précise. Réessaie.");
         }
       },opt))
     );
@@ -164,7 +163,7 @@ function App(){
   const renderSynthesis=()=>e('div',{className:'card'},
     e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'88%'}})),
     e('div',{className:'step-tag'},'Synthèse'),
-    e('h2',null,'Ce qu'il faut retenir'),
+    e('h2',null,"Ce qu'il faut retenir"),
     e('div',{className:'summary-box'},
       SYNTHESIS.map((s,i)=>e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v))
     ),
@@ -174,7 +173,7 @@ function App(){
   const renderComplete=()=>e('div',{className:'card'},
     e('div',{className:'seal'},'📢'),
     e('h1',null,'Article 11, chapitré !'),
-    e('p',{style:{textAlign:'center'}},'Module validé — les fondements de la liberté d'expression sont acquis.'),
+    e('p',{style:{textAlign:'center'}},"Module validé — les fondements de la liberté d'expression sont acquis."),
     e('div',{style:{textAlign:'center',margin:'8px 0'}},
       e('div',{className:'xp-badge'},'⚡ +50 XP envoyés au Portail')),
     e('p',{style:{textAlign:'center',color:'var(--muted)',fontSize:'.8rem',marginTop:'10px'}},
