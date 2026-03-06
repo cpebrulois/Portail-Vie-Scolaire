@@ -833,7 +833,7 @@
             }
         ];
 
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+        function encodeSaveCode(data) { return ''; }
         function decodeSaveCode(code) { try { return JSON.parse(atob(code)); } catch { return null; } }
         function getMasteryLevel(score) {
             if (score >= 450) return { level: "Expert", class: "mastery-expert" };
@@ -907,6 +907,13 @@
                 } else {
                     setPlayerData(prev => ({ ...prev, finished: true, xp: prev.xp + 100 }));
                     
+                // ── Certification locale (déverrouillage hub) ──
+                try {
+                    var _ck = 'CERT_PHARE_' + MODULE_ID;
+                    if (!localStorage.getItem(_ck)) {
+                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
+                    }
+                } catch(_ce) {}
                 // ── Bridge Superhub PVS ──
                 try {
                     var _pvsBridge = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
@@ -927,13 +934,7 @@
                 }
             }
 
-            function generateSaveCode() {
-                return encodeSaveCode({
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
-                    n: playerData.name, l: 3, s: playerData.score,
-                    x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore, f: true
-                });
-            }
+            function generateSaveCode() { return ''; }
 
             function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code copié !")); }
 
@@ -1135,7 +1136,6 @@
 
             function renderComplete() {
                 const mastery = getMasteryLevel(playerData.score);
-                const saveCode = generateSaveCode();
                 return e("div", { className: "app-container" },
                     e("div", { className: "completion-screen" },
                         e("div", { className: "completion-icon" }, "🔺"),
@@ -1148,7 +1148,7 @@
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.quizScore), e("div", { className: "stat-label" }, "Analyse")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.scenarioScore), e("div", { className: "stat-label" }, "Simulation"))
                         ),
-                        e("div", { className: "save-code-box" },
+                        e("div", { className: "save-code-box", style:{display:"none"} },
                             e("div", { className: "save-code-label" }, "📋 TON CODE DE SAUVEGARDE (pour le Module 02) :"),
                             e("div", { className: "save-code" }, saveCode),
                             e("button", { className: "copy-btn", onClick: copyCode }, "Copier le code")

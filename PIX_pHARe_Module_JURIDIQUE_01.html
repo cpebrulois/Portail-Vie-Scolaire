@@ -1159,21 +1159,6 @@
                         } else {
                             setXp(xp + MODULE_DATA.niveau3.xp_reward);
                             setMode('report');
-                            // ── Bridge Superhub PVS ──
-                            try {
-                                var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-                                _pvs.push({
-                                    id: 'PIXHARE-' + MODULE_DATA.id + '-' + Date.now(),
-                                    type: 'PIXHARE_PROGRESS',
-                                    player: localStorage.getItem('pvs_current_player') || '',
-                                    module: MODULE_DATA.id,
-                                    score: quizScore + dojoScore,
-                                    xp: xp + MODULE_DATA.niveau3.xp_reward,
-                                    d: new Date().toISOString()
-                                });
-                                localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
-                                window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
-                            } catch(_e) {}
                         }
                     };
 
@@ -1236,6 +1221,13 @@
                            type: 'PIXHARE_PROGRESS', player: getHubPlayer() || '',
                            module: moduleId, score: score, xp: xp,
                            d: new Date().toISOString() });
+                // ── Certification locale (déverrouillage hub) ──
+                try {
+                    var _ck = 'CERT_PHARE_' + MODULE_ID;
+                    if (!localStorage.getItem(_ck)) {
+                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
+                    }
+                } catch(_ce) {}
                 localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
                 window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
             } catch(e) {}

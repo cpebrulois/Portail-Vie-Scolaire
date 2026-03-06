@@ -944,9 +944,7 @@
         ];
 
         // Utility functions
-        function encodeSaveCode(data) {
-            return btoa(JSON.stringify(data));
-        }
+        function encodeSaveCode(data) { return ''; }
 
         function decodeSaveCode(code) {
             try {
@@ -1090,6 +1088,14 @@
                     xp: prev.xp + 75
                 }));
                 setGameState("complete");
+                // ── Certification locale (déverrouillage hub) ──
+                try {
+                    var _ck = 'CERT_PHARE_' + MODULE_ID;
+                    if (!localStorage.getItem(_ck)) {
+                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
+                    }
+                } catch(_ce) {}
+
                 // ── Remontée XP vers Superhub PVS ──
                 try {
                     var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
@@ -1108,23 +1114,7 @@
             }
 
             // Generate save code
-            function generateSaveCode() {
-                const saveData = {
-                    v: 1,
-                    d: new Date().toISOString(),
-                    m: MODULE_ID,
-                    mv: MODULE_VERSION,
-                    n: playerData.name,
-                    c: playerData.class,
-                    l: 3,
-                    s: playerData.score,
-                    x: playerData.xp,
-                    q: playerData.quizScore,
-                    sc: playerData.scenarioScore,
-                    f: true
-                };
-                return encodeSaveCode(saveData);
-            }
+            function generateSaveCode() { return ''; }
 
             // Copy to clipboard
             function copyCode() {
@@ -1153,47 +1143,24 @@
                                 e("p", { style: { marginTop: "15px" } }, "Tu vas découvrir comment les plateformes numériques capturent ton attention, exploitent ta dopamine, et te transforment en produit. Pas pour te faire peur - mais pour te donner les clés de ta liberté numérique."),
                                 e("p", { style: { marginTop: "15px" } }, "Prêt·e à ouvrir les yeux ?")
                             ),
-                            e("div", { style: { marginTop: "25px" } },
-                                e("label", { style: { display: "block", marginBottom: "8px", color: "var(--neon-cyan)", fontFamily: "'Share Tech Mono', monospace" } }, "TON PSEUDO :"),
-                                e("input", {
-                                    type: "text",
-                                    value: playerData.name,
-                                    onChange: (ev) => setPlayerData(prev => ({ ...prev, name: ev.target.value })),
-                                    placeholder: "Entre ton prénom ou pseudo",
-                                    style: {
-                                        width: "100%",
-                                        padding: "12px 15px",
-                                        background: "var(--darker-bg)",
-                                        border: "1px solid var(--neon-cyan)",
-                                        color: "var(--text-primary)",
-                                        fontFamily: "'Rajdhani', sans-serif",
-                                        fontSize: "1rem"
-                                    }
-                                })
-                            ),
-                            e("div", { style: { marginTop: "20px" } },
-                                e("label", { style: { display: "block", marginBottom: "8px", color: "var(--neon-cyan)", fontFamily: "'Share Tech Mono', monospace" } }, "TA CLASSE :"),
-                                e("input", {
-                                    type: "text",
-                                    value: playerData.class,
-                                    onChange: (ev) => setPlayerData(prev => ({ ...prev, class: ev.target.value })),
-                                    placeholder: "Ex: 4ème B",
-                                    style: {
-                                        width: "100%",
-                                        padding: "12px 15px",
-                                        background: "var(--darker-bg)",
-                                        border: "1px solid var(--neon-cyan)",
-                                        color: "var(--text-primary)",
-                                        fontFamily: "'Rajdhani', sans-serif",
-                                        fontSize: "1rem"
-                                    }
-                                })
+                            e("div", { style: { marginTop: "20px", marginBottom: "20px" } },
+                                playerData.name
+                                    ? e("div", { style: { textAlign: "center", padding: "12px", background: "rgba(0,255,200,0.08)", border: "1px solid rgba(0,255,200,0.3)", borderRadius: "8px" } },
+                                        e("div", { style: { fontSize: "1.5rem" } }, "\u2705"),
+                                        e("div", { style: { color: "#94a3b8", fontSize: "0.82rem" } }, "Connect\u00e9 via Portail Vie Scolaire"),
+                                        e("div", { style: { color: "#f8fafc", fontWeight: "bold" } }, playerData.name)
+                                      )
+                                    : e("div", { style: { textAlign: "center", padding: "12px", background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "8px" } },
+                                        e("div", { style: { fontSize: "1.5rem" } }, "\u26a0\ufe0f"),
+                                        e("p", { style: { color: "#f87171", fontWeight: "bold" } }, "Non connect\u00e9 au Portail Vie Scolaire"),
+                                        e("p", { style: { color: "#94a3b8", fontSize: "0.82rem" } }, "Connecte-toi d'abord depuis le Superhub.")
+                                      )
                             ),
                             e("div", { style: { textAlign: "center", marginTop: "30px" } },
                                 e("button", {
                                     className: "action-btn",
                                     onClick: startGame,
-                                    disabled: !playerData.name.trim() || !playerData.class.trim()
+                                    disabled: !playerData.name.trim()
                                 }, "[ INITIALISER ]")
                             )
                         )
@@ -1411,7 +1378,6 @@
 
             function renderComplete() {
                 const mastery = getMasteryLevel(playerData.score);
-                const saveCode = generateSaveCode();
                 
                 return e("div", { className: "app-container" },
                     e("div", { className: "completion-screen" },
@@ -1439,7 +1405,7 @@
                                 e("div", { className: "stat-label" }, "Score Scénarios")
                             )
                         ),
-                        e("div", { className: "save-code-box" },
+                        e("div", { className: "save-code-box", style:{display:"none"} },
                             e("div", { className: "save-code-label" }, "📋 TON CODE DE SAUVEGARDE (pour le Module 02) :"),
                             e("div", { className: "save-code" }, saveCode),
                             e("button", { 

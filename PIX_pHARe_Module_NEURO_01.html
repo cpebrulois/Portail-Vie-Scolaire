@@ -560,7 +560,7 @@
             }
         ];
         // --- UTILS ---
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+        function encodeSaveCode(data) { return ''; }
         function getMasteryLevel(score) {
             if (score >= 130) return { level: "Expert", class: "mastery-expert" };
             if (score >= 80) return { level: "Confirmé", class: "mastery-confirmed" };
@@ -617,29 +617,29 @@
             function nextScenario() {
                 setGameState("complete");
                 setPlayerData(prev => ({ ...prev, xp: prev.xp + 50 }));
+                // ── Certification locale (déverrouillage hub) ──
+                try {
+                    var _ck = 'CERT_PHARE_' + MODULE_ID;
+                    if (!localStorage.getItem(_ck)) {
+                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
+                    }
+                } catch(_ce) {}
                 // ── Remontée XP vers Superhub PVS ──
                 try {
                     var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
                     _pvs.push({
                         id: 'PIXHARE-NEURO_01-' + Date.now(),
                         type: 'PIXHARE_PROGRESS',
-                        player: localStorage.getItem('pvs_current_player') || playerData.name || '',
-                        module: MODULE_ID,
-                        score: playerData.score,
+                        player: localStorage.getItem('pvs_current_player') || '',
+                        module: 'NEURO_01',
                         xp: playerData.xp + 50,
                         d: new Date().toISOString()
                     });
                     localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
                     window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
-                } catch (_e) {}
+                } catch(_pe) {}
             }
-            function generateSaveCode() {
-                return encodeSaveCode({
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
-                    n: playerData.name, c: playerData.class, l: 3, s: playerData.score,
-                    x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore, f: true
-                });
-            }
+            function generateSaveCode() { return ''; }
             function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code copié !")); }
             // RENDERING
             function renderIntro() {
@@ -666,7 +666,7 @@
                                     "Découvre comment l’humain peut comprendre… ou manipuler."
                                 ),
                                 e("div", { style: { textAlign: "center", marginTop: "20px" } },
-                                    e("div", { style: { padding: "10px 16px", background: "rgba(0,255,136,0.08)", border: "1px solid var(--neuro-green,#32b185)", borderRadius: "6px", marginBottom: "16px", fontSize: "0.9rem", color: "var(--neuro-green,#32b185)" } },
+                                e("div", { style: { padding: "10px 16px", background: "rgba(0,255,136,0.08)", border: "1px solid var(--neuro-green,#32b185)", borderRadius: "6px", marginBottom: "16px", fontSize: "0.9rem", color: "var(--neuro-green,#32b185)" } },
                                     "🔗 Connecté via Portail Vie Scolaire"
                                 ),
                                 e("button", { className: "action-btn", onClick: startGame }, "[ COMMENCER ]")
@@ -845,7 +845,7 @@
                             )
                         ),
                         e("div", { className: `mastery-badge ${mastery.class}` }, mastery.level),
-                        e("div", { className: "save-code-box" },
+                        e("div", { className: "save-code-box", style:{display:"none"} },
                             e("div", { className: "save-code-label" }, "Code de sauvegarde :"),
                             e("div", { className: "save-code" }, generateSaveCode()),
                             e("button", { className: "copy-btn", onClick: copyCode }, "COPIER")
