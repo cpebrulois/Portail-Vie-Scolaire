@@ -1159,6 +1159,21 @@
                         } else {
                             setXp(xp + MODULE_DATA.niveau3.xp_reward);
                             setMode('report');
+                            // ── Bridge Superhub PVS ──
+                            try {
+                                var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                                _pvs.push({
+                                    id: 'PIXHARE-' + MODULE_DATA.id + '-' + Date.now(),
+                                    type: 'PIXHARE_PROGRESS',
+                                    player: localStorage.getItem('pvs_current_player') || '',
+                                    module: MODULE_DATA.id,
+                                    score: quizScore + dojoScore,
+                                    xp: xp + MODULE_DATA.niveau3.xp_reward,
+                                    d: new Date().toISOString()
+                                });
+                                localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
+                                window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                            } catch(_e) {}
                         }
                     };
 

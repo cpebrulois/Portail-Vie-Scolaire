@@ -494,7 +494,21 @@
                 }
                 if (currentLevel === 3) {
                     const scenarios = MODULE_DATA.niveau3.scenarios;
-                    const handleDojoAnswer = (impact) => { setDojoScore(dojoScore + Math.max(0, impact)); if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1); else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); } };
+                    const handleDojoAnswer = (impact) => { setDojoScore(dojoScore + Math.max(0, impact)); if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1); else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report');
+                                try {
+                                    var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                                    _pvs.push({
+                                        id: 'PIXHARE-' + MODULE_DATA.id + '-' + Date.now(),
+                                        type: 'PIXHARE_PROGRESS',
+                                        player: localStorage.getItem('pvs_current_player') || '',
+                                        module: MODULE_DATA.id,
+                                        score: dojoScore,
+                                        xp: xp + MODULE_DATA.niveau3.xp_reward,
+                                        d: new Date().toISOString()
+                                    });
+                                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
+                                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                                } catch(_e) {} } };
                     return e('div', { className: 'app-container' },
                         e(Header, { showProgress: true, xp }),
                         e(ProgressBar, { currentLevel, xp }),

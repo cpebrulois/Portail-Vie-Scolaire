@@ -1018,6 +1018,21 @@
                     xp: prev.xp + 100
                 }));
                 setGameState("complete");
+                // ── Remontée XP vers Superhub PVS ──
+                try {
+                    var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                    _pvs.push({
+                        id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
+                        type: 'PIXHARE_PROGRESS',
+                        player: localStorage.getItem('pvs_current_player') || playerData.name || '',
+                        module: MODULE_ID,
+                        score: playerData.score,
+                        xp: playerData.xp + 100,
+                        d: new Date().toISOString()
+                    });
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
+                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
+                } catch (_e) {}
             }
 
             function generateSaveCode() {
