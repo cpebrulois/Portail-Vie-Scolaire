@@ -1,508 +1,215 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX-pHARe | L'Armure Juridique</title>
-    <style>
-        :root {
-            --primary: #3498db;
-            --accent: #e74c3c;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --dark: #1a1a2e;
-            --darker: #16213e;
-            --card: #0f3460;
-            --light: #e8e8e8;
-            --gold: #ffd700;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
-            color: var(--light);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .app-container {
-            width: 100%;
-            max-width: 900px;
-            background: var(--card);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-        .app-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
-        }
-        
-        /* HEADER */
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 {
-            font-size: 2.2em;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
-        }
-        .header .subtitle {
-            color: var(--warning);
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        .header .badge {
-            display: inline-block;
-            background: var(--darker);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            margin-top: 10px;
-            border: 1px solid var(--primary);
-        }
-        
-        /* PROGRESS BAR */
-        .progress-container {
-            background: var(--darker);
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-        }
-        .progress-bar-outer {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            height: 12px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-        .progress-bar-inner {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-        .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-        }
-        .xp-badge {
-            background: var(--gold);
-            color: #000;
-            padding: 3px 12px;
-            border-radius: 15px;
-            font-weight: bold;
-        }
-        
-        /* BUTTONS */
-        .btn {
-            background: linear-gradient(135deg, var(--primary), #2980b9);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
-        }
-        .btn:active { transform: translateY(0); }
-        .btn-secondary {
-            background: linear-gradient(135deg, #7f8c8d, #636e72);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #1e8449);
-        }
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #e67e22);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, var(--accent), #c0392b);
-        }
-        .btn-block { width: 100%; justify-content: center; }
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        /* CARDS */
-        .card {
-            background: linear-gradient(145deg, #fff, #f0f0f0);
-            color: var(--dark);
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .card-dark {
-            background: var(--darker);
-            color: var(--light);
-        }
-        
-        /* FLASHCARD */
-        .flashcard-container {
-            perspective: 1000px;
-            margin: 25px 0;
-        }
-        .flashcard {
-            background: linear-gradient(145deg, #fff, #f8f9fa);
-            color: var(--dark);
-            padding: 40px 30px;
-            border-radius: 15px;
-            min-height: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.6s, box-shadow 0.3s;
-            transform-style: preserve-3d;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        .flashcard:hover {
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
-        .flashcard.flipped {
-            transform: rotateY(180deg);
-        }
-        .flashcard .front, .flashcard .back {
-            backface-visibility: hidden;
-            position: absolute;
-            width: calc(100% - 60px);
-        }
-        .flashcard .back {
-            transform: rotateY(180deg);
-        }
-        .flashcard .question {
-            font-size: 1.3em;
-            font-weight: 600;
-            line-height: 1.5;
-        }
-        .flashcard .answer {
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
-        .flashcard .answer-label {
-            color: var(--success);
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .flashcard .source {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-            font-size: 0.85em;
-            color: #666;
-            font-style: italic;
-        }
-        .flashcard .tap-hint {
-            position: absolute;
-            bottom: 15px;
-            font-size: 0.8em;
-            color: #999;
-        }
-        .card-counter {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-            color: var(--light);
-            opacity: 0.8;
-        }
-        
-        /* QUIZ */
-        .quiz-question {
-            background: var(--darker);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--warning);
-        }
-        .quiz-question .label {
-            color: var(--warning);
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-        .quiz-choices {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .quiz-choice {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            color: var(--light);
-            padding: 18px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-            font-size: 1rem;
-        }
-        .quiz-choice:hover {
-            background: rgba(52, 152, 219, 0.2);
-            border-color: var(--primary);
-            transform: translateX(5px);
-        }
-        .quiz-choice.correct {
-            background: rgba(39, 174, 96, 0.3);
-            border-color: var(--success);
-        }
-        .quiz-choice.incorrect {
-            background: rgba(231, 76, 60, 0.3);
-            border-color: var(--accent);
-        }
-        .quiz-choice.disabled {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-        
-        /* FEEDBACK */
-        .feedback {
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .feedback.correct {
-            background: rgba(39, 174, 96, 0.2);
-            border: 1px solid var(--success);
-        }
-        .feedback.incorrect {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid var(--accent);
-        }
-        .feedback .title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-        .feedback.correct .title { color: var(--success); }
-        .feedback.incorrect .title { color: var(--accent); }
-        
-        /* DOJO */
-        .dojo-scenario {
-            background: linear-gradient(135deg, var(--darker), #1a1a3a);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-        .dojo-scenario .context-label {
-            color: var(--accent);
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-        .dojo-scenario .context {
-            font-size: 1.05em;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-        .dojo-scenario .question {
-            background: rgba(243, 156, 18, 0.15);
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 3px solid var(--warning);
-        }
-        .impact-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .impact-positive { background: var(--success); color: #fff; }
-        .impact-negative { background: var(--accent); color: #fff; }
-        .impact-neutral { background: var(--warning); color: #000; }
-        
-        /* SAVE CODE */
-        .save-code-section {
-            background: #0a0a0a;
-            border: 2px dashed #0f0;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 25px 0;
-        }
-        .save-code-box {
-            background: #000;
-            color: #0f0;
-            font-family: 'Courier New', Consolas, monospace;
-            padding: 20px;
-            border-radius: 8px;
-            word-break: break-all;
-            font-size: 0.85em;
-            line-height: 1.5;
-            user-select: all;
-            cursor: text;
-            margin: 15px 0;
-            max-height: 120px;
-            overflow-y: auto;
-        }
-        .save-instructions {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid var(--gold);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .save-instructions h4 {
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-        .save-instructions ul {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-        
-        /* REPORT */
-        .report {
-            background: linear-gradient(145deg, #fff, #f5f5f5);
-            color: var(--dark);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-        }
-        .report-header {
-            background: linear-gradient(135deg, var(--primary), #2980b9);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .report-header h2 {
-            font-size: 1.8em;
-            margin-bottom: 5px;
-        }
-        .report-body {
-            padding: 30px;
-        }
-        .report-stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .report-stat:last-child { border-bottom: none; }
-        .report-stat .label { color: #666; }
-        .report-stat .value { font-weight: bold; color: var(--dark); }
-        .mastery-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .mastery-expert { background: linear-gradient(135deg, var(--gold), #f39c12); color: #000; }
-        .mastery-confirmed { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
-        .mastery-learning { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; }
-        
-        /* LOAD SCREEN */
-        .load-section textarea {
-            width: 100%;
-            min-height: 120px;
-            background: #000;
-            color: #0f0;
-            border: 2px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            resize: vertical;
-        }
-        .load-section textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        /* UTILITIES */
-        .text-center { text-align: center; }
-        .mt-20 { margin-top: 20px; }
-        .mb-20 { margin-bottom: 20px; }
-        .emoji-big { font-size: 3em; display: block; margin-bottom: 15px; }
-        
-        /* LEVEL INDICATOR */
-        .level-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .level-dot {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            background: var(--darker);
-            border: 3px solid #444;
-            transition: all 0.3s;
-        }
-        .level-dot.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
-        }
-        .level-dot.completed {
-            background: var(--success);
-            border-color: var(--success);
-        }
-        
-        /* RESPONSIVE */
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .app-container { padding: 20px; }
-            .header h1 { font-size: 1.6em; }
-            .flashcard { padding: 25px 20px; min-height: 220px; }
-            .btn { padding: 12px 20px; font-size: 0.9rem; }
-        }
-    </style>
-    <!-- React 18 CDN - DOIT être chargé AVANT le script principal -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIX pHARe — Juridique 01</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+:root {
+  --bg: #0a0e1a; --card: #111827; --dark: #1e293b;
+  --border: rgba(255,255,255,.09);
+  --text: #e2e8f0; --muted: #64748b;
+  --accent: #3b82f6;
+  --green: #22c55e; --red: #ef4444; --warn: #f59e0b;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+
+.app-container{ max-width:680px; margin:0 auto; padding:16px; }
+
+/* ── Header ── */
+.header{
+  background:linear-gradient(135deg,#0f172a,#1e1b4b);
+  border:1px solid var(--border); border-radius:12px;
+  padding:16px 20px; margin-bottom:16px;
+  display:flex; align-items:center; gap:14px;
+}
+.header-icon{ font-size:2rem; }
+.header-info{ flex:1; }
+.header-title{ font-weight:800; font-size:1.05rem; color:var(--accent); }
+.header-sub{ color:var(--muted); font-size:.8rem; margin-top:2px; }
+.header-xp{ font-weight:700; color:var(--green); font-size:1rem; }
+.player-info{
+  text-align:center; padding:10px 16px; margin-bottom:12px;
+  background:rgba(255,255,255,.03); border:1px solid var(--border);
+  border-radius:10px; font-size:.85rem;
+}
+.player-connected{ color:var(--green); }
+.player-disconnected{ color:var(--red); }
+
+/* ── Progression ── */
+.progress-section{ margin-bottom:16px; }
+.progress-levels{ display:flex; gap:8px; margin-bottom:8px; }
+.level-pill{
+  flex:1; text-align:center; padding:6px 4px;
+  border-radius:8px; font-size:.75rem; font-weight:700;
+  border:1px solid var(--border);
+  background:var(--dark); color:var(--muted);
+  transition: all .3s;
+}
+.level-pill.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+.level-pill.done{ background:var(--green); color:#000; border-color:var(--green); }
+.progress-bar{ height:4px; background:rgba(255,255,255,.07); border-radius:2px; }
+.progress-fill{ height:4px; background:var(--accent); border-radius:2px; transition:width .4s; }
+
+/* ── Cards ── */
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:20px; margin-bottom:14px;
+}
+.section-title{
+  font-size:.75rem; font-weight:700; letter-spacing:1px;
+  color:var(--accent); text-transform:uppercase; margin-bottom:12px;
+}
+
+/* ── Flashcard flip 3D ── */
+.flashcard-scene{
+  perspective:1000px; margin:8px 0 16px;
+}
+.flashcard-flip{
+  position:relative; width:100%;
+  min-height:220px;
+  transform-style:preserve-3d;
+  transition:transform .55s ease;
+  cursor:pointer;
+}
+.flashcard-flip.flipped{ transform:rotateY(180deg); }
+.flashcard-face{
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:12px;
+  padding:24px 20px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center;
+  min-height:220px;
+}
+.flashcard-front{
+  background:linear-gradient(135deg, #fff 0%, #f1f5f9 100%);
+  color:#1e293b;
+  border:2px solid rgba(59,130,246,.3);
+}
+.flashcard-back{
+  background:linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+  color:var(--text);
+  border:2px solid var(--accent);
+  transform:rotateY(180deg);
+}
+.fc-question{ font-size:1rem; font-weight:700; line-height:1.5; color:#1e293b; }
+.fc-hint{ font-size:.75rem; color:#64748b; margin-top:12px; }
+.fc-answer-label{
+  font-size:.7rem; font-weight:700; letter-spacing:1px;
+  color:var(--green); text-transform:uppercase; margin-bottom:10px;
+}
+.fc-answer{ font-size:.92rem; line-height:1.6; white-space:pre-line; }
+.fc-source{ font-size:.72rem; color:var(--muted); margin-top:12px; font-style:italic; }
+.fc-counter{ text-align:center; font-size:.8rem; color:var(--muted); margin-bottom:8px; }
+
+/* ── Quiz ── */
+.quiz-context{
+  background:rgba(255,255,255,.04); border-radius:8px;
+  padding:14px; margin-bottom:12px;
+  border-left:3px solid var(--warn);
+}
+.quiz-context .label{ font-size:.7rem; color:var(--warn); font-weight:700; text-transform:uppercase; margin-bottom:6px; }
+.quiz-question-text{ font-weight:700; color:var(--warn); margin:10px 0 12px; font-size:.95rem; }
+.choice-btn{
+  display:block; width:100%; text-align:left;
+  padding:12px 16px; margin-bottom:8px;
+  background:rgba(255,255,255,.04); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); cursor:pointer;
+  font-size:.9rem; transition:all .15s; line-height:1.4;
+}
+.choice-btn:hover:not(:disabled){ background:rgba(255,255,255,.09); border-color:var(--accent); }
+.choice-btn:disabled{ cursor:default; }
+.choice-btn.correct{ background:rgba(34,197,94,.15); border-color:var(--green); color:var(--green); }
+.choice-btn.incorrect{ background:rgba(239,68,68,.12); border-color:var(--red); color:var(--red); }
+.choice-btn.neutral{ opacity:.45; }
+.feedback-box{
+  border-radius:10px; padding:14px 16px; margin-top:10px;
+  font-size:.88rem; line-height:1.5;
+}
+.feedback-box.ok{ background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); }
+.feedback-box.ko{ background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); }
+.feedback-title{ font-weight:700; margin-bottom:6px; }
+
+/* ── Dojo ── */
+.dojo-context{
+  background:rgba(255,255,255,.04); border-radius:8px;
+  padding:14px; margin-bottom:12px;
+  border-left:3px solid var(--accent);
+}
+.dojo-context .label{ font-size:.7rem; color:var(--accent); font-weight:700; text-transform:uppercase; margin-bottom:6px; }
+.impact-badge{
+  display:inline-block; margin-left:8px; padding:1px 8px;
+  border-radius:10px; font-size:.75rem; font-weight:700;
+}
+.impact-plus{ background:rgba(34,197,94,.2); color:var(--green); }
+.impact-part{ background:rgba(245,158,11,.2); color:var(--warn); }
+.impact-neg{ background:rgba(239,68,68,.2); color:var(--red); }
+
+/* ── Report ── */
+.report-card{
+  background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  border:1px solid var(--accent); border-radius:14px;
+  padding:24px; text-align:center; margin-bottom:16px;
+}
+.report-emoji{ font-size:3rem; margin-bottom:12px; }
+.report-title{ font-size:1.4rem; font-weight:800; color:var(--accent); margin-bottom:4px; }
+.report-sub{ color:var(--muted); font-size:.88rem; margin-bottom:20px; }
+.stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.stat-box{
+  background:rgba(255,255,255,.05); border:1px solid var(--border);
+  border-radius:10px; padding:12px 8px; text-align:center;
+}
+.stat-val{ font-size:1.4rem; font-weight:800; color:var(--accent); }
+.stat-label{ font-size:.72rem; color:var(--muted); margin-top:2px; }
+.mastery-badge{
+  display:inline-block; padding:6px 18px; border-radius:20px;
+  font-weight:700; font-size:.88rem; margin-bottom:16px;
+}
+.mastery-expert{ background:rgba(249,115,22,.2); color:#f97316; border:1px solid #f97316; }
+.mastery-confirmed{ background:rgba(34,197,94,.2); color:var(--green); border:1px solid var(--green); }
+.mastery-learning{ background:rgba(100,116,139,.2); color:var(--muted); border:1px solid var(--muted); }
+.cert-banner{
+  background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.35);
+  border-radius:10px; padding:12px; margin-bottom:14px;
+  font-size:.88rem; color:var(--green);
+}
+
+/* ── Boutons ── */
+.btn{
+  padding:11px 20px; border-radius:8px; border:none;
+  font-weight:700; cursor:pointer; font-size:.9rem;
+  transition:all .15s;
+}
+.btn-primary{ background:var(--accent); color:#fff; }
+.btn-secondary{ background:rgba(255,255,255,.08); color:var(--text); }
+.btn-green{ background:var(--green); color:#000; }
+.btn:active{ opacity:.8; transform:scale(.98); }
+.btn-group{ display:flex; gap:10px; flex-wrap:wrap; }
+.btn-group .btn{ flex:1; min-width:120px; }
+
+/* ── Menu ── */
+.menu-mission{
+  background:rgba(255,255,255,.04); border-radius:10px;
+  padding:14px; margin-bottom:16px;
+  border-left:3px solid var(--accent); font-size:.9rem; line-height:1.5;
+}
+</style>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
 
-    <script>
-        // ============================================================
-        // DONNÉES DU MODULE (PLUG'N PLAY - Modifiable facilement)
-        // ============================================================
-        const MODULE_DATA = {
+<script>
+const e = React.createElement;
+const { useState, useEffect } = React;
+
+// ── Données du module ──────────────────────────────────────
+const MODULE_DATA = {
             id: "JURIDIQUE_01",
             version: "1.0.0",
             titre: "L'ARMURE JURIDIQUE",
@@ -697,543 +404,386 @@
                     }
                 ]
             }
-        };
-
-        // ============================================================
-        // UTILITAIRES DE SAUVEGARDE
-        // ============================================================
-        const generateSaveCode = (progress) => {
-            const payload = {
-                v: 1, // version du format
-                d: new Date().toISOString(),
-                m: MODULE_DATA.id,
-                mv: MODULE_DATA.version,
-                n: progress.nom || "Anonyme",
-                c: progress.classe || "",
-                l: progress.currentLevel,
-                s: progress.score,
-                x: progress.xp,
-                q: progress.quizScore,
-                dj: progress.dojoScore,
-                f: progress.finished
-            };
-            return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        };
-
-        const decodeSaveCode = (code) => {
-            try {
-                const data = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
-                if (data.m !== MODULE_DATA.id) return { valid: false, error: "Ce code est pour un autre module." };
-                return { valid: true, data };
-            } catch (e) {
-                return { valid: false, error: "Code invalide ou corrompu." };
-            }
-        };
-
-        const formatDate = (isoString) => {
-            return new Date(isoString).toLocaleDateString('fr-FR', {
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
-        };
-
-        // ============================================================
-        // COMPOSANTS REACT (sans JSX - compatible navigateur)
-        // ============================================================
-        const e = React.createElement;
-        const { useState, useEffect } = React;
-
-        // --- Header Component ---
-        function Header({ showProgress, xp, currentLevel }) {
-            return e('div', { className: 'header' },
-                e('h1', null, MODULE_DATA.titre),
-                e('div', { className: 'subtitle' }, MODULE_DATA.sous_titre),
-                showProgress && e('div', { className: 'badge' }, `⚡ ${xp} XP`)
-            );
         }
 
-        // --- Progress Bar Component ---
-        function ProgressBar({ currentLevel, xp }) {
-            const totalLevels = 3;
-            const percent = Math.min(100, (currentLevel / totalLevels) * 100);
-            
-            return e('div', { className: 'progress-container' },
-                e('div', { className: 'progress-stats' },
-                    e('span', null, `Niveau ${currentLevel}/3`),
-                    e('span', { className: 'xp-badge' }, `${xp} XP`)
-                ),
-                e('div', { className: 'progress-bar-outer' },
-                    e('div', { className: 'progress-bar-inner', style: { width: `${percent}%` } })
-                )
-            );
-        }
+const MODULE_ID = "JURIDIQUE_01";
+const TOTAL_XP  = 300;
 
-        // --- Level Indicator Component ---
-        function LevelIndicator({ current }) {
-            const levels = ['📚', '🔍', '⚔️'];
-            return e('div', { className: 'level-indicator' },
-                levels.map((emoji, i) => 
-                    e('div', { 
-                        key: i,
-                        className: `level-dot ${i + 1 === current ? 'active' : ''} ${i + 1 < current ? 'completed' : ''}`
-                    }, i + 1 < current ? '✓' : emoji)
-                )
-            );
-        }
+// ── Communication hub ──────────────────────────────────────
+function getHubPlayer(){
+  return localStorage.getItem('pvs_current_player')
+      || localStorage.getItem('pvs_phare_player')
+      || '';
+}
 
-        // --- Flashcard Component ---
-        function Flashcard({ card, onNext, isLast, onComplete }) {
-            const [flipped, setFlipped] = useState(false);
-            
-            return e('div', { className: 'flashcard-container' },
-                e('div', { 
-                    className: `flashcard ${flipped ? 'flipped' : ''}`,
-                    onClick: () => setFlipped(!flipped)
-                },
-                    e('div', { className: 'front' },
-                        e('div', { className: 'question' }, card.recto),
-                        e('div', { className: 'tap-hint' }, '👆 Clique pour retourner')
-                    ),
-                    e('div', { className: 'back' },
-                        e('div', { className: 'answer-label' }, '✓ Réponse'),
-                        e('div', { className: 'answer', style: { whiteSpace: 'pre-line' } }, card.verso),
-                        e('div', { className: 'source' }, `📖 ${card.source}`)
-                    )
-                ),
-                e('div', { className: 'text-center mt-20' },
-                    flipped && (
-                        isLast 
-                            ? e('button', { className: 'btn btn-success', onClick: onComplete }, '✓ VALIDER LE NIVEAU 1')
-                            : e('button', { className: 'btn', onClick: () => { onNext(); setFlipped(false); } }, 'CARTE SUIVANTE →')
-                    )
-                )
-            );
-        }
+function certifyAndBridge(player, xp){
+  try {
+    // 1. Écrire le certificat de complétion (lu par l'index PIXHARe au focus)
+    var certKey = 'CERT_PHARE_' + MODULE_ID;
+    if(!localStorage.getItem(certKey)){
+      localStorage.setItem(certKey, JSON.stringify({
+        v:1, d:new Date().toISOString(), m:MODULE_ID, f:true
+      }));
+    }
+    // 2. Pousser un event dans pvs_bridge_events (lu par le superhub)
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+    evts.push({
+      id:     'PIXHARE-' + MODULE_ID + '-' + Date.now(),
+      type:   'PIXHARE_PROGRESS',
+      player:  player,
+      module:  MODULE_ID,
+      xp:      xp,
+      d:       new Date().toISOString()
+    });
+    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+  } catch(err){}
+}
 
-        // --- Quiz Component ---
-        function QuizQuestion({ question, onAnswer }) {
-            const [answered, setAnswered] = useState(false);
-            const [selectedIdx, setSelectedIdx] = useState(null);
-            const [feedback, setFeedback] = useState(null);
+// ── Composant Header ───────────────────────────────────────
+function Header({ xp }){
+  const player = getHubPlayer();
+  return e('div', null,
+    e('div', { className:'header' },
+      e('div', { className:'header-icon' }, '⚖️'),
+      e('div', { className:'header-info' },
+        e('div', { className:'header-title' }, MODULE_DATA.titre),
+        e('div', { className:'header-sub' }, MODULE_DATA.sous_titre)
+      ),
+      e('div', { className:'header-xp' }, xp + ' XP')
+    ),
+    e('div', { className:'player-info' },
+      player
+        ? e('span', { className:'player-connected' }, '✅ ' + player)
+        : e('span', { className:'player-disconnected' },
+            '⚠️ Non connecté — reviens via le hub PIXHARe'
+          )
+    )
+  );
+}
 
-            const handleChoice = (choice, idx) => {
-                if (answered) return;
-                setAnswered(true);
-                setSelectedIdx(idx);
-                setFeedback({ correct: choice.correct, text: choice.feedback });
-            };
+// ── Composant Progression ──────────────────────────────────
+function Progress({ level, xp }){
+  const pct = Math.min(100, Math.round(xp / TOTAL_XP * 100));
+  return e('div', { className:'progress-section' },
+    e('div', { className:'progress-levels' },
+      [1,2,3].map(l =>
+        e('div', {
+          key: l,
+          className: 'level-pill' + (l < level ? ' done' : l === level ? ' active' : '')
+        }, ['📚 Théorie','🔍 Analyse','⚔️ Dojo'][l-1])
+      )
+    ),
+    e('div', { className:'progress-bar' },
+      e('div', { className:'progress-fill', style:{ width: pct + '%' } })
+    )
+  );
+}
 
-            const handleNext = () => {
-                onAnswer(feedback.correct);
-            };
+// ── Composant Flashcard ────────────────────────────────────
+function Flashcard({ card, isLast, onNext, onComplete }){
+  const [flipped, setFlipped] = useState(false);
 
-            return e('div', null,
-                e('div', { className: 'quiz-question' },
-                    e('div', { className: 'label' }, '📋 SITUATION'),
-                    e('p', { style: { marginBottom: '15px', lineHeight: '1.6' } }, question.texte),
-                    question.question && e('p', { style: { fontWeight: 'bold', color: '#f39c12' } }, `❓ ${question.question}`)
-                ),
-                e('div', { className: 'quiz-choices' },
-                    question.choix.map((choice, idx) => 
-                        e('button', {
-                            key: idx,
-                            className: `quiz-choice ${answered ? (idx === selectedIdx ? (choice.correct ? 'correct' : 'incorrect') : 'disabled') : ''}`,
-                            onClick: () => handleChoice(choice, idx),
-                            disabled: answered
-                        }, choice.txt)
-                    )
-                ),
-                feedback && e('div', { className: `feedback ${feedback.correct ? 'correct' : 'incorrect'}` },
-                    e('div', { className: 'title' }, feedback.correct ? '✓ CORRECT !' : '✗ ERREUR D\'ANALYSE'),
-                    e('p', null, feedback.text),
-                    e('button', { className: 'btn mt-20', onClick: handleNext }, 'CONTINUER →')
-                )
-            );
-        }
+  return e('div', { className:'card' },
+    e('div', { className:'fc-counter' }, card.recto ? '👆 Clique la carte pour voir la réponse' : ''),
+    e('div', {
+      className:'flashcard-scene',
+      onClick: () => setFlipped(!flipped)
+    },
+      e('div', { className:'flashcard-flip' + (flipped ? ' flipped' : '') },
+        e('div', { className:'flashcard-face flashcard-front' },
+          e('div', { className:'fc-question' }, card.recto),
+          e('div', { className:'fc-hint' }, '👆 Clique pour retourner')
+        ),
+        e('div', { className:'flashcard-face flashcard-back' },
+          e('div', { className:'fc-answer-label' }, '✓ Réponse'),
+          e('div', { className:'fc-answer' }, card.verso),
+          e('div', { className:'fc-source' }, '📖 ' + card.source)
+        )
+      )
+    ),
+    flipped && e('div', { style:{ textAlign:'center', marginTop:'8px' } },
+      isLast
+        ? e('button', { className:'btn btn-green', onClick: onComplete }, '✓ Niveau 1 validé →')
+        : e('button', { className:'btn btn-primary', onClick: () => { setFlipped(false); onNext(); } },
+            'Carte suivante →'
+          )
+    )
+  );
+}
 
-        // --- Dojo Component ---
-        function DojoScenario({ scenario, onAnswer }) {
-            const [answered, setAnswered] = useState(false);
-            const [selectedChoice, setSelectedChoice] = useState(null);
+// ── Composant Quiz ─────────────────────────────────────────
+function QuizQuestion({ question, onAnswer }){
+  const [answered, setAnswered] = useState(false);
+  const [chosen, setChosen] = useState(null);
+  const [fb, setFb] = useState(null);
 
-            const handleChoice = (choice) => {
-                if (answered) return;
-                setAnswered(true);
-                setSelectedChoice(choice);
-            };
+  const handleChoice = (choice, idx) => {
+    if(answered) return;
+    setAnswered(true); setChosen(idx);
+    setFb({ correct: choice.correct, text: choice.feedback });
+  };
 
-            const getImpactClass = (impact) => {
-                if (impact >= 80) return 'impact-positive';
-                if (impact > 0) return 'impact-neutral';
-                return 'impact-negative';
-            };
+  return e('div', { className:'card' },
+    e('div', { className:'quiz-context' },
+      e('div', { className:'label' }, '📋 Situation'),
+      e('p', null, question.texte),
+      question.question && e('p', { className:'quiz-question-text' }, '❓ ' + question.question)
+    ),
+    question.choix.map((choice, idx) => {
+      let cls = 'choice-btn';
+      if(answered){
+        if(idx === chosen) cls += choice.correct ? ' correct' : ' incorrect';
+        else cls += ' neutral';
+      }
+      return e('button', {
+        key: idx, className: cls,
+        onClick: () => handleChoice(choice, idx),
+        disabled: answered
+      }, choice.txt);
+    }),
+    fb && e('div', { className:'feedback-box ' + (fb.correct ? 'ok' : 'ko') },
+      e('div', { className:'feedback-title' }, fb.correct ? '✓ Correct !' : "✗ Erreur d'analyse"),
+      e('p', null, fb.text),
+      e('button', { className:'btn btn-primary', style:{ marginTop:'10px' }, onClick: () => onAnswer(fb.correct) },
+        'Continuer →'
+      )
+    )
+  );
+}
 
-            const getImpactLabel = (impact) => {
-                if (impact >= 80) return `+${impact} pts`;
-                if (impact > 0) return `+${impact} pts`;
-                return `${impact} pts`;
-            };
+// ── Composant Dojo ─────────────────────────────────────────
+function DojoScenario({ scenario, onAnswer }){
+  const [answered, setAnswered] = useState(false);
+  const [chosen, setChosen] = useState(null);
 
-            return e('div', null,
-                e('div', { className: 'dojo-scenario' },
-                    e('div', { className: 'context-label' }, '🎬 SCÉNARIO'),
-                    e('p', { className: 'context' }, scenario.contexte),
-                    e('div', { className: 'question' },
-                        e('strong', null, '❓ ', scenario.question)
-                    )
-                ),
-                e('div', { className: 'quiz-choices' },
-                    scenario.choix.map((choice, idx) => 
-                        e('button', {
-                            key: idx,
-                            className: `quiz-choice ${answered ? (choice === selectedChoice ? (choice.level === 'optimal' ? 'correct' : choice.level === 'error' ? 'incorrect' : '') : 'disabled') : ''}`,
-                            onClick: () => handleChoice(choice),
-                            disabled: answered
-                        }, 
-                            choice.txt,
-                            answered && e('span', { className: `impact-badge ${getImpactClass(choice.impact)}` }, getImpactLabel(choice.impact))
-                        )
-                    )
-                ),
-                selectedChoice && e('div', { className: `feedback ${selectedChoice.level === 'optimal' ? 'correct' : selectedChoice.level === 'error' ? 'incorrect' : 'correct'}` },
-                    e('div', { className: 'title' }, 
-                        selectedChoice.level === 'optimal' ? '🏆 DÉCISION OPTIMALE !' : 
-                        selectedChoice.level === 'error' ? '⚠️ DÉCISION RISQUÉE' : '👍 BONNE PISTE'
-                    ),
-                    e('p', null, selectedChoice.feedback),
-                    e('button', { className: 'btn mt-20', onClick: () => onAnswer(selectedChoice.impact) }, 'CONTINUER →')
-                )
-            );
-        }
+  const handleChoice = choice => {
+    if(answered) return;
+    setAnswered(true); setChosen(choice);
+  };
 
-        // --- Report Component ---
-        function Report({ progress, onRestart, onMenu }) {
-            const saveCode = generateSaveCode(progress);
-            const [copied, setCopied] = useState(false);
+  const impactBadge = impact => {
+    const cls = impact >= 80 ? 'impact-plus' : impact > 0 ? 'impact-part' : 'impact-neg';
+    return e('span', { className:'impact-badge ' + cls }, (impact > 0 ? '+' : '') + impact + ' pts');
+  };
 
-            const copyToClipboard = () => {
-                navigator.clipboard.writeText(saveCode).then(() => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                });
-            };
+  return e('div', { className:'card' },
+    e('div', { className:'dojo-context' },
+      e('div', { className:'label' }, '🎬 Scénario'),
+      e('p', null, scenario.contexte),
+      e('div', { className:'quiz-question-text' }, '❓ ' + scenario.question)
+    ),
+    scenario.choix.map((choice, idx) => {
+      let cls = 'choice-btn';
+      if(answered){
+        if(choice === chosen) cls += choice.level === 'optimal' ? ' correct' : choice.level === 'error' ? ' incorrect' : ' neutral';
+        else cls += ' neutral';
+      }
+      return e('button', {
+        key: idx, className: cls,
+        onClick: () => handleChoice(choice),
+        disabled: answered
+      },
+        choice.txt,
+        answered && impactBadge(choice.impact)
+      );
+    }),
+    chosen && e('div', {
+      className:'feedback-box ' + (chosen.level === 'optimal' ? 'ok' : chosen.level === 'error' ? 'ko' : 'ok')
+    },
+      e('div', { className:'feedback-title' },
+        chosen.level === 'optimal' ? '🏆 Décision optimale !'
+        : chosen.level === 'error' ? '⚠️ Décision risquée'
+        : '👍 Bonne piste'
+      ),
+      e('p', null, chosen.feedback),
+      e('button', {
+        className:'btn btn-primary', style:{ marginTop:'10px' },
+        onClick: () => onAnswer(chosen.impact)
+      }, 'Continuer →')
+    )
+  );
+}
 
-            const getMasteryLevel = () => {
-                const total = progress.quizScore + progress.dojoScore;
-                if (total >= 500) return { label: 'EXPERT', class: 'mastery-expert' };
-                if (total >= 300) return { label: 'CONFIRMÉ', class: 'mastery-confirmed' };
-                return { label: 'EN FORMATION', class: 'mastery-learning' };
-            };
+// ── Composant Report (SANS code base64) ────────────────────
+function Report({ progress, onRestart }){
+  const total = progress.quizScore + progress.dojoScore;
+  const mastery = total >= 500 ? {label:'EXPERT', cls:'mastery-expert'}
+    : total >= 300 ? {label:'CONFIRMÉ', cls:'mastery-confirmed'}
+    : {label:'EN FORMATION', cls:'mastery-learning'};
 
-            const mastery = getMasteryLevel();
+  return e('div', null,
+    e('div', { className:'report-card' },
+      e('div', { className:'report-emoji' }, '🏅'),
+      e('div', { className:'report-title' }, 'Mission accomplie !'),
+      e('div', { className:'report-sub' }, MODULE_DATA.titre),
+      e('div', { className:'mastery-badge ' + mastery.cls }, mastery.label),
+      e('div', { className:'stats-grid' },
+        e('div', { className:'stat-box' },
+          e('div', { className:'stat-val' }, progress.xp),
+          e('div', { className:'stat-label' }, 'XP Total')
+        ),
+        e('div', { className:'stat-box' },
+          e('div', { className:'stat-val' }, progress.quizScore),
+          e('div', { className:'stat-label' }, 'Score Quiz')
+        ),
+        e('div', { className:'stat-box' },
+          e('div', { className:'stat-val' }, progress.dojoScore),
+          e('div', { className:'stat-label' }, 'Score Dojo')
+        ),
+        e('div', { className:'stat-box' },
+          e('div', { className:'stat-val' }, progress.quizScore + progress.dojoScore),
+          e('div', { className:'stat-label' }, 'Score Total')
+        )
+      ),
+      e('div', { className:'cert-banner' },
+        '✅ Certificat enregistré — le hub PIXHARe a été mis à jour'
+      )
+    ),
+    e('div', { className:'btn-group' },
+      e('button', {
+        className:'btn btn-green',
+        onClick: () => window.history.back()
+      }, '← Retour au Hub PIXHARe'),
+      e('button', {
+        className:'btn btn-secondary',
+        onClick: onRestart
+      }, '🔄 Recommencer')
+    )
+  );
+}
 
-            return e('div', null,
-                e('div', { className: 'report' },
-                    e('div', { className: 'report-header' },
-                        e('span', { className: 'emoji-big' }, '🏅'),
-                        e('h2', null, 'MISSION ACCOMPLIE'),
-                        e('p', null, MODULE_DATA.titre)
-                    ),
-                    e('div', { className: 'report-body' },
-                        e('div', { className: 'report-stat' },
-                            e('span', { className: 'label' }, 'Agent'),
-                            e('span', { className: 'value' }, progress.nom || 'Anonyme')
-                        ),
-                        progress.classe && e('div', { className: 'report-stat' },
-                            e('span', { className: 'label' }, 'Classe'),
-                            e('span', { className: 'value' }, progress.classe)
-                        ),
-                        e('div', { className: 'report-stat' },
-                            e('span', { className: 'label' }, 'XP Total'),
-                            e('span', { className: 'value' }, `${progress.xp} XP`)
-                        ),
-                        e('div', { className: 'report-stat' },
-                            e('span', { className: 'label' }, 'Score Quiz'),
-                            e('span', { className: 'value' }, `${progress.quizScore} pts`)
-                        ),
-                        e('div', { className: 'report-stat' },
-                            e('span', { className: 'label' }, 'Score Dojo'),
-                            e('span', { className: 'value' }, `${progress.dojoScore} pts`)
-                        ),
-                        e('div', { className: 'report-stat' },
-                            e('span', { className: 'label' }, 'Niveau de Maîtrise'),
-                            e('span', { className: `mastery-badge ${mastery.class}` }, mastery.label)
-                        )
-                    )
-                ),
-                e('div', { className: 'save-code-section' },
-                    e('h3', { style: { color: '#0f0', marginBottom: '15px' } }, '💾 CODE DE SAUVEGARDE'),
-                    e('p', { style: { opacity: 0.8, marginBottom: '10px' } }, 
-                        'Ce code contient ta progression. Conserve-le précieusement !'
-                    ),
-                    e('div', { className: 'save-code-box' }, saveCode),
-                    e('button', { 
-                        className: `btn ${copied ? 'btn-success' : ''}`,
-                        onClick: copyToClipboard 
-                    }, copied ? '✓ COPIÉ !' : '📋 COPIER LE CODE'),
-                    e('div', { className: 'save-instructions' },
-                        e('h4', null, '📌 Que faire avec ce code ?'),
-                        e('ul', null,
-                            e('li', null, '1. GARDE-LE pour reprendre plus tard au même niveau'),
-                            e('li', null, '2. ENVOIE-LE AU CPE pour valider ton badge pHARe'),
-                            e('li', null, '3. Tu peux le coller dans un mail ou un message')
-                        )
-                    )
-                ),
-                e('div', { className: 'btn-group' },
-                    e('button', { className: 'btn btn-secondary', onClick: onMenu }, '🏠 RETOUR AU MENU'),
-                    e('button', { className: 'btn btn-warning', onClick: onRestart }, '🔄 RECOMMENCER LE MODULE')
-                )
-            );
-        }
+// ── App Principal ──────────────────────────────────────────
+function App(){
+  const [mode, setMode]       = useState('menu');
+  const [level, setLevel]     = useState(1);
+  const [cardIdx, setCardIdx] = useState(0);
+  const [qIdx, setQIdx]       = useState(0);
+  const [sIdx, setSIdx]       = useState(0);
+  const [xp, setXp]           = useState(0);
+  const [quizScore, setQS]    = useState(0);
+  const [dojoScore, setDS]    = useState(0);
+  const [certified, setCert]  = useState(false);
 
-        // --- Main App Component ---
-        function App() {
-            const [mode, setMode] = useState('menu'); // menu, game, report, load
-            const [currentLevel, setCurrentLevel] = useState(1);
-            const [cardIdx, setCardIdx] = useState(0);
-            const [questionIdx, setQuestionIdx] = useState(0);
-            const [scenarioIdx, setScenarioIdx] = useState(0);
-            const [xp, setXp] = useState(0);
-            const [quizScore, setQuizScore] = useState(0);
-            const [dojoScore, setDojoScore] = useState(0);
-            const [nom, setNom] = useState(getHubPlayer() || 'Agent');
-            const [classe, setClasse] = useState('');
-            const [inputCode, setInputCode] = useState('');
-            const [loadError, setLoadError] = useState('');
+  const player = getHubPlayer();
 
-            const resetProgress = () => {
-                setCurrentLevel(1);
-                setCardIdx(0);
-                setQuestionIdx(0);
-                setScenarioIdx(0);
-                setXp(0);
-                setQuizScore(0);
-                setDojoScore(0);
-            };
+  const resetProgress = () => {
+    setLevel(1); setCardIdx(0); setQIdx(0); setSIdx(0);
+    setXp(0); setQS(0); setDS(0);
+    setMode('game');
+  };
 
-            const progress = {
-                nom, classe, currentLevel, xp, quizScore, dojoScore,
-                score: quizScore + dojoScore,
-                finished: mode === 'report'
-            };
+  // Certifier à l'entrée en mode report
+  useEffect(() => {
+    if(mode === 'report' && !certified){
+      setCert(true);
+      certifyAndBridge(player, xp);
+    }
+  }, [mode]);
 
-            // --- MENU ---
-            if (mode === 'menu') {
-                return e('div', { className: 'app-container' },
-                    e(Header, { showProgress: false }),
-                    e('div', { className: 'card', style: { marginTop: '20px' } },
-                        e('strong', null, '🎯 MISSION : '),
-                        MODULE_DATA.description
-                    ),
-                    e('div', { className: 'btn-group' },
-                        e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, 
-                            '▶️ COMMENCER LA MISSION'
-                        ),
-                        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('load') }, 
-                            '📂 CHARGER UNE SAUVEGARDE'
-                        )
-                    ),
-                    e('div', { style: { marginTop: '30px', textAlign: 'center', opacity: 0.6, fontSize: '0.85em' } },
-                        `Module ${MODULE_DATA.id} v${MODULE_DATA.version} — ${MODULE_DATA.auteur}`
-                    )
-                );
-            }
+  const progress = { xp, quizScore, dojoScore };
 
-            // REGISTER SUPPRIMÉ — bypass superhub
+  // ── MENU ──
+  if(mode === 'menu'){
+    const alreadyCert = !!localStorage.getItem('CERT_PHARE_' + MODULE_ID);
+    return e('div', { className:'app-container' },
+      e(Header, { xp: 0 }),
+      e('div', { className:'card menu-mission' },
+        e('strong', null, '🎯 Mission : '),
+        MODULE_DATA.description
+      ),
+      alreadyCert && e('div', { className:'cert-banner', style:{ marginBottom:'14px' } },
+        "🏅 Module déjà complété — tu peux le refaire pour t'entraîner"
+      ),
+      e('div', { className:'btn-group' },
+        e('button', { className:'btn btn-primary', onClick: () => setMode('game') },
+          '▶️ Commencer la mission'
+        ),
+        e('button', { className:'btn btn-secondary', onClick: () => window.history.back() },
+          '← Hub PIXHARe'
+        )
+      ),
+      e('div', { style:{ textAlign:'center', marginTop:'20px', opacity:0.5, fontSize:'.78rem' } },
+        MODULE_DATA.id + ' v' + MODULE_DATA.version
+      )
+    );
+  }
 
-            // --- LOAD ---
-            if (mode === 'load') {
-                const handleLoad = () => {
-                    const result = decodeSaveCode(inputCode);
-                    if (!result.valid) {
-                        setLoadError(result.error);
-                        return;
-                    }
-                    const d = result.data;
-                    setNom(d.n || 'Anonyme');
-                    setClasse(d.c || '');
-                    setCurrentLevel(d.l || 1);
-                    setXp(d.x || 0);
-                    setQuizScore(d.q || 0);
-                    setDojoScore(d.dj || 0);
-                    setCardIdx(0);
-                    setQuestionIdx(0);
-                    setScenarioIdx(0);
-                    
-                    if (d.f) {
-                        setMode('report');
-                    } else {
-                        setMode('game');
-                    }
-                    setLoadError('');
-                };
+  // ── GAME ──
+  if(mode === 'game'){
+    // Niveau 1 : flashcards
+    if(level === 1){
+      const cards = MODULE_DATA.niveau1.cartes;
+      const card  = cards[cardIdx];
+      return e('div', { className:'app-container' },
+        e(Header, { xp }),
+        e(Progress, { level, xp }),
+        e('div', { className:'section-title', style:{ padding:'0 4px 4px' } },
+          `Carte ${cardIdx+1} / ${cards.length}`
+        ),
+        e(Flashcard, {
+          key: cardIdx,
+          card,
+          isLast: cardIdx === cards.length - 1,
+          onNext: () => setCardIdx(cardIdx + 1),
+          onComplete: () => {
+            setXp(xp + MODULE_DATA.niveau1.xp_reward);
+            setLevel(2); setCardIdx(0);
+          }
+        })
+      );
+    }
 
-                return e('div', { className: 'app-container' },
-                    e(Header, { showProgress: false }),
-                    e('div', { className: 'card load-section' },
-                        e('h3', { style: { marginBottom: '20px' } }, '📂 Charger une Progression'),
-                        e('p', { style: { marginBottom: '15px', opacity: 0.8 } }, 
-                            'Colle ici le code de sauvegarde que tu as gardé :'
-                        ),
-                        e('textarea', {
-                            value: inputCode,
-                            onChange: (ev) => { setInputCode(ev.target.value); setLoadError(''); },
-                            placeholder: 'Colle ton code ici...'
-                        }),
-                        loadError && e('div', { style: { color: '#e74c3c', marginTop: '10px', fontWeight: 'bold' } }, 
-                            `⚠️ ${loadError}`
-                        )
-                    ),
-                    e('div', { className: 'btn-group' },
-                        e('button', { className: 'btn btn-success btn-block', onClick: handleLoad }, '✓ CHARGER'),
-                        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setMode('menu') }, '← RETOUR')
-                    )
-                );
-            }
+    // Niveau 2 : quiz
+    if(level === 2){
+      const qs = MODULE_DATA.niveau2.questions;
+      const handleQuizAnswer = correct => {
+        if(correct) setQS(qs => qs + 25);
+        if(qIdx < qs.length - 1) setQIdx(qIdx + 1);
+        else { setXp(xp + MODULE_DATA.niveau2.xp_reward); setLevel(3); setQIdx(0); }
+      };
+      return e('div', { className:'app-container' },
+        e(Header, { xp }),
+        e(Progress, { level, xp }),
+        e('div', { className:'section-title', style:{ padding:'0 4px 4px' } },
+          `Question ${qIdx+1} / ${qs.length}`
+        ),
+        e(QuizQuestion, { key: qIdx, question: qs[qIdx], onAnswer: handleQuizAnswer })
+      );
+    }
 
-            // --- GAME ---
-            if (mode === 'game') {
-                // NIVEAU 1 : FLASHCARDS
-                if (currentLevel === 1) {
-                    const cards = MODULE_DATA.niveau1.cartes;
-                    
-                    return e('div', { className: 'app-container' },
-                        e(Header, { showProgress: true, xp }),
-                        e(ProgressBar, { currentLevel, xp }),
-                        e(LevelIndicator, { current: currentLevel }),
-                        e('h2', { style: { textAlign: 'center' } }, '📚 NIVEAU 1 : THÉORIE'),
-                        e('div', { className: 'card-counter' }, `Carte ${cardIdx + 1} / ${cards.length}`),
-                        e(Flashcard, {
-                            card: cards[cardIdx],
-                            isLast: cardIdx === cards.length - 1,
-                            onNext: () => setCardIdx(cardIdx + 1),
-                            onComplete: () => {
-                                setXp(xp + MODULE_DATA.niveau1.xp_reward);
-                                setCurrentLevel(2);
-                                setCardIdx(0);
-                            }
-                        })
-                    );
-                }
+    // Niveau 3 : dojo
+    if(level === 3){
+      const ss = MODULE_DATA.niveau3.scenarios;
+      const handleDojoAnswer = impact => {
+        setDS(ds => ds + Math.max(0, impact));
+        if(sIdx < ss.length - 1) setSIdx(sIdx + 1);
+        else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); }
+      };
+      return e('div', { className:'app-container' },
+        e(Header, { xp }),
+        e(Progress, { level, xp }),
+        e('div', { className:'section-title', style:{ padding:'0 4px 4px' } },
+          `Scénario ${sIdx+1} / ${ss.length}`
+        ),
+        e(DojoScenario, { key: sIdx, scenario: ss[sIdx], onAnswer: handleDojoAnswer })
+      );
+    }
+  }
 
-                // NIVEAU 2 : QUIZ
-                if (currentLevel === 2) {
-                    const questions = MODULE_DATA.niveau2.questions;
-                    
-                    const handleQuizAnswer = (correct) => {
-                        if (correct) setQuizScore(quizScore + 25);
-                        
-                        if (questionIdx < questions.length - 1) {
-                            setQuestionIdx(questionIdx + 1);
-                        } else {
-                            setXp(xp + MODULE_DATA.niveau2.xp_reward);
-                            setCurrentLevel(3);
-                            setQuestionIdx(0);
-                        }
-                    };
+  // ── REPORT ──
+  if(mode === 'report'){
+    return e('div', { className:'app-container' },
+      e(Header, { xp }),
+      e(Report, { progress, onRestart: resetProgress })
+    );
+  }
 
-                    return e('div', { className: 'app-container' },
-                        e(Header, { showProgress: true, xp }),
-                        e(ProgressBar, { currentLevel, xp }),
-                        e(LevelIndicator, { current: currentLevel }),
-                        e('h2', { style: { textAlign: 'center' } }, '🔍 NIVEAU 2 : ANALYSE'),
-                        e('div', { className: 'card-counter' }, `Question ${questionIdx + 1} / ${questions.length}`),
-                        e(QuizQuestion, {
-                            key: questionIdx, // Force re-render on new question
-                            question: questions[questionIdx],
-                            onAnswer: handleQuizAnswer
-                        })
-                    );
-                }
+  return e('div', { className:'app-container' }, 'Chargement...');
+}
 
-                // NIVEAU 3 : DOJO
-                if (currentLevel === 3) {
-                    const scenarios = MODULE_DATA.niveau3.scenarios;
-                    
-                    const handleDojoAnswer = (impact) => {
-                        setDojoScore(dojoScore + Math.max(0, impact));
-                        
-                        if (scenarioIdx < scenarios.length - 1) {
-                            setScenarioIdx(scenarioIdx + 1);
-                        } else {
-                            setXp(xp + MODULE_DATA.niveau3.xp_reward);
-                            setMode('report');
-                        }
-                    };
-
-                    return e('div', { className: 'app-container' },
-                        e(Header, { showProgress: true, xp }),
-                        e(ProgressBar, { currentLevel, xp }),
-                        e(LevelIndicator, { current: currentLevel }),
-                        e('h2', { style: { textAlign: 'center' } }, '⚔️ NIVEAU 3 : DOJO'),
-                        e('div', { className: 'card-counter' }, `Scénario ${scenarioIdx + 1} / ${scenarios.length}`),
-                        e(DojoScenario, {
-                            key: scenarioIdx,
-                            scenario: scenarios[scenarioIdx],
-                            onAnswer: handleDojoAnswer
-                        })
-                    );
-                }
-            }
-
-            // --- REPORT ---
-            if (mode === 'report') {
-                return e('div', { className: 'app-container' },
-                    e(Report, {
-                        progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) },
-                        onRestart: () => { resetProgress(); setMode('game'); },
-                        onMenu: () => { resetProgress(); setMode('menu'); }
-                    })
-                );
-            }
-
-            return e('div', { className: 'app-container' }, 'Chargement...');
-        }
-
-        // --- RENDER ---
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(e(App));
-    
-        // === SUPERHUB BRIDGE ===
-        function getHubPlayer() {
-            try {
-                var code = localStorage.getItem('pvs_current_player') || '';
-                if (code && code !== 'VISITEUR' && code !== 'ADMIN') return code;
-            } catch(e) {}
-            return null;
-        }
-        function sendBridgeEvent(moduleId, score, xp) {
-            try {
-                var ev = {
-                    type: 'MODULE_COMPLETE',
-                    moduleId: moduleId,
-                    score: score,
-                    xp: xp,
-                    playerCode: getHubPlayer(),
-                    ts: Date.now()
-                };
-                localStorage.setItem('pvs_bridge_event', JSON.stringify(ev));
-                window.dispatchEvent(new Event('pvs_bridge'));
-                // ── Bridge PIXHARe hub (pvs_bridge_events array) ──
-                var _b = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-                _b.push({ id: 'PIXHARE-' + moduleId + '-' + Date.now(),
-                           type: 'PIXHARE_PROGRESS', player: getHubPlayer() || '',
-                           module: moduleId, score: score, xp: xp,
-                           d: new Date().toISOString() });
-                // ── Certification locale (déverrouillage hub) ──
-                try {
-                    var _ck = 'CERT_PHARE_' + MODULE_ID;
-                    if (!localStorage.getItem(_ck)) {
-                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                    }
-                } catch(_ce) {}
-                localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
-                window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
-            } catch(e) {}
-        }
-        // === FIN SUPERHUB BRIDGE ===
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
 </script>
-
 </body>
 </html>

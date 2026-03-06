@@ -2,245 +2,335 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PIXHARe — Hub de Formation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIX pHARe — Hub de Formation</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
-
 :root {
-  --dark:   #0a0a12;
-  --panel:  #16213e;
-  --locked: #2a2a35;
-  --neon:   #00d4ff;
-  --green:  #00ff88;
-  --gold:   #ffd700;
-  --red:    #ff0044;
-  --purple: #a855f7;
-  --amber:  #b08968;
+  --bg: #0a0e1a;
+  --card: #111827;
+  --border: rgba(255,255,255,.08);
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --accent: #f97316;
+  --green: #22c55e;
+  --red: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+.hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 20px 22px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+.hero h1 span { color: var(--accent); }
+.hero p { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+
+#player-bar {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 12px 20px;
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid var(--border);
+  font-size: .88rem;
+}
+#player-bar .badge {
+  background: rgba(249,115,22,.15);
+  border: 1px solid rgba(249,115,22,.4);
+  color: var(--accent);
+  padding: 3px 10px; border-radius: 20px; font-weight: 700;
+}
+#player-bar .xp { color: var(--green); font-weight: 700; }
+
+.container { max-width: 780px; margin: 0 auto; padding: 24px 16px; }
+
+.pillar-block {
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card);
+}
+.pillar-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+}
+.pillar-icon { font-size: 2rem; }
+.pillar-info { flex: 1; }
+.pillar-title { font-weight: 700; font-size: 1.05rem; }
+.pillar-desc { color: var(--muted); font-size: .82rem; margin-top: 2px; }
+.pillar-stats { text-align: right; }
+.pillar-count { font-size: .82rem; color: var(--muted); }
+.pillar-xptotal { font-size: .9rem; font-weight: 700; }
+
+.progress-bar-outer {
+  height: 4px; background: rgba(255,255,255,.07);
+}
+.progress-bar-inner {
+  height: 4px; border-radius: 2px;
+  transition: width .4s ease;
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--dark);color:#fff;font-family:'Segoe UI',sans-serif;padding:20px;text-align:center;min-height:100vh}
+.modules-list { padding: 8px 0; }
+.module-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+.module-row:last-child { border-bottom: none; }
+.module-row:hover:not(.locked) { background: rgba(255,255,255,.04); }
+.module-row.locked { cursor: not-allowed; opacity: .5; }
+.module-row.done { opacity: 1; }
 
-/* ── HEADER ── */
-h1{font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:5px;color:var(--neon);font-size:clamp(1.4rem,4vw,2.2rem);text-shadow:0 0 10px rgba(0,212,255,.5);margin-bottom:4px}
-h1 span{color:#fff}
-.subtitle{color:#888;font-style:italic;font-size:.9em;margin-bottom:8px}
-.player-bar{display:inline-block;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:20px;padding:6px 18px;font-size:.85em;color:var(--neon);margin-bottom:30px}
-.player-bar span{color:#fff;font-weight:700}
+.mod-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+}
+.mod-info { flex: 1; }
+.mod-name { font-weight: 600; font-size: .93rem; }
+.mod-xp { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+.mod-status { font-size: 1.1rem; }
 
-/* ── STATS ── */
-.stats-bar{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:36px}
-.stat-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 20px;min-width:100px}
-.stat-chip .v{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:var(--gold)}
-.stat-chip .k{font-size:.7em;color:#888;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+/* Toast */
+#toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: #1e293b; border: 1px solid var(--border);
+  color: var(--text); padding: 10px 20px; border-radius: 10px;
+  font-size: .88rem; z-index: 999;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+#toast.show { opacity: 1; pointer-events: auto; }
 
-/* ── RETOUR ── */
-.back-btn{display:inline-block;margin-bottom:28px;border:1px solid rgba(0,212,255,.35);color:var(--neon);padding:7px 22px;border-radius:20px;text-decoration:none;font-size:.85em;transition:.25s}
-.back-btn:hover{background:var(--neon);color:#000}
-
-/* ── MATRICE ── */
-.matrix{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;margin-bottom:60px}
-
-.pillar{background:rgba(22,33,62,.5);border-radius:14px;padding:18px;width:300px;border-top:4px solid #444;display:flex;flex-direction:column;gap:12px}
-.pillar-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.pillar-icon{font-size:1.6rem}
-.pillar-title{font-size:1.05rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;text-align:left}
-.pillar-desc{font-size:.78em;color:#888;text-align:left;line-height:1.4;margin-bottom:4px}
-
-/* ── MODULE CARDS ── */
-.mod-card{padding:14px;border-radius:8px;border-left:4px solid #444;text-align:left;position:relative;transition:all .25s;background:var(--locked)}
-.mod-card.unlocked{background:var(--panel);border-left-color:var(--neon);cursor:pointer}
-.mod-card.unlocked:hover{transform:translateX(3px);box-shadow:0 0 14px rgba(0,212,255,.18)}
-.mod-card.done{background:#0f2e20;border-left-color:var(--green);cursor:pointer}
-.mod-card.done:hover{transform:translateX(3px);box-shadow:0 0 14px rgba(0,255,136,.18)}
-.mod-card.locked-card{opacity:.55;filter:grayscale(.8);cursor:not-allowed}
-
-.mod-id{font-size:.7em;color:#888;font-family:monospace;margin-bottom:4px}
-.mod-name{font-size:.92rem;font-weight:600;line-height:1.35}
-.mod-status{font-size:.7em;font-weight:700;text-transform:uppercase;margin-top:6px;letter-spacing:.5px}
-.mod-card.unlocked .mod-status{color:var(--neon)}
-.mod-card.done .mod-status{color:var(--green)}
-.mod-card.locked-card .mod-status{color:#555}
-.mod-xp{position:absolute;top:10px;right:10px;font-size:.7em;color:var(--gold);font-weight:700}
-.certif-badge{display:inline-block;font-size:.65em;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.35);color:var(--gold);padding:2px 7px;border-radius:10px;margin-top:5px}
-
-/* ── ADMIN ── */
-.admin-toggle{position:fixed;bottom:12px;right:14px;opacity:.25;cursor:pointer;font-size:1.8rem;transition:.2s}
-.admin-toggle:hover{opacity:1}
-.admin-box{display:none;background:#111;border:2px dashed var(--red);border-radius:10px;max-width:700px;margin:0 auto 40px;padding:24px;text-align:left;box-shadow:0 0 40px rgba(255,0,68,.15);position:relative}
-.admin-box::before{content:"/// ADMIN — VALIDATION MANUELLE ///";position:absolute;top:-11px;left:18px;background:#111;color:var(--red);font-size:.78em;font-weight:700;padding:0 8px}
-.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.admin-full{grid-column:1/-1}
-.admin-label{color:#888;font-size:.78em;display:block;margin-bottom:4px}
-.admin-select,.admin-input{width:100%;background:#000;color:#fff;border:1px solid #555;padding:9px;font-family:monospace;font-size:.9em}
-.admin-btn{background:var(--red);color:#fff;border:none;padding:13px;width:100%;font-weight:700;cursor:pointer;text-transform:uppercase;font-size:.9em;transition:.2s}
-.admin-btn:hover{background:#fff;color:#000}
-.admin-msg{margin-top:10px;font-size:.85em;min-height:1.4em}
-.reset-btn{background:transparent;border:1px solid #444;color:#555;padding:8px;width:100%;cursor:pointer;font-size:.78em;margin-top:14px;transition:.2s}
-.reset-btn:hover{border-color:red;color:red}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,255,136,.15);border:1px solid var(--green);color:var(--green);padding:10px 24px;border-radius:20px;font-size:.85em;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
-.toast.show{opacity:1}
+/* Admin */
+#admin-btn {
+  position: fixed; bottom: 20px; right: 16px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  color: var(--muted); padding: 6px 12px;
+  border-radius: 8px; font-size: .75rem; cursor: pointer;
+}
+#admin-panel {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 100;
+  align-items: center; justify-content: center;
+}
+#admin-panel.open { display: flex; }
+#admin-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px; max-width: 360px; width: 90%;
+}
+#admin-box h3 { margin-bottom: 16px; }
+#admin-box input {
+  width: 100%; padding: 10px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px;
+  margin-bottom: 12px;
+}
+#admin-box button { margin-right: 8px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; }
+.btn-validate { background: var(--green); color: #000; font-weight: 700; }
+.btn-reset { background: var(--red); color: #fff; }
+.btn-close-admin { background: var(--muted); color: #fff; }
+#admin-module-select { width: 100%; margin-bottom: 12px; }
+#admin-module-select select {
+  width: 100%; padding: 8px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px;
+}
 </style>
 </head>
 <body>
 
-<h1>PIX<span>-</span>pHARe</h1>
-<p class="subtitle">Hub de Prévention du Harcèlement — Académie de Formation</p>
-
-<div class="player-bar">Joueur : <span id="playerDisplay">—</span></div>
-
-<div class="stats-bar">
-  <div class="stat-chip"><div class="v" id="statDone">0</div><div class="k">Modules validés</div></div>
-  <div class="stat-chip"><div class="v" id="statTotal">25</div><div class="k">Total modules</div></div>
-  <div class="stat-chip"><div class="v" id="statXP">0</div><div class="k">XP gagnés</div></div>
-  <div class="stat-chip"><div class="v" id="statCP">0</div><div class="k">CP Superhub</div></div>
+<div class="hero">
+  <h1>PIX <span>pHARe</span></h1>
+  <p>Programme de Formation Anti-Harcèlement — Collège Château Rance</p>
 </div>
 
-<a href="index.html" class="back-btn">← Portail Vie Scolaire</a>
+<div id="player-bar">
+  <span id="pb-name">Non connecté</span>
+  <span class="xp" id="pb-xp"></span>
+</div>
 
-<div class="matrix" id="matrix"></div>
+<div class="container" id="app">
+  <!-- rendu JS -->
+</div>
 
-<!-- ADMIN -->
-<div class="admin-toggle" id="adminToggle" title="Admin">⚙️</div>
-<div class="admin-box" id="adminBox">
-  <div class="admin-grid">
-    <div>
-      <label class="admin-label">Mot de passe admin</label>
-      <input class="admin-input" type="password" id="adminPass" placeholder="Clé admin">
+<div id="toast"></div>
+<button id="admin-btn" onclick="openAdmin()">⚙ Admin</button>
+
+<div id="admin-panel">
+  <div id="admin-box">
+    <h3>⚙ Administration</h3>
+    <input type="password" id="admin-pwd" placeholder="Mot de passe admin" />
+    <div id="admin-module-select" style="display:none">
+      <select id="select-module">
+        <option value="">-- Choisir un module --</option>
+      </select>
+      <div style="margin: 10px 0; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-validate" onclick="adminValidate()">✓ Valider</button>
+        <button class="btn-reset" onclick="hardReset()">🗑 Tout réinitialiser</button>
+        <button class="btn-close-admin" onclick="closeAdmin()">✕ Fermer</button>
+      </div>
     </div>
-    <div>
-      <label class="admin-label">Valider un module manuellement</label>
-      <select class="admin-select" id="adminModule"></select>
-    </div>
-    <div class="admin-full">
-      <button class="admin-btn" onclick="adminValidate()">✅ Valider ce module</button>
-    </div>
-    <div class="admin-full">
-      <div class="admin-msg" id="adminMsg"></div>
+    <div id="admin-err" style="color:var(--red); font-size:.82rem; margin-top:8px;"></div>
+    <div style="margin-top:12px; display:flex; gap:8px;" id="admin-login-btns">
+      <button class="btn-validate" onclick="adminLogin()">Connexion</button>
+      <button class="btn-close-admin" onclick="closeAdmin()">✕</button>
     </div>
   </div>
-  <button class="reset-btn" onclick="hardReset()">⚠️ Effacer toute la progression (RAZ)</button>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-/* ══════════════════════════════════════════════════════
-   CONFIGURATION — 5 piliers, 5 modules chacun
-══════════════════════════════════════════════════════ */
-const ADMIN_PASS = 'AGORA-ADMIN';
-
+// ═══════════════════════════════════════════════════════
+// DONNÉES PILIERS
+// ═══════════════════════════════════════════════════════
 const PILLARS = [
+  {
+    key:'GRP', icon:'🔺', color:'#a855f7', glow:'rgba(168,85,247,.13)',
+    title:'Pilier Groupe',
+    desc:'Dynamiques de groupe, témoins, manipulation collective',
+    modules:[
+      {id:'GROUPE_01', file:'PIX_pHARe_Module_GROUPE_01.html', name:'Le Triangle du Témoin', xp:100},
+      {id:'GROUPE_02', file:'PIX_pHARe_Module_GROUPE_02.html', name:'La Mécanique des Foules', xp:100},
+      {id:'GROUPE_03', file:'PIX_pHARe_Module_GROUPE_03.html', name:'Bystander Effect', xp:100},
+      {id:'GROUPE_04', file:'PIX_pHARe_Module_GROUPE_04.html', name:'Résistance au Groupe', xp:100},
+      {id:'GROUPE_05', file:'PIX_pHARe_Module_GROUPE_05.html', name:'Ambassadeur en Action', xp:100},
+    ]
+  },
+  {
+    key:'HIS', icon:'📜', color:'#f59e0b', glow:'rgba(245,158,11,.13)',
+    title:'Pilier Histoire',
+    desc:'Harcèlement à travers les âges, mémoire collective, figures de résistance',
+    modules:[
+      {id:'HISTOIRE_01', file:'PIX_pHARe_Module_HISTOIRE_01.html', name:'Aux Origines du Harcèlement', xp:100},
+      {id:'HISTOIRE_02', file:'PIX_pHARe_Module_HISTOIRE_02.html', name:'Les Grandes Affaires', xp:100},
+      {id:'HISTOIRE_03', file:'PIX_pHARe_Module_HISTOIRE_03.html', name:'L'École et la Violence', xp:100},
+      {id:'HISTOIRE_04', file:'PIX_pHARe_Module_HISTOIRE_04.html', name:'Témoins de l'Histoire', xp:100},
+      {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Résistances et Renaissances', xp:100},
+    ]
+  },
+  {
+    key:'JUR', icon:'⚖️', color:'#3b82f6', glow:'rgba(59,130,246,.13)',
+    title:'Pilier Juridique',
+    desc:'Droit pénal, procédures, droits et devoirs de l'élève et de l'établissement',
+    modules:[
+      {id:'JURIDIQUE_01', file:'PIX_pHARe_Module_JURIDIQUE_01.html', name:'L'Armure Juridique', xp:300},
+      {id:'JURIDIQUE_02', file:'PIX_pHARe_Module_JURIDIQUE_02.html', name:'La Mécanique des Ombres', xp:375},
+      {id:'JURIDIQUE_03', file:'PIX_pHARe_Module_JURIDIQUE_03.html', name:'Le Spectre Numérique', xp:450},
+      {id:'JURIDIQUE_04', file:'PIX_pHARe_Module_JURIDIQUE_04.html', name:'Le Protocole pHARe', xp:525},
+      {id:'JURIDIQUE_05', file:'PIX_pHARe_Module_JURIDIQUE_05.html', name:'Maître de la Loi', xp:625},
+    ]
+  },
+  {
+    key:'NEU', icon:'🧠', color:'#10b981', glow:'rgba(16,185,129,.13)',
+    title:'Pilier Neuro',
+    desc:'Cerveau, émotions, empathie, mécanismes neurobiologiques du harcèlement',
+    modules:[
+      {id:'NEURO_01', file:'PIX_pHARe_Module_NEURO_01.html', name:'Le Cerveau sous Pression', xp:50},
+      {id:'NEURO_02', file:'PIX_pHARe_Module_NEURO_02.html', name:'Empathie & Miroirs', xp:100},
+      {id:'NEURO_03', file:'PIX_pHARe_Module_NEURO_03.html', name:'Stress & Mémoire', xp:100},
+      {id:'NEURO_04', file:'PIX_pHARe_Module_NEURO_04.html', name:'Émotions & Décision', xp:100},
+      {id:'NEURO_05', file:'PIX_pHARe_Module_NEURO_05.html', name:'Résilience Neuronale', xp:100},
+    ]
+  },
   {
     key:'NUM', icon:'💻', color:'#00d4ff', glow:'rgba(0,212,255,.13)',
     title:'Pilier Numérique',
     desc:'Algorithmes, attention, droits numériques et maîtrise du feed',
     modules:[
-      {id:'NUMERIQUE_01', file:'PIX_pHARe_Module_NUMERIQUE_01.html', name:'La Machine à Attention',          xp:50, certif:false},
-      {id:'NUMERIQUE_02', file:'PIX_pHARe_Module_NUMERIQUE_02.html', name:"Les Architectes de l'Ombre",     xp:50, certif:false},
-      {id:'NUMERIQUE_03', file:'PIX_pHARe_Module_NUMERIQUE_03.html', name:'Bulles & Miroirs',               xp:50, certif:false},
-      {id:'NUMERIQUE_04', file:'PIX_pHARe_Module_NUMERIQUE_04.html', name:'Tes Droits, Ton Armure',         xp:50, certif:false},
-      {id:'NUMERIQUE_05', file:'PIX_pHARe_Module_NUMERIQUE_05.html', name:'Maître de ton Feed',             xp:75, certif:true},
-    ]
-  },
-  {
-    key:'JUR', icon:'⚖️', color:'#ff0044', glow:'rgba(255,0,68,.13)',
-    title:'Pilier Juridique',
-    desc:'Armure juridique, mécanique des ombres, protocole pHARe',
-    modules:[
-      {id:'JURIDIQUE_01', file:'PIX_pHARe_Module_JURIDIQUE_01.html', name:"L'Armure Juridique",            xp:50, certif:false},
-      {id:'JURIDIQUE_02', file:'PIX_pHARe_Module_JURIDIQUE_02.html', name:"La Mécanique des Ombres",        xp:50, certif:false},
-      {id:'JURIDIQUE_03', file:'PIX_pHARe_Module_JURIDIQUE_03.html', name:'Le Spectre Numérique',           xp:50, certif:false},
-      {id:'JURIDIQUE_04', file:'PIX_pHARe_Module_JURIDIQUE_04.html', name:'Le Protocole pHARe',             xp:50, certif:false},
-      {id:'JURIDIQUE_05', file:'PIX_pHARe_Module_JURIDIQUE_05.html', name:"Maître de l'Harmonie",           xp:75, certif:true},
-    ]
-  },
-  {
-    key:'GRO', icon:'👥', color:'#a855f7', glow:'rgba(168,85,247,.13)',
-    title:'Pilier Dynamique de Groupe',
-    desc:'Triangle infernal, témoins, pièges de l\'esprit, leadership positif',
-    modules:[
-      {id:'GROUPE_01', file:'PIX_pHARe_Module_GROUPE_01.html', name:'Le Triangle Infernal',                xp:50, certif:false},
-      {id:'GROUPE_02', file:'PIX_pHARe_Module_GROUPE_02.html', name:'Le Pouvoir des Témoins',              xp:50, certif:false},
-      {id:'GROUPE_03', file:'PIX_pHARe_Module_GROUPE_03.html', name:"Les Pièges de l'Esprit",              xp:50, certif:false},
-      {id:'GROUPE_04', file:'PIX_pHARe_Module_GROUPE_04.html', name:'Briser le Cycle',                     xp:50, certif:false},
-      {id:'GROUPE_05', file:'PIX_pHARe_Module_GROUPE_05.html', name:'Leader Positif',                      xp:75, certif:true},
-    ]
-  },
-  {
-    key:'HIS', icon:'📜', color:'#b08968', glow:'rgba(176,137,104,.13)',
-    title:'Pilier Historique & Sociétal',
-    desc:'Des violences invisibles à la loi, mémoire et vigilance collective',
-    modules:[
-      {id:'HISTOIRE_01', file:'PIX_pHARe_Module_HISTOIRE_01.html', name:'Avant le mot : quand la violence ne se voyait pas', xp:50, certif:false},
-      {id:'HISTOIRE_02', file:'PIX_pHARe_Module_HISTOIRE_02.html', name:'Rites, bizutages et violences normalisées',          xp:50, certif:false},
-      {id:'HISTOIRE_03', file:'PIX_pHARe_Module_HISTOIRE_03.html', name:"Nommer pour comprendre : naissance d'un concept",   xp:50, certif:false},
-      {id:'HISTOIRE_04', file:'PIX_pHARe_Module_HISTOIRE_04.html', name:'De la tolérance à la loi : quand la société réagit', xp:50, certif:false},
-      {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Mémoire, luttes et vigilance collective',            xp:75, certif:true},
-    ]
-  },
-  {
-    key:'NEURO', icon:'🧠', color:'#00ff88', glow:'rgba(0,255,136,.13)',
-    title:'Pilier Neuro-Émotionnel',
-    desc:'Empathie, cerveau ado, émotions, douleur sociale, autorégulation',
-    modules:[
-      {id:'NEURO_01', file:'PIX_pHARe_Module_NEURO_01.html', name:"Comprendre l'Autre",              xp:50, certif:false},
-      {id:'NEURO_02', file:'PIX_pHARe_Module_NEURO_02.html', name:'Le Cerveau Ado en Chantier',      xp:50, certif:false},
-      {id:'NEURO_03', file:'PIX_pHARe_Module_NEURO_03.html', name:'Mettre des Mots sur ses Émotions',xp:50, certif:false},
-      {id:'NEURO_04', file:'PIX_pHARe_Module_NEURO_04.html', name:'La Douleur Sociale',              xp:50, certif:false},
-      {id:'NEURO_05', file:'PIX_pHARe_Module_NEURO_05.html', name:"S'auto-réguler",                  xp:75, certif:true},
+      {id:'NUMERIQUE_01', file:'PIX_pHARe_Module_NUMERIQUE_01.html', name:'La Machine à Attention', xp:75},
+      {id:'NUMERIQUE_02', file:'PIX_pHARe_Module_NUMERIQUE_02.html', name:"Les Architectes de l'Ombre", xp:100},
+      {id:'NUMERIQUE_03', file:'PIX_pHARe_Module_NUMERIQUE_03.html', name:'Bulles & Miroirs', xp:120},
+      {id:'NUMERIQUE_04', file:'PIX_pHARe_Module_NUMERIQUE_04.html', name:'Tes Droits, Ton Armure', xp:150},
+      {id:'NUMERIQUE_05', file:'PIX_pHARe_Module_NUMERIQUE_05.html', name:'Maître du Feed', xp:200},
     ]
   }
 ];
 
-/* ══════════════════════════════════════════════════════
-   CLÉS localStorage
-══════════════════════════════════════════════════════ */
-function ckey(id){ return 'CERT_PHARE_' + id; }
+// ═══════════════════════════════════════════════════════
+// UTILS localStorage
+// ═══════════════════════════════════════════════════════
+const ckey = id => 'CERT_PHARE_' + id;
 
-/* ══════════════════════════════════════════════════════
-   PLAYER
-══════════════════════════════════════════════════════ */
 function getPlayer(){
-  return localStorage.getItem('pvs_current_player') || '';
+  // pvs_current_player posé par le superhub ; pvs_phare_player fallback posé par ce hub
+  return localStorage.getItem('pvs_current_player')
+      || localStorage.getItem('pvs_phare_player')
+      || '';
 }
 
-/* ══════════════════════════════════════════════════════
-   ÉTAT
-══════════════════════════════════════════════════════ */
-function isDone(id){ return !!localStorage.getItem(ckey(id)); }
-
-function doneCount(){ 
-  return PILLARS.reduce((n,p)=>n+p.modules.filter(m=>isDone(m.id)).length, 0); 
+function isDone(id){
+  return !!localStorage.getItem(ckey(id));
 }
 
-function totalXP(){ 
-  return PILLARS.reduce((x,p)=>x+p.modules.reduce((s,m)=>s+(isDone(m.id)?m.xp:0),0), 0); 
+function doneCount(){
+  let n = 0;
+  PILLARS.forEach(p => p.modules.forEach(m => { if(isDone(m.id)) n++; }));
+  return n;
 }
 
-// Un module est accessible si c'est le 1er du pilier OU si le précédent est validé
+function totalXP(){
+  let xp = 0;
+  PILLARS.forEach(p => p.modules.forEach(m => { if(isDone(m.id)) xp += (m.xp || 0); }));
+  return xp;
+}
+
 function isUnlocked(pillar, idx){
   if(idx === 0) return true;
   return isDone(pillar.modules[idx-1].id);
 }
 
-/* ══════════════════════════════════════════════════════
-   BRIDGE SUPERHUB — même modèle que FRATERNITE
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// COMMUNICATION MODULE → HUB
+// ═══════════════════════════════════════════════════════
+function validateModule(moduleId, silent){
+  if(!moduleId) return;
+  const already = isDone(moduleId);
+  // Écrire CERT dans ce hub aussi (cohérence)
+  localStorage.setItem(ckey(moduleId), JSON.stringify({
+    v:1, d:new Date().toISOString(), m:moduleId, f:true
+  }));
+  if(!already) pushBridge(moduleId);
+  render();
+  if(!silent) toast('✅ ' + moduleId + ' validé !');
+}
+
 function pushBridge(moduleId){
   const player = getPlayer();
-  const total  = doneCount();
   try {
     var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
     evts.push({
-      id:      'PHARE-' + moduleId + '-' + Date.now(),
-      type:    'PIXHARE_PROGRESS',
+      id:     'PHARE-' + moduleId + '-' + Date.now(),
+      type:   'PIXHARE_PROGRESS',
       player:  player,
       module:  moduleId,
-      cpTotal: total,
+      cpTotal: doneCount(),
       d:       new Date().toISOString()
     });
     if(evts.length > 500) evts.splice(0, evts.length - 500);
@@ -249,202 +339,213 @@ function pushBridge(moduleId){
   } catch(e){}
 }
 
-/* ══════════════════════════════════════════════════════
-   VALIDATION D'UN MODULE (appelée par les modules eux-mêmes
-   via window.opener ou directement, ET par l'admin)
-══════════════════════════════════════════════════════ */
-function validateModule(moduleId, silent){
-  if(!moduleId) return;
-  const alreadyDone = isDone(moduleId);
-  localStorage.setItem(ckey(moduleId), JSON.stringify({
-    v:1, d:new Date().toISOString(), m:moduleId, f:true
-  }));
-  if(!alreadyDone) pushBridge(moduleId);
-  render();
-  if(!silent) toast('✅ ' + moduleId + ' validé — XP envoyés !');
-}
-
-/* ══════════════════════════════════════════════════════
-   NAVIGATION
-══════════════════════════════════════════════════════ */
-function openModule(file, moduleId){
-  // Stocker l'id en attente : le module appellera window.opener.validateModule si possible
-  localStorage.setItem('pvs_phare_pending', moduleId);
-  window.open(file, '_self');
-}
-
-// Vérifier au retour si un module vient d'être complété
+// checkReturn : appelé au focus — lit les CERT_PHARE_* écrits par les modules
 function checkReturn(){
-  const pending = localStorage.getItem('pvs_phare_pending');
-  if(!pending) return;
-  // Chercher si le module a poussé son propre event PIXHARE_PROGRESS
-  // (modules câblés le font via leur bridge interne)
-  // On vide juste le pending — la validation vient du bridge du module
-  localStorage.removeItem('pvs_phare_pending');
-}
-
-/* ══════════════════════════════════════════════════════
-   RENDU
-══════════════════════════════════════════════════════ */
-function render(){
-  const done  = doneCount();
-  const xp    = totalXP();
-  const player= getPlayer();
-
-  document.getElementById('playerDisplay').textContent = player || 'Anonyme';
-  document.getElementById('statDone').textContent = done;
-  document.getElementById('statXP').textContent   = xp;
-  document.getElementById('statCP').textContent   = done; // 1 CP = 1 module
-
-  const matrix = document.getElementById('matrix');
-  matrix.innerHTML = '';
-
-  PILLARS.forEach(pillar => {
-    const col = document.createElement('div');
-    col.className = 'pillar';
-    col.style.borderTopColor = pillar.color;
-    col.style.background = 'rgba(22,33,62,.5)';
-
-    col.innerHTML = `
-      <div class="pillar-head">
-        <div class="pillar-icon">${pillar.icon}</div>
-        <div class="pillar-title" style="color:${pillar.color}">${pillar.title}</div>
-      </div>
-      <div class="pillar-desc">${pillar.desc}</div>
-    `;
-
-    pillar.modules.forEach((mod, idx) => {
-      const done_m   = isDone(mod.id);
-      const unlocked = isUnlocked(pillar, idx);
-      const card = document.createElement('div');
-
-      let stateClass, statusTxt, clickable;
-      if(done_m){
-        stateClass = 'done'; statusTxt = '✅ Validé — Rejouer'; clickable = true;
-      } else if(unlocked){
-        stateClass = 'unlocked'; statusTxt = '▶ Lancer la mission'; clickable = true;
-      } else {
-        stateClass = 'locked-card'; statusTxt = '🔒 Verrouillé'; clickable = false;
-      }
-
-      card.className = 'mod-card ' + stateClass;
-      card.style.borderLeftColor = done_m ? '#00ff88' : (unlocked ? pillar.color : '#444');
-      if(clickable) card.style.cursor = 'pointer';
-
-      card.innerHTML = `
-        <div class="mod-xp">⚡ ${mod.xp} XP</div>
-        <div class="mod-id">${mod.id}</div>
-        <div class="mod-name">${mod.name}</div>
-        ${mod.certif ? '<div class="certif-badge">✦ CERTIFICATION</div>' : ''}
-        <div class="mod-status">${statusTxt}</div>
-      `;
-
-      if(clickable){
-        card.addEventListener('click', () => openModule(mod.file, mod.id));
-      }
-      col.appendChild(card);
-    });
-
-    matrix.appendChild(col);
-  });
-
-  // Remplir le select admin
-  const sel = document.getElementById('adminModule');
-  if(sel && sel.options.length === 0){
-    PILLARS.forEach(p => p.modules.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m.id;
-      opt.textContent = m.id + ' — ' + m.name;
-      sel.appendChild(opt);
-    }));
-  }
-}
-
-/* ══════════════════════════════════════════════════════
-   ADMIN
-══════════════════════════════════════════════════════ */
-let adminUnlocked = false;
-
-document.getElementById('adminToggle').addEventListener('click', () => {
-  const box = document.getElementById('adminBox');
-  if(!adminUnlocked){
-    const pass = document.getElementById('adminPass').value;
-    if(pass !== ADMIN_PASS){
-      // Afficher la box pour saisir le MDP
-      box.style.display = box.style.display === 'block' ? 'none' : 'block';
-      return;
+  let changed = false;
+  PILLARS.forEach(p => p.modules.forEach(m => {
+    const cert = localStorage.getItem(ckey(m.id));
+    if(cert && !isDone(m.id)){
+      validateModule(m.id, true);
+      changed = true;
     }
-    adminUnlocked = true;
-  }
-  box.style.display = box.style.display === 'block' ? 'none' : 'block';
-});
-
-function adminValidate(){
-  const pass = document.getElementById('adminPass').value;
-  const msg  = document.getElementById('adminMsg');
-  if(pass !== ADMIN_PASS){ msg.style.color='#ff4444'; msg.textContent='❌ Mot de passe incorrect.'; return; }
-  const mid = document.getElementById('adminModule').value;
-  if(!mid){ msg.textContent='Sélectionner un module.'; return; }
-  validateModule(mid, false);
-  msg.style.color = '#00ff88';
-  msg.textContent = '✅ ' + mid + ' validé manuellement.';
-}
-
-function hardReset(){
-  if(!confirm('Effacer TOUTE la progression PIXHARe ?')) return;
-  PILLARS.forEach(p => p.modules.forEach(m => localStorage.removeItem(ckey(m.id))));
-  localStorage.removeItem('pvs_phare_pending');
-  render();
-  toast('🗑️ Progression effacée.');
-}
-
-/* ══════════════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════════════ */
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-/* ══════════════════════════════════════════════════════
-   ÉCOUTE storage (retour de module)
-══════════════════════════════════════════════════════ */
-// Traiter les events PIXHARE_PROGRESS reçus depuis les modules
-function processBridgeReturn(){
+  }));
+  // Lire aussi le bridge events (double filet)
   try {
-    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-    var changed = false;
-    evts.forEach(function(ev){
+    const evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+    evts.forEach(ev => {
       if(ev.type === 'PIXHARE_PROGRESS' && ev.module && !isDone(ev.module)){
-        var found = PILLARS.some(p => p.modules.some(m => m.id === ev.module));
+        const found = PILLARS.some(p => p.modules.some(m => m.id === ev.module));
         if(found){ validateModule(ev.module, true); changed = true; }
       }
     });
-    if(changed) render();
   } catch(e){}
+  if(changed) render();
 }
 
+// ═══════════════════════════════════════════════════════
+// NAVIGATION VERS MODULE
+// ═══════════════════════════════════════════════════════
+function openModule(file, moduleId){
+  const player = getPlayer();
+  if(!player){
+    toast('⚠️ Connecte-toi au Portail Vie Scolaire avant de commencer !');
+    return;
+  }
+  // S'assurer que le module peut lire le joueur
+  localStorage.setItem('pvs_phare_player', player);
+  // Si pvs_current_player absent, l'écrire pour que le module le trouve
+  if(!localStorage.getItem('pvs_current_player')){
+    localStorage.setItem('pvs_current_player', player);
+  }
+  localStorage.setItem('pvs_phare_pending', moduleId);
+  window.location.href = file;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDU
+// ═══════════════════════════════════════════════════════
+function render(){
+  const player = getPlayer();
+  const xp = totalXP();
+  const done = doneCount();
+  const total = PILLARS.reduce((s,p) => s + p.modules.length, 0);
+
+  document.getElementById('pb-name').textContent = player || 'Non connecté';
+  document.getElementById('pb-xp').textContent = player
+    ? `${xp} XP — ${done}/${total} modules`
+    : '';
+
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  PILLARS.forEach(pillar => {
+    const doneInPillar = pillar.modules.filter(m => isDone(m.id)).length;
+    const totalInPillar = pillar.modules.length;
+    const pct = Math.round(doneInPillar / totalInPillar * 100);
+
+    const block = document.createElement('div');
+    block.className = 'pillar-block';
+
+    // Header
+    const hdr = document.createElement('div');
+    hdr.className = 'pillar-header';
+    hdr.innerHTML = `
+      <div class="pillar-icon">${pillar.icon}</div>
+      <div class="pillar-info">
+        <div class="pillar-title" style="color:${pillar.color}">${pillar.title}</div>
+        <div class="pillar-desc">${pillar.desc}</div>
+      </div>
+      <div class="pillar-stats">
+        <div class="pillar-count">${doneInPillar}/${totalInPillar}</div>
+        <div class="pillar-xptotal" style="color:${pillar.color}">${pct}%</div>
+      </div>
+    `;
+    block.appendChild(hdr);
+
+    // Barre de progression
+    const barOuter = document.createElement('div');
+    barOuter.className = 'progress-bar-outer';
+    const barInner = document.createElement('div');
+    barInner.className = 'progress-bar-inner';
+    barInner.style.cssText = `width:${pct}%; background:${pillar.color};`;
+    barOuter.appendChild(barInner);
+    block.appendChild(barOuter);
+
+    // Liste modules
+    const list = document.createElement('div');
+    list.className = 'modules-list';
+
+    pillar.modules.forEach((mod, idx) => {
+      const done_mod = isDone(mod.id);
+      const unlocked = isUnlocked(pillar, idx);
+      const row = document.createElement('div');
+      row.className = 'module-row' + (done_mod ? ' done' : '') + (!unlocked ? ' locked' : '');
+
+      const numColor = done_mod ? pillar.color : (unlocked ? pillar.color : '#475569');
+
+      row.innerHTML = `
+        <div class="mod-num" style="color:${numColor}; border-color:${numColor}">
+          ${done_mod ? '✓' : (idx+1)}
+        </div>
+        <div class="mod-info">
+          <div class="mod-name">${mod.name}</div>
+          <div class="mod-xp">${mod.xp} XP${!unlocked ? ' — 🔒 Termine le module précédent' : ''}</div>
+        </div>
+        <div class="mod-status">${done_mod ? '🏅' : (unlocked ? '▶' : '🔒')}</div>
+      `;
+
+      if(unlocked && !done_mod){
+        row.addEventListener('click', () => openModule(mod.file, mod.id));
+      } else if(done_mod){
+        row.style.cursor = 'default';
+        row.title = 'Module terminé';
+      }
+      list.appendChild(row);
+    });
+    block.appendChild(list);
+    app.appendChild(block);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════════
+const ADMIN_PWD = 'AGORA-ADMIN';
+
+function openAdmin(){
+  // Peupler la liste des modules
+  const sel = document.getElementById('select-module');
+  sel.innerHTML = '<option value="">-- Choisir un module --</option>';
+  PILLARS.forEach(p => p.modules.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = (isDone(m.id) ? '✓ ' : '') + m.id + ' — ' + m.name;
+    sel.appendChild(opt);
+  }));
+  document.getElementById('admin-panel').classList.add('open');
+}
+
+function closeAdmin(){
+  document.getElementById('admin-panel').classList.remove('open');
+  document.getElementById('admin-pwd').value = '';
+  document.getElementById('admin-err').textContent = '';
+  document.getElementById('admin-module-select').style.display = 'none';
+  document.getElementById('admin-login-btns').style.display = 'flex';
+}
+
+function adminLogin(){
+  const pwd = document.getElementById('admin-pwd').value;
+  if(pwd !== ADMIN_PWD){
+    document.getElementById('admin-err').textContent = '❌ Mot de passe incorrect';
+    return;
+  }
+  document.getElementById('admin-module-select').style.display = 'block';
+  document.getElementById('admin-login-btns').style.display = 'none';
+  document.getElementById('admin-err').textContent = '';
+}
+
+function adminValidate(){
+  const id = document.getElementById('select-module').value;
+  if(!id){ toast('⚠️ Choisis un module'); return; }
+  validateModule(id, false);
+  openAdmin(); // rafraîchir la liste
+}
+
+function hardReset(){
+  if(!confirm('Supprimer TOUTES les progressions PIXHARe ?')) return;
+  PILLARS.forEach(p => p.modules.forEach(m => {
+    localStorage.removeItem(ckey(m.id));
+  }));
+  localStorage.removeItem('pvs_phare_pending');
+  closeAdmin();
+  render();
+  toast('🗑 Réinitialisé');
+}
+
+function toast(msg, duration=3000){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('focus', () => { checkReturn(); render(); });
 window.addEventListener('storage', e => {
-  if(e.key === 'pvs_bridge_events'){
-    processBridgeReturn();
+  if(e.key === 'pvs_bridge_events' || e.key && e.key.startsWith('CERT_PHARE_')){
+    checkReturn();
     render();
   }
 });
 
-window.addEventListener('focus', () => {
-  processBridgeReturn();
+// Au chargement : vérifier les CERT déjà présents (si on revient d'un module)
+document.addEventListener('DOMContentLoaded', () => {
   checkReturn();
   render();
 });
-
-/* ══════════════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════════════ */
-processBridgeReturn();
-checkReturn();
-render();
 </script>
 </body>
 </html>
