@@ -6,213 +6,146 @@
 <title>PIX pHARe — Hub de Formation</title>
 <style>
 :root {
-  --bg: #0a0e1a;
-  --card: #111827;
-  --border: rgba(255,255,255,.08);
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --accent: #f97316;
-  --green: #22c55e;
-  --red: #ef4444;
+  --bg:#0a0e1a; --card:#111827; --border:rgba(255,255,255,.08);
+  --text:#e2e8f0; --muted:#64748b;
+  --accent:#f97316; --green:#22c55e; --red:#ef4444;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  min-height: 100vh;
-  padding: 0 0 60px;
-}
-.hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 28px 20px 22px;
-  text-align: center;
-}
-.hero h1 {
-  font-size: clamp(1.4rem, 5vw, 2rem);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: #fff;
-}
-.hero h1 span { color: var(--accent); }
-.hero p { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding-bottom:70px;}
 
-#player-bar {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  padding: 12px 20px;
-  background: rgba(255,255,255,.03);
-  border-bottom: 1px solid var(--border);
-  font-size: .88rem;
-}
-#player-bar .badge {
-  background: rgba(249,115,22,.15);
-  border: 1px solid rgba(249,115,22,.4);
-  color: var(--accent);
-  padding: 3px 10px; border-radius: 20px; font-weight: 700;
-}
-#player-bar .xp { color: var(--green); font-weight: 700; }
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:24px 20px 18px;text-align:center;}
+.hero h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;letter-spacing:-.5px;color:#fff;}
+.hero h1 span{color:var(--accent);}
+.hero p{color:var(--muted);font-size:.85rem;margin-top:5px;}
 
-.container { max-width: 780px; margin: 0 auto; padding: 24px 16px; }
+#player-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);font-size:.85rem;flex-wrap:wrap;text-align:center;}
+.pb-connected{color:var(--green);}
+.pb-name{font-weight:700;color:#fff;}
+.pb-disconnected{color:var(--red);}
+.pb-xp{color:var(--green);font-weight:700;}
 
-.pillar-block {
-  margin-bottom: 28px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--card);
-}
-.pillar-header {
-  padding: 16px 20px;
-  display: flex; align-items: center; gap: 14px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer; user-select: none;
-}
-.pillar-icon { font-size: 2rem; }
-.pillar-info { flex: 1; }
-.pillar-title { font-weight: 700; font-size: 1.05rem; }
-.pillar-desc { color: var(--muted); font-size: .82rem; margin-top: 2px; }
-.pillar-stats { text-align: right; }
-.pillar-count { font-size: .82rem; color: var(--muted); }
-.pillar-xptotal { font-size: .9rem; font-weight: 700; }
+.container{max-width:780px;margin:0 auto;padding:20px 14px;}
 
-.progress-bar-outer {
-  height: 4px; background: rgba(255,255,255,.07);
-}
-.progress-bar-inner {
-  height: 4px; border-radius: 2px;
-  transition: width .4s ease;
-}
+.pillar-block{margin-bottom:22px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);}
+.pillar-header{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.pillar-icon{font-size:1.8rem;flex-shrink:0;}
+.pillar-info{flex:1;}
+.pillar-title{font-weight:700;font-size:1rem;}
+.pillar-desc{color:var(--muted);font-size:.78rem;margin-top:2px;}
+.pillar-stats{text-align:right;flex-shrink:0;}
+.pillar-count{font-size:.78rem;color:var(--muted);}
+.pillar-pct{font-size:.9rem;font-weight:700;}
+.prog-outer{height:3px;background:rgba(255,255,255,.07);}
+.prog-inner{height:3px;transition:width .4s;}
 
-.modules-list { padding: 8px 0; }
-.module-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 13px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.04);
-  cursor: pointer;
-  transition: background .15s;
-  position: relative;
-}
-.module-row:last-child { border-bottom: none; }
-.module-row:hover:not(.locked) { background: rgba(255,255,255,.04); }
-.module-row.locked { cursor: not-allowed; opacity: .5; }
-.module-row.done { opacity: 1; }
+.mod-list{padding:4px 0;}
+.mod-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+.mod-row:last-child{border-bottom:none;}
+.mod-row.clickable{cursor:pointer;}
+.mod-row.clickable:hover{background:rgba(255,255,255,.05);}
+.mod-row.locked{opacity:.4;cursor:not-allowed;}
+.mod-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;border:2px solid currentColor;}
+.mod-info{flex:1;}
+.mod-name{font-weight:600;font-size:.9rem;}
+.mod-sub{font-size:.75rem;color:var(--muted);margin-top:1px;}
+.mod-ico{font-size:1.1rem;flex-shrink:0;}
 
-.mod-num {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .8rem; font-weight: 700;
-  flex-shrink: 0;
-  border: 2px solid currentColor;
-}
-.mod-info { flex: 1; }
-.mod-name { font-weight: 600; font-size: .93rem; }
-.mod-xp { font-size: .78rem; color: var(--muted); margin-top: 2px; }
-.mod-status { font-size: 1.1rem; }
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:10px;font-size:.85rem;z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;}
+#toast.show{opacity:1;}
 
-/* Toast */
-#toast {
-  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-  background: #1e293b; border: 1px solid var(--border);
-  color: var(--text); padding: 10px 20px; border-radius: 10px;
-  font-size: .88rem; z-index: 999;
-  opacity: 0; pointer-events: none;
-  transition: opacity .3s;
-}
-#toast.show { opacity: 1; pointer-events: auto; }
+#admin-fab{position:fixed;bottom:18px;right:16px;background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);padding:7px 13px;border-radius:8px;font-size:.78rem;cursor:pointer;z-index:800;}
+#admin-fab:hover{background:rgba(255,255,255,.12);}
 
-/* Admin */
-#admin-btn {
-  position: fixed; bottom: 20px; right: 16px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid var(--border);
-  color: var(--muted); padding: 6px 12px;
-  border-radius: 8px; font-size: .75rem; cursor: pointer;
-}
-#admin-panel {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.8);
-  z-index: 100;
-  align-items: center; justify-content: center;
-}
-#admin-panel.open { display: flex; }
-#admin-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px; max-width: 360px; width: 90%;
-}
-#admin-box h3 { margin-bottom: 16px; }
-#admin-box input {
-  width: 100%; padding: 10px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid var(--border);
-  color: var(--text); border-radius: 8px;
-  margin-bottom: 12px;
-}
-#admin-box button { margin-right: 8px; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; }
-.btn-validate { background: var(--green); color: #000; font-weight: 700; }
-.btn-reset { background: var(--red); color: #fff; }
-.btn-close-admin { background: var(--muted); color: #fff; }
-#admin-module-select { width: 100%; margin-bottom: 12px; }
-#admin-module-select select {
-  width: 100%; padding: 8px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid var(--border);
-  color: var(--text); border-radius: 8px;
-}
+#admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:950;align-items:center;justify-content:center;}
+#admin-overlay.open{display:flex;}
+#admin-box{background:#1e293b;border:1px solid var(--border);border-radius:16px;padding:24px;width:min(440px,93vw);max-height:88vh;overflow-y:auto;}
+#admin-box h3{font-size:1.1rem;margin-bottom:14px;color:var(--accent);}
+.ai{width:100%;padding:9px 12px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:.88rem;margin-bottom:10px;}
+.ai:focus{outline:none;border-color:var(--accent);}
+.arow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.ab{padding:8px 15px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:.84rem;}
+.ab-p{background:var(--accent);color:#fff;}
+.ab-g{background:var(--green);color:#000;}
+.ab-r{background:var(--red);color:#fff;}
+.ab-n{background:rgba(255,255,255,.12);color:var(--text);}
+.asec{margin-top:14px;border-top:1px solid var(--border);padding-top:12px;}
+.asec h4{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.mcl{display:flex;flex-direction:column;gap:3px;max-height:320px;overflow-y:auto;}
+.mc{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;background:rgba(255,255,255,.04);cursor:pointer;transition:background .1s;}
+.mc:hover{background:rgba(255,255,255,.08);}
+.mc input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+.mc-lbl{font-size:.84rem;flex:1;}
+.mc-done{color:var(--green);font-size:.72rem;margin-left:6px;}
+.psep{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 4px 4px;border-top:1px solid var(--border);margin-top:4px;}
+.psep:first-child{border-top:none;padding-top:0;}
+.aerr{color:var(--red);font-size:.8rem;margin-top:6px;}
+.aok{color:var(--green);font-size:.8rem;margin-top:6px;}
+.aplayer{font-size:.82rem;padding:8px 10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:7px;color:var(--green);margin-bottom:10px;}
 </style>
 </head>
 <body>
 
 <div class="hero">
   <h1>PIX <span>pHARe</span></h1>
-  <p>Programme de Formation Anti-Harcèlement — Collège Château Rance</p>
+  <p>Programme de Formation Anti-Harcèlement · Collège Château Rance</p>
 </div>
 
 <div id="player-bar">
-  <span id="pb-name">Non connecté</span>
-  <span class="xp" id="pb-xp"></span>
+  <span id="pb-status"></span>
+  <span id="pb-xp"></span>
 </div>
 
-<div class="container" id="app">
-  <!-- rendu JS -->
-</div>
+<div class="container" id="app"></div>
 
 <div id="toast"></div>
-<button id="admin-btn" onclick="openAdmin()">⚙ Admin</button>
+<button id="admin-fab" onclick="openAdmin()">⚙ Admin</button>
 
-<div id="admin-panel">
+<div id="admin-overlay">
   <div id="admin-box">
-    <h3>⚙ Administration</h3>
-    <input type="password" id="admin-pwd" placeholder="Mot de passe admin" />
-    <div id="admin-module-select" style="display:none">
-      <select id="select-module">
-        <option value="">-- Choisir un module --</option>
-      </select>
-      <div style="margin: 10px 0; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn-validate" onclick="adminValidate()">✓ Valider</button>
-        <button class="btn-reset" onclick="hardReset()">🗑 Tout réinitialiser</button>
-        <button class="btn-close-admin" onclick="closeAdmin()">✕ Fermer</button>
+    <h3>⚙ Administration PIXHARe</h3>
+
+    <div id="admin-login">
+      <p style="font-size:.83rem;color:var(--muted);margin-bottom:10px;">
+        Entrez votre code CPE pour accéder à la validation manuelle des modules.
+      </p>
+      <input class="ai" type="password" id="admin-pwd"
+             placeholder="Code administrateur…"
+             onkeydown="if(event.key==='Enter')adminLogin()"/>
+      <div class="arow">
+        <button class="ab ab-p" onclick="adminLogin()">Connexion</button>
+        <button class="ab ab-n" onclick="closeAdmin()">Annuler</button>
       </div>
+      <div class="aerr" id="admin-err"></div>
     </div>
-    <div id="admin-err" style="color:var(--red); font-size:.82rem; margin-top:8px;"></div>
-    <div style="margin-top:12px; display:flex; gap:8px;" id="admin-login-btns">
-      <button class="btn-validate" onclick="adminLogin()">Connexion</button>
-      <button class="btn-close-admin" onclick="closeAdmin()">✕</button>
+
+    <div id="admin-panel" style="display:none;">
+      <div class="aplayer" id="admin-player-info"></div>
+
+      <div class="asec">
+        <h4>Sélectionner les modules à valider</h4>
+        <div class="mcl" id="admin-mod-list"></div>
+      </div>
+
+      <div class="asec">
+        <div class="arow">
+          <button class="ab ab-g" onclick="adminValidateSelected()">✓ Valider la sélection</button>
+          <button class="ab ab-r" onclick="adminResetAll()">🗑 Tout réinitialiser</button>
+          <button class="ab ab-n" onclick="closeAdmin()">✕ Fermer</button>
+        </div>
+        <div id="admin-fb"></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// DONNÉES PILIERS
-// ═══════════════════════════════════════════════════════
+// ── Config admin ───────────────────────────────────────────────
+const ADMIN_PASS = 'CPE59!-Chateau-70+';
+
+// ── Piliers et modules ─────────────────────────────────────────
 const PILLARS = [
   {
-    key:'GRP', icon:'🔺', color:'#a855f7', glow:'rgba(168,85,247,.13)',
+    icon:'🔺', color:'#a855f7',
     title:'Pilier Groupe',
     desc:'Dynamiques de groupe, témoins, manipulation collective',
     modules:[
@@ -224,23 +157,23 @@ const PILLARS = [
     ]
   },
   {
-    key:'HIS', icon:'📜', color:'#f59e0b', glow:'rgba(245,158,11,.13)',
+    icon:'📜', color:'#f59e0b',
     title:'Pilier Histoire',
-    desc:'Harcèlement à travers les âges, mémoire collective, figures de résistance',
+    desc:'Harcèlement à travers les âges, mémoire collective',
     modules:[
       {id:'HISTOIRE_01', file:'PIX_pHARe_Module_HISTOIRE_01.html', name:'Aux Origines du Harcèlement', xp:100},
       {id:'HISTOIRE_02', file:'PIX_pHARe_Module_HISTOIRE_02.html', name:'Les Grandes Affaires', xp:100},
-      {id:'HISTOIRE_03', file:'PIX_pHARe_Module_HISTOIRE_03.html', name:'L'École et la Violence', xp:100},
-      {id:'HISTOIRE_04', file:'PIX_pHARe_Module_HISTOIRE_04.html', name:'Témoins de l'Histoire', xp:100},
+      {id:'HISTOIRE_03', file:'PIX_pHARe_Module_HISTOIRE_03.html', name:"L'École et la Violence", xp:100},
+      {id:'HISTOIRE_04', file:'PIX_pHARe_Module_HISTOIRE_04.html', name:"Témoins de l'Histoire", xp:100},
       {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Résistances et Renaissances', xp:100},
     ]
   },
   {
-    key:'JUR', icon:'⚖️', color:'#3b82f6', glow:'rgba(59,130,246,.13)',
+    icon:'⚖️', color:'#3b82f6',
     title:'Pilier Juridique',
-    desc:'Droit pénal, procédures, droits et devoirs de l'élève et de l'établissement',
+    desc:"Droit pénal, procédures, droits et devoirs de l'élève",
     modules:[
-      {id:'JURIDIQUE_01', file:'PIX_pHARe_Module_JURIDIQUE_01.html', name:'L'Armure Juridique', xp:300},
+      {id:'JURIDIQUE_01', file:'PIX_pHARe_Module_JURIDIQUE_01.html', name:"L'Armure Juridique", xp:300},
       {id:'JURIDIQUE_02', file:'PIX_pHARe_Module_JURIDIQUE_02.html', name:'La Mécanique des Ombres', xp:375},
       {id:'JURIDIQUE_03', file:'PIX_pHARe_Module_JURIDIQUE_03.html', name:'Le Spectre Numérique', xp:450},
       {id:'JURIDIQUE_04', file:'PIX_pHARe_Module_JURIDIQUE_04.html', name:'Le Protocole pHARe', xp:525},
@@ -248,9 +181,9 @@ const PILLARS = [
     ]
   },
   {
-    key:'NEU', icon:'🧠', color:'#10b981', glow:'rgba(16,185,129,.13)',
+    icon:'🧠', color:'#10b981',
     title:'Pilier Neuro',
-    desc:'Cerveau, émotions, empathie, mécanismes neurobiologiques du harcèlement',
+    desc:'Cerveau, émotions, empathie, mécanismes neurobiologiques',
     modules:[
       {id:'NEURO_01', file:'PIX_pHARe_Module_NEURO_01.html', name:'Le Cerveau sous Pression', xp:50},
       {id:'NEURO_02', file:'PIX_pHARe_Module_NEURO_02.html', name:'Empathie & Miroirs', xp:100},
@@ -260,7 +193,7 @@ const PILLARS = [
     ]
   },
   {
-    key:'NUM', icon:'💻', color:'#00d4ff', glow:'rgba(0,212,255,.13)',
+    icon:'💻', color:'#00d4ff',
     title:'Pilier Numérique',
     desc:'Algorithmes, attention, droits numériques et maîtrise du feed',
     modules:[
@@ -273,192 +206,174 @@ const PILLARS = [
   }
 ];
 
-// ═══════════════════════════════════════════════════════
-// UTILS localStorage
-// ═══════════════════════════════════════════════════════
-const ckey = id => 'CERT_PHARE_' + id;
+// ── Joueur ─────────────────────────────────────────────────────
+// PRIORITÉ : ?player= dans l'URL (posé par openTracked du superhub)
+// FALLBACK  : localStorage pvs_current_player
+function initPlayer() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var urlPlayer = urlParams.get('player');
+  if (urlPlayer && urlPlayer.length > 2) {
+    localStorage.setItem('pvs_current_player', urlPlayer);
+    localStorage.setItem('pvs_phare_player',   urlPlayer);
+  }
+}
 
-function getPlayer(){
-  // pvs_current_player posé par le superhub ; pvs_phare_player fallback posé par ce hub
+function getPlayer() {
   return localStorage.getItem('pvs_current_player')
       || localStorage.getItem('pvs_phare_player')
       || '';
 }
 
-function isDone(id){
-  return !!localStorage.getItem(ckey(id));
+// ── Certificats ────────────────────────────────────────────────
+function ckey(id) { return 'CERT_PHARE_' + id; }
+function isDone(id) { return !!localStorage.getItem(ckey(id)); }
+function isUnlocked(pillar, idx) {
+  return idx === 0 || isDone(pillar.modules[idx - 1].id);
 }
-
-function doneCount(){
-  let n = 0;
-  PILLARS.forEach(p => p.modules.forEach(m => { if(isDone(m.id)) n++; }));
+function doneCount() {
+  var n = 0;
+  PILLARS.forEach(function(p){ p.modules.forEach(function(m){ if(isDone(m.id)) n++; }); });
   return n;
 }
-
-function totalXP(){
-  let xp = 0;
-  PILLARS.forEach(p => p.modules.forEach(m => { if(isDone(m.id)) xp += (m.xp || 0); }));
+function totalXP() {
+  var xp = 0;
+  PILLARS.forEach(function(p){ p.modules.forEach(function(m){ if(isDone(m.id)) xp += (m.xp||0); }); });
   return xp;
 }
 
-function isUnlocked(pillar, idx){
-  if(idx === 0) return true;
-  return isDone(pillar.modules[idx-1].id);
-}
-
-// ═══════════════════════════════════════════════════════
-// COMMUNICATION MODULE → HUB
-// ═══════════════════════════════════════════════════════
-function validateModule(moduleId, silent){
-  if(!moduleId) return;
-  const already = isDone(moduleId);
-  // Écrire CERT dans ce hub aussi (cohérence)
+// ── Validation ─────────────────────────────────────────────────
+function validateModule(moduleId, silent) {
+  var was = isDone(moduleId);
   localStorage.setItem(ckey(moduleId), JSON.stringify({
     v:1, d:new Date().toISOString(), m:moduleId, f:true
   }));
-  if(!already) pushBridge(moduleId);
+  if (!was) pushBridge(moduleId);
   render();
-  if(!silent) toast('✅ ' + moduleId + ' validé !');
+  if (!silent) toast('✅ ' + moduleId + ' validé !');
 }
 
-function pushBridge(moduleId){
-  const player = getPlayer();
+function pushBridge(moduleId) {
+  var player = getPlayer();
   try {
     var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-    evts.push({
-      id:     'PHARE-' + moduleId + '-' + Date.now(),
-      type:   'PIXHARE_PROGRESS',
-      player:  player,
-      module:  moduleId,
-      cpTotal: doneCount(),
-      d:       new Date().toISOString()
-    });
-    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    evts.push({ id:'PHARE-'+moduleId+'-'+Date.now(), type:'PIXHARE_PROGRESS',
+                player:player, module:moduleId, cpTotal:doneCount(),
+                d:new Date().toISOString() });
+    if(evts.length > 500) evts.splice(0, evts.length-500);
     localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
     window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
-  } catch(e){}
+  } catch(e) {}
 }
 
-// checkReturn : appelé au focus — lit les CERT_PHARE_* écrits par les modules
-function checkReturn(){
-  let changed = false;
-  PILLARS.forEach(p => p.modules.forEach(m => {
-    const cert = localStorage.getItem(ckey(m.id));
-    if(cert && !isDone(m.id)){
-      validateModule(m.id, true);
-      changed = true;
-    }
-  }));
-  // Lire aussi le bridge events (double filet)
-  try {
-    const evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-    evts.forEach(ev => {
-      if(ev.type === 'PIXHARE_PROGRESS' && ev.module && !isDone(ev.module)){
-        const found = PILLARS.some(p => p.modules.some(m => m.id === ev.module));
-        if(found){ validateModule(ev.module, true); changed = true; }
+function checkReturn() {
+  var changed = false;
+  PILLARS.forEach(function(p){
+    p.modules.forEach(function(m){
+      if(localStorage.getItem(ckey(m.id)) && !isDone(m.id)){
+        validateModule(m.id, true); changed = true;
       }
     });
-  } catch(e){}
+  });
+  try {
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+    evts.forEach(function(ev){
+      if(ev.type === 'PIXHARE_PROGRESS' && ev.module && !isDone(ev.module)){
+        if(PILLARS.some(function(p){ return p.modules.some(function(m){ return m.id===ev.module; }); })){
+          validateModule(ev.module, true); changed = true;
+        }
+      }
+    });
+  } catch(e) {}
   if(changed) render();
 }
 
-// ═══════════════════════════════════════════════════════
-// NAVIGATION VERS MODULE
-// ═══════════════════════════════════════════════════════
-function openModule(file, moduleId){
-  const player = getPlayer();
-  if(!player){
-    toast('⚠️ Connecte-toi au Portail Vie Scolaire avant de commencer !');
-    return;
-  }
-  // S'assurer que le module peut lire le joueur
-  localStorage.setItem('pvs_phare_player', player);
-  // Si pvs_current_player absent, l'écrire pour que le module le trouve
-  if(!localStorage.getItem('pvs_current_player')){
+// ── Navigation vers module ──────────────────────────────────────
+function openModule(file, moduleId) {
+  var player = getPlayer();
+  if(player){
     localStorage.setItem('pvs_current_player', player);
+    localStorage.setItem('pvs_phare_player',   player);
   }
   localStorage.setItem('pvs_phare_pending', moduleId);
-  window.location.href = file;
+  // Passer le joueur en param URL pour que le module le retrouve
+  var sep = file.includes('?') ? '&' : '?';
+  var url  = player ? file + sep + 'player=' + encodeURIComponent(player) : file;
+  window.location.href = url;
 }
 
-// ═══════════════════════════════════════════════════════
-// RENDU
-// ═══════════════════════════════════════════════════════
-function render(){
-  const player = getPlayer();
-  const xp = totalXP();
-  const done = doneCount();
-  const total = PILLARS.reduce((s,p) => s + p.modules.length, 0);
+// ── Rendu ───────────────────────────────────────────────────────
+function render() {
+  var player = getPlayer();
+  var xp     = totalXP();
+  var done   = doneCount();
+  var total  = PILLARS.reduce(function(s,p){ return s + p.modules.length; }, 0);
 
-  document.getElementById('pb-name').textContent = player || 'Non connecté';
-  document.getElementById('pb-xp').textContent = player
-    ? `${xp} XP — ${done}/${total} modules`
-    : '';
+  var pbStatus = document.getElementById('pb-status');
+  var pbXp     = document.getElementById('pb-xp');
 
-  const app = document.getElementById('app');
+  if(player) {
+    pbStatus.innerHTML = '<span class="pb-connected">✅</span> <span class="pb-name">' + player + '</span>';
+    pbXp.textContent   = xp + ' XP · ' + done + '/' + total + ' modules complétés';
+  } else {
+    pbStatus.innerHTML = '<span class="pb-disconnected">⚠️ Non connecté — ouvre ce hub depuis le Portail Vie Scolaire</span>';
+    pbXp.textContent   = '';
+  }
+
+  var app = document.getElementById('app');
   app.innerHTML = '';
 
-  PILLARS.forEach(pillar => {
-    const doneInPillar = pillar.modules.filter(m => isDone(m.id)).length;
-    const totalInPillar = pillar.modules.length;
-    const pct = Math.round(doneInPillar / totalInPillar * 100);
+  PILLARS.forEach(function(pillar) {
+    var doneN  = pillar.modules.filter(function(m){ return isDone(m.id); }).length;
+    var totalN = pillar.modules.length;
+    var pct    = Math.round(doneN / totalN * 100);
 
-    const block = document.createElement('div');
+    var block = document.createElement('div');
     block.className = 'pillar-block';
 
-    // Header
-    const hdr = document.createElement('div');
+    var hdr = document.createElement('div');
     hdr.className = 'pillar-header';
-    hdr.innerHTML = `
-      <div class="pillar-icon">${pillar.icon}</div>
-      <div class="pillar-info">
-        <div class="pillar-title" style="color:${pillar.color}">${pillar.title}</div>
-        <div class="pillar-desc">${pillar.desc}</div>
-      </div>
-      <div class="pillar-stats">
-        <div class="pillar-count">${doneInPillar}/${totalInPillar}</div>
-        <div class="pillar-xptotal" style="color:${pillar.color}">${pct}%</div>
-      </div>
-    `;
+    hdr.innerHTML =
+      '<div class="pillar-icon">' + pillar.icon + '</div>' +
+      '<div class="pillar-info">' +
+        '<div class="pillar-title" style="color:' + pillar.color + '">' + pillar.title + '</div>' +
+        '<div class="pillar-desc">' + pillar.desc + '</div>' +
+      '</div>' +
+      '<div class="pillar-stats">' +
+        '<div class="pillar-count">' + doneN + '/' + totalN + '</div>' +
+        '<div class="pillar-pct" style="color:' + pillar.color + '">' + pct + '%</div>' +
+      '</div>';
     block.appendChild(hdr);
 
-    // Barre de progression
-    const barOuter = document.createElement('div');
-    barOuter.className = 'progress-bar-outer';
-    const barInner = document.createElement('div');
-    barInner.className = 'progress-bar-inner';
-    barInner.style.cssText = `width:${pct}%; background:${pillar.color};`;
-    barOuter.appendChild(barInner);
-    block.appendChild(barOuter);
+    var po = document.createElement('div'); po.className = 'prog-outer';
+    var pi = document.createElement('div'); pi.className = 'prog-inner';
+    pi.style.cssText = 'width:' + pct + '%;background:' + pillar.color;
+    po.appendChild(pi); block.appendChild(po);
 
-    // Liste modules
-    const list = document.createElement('div');
-    list.className = 'modules-list';
+    var list = document.createElement('div');
+    list.className = 'mod-list';
 
-    pillar.modules.forEach((mod, idx) => {
-      const done_mod = isDone(mod.id);
-      const unlocked = isUnlocked(pillar, idx);
-      const row = document.createElement('div');
-      row.className = 'module-row' + (done_mod ? ' done' : '') + (!unlocked ? ' locked' : '');
+    pillar.modules.forEach(function(mod, idx) {
+      var done_m   = isDone(mod.id);
+      var unlocked = isUnlocked(pillar, idx);
+      var color    = (done_m || unlocked) ? pillar.color : '#475569';
 
-      const numColor = done_mod ? pillar.color : (unlocked ? pillar.color : '#475569');
+      var row = document.createElement('div');
+      row.className = 'mod-row' + ((unlocked || done_m) ? ' clickable' : ' locked');
 
-      row.innerHTML = `
-        <div class="mod-num" style="color:${numColor}; border-color:${numColor}">
-          ${done_mod ? '✓' : (idx+1)}
-        </div>
-        <div class="mod-info">
-          <div class="mod-name">${mod.name}</div>
-          <div class="mod-xp">${mod.xp} XP${!unlocked ? ' — 🔒 Termine le module précédent' : ''}</div>
-        </div>
-        <div class="mod-status">${done_mod ? '🏅' : (unlocked ? '▶' : '🔒')}</div>
-      `;
+      row.innerHTML =
+        '<div class="mod-num" style="color:' + color + ';border-color:' + color + '">' +
+          (done_m ? '✓' : (idx+1)) +
+        '</div>' +
+        '<div class="mod-info">' +
+          '<div class="mod-name">' + mod.name + '</div>' +
+          '<div class="mod-sub">' + mod.xp + ' XP' +
+            (!unlocked && !done_m ? ' · 🔒 Module précédent requis' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="mod-ico">' + (done_m ? '🏅' : (unlocked ? '▶' : '🔒')) + '</div>';
 
-      if(unlocked && !done_mod){
-        row.addEventListener('click', () => openModule(mod.file, mod.id));
-      } else if(done_mod){
-        row.style.cursor = 'default';
-        row.title = 'Module terminé';
+      if(unlocked || done_m) {
+        (function(f, mid){ row.addEventListener('click', function(){ openModule(f, mid); }); })(mod.file, mod.id);
       }
       list.appendChild(row);
     });
@@ -467,85 +382,125 @@ function render(){
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// ADMIN
-// ═══════════════════════════════════════════════════════
-const ADMIN_PWD = 'AGORA-ADMIN';
+// ── Admin ───────────────────────────────────────────────────────
+var adminUnlocked = false;
 
-function openAdmin(){
-  // Peupler la liste des modules
-  const sel = document.getElementById('select-module');
-  sel.innerHTML = '<option value="">-- Choisir un module --</option>';
-  PILLARS.forEach(p => p.modules.forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m.id;
-    opt.textContent = (isDone(m.id) ? '✓ ' : '') + m.id + ' — ' + m.name;
-    sel.appendChild(opt);
-  }));
-  document.getElementById('admin-panel').classList.add('open');
-}
-
-function closeAdmin(){
-  document.getElementById('admin-panel').classList.remove('open');
+function openAdmin() {
+  adminUnlocked = false;
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-panel').style.display = 'none';
   document.getElementById('admin-pwd').value = '';
   document.getElementById('admin-err').textContent = '';
-  document.getElementById('admin-module-select').style.display = 'none';
-  document.getElementById('admin-login-btns').style.display = 'flex';
+  document.getElementById('admin-fb').textContent  = '';
+  document.getElementById('admin-overlay').classList.add('open');
+  setTimeout(function(){ document.getElementById('admin-pwd').focus(); }, 80);
 }
 
-function adminLogin(){
-  const pwd = document.getElementById('admin-pwd').value;
-  if(pwd !== ADMIN_PWD){
-    document.getElementById('admin-err').textContent = '❌ Mot de passe incorrect';
+function closeAdmin() {
+  document.getElementById('admin-overlay').classList.remove('open');
+  adminUnlocked = false;
+}
+
+function adminLogin() {
+  var pwd = document.getElementById('admin-pwd').value.trim();
+  if(pwd !== ADMIN_PASS) {
+    document.getElementById('admin-err').textContent = '❌ Code incorrect';
     return;
   }
-  document.getElementById('admin-module-select').style.display = 'block';
-  document.getElementById('admin-login-btns').style.display = 'none';
-  document.getElementById('admin-err').textContent = '';
+  adminUnlocked = true;
+  document.getElementById('admin-login').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  buildAdminList();
 }
 
-function adminValidate(){
-  const id = document.getElementById('select-module').value;
-  if(!id){ toast('⚠️ Choisis un module'); return; }
-  validateModule(id, false);
-  openAdmin(); // rafraîchir la liste
+function buildAdminList() {
+  var player = getPlayer();
+  document.getElementById('admin-player-info').textContent =
+    player ? 'Joueur actif : ' + player
+           : '⚠️ Aucun joueur — connecte un élève depuis le superhub avant de valider';
+
+  var list = document.getElementById('admin-mod-list');
+  list.innerHTML = '';
+
+  PILLARS.forEach(function(pillar) {
+    var sep = document.createElement('div');
+    sep.className = 'psep';
+    sep.textContent = pillar.icon + ' ' + pillar.title;
+    list.appendChild(sep);
+
+    pillar.modules.forEach(function(mod) {
+      var done_m = isDone(mod.id);
+      var wrap   = document.createElement('label');
+      wrap.className = 'mc';
+
+      var chk = document.createElement('input');
+      chk.type    = 'checkbox';
+      chk.value   = mod.id;
+      chk.checked = done_m;
+
+      var lbl = document.createElement('span');
+      lbl.className = 'mc-lbl';
+      lbl.innerHTML = mod.name + (done_m ? '<span class="mc-done">✓ validé</span>' : '');
+
+      wrap.appendChild(chk);
+      wrap.appendChild(lbl);
+      list.appendChild(wrap);
+    });
+  });
 }
 
-function hardReset(){
-  if(!confirm('Supprimer TOUTES les progressions PIXHARe ?')) return;
-  PILLARS.forEach(p => p.modules.forEach(m => {
-    localStorage.removeItem(ckey(m.id));
-  }));
+function adminValidateSelected() {
+  if(!adminUnlocked) return;
+  var boxes = document.querySelectorAll('#admin-mod-list input[type=checkbox]');
+  var count = 0;
+  boxes.forEach(function(chk){
+    if(chk.checked && !isDone(chk.value)){
+      validateModule(chk.value, true);
+      count++;
+    }
+  });
+  var fb = document.getElementById('admin-fb');
+  if(count > 0) {
+    fb.className = 'aok'; fb.textContent = '✅ ' + count + ' module(s) validé(s) avec succès';
+    buildAdminList();
+  } else {
+    fb.className = 'aerr'; fb.textContent = 'Aucun nouveau module à valider dans la sélection';
+  }
+}
+
+function adminResetAll() {
+  if(!adminUnlocked) return;
+  if(!confirm('Supprimer TOUTE la progression PIXHARe du joueur actuel ?')) return;
+  PILLARS.forEach(function(p){
+    p.modules.forEach(function(m){ localStorage.removeItem(ckey(m.id)); });
+  });
   localStorage.removeItem('pvs_phare_pending');
-  closeAdmin();
+  var fb = document.getElementById('admin-fb');
+  fb.className = 'aok'; fb.textContent = '🗑 Progression supprimée';
+  buildAdminList();
   render();
-  toast('🗑 Réinitialisé');
 }
 
-function toast(msg, duration=3000){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), duration);
+// ── Toast ───────────────────────────────────────────────────────
+var _tt;
+function toast(msg, ms) {
+  var t = document.getElementById('toast');
+  t.textContent = msg || ''; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(function(){ t.classList.remove('show'); }, ms||3000);
 }
 
-// ═══════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════
-window.addEventListener('focus', () => { checkReturn(); render(); });
-window.addEventListener('storage', e => {
-  if(e.key === 'pvs_bridge_events' || e.key && e.key.startsWith('CERT_PHARE_')){
-    checkReturn();
-    render();
+// ── Événements ──────────────────────────────────────────────────
+window.addEventListener('focus', function(){ checkReturn(); render(); });
+window.addEventListener('storage', function(e){
+  if(!e.key || e.key.startsWith('CERT_PHARE_') || e.key === 'pvs_bridge_events'){
+    checkReturn(); render();
   }
 });
 
-// Au chargement : vérifier les CERT déjà présents (si on revient d'un module)
-document.addEventListener('DOMContentLoaded', () => {
-  checkReturn();
-  render();
-});
+// ── Init ────────────────────────────────────────────────────────
+initPlayer();
+checkReturn();
+render();
 </script>
 </body>
 </html>
