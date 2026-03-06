@@ -257,7 +257,7 @@ function pushBridge(moduleId) {
   try {
     var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
     evts.push({ id:'PHARE-'+moduleId+'-'+Date.now(), type:'PIXHARE_PROGRESS',
-                player:player, module:moduleId, cpTotal:doneCount(),
+                player:player, module:moduleId, cpTotal:doneCount(), hubXpTotal:totalXP(),
                 d:new Date().toISOString() });
     if(evts.length > 500) evts.splice(0, evts.length-500);
     localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));

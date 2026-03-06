@@ -921,6 +921,12 @@
                     xp: prev.xp + 100 
                 }));
                 setGameState("final");
+                try {
+                    var _ck = 'CERT_PHARE_' + MODULE_ID;
+                    if (!localStorage.getItem(_ck)) {
+                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
+                    }
+                } catch(_ce) {}
                 // ── Remontée XP vers Superhub PVS ──
                 try {
                     var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');

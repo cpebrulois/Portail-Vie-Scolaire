@@ -649,8 +649,10 @@
         }
 
         function App() {
-            const [gameState, setGameState] = useState("unlock");
-            const [playerData, setPlayerData] = useState({ name: localStorage.getItem('pvs_current_player') || "", class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, finished: false });
+            const activePlayer = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || "";
+            const hasHubUnlock = !!activePlayer && !!localStorage.getItem('CERT_PHARE_' + PREREQUISITE_MODULE);
+            const [gameState, setGameState] = useState(hasHubUnlock ? "intro" : "unlock");
+            const [playerData, setPlayerData] = useState({ name: activePlayer, class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, finished: false });
             const [unlockCode, setUnlockCode] = useState("");
             const [unlockError, setUnlockError] = useState("");
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
@@ -667,7 +669,7 @@
                 if (!decoded) { setUnlockError("Code invalide."); return; }
                 if (decoded.m !== PREREQUISITE_MODULE) { setUnlockError(`Code du module ${decoded.m}. Il te faut celui de ${PREREQUISITE_MODULE}.`); return; }
                 if (!decoded.f) { setUnlockError("Module précédent non terminé."); return; }
-                setPlayerData(prev => ({ ...prev, name: localStorage.getItem('pvs_current_player') || decoded.n || "" }));
+                setPlayerData(prev => ({ ...prev, name: activePlayer || decoded.n || "" }));
                 setGameState("intro");
             }
 
@@ -715,7 +717,13 @@
                     setShowScenarioResult(false);
                 } else {
                     setPlayerData(prev => ({ ...prev, finished: true, xp: prev.xp + 100 }));
-                    
+                    try {
+                        var _ck = 'CERT_PHARE_' + MODULE_ID;
+                        if (!localStorage.getItem(_ck)) {
+                            localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
+                        }
+                    } catch(_ce) {}
+
                 // ── Bridge Superhub PVS ──
                 try {
                     var _pvsBridge = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
