@@ -441,20 +441,33 @@
     });
 
     // --- SYSTÈME DE BONUS (5 PILIERS) ---
+    // Compatible avec le hub intégré (CERT_PHARE_*) ET l'ancien format (CERT_*_N)
+    const PILLAR_MAP = {
+        NUM:   ['NUMERIQUE_01','NUMERIQUE_02','NUMERIQUE_03','NUMERIQUE_04','NUMERIQUE_05'],
+        JUR:   ['JURIDIQUE_01','JURIDIQUE_02','JURIDIQUE_03','JURIDIQUE_04','JURIDIQUE_05'],
+        GRP:   ['GROUPE_01','GROUPE_02','GROUPE_03','GROUPE_04','GROUPE_05'],
+        HIS:   ['HISTOIRE_01','HISTOIRE_02','HISTOIRE_03','HISTOIRE_04','HISTOIRE_05'],
+        NEU:   ['NEURO_01','NEURO_02','NEURO_03','NEURO_04','NEURO_05']
+    };
+
     function getLvl(pillar) { 
-        let lvl = 0; 
-        for(let i = 1; i <= 5; i++) {
-            if(localStorage.getItem(`CERT_${pillar}_${i}`)) lvl = i;
+        let lvl = 0;
+        const ids = PILLAR_MAP[pillar] || [];
+        for(let i = 0; i < ids.length; i++) {
+            // Check new format (CERT_PHARE_GROUPE_01) first, fallback to old (CERT_GRP_1)
+            if(localStorage.getItem('CERT_PHARE_' + ids[i]) || localStorage.getItem(`CERT_${pillar}_${i+1}`)) {
+                lvl = i + 1;
+            }
         }
         return lvl; 
     }
 
     const BONUSES = {
-        NUM: getLvl('NUM'),    // Lasers multiples (pas encore de modules)
-        JUR: getLvl('JUR'),    // Bouclier (pas encore de modules)
-        GRO: getLvl('GRP'),    // Drones (CERT_GRP_X dans localStorage)
-        HIS: getLvl('HIS'),    // Blindage (HP max)
-        NEURO: getLvl('NEU')   // Régénération (CERT_NEU_X dans localStorage)
+        NUM: getLvl('NUM'),
+        JUR: getLvl('JUR'),
+        GRO: getLvl('GRP'),
+        HIS: getLvl('HIS'),
+        NEURO: getLvl('NEU')
     };
 
     // UI Hangar

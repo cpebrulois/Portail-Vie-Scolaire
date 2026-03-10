@@ -3,134 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIX pHARe — Hub de Formation</title>
+<title>PIX pHARe — Hub de Formation & Médiation</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&family=Courier+New:wght@700&family=Orbitron:wght@700&display=swap');
+
 :root {
-  --bg:#0a0e1a; --card:#111827; --border:rgba(255,255,255,.08);
-  --text:#e2e8f0; --muted:#64748b;
-  --accent:#f97316; --green:#22c55e; --red:#ef4444;
+  --neon:#00d4ff; --neon-red:#ff0044; --neon-green:#00ff88; --neon-gold:#ffd700;
+  --dark:#0a0a12; --panel:#16213e; --locked:#2a2a35;
+  --border:rgba(255,255,255,.08); --muted:#64748b;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding-bottom:70px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:#fff;font-family:'Segoe UI',sans-serif;padding:20px;text-align:center;min-height:100vh;}
 
-.hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:24px 20px 18px;text-align:center;}
-.hero h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;letter-spacing:-.5px;color:#fff;}
-.hero h1 span{color:var(--accent);}
-.hero p{color:var(--muted);font-size:.85rem;margin-top:5px;}
+/* === NOTICE D'ACCUEIL === */
+#welcome-overlay{position:fixed;inset:0;background:rgba(10,10,18,.95);z-index:20000;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease-out;}
+#welcome-overlay.hidden{display:none;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.welcome-box{background:var(--panel);border:2px solid var(--neon);border-radius:15px;max-width:600px;padding:40px;box-shadow:0 0 50px rgba(0,212,255,.3);animation:slideUp .4s ease-out;}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.welcome-box h2{font-family:'Orbitron',sans-serif;color:var(--neon);margin-bottom:20px;font-size:1.8em;text-transform:uppercase;letter-spacing:3px;}
+.welcome-box p{color:#ccc;line-height:1.6;margin-bottom:15px;text-align:left;}
+.welcome-box ul{text-align:left;color:#aaa;margin:15px 0 20px 20px;line-height:1.8;}
+.welcome-box ul li{margin-bottom:8px;}
+.welcome-box strong{color:var(--neon-green);}
+.btn-welcome-close{background:var(--neon);color:#000;border:none;padding:12px 30px;font-weight:bold;font-size:1em;cursor:pointer;border-radius:5px;margin-top:20px;transition:.3s;text-transform:uppercase;letter-spacing:1px;}
+.btn-welcome-close:hover{background:#fff;box-shadow:0 0 20px var(--neon);}
+#btn-reopen-notice{position:fixed;top:15px;left:15px;background:rgba(22,33,62,.8);border:1px solid var(--neon);color:var(--neon);padding:8px 15px;font-size:.75em;cursor:pointer;border-radius:5px;z-index:9999;font-weight:bold;transition:.3s;text-transform:uppercase;opacity:.7;}
+#btn-reopen-notice:hover{opacity:1;background:var(--neon);color:#000;}
 
-#player-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);font-size:.85rem;flex-wrap:wrap;text-align:center;}
-.pb-connected{color:var(--green);}
+/* === HEADER === */
+h1{font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:5px;color:var(--neon);margin-bottom:5px;font-weight:800;text-shadow:0 0 10px rgba(0,212,255,.5);}
+h1 span{color:#fff;}
+.subtitle{color:#888;margin-bottom:10px;font-style:italic;font-size:.9em;}
+
+/* === PLAYER BAR === */
+#player-bar{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 20px;background:rgba(22,33,62,.5);border:1px solid var(--border);border-radius:10px;font-size:.85rem;flex-wrap:wrap;margin:0 auto 20px;max-width:700px;}
+.pb-connected{color:var(--neon-green);}
 .pb-name{font-weight:700;color:#fff;}
-.pb-disconnected{color:var(--red);}
-.pb-xp{color:var(--green);font-weight:700;}
+.pb-disconnected{color:var(--neon-red);}
+.pb-xp{color:var(--neon-green);font-weight:700;font-family:'Courier New',monospace;}
 
-.container{max-width:780px;margin:0 auto;padding:20px 14px;}
+/* === BOUTON ARCADE === */
+.arcade-btn{display:block;margin:0 auto 30px;background:transparent;border:2px solid var(--neon-gold);color:var(--neon-gold);padding:12px 30px;font-family:'Courier New',monospace;font-weight:bold;cursor:pointer;text-decoration:none;width:fit-content;text-transform:uppercase;letter-spacing:2px;box-shadow:0 0 10px rgba(255,215,0,.2);transition:.3s;animation:pulse-gold 2s infinite;border-radius:6px;font-size:1em;}
+.arcade-btn:hover{background:var(--neon-gold);color:#000;box-shadow:0 0 25px var(--neon-gold);}
+.arcade-btn.locked{opacity:.35;pointer-events:none;filter:grayscale(1);animation:none;border-color:#555;color:#555;}
+@keyframes pulse-gold{0%{opacity:1}50%{opacity:.7}100%{opacity:1}}
 
-.pillar-block{margin-bottom:22px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card);}
-.pillar-header{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
-.pillar-icon{font-size:1.8rem;flex-shrink:0;}
-.pillar-info{flex:1;}
-.pillar-title{font-weight:700;font-size:1rem;}
-.pillar-desc{color:var(--muted);font-size:.78rem;margin-top:2px;}
-.pillar-stats{text-align:right;flex-shrink:0;}
-.pillar-count{font-size:.78rem;color:var(--muted);}
-.pillar-pct{font-size:.9rem;font-weight:700;}
-.prog-outer{height:3px;background:rgba(255,255,255,.07);}
-.prog-inner{height:3px;transition:width .4s;}
+/* === MATRICE === */
+.matrix-container{display:flex;flex-wrap:wrap;justify-content:center;gap:30px;padding-bottom:80px;}
+.pillar-column{background:rgba(22,33,62,.5);border-radius:12px;padding:15px;width:300px;border-top:4px solid #555;display:flex;flex-direction:column;gap:15px;}
+.pillar-title{font-size:1.3em;font-weight:bold;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
+.pillar-stats{font-size:.78rem;color:var(--muted);margin-top:-6px;margin-bottom:4px;}
+.module-card{background:var(--locked);padding:15px;border-radius:6px;border-left:4px solid #444;text-align:left;position:relative;transition:.3s;}
+.module-card.locked{opacity:.5;pointer-events:none;filter:grayscale(1);}
+.module-card.open{background:var(--panel);border-left-color:var(--neon);cursor:pointer;}
+.module-card.open:hover{background:rgba(22,33,62,.9);box-shadow:0 0 15px rgba(0,212,255,.15);}
+.module-card.done{background:#0f2e20;border-left-color:var(--neon-green);}
+.module-card h4{margin:0 0 5px;font-size:1.05em;}
+.status-txt{font-size:.7em;font-weight:bold;text-transform:uppercase;float:right;margin-top:3px;}
+.mod-xp{font-size:.75em;color:var(--muted);font-family:'Courier New',monospace;}
+.btn-launch{display:block;width:100%;padding:10px;margin-top:10px;background:transparent;border:1px solid var(--neon);color:var(--neon);text-decoration:none;text-align:center;font-size:.9em;font-weight:bold;transition:.3s;border-radius:4px;}
+.btn-launch:hover{background:var(--neon);color:#000;}
 
-.mod-list{padding:4px 0;}
-.mod-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
-.mod-row:last-child{border-bottom:none;}
-.mod-row.clickable{cursor:pointer;}
-.mod-row.clickable:hover{background:rgba(255,255,255,.05);}
-.mod-row.locked{opacity:.4;cursor:not-allowed;}
-.mod-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;border:2px solid currentColor;}
-.mod-info{flex:1;}
-.mod-name{font-weight:600;font-size:.9rem;}
-.mod-sub{font-size:.75rem;color:var(--muted);margin-top:1px;}
-.mod-ico{font-size:1.1rem;flex-shrink:0;}
-
-#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:10px;font-size:.85rem;z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;}
-#toast.show{opacity:1;}
-
+/* === ADMIN === */
 #admin-fab{position:fixed;bottom:18px;right:16px;background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);padding:7px 13px;border-radius:8px;font-size:.78rem;cursor:pointer;z-index:800;}
 #admin-fab:hover{background:rgba(255,255,255,.12);}
-
 #admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:950;align-items:center;justify-content:center;}
 #admin-overlay.open{display:flex;}
 #admin-box{background:#1e293b;border:1px solid var(--border);border-radius:16px;padding:24px;width:min(440px,93vw);max-height:88vh;overflow-y:auto;}
-#admin-box h3{font-size:1.1rem;margin-bottom:14px;color:var(--accent);}
-.ai{width:100%;padding:9px 12px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:.88rem;margin-bottom:10px;}
-.ai:focus{outline:none;border-color:var(--accent);}
+#admin-box h3{font-size:1.1rem;margin-bottom:14px;color:var(--neon);}
+.ai{width:100%;padding:9px 12px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:#fff;border-radius:8px;font-size:.88rem;margin-bottom:10px;}
+.ai:focus{outline:none;border-color:var(--neon);}
 .arow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
 .ab{padding:8px 15px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:.84rem;}
-.ab-p{background:var(--accent);color:#fff;}
-.ab-g{background:var(--green);color:#000;}
-.ab-r{background:var(--red);color:#fff;}
-.ab-n{background:rgba(255,255,255,.12);color:var(--text);}
+.ab-p{background:var(--neon);color:#000;}
+.ab-g{background:var(--neon-green);color:#000;}
+.ab-r{background:var(--neon-red);color:#fff;}
+.ab-n{background:rgba(255,255,255,.12);color:#fff;}
 .asec{margin-top:14px;border-top:1px solid var(--border);padding-top:12px;}
 .asec h4{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
 .mcl{display:flex;flex-direction:column;gap:3px;max-height:320px;overflow-y:auto;}
-.mc{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;background:rgba(255,255,255,.04);cursor:pointer;transition:background .1s;}
+.mc{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;background:rgba(255,255,255,.04);cursor:pointer;transition:.1s;}
 .mc:hover{background:rgba(255,255,255,.08);}
-.mc input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+.mc input{accent-color:var(--neon);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
 .mc-lbl{font-size:.84rem;flex:1;}
-.mc-done{color:var(--green);font-size:.72rem;margin-left:6px;}
+.mc-done{color:var(--neon-green);font-size:.72rem;margin-left:6px;}
 .psep{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 4px 4px;border-top:1px solid var(--border);margin-top:4px;}
 .psep:first-child{border-top:none;padding-top:0;}
-.aerr{color:var(--red);font-size:.8rem;margin-top:6px;}
-.aok{color:var(--green);font-size:.8rem;margin-top:6px;}
-.aplayer{font-size:.82rem;padding:8px 10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:7px;color:var(--green);margin-bottom:10px;}
+.aerr{color:var(--neon-red);font-size:.8rem;margin-top:6px;}
+.aok{color:var(--neon-green);font-size:.8rem;margin-top:6px;}
+.aplayer{font-size:.82rem;padding:8px 10px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:7px;color:var(--neon);margin-bottom:10px;}
+
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--neon);color:#fff;padding:9px 18px;border-radius:10px;font-size:.85rem;z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;}
+#toast.show{opacity:1;}
+
+@media(max-width:768px){.pillar-column{width:100%;}.welcome-box{margin:20px;padding:25px;}}
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <h1>PIX <span>pHARe</span></h1>
-  <p>Programme de Formation Anti-Harcèlement · Collège Château Rance</p>
+<!-- NOTICE D'ACCUEIL -->
+<div id="welcome-overlay">
+  <div class="welcome-box">
+    <h2>&#x1F3DB; Bienvenue sur PIX pHARe</h2>
+    <p><strong>PIX pHARe</strong> est votre plateforme de formation interactive sur le harcèlement scolaire, la médiation et le vivre-ensemble.</p>
+    <p><strong>Comment ça fonctionne ?</strong></p>
+    <ul>
+      <li>&#x1F4DA; <strong>5 Piliers thématiques</strong> : Groupe, Histoire, Juridique, Neuro, Numérique</li>
+      <li>&#x1F3AF; <strong>Progression par niveaux</strong> : Chaque pilier contient 5 modules progressifs</li>
+      <li>&#x1F513; <strong>Validation automatique</strong> : Complète un module, la progression est enregistrée</li>
+      <li>&#x1F3AE; <strong>Zone Arcade</strong> : Bonus débloqué dès ton premier module validé !</li>
+    </ul>
+    <p><strong>Conseil :</strong> Commence par le <strong>Niveau 1</strong> de chaque pilier.</p>
+    <button class="btn-welcome-close" onclick="closeWelcome()">COMMENCER L'AVENTURE</button>
+  </div>
 </div>
 
+<button id="btn-reopen-notice" onclick="showWelcome()">&#x2139;&#xFE0F; NOTICE</button>
+
+<!-- HEADER -->
+<h1>PIX <span>///</span> pHARe</h1>
+<p class="subtitle">Programme de Formation Anti-Harcèlement &middot; Coll&egrave;ge Ch&acirc;teau Rance</p>
+
+<!-- PLAYER BAR -->
 <div id="player-bar">
   <span id="pb-status"></span>
   <span id="pb-xp"></span>
 </div>
 
-<div class="container" id="app"></div>
+<!-- BOUTON ARCADE -->
+<a href="#" id="arcadeLink" class="arcade-btn locked" onclick="launchArcade(); return false;">
+  &#x1F512; ZONE ARCADE — Valide un module pour débloquer
+  <span id="arcadeLvlWrap" style="display:none"> (Lvl.<span id="arcadeLvl">0</span>)</span>
+</a>
 
+<!-- MATRICE DES MODULES -->
+<div class="matrix-container" id="matrixRoot"></div>
+
+<!-- TOAST -->
 <div id="toast"></div>
-<button id="admin-fab" onclick="openAdmin()">⚙ Admin</button>
 
+<!-- ADMIN -->
+<button id="admin-fab" onclick="openAdmin()">&#x2699; Admin</button>
 <div id="admin-overlay">
   <div id="admin-box">
-    <h3>⚙ Administration PIXHARe</h3>
-
+    <h3>&#x2699; Administration PIXHARe</h3>
     <div id="admin-login">
       <p style="font-size:.83rem;color:var(--muted);margin-bottom:10px;">
         Entrez votre code CPE pour accéder à la validation manuelle des modules.
       </p>
-      <input class="ai" type="password" id="admin-pwd"
-             placeholder="Code administrateur…"
-             onkeydown="if(event.key==='Enter')adminLogin()"/>
+      <input class="ai" type="password" id="admin-pwd" placeholder="Code administrateur..." onkeydown="if(event.key==='Enter')adminLogin()"/>
       <div class="arow">
         <button class="ab ab-p" onclick="adminLogin()">Connexion</button>
         <button class="ab ab-n" onclick="closeAdmin()">Annuler</button>
       </div>
       <div class="aerr" id="admin-err"></div>
     </div>
-
     <div id="admin-panel" style="display:none;">
       <div class="aplayer" id="admin-player-info"></div>
-
       <div class="asec">
         <h4>Sélectionner les modules à valider</h4>
         <div class="mcl" id="admin-mod-list"></div>
       </div>
-
       <div class="asec">
         <div class="arow">
-          <button class="ab ab-g" onclick="adminValidateSelected()">✓ Valider la sélection</button>
-          <button class="ab ab-r" onclick="adminResetAll()">🗑 Tout réinitialiser</button>
-          <button class="ab ab-n" onclick="closeAdmin()">✕ Fermer</button>
+          <button class="ab ab-g" onclick="adminValidateSelected()">&#x2713; Valider la sélection</button>
+          <button class="ab ab-r" onclick="adminResetAll()">&#x1F5D1; Tout réinitialiser</button>
+          <button class="ab ab-n" onclick="closeAdmin()">&#x2715; Fermer</button>
         </div>
         <div id="admin-fb"></div>
       </div>
@@ -140,12 +179,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 
 <script>
 // ── Config admin ───────────────────────────────────────────────
-const ADMIN_PASS = 'CPE59!-Chateau-70+';
+var ADMIN_PASS = 'CPE59!-Chateau-70+';
 
 // ── Piliers et modules ─────────────────────────────────────────
-const PILLARS = [
+var PILLARS = [
   {
-    icon:'🔺', color:'#a855f7',
+    icon:'\u{1F538}', color:'#a855f7', key:'GRP',
     title:'Pilier Groupe',
     desc:'Dynamiques de groupe, témoins, manipulation collective',
     modules:[
@@ -153,11 +192,11 @@ const PILLARS = [
       {id:'GROUPE_02', file:'PIX_pHARe_Module_GROUPE_02.html', name:'La Mécanique des Foules', xp:100},
       {id:'GROUPE_03', file:'PIX_pHARe_Module_GROUPE_03.html', name:'Bystander Effect', xp:100},
       {id:'GROUPE_04', file:'PIX_pHARe_Module_GROUPE_04.html', name:'Résistance au Groupe', xp:100},
-      {id:'GROUPE_05', file:'PIX_pHARe_Module_GROUPE_05.html', name:'Ambassadeur en Action', xp:100},
+      {id:'GROUPE_05', file:'PIX_pHARe_Module_GROUPE_05.html', name:'Ambassadeur en Action', xp:100}
     ]
   },
   {
-    icon:'📜', color:'#f59e0b',
+    icon:'\u{1F4DC}', color:'#f59e0b', key:'HIS',
     title:'Pilier Histoire',
     desc:'Harcèlement à travers les âges, mémoire collective',
     modules:[
@@ -165,11 +204,11 @@ const PILLARS = [
       {id:'HISTOIRE_02', file:'PIX_pHARe_Module_HISTOIRE_02.html', name:'Les Grandes Affaires', xp:100},
       {id:'HISTOIRE_03', file:'PIX_pHARe_Module_HISTOIRE_03.html', name:"L'École et la Violence", xp:100},
       {id:'HISTOIRE_04', file:'PIX_pHARe_Module_HISTOIRE_04.html', name:"Témoins de l'Histoire", xp:100},
-      {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Résistances et Renaissances', xp:100},
+      {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Résistances et Renaissances', xp:100}
     ]
   },
   {
-    icon:'⚖️', color:'#3b82f6',
+    icon:'\u2696\uFE0F', color:'#3b82f6', key:'JUR',
     title:'Pilier Juridique',
     desc:"Droit pénal, procédures, droits et devoirs de l'élève",
     modules:[
@@ -177,11 +216,11 @@ const PILLARS = [
       {id:'JURIDIQUE_02', file:'PIX_pHARe_Module_JURIDIQUE_02.html', name:'La Mécanique des Ombres', xp:375},
       {id:'JURIDIQUE_03', file:'PIX_pHARe_Module_JURIDIQUE_03.html', name:'Le Spectre Numérique', xp:450},
       {id:'JURIDIQUE_04', file:'PIX_pHARe_Module_JURIDIQUE_04.html', name:'Le Protocole pHARe', xp:525},
-      {id:'JURIDIQUE_05', file:'PIX_pHARe_Module_JURIDIQUE_05.html', name:'Maître de la Loi', xp:625},
+      {id:'JURIDIQUE_05', file:'PIX_pHARe_Module_JURIDIQUE_05.html', name:'Maître de la Loi', xp:625}
     ]
   },
   {
-    icon:'🧠', color:'#10b981',
+    icon:'\u{1F9E0}', color:'#10b981', key:'NEU',
     title:'Pilier Neuro',
     desc:'Cerveau, émotions, empathie, mécanismes neurobiologiques',
     modules:[
@@ -189,11 +228,11 @@ const PILLARS = [
       {id:'NEURO_02', file:'PIX_pHARe_Module_NEURO_02.html', name:'Empathie & Miroirs', xp:100},
       {id:'NEURO_03', file:'PIX_pHARe_Module_NEURO_03.html', name:'Stress & Mémoire', xp:100},
       {id:'NEURO_04', file:'PIX_pHARe_Module_NEURO_04.html', name:'Émotions & Décision', xp:100},
-      {id:'NEURO_05', file:'PIX_pHARe_Module_NEURO_05.html', name:'Résilience Neuronale', xp:100},
+      {id:'NEURO_05', file:'PIX_pHARe_Module_NEURO_05.html', name:'Résilience Neuronale', xp:100}
     ]
   },
   {
-    icon:'💻', color:'#00d4ff',
+    icon:'\u{1F4BB}', color:'#00d4ff', key:'NUM',
     title:'Pilier Numérique',
     desc:'Algorithmes, attention, droits numériques et maîtrise du feed',
     modules:[
@@ -201,23 +240,30 @@ const PILLARS = [
       {id:'NUMERIQUE_02', file:'PIX_pHARe_Module_NUMERIQUE_02.html', name:"Les Architectes de l'Ombre", xp:100},
       {id:'NUMERIQUE_03', file:'PIX_pHARe_Module_NUMERIQUE_03.html', name:'Bulles & Miroirs', xp:120},
       {id:'NUMERIQUE_04', file:'PIX_pHARe_Module_NUMERIQUE_04.html', name:'Tes Droits, Ton Armure', xp:150},
-      {id:'NUMERIQUE_05', file:'PIX_pHARe_Module_NUMERIQUE_05.html', name:'Maître du Feed', xp:200},
+      {id:'NUMERIQUE_05', file:'PIX_pHARe_Module_NUMERIQUE_05.html', name:'Maître du Feed', xp:200}
     ]
   }
 ];
 
-// ── Joueur ─────────────────────────────────────────────────────
-// PRIORITÉ : ?player= dans l'URL (posé par openTracked du superhub)
-// FALLBACK  : localStorage pvs_current_player
+// ── Notice d'accueil ───────────────────────────────────────────
+function closeWelcome() {
+  document.getElementById('welcome-overlay').classList.add('hidden');
+  localStorage.setItem('PIXHARE_WELCOME_SEEN', 'true');
+}
+function showWelcome() {
+  document.getElementById('welcome-overlay').classList.remove('hidden');
+}
+if (localStorage.getItem('PIXHARE_WELCOME_SEEN')) { closeWelcome(); }
+
+// ── Joueur (super-hub bridge) ──────────────────────────────────
 function initPlayer() {
   var urlParams = new URLSearchParams(window.location.search);
   var urlPlayer = urlParams.get('player');
   if (urlPlayer && urlPlayer.length > 2) {
     localStorage.setItem('pvs_current_player', urlPlayer);
-    localStorage.setItem('pvs_phare_player',   urlPlayer);
+    localStorage.setItem('pvs_phare_player', urlPlayer);
   }
 }
-
 function getPlayer() {
   return localStorage.getItem('pvs_current_player')
       || localStorage.getItem('pvs_phare_player')
@@ -249,7 +295,7 @@ function validateModule(moduleId, silent) {
   }));
   if (!was) pushBridge(moduleId);
   render();
-  if (!silent) toast('✅ ' + moduleId + ' validé !');
+  if (!silent) toast('\u2705 ' + moduleId + ' validé !');
 }
 
 function pushBridge(moduleId) {
@@ -292,119 +338,123 @@ function openModule(file, moduleId) {
   var player = getPlayer();
   if(player){
     localStorage.setItem('pvs_current_player', player);
-    localStorage.setItem('pvs_phare_player',   player);
+    localStorage.setItem('pvs_phare_player', player);
   }
   localStorage.setItem('pvs_phare_pending', moduleId);
-  // Passer le joueur en param URL pour que le module le retrouve
   var sep = file.includes('?') ? '&' : '?';
-  var url  = player ? file + sep + 'player=' + encodeURIComponent(player) : file;
+  var url = player ? file + sep + 'player=' + encodeURIComponent(player) : file;
   window.location.href = url;
 }
 
-// ── Rendu ───────────────────────────────────────────────────────
+// ── Arcade ──────────────────────────────────────────────────────
+function updateArcadeButton() {
+  var total = doneCount();
+  var btn = document.getElementById('arcadeLink');
+  var wrap = document.getElementById('arcadeLvlWrap');
+  if (total > 0) {
+    btn.classList.remove('locked');
+    btn.innerHTML = '\u{1F47E} ZONE ARCADE (Lvl.<span id="arcadeLvl">' + total + '</span>)';
+  } else {
+    btn.classList.add('locked');
+    btn.innerHTML = '\u{1F512} ZONE ARCADE \u2014 Valide un module pour d\u00E9bloquer';
+  }
+}
+
+function launchArcade() {
+  var total = doneCount();
+  if (total < 1) return;
+  window.open('BONUS_ARCADE.html?power=' + total, '_blank');
+}
+
+// ── Rendu principal ─────────────────────────────────────────────
 function render() {
   var player = getPlayer();
-  var xp     = totalXP();
-  var done   = doneCount();
-  var total  = PILLARS.reduce(function(s,p){ return s + p.modules.length; }, 0);
+  var xp = totalXP();
+  var done = doneCount();
+  var total = PILLARS.reduce(function(s,p){ return s + p.modules.length; }, 0);
 
   var pbStatus = document.getElementById('pb-status');
-  var pbXp     = document.getElementById('pb-xp');
+  var pbXp = document.getElementById('pb-xp');
 
   if(player) {
-    pbStatus.innerHTML = '<span class="pb-connected">✅</span> <span class="pb-name">' + player + '</span>';
-    pbXp.textContent   = xp + ' XP · ' + done + '/' + total + ' modules complétés';
+    pbStatus.innerHTML = '<span class="pb-connected">\u2705</span> <span class="pb-name">' + player + '</span>';
+    pbXp.textContent = xp + ' XP \u00B7 ' + done + '/' + total + ' modules';
   } else {
-    pbStatus.innerHTML = '<span class="pb-disconnected">⚠️ Non connecté — ouvre ce hub depuis le Portail Vie Scolaire</span>';
-    pbXp.textContent   = '';
+    pbStatus.innerHTML = '<span class="pb-disconnected">\u26A0\uFE0F Non connecté — ouvre ce hub depuis le Portail Vie Scolaire</span>';
+    pbXp.textContent = '';
   }
 
-  var app = document.getElementById('app');
-  app.innerHTML = '';
+  var root = document.getElementById('matrixRoot');
+  root.innerHTML = '';
 
   PILLARS.forEach(function(pillar) {
-    var doneN  = pillar.modules.filter(function(m){ return isDone(m.id); }).length;
+    var doneN = pillar.modules.filter(function(m){ return isDone(m.id); }).length;
     var totalN = pillar.modules.length;
-    var pct    = Math.round(doneN / totalN * 100);
+    var pct = Math.round(doneN / totalN * 100);
 
-    var block = document.createElement('div');
-    block.className = 'pillar-block';
+    var col = document.createElement('div');
+    col.className = 'pillar-column';
+    col.style.borderTopColor = pillar.color;
 
-    var hdr = document.createElement('div');
-    hdr.className = 'pillar-header';
-    hdr.innerHTML =
-      '<div class="pillar-icon">' + pillar.icon + '</div>' +
-      '<div class="pillar-info">' +
-        '<div class="pillar-title" style="color:' + pillar.color + '">' + pillar.title + '</div>' +
-        '<div class="pillar-desc">' + pillar.desc + '</div>' +
-      '</div>' +
-      '<div class="pillar-stats">' +
-        '<div class="pillar-count">' + doneN + '/' + totalN + '</div>' +
-        '<div class="pillar-pct" style="color:' + pillar.color + '">' + pct + '%</div>' +
-      '</div>';
-    block.appendChild(hdr);
+    col.innerHTML = '<div class="pillar-title" style="color:' + pillar.color + '">' +
+      pillar.icon + ' ' + pillar.title + '</div>' +
+      '<div class="pillar-stats">' + doneN + '/' + totalN + ' \u00B7 ' + pct + '%</div>';
 
-    var po = document.createElement('div'); po.className = 'prog-outer';
-    var pi = document.createElement('div'); pi.className = 'prog-inner';
-    pi.style.cssText = 'width:' + pct + '%;background:' + pillar.color;
-    po.appendChild(pi); block.appendChild(po);
+    pillar.modules.forEach(function(mod, index) {
+      var levelNum = index + 1;
+      var done_m = isDone(mod.id);
+      var open_m = isUnlocked(pillar, index);
 
-    var list = document.createElement('div');
-    list.className = 'mod-list';
+      var statusClass = done_m ? 'done' : (open_m ? 'open' : 'locked');
+      var statusText = done_m ? '\u2705 VALIDÉ' : (open_m ? '\u{1F7E2} DISPONIBLE' : '\u{1F512} VERROUILLÉ');
+      var statusColor = done_m ? '#00ff88' : (open_m ? '#fff' : '#555');
 
-    pillar.modules.forEach(function(mod, idx) {
-      var done_m   = isDone(mod.id);
-      var unlocked = isUnlocked(pillar, idx);
-      var color    = (done_m || unlocked) ? pillar.color : '#475569';
+      var card = document.createElement('div');
+      card.className = 'module-card ' + statusClass;
+      card.innerHTML =
+        '<span class="status-txt" style="color:' + statusColor + '">' + statusText + '</span>' +
+        '<h4>NIVEAU ' + levelNum + '</h4>' +
+        '<div style="font-size:.9em;margin-bottom:3px;color:#aaa">' + mod.name + '</div>' +
+        '<div class="mod-xp">' + mod.xp + ' XP</div>' +
+        (open_m && !done_m ? '<a href="#" class="btn-launch" data-file="' + mod.file + '" data-id="' + mod.id + '">LANCER MISSION</a>' : '');
 
-      var row = document.createElement('div');
-      row.className = 'mod-row' + ((unlocked || done_m) ? ' clickable' : ' locked');
-
-      row.innerHTML =
-        '<div class="mod-num" style="color:' + color + ';border-color:' + color + '">' +
-          (done_m ? '✓' : (idx+1)) +
-        '</div>' +
-        '<div class="mod-info">' +
-          '<div class="mod-name">' + mod.name + '</div>' +
-          '<div class="mod-sub">' + mod.xp + ' XP' +
-            (!unlocked && !done_m ? ' · 🔒 Module précédent requis' : '') +
-          '</div>' +
-        '</div>' +
-        '<div class="mod-ico">' + (done_m ? '🏅' : (unlocked ? '▶' : '🔒')) + '</div>';
-
-      if(unlocked || done_m) {
-        (function(f, mid){ row.addEventListener('click', function(){ openModule(f, mid); }); })(mod.file, mod.id);
-      }
-      list.appendChild(row);
+      col.appendChild(card);
     });
-    block.appendChild(list);
-    app.appendChild(block);
+
+    root.appendChild(col);
   });
+
+  // Attach click handlers for launch buttons
+  root.querySelectorAll('.btn-launch').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      openModule(this.getAttribute('data-file'), this.getAttribute('data-id'));
+    });
+  });
+
+  updateArcadeButton();
 }
 
 // ── Admin ───────────────────────────────────────────────────────
 var adminUnlocked = false;
-
 function openAdmin() {
   adminUnlocked = false;
   document.getElementById('admin-login').style.display = 'block';
   document.getElementById('admin-panel').style.display = 'none';
   document.getElementById('admin-pwd').value = '';
   document.getElementById('admin-err').textContent = '';
-  document.getElementById('admin-fb').textContent  = '';
+  document.getElementById('admin-fb').textContent = '';
   document.getElementById('admin-overlay').classList.add('open');
   setTimeout(function(){ document.getElementById('admin-pwd').focus(); }, 80);
 }
-
 function closeAdmin() {
   document.getElementById('admin-overlay').classList.remove('open');
   adminUnlocked = false;
 }
-
 function adminLogin() {
   var pwd = document.getElementById('admin-pwd').value.trim();
   if(pwd !== ADMIN_PASS) {
-    document.getElementById('admin-err').textContent = '❌ Code incorrect';
+    document.getElementById('admin-err').textContent = '\u274C Code incorrect';
     return;
   }
   adminUnlocked = true;
@@ -412,43 +462,31 @@ function adminLogin() {
   document.getElementById('admin-panel').style.display = 'block';
   buildAdminList();
 }
-
 function buildAdminList() {
   var player = getPlayer();
   document.getElementById('admin-player-info').textContent =
     player ? 'Joueur actif : ' + player
-           : '⚠️ Aucun joueur — connecte un élève depuis le superhub avant de valider';
-
+           : '\u26A0\uFE0F Aucun joueur — connecte un élève depuis le superhub';
   var list = document.getElementById('admin-mod-list');
   list.innerHTML = '';
-
   PILLARS.forEach(function(pillar) {
     var sep = document.createElement('div');
     sep.className = 'psep';
     sep.textContent = pillar.icon + ' ' + pillar.title;
     list.appendChild(sep);
-
     pillar.modules.forEach(function(mod) {
       var done_m = isDone(mod.id);
-      var wrap   = document.createElement('label');
+      var wrap = document.createElement('label');
       wrap.className = 'mc';
-
       var chk = document.createElement('input');
-      chk.type    = 'checkbox';
-      chk.value   = mod.id;
-      chk.checked = done_m;
-
+      chk.type = 'checkbox'; chk.value = mod.id; chk.checked = done_m;
       var lbl = document.createElement('span');
       lbl.className = 'mc-lbl';
-      lbl.innerHTML = mod.name + (done_m ? '<span class="mc-done">✓ validé</span>' : '');
-
-      wrap.appendChild(chk);
-      wrap.appendChild(lbl);
-      list.appendChild(wrap);
+      lbl.innerHTML = mod.name + (done_m ? '<span class="mc-done">\u2713 validé</span>' : '');
+      wrap.appendChild(chk); wrap.appendChild(lbl); list.appendChild(wrap);
     });
   });
 }
-
 function adminValidateSelected() {
   if(!adminUnlocked) return;
   var boxes = document.querySelectorAll('#admin-mod-list input[type=checkbox]');
@@ -461,13 +499,12 @@ function adminValidateSelected() {
   });
   var fb = document.getElementById('admin-fb');
   if(count > 0) {
-    fb.className = 'aok'; fb.textContent = '✅ ' + count + ' module(s) validé(s) avec succès';
+    fb.className = 'aok'; fb.textContent = '\u2705 ' + count + ' module(s) validé(s)';
     buildAdminList();
   } else {
-    fb.className = 'aerr'; fb.textContent = 'Aucun nouveau module à valider dans la sélection';
+    fb.className = 'aerr'; fb.textContent = 'Aucun nouveau module à valider';
   }
 }
-
 function adminResetAll() {
   if(!adminUnlocked) return;
   if(!confirm('Supprimer TOUTE la progression PIXHARe du joueur actuel ?')) return;
@@ -476,9 +513,8 @@ function adminResetAll() {
   });
   localStorage.removeItem('pvs_phare_pending');
   var fb = document.getElementById('admin-fb');
-  fb.className = 'aok'; fb.textContent = '🗑 Progression supprimée';
-  buildAdminList();
-  render();
+  fb.className = 'aok'; fb.textContent = '\u{1F5D1} Progression supprimée';
+  buildAdminList(); render();
 }
 
 // ── Toast ───────────────────────────────────────────────────────
