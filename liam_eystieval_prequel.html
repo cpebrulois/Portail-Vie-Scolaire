@@ -323,48 +323,50 @@ const STORY_KEY = 'ave6e_liam_eystieval_v1';
 const TOTAL_MAIN_SCENES = 5;
 const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
 
-function assetSources(stem, preferred = 'jpg'){
+function assetSources(stems, preferred = 'jpg'){
+  const baseStems = Array.isArray(stems) ? stems.filter(Boolean) : [stems].filter(Boolean);
   const seen = new Set();
-  return [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
+  const extensions = [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
     const key = String(ext || '').toLowerCase();
     if (!key || seen.has(key)) return false;
     seen.add(key);
     return true;
-  }).map(ext => `${stem}.${ext}`);
+  });
+  return baseStems.flatMap(stem => extensions.map(ext => `${stem}.${ext}`));
 }
 
 const VISUAL_ASSETS = {
-  referencePortrait: assetSources('assets_eystieval/liam_reference_face'),
-  storyboardBoard: assetSources('assets_eystieval/liam_storyboard_board', 'png'),
+  referencePortrait: assetSources(['assets_eystieval/liam_reference_face', 'liam_reference_face']),
+  storyboardBoard: assetSources(['assets_eystieval/liam_storyboard_board', 'liam_storyboard_board'], 'png'),
   scenes: {
     forge_aube: {
-      bg: assetSources('assets_eystieval/scene_01_forge_aube'),
-      card: assetSources('assets_eystieval/scene_01_forge_aube'),
+      bg: assetSources(['assets_eystieval/scene_01_forge_aube', 'scene_01_forge_aube']),
+      card: assetSources(['assets_eystieval/scene_01_forge_aube', 'scene_01_forge_aube']),
       alt: 'Liam à la forge de son père à Eystie-Val'
     },
     lettre_mere: {
-      bg: assetSources('assets_eystieval/scene_02_lettre_maelle'),
-      card: assetSources('assets_eystieval/scene_02_lettre_maelle'),
+      bg: assetSources(['assets_eystieval/scene_02_lettre_maelle', 'scene_02_lettre_maelle']),
+      card: assetSources(['assets_eystieval/scene_02_lettre_maelle', 'scene_02_lettre_maelle']),
       alt: 'Maëlle remet une phrase porte-bonheur à Liam'
     },
     marche_clous: {
-      bg: assetSources('assets_eystieval/scene_03_marche_remus'),
-      card: assetSources('assets_eystieval/scene_03_marche_remus'),
+      bg: assetSources(['assets_eystieval/scene_03_marche_remus', 'scene_03_marche_remus']),
+      card: assetSources(['assets_eystieval/scene_03_marche_remus', 'scene_03_marche_remus']),
       alt: "Liam et Remus au marché d'Eystie-Val"
     },
     phrase_depart: {
-      bg: assetSources('assets_eystieval/scene_04_lavoir_depart'),
-      card: assetSources('assets_eystieval/scene_04_lavoir_depart'),
+      bg: assetSources(['assets_eystieval/scene_04_lavoir_depart', 'scene_04_lavoir_depart']),
+      card: assetSources(['assets_eystieval/scene_04_lavoir_depart', 'scene_04_lavoir_depart']),
       alt: 'Liam au lavoir au coucher du soleil'
     },
     route_valdurne: {
-      bg: assetSources('assets_eystieval/scene_05_route_valdurne'),
-      card: assetSources('assets_eystieval/scene_05_route_valdurne'),
+      bg: assetSources(['assets_eystieval/scene_05_route_valdurne', 'scene_05_route_valdurne']),
+      card: assetSources(['assets_eystieval/scene_05_route_valdurne', 'scene_05_route_valdurne']),
       alt: 'Le départ vers Valdurne en charrette'
     },
     epilogue: {
-      bg: assetSources('assets_eystieval/scene_06_epilogue_valdurne'),
-      card: assetSources('assets_eystieval/scene_06_epilogue_valdurne'),
+      bg: assetSources(['assets_eystieval/scene_06_epilogue_valdurne', 'scene_06_epilogue_valdurne']),
+      card: assetSources(['assets_eystieval/scene_06_epilogue_valdurne', 'scene_06_epilogue_valdurne']),
       alt: 'Le lointain de Valdurne vu depuis la route'
     }
   }

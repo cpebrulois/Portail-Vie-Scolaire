@@ -213,25 +213,27 @@ const LS_KEY = 'ave6e_progress';
 const STORY_KEY = 'ave6e_liam_eystieval_v1';
 const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
 
-function assetSources(stem, preferred = 'jpg'){
+function assetSources(stems, preferred = 'jpg'){
+  const baseStems = Array.isArray(stems) ? stems.filter(Boolean) : [stems].filter(Boolean);
   const seen = new Set();
-  return [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
+  const extensions = [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
     const key = String(ext || '').toLowerCase();
     if (!key || seen.has(key)) return false;
     seen.add(key);
     return true;
-  }).map(ext => `${stem}.${ext}`);
+  });
+  return baseStems.flatMap(stem => extensions.map(ext => `${stem}.${ext}`));
 }
 
 const VISUAL_ASSETS = {
-  hubCover: assetSources('assets_eystieval/liam_hub_cover'),
-  referenceBoard: assetSources('assets_eystieval/liam_storyboard_board', 'png'),
+  hubCover: assetSources(['assets_eystieval/liam_hub_cover', 'liam_hub_cover']),
+  referenceBoard: assetSources(['assets_eystieval/liam_storyboard_board', 'liam_storyboard_board'], 'png'),
   storyCovers: {
     'liam-prequel-01': [
-      ...assetSources('assets_eystieval/liam_story_ete_cover'),
-      ...assetSources('assets_eystieval/liam_hub_cover')
+      ...assetSources(['assets_eystieval/liam_story_ete_cover', 'liam_story_ete_cover']),
+      ...assetSources(['assets_eystieval/liam_hub_cover', 'liam_hub_cover'])
     ],
-    'liam-prequel-02': assetSources('assets_eystieval/remus_story_cover')
+    'liam-prequel-02': assetSources(['assets_eystieval/remus_story_cover', 'remus_story_cover'])
   }
 };
 
