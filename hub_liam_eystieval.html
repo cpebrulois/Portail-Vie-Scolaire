@@ -78,7 +78,7 @@ body{
   border:2px solid rgba(15,23,42,0.08);box-shadow:0 14px 28px rgba(15,23,42,0.1);
 }
 .hero-visual img{
-  width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:20px;display:none;
+  width:100%;aspect-ratio:4/5;object-fit:contain;border-radius:20px;display:none;
   background:linear-gradient(180deg,#fef3c7,#dbeafe);
 }
 .hero-fallback{
@@ -119,13 +119,13 @@ body{
 }
 .story-cover{
   border-radius:22px;overflow:hidden;border:2px solid rgba(15,23,42,0.06);background:#fff7d6;
-  min-height:170px;position:relative;
+  min-height:220px;position:relative;
 }
 .story-cover img{
-  width:100%;height:170px;object-fit:cover;display:none;background:linear-gradient(180deg,#fef3c7,#dbeafe);
+  width:100%;height:220px;object-fit:contain;display:none;background:linear-gradient(180deg,#fef3c7,#dbeafe);
 }
 .story-cover-fallback{
-  height:170px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#92400e;
+  height:220px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#92400e;
   background:linear-gradient(180deg,rgba(245,158,11,0.16),rgba(219,234,254,0.7));
 }
 .story-title{font-family:var(--font-title);font-size:1.4rem;font-weight:800;line-height:1.1}
@@ -211,12 +211,27 @@ body{
 <script>
 const LS_KEY = 'ave6e_progress';
 const STORY_KEY = 'ave6e_liam_eystieval_v1';
+const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
+
+function assetSources(stem, preferred = 'jpg'){
+  const seen = new Set();
+  return [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
+    const key = String(ext || '').toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map(ext => `${stem}.${ext}`);
+}
+
 const VISUAL_ASSETS = {
-  hubCover: 'assets_eystieval/liam_hub_cover.jpg',
-  referenceBoard: 'assets_eystieval/liam_storyboard_board.png',
+  hubCover: assetSources('assets_eystieval/liam_hub_cover'),
+  referenceBoard: assetSources('assets_eystieval/liam_storyboard_board', 'png'),
   storyCovers: {
-    'liam-prequel-01': 'assets_eystieval/liam_story_ete_cover.jpg',
-    'liam-prequel-02': 'assets_eystieval/remus_story_cover.jpg'
+    'liam-prequel-01': [
+      ...assetSources('assets_eystieval/liam_story_ete_cover'),
+      ...assetSources('assets_eystieval/liam_hub_cover')
+    ],
+    'liam-prequel-02': assetSources('assets_eystieval/remus_story_cover')
   }
 };
 
@@ -246,17 +261,32 @@ const ADVENTURES = [
 ];
 
 function bindOptionalImage(imgEl, fallbackEl, src, alt){
-  if(!imgEl || !fallbackEl || !src) return;
+  if(!imgEl || !fallbackEl) return;
+  const sources = Array.isArray(src) ? src.filter(Boolean) : (src ? [src] : []);
+  let sourceIndex = 0;
+  if (!sources.length) {
+    imgEl.style.display = 'none';
+    fallbackEl.style.display = 'flex';
+    return;
+  }
+  function loadSource(){
+    if (sourceIndex >= sources.length) {
+      imgEl.style.display = 'none';
+      fallbackEl.style.display = 'flex';
+      return;
+    }
+    imgEl.src = sources[sourceIndex];
+  }
   imgEl.onload = function(){
     imgEl.style.display = 'block';
     fallbackEl.style.display = 'none';
   };
   imgEl.onerror = function(){
-    imgEl.style.display = 'none';
-    fallbackEl.style.display = 'flex';
+    sourceIndex += 1;
+    loadSource();
   };
   imgEl.alt = alt || '';
-  imgEl.src = src;
+  loadSource();
 }
 
 function getMainProgress(){

@@ -107,7 +107,7 @@ body{
 }
 .backdrop-image{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;
-  opacity:.58;filter:saturate(.98) contrast(1.02);
+  opacity:.26;filter:saturate(.98) contrast(1.02);
 }
 .backdrop-shade{
   position:absolute;inset:0;
@@ -141,6 +141,25 @@ body{
 }
 .scene-title{
   font-family:var(--font-title);font-size:clamp(1.7rem,3vw,2.6rem);line-height:1.05;margin:14px 0 10px;
+}
+.scene-media{
+  margin:16px 0 18px;display:grid;gap:10px;
+}
+.scene-media[hidden]{display:none}
+.scene-media-frame{
+  border-radius:28px;overflow:hidden;border:2px solid rgba(16,32,50,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,248,235,0.98), rgba(255,255,255,0.96)),
+    linear-gradient(135deg, rgba(245,158,11,0.12), transparent 45%);
+  box-shadow:0 18px 34px rgba(15,23,42,0.12);
+  padding:12px;
+}
+.scene-media-frame img{
+  width:100%;max-height:min(56vh,620px);display:none;object-fit:contain;
+  border-radius:20px;background:linear-gradient(180deg,#fff7d6,#e0f2fe);
+}
+.scene-media-caption{
+  font-size:.84rem;line-height:1.5;color:var(--ink-soft);font-weight:800;
 }
 .scene-text{
   font-size:1.07rem;line-height:1.9;color:var(--ink-soft);font-weight:700;
@@ -197,6 +216,8 @@ code{
   .scene-wrap{padding:18px}
   .scene-card{padding:20px}
   .art{font-size:5rem;right:18px;top:22px}
+  .scene-media-frame{padding:10px}
+  .scene-media-frame img{max-height:48vh}
 }
 </style>
 </head>
@@ -234,7 +255,7 @@ code{
         </div>
         <div class="progress-bar"><span id="progressFill"></span></div>
         <div class="mini-grid">
-          <div class="mini-card"><strong id="sceneNumber">1</strong>Scene actuelle</div>
+          <div class="mini-card"><strong id="sceneNumber">1</strong>Scène actuelle</div>
           <div class="mini-card"><strong id="subjectLabel">Maths</strong>Révision du moment</div>
         </div>
       </div>
@@ -265,6 +286,12 @@ code{
         <article class="scene-card">
           <div class="scene-tag" id="sceneTag">Maths</div>
           <h2 class="scene-title" id="sceneTitle">Le matin de la forge</h2>
+          <div class="scene-media" id="sceneMedia" hidden>
+            <div class="scene-media-frame">
+              <img id="sceneCardImg" alt="">
+            </div>
+            <div class="scene-media-caption" id="sceneCaption"></div>
+          </div>
           <div class="scene-text" id="sceneText"></div>
           <div class="scene-prompt" id="scenePrompt"></div>
           <div class="choices" id="choices"></div>
@@ -294,32 +321,50 @@ code{
 <script>
 const STORY_KEY = 'ave6e_liam_eystieval_v1';
 const TOTAL_MAIN_SCENES = 5;
+const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
+
+function assetSources(stem, preferred = 'jpg'){
+  const seen = new Set();
+  return [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
+    const key = String(ext || '').toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map(ext => `${stem}.${ext}`);
+}
+
 const VISUAL_ASSETS = {
-  referencePortrait: 'assets_eystieval/liam_reference_face.jpg',
-  storyboardBoard: 'assets_eystieval/liam_storyboard_board.png',
+  referencePortrait: assetSources('assets_eystieval/liam_reference_face'),
+  storyboardBoard: assetSources('assets_eystieval/liam_storyboard_board', 'png'),
   scenes: {
     forge_aube: {
-      bg: 'assets_eystieval/scene_01_forge_aube.jpg',
+      bg: assetSources('assets_eystieval/scene_01_forge_aube'),
+      card: assetSources('assets_eystieval/scene_01_forge_aube'),
       alt: 'Liam à la forge de son père à Eystie-Val'
     },
     lettre_mere: {
-      bg: 'assets_eystieval/scene_02_lettre_maelle.jpg',
+      bg: assetSources('assets_eystieval/scene_02_lettre_maelle'),
+      card: assetSources('assets_eystieval/scene_02_lettre_maelle'),
       alt: 'Maëlle remet une phrase porte-bonheur à Liam'
     },
     marche_clous: {
-      bg: 'assets_eystieval/scene_03_marche_remus.jpg',
+      bg: assetSources('assets_eystieval/scene_03_marche_remus'),
+      card: assetSources('assets_eystieval/scene_03_marche_remus'),
       alt: "Liam et Remus au marché d'Eystie-Val"
     },
     phrase_depart: {
-      bg: 'assets_eystieval/scene_04_lavoir_depart.jpg',
+      bg: assetSources('assets_eystieval/scene_04_lavoir_depart'),
+      card: assetSources('assets_eystieval/scene_04_lavoir_depart'),
       alt: 'Liam au lavoir au coucher du soleil'
     },
     route_valdurne: {
-      bg: 'assets_eystieval/scene_05_route_valdurne.jpg',
+      bg: assetSources('assets_eystieval/scene_05_route_valdurne'),
+      card: assetSources('assets_eystieval/scene_05_route_valdurne'),
       alt: 'Le départ vers Valdurne en charrette'
     },
     epilogue: {
-      bg: 'assets_eystieval/scene_06_epilogue_valdurne.jpg',
+      bg: assetSources('assets_eystieval/scene_06_epilogue_valdurne'),
+      card: assetSources('assets_eystieval/scene_06_epilogue_valdurne'),
       alt: 'Le lointain de Valdurne vu depuis la route'
     }
   }
@@ -491,7 +536,7 @@ const STORY_SCENES = {
       {
         badge: 'Français',
         title: "Liam range c'est outils et dit : ces le moment de grandir.",
-        sub: "Cette phrase s'emmelle toute seule dans les herbes du chemin.",
+        sub: "Cette phrase s'emmêle toute seule dans les herbes du chemin.",
         kind: 'fall',
         fall: {
           icon: '🌿',
@@ -620,23 +665,46 @@ function frenchVoice(){
   return voices.find(v => /^fr/i.test(v.lang || '')) || voices[0] || null;
 }
 
-function bindOptionalImage(imgEl, src, alt, fallbackEl){
+function bindOptionalImage(imgEl, src, alt, fallbackEl, options = {}){
   if(!imgEl) return;
-  if(!src){
+  const sources = Array.isArray(src) ? src.filter(Boolean) : (src ? [src] : []);
+  const containerEl = options.container || null;
+  const captionEl = options.captionEl || null;
+  const captionText = options.captionText || '';
+  let sourceIndex = 0;
+
+  function hideAll(){
     imgEl.style.display = 'none';
     if (fallbackEl) fallbackEl.style.display = 'flex';
+    if (containerEl) containerEl.hidden = true;
+    if (captionEl) captionEl.textContent = '';
+  }
+
+  if(!sources.length){
+    hideAll();
     return;
   }
+
+  function loadSource(){
+    if (sourceIndex >= sources.length) {
+      hideAll();
+      return;
+    }
+    imgEl.src = sources[sourceIndex];
+  }
+
   imgEl.onload = function(){
     imgEl.style.display = 'block';
     if (fallbackEl) fallbackEl.style.display = 'none';
+    if (containerEl) containerEl.hidden = false;
+    if (captionEl) captionEl.textContent = captionText || alt || '';
   };
   imgEl.onerror = function(){
-    imgEl.style.display = 'none';
-    if (fallbackEl) fallbackEl.style.display = 'flex';
+    sourceIndex += 1;
+    loadSource();
   };
   imgEl.alt = alt || '';
-  imgEl.src = src;
+  loadSource();
 }
 
 function speak(text){
@@ -780,6 +848,17 @@ function renderScene(){
     sceneVisual ? sceneVisual.bg : '',
     sceneVisual ? sceneVisual.alt : '',
     null
+  );
+  bindOptionalImage(
+    document.getElementById('sceneCardImg'),
+    sceneVisual ? sceneVisual.card : '',
+    sceneVisual ? sceneVisual.alt : '',
+    null,
+    {
+      container: document.getElementById('sceneMedia'),
+      captionEl: document.getElementById('sceneCaption'),
+      captionText: sceneVisual ? `Illustration de scène : ${scene.title}` : ''
+    }
   );
   document.getElementById('progressLabel').textContent = `${Math.min(state.cleared.length, TOTAL_MAIN_SCENES)}/${TOTAL_MAIN_SCENES}`;
   document.getElementById('progressFill').style.width = `${progress}%`;
