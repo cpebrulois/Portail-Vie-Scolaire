@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>L'ete de Liam a Eystie-Val</title>
+<title>L'été de Liam à Eystie-Val</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -63,6 +63,20 @@ body{
   padding:14px;border-radius:20px;background:#eff6ff;border:1px solid rgba(59,130,246,0.14);
   color:#1d4ed8;font-weight:800;line-height:1.6;
 }
+.portrait-box{
+  border-radius:24px;overflow:hidden;border:2px solid rgba(16,32,50,0.08);background:rgba(255,255,255,0.92);
+  box-shadow:0 12px 22px rgba(15,23,42,0.08);
+}
+.portrait-box img{
+  width:100%;aspect-ratio:4/5;object-fit:cover;display:none;background:linear-gradient(180deg,#fef3c7,#dbeafe);
+}
+.portrait-fallback{
+  aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;font-size:4rem;color:#92400e;
+  background:linear-gradient(180deg,rgba(245,158,11,0.16),rgba(219,234,254,0.7));
+}
+.portrait-note{
+  padding:12px 14px;font-size:.8rem;line-height:1.55;color:var(--ink-soft);font-weight:800;
+}
 .progress-card{
   padding:16px;border-radius:22px;background:rgba(255,255,255,0.9);border:2px solid rgba(16,32,50,0.06);
 }
@@ -90,6 +104,17 @@ body{
 }
 .backdrop{
   position:absolute;inset:0;background:linear-gradient(180deg,#dbeafe,#fff8eb);transition:background .35s ease;
+}
+.backdrop-image{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;
+  opacity:.58;filter:saturate(.98) contrast(1.02);
+}
+.backdrop-shade{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(15,23,42,0.1) 48%, rgba(255,248,235,0.16)),
+    linear-gradient(90deg, rgba(255,255,255,0.1), transparent 30%, transparent 70%, rgba(255,255,255,0.08));
+  pointer-events:none;
 }
 .art{
   position:absolute;right:32px;top:34px;font-size:8rem;line-height:1;opacity:.16;filter:drop-shadow(0 18px 24px rgba(15,23,42,.1));
@@ -180,19 +205,27 @@ code{
   <div class="shell">
     <aside class="side">
       <div class="pill">Aventure orale interactive</div>
-      <h1>L'ete de Liam<br>a Eystie-Val</h1>
+      <h1>L'été de Liam<br>à Eystie-Val</h1>
       <p>
-        Cinq scenes-clefs, une seule bonne reponse a chaque fois, et des chutes rigolotes
+        Cinq scènes-clés, une seule bonne réponse à chaque fois, et des chutes rigolotes
         si Liam se trompe. La voix se lance automatiquement quand ton navigateur le permet.
       </p>
       <div class="tools">
         <button class="tool-btn primary" id="speakBtn" type="button">🔊 Couper la voix</button>
-        <button class="tool-btn secondary" id="replayBtn" type="button">↻ Relire la scene</button>
-        <button class="tool-btn secondary" id="restartBtn" type="button">↺ Recommencer depuis le debut</button>
+        <button class="tool-btn secondary" id="replayBtn" type="button">↻ Relire la scène</button>
+        <button class="tool-btn secondary" id="restartBtn" type="button">↺ Recommencer depuis le début</button>
         <a class="link-btn tool-btn secondary" href="hub_liam_eystieval.html">← Retour au sous-hub</a>
       </div>
       <div class="status-box" id="voiceStatus">
-        Lecture orale active. Si la voix ne demarre pas, utilise le bouton "Relire la scene".
+        Lecture orale active. Si la voix ne démarre pas, utilise le bouton "Relire la scène".
+      </div>
+      <div class="portrait-box">
+        <img id="liamReferenceImg" alt="Référence visuelle de Liam">
+        <div class="portrait-fallback" id="liamReferenceFallback">🧒</div>
+        <div class="portrait-note">
+          Dépose ici le visage de référence de Liam :
+          <code>assets_eystieval/liam_reference_face.jpg</code>
+        </div>
       </div>
       <div class="progress-card">
         <div class="progress-head">
@@ -202,25 +235,28 @@ code{
         <div class="progress-bar"><span id="progressFill"></span></div>
         <div class="mini-grid">
           <div class="mini-card"><strong id="sceneNumber">1</strong>Scene actuelle</div>
-          <div class="mini-card"><strong id="subjectLabel">Maths</strong>Revision du moment</div>
+          <div class="mini-card"><strong id="subjectLabel">Maths</strong>Révision du moment</div>
         </div>
       </div>
       <div class="progress-card">
-        <div class="progress-title">Zone a enrichir</div>
+        <div class="progress-title">Zone à enrichir</div>
         <p style="margin-top:8px">
-          Toute la trame editable se trouve dans <code>STORY_SCENES</code> :
-          texte, fonds, choix, chutes et scene suivante.
+          Toute la trame éditable se trouve dans <code>STORY_SCENES</code> :
+          texte, fonds, choix, chutes et scène suivante. Les images Sora peuvent être déposées
+          dans <code>assets_eystieval/</code> avec les noms prévus.
         </p>
       </div>
     </aside>
 
     <main class="stage">
       <div class="backdrop" id="backdrop"></div>
+      <img class="backdrop-image" id="sceneBgImg" alt="">
+      <div class="backdrop-shade"></div>
       <div class="art" id="sceneArt">⚒️</div>
       <div class="scene-wrap">
         <div class="scene-top">
           <div class="breadcrumbs">
-            <span class="crumb" id="chapterPill">Episode 1</span>
+            <span class="crumb" id="chapterPill">Épisode 1</span>
             <span class="crumb" id="locationPill">Eystie-Val</span>
           </div>
           <a class="small-link" href="hub_liam_eystieval.html">Retour au hub narratif</a>
@@ -233,8 +269,8 @@ code{
           <div class="scene-prompt" id="scenePrompt"></div>
           <div class="choices" id="choices"></div>
           <div class="nav-row">
-            <div style="font-weight:800;color:var(--ink-soft)" id="sceneHint">Une seule bonne reponse ouvre la suite de l'histoire.</div>
-            <div style="font-weight:900;color:#92400e" id="resumeHint">Prequel de Valdurne</div>
+            <div style="font-weight:800;color:var(--ink-soft)" id="sceneHint">Une seule bonne réponse ouvre la suite de l'histoire.</div>
+            <div style="font-weight:900;color:#92400e" id="resumeHint">Préquel de Valdurne</div>
           </div>
         </article>
       </div>
@@ -250,7 +286,7 @@ code{
     <div class="modal-coach" id="fallCoach"></div>
     <div class="modal-actions">
       <button class="tool-btn primary" type="button" id="closeFallBtn">Je repars du bon pied</button>
-      <button class="tool-btn secondary" type="button" id="replayFallBtn">Relire la scene</button>
+      <button class="tool-btn secondary" type="button" id="replayFallBtn">Relire la scène</button>
     </div>
   </div>
 </div>
@@ -258,47 +294,77 @@ code{
 <script>
 const STORY_KEY = 'ave6e_liam_eystieval_v1';
 const TOTAL_MAIN_SCENES = 5;
+const VISUAL_ASSETS = {
+  referencePortrait: 'assets_eystieval/liam_reference_face.jpg',
+  storyboardBoard: 'assets_eystieval/liam_storyboard_board.png',
+  scenes: {
+    forge_aube: {
+      bg: 'assets_eystieval/scene_01_forge_aube.jpg',
+      alt: 'Liam à la forge de son père à Eystie-Val'
+    },
+    lettre_mere: {
+      bg: 'assets_eystieval/scene_02_lettre_maelle.jpg',
+      alt: 'Maëlle remet une phrase porte-bonheur à Liam'
+    },
+    marche_clous: {
+      bg: 'assets_eystieval/scene_03_marche_remus.jpg',
+      alt: "Liam et Remus au marché d'Eystie-Val"
+    },
+    phrase_depart: {
+      bg: 'assets_eystieval/scene_04_lavoir_depart.jpg',
+      alt: 'Liam au lavoir au coucher du soleil'
+    },
+    route_valdurne: {
+      bg: 'assets_eystieval/scene_05_route_valdurne.jpg',
+      alt: 'Le départ vers Valdurne en charrette'
+    },
+    epilogue: {
+      bg: 'assets_eystieval/scene_06_epilogue_valdurne.jpg',
+      alt: 'Le lointain de Valdurne vu depuis la route'
+    }
+  }
+};
 
 const STORY_SCENES = {
   forge_aube: {
     id: 'forge_aube',
-    chapter: 'Episode 1',
-    location: 'Forge d Eystie-Val',
+    chapter: 'Épisode 1',
+    location: "Forge d'Eystie-Val",
     subject: 'Maths',
     icon: '⚒️',
     background: 'linear-gradient(180deg, #fde68a 0%, #fed7aa 45%, #fca5a5 100%)',
     title: 'Le matin de la forge',
-    text: "Le soleil glisse a peine sur les toits d'Eystie-Val. Dans la forge, Liam aide son pere Alard a preparer quatre chevaux de la garde du village. Chaque cheval a besoin de quatre fers neufs. Alard leve un sourcil noir de suie : 'Avant meme de penser a Valdurne, montre-moi que tu comptes plus vite qu'une etincelle.'",
-    prompt: 'Combien de fers faut-il preparer ?',
+    text: "Le soleil glisse à peine sur les toits d'Eystie-Val. Dans la forge, Liam aide son père Alard à préparer quatre chevaux de la garde du village. Chaque cheval a besoin de quatre fers neufs. Alard lève un sourcil noir de suie : 'Avant même de penser à Valdurne, montre-moi que tu comptes plus vite qu'une étincelle.'",
+    prompt: 'Combien de fers faut-il préparer ?',
     choices: [
       {
         badge: 'Maths',
         title: '12 fers',
-        sub: "Liam recompte trop vite et oublie un cheval entier dans son elan.",
+        sub: "Liam recompte trop vite et oublie un cheval entier dans son élan.",
         kind: 'fall',
         fall: {
           icon: '🐴',
-          title: 'Le quatrieme cheval proteste',
-          text: "Dans ta tete, trois chevaux filent deja au galop... sauf qu'un quatrieme tape du sabot devant la forge. Alard toussote pour cacher son rire.",
+          title: 'Le quatrième cheval proteste',
+          text: "Dans ta tête, trois chevaux filent déjà au galop... sauf qu'un quatrième tape du sabot devant la forge. Alard toussote pour cacher son rire.",
           coach: 'Reprends calmement : 4 chevaux, 4 fers chacun.'
         }
       },
       {
         badge: 'Maths',
         title: '16 fers',
-        sub: "Liam aligne la bonne pile de fers. Alard hoche la tete, impressionne.",
+        sub: "Liam aligne la bonne pile de fers. Alard hoche la tête, impressionné.",
         kind: 'advance',
         next: 'lettre_mere'
       },
       {
         badge: 'Maths',
         title: '20 fers',
-        sub: "Liam prevoit large... beaucoup trop large. La reserve ressemble a une montagne.",
+        sub: "Liam prévoit large... beaucoup trop large. La réserve ressemble à une montagne.",
         kind: 'fall',
         fall: {
           icon: '🔥',
-          title: 'La montagne de metal',
-          text: "Bravo pour l'enthousiasme, mais la forge ressemble maintenant a un dragon couche sur un tas de metal. Remus n'ose meme plus entrer.",
+          title: 'La montagne de métal',
+          text: "Bravo pour l'enthousiasme, mais la forge ressemble maintenant à un dragon couché sur un tas de métal. Remus n'ose même plus entrer.",
           coach: 'Compte les chevaux, puis multiplie par le nombre de fers par cheval.'
         }
       }
@@ -306,81 +372,81 @@ const STORY_SCENES = {
   },
   lettre_mere: {
     id: 'lettre_mere',
-    chapter: 'Episode 2',
+    chapter: 'Épisode 2',
     location: 'Maison des Ferrault',
-    subject: 'Francais',
+    subject: 'Français',
     icon: '📜',
     background: 'linear-gradient(180deg, #fef3c7 0%, #fde68a 42%, #dbeafe 100%)',
-    title: 'La phrase porte-bonheur de Maelle',
-    text: "Avant le dejeuner, Maelle, la maman de Liam, glisse une petite carte dans son sac. 'Si tu pars bientot pour Valdurne, pars aussi avec des phrases bien rangees', souffle-t-elle. Elle lui propose trois formulations. Une seule est parfaitement ecrite.",
+    title: 'La phrase porte-bonheur de Maëlle',
+    text: "Avant le déjeuner, Maëlle, la maman de Liam, glisse une petite carte dans son sac. 'Si tu pars bientôt pour Valdurne, pars aussi avec des phrases bien rangées', souffle-t-elle. Elle lui propose trois formulations. Une seule est parfaitement écrite.",
     prompt: 'Quelle phrase est correcte ?',
     choices: [
       {
-        badge: 'Francais',
-        title: 'Liam et Remus range leurs outils avant le diner.',
-        sub: "Quelque chose cloche : le verbe n'arrive pas a suivre les deux garcons.",
+        badge: 'Français',
+        title: 'Liam et Remus range leurs outils avant le dîner.',
+        sub: "Quelque chose cloche : le verbe n'arrive pas à suivre les deux garçons.",
         kind: 'fall',
         fall: {
           icon: '🪶',
           title: 'La plume se rebiffe',
-          text: "La plume de Maelle grince sur le papier, comme si elle refusait d'ecrire la phrase de travers. Meme le chat du foyer fronce les moustaches.",
+          text: "La plume de Maëlle grince sur le papier, comme si elle refusait d'écrire la phrase de travers. Même le chat du foyer fronce les moustaches.",
           coach: 'Observe bien le sujet : Liam ET Remus. Le verbe doit suivre le pluriel.'
         }
       },
       {
-        badge: 'Francais',
-        title: 'Liam et Remus rangent leurs outils avant le diner.',
-        sub: "La phrase file droit, propre et solide comme un fer bien pose.",
+        badge: 'Français',
+        title: 'Liam et Remus rangent leurs outils avant le dîner.',
+        sub: "La phrase file droit, propre et solide comme un fer bien posé.",
         kind: 'advance',
         next: 'marche_clous'
       },
       {
-        badge: 'Francais',
-        title: 'Liam et Remus rangent leur outils avant le diner.',
-        sub: "Le verbe va bien, mais un petit mot d'accord est reste dans la poussiere.",
+        badge: 'Français',
+        title: 'Liam et Remus rangent leur outils avant le dîner.',
+        sub: "Le verbe va bien, mais un petit mot d'accord est resté dans la poussière.",
         kind: 'fall',
         fall: {
           icon: '📚',
           title: 'Un outil sans jumeau',
-          text: "Dans ta phrase, les outils se retrouvent a boiter. Remus affirme qu'il a bien deux mains, et donc probablement plus d'un outil a ranger.",
-          coach: "Quand plusieurs personnes possedent plusieurs objets, pense au bon determinant possessif."
+          text: "Dans ta phrase, les outils se retrouvent à boiter. Remus affirme qu'il a bien deux mains, et donc probablement plus d'un outil à ranger.",
+          coach: "Quand plusieurs personnes possèdent plusieurs objets, pense au bon déterminant possessif."
         }
       }
     ]
   },
   marche_clous: {
     id: 'marche_clous',
-    chapter: 'Episode 3',
-    location: 'Marche du village',
+    chapter: 'Épisode 3',
+    location: 'Marché du village',
     subject: 'Maths',
     icon: '🧰',
     background: 'linear-gradient(180deg, #bbf7d0 0%, #86efac 38%, #bfdbfe 100%)',
-    title: 'La mission du marche avec Remus',
-    text: "Au marche d'Eystie-Val, Remus aide Liam a porter les sacs. Alard a besoin de 27 clous, vendus en sachets de 9. Remus se tourne vers Liam avec un grand sourire : 'Si on se trompe, c'est moi qui porte le surplus jusque chez ton pere.'",
+    title: 'La mission du marché avec Remus',
+    text: "Au marché d'Eystie-Val, Remus aide Liam à porter les sacs. Alard a besoin de 27 clous, vendus en sachets de 9. Remus se tourne vers Liam avec un grand sourire : 'Si on se trompe, c'est moi qui porte le surplus jusque chez ton père.'",
     prompt: 'Combien de sachets faut-il acheter ?',
     choices: [
       {
         badge: 'Maths',
         title: '2 sachets',
-        sub: "Remus essaie deja de courir jusqu'a la forge... mais il manque des clous.",
+        sub: "Remus essaie déjà de courir jusqu'à la forge... mais il manque des clous.",
         kind: 'fall',
         fall: {
           icon: '🛞',
           title: 'La brouette grince',
-          text: "De retour a la forge, il manque des clous et la roue d'une brouette se met a couiner comme une oie vexee. Remus te lance un regard dramatique.",
+          text: "De retour à la forge, il manque des clous et la roue d'une brouette se met à couiner comme une oie vexée. Remus te lance un regard dramatique.",
           coach: 'Cherche combien de fois 9 rentre exactement dans 27.'
         }
       },
       {
         badge: 'Maths',
         title: '4 sachets',
-        sub: "Cette fois, il y a largement de quoi ferrer tout le village... et peut-etre une licorne.",
+        sub: "Cette fois, il y a largement de quoi ferrer tout le village... et peut-être une licorne.",
         kind: 'fall',
         fall: {
           icon: '🪙',
           title: 'Le trop-plein de clous',
-          text: "Le marchand te felicite beaucoup trop vite. Remus finit avec un sac qui sonne comme une casserole geante a chacun de ses pas.",
-          coach: 'Essaie une division simple : 27 partage par 9.'
+          text: "Le marchand te félicite beaucoup trop vite. Remus finit avec un sac qui sonne comme une casserole géante à chacun de ses pas.",
+          coach: 'Essaie une division simple : 27 partagé par 9.'
         }
       },
       {
@@ -394,43 +460,43 @@ const STORY_SCENES = {
   },
   phrase_depart: {
     id: 'phrase_depart',
-    chapter: 'Episode 4',
+    chapter: 'Épisode 4',
     location: 'Le lavoir et le grand chemin',
-    subject: 'Francais',
+    subject: 'Français',
     icon: '🖋️',
     background: 'linear-gradient(180deg, #dbeafe 0%, #bfdbfe 35%, #fef3c7 100%)',
-    title: 'Les mots du depart',
-    text: "Le soir descend sur le lavoir. Maelle dicte a Liam une phrase qu'il voudra relire plus tard, quand Valdurne lui paraitra trop loin d'Eystie-Val : les mots doivent tomber juste, sinon toute la magie s'effiloche.",
+    title: 'Les mots du départ',
+    text: "Le soir descend sur le lavoir. Maëlle dicte à Liam une phrase qu'il voudra relire plus tard, quand Valdurne lui paraîtra trop loin d'Eystie-Val : les mots doivent tomber juste, sinon toute la magie s'effiloche.",
     prompt: 'Quelle phrase choisit Liam ?',
     choices: [
       {
-        badge: 'Francais',
+        badge: 'Français',
         title: "Liam range ses outils et dit : c'est le moment de grandir.",
         sub: "Les mots sonnent juste, comme un petit serment avant la route.",
         kind: 'advance',
         next: 'route_valdurne'
       },
       {
-        badge: 'Francais',
+        badge: 'Français',
         title: "Liam range ces outils et dit : ses le moment de grandir.",
-        sub: "On entend la phrase boiter avant meme la fin du chemin.",
+        sub: "On entend la phrase boiter avant même la fin du chemin.",
         kind: 'fall',
         fall: {
           icon: '💦',
           title: 'Splash grammatical',
-          text: "Remus manque de tomber du muret du lavoir en entendant la phrase. Meme l'eau semble faire des bulles de protestation.",
-          coach: "Pense au bon homophone : possession d'un cote, expression 'c'est' de l'autre."
+          text: "Remus manque de tomber du muret du lavoir en entendant la phrase. Même l'eau semble faire des bulles de protestation.",
+          coach: "Pense au bon homophone : possession d'un côté, expression 'c'est' de l'autre."
         }
       },
       {
-        badge: 'Francais',
+        badge: 'Français',
         title: "Liam range c'est outils et dit : ces le moment de grandir.",
         sub: "Cette phrase s'emmelle toute seule dans les herbes du chemin.",
         kind: 'fall',
         fall: {
           icon: '🌿',
-          title: 'Les mots s accrochent aux ronces',
-          text: "Chaque mot part dans une direction differente et la phrase finit emmallee comme un filet oublie au bord d'un champ.",
+        title: "Les mots s'accrochent aux ronces",
+        text: "Chaque mot part dans une direction différente et la phrase finit emmêlée comme un filet oublié au bord d'un champ.",
           coach: "Regarde bien quel mot parle d'appartenance, et quel mot signifie 'cela est'."
         }
       }
@@ -438,14 +504,14 @@ const STORY_SCENES = {
   },
   route_valdurne: {
     id: 'route_valdurne',
-    chapter: 'Episode 5',
+    chapter: 'Épisode 5',
     location: 'Route de Valdurne',
     subject: 'Maths',
     icon: '🏰',
     background: 'linear-gradient(180deg, #c7d2fe 0%, #dbeafe 28%, #fde68a 100%)',
     title: 'Le nombre des jours',
-    text: "Au matin du depart, la charrette est prete. Valdurne se trouve a 130 kilometres d'Eystie-Val, et le charretier annonce qu'il parcourt environ 65 kilometres par jour sur cette route. Liam pose sa main sur le rebord de bois. Il sait que la bonne reponse lui ouvrira la derniere ligne droite.",
-    prompt: 'Combien de jours de route faut-il prevoir ?',
+    text: "Au matin du départ, la charrette est prête. Valdurne se trouve à 130 kilomètres d'Eystie-Val, et le charretier annonce qu'il parcourt environ 65 kilomètres par jour sur cette route. Liam pose sa main sur le rebord de bois. Il sait que la bonne réponse lui ouvrira la dernière ligne droite.",
+    prompt: 'Combien de jours de route faut-il prévoir ?',
     choices: [
       {
         badge: 'Maths',
@@ -454,61 +520,61 @@ const STORY_SCENES = {
         kind: 'fall',
         fall: {
           icon: '🪽',
-          title: 'La charrette n a pas d ailes',
-          text: "Remus propose tres serieusement d'accrocher des oies geantes a la charrette. Alard refuse avant meme qu'il ait fini sa phrase.",
+          title: "La charrette n'a pas d'ailes",
+          text: "Remus propose très sérieusement d'accrocher des oies géantes à la charrette. Alard refuse avant même qu'il ait fini sa phrase.",
           coach: 'Compare la distance totale et celle parcourue chaque jour.'
         }
       },
       {
         badge: 'Maths',
         title: '2 jours',
-        sub: "Le calcul est juste. La route devient soudain un peu plus nette dans la tete de Liam.",
+        sub: "Le calcul est juste. La route devient soudain un peu plus nette dans la tête de Liam.",
         kind: 'advance',
         next: 'epilogue'
       },
       {
         badge: 'Maths',
         title: '3 jours',
-        sub: "Liam prevoit trop large : les parents auraient le temps de pleurer trois fois de plus.",
+        sub: "Liam prévoit trop large : les parents auraient le temps de pleurer trois fois de plus.",
         kind: 'fall',
         fall: {
           icon: '🐓',
           title: 'Trois au revoir de trop',
-          text: "Si le trajet durait si longtemps, meme les poules du village auraient le temps d'organiser une ceremonie de depart.",
-          coach: '130 et 65 vont tres bien ensemble : cherche combien de fois 65 fait 130.'
+          text: "Si le trajet durait si longtemps, même les poules du village auraient le temps d'organiser une cérémonie de départ.",
+          coach: '130 et 65 vont très bien ensemble : cherche combien de fois 65 fait 130.'
         }
       }
     ]
   },
   epilogue: {
     id: 'epilogue',
-    chapter: 'Epilogue',
-    location: 'Au-dela d Eystie-Val',
+    chapter: 'Épilogue',
+    location: "Au-delà d'Eystie-Val",
     subject: 'Histoire de Liam',
     icon: '✨',
     background: 'linear-gradient(180deg, #1e293b 0%, #475569 40%, #f59e0b 100%)',
-    title: 'Le prequel est ouvert',
-    text: "La charrette s'eloigne. Derriere lui, Liam laisse la forge d'Alard, le sourire de Maelle et les plans improvises de Remus. Devant lui, a 130 kilometres, se dressent les murs de Valdurne. Il n'est pas encore l'ecuyer du roman principal. Il est juste un garcon d'Eystie-Val qui a appris a compter, a choisir ses mots et a garder le cap. C'est ainsi que commencent les grandes histoires.",
-    prompt: "Tu as termine le prequel. Tu peux l'ecouter encore, le rejouer, ou revenir au sous-hub pour y ajouter d'autres recits.",
+    title: 'Le préquel est ouvert',
+    text: "La charrette s'éloigne. Derrière lui, Liam laisse la forge d'Alard, le sourire de Maëlle et les plans improvisés de Remus. Devant lui, à 130 kilomètres, se dressent les murs de Valdurne. Il n'est pas encore l'écuyer du roman principal. Il est juste un garçon d'Eystie-Val qui a appris à compter, à choisir ses mots et à garder le cap. C'est ainsi que commencent les grandes histoires.",
+    prompt: "Tu as terminé le préquel. Tu peux l'écouter encore, le rejouer, ou revenir au sous-hub pour y ajouter d'autres récits.",
     choices: [
       {
         badge: 'Final',
-        title: 'Relire l epilogue',
-        sub: "Rejouer une derniere fois la scene de depart, comme la fin d'un conte au coin du feu.",
+        title: "Relire l'épilogue",
+        sub: "Rejouer une dernière fois la scène de départ, comme la fin d'un conte au coin du feu.",
         kind: 'action',
         action: 'replay'
       },
       {
         badge: 'Final',
-        title: 'Rejouer depuis le debut',
-        sub: "Repartir a la forge et refaire toutes les bifurcations avec Liam.",
+        title: 'Rejouer depuis le début',
+        sub: "Repartir à la forge et refaire toutes les bifurcations avec Liam.",
         kind: 'action',
         action: 'restart'
       },
       {
         badge: 'Final',
         title: 'Retourner au sous-hub',
-        sub: "Revenir a la porte d'entree de Liam a Eystie-Val.",
+        sub: "Revenir à la porte d'entrée de Liam à Eystie-Val.",
         kind: 'action',
         action: 'hub'
       }
@@ -554,15 +620,34 @@ function frenchVoice(){
   return voices.find(v => /^fr/i.test(v.lang || '')) || voices[0] || null;
 }
 
+function bindOptionalImage(imgEl, src, alt, fallbackEl){
+  if(!imgEl) return;
+  if(!src){
+    imgEl.style.display = 'none';
+    if (fallbackEl) fallbackEl.style.display = 'flex';
+    return;
+  }
+  imgEl.onload = function(){
+    imgEl.style.display = 'block';
+    if (fallbackEl) fallbackEl.style.display = 'none';
+  };
+  imgEl.onerror = function(){
+    imgEl.style.display = 'none';
+    if (fallbackEl) fallbackEl.style.display = 'flex';
+  };
+  imgEl.alt = alt || '';
+  imgEl.src = src;
+}
+
 function speak(text){
   const state = getState();
   const voiceStatus = document.getElementById('voiceStatus');
   if (!state.speechEnabled) {
-    if (voiceStatus) voiceStatus.textContent = "Lecture orale desactivee. Tu peux la relancer quand tu veux.";
+    if (voiceStatus) voiceStatus.textContent = "Lecture orale désactivée. Tu peux la relancer quand tu veux.";
     return;
   }
   if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-    if (voiceStatus) voiceStatus.textContent = "La synthese vocale du navigateur n'est pas disponible ici. Le texte reste lisible a l'ecran.";
+    if (voiceStatus) voiceStatus.textContent = "La synthèse vocale du navigateur n'est pas disponible ici. Le texte reste lisible à l'écran.";
     return;
   }
   window.speechSynthesis.cancel();
@@ -572,10 +657,10 @@ function speak(text){
   const picked = frenchVoice();
   if (picked) utter.voice = picked;
   utter.onstart = () => {
-    if (voiceStatus) voiceStatus.textContent = "Lecture orale active. Liam te raconte la scene en cours.";
+    if (voiceStatus) voiceStatus.textContent = "Lecture orale active. Liam te raconte la scène en cours.";
   };
   utter.onerror = () => {
-    if (voiceStatus) voiceStatus.textContent = "La voix n'a pas pu se lancer. Utilise le bouton Relire la scene si besoin.";
+    if (voiceStatus) voiceStatus.textContent = "La voix n'a pas pu se lancer. Utilise le bouton Relire la scène si besoin.";
   };
   window.speechSynthesis.speak(utter);
 }
@@ -633,7 +718,7 @@ function openFall(fall){
   document.getElementById('fallIcon').textContent = fall.icon || '😄';
   document.getElementById('fallTitle').textContent = fall.title || 'Oups';
   document.getElementById('fallText').textContent = fall.text || '';
-  document.getElementById('fallCoach').textContent = fall.coach || "Essaie encore : la bonne reponse est juste a cote.";
+  document.getElementById('fallCoach').textContent = fall.coach || "Essaie encore : la bonne réponse est juste à côté.";
   modal.classList.add('show');
   modal.setAttribute('aria-hidden', 'false');
   speak(`${fall.title}. ${fall.text}. ${fall.coach}`);
@@ -665,13 +750,13 @@ function updateVoiceButtons(){
   const voiceStatus = document.getElementById('voiceStatus');
   if (speakBtn) speakBtn.textContent = state.speechEnabled ? '🔊 Couper la voix' : '🔈 Remettre la voix';
   if (voiceStatus && !('speechSynthesis' in window)) {
-    voiceStatus.textContent = "La synthese vocale du navigateur n'est pas disponible ici. Le texte reste lisible a l'ecran.";
+    voiceStatus.textContent = "La synthèse vocale du navigateur n'est pas disponible ici. Le texte reste lisible à l'écran.";
     return;
   }
   if (voiceStatus) {
     voiceStatus.textContent = state.speechEnabled
-      ? "Lecture orale active. Si la voix ne demarre pas, utilise le bouton Relire la scene."
-      : "Lecture orale coupee. Le recit reste entierement lisible a l'ecran.";
+      ? "Lecture orale active. Si la voix ne démarre pas, utilise le bouton Relire la scène."
+      : "Lecture orale coupée. Le récit reste entièrement lisible à l'écran.";
   }
 }
 
@@ -680,6 +765,7 @@ function renderScene(){
   const scene = currentScene();
   const progress = Math.max(0, percentDone(state));
   const sceneIdx = sceneOrder().includes(scene.id) ? sceneOrder().indexOf(scene.id) + 1 : TOTAL_MAIN_SCENES;
+  const sceneVisual = VISUAL_ASSETS.scenes[scene.id] || null;
 
   document.getElementById('chapterPill').textContent = scene.chapter;
   document.getElementById('locationPill').textContent = scene.location;
@@ -689,11 +775,17 @@ function renderScene(){
   document.getElementById('scenePrompt').textContent = scene.prompt;
   document.getElementById('sceneArt').textContent = scene.icon;
   document.getElementById('backdrop').style.background = scene.background;
+  bindOptionalImage(
+    document.getElementById('sceneBgImg'),
+    sceneVisual ? sceneVisual.bg : '',
+    sceneVisual ? sceneVisual.alt : '',
+    null
+  );
   document.getElementById('progressLabel').textContent = `${Math.min(state.cleared.length, TOTAL_MAIN_SCENES)}/${TOTAL_MAIN_SCENES}`;
   document.getElementById('progressFill').style.width = `${progress}%`;
   document.getElementById('sceneNumber').textContent = String(sceneIdx);
   document.getElementById('subjectLabel').textContent = scene.subject;
-  document.getElementById('resumeHint').textContent = scene.id === 'epilogue' ? 'Valdurne t attend' : 'Une seule reponse ouvre la suite';
+  document.getElementById('resumeHint').textContent = scene.id === 'epilogue' ? "Valdurne t'attend" : 'Une seule réponse ouvre la suite';
 
   const choices = document.getElementById('choices');
   choices.innerHTML = '';
@@ -731,6 +823,13 @@ window.addEventListener('beforeunload', () => {
 if ('speechSynthesis' in window && typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
   window.speechSynthesis.onvoiceschanged = updateVoiceButtons;
 }
+
+bindOptionalImage(
+  document.getElementById('liamReferenceImg'),
+  VISUAL_ASSETS.referencePortrait,
+  "Référence de Liam pour le préquel d'Eystie-Val",
+  document.getElementById('liamReferenceFallback')
+);
 
 const params = new URLSearchParams(window.location.search);
 if (params.get('restart') === '1') restartStory();
