@@ -18,6 +18,8 @@
   --grass-soft:#dcfce7;
   --sky:#dbeafe;
   --night:#1e293b;
+  --slate:#e2e8f0;
+  --rose:#fb7185;
   --radius:26px;
   --shadow:0 18px 40px rgba(15,23,42,0.16);
   --font-title:'Baloo 2', cursive;
@@ -34,7 +36,7 @@ body{
     linear-gradient(180deg, #fff8eb 0%, #f8fafc 100%);
   min-height:100vh;
 }
-.wrap{max-width:1100px;margin:0 auto;padding:28px 18px 64px}
+.wrap{max-width:1160px;margin:0 auto;padding:28px 18px 72px}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
 .backlink,.ghost-btn{
   display:inline-flex;align-items:center;gap:8px;
@@ -93,9 +95,58 @@ body{
   margin-top:18px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,0.76);
   border:1px solid rgba(15,23,42,0.08);font-weight:700;color:var(--ink-soft);
 }
+.music-panel{
+  margin-top:20px;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;
+  padding:18px 20px;border-radius:24px;background:rgba(255,255,255,0.88);
+  border:2px solid rgba(15,23,42,0.08);box-shadow:0 12px 24px rgba(15,23,42,0.08);
+}
+.music-copy strong{display:block;font-size:1rem;margin-bottom:6px}
+.music-copy p{margin:0;color:var(--ink-soft);font-weight:700;line-height:1.65}
+.music-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.music-controls button,
+.music-controls input[type="range"]{
+  font:inherit;
+}
+.music-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 14px;border-radius:16px;border:none;cursor:pointer;font-weight:900;
+  background:linear-gradient(135deg,#1d4ed8,#38bdf8);color:#fff;
+  box-shadow:0 10px 18px rgba(29,78,216,0.22);
+}
+.music-btn.secondary{
+  background:#fff;color:var(--ink);border:2px solid rgba(15,23,42,0.08);box-shadow:none;
+}
+.music-controls label{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:16px;
+  background:#fff;border:2px solid rgba(15,23,42,0.08);font-weight:800;color:var(--ink-soft);
+}
+.music-status{
+  grid-column:1 / -1;
+  padding:12px 14px;border-radius:18px;background:#eff6ff;color:#1d4ed8;font-weight:800;line-height:1.6;
+}
+.section-block{margin-top:30px}
+.section-head{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px;
+}
 .section-title{
-  display:flex;align-items:center;gap:10px;margin:28px 0 14px;
-  font-family:var(--font-title);font-size:1.3rem;font-weight:800;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-title);font-size:1.45rem;font-weight:800;
+}
+.section-copy{
+  max-width:820px;color:var(--ink-soft);font-weight:700;line-height:1.7;
+}
+.journey-alert{
+  margin:0 0 18px;
+  padding:18px 20px;border-radius:24px;
+  background:linear-gradient(135deg, rgba(30,41,59,0.96), rgba(51,65,85,0.94));
+  color:#f8fafc;border:2px solid rgba(148,163,184,0.2);box-shadow:0 18px 30px rgba(15,23,42,0.18);
+}
+.journey-alert strong{
+  display:block;font-size:1.03rem;margin-bottom:8px;color:#fde68a;
+}
+.journey-alert ul{
+  margin:0;padding-left:18px;line-height:1.75;font-weight:700;
 }
 .cards{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;
@@ -110,9 +161,24 @@ body{
     linear-gradient(135deg, rgba(245,158,11,0.12), transparent);
   border-color:rgba(245,158,11,0.24);
 }
+.story-card.locked{
+  background:rgba(255,255,255,0.78);
+  border-color:rgba(148,163,184,0.22);
+  opacity:.88;
+}
+.story-card.bonus{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(240,249,255,0.95)),
+    linear-gradient(135deg, rgba(56,189,248,0.14), transparent);
+  border-color:rgba(56,189,248,0.26);
+}
 .story-icon{
   width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center;
   font-size:2rem;background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:0 12px 22px rgba(245,158,11,0.24);
+}
+.story-card.bonus .story-icon{
+  background:linear-gradient(135deg,#38bdf8,#1d4ed8);
+  box-shadow:0 12px 22px rgba(29,78,216,0.2);
 }
 .story-cover{
   border-radius:22px;overflow:hidden;border:2px solid rgba(15,23,42,0.06);background:#fff7d6;
@@ -125,9 +191,9 @@ body{
   height:220px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#92400e;
   background:linear-gradient(180deg,rgba(245,158,11,0.16),rgba(219,234,254,0.7));
 }
-.story-title{font-family:var(--font-title);font-size:1.4rem;font-weight:800;line-height:1.1}
-.story-sub{font-size:.85rem;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:.35px}
-.story-desc{line-height:1.7;color:var(--ink-soft);font-weight:700}
+.story-title{font-family:var(--font-title);font-size:1.36rem;font-weight:800;line-height:1.14}
+.story-sub{font-size:.83rem;font-weight:900;color:#92400e;text-transform:uppercase;letter-spacing:.35px}
+.story-desc{line-height:1.72;color:var(--ink-soft);font-weight:700}
 .story-tags{display:flex;flex-wrap:wrap;gap:8px}
 .story-tag{
   padding:7px 11px;border-radius:999px;background:#f8fafc;border:1px solid rgba(15,23,42,0.08);
@@ -136,6 +202,9 @@ body{
 .story-status{
   padding:12px 14px;border-radius:18px;background:var(--grass-soft);color:#166534;font-weight:800;line-height:1.55;
 }
+.story-status.locked{
+  background:#f8fafc;color:#475569;
+}
 .story-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
 .cta,.cta-ghost{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:16px;
@@ -143,15 +212,19 @@ body{
 }
 .cta{background:linear-gradient(135deg,#f59e0b,#fb923c);color:white;box-shadow:0 10px 18px rgba(245,158,11,0.24)}
 .cta-ghost{background:white;color:var(--ink);border:2px solid rgba(15,23,42,0.08)}
-.soon{
-  opacity:.76;background:rgba(255,255,255,0.76);
+.cta[disabled],.cta-ghost[disabled]{
+  opacity:.56;cursor:not-allowed;box-shadow:none;
 }
-.note{
-  margin-top:24px;padding:18px 20px;border-radius:24px;background:rgba(255,255,255,0.84);
-  border:2px dashed rgba(15,23,42,0.12);line-height:1.7;color:var(--ink-soft);font-weight:700;
+.bonus-note{
+  margin-top:18px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,0.9);
+  border:2px dashed rgba(56,189,248,0.22);color:var(--ink-soft);line-height:1.7;font-weight:700;
+}
+@media (max-width:920px){
+  .hero-flex{grid-template-columns:1fr}
+  .music-panel{grid-template-columns:1fr}
+  .music-controls{justify-content:flex-start}
 }
 @media (max-width:640px){
-  .hero-flex{grid-template-columns:1fr}
   .hero{padding:26px 20px}
   .story-actions{flex-direction:column}
   .cta,.cta-ghost{width:100%}
@@ -162,7 +235,7 @@ body{
 <div class="wrap">
   <div class="topbar">
     <a class="backlink" href="index_ACCEUIL6e.html">← Retour au hub CM2/6e</a>
-    <a class="ghost-btn" href="liam_ruisseau_collines.html?restart=1">↺ Recommencer la première aventure</a>
+    <a class="ghost-btn" href="remus_chroniques.html?restart=1">↺ Recommencer l'entraînement</a>
   </div>
 
   <section class="hero">
@@ -171,39 +244,117 @@ body{
         <div class="hero-tag">Préquel de la Bibliothèque de Valdurne</div>
         <h1>Les aventures de Liam<br>à Eystie-Val</h1>
         <p>
-          Avant l'école-château de Valdurne, il y a l'été d'Eystie-Val : la forge du père,
-          les escapades dans les collines, les conseils de la maman, les derniers jours avant le départ
-          et les plans toujours imprévisibles de Rémus. Ce hub est prévu comme une mini collection de récits
-          interactifs à l'oral, façon Lunii, mais avec de vrais embranchements de révision.
+          Avant l'école-château de Valdurne, il y a les saisons d'Eystie-Val : les moissons avec
+          Rémus, les collines et le ruisseau, puis les derniers jours auprès d'Alard et de Maëlle.
+          Ce hub rassemble l'entraînement de Liam, puis ouvre enfin la route du voyage vers Valdurne.
         </p>
         <div class="hero-meta">
-          <div class="meta-pill">⚒️ Village de forge</div>
-          <div class="meta-pill">🔊 Lecture orale intégrée</div>
-          <div class="meta-pill">🧩 3 aventures jouables</div>
-          <div class="meta-pill">🏰 Passage vers Valdurne</div>
+          <div class="meta-pill">🌾 3 entraînements</div>
+          <div class="meta-pill">🐴 2 chapitres de voyage</div>
+          <div class="meta-pill">♟️ Bonus à débloquer</div>
+          <div class="meta-pill">🔊 Ambiance sonore</div>
         </div>
-        <div class="hello" id="helloBox">Bonjour, voyageur. Ton aventure estivale est prête.</div>
+        <div class="hello" id="helloBox">Bonjour, voyageur. Ton été à Eystie-Val est prêt.</div>
       </div>
       <div class="hero-visual">
         <img id="heroVisualImg" alt="Liam à Eystie-Val">
         <div class="hero-fallback" id="heroVisualFallback">⚒️</div>
       </div>
     </div>
+
+    <div class="music-panel">
+      <div class="music-copy">
+        <strong>Ambiance du hub</strong>
+        <p>
+          Lance la musique d'Eystie-Val pendant la lecture du sous-hub. Le volume reste mémorisé
+          et la piste peut reprendre automatiquement à ton retour si elle avait déjà été activée.
+        </p>
+      </div>
+      <div class="music-controls">
+        <button class="music-btn" id="musicToggleBtn" type="button">▶ Lancer l'ambiance</button>
+        <button class="music-btn secondary" id="musicStopBtn" type="button">⏹ Arrêter</button>
+        <label>Volume <input id="musicVolume" type="range" min="0" max="100" value="35"></label>
+      </div>
+      <div class="music-status" id="musicStatus">
+        L'ambiance est prête. Lance-la quand tu veux depuis ce hub.
+      </div>
+    </div>
   </section>
 
-  <div class="section-title">📚 Aventures disponibles</div>
-  <section class="cards" id="storyCards"></section>
+  <section class="section-block">
+    <div class="section-head">
+      <div>
+        <div class="section-title">📚 Parcours d'entraînement</div>
+        <div class="section-copy">
+          Ces trois aventures servent d'échauffement avant la grande route. Elles installent Liam,
+          Rémus, le village et les repères du programme de CM2.
+        </div>
+      </div>
+    </div>
+    <section class="cards" id="trainingCards"></section>
+  </section>
 
-  <div class="note">
-    Zone facile à enrichir : pour ajouter d'autres aventures, il suffira d'ajouter une nouvelle
-    carte dans le tableau <code>ADVENTURES</code> de cette page et un nouveau fichier d'histoire.
-    Le système est déjà prévu pour afficher "Commencer", "Reprendre" ou "Rejouer" selon la progression.
-  </div>
+  <section class="section-block">
+    <div class="section-head">
+      <div>
+        <div class="section-title">🎁 Bonus d'entraînement</div>
+        <div class="section-copy">
+          Quand les trois premiers récits sont terminés, Liam et Rémus prennent une pause et se
+          défient au jeu de dames.
+        </div>
+      </div>
+    </div>
+    <section class="cards" id="trainingBonusCards"></section>
+  </section>
+
+  <section class="section-block">
+    <div class="section-head">
+      <div>
+        <div class="section-title">🛞 Voyage vers Valdurne</div>
+        <div class="section-copy">
+          Une fois l'entraînement terminé, Liam monte dans la charrette de Basile. Le ton devient
+          plus romanesque et les erreurs ont désormais un vrai prix : le voyage repart du début.
+        </div>
+      </div>
+    </div>
+
+    <div class="journey-alert">
+      <strong>Avant d'ouvrir la route :</strong>
+      <ul>
+        <li>Ces deux chapitres sont plus longs et plus aventureux que les contes d'entraînement.</li>
+        <li>La narration passe par des enregistrements MP3, lancés automatiquement quand le navigateur l'autorise.</li>
+        <li>Chaque chapitre propose un bouton stop et un réglage de volume.</li>
+        <li>Il n'y a plus d'aide : une mauvaise réponse renvoie au début du chapitre.</li>
+        <li>La fin du chapitre 1 débloque un bonus supplémentaire avec le charretier.</li>
+      </ul>
+    </div>
+
+    <section class="cards" id="journeyCards"></section>
+  </section>
+
+  <section class="section-block">
+    <div class="section-head">
+      <div>
+        <div class="section-title">🚚 Bonus de route</div>
+        <div class="section-copy">
+          Basile confie un vrai jeu bonus à Liam après la première étape de la route.
+        </div>
+      </div>
+    </div>
+    <section class="cards" id="journeyBonusCards"></section>
+    <div class="bonus-note">
+      Les bonus restent accessibles depuis ce sous-hub dès qu'ils sont débloqués.
+    </div>
+  </section>
+
+  <audio id="ambienceAudio" loop preload="none" hidden></audio>
 </div>
 
 <script>
 const LS_KEY = 'ave6e_progress';
+const MUSIC_KEY = 'ave6e_hub_music_settings';
 const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
+const AUDIO_EXTENSIONS = ['mp3','ogg','wav'];
 
 function assetSources(stems, preferred = 'jpg'){
   const baseStems = Array.isArray(stems) ? stems.filter(Boolean) : [stems].filter(Boolean);
@@ -217,32 +368,60 @@ function assetSources(stems, preferred = 'jpg'){
   return baseStems.flatMap(stem => extensions.map(ext => `${stem}.${ext}`));
 }
 
+function audioSources(stems, preferred = 'mp3'){
+  const baseStems = Array.isArray(stems) ? stems.filter(Boolean) : [stems].filter(Boolean);
+  const seen = new Set();
+  const extensions = [preferred].concat(AUDIO_EXTENSIONS).filter(ext => {
+    const key = String(ext || '').toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return baseStems.flatMap(stem => extensions.map(ext => `${stem}.${ext}`));
+}
+
 const VISUAL_ASSETS = {
   hubCover: assetSources(['assets_eystieval/liam_hub_cover', 'liam_hub_cover']),
-  referenceBoard: assetSources(['assets_eystieval/liam_storyboard_board', 'liam_storyboard_board'], 'png'),
   storyCovers: {
+    'remus-prequel-01': assetSources(['assets_eystieval/remus_chroniques_cover', 'remus_chroniques_cover']),
     'liam-prequel-00': assetSources(['assets_eystieval/liam_ruisseau_cover', 'liam_ruisseau_cover']),
     'liam-prequel-01': [
       ...assetSources(['assets_eystieval/liam_story_ete_cover', 'liam_story_ete_cover']),
       ...assetSources(['assets_eystieval/liam_hub_cover', 'liam_hub_cover'])
     ],
-    'remus-prequel-01': [
-      ...assetSources(['assets_eystieval/remus_chroniques_cover', 'remus_chroniques_cover']),
-      ...assetSources(['assets_eystieval/remus_story_cover', 'remus_story_cover'])
-    ]
+    'bonus-dames': assetSources(['assets_eystieval/dames_liam_remus_cover', 'dames_liam_remus_cover']),
+    'valdurne-ch1': assetSources(['assets_eystieval/valdurne_ch1_cover', 'valdurne_ch1_cover']),
+    'valdurne-ch2': assetSources(['assets_eystieval/valdurne_ch2_cover', 'valdurne_ch2_cover']),
+    'bonus-charrette': assetSources(['assets_eystieval/charrette_bonus_cover', 'charrette_bonus_cover'])
   }
 };
 
-const ADVENTURES = [
+const MUSIC_SOURCES = audioSources(['assets_eystieval/eystieval_ambiance_hub', 'eystieval_ambiance_hub']);
+const CHAPTER1_KEY = 'ave6e_valdurne_voyage_ch1_v1';
+const CHAPTER2_KEY = 'ave6e_valdurne_voyage_ch2_v1';
+
+const TRAINING_ADVENTURES = [
+  {
+    id: 'remus-prequel-01',
+    storyKey: 'ave6e_remus_chroniques_v1',
+    sceneCount: 5,
+    icon: '🌾',
+    title: 'Le vent des moissons - Les chroniques de Rémus',
+    subtitle: 'Entraînement - 2 ans avant le départ de Liam',
+    desc: "Rémus entraîne Liam dans les champs d'Eystie-Val. Les signes du ciel, les oiseaux, les plantes et les moissons servent d'échauffement avant les grandes routes.",
+    tags: ['Maths', 'Sciences', 'Météo', 'Entraînement'],
+    file: 'remus_chroniques.html',
+    cover: VISUAL_ASSETS.storyCovers['remus-prequel-01']
+  },
   {
     id: 'liam-prequel-00',
     storyKey: 'ave6e_liam_ruisseau_v1',
     sceneCount: 4,
     icon: '🐸',
-    title: 'Le ruisseau des collines',
-    subtitle: 'Conte nature et révisions',
-    desc: "Quelques semaines avant Valdurne, Liam et Rémus longent le ruisseau des collines. Entre grenouilles, pluie d'été, reliefs et petits calculs, ils révisent sans même s'en apercevoir.",
-    tags: ['Maths', 'Sciences', 'CM2', 'Nature'],
+    title: 'Conte nature et révisions - Le ruisseau des collines',
+    subtitle: 'Entraînement - 1 an avant le départ de Liam',
+    desc: "Un an avant Valdurne, Liam et Rémus suivent le ruisseau, observent les grenouilles, l'eau, le relief et reprennent confiance dans les révisions.",
+    tags: ['Maths', 'Sciences', 'Nature', 'Entraînement'],
     file: 'liam_ruisseau_collines.html',
     cover: VISUAL_ASSETS.storyCovers['liam-prequel-00']
   },
@@ -251,24 +430,71 @@ const ADVENTURES = [
     storyKey: 'ave6e_liam_eystieval_v1',
     sceneCount: 5,
     icon: '⚒️',
-    title: "L'été de Liam à Eystie-Val",
-    subtitle: 'Les derniers jours avant Valdurne',
-    desc: "Le départ approche. Liam aide son père forgeron, suit les conseils de sa mère et vit ses derniers défis d'été avec Rémus avant de prendre la route de Valdurne.",
-    tags: ['Maths', 'Français', 'Chutes rigolotes', 'CM2/6e'],
+    title: 'Les derniers jours avant Valdurne - L’été de Liam à Eystie-Val',
+    subtitle: 'Entraînement final avant le départ',
+    desc: "La forge, Maëlle, le marché et les derniers préparatifs. C'est la dernière étape d'entraînement avant que Liam ne monte enfin dans la charrette.",
+    tags: ['Maths', 'Français', 'CM2/6e', 'Entraînement'],
     file: 'liam_eystieval_prequel.html',
     cover: VISUAL_ASSETS.storyCovers['liam-prequel-01']
+  }
+];
+
+const TRAINING_BONUSES = [
+  {
+    id: 'bonus-dames',
+    icon: '♟️',
+    title: 'Bonus - Le jeu de dames de Liam et Rémus',
+    subtitle: 'Déblocable après les 3 entraînements',
+    desc: "Les deux amis s'installent pour une partie de dames. Tu peux jouer à deux humains ou affronter une petite IA locale.",
+    tags: ['Bonus', '2 joueurs', 'IA simple'],
+    file: 'jeu_dames_liam_remus.html',
+    cover: VISUAL_ASSETS.storyCovers['bonus-dames'],
+    gateMessage: "Termine les trois aventures d'entraînement pour ouvrir la partie de dames.",
+    unlockedMessage: "Bonus débloqué. Liam et Rémus t'attendent pour une partie."
+  }
+];
+
+const JOURNEY_ADVENTURES = [
+  {
+    id: 'valdurne-ch1',
+    storyKey: CHAPTER1_KEY,
+    sceneCount: 5,
+    icon: '🐴',
+    title: 'Chapitre 1 - La route des ornières',
+    subtitle: 'Voyage vers Valdurne',
+    desc: "Liam quitte Eystie-Val avec Basile le charretier. Les roues grincent, la pluie menace et le premier campement se mérite.",
+    tags: ['Narration MP3', 'Erreur = début', 'Bonus après la fin'],
+    file: 'valdurne_voyage_ch1.html',
+    cover: VISUAL_ASSETS.storyCovers['valdurne-ch1'],
+    gateMessage: "Termine d'abord les trois entraînements pour ouvrir la route vers Valdurne."
   },
   {
-    id: 'remus-prequel-01',
-    storyKey: 'ave6e_remus_chroniques_v1',
+    id: 'valdurne-ch2',
+    storyKey: CHAPTER2_KEY,
     sceneCount: 5,
-    icon: '🌾',
-    title: 'Les chroniques de Rémus',
-    subtitle: 'Le vent des moissons',
-    desc: "Rémus entraîne Liam dans une journée pleine de signes du ciel, d'oiseaux, de champs et de sacs de grain. Une autre façon de réviser les maths et les sciences du village.",
-    tags: ['Maths', 'Sciences', 'Météo', 'Rémus'],
-    file: 'remus_chroniques.html',
-    cover: VISUAL_ASSETS.storyCovers['remus-prequel-01']
+    icon: '🌫️',
+    title: 'Chapitre 2 - Le pont des brumes',
+    subtitle: 'Approche de Valdurne',
+    desc: "Au matin, la route se resserre entre les bornes, le pont et le brouillard. Liam approche enfin des tours du château.",
+    tags: ['Narration MP3', 'Chapitre 2', 'Erreur = début'],
+    file: 'valdurne_voyage_ch2.html',
+    cover: VISUAL_ASSETS.storyCovers['valdurne-ch2'],
+    gateMessage: "Termine le chapitre 1 du voyage pour poursuivre jusqu'aux portes de Valdurne."
+  }
+];
+
+const JOURNEY_BONUSES = [
+  {
+    id: 'bonus-charrette',
+    icon: '🚚',
+    title: 'Bonus - Le chargement du charretier',
+    subtitle: 'Débloqué après le chapitre 1',
+    desc: "Basile te confie les caisses, les sacs et l'équilibre de la charrette. Un mini-jeu bonus à rouvrir quand tu veux.",
+    tags: ['Bonus', 'Logique', 'Chargement'],
+    file: 'jeu_bonus_charrette.html',
+    cover: VISUAL_ASSETS.storyCovers['bonus-charrette'],
+    gateMessage: "Finis le chapitre 1 du voyage pour ouvrir ce bonus.",
+    unlockedMessage: "Bonus débloqué. Basile te laisse gérer le chargement."
   }
 ];
 
@@ -315,12 +541,37 @@ function getStoryProgress(storyKey){
   }
 }
 
+function isCompleted(storyKey){
+  return !!getStoryProgress(storyKey).completed;
+}
+
+function trainingComplete(){
+  return TRAINING_ADVENTURES.every(adventure => isCompleted(adventure.storyKey));
+}
+
+function chapter1Complete(){
+  return isCompleted(CHAPTER1_KEY);
+}
+
+function chapter2Complete(){
+  return isCompleted(CHAPTER2_KEY);
+}
+
 function helloText(){
   const p = getMainProgress();
-  if (p.player_id) {
-    return `Bonjour ${p.player_id}. Retrouve ici les aventures d'Eystie-Val avant Valdurne, entre Liam, Rémus et les collines du village.`;
+  const player = p.player_id ? `${p.player_id}, ` : '';
+  if (chapter2Complete()) {
+    return `Bonjour ${player}tu as déjà mené Liam jusqu'aux portes de Valdurne. Les bonus restent ouverts ici quand tu veux revenir.`;
   }
-  return "Bonjour, voyageur. Les aventures d'Eystie-Val t'attendent.";
+  if (chapter1Complete()) {
+    return `Bonjour ${player}la première étape du voyage est validée. Le campement est derrière toi, la suite de la route est ouverte.`;
+  }
+  if (trainingComplete()) {
+    return `Bonjour ${player}l'entraînement est terminé. Liam peut maintenant quitter Eystie-Val pour Valdurne.`;
+  }
+  return p.player_id
+    ? `Bonjour ${p.player_id}. Retrouve ici les saisons d'Eystie-Val avant le départ de Liam.`
+    : "Bonjour, voyageur. Les aventures d'Eystie-Val t'attendent.";
 }
 
 function adventureStatus(adventure){
@@ -329,7 +580,7 @@ function adventureStatus(adventure){
   const doneCount = Math.min(Array.isArray(st.cleared) ? st.cleared.length : 0, sceneCount);
   if (st.completed) {
     return {
-      box: `Aventure terminée. Tu peux la rejouer quand tu veux. ${doneCount}/${sceneCount} scènes ont déjà été validées.`,
+      box: `Aventure terminée. ${doneCount}/${sceneCount} scènes ont déjà été validées et tu peux la relancer quand tu veux.`,
       cta: 'Rejouer',
       href: `${adventure.file}?restart=1`,
       extraHref: adventure.file,
@@ -338,7 +589,7 @@ function adventureStatus(adventure){
   }
   if (st.currentScene) {
     return {
-      box: `Aventure en cours. ${doneCount}/${sceneCount} scènes validées. Reprends là où le récit s'est arrêté.`,
+      box: `Aventure en cours. ${doneCount}/${sceneCount} scènes validées. Reprends là où Liam s'est arrêté.`,
       cta: 'Reprendre',
       href: adventure.file,
       extraHref: `${adventure.file}?restart=1`,
@@ -346,30 +597,64 @@ function adventureStatus(adventure){
     };
   }
   return {
-    box: "Aventure pas encore commencée. Lance ce récit pour ouvrir une nouvelle étape de l'été à Eystie-Val.",
+    box: "Aventure pas encore commencée. Lance ce récit pour ouvrir une nouvelle étape du chemin de Liam.",
     cta: 'Commencer',
     href: adventure.file,
     extraHref: `${adventure.file}?restart=1`,
-    extraLabel: 'Mode conte direct'
+    extraLabel: 'Mode départ direct'
   };
 }
 
-function renderCards(){
-  const root = document.getElementById('storyCards');
+function bonusStatus(adventure, unlocked){
+  if (!unlocked) {
+    return {
+      box: adventure.gateMessage,
+      locked: true
+    };
+  }
+  return {
+    box: adventure.unlockedMessage || 'Bonus débloqué. Ouvre-le quand tu veux.',
+    locked: false
+  };
+}
+
+function renderAdventureCards(rootId, list, options = {}){
+  const root = document.getElementById(rootId);
   if (!root) return;
+  const primaryId = options.primaryId || '';
+  const gateFn = options.gateFn || (() => true);
   root.innerHTML = '';
 
-  ADVENTURES.forEach((adventure, index) => {
+  list.forEach(adventure => {
+    const unlocked = gateFn(adventure);
     const article = document.createElement('article');
-    article.className = `story-card${index === 0 ? ' main' : ''}${adventure.disabled ? ' soon' : ''}`;
+    const isPrimary = adventure.id === primaryId;
+    article.className = `story-card${isPrimary ? ' main' : ''}${!unlocked ? ' locked' : ''}${options.bonus ? ' bonus' : ''}`;
     const tags = (adventure.tags || []).map(tag => `<span class="story-tag">${tag}</span>`).join('');
-    let actions = '<div class="story-actions"><button class="cta-ghost" disabled>Encore un peu de patience</button></div>';
-    let statusBox = "<div class=\"story-status\">Cette place est réservée à une prochaine aventure d'Eystie-Val.</div>";
 
-    if (!adventure.disabled && adventure.file) {
+    let statusHtml = '';
+    let actionsHtml = '';
+
+    if (options.bonus) {
+      const status = bonusStatus(adventure, unlocked);
+      statusHtml = `<div class="story-status${status.locked ? ' locked' : ''}">${status.box}</div>`;
+      actionsHtml = unlocked
+        ? `<div class="story-actions">
+             <a class="cta" href="${adventure.file}">▶ Ouvrir</a>
+             <a class="cta-ghost" href="${adventure.file}">Relancer</a>
+           </div>`
+        : `<div class="story-actions">
+             <button class="cta-ghost" type="button" disabled>Verrouillé</button>
+           </div>`;
+    } else if (!unlocked) {
+      statusHtml = `<div class="story-status locked">${adventure.gateMessage}</div>`;
+      actionsHtml = `<div class="story-actions">
+        <button class="cta-ghost" type="button" disabled>Verrouillé</button>
+      </div>`;
+    } else {
       const state = adventureStatus(adventure);
-      statusBox = `<div class="story-status">${state.box}</div>`;
-      actions = `
+      statusHtml = `<div class="story-status">${state.box}</div>`;
+      actionsHtml = `
         <div class="story-actions">
           <a class="cta" href="${state.href}">▶ ${state.cta}</a>
           <a class="cta-ghost" href="${state.extraHref}">${state.extraLabel}</a>
@@ -387,8 +672,8 @@ function renderCards(){
       <div class="story-title">${adventure.title}</div>
       <div class="story-desc">${adventure.desc}</div>
       <div class="story-tags">${tags}</div>
-      ${statusBox}
-      ${actions}
+      ${statusHtml}
+      ${actionsHtml}
     `;
     root.appendChild(article);
     bindOptionalImage(
@@ -400,14 +685,156 @@ function renderCards(){
   });
 }
 
+function loadAudioSource(audioEl, sources, onMissing){
+  const list = Array.isArray(sources) ? sources.filter(Boolean) : [];
+  let index = 0;
+  function tryNext(){
+    if (!audioEl) return;
+    if (index >= list.length) {
+      audioEl.removeAttribute('src');
+      audioEl.load();
+      if (typeof onMissing === 'function') onMissing();
+      return;
+    }
+    audioEl.src = list[index];
+    audioEl.load();
+  }
+  audioEl.onerror = () => {
+    index += 1;
+    tryNext();
+  };
+  audioEl.onloadeddata = null;
+  tryNext();
+}
+
+function getMusicSettings(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(MUSIC_KEY) || '{}');
+    return {
+      enabled: !!raw.enabled,
+      volume: typeof raw.volume === 'number' ? raw.volume : 0.35
+    };
+  } catch(e) {
+    return { enabled:false, volume:0.35 };
+  }
+}
+
+function saveMusicSettings(data){
+  localStorage.setItem(MUSIC_KEY, JSON.stringify(data));
+}
+
+function setupMusicPanel(){
+  const audio = document.getElementById('ambienceAudio');
+  const toggleBtn = document.getElementById('musicToggleBtn');
+  const stopBtn = document.getElementById('musicStopBtn');
+  const volume = document.getElementById('musicVolume');
+  const status = document.getElementById('musicStatus');
+  if (!audio || !toggleBtn || !stopBtn || !volume || !status) return;
+
+  const settings = getMusicSettings();
+  let sourceReady = false;
+
+  function writeStatus(text){
+    status.textContent = text;
+  }
+
+  function refreshButtons(){
+    toggleBtn.textContent = audio.paused ? '▶ Lancer l\'ambiance' : '⏸ Mettre en pause';
+  }
+
+  function playMusic(autoAttempt = false){
+    if (!sourceReady) {
+      writeStatus("Aucune musique détectée pour l'instant. Dépose la piste du hub puis recharge la page.");
+      return;
+    }
+    const promise = audio.play();
+    if (promise && typeof promise.catch === 'function') {
+      promise.then(() => {
+        saveMusicSettings({ enabled:true, volume:audio.volume });
+        writeStatus("Ambiance lancée. Le volume restera mémorisé pour tes prochaines visites.");
+        refreshButtons();
+      }).catch(() => {
+        saveMusicSettings({ enabled:false, volume:audio.volume });
+        writeStatus(autoAttempt
+          ? "Le navigateur a bloqué le démarrage automatique. Relance la musique avec le bouton."
+          : "Le navigateur a bloqué la lecture. Clique à nouveau sur le bouton pour l'autoriser.");
+        refreshButtons();
+      });
+      return;
+    }
+    saveMusicSettings({ enabled:true, volume:audio.volume });
+    writeStatus("Ambiance lancée.");
+    refreshButtons();
+  }
+
+  function pauseMusic(keepEnabled){
+    audio.pause();
+    if (!keepEnabled) saveMusicSettings({ enabled:false, volume:audio.volume });
+    refreshButtons();
+  }
+
+  audio.volume = settings.volume;
+  volume.value = String(Math.round(settings.volume * 100));
+  loadAudioSource(audio, MUSIC_SOURCES, () => {
+    sourceReady = false;
+    refreshButtons();
+    writeStatus("Aucune musique détectée pour l'instant. Dépose la piste du hub puis recharge la page.");
+  });
+  audio.onloadeddata = () => {
+    sourceReady = true;
+    refreshButtons();
+    writeStatus(settings.enabled
+      ? "L'ambiance est prête. Le hub essaie de la relancer automatiquement."
+      : "L'ambiance est prête. Lance-la quand tu veux depuis ce hub.");
+    if (settings.enabled) playMusic(true);
+  };
+  audio.onplay = refreshButtons;
+  audio.onpause = refreshButtons;
+
+  toggleBtn.addEventListener('click', () => {
+    if (audio.paused) playMusic(false);
+    else {
+      pauseMusic(true);
+      writeStatus("Ambiance mise en pause. Tu peux la relancer quand tu veux.");
+    }
+  });
+
+  stopBtn.addEventListener('click', () => {
+    pauseMusic(false);
+    audio.currentTime = 0;
+    writeStatus("Ambiance arrêtée.");
+  });
+
+  volume.addEventListener('input', () => {
+    const nextVolume = Number(volume.value || 35) / 100;
+    audio.volume = Math.min(1, Math.max(0, nextVolume));
+    const enabled = !audio.paused || getMusicSettings().enabled;
+    saveMusicSettings({ enabled, volume:audio.volume });
+  });
+}
+
 document.getElementById('helloBox').textContent = helloText();
 bindOptionalImage(
   document.getElementById('heroVisualImg'),
   document.getElementById('heroVisualFallback'),
   VISUAL_ASSETS.hubCover,
-  "Couverture de Liam à Eystie-Val"
+  'Couverture de Liam à Eystie-Val'
 );
-renderCards();
+
+renderAdventureCards('trainingCards', TRAINING_ADVENTURES);
+renderAdventureCards('trainingBonusCards', TRAINING_BONUSES, {
+  bonus:true,
+  gateFn: () => trainingComplete()
+});
+renderAdventureCards('journeyCards', JOURNEY_ADVENTURES, {
+  primaryId:'valdurne-ch1',
+  gateFn: (adventure) => adventure.id === 'valdurne-ch1' ? trainingComplete() : chapter1Complete()
+});
+renderAdventureCards('journeyBonusCards', JOURNEY_BONUSES, {
+  bonus:true,
+  gateFn: () => chapter1Complete()
+});
+setupMusicPanel();
 </script>
 </body>
 </html>
