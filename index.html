@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -148,6 +148,10 @@
   <button id="bonusLauncher" class="hubUtilityTab" style="display:none" onclick="openBonusModal()" title="Ouvrir le panneau bonus" aria-label="Ouvrir le panneau bonus">
     <span>Bonus</span>
     <span id="bonusLauncherState" class="hubUtilityBadge">XP</span>
+  </button>
+  <button id="ttsHubLauncher" class="hubUtilityTab" onclick="openTtsPanelFromHub()" title="Ouvrir la lecture orale" aria-label="Ouvrir la lecture orale">
+    <span>Lire</span>
+    <span id="ttsHubState" class="hubUtilityBadge">TTS</span>
   </button>
 </div>
 </div>
@@ -327,7 +331,7 @@
 <!-- HUB ACADÉMIQUE — Français & Mathématiques     -->
 <!-- Pour ajouter des modules : éditer ACAD_REGISTRY dans le JS ci-dessus -->
 <!-- ══════════════════════════════════════════════ -->
-<section class="card" id="acadHub" style="margin-top:18px">
+<section class="card" id="acadHubLegacy" style="display:none">
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
   <h2 style="margin:0">📚 Hub Académique</h2>
   <span style="font-size:0.7em;color:#aaa">Français · Mathématiques · 6e → 3e</span>
@@ -342,22 +346,22 @@ Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augment
 </div>
 
 <div class="acad-filters">
-  <select id="acadFilterLevel" onchange="renderAcademie()">
+  <select id="acadFilterLevelLegacy" onchange="renderAcademie()">
     <option value="">Tous niveaux</option>
     <option value="6e">6e</option>
     <option value="5e">5e</option>
     <option value="4e">4e</option>
     <option value="3e">3e</option>
   </select>
-  <select id="acadFilterSubj" onchange="renderAcademie()">
+  <select id="acadFilterSubjLegacy" onchange="renderAcademie()">
     <option value="">Toutes matières</option>
     <option value="Francais">📝 Français</option>
     <option value="Maths">🔢 Maths</option>
   </select>
 </div>
 
-<div class="acad-grid" id="acadGrid"></div>
-<div class="msg" id="acadMsg"></div>
+<div class="acad-grid" id="acadGridLegacy"></div>
+<div class="msg" id="acadMsgLegacy"></div>
 <p class="hint" style="margin-top:10px;border-top:1px solid #222;padding-top:8px">
   💡 <b>Pour ajouter des modules :</b> éditer le tableau <code>ACAD_REGISTRY</code> dans le code source du hub, puis créer le fichier HTML correspondant.
 </p>
@@ -1168,6 +1172,7 @@ const ACAD_MODULES=[
 const MAL={incivilite:{l:'Incivilite (-50)',x:-50},agressivite:{l:'Agressivite verbale (-150)',x:-150},degradation:{l:'Degradation materiel (-300)',x:-300},faux_temoignage:{l:'Faux temoignage (-500)',x:-500},reset_total:{l:'RESET total',x:0}};
 const VIDEOS=(Array.isArray(window.PVS_VIDEOS)&&window.PVS_VIDEOS.length)?window.PVS_VIDEOS:[{id:'YT_01',title:'Video 01',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'pHARe-SOLO',offer:20,reward:80},{id:'YT_02',title:'Video 02',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'EMPREINTE-2022',offer:20,reward:80}];
 const AUDIO_FILES=['Tous Ensemble Aujourd\u2019hui.mp3',"Tous Ensemble Aujourd'hui.mp3",'Tous_Ensemble_Aujourd_hui.mp3'];
+const TTS_SCRIPT_VERSION='2026-03-11c';
 // Augmente cette version a chaque nouvelle publication pour reafficher la fenetre.
 const NEWS_HUB_FILE='hub_nouveautes.html',NEWS_HUB_VERSION='2026-03-11-news-hub-v2',NEWS_HUB_SEEN_KEY='pvs_news_seen_v1';
 const BONUS_GAME_FILE='Chevaliers_Justice.html',REWARD_SEEN_KEY='pvs_rewards_seen_v2',REWARD_DOCK_PREF_KEY='pvs_rewards_dock_open_v1',BONUS_GAME_XP=500;
@@ -1270,6 +1275,10 @@ function openAudioModal(){const modal=document.getElementById('audioModal');if(m
 function closeAudioModal(){const modal=document.getElementById('audioModal');if(modal)modal.classList.remove('on')}
 function openBonusModal(){const modal=document.getElementById('bonusModal');if(!modal)return;renderRewardsDock();modal.classList.add('on')}
 function closeBonusModal(){const modal=document.getElementById('bonusModal');if(modal)modal.classList.remove('on')}
+function ttsScriptUrl(){return `tts_accessibility.js?v=${encodeURIComponent(TTS_SCRIPT_VERSION)}`}
+function setTtsHubState(txt){const el=document.getElementById('ttsHubState');if(el)el.textContent=txt}
+function ensureTtsReady(forceReload){if(window.PVS_TTS_READY&&document.getElementById('pvsTtsLauncher'))return Promise.resolve(true);return new Promise(resolve=>{const done=ok=>{setTtsHubState(ok?'OK':'TTS');resolve(ok)};let script=document.getElementById('ttsHubLoader');if(script&&script.dataset.loading==='1'){script.addEventListener('load',()=>setTimeout(()=>done(!!window.PVS_TTS_READY),80),{once:true});script.addEventListener('error',()=>done(false),{once:true});return}if(script)script.remove();script=document.createElement('script');script.id='ttsHubLoader';script.dataset.loading='1';script.src=`${ttsScriptUrl()}${forceReload?`&r=${Date.now()}`:''}`;script.onload=()=>{script.dataset.loading='0';setTimeout(()=>done(!!window.PVS_TTS_READY),80)};script.onerror=()=>{script.dataset.loading='0';done(false)};document.body.appendChild(script)})}
+async function openTtsPanelFromHub(){setTtsHubState('...');const ok=await ensureTtsReady(true);if(!ok){alert("Le module de lecture orale n'a pas pu etre charge. Verifie que tts_accessibility.js est bien publie sur GitHub Pages.");return}const launcher=document.getElementById('pvsTtsLauncher');if(launcher){launcher.click();setTtsHubState('OK');return}setTimeout(()=>{const late=document.getElementById('pvsTtsLauncher');if(late){late.click();setTtsHubState('OK')}else setTtsHubState('TTS')},120)}
 function onAudioError(){
   audioRetries+=1;
   if(!audioTryRaw){setAudioSource(audioIdx,true);playAudio();return}
@@ -1345,38 +1354,7 @@ function resetNewsUi(){const modal=document.getElementById('newsModal'),frame=do
 function maybeAutoOpenNews(){const actor=newsActorKey(),modal=document.getElementById('newsModal'),rewardModal=document.getElementById('rewardGameModal'),rewardOverlay=document.getElementById('rewardOverlay');renderNewsLauncher();if(!actor||isNewsSeen(actor))return;if(rewardBusy||(rewardModal&&rewardModal.classList.contains('on'))||(rewardOverlay&&rewardOverlay.classList.contains('active'))){setTimeout(maybeAutoOpenNews,400);return}if(modal&&modal.classList.contains('on'))return;openNewsModal(true)}
 function renderHall(){const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount}`}
 
-function renderAcademie(){
-  const wrap=document.getElementById('acadGrid');
-  if(!wrap)return;
-  wrap.innerHTML='';
-  const p=cur?S.players[cur]:null;
-  const done=p&&Array.isArray(p.acadIds)?p.acadIds:[];
-  const coeff=p?acadCoeff(p):1;
-  // Titre coeff
-  const cc=document.getElementById('acadCoeffDisp');
-  if(cc)cc.textContent='Coefficient actuel : ×'+coeff.toFixed(2)+(done.length>0?' ('+done.length+' module'+(done.length>1?'s':'')+' accompli'+(done.length>1?'s':'')+')':'');
-  // Filtre actif
-  const fLevel=document.getElementById('acadFilterLevel');
-  const fSubj=document.getElementById('acadFilterSubj');
-  const lv=fLevel?fLevel.value:'';
-  const sj=fSubj?fSubj.value:'';
-  ACAD_REGISTRY.forEach(mod=>{
-    if(lv&&mod.level!==lv)return;
-    if(sj&&mod.subject!==sj)return;
-    const isDone=done.includes(mod.id);
-    const card=document.createElement('div');
-    card.className='acad-card'+(isDone?' acad-done':'');
-    card.innerHTML=`
-      <div class="acad-icon">${mod.icon}</div>
-      <div class="acad-meta"><span class="acad-level">${mod.level}</span> · <span class="acad-subj">${mod.subject}</span></div>
-      <div class="acad-title">${mod.title}</div>
-      <div class="acad-status">${isDone?'✅ Accompli':'⬜ À faire'}</div>
-      <button class="acad-btn ${isDone?'acad-redo':''}" onclick="openAcadModule('${mod.id}','${mod.file}')">${isDone?'↩ Refaire':'▶ Commencer'}</button>
-    `;
-    wrap.appendChild(card);
-  });
-  if(!wrap.children.length)wrap.innerHTML='<p style="color:#aaa;font-size:0.8em">Aucun module pour ce filtre.</p>';
-}
+function renderAcademie(){renderAcadGrid()}
 
 function openAcadModule(id,file){
   if(!cur&&!isVisitor){sm('acadMsg','Connecte-toi pour enregistrer ta progression.',false);return;}
@@ -1532,6 +1510,7 @@ function processBridge(){try{const arr=JSON.parse(localStorage.getItem(BRIDGE_KE
 document.addEventListener('DOMContentLoaded',async()=>{
 fill();load();
 initAudio();
+setTimeout(()=>setTtsHubState(window.PVS_TTS_READY?'OK':'TTS'),180);
 if(!S.registry.length){await loadDefaultCodes(false)}else{buildRegistry();norm();updateCodesInfo()}
 if(!S.parents||!S.parents.length){await loadDefaultParents(false)}else{buildParentMap()}
 if(!S.adults||!S.adults.length){await loadDefaultAdults(false)}else{buildAdultMap()}
@@ -1638,6 +1617,7 @@ window.addEventListener('DOMContentLoaded',()=>{initSupabase();if(cur)sbPullCurr
 window.addEventListener('storage',e=>{if(e.key===BRIDGE_ALT_KEY)processBridge()});
 window.addEventListener('focus',()=>{sbPullAllPlayers(false);sbPullCurrent(false)});
 </script>
-<script src="tts_accessibility.js" data-pvs-tts="1"></script>
+<script src="tts_accessibility.js?v=2026-03-11c" data-pvs-tts="1"></script>
 </body>
 </html>
+
