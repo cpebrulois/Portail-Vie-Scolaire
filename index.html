@@ -31,6 +31,48 @@
 
 </style>
 <style>
+.rewardDock{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:1395;width:min(560px,calc(100vw - 28px));display:none;padding:12px 14px;border-radius:16px;border:1px solid #ffd70055;background:linear-gradient(135deg,#0f1933f2,#111928f2);box-shadow:0 18px 40px #00000055;backdrop-filter:blur(8px)}
+.rewardDock.on{display:block}
+.rewardDockHead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rewardDockTitle{font-family:Orbitron,monospace;color:#ffd700;font-size:.92rem}
+.rewardDockMeta{font-size:.82rem;color:#d5e3ff}
+.rewardDockBody{display:grid;gap:10px;margin-top:10px}
+.rewardGameCard,.rewardRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #ffffff20;background:#ffffff08}
+.rewardGameCard.locked,.rewardRow.locked{opacity:.72;border-style:dashed}
+.rewardInfo{flex:1;min-width:0}
+.rewardName{font-weight:700}
+.rewardSub{font-size:.8rem;color:#a9bbd6;line-height:1.35}
+.rewardPill{display:inline-block;margin-bottom:6px;padding:3px 8px;border-radius:999px;background:#ffd70022;border:1px solid #ffd70055;color:#ffd700;font-size:.74rem;font-weight:700}
+.rewardList{display:grid;gap:8px}
+.rewardIcon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(135deg,#00d4ff33,#ffd70022);border:1px solid #ffffff22;font-family:Orbitron,monospace;font-size:.72rem;font-weight:800;color:#fff;flex-shrink:0}
+.rewardActions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.rewardActions button[disabled]{opacity:.55;cursor:not-allowed}
+#rewardOverlay{position:fixed;inset:0;z-index:1990;display:none;align-items:center;justify-content:center;padding:20px;background:#000}
+#rewardOverlay.active{display:flex}
+#rewardVideoWrap{position:relative;width:min(100vw,100%);height:min(100vh,100%);display:flex;align-items:center;justify-content:center}
+#rewardVideo{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;background:#000;border-radius:14px;box-shadow:0 20px 60px #000000a0}
+#rewardOverlayBar{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #ffffff24;background:linear-gradient(135deg,#081120d9,#152440d9)}
+#rewardTitle{font-family:Orbitron,monospace;color:#ffd700}
+#rewardOverlayHint{font-size:.8rem;color:#d4e3f7}
+#rewardGameModal{position:fixed;inset:0;z-index:1985;display:none;align-items:center;justify-content:center;padding:18px;background:#000000c8}
+#rewardGameModal.on{display:flex}
+.rewardGameModalCard{max-width:480px;width:min(92vw,480px);padding:22px;border-radius:16px;border:1px solid #ffd70066;background:linear-gradient(135deg,#171205,#261a08);box-shadow:0 18px 46px #00000080}
+.newsLauncher{position:fixed;top:12px;right:12px;z-index:1392;display:none}
+.newsLauncherBtn{position:relative;width:34px;height:34px;padding:0;border-radius:999px;border:1px solid #ffffff35;background:#081322d9;color:#d7e8ff;font-family:Orbitron,monospace;font-size:.82rem;box-shadow:0 8px 18px #00000035}
+.newsLauncher.new .newsLauncherBtn{border-color:#ffd66b66;color:#ffd66b}
+.newsLauncherPulse{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:999px;background:#ffd66b;box-shadow:0 0 0 0 #ffd66b99;display:none;animation:newsPulse 1.4s infinite}
+.newsLauncher.new .newsLauncherPulse{display:block}
+.newsModal{position:fixed;inset:0;z-index:1535;display:none;align-items:center;justify-content:center;padding:18px;background:#000000bb}
+.newsModal.on{display:flex}
+.newsModalCard{width:min(960px,96vw);max-height:min(92vh,900px);display:flex;flex-direction:column;padding:14px;border-radius:20px;border:1px solid #ffffff24;background:linear-gradient(145deg,#091426,#142447);box-shadow:0 18px 46px #0000007a}
+.newsModalHead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:10px}
+.newsModalTitle{font-family:Orbitron,monospace;color:#ffd66b;font-size:1rem}
+.newsModalSub{font-size:.85rem;color:#c9daf5;margin-top:3px}
+.newsFrame{width:100%;height:min(70vh,720px);border:1px solid #ffffff1c;border-radius:16px;background:#08111f}
+@keyframes newsPulse{0%{box-shadow:0 0 0 0 #ffd66b99}70%{box-shadow:0 0 0 10px #ffd66b00}100%{box-shadow:0 0 0 0 #ffd66b00}}
+@media (max-width:980px){.rewardDock{left:14px;right:14px;bottom:84px;transform:none;width:auto}.rewardDockHead{align-items:flex-start;flex-direction:column}.rewardGameCard,.rewardRow,#rewardOverlayBar,.newsModalHead{align-items:flex-start;flex-direction:column}.rewardActions{width:100%;justify-content:flex-start}.newsModalCard{width:min(96vw,96vw);padding:12px}.newsFrame{height:62vh}}
+</style>
+<style>
 #authGate{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 15% 15%,#00d4ff22,transparent 35%),radial-gradient(circle at 85% 85%,#ffd70022,transparent 40%),linear-gradient(135deg,#02060f,#101f3f)}
 #authCard{max-width:560px;width:min(92vw,560px)}
 #authTitle{font-family:Orbitron,monospace;background:linear-gradient(135deg,#00d4ff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 8px}
@@ -703,10 +745,29 @@ function closeAcadQuiz(){
 document.addEventListener('DOMContentLoaded',()=>{renderAcadGrid();});
 </script>
 
+<div id="newsLauncher" class="newsLauncher">
+  <button class="newsLauncherBtn" onclick="openNewsModal(true)" title="Reouvrir les nouveautes" aria-label="Reouvrir les nouveautes">
+    N
+    <span class="newsLauncherPulse"></span>
+  </button>
+</div>
 <div id="quickTabs" style="position:fixed;right:12px;bottom:12px;z-index:1400;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:680px">
   <button id="tutorialTab" class="btn2" onclick="openTutorial()">Guide didacticiel</button>
   <button id="visitorArticleTab" class="btn2" style="display:none" onclick="openVisitorArticle()">Article visiteur</button>
   <button id="rulesTab" class="btn2" onclick="openRules()">Regles et bareme</button>
+</div>
+<div id="rewardsDock" class="rewardDock" aria-live="polite">
+  <div class="rewardDockHead">
+    <div>
+      <div class="rewardDockTitle">Bonus de progression</div>
+      <div class="rewardDockMeta" id="rewardsMeta">Atteins 500 XP pour debloquer la premiere video et le jeu bonus.</div>
+    </div>
+    <button id="rewardsToggle" class="btn2" style="padding:6px 10px" onclick="toggleRewardsDock()">Masquer</button>
+  </div>
+  <div id="rewardsDockBody" class="rewardDockBody">
+    <div id="rewardGameCard" class="rewardGameCard locked"></div>
+    <div id="rewardList" class="rewardList"></div>
+  </div>
 </div>
 <div id="audioDock" class="audioDock" style="transition:all 0.2s">
   <div class="rw" style="justify-content:space-between;align-items:center;gap:6px">
@@ -775,6 +836,47 @@ document.addEventListener('DOMContentLoaded',()=>{renderAcadGrid();});
   </div>
 </div>
 </div>
+</div>
+<div id="rewardOverlay">
+  <div id="rewardVideoWrap">
+    <video id="rewardVideo" playsinline preload="auto" controls>
+      <source id="rewardVideoSrc" src="" type="video/mp4">
+    </video>
+    <div id="rewardOverlayBar">
+      <div>
+        <div id="rewardTitle">Recompense debloquee</div>
+        <div id="rewardOverlayHint">La video se lance ici en plein ecran si le navigateur l'autorise.</div>
+      </div>
+      <button class="btn2" onclick="closeRewardOverlay()">Fermer</button>
+    </div>
+  </div>
+</div>
+<div id="rewardGameModal">
+  <div class="rewardGameModalCard">
+    <div class="tag">BONUS</div>
+    <h3 style="margin-top:10px">Chevaliers de la Justice debloque</h3>
+    <p class="hint" style="margin:10px 0 14px">Le jeu bonus est maintenant accessible. La puissance de ton heros suit la progression du portail.</p>
+    <div class="rw">
+      <button onclick="closeRewardGameModal(true)">Ouvrir le jeu bonus</button>
+      <button class="btn2" onclick="closeRewardGameModal(false)">Plus tard</button>
+    </div>
+  </div>
+</div>
+<div id="newsModal" class="newsModal">
+  <div class="newsModalCard">
+    <div class="newsModalHead">
+      <div>
+        <div class="newsModalTitle">Nouveautes du portail</div>
+        <div class="newsModalSub">Cette fenetre s'ouvre une fois par mise a jour et reste accessible avec le petit bouton N.</div>
+      </div>
+      <button class="btn2" style="padding:6px 10px" onclick="closeNewsModal()">X</button>
+    </div>
+    <iframe id="newsFrame" class="newsFrame" title="Nouveautes du Super-Hub" loading="lazy"></iframe>
+    <div class="rw" style="margin-top:10px;justify-content:space-between;align-items:center">
+      <span class="hint">Tu peux rouvrir cette fenetre plus tard sans gener l'usage du portail.</span>
+      <button class="btn2" onclick="openNewsHubPage()">Ouvrir en page complete</button>
+    </div>
+  </div>
 </div>
 <script src="videos_catalog.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1009,7 +1111,17 @@ const ACAD_MODULES=[
 const MAL={incivilite:{l:'Incivilite (-50)',x:-50},agressivite:{l:'Agressivite verbale (-150)',x:-150},degradation:{l:'Degradation materiel (-300)',x:-300},faux_temoignage:{l:'Faux temoignage (-500)',x:-500},reset_total:{l:'RESET total',x:0}};
 const VIDEOS=(Array.isArray(window.PVS_VIDEOS)&&window.PVS_VIDEOS.length)?window.PVS_VIDEOS:[{id:'YT_01',title:'Video 01',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'pHARe-SOLO',offer:20,reward:80},{id:'YT_02',title:'Video 02',url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ',secret:'EMPREINTE-2022',offer:20,reward:80}];
 const AUDIO_FILES=['Tous Ensemble Aujourd\u2019hui.mp3',"Tous Ensemble Aujourd'hui.mp3",'Tous_Ensemble_Aujourd_hui.mp3'];
+// Augmente cette version a chaque nouvelle publication pour reafficher la fenetre.
+const NEWS_HUB_FILE='hub_nouveautes.html',NEWS_HUB_VERSION='2026-03-11-news-hub-v1',NEWS_HUB_SEEN_KEY='pvs_news_seen_v1';
+const BONUS_GAME_FILE='Chevaliers_Justice.html',REWARD_SEEN_KEY='pvs_rewards_seen_v2',REWARD_DOCK_PREF_KEY='pvs_rewards_dock_open_v1',BONUS_GAME_XP=500;
+const BONUS_REWARDS=[
+  {id:'reward_500',xp:500,paths:['reward_apprenti.mp4','MAJ VieSco/reward_apprenti.mp4'],title:"L'Apprenti Chevalier",label:"L'Apprenti Chevalier",sub:'Debloque a 500 XP'},
+  {id:'reward_1000',xp:1000,paths:['reward_ecuyere.mp4','MAJ VieSco/reward_ecuyere.mp4'],title:"La Jeune Ecuyere",label:"La Jeune Ecuyere",sub:'Debloque a 1000 XP'},
+  {id:'reward_1500',xp:1500,paths:['reward_chevalier.mp4','MAJ VieSco/reward_chevalier.mp4'],title:'Le Jeune Chevalier',label:'Le Jeune Chevalier',sub:'Debloque a 1500 XP'},
+  {id:'reward_2000',xp:2000,paths:['reward_paladine.mp4','MAJ VieSco/reward_paladine.mp4'],title:'La Paladine Rayonnante',label:'La Paladine Rayonnante',sub:'Debloque a 2000 XP'}
+];
 let S={week:'',players:{},logs:[],seen:{},registry:[],registry_source:'',adults:[],adults_source:'',parents:[],parents_source:'',neg_reports:[],citizen_lists:{}},REG={j:{},t:{},p:{}},ADW={},ADP={},PRW={},PRP={},cur='',mode='global',adminOn=false,isVisitor=false,tutoIdx=0,tutoFocusEl=null,syncRev=Number(localStorage.getItem(SYNC_REV_KEY)||0),syncOnline=false,syncMutePush=false,syncPushTimer=null,audioIdx=0,audioTryRaw=false,audioRetries=0;
+let rewardQueue=[],rewardBusy=false,rewardSourceIdx=0,rewardCurrentKey='',rewardAutoMode=false;
 const TUTO_STEPS=[
   {sel:'#profile',title:'1/10 Profil joueur',text:'Ici tu suis ton XP global, hebdo, citoyen, academie et videos.'},
   {sel:'#wCode',title:'2/10 Temoignage',text:'Saisis ton code temoin puis le code public cible pour reconnaitre un acte positif.'},
@@ -1120,8 +1232,8 @@ function isParentPlayerCode(code){const c=nCode(code);return !!PRW[c]}
 function isKnownPlayerCode(code){const c=nCode(code);return !!(c&&(REG.j[c]||ADP[c]||PRW[c]))}
 function showHub(show){const a=document.getElementById('authGate'),h=document.getElementById('hubScreen');if(a)a.style.display=show?'none':'flex';if(h)h.style.display=show?'block':'none'}
 function renderAdminMode(){const c=document.getElementById('adminConsole'),h=document.getElementById('adminHint');if(c)c.style.display=adminOn?'block':'none';if(h)h.textContent=adminOn?'Mode admin actif.':'Mode admin inactif.'}
-function openAuthGate(msg){adminOn=false;sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);showHub(false);closeVisitorArticle();closeTutorial();renderAdminMode();if(msg)sm('authMsg',msg,false);else cm('authMsg')}
-function closeAuthGate(){showHub(true);cm('authMsg')}
+function openAuthGate(msg){adminOn=false;sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);showHub(false);closeVisitorArticle();closeTutorial();resetRewardUi();resetNewsUi();renderAdminMode();if(msg)sm('authMsg',msg,false);else cm('authMsg')}
+function closeAuthGate(){showHub(true);cm('authMsg');renderNewsLauncher();setTimeout(maybeAutoOpenNews,120)}
 function fillVisitorCode(){const e=document.getElementById('authCode'),a=document.getElementById('authAdmin');if(e)e.value='Visiteur-Viescolaire-ChateauRance';if(a)a.value='';cm('authMsg')}
 function updateVisitorUi(){const tab=document.getElementById('visitorArticleTab');if(tab)tab.style.display=isVisitor?'inline-block':'none';if(!isVisitor){closeVisitorArticle()}}
 function openVisitorArticle(){if(!isVisitor)return;const m=document.getElementById('visitorModal');if(m)m.style.display='block'}
@@ -1135,6 +1247,41 @@ function openTutorial(step){const b=document.getElementById('tutorialBubble');if
 function nextTutorial(){openTutorial(tutoIdx+1)}
 function prevTutorial(){openTutorial(tutoIdx-1)}
 function logEv(player,type,target,xp){S.logs.unshift({d:new Date().toISOString(),p:player||'',t:type||'',target:target||'',xp:Number(xp||0)});if(S.logs.length>700)S.logs.length=700}
+function bonusXp(p){return Math.max(0,Number(xg(p)||0))}
+function getBonusReward(id){return BONUS_REWARDS.find(r=>String(r.id)===String(id))||null}
+function getRewardStore(){try{const raw=JSON.parse(localStorage.getItem(REWARD_SEEN_KEY)||'{}');return raw&&typeof raw==='object'?raw:{}}catch(e){return {}}}
+function getRewardSeenFor(code){const c=nCode(code||cur||'');if(!c)return {};const store=getRewardStore();return store[c]&&typeof store[c]==='object'?store[c]:{}}
+function isRewardSeen(id,code){return !!getRewardSeenFor(code)[String(id)]}
+function markRewardSeen(id,code){const c=nCode(code||cur||'');if(!c)return;const store=getRewardStore();if(!store[c]||typeof store[c]!=='object')store[c]={};store[c][String(id)]=new Date().toISOString();localStorage.setItem(REWARD_SEEN_KEY,JSON.stringify(store))}
+function toggleRewardsDock(){const body=document.getElementById('rewardsDockBody'),btn=document.getElementById('rewardsToggle');if(!body||!btn)return;const hidden=body.style.display==='none';body.style.display=hidden?'':'none';btn.textContent=hidden?'Masquer':'Afficher';localStorage.setItem(REWARD_DOCK_PREF_KEY,hidden?'1':'0')}
+function applyRewardsDockPref(){const body=document.getElementById('rewardsDockBody'),btn=document.getElementById('rewardsToggle');if(!body||!btn)return;const open=localStorage.getItem(REWARD_DOCK_PREF_KEY)!=='0';body.style.display=open?'':'none';btn.textContent=open?'Masquer':'Afficher'}
+function enqueueReward(type,id){const key=`${type}:${id}`;if(rewardCurrentKey===key)return;if(rewardQueue.some(item=>item.key===key))return;rewardQueue.push({type,id,key})}
+function requestRewardFullscreen(){const target=document.getElementById('rewardVideo');if(!target||!target.requestFullscreen)return Promise.resolve(false);return target.requestFullscreen().then(()=>true).catch(()=>false)}
+function exitRewardFullscreen(){if(!document.fullscreenElement||!document.exitFullscreen)return Promise.resolve(false);return document.exitFullscreen().then(()=>true).catch(()=>false)}
+function setRewardSource(reward,idx){const vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc');if(!vid||!src||!reward)return;rewardSourceIdx=idx;src.src=encodeURI(String(reward.paths[idx]||''));vid.load()}
+async function startRewardPlayback(autoMode){const vid=document.getElementById('rewardVideo'),hint=document.getElementById('rewardOverlayHint');if(!vid)return;if(autoMode)await requestRewardFullscreen();try{await vid.play()}catch(e){if(hint)hint.textContent='Lecture bloquee par le navigateur. Utilise le bouton lecture de la video.'}}
+function onRewardVideoError(){const reward=getBonusReward(String(rewardCurrentKey).replace('video:','')),vid=document.getElementById('rewardVideo');if(reward&&vid&&rewardSourceIdx<reward.paths.length-1){vid.onloadedmetadata=()=>{vid.onloadedmetadata=null;startRewardPlayback(rewardAutoMode)};setRewardSource(reward,rewardSourceIdx+1);return}closeRewardOverlay()}
+function playRewardVideo(id,autoMode){const reward=getBonusReward(id),ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),ttl=document.getElementById('rewardTitle'),hint=document.getElementById('rewardOverlayHint');if(!reward||!ov||!vid||!ttl){rewardBusy=false;rewardCurrentKey='';rewardAutoMode=false;processRewardQueue();return}rewardBusy=true;rewardCurrentKey=`video:${id}`;rewardAutoMode=!!autoMode;ttl.textContent=reward.title;hint.textContent=autoMode?`Nouvelle video debloquee a ${reward.xp} XP.`:'Relecture disponible a tout moment depuis le panneau bonus.';ov.classList.add('active');vid.pause();vid.currentTime=0;vid.onended=closeRewardOverlay;vid.onerror=onRewardVideoError;vid.onloadedmetadata=()=>{vid.onloadedmetadata=null;startRewardPlayback(rewardAutoMode)};setRewardSource(reward,0)}
+function closeRewardOverlay(){const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc');if(vid){try{vid.pause()}catch(e){}vid.currentTime=0;vid.onended=null;vid.onerror=null;vid.onloadedmetadata=null}if(src)src.src='';if(vid)vid.load();if(ov)ov.classList.remove('active');exitRewardFullscreen();rewardCurrentKey='';rewardAutoMode=false;rewardBusy=false;processRewardQueue()}
+function replayReward(id){const reward=getBonusReward(id),p=cur&&S.players[cur]?S.players[cur]:null;if(!reward||!p||bonusXp(p)<reward.xp)return;playRewardVideo(id,false)}
+function showRewardGameModal(){const m=document.getElementById('rewardGameModal');if(m)m.classList.add('on')}
+function closeRewardGameModal(openNow){const m=document.getElementById('rewardGameModal');if(m)m.classList.remove('on');rewardCurrentKey='';rewardAutoMode=false;rewardBusy=false;if(openNow)openBonusGame();processRewardQueue()}
+function openBonusGame(){if(!cur||!S.players[cur]||isVisitor){sm('vMsg','Connecte un joueur pour acceder au jeu bonus.',false);return}openTracked('bonus','CHEVALIERS_JUSTICE',BONUS_GAME_FILE)}
+function queuePendingRewards(){if(!cur||!S.players[cur]||isVisitor||adminOn)return;const p=S.players[cur],xpNow=bonusXp(p);let hasNew=false;BONUS_REWARDS.forEach(r=>{if(xpNow>=r.xp&&!isRewardSeen(r.id)){enqueueReward('video',r.id);hasNew=true}});if(xpNow>=BONUS_GAME_XP&&!isRewardSeen('bonus_game')){enqueueReward('game','bonus_game');hasNew=true}if(hasNew)localStorage.setItem(REWARD_DOCK_PREF_KEY,'1');if(!rewardBusy)processRewardQueue()}
+function processRewardQueue(){if(rewardBusy)return;const next=rewardQueue.shift();if(!next)return;rewardBusy=true;rewardCurrentKey=next.key;if(next.type==='video'){markRewardSeen(next.id);renderRewardsDock();playRewardVideo(next.id,true);return}markRewardSeen(next.id);renderRewardsDock();showRewardGameModal()}
+function renderRewardsDock(){const dock=document.getElementById('rewardsDock'),list=document.getElementById('rewardList'),meta=document.getElementById('rewardsMeta'),gameCard=document.getElementById('rewardGameCard');if(!dock||!list||!meta||!gameCard)return;if(!cur||!S.players[cur]||isVisitor||adminOn){dock.classList.remove('on');return}const p=S.players[cur],xpNow=bonusXp(p),next=BONUS_REWARDS.find(r=>xpNow<r.xp)||null,gameUnlocked=xpNow>=BONUS_GAME_XP;dock.classList.add('on');meta.textContent=next?`XP bonus: ${xpNow}. Prochain palier a ${next.xp} XP.`:`XP bonus: ${xpNow}. Toutes les recompenses sont debloquees.`;gameCard.className=`rewardGameCard${gameUnlocked?'':' locked'}`;gameCard.innerHTML=gameUnlocked?`<div class="rewardInfo"><div class="rewardPill">Jeu bonus debloque</div><div class="rewardName">Chevaliers de la Justice</div><div class="rewardSub">Le heros gagne en puissance au rythme de ton XP du portail.</div></div><div class="rewardActions"><button onclick="openBonusGame()">Ouvrir le jeu bonus</button></div>`:`<div class="rewardInfo"><div class="rewardPill">Jeu bonus a ${BONUS_GAME_XP} XP</div><div class="rewardName">Chevaliers de la Justice</div><div class="rewardSub">${Math.max(0,BONUS_GAME_XP-xpNow)} XP restants avant l'ouverture.</div></div><div class="rewardActions"><button class="btn2" disabled>Verrouille</button></div>`;list.innerHTML='';BONUS_REWARDS.forEach(r=>{const unlocked=xpNow>=r.xp,box=document.createElement('div');box.className=`rewardRow${unlocked?'':' locked'}`;box.innerHTML=`<div class="rewardIcon">${unlocked?'FILM':'LOCK'}</div><div class="rewardInfo"><div class="rewardName">${r.label}</div><div class="rewardSub">${r.sub}</div></div><div class="rewardActions">${unlocked?`<button class="btn2" onclick="replayReward('${r.id}')">Revoir</button>`:`<span class="rewardPill">A ${r.xp} XP</span>`}</div>`;list.appendChild(box)});applyRewardsDockPref()}
+function resetRewardUi(){rewardQueue=[];rewardBusy=false;rewardCurrentKey='';rewardAutoMode=false;const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc'),modal=document.getElementById('rewardGameModal');if(vid){try{vid.pause()}catch(e){}vid.currentTime=0;vid.onended=null;vid.onerror=null;vid.onloadedmetadata=null}if(src)src.src='';if(vid)vid.load();if(ov)ov.classList.remove('active');if(modal)modal.classList.remove('on');exitRewardFullscreen()}
+function newsActorKey(){return(!cur||isVisitor||adminOn)?'':nCode(cur)}
+function newsHubUrl(){return `${NEWS_HUB_FILE}?v=${encodeURIComponent(NEWS_HUB_VERSION)}`}
+function getNewsSeenStore(){try{const raw=JSON.parse(localStorage.getItem(NEWS_HUB_SEEN_KEY)||'{}');return raw&&typeof raw==='object'?raw:{}}catch(e){return {}}}
+function isNewsSeen(actor){const key=nCode(actor||newsActorKey()||'');if(!key)return true;return String(getNewsSeenStore()[key]||'')===NEWS_HUB_VERSION}
+function markNewsSeen(actor){const key=nCode(actor||newsActorKey()||'');if(!key)return;const store=getNewsSeenStore();store[key]=NEWS_HUB_VERSION;localStorage.setItem(NEWS_HUB_SEEN_KEY,JSON.stringify(store))}
+function renderNewsLauncher(){const el=document.getElementById('newsLauncher'),hub=document.getElementById('hubScreen'),actor=newsActorKey();if(!el||!hub)return;const visible=Boolean(actor)&&hub.style.display!=='none';el.style.display=visible?'block':'none';el.classList.toggle('new',visible&&!isNewsSeen(actor))}
+function openNewsModal(markSeen){const actor=newsActorKey(),modal=document.getElementById('newsModal'),frame=document.getElementById('newsFrame');if(!actor||!modal||!frame)return;if(markSeen!==false)markNewsSeen(actor);frame.src=newsHubUrl();modal.classList.add('on');renderNewsLauncher()}
+function closeNewsModal(){const modal=document.getElementById('newsModal');if(modal)modal.classList.remove('on')}
+function openNewsHubPage(){const actor=newsActorKey();if(!actor)return;markNewsSeen(actor);renderNewsLauncher();openTracked('news','NEWS_HUB',newsHubUrl())}
+function resetNewsUi(){const modal=document.getElementById('newsModal'),frame=document.getElementById('newsFrame');if(modal)modal.classList.remove('on');if(frame)frame.src='about:blank';renderNewsLauncher()}
+function maybeAutoOpenNews(){const actor=newsActorKey(),modal=document.getElementById('newsModal'),rewardModal=document.getElementById('rewardGameModal'),rewardOverlay=document.getElementById('rewardOverlay');renderNewsLauncher();if(!actor||isNewsSeen(actor))return;if(rewardBusy||(rewardModal&&rewardModal.classList.contains('on'))||(rewardOverlay&&rewardOverlay.classList.contains('active'))){setTimeout(maybeAutoOpenNews,400);return}if(modal&&modal.classList.contains('on'))return;openNewsModal(true)}
 function renderHall(){const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount}`}
 
 function renderAcademie(){
@@ -1185,7 +1332,7 @@ document.getElementById('pCp').textContent=cpTotal(p);const nbAcad=acadDoneCount
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
 function renderPop(){const b=document.getElementById('popBody');const map={};S.logs.forEach(r=>{if(!map[r.target])map[r.target]={o:0,v:0};if(String(r.t||'').startsWith('OPEN_'))map[r.target].o+=1;if(r.t==='VALID_VIDEO')map[r.target].v+=1});const rows=Object.entries(map).sort((a,b)=>((b[1].o+b[1].v)-(a[1].o+a[1].v))).slice(0,12);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"3\">Aucune donnee.</td></tr>';return}rows.forEach(([k,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${k||'-'}</td><td>${v.o}</td><td>${v.v}</td>`;b.appendChild(tr)})}
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=(S.adults||[]).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
-function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial()}
+function refresh(){resetWeek();save();renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial();renderRewardsDock();queuePendingRewards();renderNewsLauncher()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
