@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le ruisseau des collines</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#102032;
+  --ink-soft:#425466;
+  --paper:rgba(255,252,245,0.94);
+  --gold:#f59e0b;
+  --gold-deep:#b45309;
+  --grass:#16a34a;
+  --sky:#dbeafe;
+  --rose:#fb7185;
+  --radius:28px;
+  --shadow:0 22px 48px rgba(15,23,42,0.2);
+  --font-title:'Baloo 2', cursive;
+  --font-body:'Nunito', sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(245,158,11,0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(34,197,94,0.18), transparent 26%),
+    linear-gradient(180deg, #f7fbff 0%, #fff7ea 100%);
+}
+.wrap{min-height:100vh;padding:18px}
+.shell{
+  max-width:1180px;margin:0 auto;display:grid;grid-template-columns:320px 1fr;gap:20px;
+}
+.side{
+  background:rgba(255,255,255,0.9);
+  border:2px solid rgba(16,32,50,0.08);
+  border-radius:30px;
+  padding:20px;
+  box-shadow:0 16px 34px rgba(15,23,42,0.12);
+  display:flex;flex-direction:column;gap:16px;
+}
+.side h1{
+  font-family:var(--font-title);font-size:1.8rem;line-height:1.02;margin:0;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+  background:#fff7d6;color:#92400e;font-weight:900;font-size:.78rem;letter-spacing:.35px;text-transform:uppercase;
+}
+.side p{margin:0;line-height:1.7;color:var(--ink-soft);font-weight:700}
+.tools{display:grid;gap:10px}
+.tool-btn,.link-btn{
+  width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 14px;border-radius:18px;border:none;cursor:pointer;
+  font-family:inherit;font-weight:900;text-decoration:none;
+}
+.tool-btn.primary{background:linear-gradient(135deg,#f59e0b,#fb923c);color:white;box-shadow:0 10px 20px rgba(245,158,11,0.24)}
+.tool-btn.secondary{background:white;color:var(--ink);border:2px solid rgba(16,32,50,0.08)}
+.status-box{
+  padding:14px;border-radius:20px;background:#eff6ff;border:1px solid rgba(59,130,246,0.14);
+  color:#1d4ed8;font-weight:800;line-height:1.6;
+}
+.portrait-box{
+  border-radius:24px;overflow:hidden;border:2px solid rgba(16,32,50,0.08);background:rgba(255,255,255,0.92);
+  box-shadow:0 12px 22px rgba(15,23,42,0.08);
+}
+.portrait-box img{
+  width:100%;aspect-ratio:4/5;object-fit:cover;display:none;background:linear-gradient(180deg,#fef3c7,#dbeafe);
+}
+.portrait-fallback{
+  aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;font-size:4rem;color:#92400e;
+  background:linear-gradient(180deg,rgba(245,158,11,0.16),rgba(219,234,254,0.7));
+}
+.progress-card{
+  padding:16px;border-radius:22px;background:rgba(255,255,255,0.9);border:2px solid rgba(16,32,50,0.06);
+}
+.progress-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.progress-title{font-family:var(--font-title);font-size:1.08rem}
+.progress-bar{height:12px;border-radius:999px;overflow:hidden;background:#dbeafe}
+.progress-bar span{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#38bdf8);width:0%;transition:width .35s ease}
+.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.mini-card{
+  border-radius:18px;padding:12px;background:#fff;border:1px solid rgba(16,32,50,0.06);font-weight:800;color:var(--ink-soft)
+}
+.mini-card strong{display:block;font-size:1.15rem;color:var(--ink);font-family:var(--font-title)}
+.stage{
+  position:relative;min-height:760px;border-radius:36px;overflow:hidden;
+  background:linear-gradient(180deg,#dbeafe,#fff8eb);
+  box-shadow:var(--shadow);
+  border:2px solid rgba(255,255,255,0.6);
+}
+.stage::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.34), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(255,255,255,0.16), transparent 32%);
+  pointer-events:none;
+}
+.backdrop{
+  position:absolute;inset:0;background:linear-gradient(180deg,#dbeafe,#fff8eb);transition:background .35s ease;
+}
+.backdrop-image{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;
+  opacity:.26;filter:saturate(.98) contrast(1.02);
+}
+.backdrop-shade{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(15,23,42,0.1) 48%, rgba(255,248,235,0.16)),
+    linear-gradient(90deg, rgba(255,255,255,0.1), transparent 30%, transparent 70%, rgba(255,255,255,0.08));
+  pointer-events:none;
+}
+.art{
+  position:absolute;right:32px;top:34px;font-size:8rem;line-height:1;opacity:.16;filter:drop-shadow(0 18px 24px rgba(15,23,42,.1));
+}
+.scene-wrap{
+  position:relative;z-index:2;display:flex;flex-direction:column;min-height:760px;padding:28px;
+}
+.scene-top{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px;
+}
+.breadcrumbs{
+  display:flex;gap:8px;flex-wrap:wrap
+}
+.crumb{
+  padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.76);border:1px solid rgba(16,32,50,0.08);font-weight:800;color:var(--ink-soft)
+}
+.scene-card{
+  margin-top:auto;background:var(--paper);border-radius:34px;padding:24px;border:2px solid rgba(255,255,255,0.8);
+  box-shadow:0 20px 42px rgba(15,23,42,0.16);backdrop-filter:blur(6px);
+}
+.scene-tag{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;
+  background:#eff6ff;color:#1d4ed8;font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.3px;
+}
+.scene-title{
+  font-family:var(--font-title);font-size:clamp(1.7rem,3vw,2.6rem);line-height:1.05;margin:14px 0 10px;
+}
+.scene-media{
+  margin:16px 0 18px;display:grid;gap:10px;
+}
+.scene-media[hidden]{display:none}
+.scene-media-frame{
+  border-radius:28px;overflow:hidden;border:2px solid rgba(16,32,50,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,248,235,0.98), rgba(255,255,255,0.96)),
+    linear-gradient(135deg, rgba(245,158,11,0.12), transparent 45%);
+  box-shadow:0 18px 34px rgba(15,23,42,0.12);
+  padding:12px;
+}
+.scene-media-frame img{
+  width:100%;max-height:min(56vh,620px);display:none;object-fit:contain;
+  border-radius:20px;background:linear-gradient(180deg,#fff7d6,#e0f2fe);
+}
+.scene-media-caption{
+  font-size:.84rem;line-height:1.5;color:var(--ink-soft);font-weight:800;
+}
+.scene-text{
+  font-size:1.07rem;line-height:1.9;color:var(--ink-soft);font-weight:700;
+}
+.scene-prompt{
+  margin-top:16px;padding:14px 16px;border-radius:20px;background:#fff7d6;color:#92400e;font-weight:900;line-height:1.6;
+}
+.choices{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px;
+}
+.choice{
+  border:none;border-radius:24px;padding:18px 16px;text-align:left;cursor:pointer;
+  background:white;border:2px solid rgba(16,32,50,0.08);box-shadow:0 10px 18px rgba(15,23,42,0.08);
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.choice:hover{transform:translateY(-3px);box-shadow:0 16px 22px rgba(15,23,42,0.12);border-color:rgba(245,158,11,0.28)}
+.choice-badge{
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;padding:5px 10px;border-radius:999px;
+  background:#eff6ff;color:#1d4ed8;font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.3px;
+}
+.choice-title{font-weight:900;font-size:1rem;color:var(--ink);line-height:1.45}
+.choice-sub{margin-top:8px;font-size:.84rem;color:var(--ink-soft);font-weight:700;line-height:1.55}
+.nav-row{
+  margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.small-link{
+  text-decoration:none;color:var(--ink-soft);font-weight:900;
+}
+.modal{
+  position:fixed;inset:0;background:rgba(15,23,42,0.55);display:none;align-items:center;justify-content:center;
+  padding:18px;z-index:50;
+}
+.modal.show{display:flex}
+.modal-card{
+  max-width:520px;width:min(96vw,520px);background:#fffdf7;border-radius:30px;padding:26px;border:2px solid rgba(245,158,11,0.2);
+  box-shadow:0 26px 48px rgba(15,23,42,0.22);
+}
+.modal-ico{font-size:3rem;margin-bottom:10px}
+.modal-title{font-family:var(--font-title);font-size:1.65rem;line-height:1.05;margin-bottom:10px}
+.modal-text{line-height:1.8;color:var(--ink-soft);font-weight:700}
+.modal-coach{
+  margin-top:14px;padding:13px 14px;border-radius:18px;background:#eff6ff;color:#1d4ed8;font-weight:900;line-height:1.6;
+}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+code{
+  padding:2px 6px;border-radius:8px;background:rgba(16,32,50,0.08);
+}
+@media (max-width:960px){
+  .shell{grid-template-columns:1fr}
+  .stage,.scene-wrap{min-height:auto}
+}
+@media (max-width:760px){
+  .choices{grid-template-columns:1fr}
+  .scene-wrap{padding:18px}
+  .scene-card{padding:20px}
+  .art{font-size:5rem;right:18px;top:22px}
+  .scene-media-frame{padding:10px}
+  .scene-media-frame img{max-height:48vh}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="shell">
+    <aside class="side">
+      <div class="pill">Conte nature et maths</div>
+      <h1>Le ruisseau des<br>collines</h1>
+      <p>
+        Quatre scènes plus courtes, entre grenouilles, collines, pluie d'été et petits calculs.
+        Liam et Rémus révisent les sciences du CM2 en suivant le ruisseau du village.
+      </p>
+      <div class="tools">
+        <button class="tool-btn primary" id="speakBtn" type="button">🔊 Couper la voix</button>
+        <button class="tool-btn secondary" id="replayBtn" type="button">↻ Relire la scène</button>
+        <button class="tool-btn secondary" id="restartBtn" type="button">↺ Recommencer depuis le début</button>
+        <a class="link-btn tool-btn secondary" href="hub_liam_eystieval.html">← Retour au sous-hub</a>
+      </div>
+      <div class="status-box" id="voiceStatus">
+        Lecture orale active. Si la voix ne démarre pas, utilise le bouton "Relire la scène".
+      </div>
+      <div class="portrait-box">
+        <img id="liamReferenceImg" alt="Portrait de Liam au début de l'été">
+        <div class="portrait-fallback" id="liamReferenceFallback">🐸</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-head">
+          <div class="progress-title">Progression du sentier</div>
+          <div id="progressLabel">0/4</div>
+        </div>
+        <div class="progress-bar"><span id="progressFill"></span></div>
+        <div class="mini-grid">
+          <div class="mini-card"><strong id="sceneNumber">1</strong>Scène actuelle</div>
+          <div class="mini-card"><strong id="subjectLabel">Sciences</strong>Révision du moment</div>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-title">Images à prévoir</div>
+        <p style="margin-top:8px">
+          Cette aventure affichera automatiquement ses illustrations si tu ajoutes les fichiers
+          prévus dans le dépôt ou à la racine GitHub.
+        </p>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="backdrop" id="backdrop"></div>
+      <img class="backdrop-image" id="sceneBgImg" alt="">
+      <div class="backdrop-shade"></div>
+      <div class="art" id="sceneArt">🐸</div>
+      <div class="scene-wrap">
+        <div class="scene-top">
+          <div class="breadcrumbs">
+            <span class="crumb" id="chapterPill">Épisode 1</span>
+            <span class="crumb" id="locationPill">Les collines</span>
+          </div>
+          <a class="small-link" href="hub_liam_eystieval.html">Retour au hub narratif</a>
+        </div>
+
+        <article class="scene-card">
+          <div class="scene-tag" id="sceneTag">Sciences</div>
+          <h2 class="scene-title" id="sceneTitle">Le réveil du ruisseau</h2>
+          <div class="scene-media" id="sceneMedia" hidden>
+            <div class="scene-media-frame">
+              <img id="sceneCardImg" alt="">
+            </div>
+            <div class="scene-media-caption" id="sceneCaption"></div>
+          </div>
+          <div class="scene-text" id="sceneText"></div>
+          <div class="scene-prompt" id="scenePrompt"></div>
+          <div class="choices" id="choices"></div>
+          <div class="nav-row">
+            <div style="font-weight:800;color:var(--ink-soft)" id="sceneHint">Une seule bonne réponse ouvre la suite de l'histoire.</div>
+            <div style="font-weight:900;color:#3f6212" id="resumeHint">Début de l'été</div>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal" id="fallModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-ico" id="fallIcon">😄</div>
+    <div class="modal-title" id="fallTitle">Oups !</div>
+    <div class="modal-text" id="fallText"></div>
+    <div class="modal-coach" id="fallCoach"></div>
+    <div class="modal-actions">
+      <button class="tool-btn primary" type="button" id="closeFallBtn">Je repars du bon pied</button>
+      <button class="tool-btn secondary" type="button" id="replayFallBtn">Relire la scène</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORY_KEY = 'ave6e_liam_ruisseau_v1';
+const TOTAL_MAIN_SCENES = 4;
+const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
+
+function assetSources(stems, preferred = 'jpg'){
+  const baseStems = Array.isArray(stems) ? stems.filter(Boolean) : [stems].filter(Boolean);
+  const seen = new Set();
+  const extensions = [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
+    const key = String(ext || '').toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return baseStems.flatMap(stem => extensions.map(ext => `${stem}.${ext}`));
+}
+
+const VISUAL_ASSETS = {
+  referencePortrait: assetSources([
+    'assets_eystieval/liam_ruisseau_portrait',
+    'liam_ruisseau_portrait',
+    'assets_eystieval/liam_reference_face',
+    'liam_reference_face'
+  ]),
+  scenes: {
+    grenouilles_aube: {
+      bg: assetSources(['assets_eystieval/ruisseau_01_grenouilles_aube', 'ruisseau_01_grenouilles_aube']),
+      card: assetSources(['assets_eystieval/ruisseau_01_grenouilles_aube', 'ruisseau_01_grenouilles_aube']),
+      alt: 'Liam et Rémus au ruisseau parmi les grenouilles'
+    },
+    cycle_grenouille: {
+      bg: assetSources(['assets_eystieval/ruisseau_02_cycle_grenouille', 'ruisseau_02_cycle_grenouille']),
+      card: assetSources(['assets_eystieval/ruisseau_02_cycle_grenouille', 'ruisseau_02_cycle_grenouille']),
+      alt: 'Une scène autour des têtards et des grenouilles'
+    },
+    eau_collines: {
+      bg: assetSources(['assets_eystieval/ruisseau_03_eau_des_collines', 'ruisseau_03_eau_des_collines']),
+      card: assetSources(['assets_eystieval/ruisseau_03_eau_des_collines', 'ruisseau_03_eau_des_collines']),
+      alt: "Le ruisseau descend depuis les collines d'Eystie-Val"
+    },
+    pont_des_pas: {
+      bg: assetSources(['assets_eystieval/ruisseau_04_pont_des_pas', 'ruisseau_04_pont_des_pas']),
+      card: assetSources(['assets_eystieval/ruisseau_04_pont_des_pas', 'ruisseau_04_pont_des_pas']),
+      alt: 'Liam et Rémus traversent un petit pont de campagne'
+    },
+    epilogue: {
+      bg: assetSources(['assets_eystieval/ruisseau_05_epilogue_roseaux', 'ruisseau_05_epilogue_roseaux']),
+      card: assetSources(['assets_eystieval/ruisseau_05_epilogue_roseaux', 'ruisseau_05_epilogue_roseaux']),
+      alt: 'Le ruisseau paisible sous le soleil revenu'
+    }
+  }
+};
+
+const STORY_SCENES = {
+  grenouilles_aube: {
+    id: 'grenouilles_aube',
+    chapter: 'Épisode 1',
+    location: 'Ruisseau des Trois-Saules',
+    subject: 'Maths',
+    icon: '🐸',
+    background: 'linear-gradient(180deg, #d9f99d 0%, #86efac 38%, #bfdbfe 100%)',
+    title: 'Le réveil des grenouilles',
+    text: "Après une nuit de pluie, Liam et Rémus descendent vers le ruisseau des collines. Sur quatre grosses pierres plates, trois grenouilles vertes se sont installées sur chacune d'elles. Rémus plisse les yeux : 'Si on les compte bien, on aura droit au meilleur coin pour écouter le ruisseau.'",
+    prompt: 'Combien de grenouilles voient-ils en tout ?',
+    choices: [
+      {
+        badge: 'Maths',
+        title: '9 grenouilles',
+        sub: "C'est un bon départ, mais trois pierres ont disparu dans ta tête.",
+        kind: 'fall',
+        fall: {
+          icon: '🌿',
+          title: 'Les roseaux cachent trois sauteuses',
+          text: "Rémus écarte doucement les roseaux : les trois dernières grenouilles te regardaient déjà comme si tu leur devais des excuses.",
+          coach: 'Compte 4 pierres avec 3 grenouilles sur chacune.'
+        }
+      },
+      {
+        badge: 'Maths',
+        title: '12 grenouilles',
+        sub: "Cette fois, Liam les compte juste. Même Rémus applaudit sans faire fuir les bêtes.",
+        kind: 'advance',
+        next: 'cycle_grenouille'
+      },
+      {
+        badge: 'Maths',
+        title: '16 grenouilles',
+        sub: "Tu as ajouté des spectatrices invisibles au concert du matin.",
+        kind: 'fall',
+        fall: {
+          icon: '💧',
+          title: 'Le plouf des grenouilles fantômes',
+          text: "Deux petits ploufs retentissent, mais impossible d'inventer quatre grenouilles de plus. Le ruisseau n'est pas magicien à ce point.",
+          coach: 'Multiplie le nombre de pierres par le nombre de grenouilles par pierre.'
+        }
+      }
+    ]
+  },
+  cycle_grenouille: {
+    id: 'cycle_grenouille',
+    chapter: 'Épisode 2',
+    location: 'Mare claire sous la colline',
+    subject: 'Sciences',
+    icon: '🥚',
+    background: 'linear-gradient(180deg, #dbeafe 0%, #a7f3d0 40%, #ecfccb 100%)',
+    title: 'Le secret des têtards',
+    text: "Plus loin, Liam aperçoit dans une eau calme des petits têtards qui frétillent près d'un amas d'œufs transparents. Rémus aime faire semblant de tout savoir, mais cette fois il demande sérieusement : 'Dans quel ordre la grenouille grandit-elle vraiment ?'",
+    prompt: 'Quel cycle de vie est correct ?',
+    choices: [
+      {
+        badge: 'Sciences',
+        title: 'Grenouille -> têtard -> œuf',
+        sub: "On dirait un conte raconté à l'envers par une grenouille fatiguée.",
+        kind: 'fall',
+        fall: {
+          icon: '🔄',
+          title: 'Le ruisseau remonte le temps',
+          text: "Même Rémus éclate de rire : dans ce cas, les grenouilles pondraient avant de redevenir minuscules. Ce n'est pas ainsi que la nature fonctionne.",
+          coach: "Cherche l'ordre du plus petit au plus grand : d'abord l'œuf, puis le têtard, puis la grenouille."
+        }
+      },
+      {
+        badge: 'Sciences',
+        title: 'Œuf -> têtard -> grenouille',
+        sub: "Liam retrouve le bon ordre. Les petits têtards semblent presque approuver.",
+        kind: 'advance',
+        next: 'eau_collines'
+      },
+      {
+        badge: 'Sciences',
+        title: 'Têtard -> œuf -> grenouille',
+        sub: "Cette suite fait trébucher toute la mare.",
+        kind: 'fall',
+        fall: {
+          icon: '🫧',
+          title: 'Les bulles protestent',
+          text: "Une bulle éclate à la surface au moment exact où Rémus secoue la tête. Les têtards n'ont jamais eu à redevenir des œufs.",
+          coach: "Pense à ce qu'on voit d'abord dans l'eau au début de la vie de la grenouille."
+        }
+      }
+    ]
+  },
+  eau_collines: {
+    id: 'eau_collines',
+    chapter: 'Épisode 3',
+    location: 'Sous les grands saules',
+    subject: 'Sciences',
+    icon: '🌧️',
+    background: 'linear-gradient(180deg, #bfdbfe 0%, #d9f99d 40%, #fef3c7 100%)',
+    title: "D'où vient le ruisseau ?",
+    text: "Le sentier grimpe un peu et l'on voit mieux les collines tout autour du village. Liam suit du doigt le petit filet d'eau qui descend vers la mare. Rémus, très fier, annonce qu'il connaît la réponse... mais il en donne trois versions différentes.",
+    prompt: "Quelle phrase explique correctement le trajet de l'eau ?",
+    choices: [
+      {
+        badge: 'Sciences',
+        title: "La pluie tombe sur les collines, rejoint le sol puis l'eau descend vers le ruisseau.",
+        sub: "C'est exactement ce que Liam observe autour de lui.",
+        kind: 'advance',
+        next: 'pont_des_pas'
+      },
+      {
+        badge: 'Sciences',
+        title: "Le ruisseau grimpe tout seul jusqu'en haut des collines quand personne ne regarde.",
+        sub: "Cette théorie ferait beaucoup rire les seaux de la forge.",
+        kind: 'fall',
+        fall: {
+          icon: '⛰️',
+          title: 'Le ruisseau alpiniste',
+          text: "Rémus mime un ruisseau qui grimpe la pente sur ses deux jambes invisibles. Même Liam doit s'arrêter de marcher pour rire.",
+          coach: "Observe le relief : l'eau descend naturellement du plus haut vers le plus bas."
+        }
+      },
+      {
+        badge: 'Sciences',
+        title: "Les pierres fabriquent l'eau toutes seules pendant la nuit.",
+        sub: "Ce serait pratique, mais ce n'est pas le programme des collines.",
+        kind: 'fall',
+        fall: {
+          icon: '🪨',
+          title: 'Les cailloux fabricants',
+          text: "Rémus tapote un caillou comme pour le remercier de son travail imaginaire. Aucun ne se met à produire de pluie pour autant.",
+          coach: "Pense à la pluie, au sol et à l'écoulement vers le ruisseau."
+        }
+      }
+    ]
+  },
+  pont_des_pas: {
+    id: 'pont_des_pas',
+    chapter: 'Épisode 4',
+    location: 'Le petit pont moussu',
+    subject: 'Maths',
+    icon: '🌉',
+    background: 'linear-gradient(180deg, #ecfccb 0%, #dbeafe 35%, #fde68a 100%)',
+    title: 'Le pont des pas',
+    text: "Pour rentrer avant le dîner, les deux amis longent encore le ruisseau. Ils ont déjà parcouru 240 mètres depuis la mare, puis 160 mètres de plus jusqu'au vieux petit pont. Liam veut savoir quelle distance ils ont faite en tout avant de rebrousser chemin.",
+    prompt: 'Combien de mètres ont-ils parcourus au total ?',
+    choices: [
+      {
+        badge: 'Maths',
+        title: '300 mètres',
+        sub: "Le pont semble un peu plus long que dans ton calcul.",
+        kind: 'fall',
+        fall: {
+          icon: '👣',
+          title: 'Des pas oubliés dans l’herbe',
+          text: "Rémus regarde ses bottes et jure qu'il a bien marché davantage que cela. Les herbes écrasées le prouvent.",
+          coach: 'Additionne 240 et 160 sans oublier la dernière partie du trajet.'
+        }
+      },
+      {
+        badge: 'Maths',
+        title: '400 mètres',
+        sub: "Le compte tombe juste. Le retour peut commencer sans discussion.",
+        kind: 'advance',
+        next: 'epilogue'
+      },
+      {
+        badge: 'Maths',
+        title: '500 mètres',
+        sub: "C'est généreux, mais le sentier n'est pas encore si long.",
+        kind: 'fall',
+        fall: {
+          icon: '🪵',
+          title: 'Le pont rallonge sa planche',
+          text: "Rémus prétend que le pont a peut-être décidé de grandir ce matin. Liam lui répond qu'un pont ne pousse pas comme une salade.",
+          coach: 'Additionne seulement les deux distances données : 240 m et 160 m.'
+        }
+      }
+    ]
+  },
+  epilogue: {
+    id: 'epilogue',
+    chapter: 'Épilogue',
+    location: 'Au bord des roseaux',
+    subject: 'Histoire de Liam',
+    icon: '✨',
+    background: 'linear-gradient(180deg, #14532d 0%, #166534 36%, #f59e0b 100%)',
+    title: 'Le ruisseau garde ses secrets',
+    text: "Le soleil revient entre les nuages. Liam et Rémus remontent vers le village avec les chaussures un peu humides et la tête bien remplie. Les collines, la pluie et les grenouilles leur ont offert une drôle de leçon d'été. Plus tard, d'autres aventures les attendront encore avant Valdurne.",
+    prompt: "Tu as terminé ce conte du début d'été. Tu peux le relire, le rejouer, ou revenir au sous-hub.",
+    choices: [
+      {
+        badge: 'Final',
+        title: "Relire l'épilogue",
+        sub: "Repasser une dernière fois sous les saules et le long de l'eau claire.",
+        kind: 'action',
+        action: 'replay'
+      },
+      {
+        badge: 'Final',
+        title: 'Rejouer depuis le début',
+        sub: "Repartir au ruisseau et reprendre chaque embranchement.",
+        kind: 'action',
+        action: 'restart'
+      },
+      {
+        badge: 'Final',
+        title: 'Retourner au sous-hub',
+        sub: "Revenir à la collection des aventures d'Eystie-Val.",
+        kind: 'action',
+        action: 'hub'
+      }
+    ]
+  }
+};
+
+function defaultState(){
+  return {
+    currentScene: 'grenouilles_aube',
+    cleared: [],
+    completed: false,
+    speechEnabled: true,
+    updatedAt: ''
+  };
+}
+
+function getState(){
+  try {
+    const data = JSON.parse(localStorage.getItem(STORY_KEY) || '{}');
+    return Object.assign(defaultState(), data && typeof data === 'object' ? data : {});
+  } catch(e) {
+    return defaultState();
+  }
+}
+
+function saveState(state){
+  state.updatedAt = new Date().toISOString();
+  localStorage.setItem(STORY_KEY, JSON.stringify(state));
+}
+
+function sceneOrder(){
+  return ['grenouilles_aube','cycle_grenouille','eau_collines','pont_des_pas'];
+}
+
+function percentDone(state){
+  const done = Array.isArray(state.cleared) ? state.cleared.length : 0;
+  return Math.round((done / TOTAL_MAIN_SCENES) * 100);
+}
+
+function frenchVoice(){
+  const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  return voices.find(v => /^fr/i.test(v.lang || '')) || voices[0] || null;
+}
+
+function bindOptionalImage(imgEl, src, alt, fallbackEl, options = {}){
+  if(!imgEl) return;
+  const sources = Array.isArray(src) ? src.filter(Boolean) : (src ? [src] : []);
+  const containerEl = options.container || null;
+  const captionEl = options.captionEl || null;
+  const captionText = options.captionText || '';
+  let sourceIndex = 0;
+
+  function hideAll(){
+    imgEl.style.display = 'none';
+    if (fallbackEl) fallbackEl.style.display = 'flex';
+    if (containerEl) containerEl.hidden = true;
+    if (captionEl) captionEl.textContent = '';
+  }
+
+  if(!sources.length){
+    hideAll();
+    return;
+  }
+
+  function loadSource(){
+    if (sourceIndex >= sources.length) {
+      hideAll();
+      return;
+    }
+    imgEl.src = sources[sourceIndex];
+  }
+
+  imgEl.onload = function(){
+    imgEl.style.display = 'block';
+    if (fallbackEl) fallbackEl.style.display = 'none';
+    if (containerEl) containerEl.hidden = false;
+    if (captionEl) captionEl.textContent = captionText || alt || '';
+  };
+  imgEl.onerror = function(){
+    sourceIndex += 1;
+    loadSource();
+  };
+  imgEl.alt = alt || '';
+  loadSource();
+}
+
+function speak(text){
+  const state = getState();
+  const voiceStatus = document.getElementById('voiceStatus');
+  if (!state.speechEnabled) {
+    if (voiceStatus) voiceStatus.textContent = "Lecture orale désactivée. Tu peux la relancer quand tu veux.";
+    return;
+  }
+  if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+    if (voiceStatus) voiceStatus.textContent = "La synthèse vocale du navigateur n'est pas disponible ici. Le texte reste lisible à l'écran.";
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'fr-FR';
+  utter.rate = 0.97;
+  const picked = frenchVoice();
+  if (picked) utter.voice = picked;
+  utter.onstart = () => {
+    if (voiceStatus) voiceStatus.textContent = "Lecture orale active. Liam et Rémus racontent la scène en cours.";
+  };
+  utter.onerror = () => {
+    if (voiceStatus) voiceStatus.textContent = "La voix n'a pas pu se lancer. Utilise le bouton Relire la scène si besoin.";
+  };
+  window.speechSynthesis.speak(utter);
+}
+
+function currentScene(){
+  const state = getState();
+  return STORY_SCENES[state.currentScene] || STORY_SCENES.grenouilles_aube;
+}
+
+function markCleared(sceneId){
+  const state = getState();
+  if (!state.cleared.includes(sceneId) && sceneOrder().includes(sceneId)) {
+    state.cleared.push(sceneId);
+  }
+  saveState(state);
+}
+
+function gotoScene(sceneId){
+  const state = getState();
+  state.currentScene = sceneId;
+  if (sceneId === 'epilogue') state.completed = true;
+  saveState(state);
+  renderScene();
+}
+
+function restartStory(){
+  const fresh = defaultState();
+  saveState(fresh);
+  renderScene();
+}
+
+function openHub(){
+  window.location.href = 'hub_liam_eystieval.html';
+}
+
+function choiceClicked(choice){
+  if (choice.kind === 'advance') {
+    markCleared(currentScene().id);
+    gotoScene(choice.next);
+    return;
+  }
+  if (choice.kind === 'fall') {
+    openFall(choice.fall);
+    return;
+  }
+  if (choice.kind === 'action') {
+    if (choice.action === 'restart') { restartStory(); return; }
+    if (choice.action === 'hub') { openHub(); return; }
+    if (choice.action === 'replay') { speakScene(); return; }
+  }
+}
+
+function openFall(fall){
+  const modal = document.getElementById('fallModal');
+  document.getElementById('fallIcon').textContent = fall.icon || '😄';
+  document.getElementById('fallTitle').textContent = fall.title || 'Oups';
+  document.getElementById('fallText').textContent = fall.text || '';
+  document.getElementById('fallCoach').textContent = fall.coach || "Essaie encore : la bonne réponse est juste à côté.";
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  speak(`${fall.title}. ${fall.text}. ${fall.coach}`);
+}
+
+function closeFall(){
+  const modal = document.getElementById('fallModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function speakScene(){
+  const scene = currentScene();
+  speak(`${scene.title}. ${scene.text} ${scene.prompt}`);
+}
+
+function toggleSpeech(){
+  const state = getState();
+  state.speechEnabled = !state.speechEnabled;
+  saveState(state);
+  updateVoiceButtons();
+  if (state.speechEnabled) speakScene();
+  else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+function updateVoiceButtons(){
+  const state = getState();
+  const speakBtn = document.getElementById('speakBtn');
+  const voiceStatus = document.getElementById('voiceStatus');
+  if (speakBtn) speakBtn.textContent = state.speechEnabled ? '🔊 Couper la voix' : '🔈 Remettre la voix';
+  if (voiceStatus && !('speechSynthesis' in window)) {
+    voiceStatus.textContent = "La synthèse vocale du navigateur n'est pas disponible ici. Le texte reste lisible à l'écran.";
+    return;
+  }
+  if (voiceStatus) {
+    voiceStatus.textContent = state.speechEnabled
+      ? "Lecture orale active. Si la voix ne démarre pas, utilise le bouton Relire la scène."
+      : "Lecture orale coupée. Le récit reste entièrement lisible à l'écran.";
+  }
+}
+
+function renderScene(){
+  const state = getState();
+  const scene = currentScene();
+  const progress = Math.max(0, percentDone(state));
+  const sceneIdx = sceneOrder().includes(scene.id) ? sceneOrder().indexOf(scene.id) + 1 : TOTAL_MAIN_SCENES;
+  const sceneVisual = VISUAL_ASSETS.scenes[scene.id] || null;
+
+  document.getElementById('chapterPill').textContent = scene.chapter;
+  document.getElementById('locationPill').textContent = scene.location;
+  document.getElementById('sceneTag').textContent = scene.subject;
+  document.getElementById('sceneTitle').textContent = scene.title;
+  document.getElementById('sceneText').textContent = scene.text;
+  document.getElementById('scenePrompt').textContent = scene.prompt;
+  document.getElementById('sceneArt').textContent = scene.icon;
+  document.getElementById('backdrop').style.background = scene.background;
+  bindOptionalImage(
+    document.getElementById('sceneBgImg'),
+    sceneVisual ? sceneVisual.bg : '',
+    sceneVisual ? sceneVisual.alt : '',
+    null
+  );
+  bindOptionalImage(
+    document.getElementById('sceneCardImg'),
+    sceneVisual ? sceneVisual.card : '',
+    sceneVisual ? sceneVisual.alt : '',
+    null,
+    {
+      container: document.getElementById('sceneMedia'),
+      captionEl: document.getElementById('sceneCaption'),
+      captionText: sceneVisual ? `Illustration de scène : ${scene.title}` : ''
+    }
+  );
+  document.getElementById('progressLabel').textContent = `${Math.min(state.cleared.length, TOTAL_MAIN_SCENES)}/${TOTAL_MAIN_SCENES}`;
+  document.getElementById('progressFill').style.width = `${progress}%`;
+  document.getElementById('sceneNumber').textContent = String(sceneIdx);
+  document.getElementById('subjectLabel').textContent = scene.subject;
+  document.getElementById('resumeHint').textContent = scene.id === 'epilogue' ? "L'été continue" : 'Une seule réponse ouvre la suite';
+
+  const choices = document.getElementById('choices');
+  choices.innerHTML = '';
+  scene.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'choice';
+    btn.innerHTML = `
+      <div class="choice-badge">${choice.badge}</div>
+      <div class="choice-title">${choice.title}</div>
+      <div class="choice-sub">${choice.sub}</div>
+    `;
+    btn.addEventListener('click', () => choiceClicked(choice));
+    choices.appendChild(btn);
+  });
+
+  updateVoiceButtons();
+  setTimeout(() => speakScene(), 120);
+}
+
+document.getElementById('speakBtn').addEventListener('click', toggleSpeech);
+document.getElementById('replayBtn').addEventListener('click', speakScene);
+document.getElementById('restartBtn').addEventListener('click', restartStory);
+document.getElementById('closeFallBtn').addEventListener('click', closeFall);
+document.getElementById('replayFallBtn').addEventListener('click', () => {
+  closeFall();
+  speakScene();
+});
+document.getElementById('fallModal').addEventListener('click', (ev) => {
+  if (ev.target === ev.currentTarget) closeFall();
+});
+window.addEventListener('beforeunload', () => {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+});
+if ('speechSynthesis' in window && typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+  window.speechSynthesis.onvoiceschanged = updateVoiceButtons;
+}
+
+bindOptionalImage(
+  document.getElementById('liamReferenceImg'),
+  VISUAL_ASSETS.referencePortrait,
+  "Portrait de Liam au bord du ruisseau",
+  document.getElementById('liamReferenceFallback')
+);
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('restart') === '1') restartStory();
+else renderScene();
+</script>
+</body>
+</html>

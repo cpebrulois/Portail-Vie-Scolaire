@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les chroniques de Rémus</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#102032;
+  --ink-soft:#425466;
+  --paper:rgba(255,252,245,0.94);
+  --gold:#f59e0b;
+  --gold-deep:#b45309;
+  --grass:#16a34a;
+  --sky:#dbeafe;
+  --rose:#fb7185;
+  --radius:28px;
+  --shadow:0 22px 48px rgba(15,23,42,0.2);
+  --font-title:'Baloo 2', cursive;
+  --font-body:'Nunito', sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(245,158,11,0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(34,197,94,0.18), transparent 26%),
+    linear-gradient(180deg, #f7fbff 0%, #fff7ea 100%);
+}
+.wrap{min-height:100vh;padding:18px}
+.shell{
+  max-width:1180px;margin:0 auto;display:grid;grid-template-columns:320px 1fr;gap:20px;
+}
+.side{
+  background:rgba(255,255,255,0.9);
+  border:2px solid rgba(16,32,50,0.08);
+  border-radius:30px;
+  padding:20px;
+  box-shadow:0 16px 34px rgba(15,23,42,0.12);
+  display:flex;flex-direction:column;gap:16px;
+}
+.side h1{
+  font-family:var(--font-title);font-size:1.8rem;line-height:1.02;margin:0;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+  background:#fff7d6;color:#92400e;font-weight:900;font-size:.78rem;letter-spacing:.35px;text-transform:uppercase;
+}
+.side p{margin:0;line-height:1.7;color:var(--ink-soft);font-weight:700}
+.tools{display:grid;gap:10px}
+.tool-btn,.link-btn{
+  width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 14px;border-radius:18px;border:none;cursor:pointer;
+  font-family:inherit;font-weight:900;text-decoration:none;
+}
+.tool-btn.primary{background:linear-gradient(135deg,#f59e0b,#fb923c);color:white;box-shadow:0 10px 20px rgba(245,158,11,0.24)}
+.tool-btn.secondary{background:white;color:var(--ink);border:2px solid rgba(16,32,50,0.08)}
+.status-box{
+  padding:14px;border-radius:20px;background:#eff6ff;border:1px solid rgba(59,130,246,0.14);
+  color:#1d4ed8;font-weight:800;line-height:1.6;
+}
+.portrait-box{
+  border-radius:24px;overflow:hidden;border:2px solid rgba(16,32,50,0.08);background:rgba(255,255,255,0.92);
+  box-shadow:0 12px 22px rgba(15,23,42,0.08);
+}
+.portrait-box img{
+  width:100%;aspect-ratio:4/5;object-fit:cover;display:none;background:linear-gradient(180deg,#fef3c7,#dbeafe);
+}
+.portrait-fallback{
+  aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;font-size:4rem;color:#92400e;
+  background:linear-gradient(180deg,rgba(245,158,11,0.16),rgba(219,234,254,0.7));
+}
+.progress-card{
+  padding:16px;border-radius:22px;background:rgba(255,255,255,0.9);border:2px solid rgba(16,32,50,0.06);
+}
+.progress-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.progress-title{font-family:var(--font-title);font-size:1.08rem}
+.progress-bar{height:12px;border-radius:999px;overflow:hidden;background:#dbeafe}
+.progress-bar span{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#38bdf8);width:0%;transition:width .35s ease}
+.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.mini-card{
+  border-radius:18px;padding:12px;background:#fff;border:1px solid rgba(16,32,50,0.06);font-weight:800;color:var(--ink-soft)
+}
+.mini-card strong{display:block;font-size:1.15rem;color:var(--ink);font-family:var(--font-title)}
+.stage{
+  position:relative;min-height:760px;border-radius:36px;overflow:hidden;
+  background:linear-gradient(180deg,#dbeafe,#fff8eb);
+  box-shadow:var(--shadow);
+  border:2px solid rgba(255,255,255,0.6);
+}
+.stage::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.34), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(255,255,255,0.16), transparent 32%);
+  pointer-events:none;
+}
+.backdrop{
+  position:absolute;inset:0;background:linear-gradient(180deg,#dbeafe,#fff8eb);transition:background .35s ease;
+}
+.backdrop-image{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;
+  opacity:.26;filter:saturate(.98) contrast(1.02);
+}
+.backdrop-shade{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(15,23,42,0.1) 48%, rgba(255,248,235,0.16)),
+    linear-gradient(90deg, rgba(255,255,255,0.1), transparent 30%, transparent 70%, rgba(255,255,255,0.08));
+  pointer-events:none;
+}
+.art{
+  position:absolute;right:32px;top:34px;font-size:8rem;line-height:1;opacity:.16;filter:drop-shadow(0 18px 24px rgba(15,23,42,.1));
+}
+.scene-wrap{
+  position:relative;z-index:2;display:flex;flex-direction:column;min-height:760px;padding:28px;
+}
+.scene-top{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px;
+}
+.breadcrumbs{
+  display:flex;gap:8px;flex-wrap:wrap
+}
+.crumb{
+  padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.76);border:1px solid rgba(16,32,50,0.08);font-weight:800;color:var(--ink-soft)
+}
+.scene-card{
+  margin-top:auto;background:var(--paper);border-radius:34px;padding:24px;border:2px solid rgba(255,255,255,0.8);
+  box-shadow:0 20px 42px rgba(15,23,42,0.16);backdrop-filter:blur(6px);
+}
+.scene-tag{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;
+  background:#eff6ff;color:#1d4ed8;font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.3px;
+}
+.scene-title{
+  font-family:var(--font-title);font-size:clamp(1.7rem,3vw,2.6rem);line-height:1.05;margin:14px 0 10px;
+}
+.scene-media{
+  margin:16px 0 18px;display:grid;gap:10px;
+}
+.scene-media[hidden]{display:none}
+.scene-media-frame{
+  border-radius:28px;overflow:hidden;border:2px solid rgba(16,32,50,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,248,235,0.98), rgba(255,255,255,0.96)),
+    linear-gradient(135deg, rgba(245,158,11,0.12), transparent 45%);
+  box-shadow:0 18px 34px rgba(15,23,42,0.12);
+  padding:12px;
+}
+.scene-media-frame img{
+  width:100%;max-height:min(56vh,620px);display:none;object-fit:contain;
+  border-radius:20px;background:linear-gradient(180deg,#fff7d6,#e0f2fe);
+}
+.scene-media-caption{
+  font-size:.84rem;line-height:1.5;color:var(--ink-soft);font-weight:800;
+}
+.scene-text{
+  font-size:1.07rem;line-height:1.9;color:var(--ink-soft);font-weight:700;
+}
+.scene-prompt{
+  margin-top:16px;padding:14px 16px;border-radius:20px;background:#fff7d6;color:#92400e;font-weight:900;line-height:1.6;
+}
+.choices{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px;
+}
+.choice{
+  border:none;border-radius:24px;padding:18px 16px;text-align:left;cursor:pointer;
+  background:white;border:2px solid rgba(16,32,50,0.08);box-shadow:0 10px 18px rgba(15,23,42,0.08);
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.choice:hover{transform:translateY(-3px);box-shadow:0 16px 22px rgba(15,23,42,0.12);border-color:rgba(245,158,11,0.28)}
+.choice-badge{
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;padding:5px 10px;border-radius:999px;
+  background:#eff6ff;color:#1d4ed8;font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.3px;
+}
+.choice-title{font-weight:900;font-size:1rem;color:var(--ink);line-height:1.45}
+.choice-sub{margin-top:8px;font-size:.84rem;color:var(--ink-soft);font-weight:700;line-height:1.55}
+.nav-row{
+  margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.small-link{
+  text-decoration:none;color:var(--ink-soft);font-weight:900;
+}
+.modal{
+  position:fixed;inset:0;background:rgba(15,23,42,0.55);display:none;align-items:center;justify-content:center;
+  padding:18px;z-index:50;
+}
+.modal.show{display:flex}
+.modal-card{
+  max-width:520px;width:min(96vw,520px);background:#fffdf7;border-radius:30px;padding:26px;border:2px solid rgba(245,158,11,0.2);
+  box-shadow:0 26px 48px rgba(15,23,42,0.22);
+}
+.modal-ico{font-size:3rem;margin-bottom:10px}
+.modal-title{font-family:var(--font-title);font-size:1.65rem;line-height:1.05;margin-bottom:10px}
+.modal-text{line-height:1.8;color:var(--ink-soft);font-weight:700}
+.modal-coach{
+  margin-top:14px;padding:13px 14px;border-radius:18px;background:#eff6ff;color:#1d4ed8;font-weight:900;line-height:1.6;
+}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+code{
+  padding:2px 6px;border-radius:8px;background:rgba(16,32,50,0.08);
+}
+@media (max-width:960px){
+  .shell{grid-template-columns:1fr}
+  .stage,.scene-wrap{min-height:auto}
+}
+@media (max-width:760px){
+  .choices{grid-template-columns:1fr}
+  .scene-wrap{padding:18px}
+  .scene-card{padding:20px}
+  .art{font-size:5rem;right:18px;top:22px}
+  .scene-media-frame{padding:10px}
+  .scene-media-frame img{max-height:48vh}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="shell">
+    <aside class="side">
+      <div class="pill">Le vent des moissons</div>
+      <h1>Les chroniques de<br>Rémus</h1>
+      <p>
+        Cinq scènes entre ciel changeant, sacs de grain, hirondelles et potagers.
+        Cette fois, Rémus entraîne Liam dans sa façon bien à lui de réviser les maths et les sciences.
+      </p>
+      <div class="tools">
+        <button class="tool-btn primary" id="speakBtn" type="button">🔊 Couper la voix</button>
+        <button class="tool-btn secondary" id="replayBtn" type="button">↻ Relire la scène</button>
+        <button class="tool-btn secondary" id="restartBtn" type="button">↺ Recommencer depuis le début</button>
+        <a class="link-btn tool-btn secondary" href="hub_liam_eystieval.html">← Retour au sous-hub</a>
+      </div>
+      <div class="status-box" id="voiceStatus">
+        Lecture orale active. Si la voix ne démarre pas, utilise le bouton "Relire la scène".
+      </div>
+      <div class="portrait-box">
+        <img id="liamReferenceImg" alt="Portrait de Rémus dans les champs">
+        <div class="portrait-fallback" id="liamReferenceFallback">🌾</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-head">
+          <div class="progress-title">Progression de Rémus</div>
+          <div id="progressLabel">0/5</div>
+        </div>
+        <div class="progress-bar"><span id="progressFill"></span></div>
+        <div class="mini-grid">
+          <div class="mini-card"><strong id="sceneNumber">1</strong>Scène actuelle</div>
+          <div class="mini-card"><strong id="subjectLabel">Sciences</strong>Révision du moment</div>
+        </div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-title">Images à prévoir</div>
+        <p style="margin-top:8px">
+          Cette aventure est déjà prête à charger ses illustrations de couverture et ses images
+          de séquence dès que tu ajoutes les bons fichiers.
+        </p>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="backdrop" id="backdrop"></div>
+      <img class="backdrop-image" id="sceneBgImg" alt="">
+      <div class="backdrop-shade"></div>
+      <div class="art" id="sceneArt">🌾</div>
+      <div class="scene-wrap">
+        <div class="scene-top">
+          <div class="breadcrumbs">
+            <span class="crumb" id="chapterPill">Épisode 1</span>
+            <span class="crumb" id="locationPill">Les moissons</span>
+          </div>
+          <a class="small-link" href="hub_liam_eystieval.html">Retour au hub narratif</a>
+        </div>
+
+        <article class="scene-card">
+          <div class="scene-tag" id="sceneTag">Sciences</div>
+          <h2 class="scene-title" id="sceneTitle">Les signes du ciel</h2>
+          <div class="scene-media" id="sceneMedia" hidden>
+            <div class="scene-media-frame">
+              <img id="sceneCardImg" alt="">
+            </div>
+            <div class="scene-media-caption" id="sceneCaption"></div>
+          </div>
+          <div class="scene-text" id="sceneText"></div>
+          <div class="scene-prompt" id="scenePrompt"></div>
+          <div class="choices" id="choices"></div>
+          <div class="nav-row">
+            <div style="font-weight:800;color:var(--ink-soft)" id="sceneHint">Une seule bonne réponse ouvre la suite de l'histoire.</div>
+            <div style="font-weight:900;color:#92400e" id="resumeHint">Rémus ouvre la marche</div>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal" id="fallModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-ico" id="fallIcon">😄</div>
+    <div class="modal-title" id="fallTitle">Oups !</div>
+    <div class="modal-text" id="fallText"></div>
+    <div class="modal-coach" id="fallCoach"></div>
+    <div class="modal-actions">
+      <button class="tool-btn primary" type="button" id="closeFallBtn">Je repars du bon pied</button>
+      <button class="tool-btn secondary" type="button" id="replayFallBtn">Relire la scène</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORY_KEY = 'ave6e_remus_chroniques_v1';
+const TOTAL_MAIN_SCENES = 5;
+const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
+
+function assetSources(stems, preferred = 'jpg'){
+  const baseStems = Array.isArray(stems) ? stems.filter(Boolean) : [stems].filter(Boolean);
+  const seen = new Set();
+  const extensions = [preferred].concat(IMAGE_EXTENSIONS).filter(ext => {
+    const key = String(ext || '').toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return baseStems.flatMap(stem => extensions.map(ext => `${stem}.${ext}`));
+}
+
+const VISUAL_ASSETS = {
+  referencePortrait: assetSources([
+    'assets_eystieval/remus_reference_face',
+    'remus_reference_face',
+    'assets_eystieval/remus_duo_reference',
+    'remus_duo_reference'
+  ]),
+  scenes: {
+    ciel_moissons: {
+      bg: assetSources(['assets_eystieval/remus_01_ciel_des_moissons', 'remus_01_ciel_des_moissons']),
+      card: assetSources(['assets_eystieval/remus_01_ciel_des_moissons', 'remus_01_ciel_des_moissons']),
+      alt: 'Rémus observe le ciel au-dessus des moissons'
+    },
+    sacs_grain: {
+      bg: assetSources(['assets_eystieval/remus_02_sacs_de_grain', 'remus_02_sacs_de_grain']),
+      card: assetSources(['assets_eystieval/remus_02_sacs_de_grain', 'remus_02_sacs_de_grain']),
+      alt: 'Des sacs de grain au marché ou à la grange'
+    },
+    hirondelles_grange: {
+      bg: assetSources(['assets_eystieval/remus_03_hirondelles_grange', 'remus_03_hirondelles_grange']),
+      card: assetSources(['assets_eystieval/remus_03_hirondelles_grange', 'remus_03_hirondelles_grange']),
+      alt: 'Des hirondelles tournent près de la grange'
+    },
+    racines_potager: {
+      bg: assetSources(['assets_eystieval/remus_04_racines_du_potager', 'remus_04_racines_du_potager']),
+      card: assetSources(['assets_eystieval/remus_04_racines_du_potager', 'remus_04_racines_du_potager']),
+      alt: 'Rémus et Liam dans le potager après la pluie'
+    },
+    partage_bottes: {
+      bg: assetSources(['assets_eystieval/remus_05_partage_des_bottes', 'remus_05_partage_des_bottes']),
+      card: assetSources(['assets_eystieval/remus_05_partage_des_bottes', 'remus_05_partage_des_bottes']),
+      alt: 'Des bottes de paille et des charrettes dans les champs'
+    },
+    epilogue: {
+      bg: assetSources(['assets_eystieval/remus_06_epilogue_colline', 'remus_06_epilogue_colline']),
+      card: assetSources(['assets_eystieval/remus_06_epilogue_colline', 'remus_06_epilogue_colline']),
+      alt: 'Rémus sur la colline au soleil couchant'
+    }
+  }
+};
+
+const STORY_SCENES = {
+  ciel_moissons: {
+    id: 'ciel_moissons',
+    chapter: 'Épisode 1',
+    location: 'Chemin des moissons',
+    subject: 'Sciences',
+    icon: '🌤️',
+    background: 'linear-gradient(180deg, #dbeafe 0%, #fde68a 36%, #fef3c7 100%)',
+    title: 'Les signes du ciel',
+    text: "Rémus lève le nez bien avant Liam. Au-dessus des champs, l'air est lourd, les nuages s'épaississent et quelques hirondelles volent bas. 'Je te parie ma meilleure pomme qu'une surprise du ciel nous attend', annonce-t-il avec un grand sourire.",
+    prompt: 'Quel temps est le plus probable ?',
+    choices: [
+      {
+        badge: 'Sciences',
+        title: 'Une averse ou un orage approche',
+        sub: "Rémus hoche la tête : les signes du ciel vont tous dans le même sens.",
+        kind: 'advance',
+        next: 'sacs_grain'
+      },
+      {
+        badge: 'Sciences',
+        title: 'Une chute de neige est imminente',
+        sub: "Il faudrait vraiment un drôle d'été pour ça.",
+        kind: 'fall',
+        fall: {
+          icon: '❄️',
+          title: 'La neige perd son chemin',
+          text: "Rémus tend les paumes vers le ciel. Rien ne tombe, sinon quelques feuilles et beaucoup de chaleur.",
+          coach: "Observe les indices de saison et de météo : nuages lourds, air humide, hirondelles basses."
+        }
+      },
+      {
+        badge: 'Sciences',
+        title: 'Un grand froid va geler les flaques',
+        sub: "Même les blés lèvent un sourcil devant cette idée.",
+        kind: 'fall',
+        fall: {
+          icon: '🥶',
+          title: 'Le champ frissonne pour rire',
+          text: "Liam regarde autour de lui : tout sent l'été, pas l'hiver. Rémus prétend qu'aucun épi n'a mis d'écharpe.",
+          coach: "Cherche le phénomène météo cohérent avec l'été et les nuages chargés."
+        }
+      }
+    ]
+  },
+  sacs_grain: {
+    id: 'sacs_grain',
+    chapter: 'Épisode 2',
+    location: 'La grange du plateau',
+    subject: 'Maths',
+    icon: '🌾',
+    background: 'linear-gradient(180deg, #fde68a 0%, #fef3c7 38%, #dbeafe 100%)',
+    title: 'Les sacs de grain',
+    text: "À l'abri dans une grange, Liam et Rémus aident à déplacer quatre sacs de grain. Chacun pèse 25 kilos. Rémus tape doucement sur l'un d'eux : 'Si on trouve le poids total, on pourra dire qu'on a sauvé les moissons de l'orage.'",
+    prompt: 'Quel est le poids total des 4 sacs ?',
+    choices: [
+      {
+        badge: 'Maths',
+        title: '75 kilos',
+        sub: "Un sac a mystérieusement disparu dans ton calcul.",
+        kind: 'fall',
+        fall: {
+          icon: '🧺',
+          title: 'Le sac fugueur',
+          text: "Rémus fait semblant de chercher un sac sous une botte de paille. Malheureusement, les quatre sont bien là, alignés contre le mur.",
+          coach: 'Additionne 25 kilos quatre fois, ou multiplie 25 par 4.'
+        }
+      },
+      {
+        badge: 'Maths',
+        title: '100 kilos',
+        sub: "Cette fois, tout tombe juste. Les sacs peuvent être rangés.",
+        kind: 'advance',
+        next: 'hirondelles_grange'
+      },
+      {
+        badge: 'Maths',
+        title: '125 kilos',
+        sub: "Tu as donné un peu trop de courage à la récolte.",
+        kind: 'fall',
+        fall: {
+          icon: '⚖️',
+          title: 'La balance proteste',
+          text: "Même la vieille balance de la grange grince à cette idée. Rémus assure qu'elle n'a jamais vu les sacs grossir en cinq secondes.",
+          coach: 'Reprends 4 sacs de 25 kilos chacun.'
+        }
+      }
+    ]
+  },
+  hirondelles_grange: {
+    id: 'hirondelles_grange',
+    chapter: 'Épisode 3',
+    location: 'Sous les poutres de la grange',
+    subject: 'Sciences',
+    icon: '🐦',
+    background: 'linear-gradient(180deg, #bfdbfe 0%, #ecfccb 36%, #fde68a 100%)',
+    title: 'Les hirondelles du toit',
+    text: "Sous les poutres, Rémus montre à Liam un nid d'hirondelles. Les oiseaux entrent et ressortent sans arrêt pour attraper des insectes. Rémus adore ce spectacle, mais il veut être sûr de bien raconter ce qu'il a observé.",
+    prompt: 'Quelle phrase est juste ?',
+    choices: [
+      {
+        badge: 'Sciences',
+        title: "L'hirondelle est un oiseau qui pond des œufs et mange beaucoup d'insectes.",
+        sub: "Liam retrouve la bonne description sans hésiter.",
+        kind: 'advance',
+        next: 'racines_potager'
+      },
+      {
+        badge: 'Sciences',
+        title: "L'hirondelle est un mammifère qui nourrit ses petits avec du lait.",
+        sub: "Le nid en reste tout silencieux de surprise.",
+        kind: 'fall',
+        fall: {
+          icon: '🪺',
+          title: 'Le nid tousse doucement',
+          text: "Rémus regarde le nid, puis ses mains vides. Pas de poils, pas de lait : seulement des plumes et des becs très affairés.",
+          coach: "Observe la classe de l'animal : plumes, ailes, œufs."
+        }
+      },
+      {
+        badge: 'Sciences',
+        title: "L'hirondelle est un poisson qui respire sous l'eau près des meules.",
+        sub: "Cette théorie ferait rire toute la grange.",
+        kind: 'fall',
+        fall: {
+          icon: '🐟',
+          title: 'Le poisson du grenier',
+          text: "Liam regarde en l'air, puis au sol, puis en l'air encore. Aucun bassin n'est caché dans les poutres.",
+          coach: "Pense aux animaux qu'on voit voler et faire leur nid sous un toit."
+        }
+      }
+    ]
+  },
+  racines_potager: {
+    id: 'racines_potager',
+    chapter: 'Épisode 4',
+    location: 'Le potager après la pluie',
+    subject: 'Sciences',
+    icon: '🥕',
+    background: 'linear-gradient(180deg, #dcfce7 0%, #bfdbfe 36%, #fef3c7 100%)',
+    title: 'Les racines boivent en silence',
+    text: "Quand la pluie s'éloigne enfin, les deux garçons passent par le potager. La terre est sombre et souple. Rémus tapote une feuille de salade encore mouillée : 'Bon, ça je sais presque... mais quelle partie de la plante boit vraiment l'eau du sol ?'",
+    prompt: 'Quelle partie de la plante absorbe surtout l’eau du sol ?',
+    choices: [
+      {
+        badge: 'Sciences',
+        title: 'Les racines',
+        sub: "La réponse est bonne. Les plantes peuvent continuer à grandir tranquillement.",
+        kind: 'advance',
+        next: 'partage_bottes'
+      },
+      {
+        badge: 'Sciences',
+        title: 'Les pétales',
+        sub: "Jolie réponse, mais plutôt réservée aux fleurs.",
+        kind: 'fall',
+        fall: {
+          icon: '🌸',
+          title: 'Les pétales s’offusquent',
+          text: "Rémus souffle sur une fleur voisine : elle est magnifique, mais elle ne creuse pas la terre pour boire.",
+          coach: "Cherche la partie de la plante cachée sous le sol."
+        }
+      },
+      {
+        badge: 'Sciences',
+        title: 'Les nuages',
+        sub: "Les nuages donnent la pluie, mais ils ne poussent pas dans le potager.",
+        kind: 'fall',
+        fall: {
+          icon: '☁️',
+          title: 'Le chou nuageux',
+          text: "Liam imagine un instant un légume accroché au ciel. Rémus juge que ce serait très peu pratique à récolter.",
+          coach: "Pense à la partie de la plante qui reste dans la terre."
+        }
+      }
+    ]
+  },
+  partage_bottes: {
+    id: 'partage_bottes',
+    chapter: 'Épisode 5',
+    location: 'Au bord du champ sec',
+    subject: 'Maths',
+    icon: '🚜',
+    background: 'linear-gradient(180deg, #fde68a 0%, #fef3c7 40%, #bfdbfe 100%)',
+    title: 'Le partage des bottes',
+    text: "Avant de rentrer, il reste encore 18 bottes de paille à répartir dans 3 petites charrettes. Rémus pose les mains sur les hanches et annonce : 'Si on fait un partage juste, même la route du retour semblera plus légère.'",
+    prompt: 'Combien de bottes faut-il mettre dans chaque charrette ?',
+    choices: [
+      {
+        badge: 'Maths',
+        title: '5 bottes',
+        sub: "Tu aurais laissé quelques bottes seules au milieu du champ.",
+        kind: 'fall',
+        fall: {
+          icon: '🌾',
+          title: 'Les bottes restantes protestent',
+          text: "Rémus compte sur ses doigts, puis du regard. Trois bottes oubliées semblent te fixer avec reproche.",
+          coach: 'Partage 18 en 3 parts égales.'
+        }
+      },
+      {
+        badge: 'Maths',
+        title: '6 bottes',
+        sub: "Répartition parfaite. Les charrettes sont prêtes à rouler.",
+        kind: 'advance',
+        next: 'epilogue'
+      },
+      {
+        badge: 'Maths',
+        title: '9 bottes',
+        sub: "Deux charrettes seraient pleines, mais la troisième ferait grise mine.",
+        kind: 'fall',
+        fall: {
+          icon: '🛞',
+          title: 'La charrette jalouse',
+          text: "Liam regarde la troisième charrette vide et hausse un sourcil. Rémus reconnaît qu'elle risque de ne pas apprécier le traitement.",
+          coach: 'Cherche combien fait 18 divisé par 3.'
+        }
+      }
+    ]
+  },
+  epilogue: {
+    id: 'epilogue',
+    chapter: 'Épilogue',
+    location: 'Sur la colline dorée',
+    subject: 'Histoire de Rémus',
+    icon: '✨',
+    background: 'linear-gradient(180deg, #1e293b 0%, #475569 40%, #f59e0b 100%)',
+    title: 'Les plans de Rémus continuent',
+    text: "Le ciel s'ouvre à nouveau sur un grand bleu. Rémus rentre avec l'air très satisfait de celui qui a appris beaucoup de choses sans en avoir l'air. Liam sait déjà que ce n'était qu'un premier épisode : avec Rémus, chaque détour du village peut devenir une chronique.",
+    prompt: "Tu as terminé ce premier récit de Rémus. Tu peux le relire, le rejouer, ou revenir au sous-hub.",
+    choices: [
+      {
+        badge: 'Final',
+        title: "Relire l'épilogue",
+        sub: "Revenir sur la colline et regarder encore une fois le ciel se calmer.",
+        kind: 'action',
+        action: 'replay'
+      },
+      {
+        badge: 'Final',
+        title: 'Rejouer depuis le début',
+        sub: "Reprendre la route des champs depuis le premier nuage.",
+        kind: 'action',
+        action: 'restart'
+      },
+      {
+        badge: 'Final',
+        title: 'Retourner au sous-hub',
+        sub: "Revenir à la collection des aventures d'Eystie-Val.",
+        kind: 'action',
+        action: 'hub'
+      }
+    ]
+  }
+};
+
+function defaultState(){
+  return {
+    currentScene: 'ciel_moissons',
+    cleared: [],
+    completed: false,
+    speechEnabled: true,
+    updatedAt: ''
+  };
+}
+
+function getState(){
+  try {
+    const data = JSON.parse(localStorage.getItem(STORY_KEY) || '{}');
+    return Object.assign(defaultState(), data && typeof data === 'object' ? data : {});
+  } catch(e) {
+    return defaultState();
+  }
+}
+
+function saveState(state){
+  state.updatedAt = new Date().toISOString();
+  localStorage.setItem(STORY_KEY, JSON.stringify(state));
+}
+
+function sceneOrder(){
+  return ['ciel_moissons','sacs_grain','hirondelles_grange','racines_potager','partage_bottes'];
+}
+
+function percentDone(state){
+  const done = Array.isArray(state.cleared) ? state.cleared.length : 0;
+  return Math.round((done / TOTAL_MAIN_SCENES) * 100);
+}
+
+function frenchVoice(){
+  const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  return voices.find(v => /^fr/i.test(v.lang || '')) || voices[0] || null;
+}
+
+function bindOptionalImage(imgEl, src, alt, fallbackEl, options = {}){
+  if(!imgEl) return;
+  const sources = Array.isArray(src) ? src.filter(Boolean) : (src ? [src] : []);
+  const containerEl = options.container || null;
+  const captionEl = options.captionEl || null;
+  const captionText = options.captionText || '';
+  let sourceIndex = 0;
+
+  function hideAll(){
+    imgEl.style.display = 'none';
+    if (fallbackEl) fallbackEl.style.display = 'flex';
+    if (containerEl) containerEl.hidden = true;
+    if (captionEl) captionEl.textContent = '';
+  }
+
+  if(!sources.length){
+    hideAll();
+    return;
+  }
+
+  function loadSource(){
+    if (sourceIndex >= sources.length) {
+      hideAll();
+      return;
+    }
+    imgEl.src = sources[sourceIndex];
+  }
+
+  imgEl.onload = function(){
+    imgEl.style.display = 'block';
+    if (fallbackEl) fallbackEl.style.display = 'none';
+    if (containerEl) containerEl.hidden = false;
+    if (captionEl) captionEl.textContent = captionText || alt || '';
+  };
+  imgEl.onerror = function(){
+    sourceIndex += 1;
+    loadSource();
+  };
+  imgEl.alt = alt || '';
+  loadSource();
+}
+
+function speak(text){
+  const state = getState();
+  const voiceStatus = document.getElementById('voiceStatus');
+  if (!state.speechEnabled) {
+    if (voiceStatus) voiceStatus.textContent = "Lecture orale désactivée. Tu peux la relancer quand tu veux.";
+    return;
+  }
+  if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+    if (voiceStatus) voiceStatus.textContent = "La synthèse vocale du navigateur n'est pas disponible ici. Le texte reste lisible à l'écran.";
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'fr-FR';
+  utter.rate = 0.97;
+  const picked = frenchVoice();
+  if (picked) utter.voice = picked;
+  utter.onstart = () => {
+    if (voiceStatus) voiceStatus.textContent = "Lecture orale active. Rémus raconte la scène en cours.";
+  };
+  utter.onerror = () => {
+    if (voiceStatus) voiceStatus.textContent = "La voix n'a pas pu se lancer. Utilise le bouton Relire la scène si besoin.";
+  };
+  window.speechSynthesis.speak(utter);
+}
+
+function currentScene(){
+  const state = getState();
+  return STORY_SCENES[state.currentScene] || STORY_SCENES.ciel_moissons;
+}
+
+function markCleared(sceneId){
+  const state = getState();
+  if (!state.cleared.includes(sceneId) && sceneOrder().includes(sceneId)) {
+    state.cleared.push(sceneId);
+  }
+  saveState(state);
+}
+
+function gotoScene(sceneId){
+  const state = getState();
+  state.currentScene = sceneId;
+  if (sceneId === 'epilogue') state.completed = true;
+  saveState(state);
+  renderScene();
+}
+
+function restartStory(){
+  const fresh = defaultState();
+  saveState(fresh);
+  renderScene();
+}
+
+function openHub(){
+  window.location.href = 'hub_liam_eystieval.html';
+}
+
+function choiceClicked(choice){
+  if (choice.kind === 'advance') {
+    markCleared(currentScene().id);
+    gotoScene(choice.next);
+    return;
+  }
+  if (choice.kind === 'fall') {
+    openFall(choice.fall);
+    return;
+  }
+  if (choice.kind === 'action') {
+    if (choice.action === 'restart') { restartStory(); return; }
+    if (choice.action === 'hub') { openHub(); return; }
+    if (choice.action === 'replay') { speakScene(); return; }
+  }
+}
+
+function openFall(fall){
+  const modal = document.getElementById('fallModal');
+  document.getElementById('fallIcon').textContent = fall.icon || '😄';
+  document.getElementById('fallTitle').textContent = fall.title || 'Oups';
+  document.getElementById('fallText').textContent = fall.text || '';
+  document.getElementById('fallCoach').textContent = fall.coach || "Essaie encore : la bonne réponse est juste à côté.";
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  speak(`${fall.title}. ${fall.text}. ${fall.coach}`);
+}
+
+function closeFall(){
+  const modal = document.getElementById('fallModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function speakScene(){
+  const scene = currentScene();
+  speak(`${scene.title}. ${scene.text} ${scene.prompt}`);
+}
+
+function toggleSpeech(){
+  const state = getState();
+  state.speechEnabled = !state.speechEnabled;
+  saveState(state);
+  updateVoiceButtons();
+  if (state.speechEnabled) speakScene();
+  else if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+function updateVoiceButtons(){
+  const state = getState();
+  const speakBtn = document.getElementById('speakBtn');
+  const voiceStatus = document.getElementById('voiceStatus');
+  if (speakBtn) speakBtn.textContent = state.speechEnabled ? '🔊 Couper la voix' : '🔈 Remettre la voix';
+  if (voiceStatus && !('speechSynthesis' in window)) {
+    voiceStatus.textContent = "La synthèse vocale du navigateur n'est pas disponible ici. Le texte reste lisible à l'écran.";
+    return;
+  }
+  if (voiceStatus) {
+    voiceStatus.textContent = state.speechEnabled
+      ? "Lecture orale active. Si la voix ne démarre pas, utilise le bouton Relire la scène."
+      : "Lecture orale coupée. Le récit reste entièrement lisible à l'écran.";
+  }
+}
+
+function renderScene(){
+  const state = getState();
+  const scene = currentScene();
+  const progress = Math.max(0, percentDone(state));
+  const sceneIdx = sceneOrder().includes(scene.id) ? sceneOrder().indexOf(scene.id) + 1 : TOTAL_MAIN_SCENES;
+  const sceneVisual = VISUAL_ASSETS.scenes[scene.id] || null;
+
+  document.getElementById('chapterPill').textContent = scene.chapter;
+  document.getElementById('locationPill').textContent = scene.location;
+  document.getElementById('sceneTag').textContent = scene.subject;
+  document.getElementById('sceneTitle').textContent = scene.title;
+  document.getElementById('sceneText').textContent = scene.text;
+  document.getElementById('scenePrompt').textContent = scene.prompt;
+  document.getElementById('sceneArt').textContent = scene.icon;
+  document.getElementById('backdrop').style.background = scene.background;
+  bindOptionalImage(
+    document.getElementById('sceneBgImg'),
+    sceneVisual ? sceneVisual.bg : '',
+    sceneVisual ? sceneVisual.alt : '',
+    null
+  );
+  bindOptionalImage(
+    document.getElementById('sceneCardImg'),
+    sceneVisual ? sceneVisual.card : '',
+    sceneVisual ? sceneVisual.alt : '',
+    null,
+    {
+      container: document.getElementById('sceneMedia'),
+      captionEl: document.getElementById('sceneCaption'),
+      captionText: sceneVisual ? `Illustration de scène : ${scene.title}` : ''
+    }
+  );
+  document.getElementById('progressLabel').textContent = `${Math.min(state.cleared.length, TOTAL_MAIN_SCENES)}/${TOTAL_MAIN_SCENES}`;
+  document.getElementById('progressFill').style.width = `${progress}%`;
+  document.getElementById('sceneNumber').textContent = String(sceneIdx);
+  document.getElementById('subjectLabel').textContent = scene.subject;
+  document.getElementById('resumeHint').textContent = scene.id === 'epilogue' ? "D'autres chroniques arrivent" : 'Une seule réponse ouvre la suite';
+
+  const choices = document.getElementById('choices');
+  choices.innerHTML = '';
+  scene.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'choice';
+    btn.innerHTML = `
+      <div class="choice-badge">${choice.badge}</div>
+      <div class="choice-title">${choice.title}</div>
+      <div class="choice-sub">${choice.sub}</div>
+    `;
+    btn.addEventListener('click', () => choiceClicked(choice));
+    choices.appendChild(btn);
+  });
+
+  updateVoiceButtons();
+  setTimeout(() => speakScene(), 120);
+}
+
+document.getElementById('speakBtn').addEventListener('click', toggleSpeech);
+document.getElementById('replayBtn').addEventListener('click', speakScene);
+document.getElementById('restartBtn').addEventListener('click', restartStory);
+document.getElementById('closeFallBtn').addEventListener('click', closeFall);
+document.getElementById('replayFallBtn').addEventListener('click', () => {
+  closeFall();
+  speakScene();
+});
+document.getElementById('fallModal').addEventListener('click', (ev) => {
+  if (ev.target === ev.currentTarget) closeFall();
+});
+window.addEventListener('beforeunload', () => {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+});
+if ('speechSynthesis' in window && typeof window.speechSynthesis.onvoiceschanged !== 'undefined') {
+  window.speechSynthesis.onvoiceschanged = updateVoiceButtons;
+}
+
+bindOptionalImage(
+  document.getElementById('liamReferenceImg'),
+  VISUAL_ASSETS.referencePortrait,
+  "Portrait de Rémus dans les champs",
+  document.getElementById('liamReferenceFallback')
+);
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('restart') === '1') restartStory();
+else renderScene();
+</script>
+</body>
+</html>

@@ -162,7 +162,7 @@ body{
 <div class="wrap">
   <div class="topbar">
     <a class="backlink" href="index_ACCEUIL6e.html">← Retour au hub CM2/6e</a>
-    <a class="ghost-btn" href="liam_eystieval_prequel.html?restart=1">↺ Recommencer l'aventure</a>
+    <a class="ghost-btn" href="liam_ruisseau_collines.html?restart=1">↺ Recommencer la première aventure</a>
   </div>
 
   <section class="hero">
@@ -172,14 +172,14 @@ body{
         <h1>Les aventures de Liam<br>à Eystie-Val</h1>
         <p>
           Avant l'école-château de Valdurne, il y a l'été d'Eystie-Val : la forge du père,
-          les conseils de la maman, les escapades avec Remus et une série de petites épreuves
-          en maths et en français. Ce hub est prévu comme une mini collection de récits
+          les escapades dans les collines, les conseils de la maman, les derniers jours avant le départ
+          et les plans toujours imprévisibles de Rémus. Ce hub est prévu comme une mini collection de récits
           interactifs à l'oral, façon Lunii, mais avec de vrais embranchements de révision.
         </p>
         <div class="hero-meta">
           <div class="meta-pill">⚒️ Village de forge</div>
           <div class="meta-pill">🔊 Lecture orale intégrée</div>
-          <div class="meta-pill">🧩 3 choix par scène</div>
+          <div class="meta-pill">🧩 3 aventures jouables</div>
           <div class="meta-pill">🏰 Passage vers Valdurne</div>
         </div>
         <div class="hello" id="helloBox">Bonjour, voyageur. Ton aventure estivale est prête.</div>
@@ -203,7 +203,6 @@ body{
 
 <script>
 const LS_KEY = 'ave6e_progress';
-const STORY_KEY = 'ave6e_liam_eystieval_v1';
 const IMAGE_EXTENSIONS = ['jpg','jpeg','png','webp'];
 
 function assetSources(stems, preferred = 'jpg'){
@@ -222,36 +221,54 @@ const VISUAL_ASSETS = {
   hubCover: assetSources(['assets_eystieval/liam_hub_cover', 'liam_hub_cover']),
   referenceBoard: assetSources(['assets_eystieval/liam_storyboard_board', 'liam_storyboard_board'], 'png'),
   storyCovers: {
+    'liam-prequel-00': assetSources(['assets_eystieval/liam_ruisseau_cover', 'liam_ruisseau_cover']),
     'liam-prequel-01': [
       ...assetSources(['assets_eystieval/liam_story_ete_cover', 'liam_story_ete_cover']),
       ...assetSources(['assets_eystieval/liam_hub_cover', 'liam_hub_cover'])
     ],
-    'liam-prequel-02': assetSources(['assets_eystieval/remus_story_cover', 'remus_story_cover'])
+    'remus-prequel-01': [
+      ...assetSources(['assets_eystieval/remus_chroniques_cover', 'remus_chroniques_cover']),
+      ...assetSources(['assets_eystieval/remus_story_cover', 'remus_story_cover'])
+    ]
   }
 };
 
 const ADVENTURES = [
   {
+    id: 'liam-prequel-00',
+    storyKey: 'ave6e_liam_ruisseau_v1',
+    sceneCount: 4,
+    icon: '🐸',
+    title: 'Le ruisseau des collines',
+    subtitle: 'Conte nature et révisions',
+    desc: "Quelques semaines avant Valdurne, Liam et Rémus longent le ruisseau des collines. Entre grenouilles, pluie d'été, reliefs et petits calculs, ils révisent sans même s'en apercevoir.",
+    tags: ['Maths', 'Sciences', 'CM2', 'Nature'],
+    file: 'liam_ruisseau_collines.html',
+    cover: VISUAL_ASSETS.storyCovers['liam-prequel-00']
+  },
+  {
     id: 'liam-prequel-01',
+    storyKey: 'ave6e_liam_eystieval_v1',
+    sceneCount: 5,
     icon: '⚒️',
     title: "L'été de Liam à Eystie-Val",
-    subtitle: 'Aventure orale interactive',
-    desc: "Liam aide son père forgeron, suit les conseils de sa mère et part vivre quelques aventures d'été avec Remus. Pour progresser, il faut choisir la bonne réponse de révision.",
+    subtitle: 'Les derniers jours avant Valdurne',
+    desc: "Le départ approche. Liam aide son père forgeron, suit les conseils de sa mère et vit ses derniers défis d'été avec Rémus avant de prendre la route de Valdurne.",
     tags: ['Maths', 'Français', 'Chutes rigolotes', 'CM2/6e'],
     file: 'liam_eystieval_prequel.html',
-    resumeScene: '5 scènes clefs',
     cover: VISUAL_ASSETS.storyCovers['liam-prequel-01']
   },
   {
-    id: 'liam-prequel-02',
+    id: 'remus-prequel-01',
+    storyKey: 'ave6e_remus_chroniques_v1',
+    sceneCount: 5,
     icon: '🌾',
-    title: 'Les chroniques de Remus',
-    subtitle: 'Prochain conte du village',
-    desc: "Un futur mini-récit autour du marché, des champs et des chemins d'Eystie-Val, pour continuer les révisions sous forme d'aventures.",
-    tags: ['Bientôt', 'Extension du hub', 'Narration orale'],
-    file: '',
-    disabled: true,
-    cover: VISUAL_ASSETS.storyCovers['liam-prequel-02']
+    title: 'Les chroniques de Rémus',
+    subtitle: 'Le vent des moissons',
+    desc: "Rémus entraîne Liam dans une journée pleine de signes du ciel, d'oiseaux, de champs et de sacs de grain. Une autre façon de réviser les maths et les sciences du village.",
+    tags: ['Maths', 'Sciences', 'Météo', 'Rémus'],
+    file: 'remus_chroniques.html',
+    cover: VISUAL_ASSETS.storyCovers['remus-prequel-01']
   }
 ];
 
@@ -289,9 +306,9 @@ function getMainProgress(){
   catch(e){ return {}; }
 }
 
-function getStoryProgress(){
+function getStoryProgress(storyKey){
   try {
-    const data = JSON.parse(localStorage.getItem(STORY_KEY) || '{}');
+    const data = JSON.parse(localStorage.getItem(storyKey || '') || '{}');
     return data && typeof data === 'object' ? data : {};
   } catch(e) {
     return {};
@@ -301,37 +318,38 @@ function getStoryProgress(){
 function helloText(){
   const p = getMainProgress();
   if (p.player_id) {
-    return `Bonjour ${p.player_id}. Retrouve ici le préquel oral de Valdurne et les prochaines aventures de Liam.`;
+    return `Bonjour ${p.player_id}. Retrouve ici les aventures d'Eystie-Val avant Valdurne, entre Liam, Rémus et les collines du village.`;
   }
-  return "Bonjour, voyageur. Ton aventure estivale est prête.";
+  return "Bonjour, voyageur. Les aventures d'Eystie-Val t'attendent.";
 }
 
-function adventureStatus(){
-  const st = getStoryProgress();
-  const doneCount = Array.isArray(st.cleared) ? st.cleared.length : 0;
+function adventureStatus(adventure){
+  const st = getStoryProgress(adventure.storyKey);
+  const sceneCount = adventure.sceneCount || 1;
+  const doneCount = Math.min(Array.isArray(st.cleared) ? st.cleared.length : 0, sceneCount);
   if (st.completed) {
     return {
-      box: `Aventure terminée. Tu peux la rejouer quand tu veux. ${doneCount}/5 scènes ont déjà été validées.`,
-      cta: 'Rejouer le préquel',
-      href: 'liam_eystieval_prequel.html?restart=1',
-      extraHref: 'liam_eystieval_prequel.html',
+      box: `Aventure terminée. Tu peux la rejouer quand tu veux. ${doneCount}/${sceneCount} scènes ont déjà été validées.`,
+      cta: 'Rejouer',
+      href: `${adventure.file}?restart=1`,
+      extraHref: adventure.file,
       extraLabel: 'Relire la fin'
     };
   }
   if (st.currentScene) {
     return {
-      box: `Aventure en cours. ${doneCount}/5 scènes validées. Reprends là où Liam s'est arrêté.`,
-      cta: "Reprendre l'aventure",
-      href: 'liam_eystieval_prequel.html',
-      extraHref: 'liam_eystieval_prequel.html?restart=1',
+      box: `Aventure en cours. ${doneCount}/${sceneCount} scènes validées. Reprends là où le récit s'est arrêté.`,
+      cta: 'Reprendre',
+      href: adventure.file,
+      extraHref: `${adventure.file}?restart=1`,
       extraLabel: 'Repartir du début'
     };
   }
   return {
-    box: "Aventure pas encore commencée. Lance le préquel pour suivre Liam avant son départ vers Valdurne.",
-    cta: "Commencer l'aventure",
-    href: 'liam_eystieval_prequel.html',
-    extraHref: 'liam_eystieval_prequel.html?restart=1',
+    box: "Aventure pas encore commencée. Lance ce récit pour ouvrir une nouvelle étape de l'été à Eystie-Val.",
+    cta: 'Commencer',
+    href: adventure.file,
+    extraHref: `${adventure.file}?restart=1`,
     extraLabel: 'Mode conte direct'
   };
 }
@@ -339,7 +357,6 @@ function adventureStatus(){
 function renderCards(){
   const root = document.getElementById('storyCards');
   if (!root) return;
-  const state = adventureStatus();
   root.innerHTML = '';
 
   ADVENTURES.forEach((adventure, index) => {
@@ -350,6 +367,7 @@ function renderCards(){
     let statusBox = "<div class=\"story-status\">Cette place est réservée à une prochaine aventure d'Eystie-Val.</div>";
 
     if (!adventure.disabled && adventure.file) {
+      const state = adventureStatus(adventure);
       statusBox = `<div class="story-status">${state.box}</div>`;
       actions = `
         <div class="story-actions">
