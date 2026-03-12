@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réguler effort et confiance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1320;--panel:#12263a;--line:#ffffff1f;--text:#edf5ff;--muted:#bfd0e1;--accent:#56c8bb;--paper:#f7f1e6;--ink:#162638}
+*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(180deg,#07111a,#0b1320 45%,#14344d);color:var(--text);min-height:100vh}.wrap{max-width:980px;margin:0 auto;padding:24px 16px 56px}.hero,.panel{background:rgba(18,38,58,.94);border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 42px rgba(0,0,0,.22)}.hero{padding:24px}.panel{padding:18px;margin-top:16px}.hero h1,.panel h2{font-family:'Fraunces',serif}.hero p,.panel p,.panel li{color:var(--muted);line-height:1.6}.row,.actions{display:flex;flex-wrap:wrap;gap:10px}.tag,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px}.tag{padding:8px 12px;border:1px solid #ffffff24;background:#ffffff10;font-size:.84rem}.btn{border:none;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer}.btn.main{background:linear-gradient(135deg,var(--accent),#a5ece1);color:#082434}.btn.alt{background:#ffffff10;color:var(--text)}textarea{width:100%;min-height:180px;padding:12px 13px;border-radius:16px;border:1px solid #ffffff1f;background:#ffffff0c;color:var(--text);font:inherit;resize:vertical}.paper{padding:16px;border-radius:18px;background:linear-gradient(180deg,var(--paper),#fffaf1);color:var(--ink)}.paper ul{margin:0;padding-left:18px}.sub{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="row">
+      <div class="tag">ATELIER DES APPUIS</div>
+      <div class="tag">S'ajuster</div>
+    </div>
+    <h1>Réguler effort et confiance</h1>
+    <p>Repérer fatigue, bruit, stress, évitement, confiance et modalités qui permettent de repartir.</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn main" onclick="goHub()">Retour à l'atelier</button>
+      <button class="btn alt" onclick="goOrientation()">Retour Orientation</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Repères d'observation</h2>
+    <div class="paper">
+      <ul>
+<li>Qu'est-ce qui semble peser sur l'engagement ou l'endurance ?</li>
+<li>Quels signes montrent qu'un appui rassure réellement ?</li>
+<li>Quelles adaptations semblent les plus efficaces ?</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Trace locale</h2>
+    <p class="sub">Cette note reste locale au poste pour garder une trace de travail. La validation du module se fait ensuite depuis le panneau Admin du hub.</p>
+    <textarea id="notes" placeholder="Noter ici ce qu'on observe, ce qui aide, ce qui freine, les points à reprendre, sans poser de diagnostic..."></textarea>
+  </section>
+</div>
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_PLAYER_KEY='pvs_phare_player';
+const NOTES_KEY='pvs_appuis_notes_v1';
+const MODULE_ID='APPUIS_Module_AJUSTER_01';
+function getPlayer(){const q=new URLSearchParams(window.location.search).get('player');const qp=String(q||'').trim().toUpperCase();if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_PLAYER_KEY,qp);return qp;}return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_PLAYER_KEY)||'VISITEUR').trim().toUpperCase()||'VISITEUR';}
+function getStore(){try{return JSON.parse(localStorage.getItem(NOTES_KEY)||'{}')||{};}catch(e){return {};}}
+function saveStore(store){localStorage.setItem(NOTES_KEY,JSON.stringify(store));}
+function loadNote(){const player=getPlayer();const store=getStore();const value=((store[player]||{})[MODULE_ID]||'');document.getElementById('notes').value=value;document.getElementById('notes').oninput=()=>{const safe=getStore();safe[player]=safe[player]||{};safe[player][MODULE_ID]=document.getElementById('notes').value;saveStore(safe);};}
+function goHub(){const suffix='?player='+encodeURIComponent(getPlayer());window.location.href='index_APPUIS.html'+suffix;}
+function goOrientation(){const suffix='?player='+encodeURIComponent(getPlayer());window.location.href='hub_orientation.html'+suffix;}
+document.addEventListener('DOMContentLoaded',loadNote);
+</script>
+</body>
+</html>
