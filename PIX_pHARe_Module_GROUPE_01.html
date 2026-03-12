@@ -670,6 +670,32 @@
             .panel-body { padding: 15px; }
             .flashcard-face { padding: 20px 15px; min-height: 260px; }
         }
+        /* Fix flip visibility */
+        .flashcard,
+        .flashcard-flip{
+            -webkit-transform-style:preserve-3d;
+            transform-style:preserve-3d;
+        }
+        .flashcard-face,
+        .card-face{
+            -webkit-backface-visibility:hidden;
+            backface-visibility:hidden;
+            transition:opacity .2s ease;
+        }
+        .card-back,
+        .flashcard-back{
+            opacity:0;
+        }
+        .flashcard.flipped .card-face:not(.card-back),
+        .flashcard.flipped .flashcard-front,
+        .flashcard-flip.flipped .flashcard-front{
+            opacity:0;
+        }
+        .flashcard.flipped .card-back,
+        .flashcard.flipped .flashcard-back,
+        .flashcard-flip.flipped .flashcard-back{
+            opacity:1;
+        }
     </style>
 </head>
 <body>
