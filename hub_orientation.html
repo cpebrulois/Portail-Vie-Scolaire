@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cap Orientation BFC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#081521;--bg2:#11283a;--panel:#0e2234dd;--line:#ffffff1a;--text:#eef5ff;--muted:#bfd0e1;--accent:#56c8bb;--gold:#f0bf57;--coral:#ff8f6d;--blue:#71a7ff;--ok:#8ae2ad;--paper:#f7f1e6;--ink:#162638}
+*{box-sizing:border-box} body{margin:0;font-family:'IBM Plex Sans',sans-serif;color:var(--text);background:radial-gradient(circle at top right,rgba(86,200,187,.18),transparent 18%),linear-gradient(180deg,#07111a,var(--bg) 38%,var(--bg2));min-height:100vh}
+body::before{content:"";position:fixed;inset:0;background:linear-gradient(transparent 95%,rgba(255,255,255,.03) 96%),linear-gradient(90deg,transparent 95%,rgba(255,255,255,.03) 96%);background-size:34px 34px;opacity:.18;pointer-events:none}
+.wrap{position:relative;max-width:1280px;margin:0 auto;padding:22px 16px 60px}
+.hero,.panel{background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:0 16px 42px rgba(0,0,0,.24)}
+.hero{padding:24px;overflow:hidden}
+.hero h1,.panel h2,.paper h3{font-family:'Fraunces',serif}
+.hero h1{font-size:clamp(2.2rem,4vw,3.8rem);margin:10px 0 8px;line-height:1}
+.hero p,.sub,.paper p,.panel p,.school small{color:var(--muted);line-height:1.6}
+.row,.chips,.tabs,.missions,.resources,.schools,.stats,.rates,.actions{display:flex;flex-wrap:wrap;gap:10px}
+.between{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.tag,.pill,.chip,.tab,.rate,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid #ffffff20}
+.tag,.pill{padding:7px 12px;background:#ffffff12;font-size:.84rem}
+.btn,.tab,.chip,.rate{cursor:pointer;font:inherit;font-weight:700;transition:transform .15s ease,background .15s ease,border-color .15s ease}
+.btn:hover,.tab:hover,.chip:hover,.rate:hover{transform:translateY(-1px)}
+.btn{border-radius:14px;padding:11px 15px;border:none}
+.btn.main{background:linear-gradient(135deg,var(--accent),#a5ece1);color:#072739}
+.btn.alt{background:#ffffff10;color:var(--text)}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#ffe2a8);color:#3d2800}
+.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}
+.stack{display:grid;gap:16px}
+.panel{padding:18px}
+.tabs{margin-top:10px}
+.tab{padding:9px 13px;background:#ffffff0d;color:var(--text)}
+.tab.on[data-level="6e"]{background:rgba(255,143,109,.18);border-color:rgba(255,143,109,.5)}
+.tab.on[data-level="5e"]{background:rgba(86,200,187,.18);border-color:rgba(86,200,187,.5)}
+.tab.on[data-level="4e"]{background:rgba(113,167,255,.18);border-color:rgba(113,167,255,.5)}
+.tab.on[data-level="3e"]{background:rgba(240,191,87,.18);border-color:rgba(240,191,87,.5)}
+.banner{margin-top:12px;padding:16px;border-radius:18px;background:linear-gradient(135deg,var(--paper),#fff);color:var(--ink)}
+.banner .tag{background:#16263810;border-color:#1626381f;color:#4b5c6e;margin-bottom:8px}
+.missions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.mission{padding:14px;border-radius:18px;background:#0815218f;border:1px solid #ffffff12}
+.mission .head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.mission h4{margin:0;font-size:1rem}
+.tick{width:34px;height:34px;border-radius:12px;border:1px solid #ffffff20;background:#ffffff10;color:var(--text)}
+.tick.on{background:rgba(138,226,173,.18);border-color:rgba(138,226,173,.45)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;margin-bottom:6px;font-weight:700;font-size:.92rem}
+input[type="text"],textarea{width:100%;padding:12px 13px;border-radius:14px;border:1px solid #ffffff1d;background:#ffffff0c;color:var(--text);font:inherit}
+textarea{min-height:90px;resize:vertical}
+.chip{padding:8px 12px;background:#ffffff0d;color:var(--text)}
+.chip.on{background:rgba(86,200,187,.18);border-color:rgba(86,200,187,.5)}
+.chip.warn.on{background:rgba(240,191,87,.18);border-color:rgba(240,191,87,.5)}
+.sector,.resource,.pole{padding:14px;border-radius:18px;background:#ffffff0a;border:1px solid #ffffff12}
+.sector h4,.resource h4,.pole h4{margin:0 0 6px}
+.resources,.schools,.sector-grid,.pole-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rates{margin-top:10px}
+.rate{min-width:40px;padding:8px 10px;background:#ffffff0e;color:var(--text)}
+.rate.on{background:rgba(113,167,255,.18);border-color:rgba(113,167,255,.5)}
+.school{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #ffffff10}
+.school:first-child{border-top:none;padding-top:0}
+.school input{margin-top:4px;accent-color:var(--accent)}
+.paper{padding:18px;border-radius:20px;background:linear-gradient(180deg,var(--paper),#fffaf1);color:var(--ink);border:1px solid rgba(240,191,87,.35)}
+.paper blockquote{margin:12px 0;padding:12px 14px;border-left:4px solid var(--gold);background:#1626380b;border-radius:0 12px 12px 0;color:#445769}
+.paper section{margin-top:14px;padding-top:14px;border-top:1px solid #16263814}
+.paper h4{margin:0 0 8px}.paper ul{margin:0;padding-left:18px;line-height:1.6}
+.stats{margin-top:16px}.stat{flex:1;min-width:140px;padding:14px;border-radius:18px;background:#ffffff0c;border:1px solid #ffffff12}.stat strong{display:block;font-size:1.7rem;font-family:'Fraunces',serif}
+#status{min-height:22px;font-size:.92rem}
+.ok{color:var(--ok)} .warn{color:var(--gold)} .bad{color:var(--coral)}
+@media (max-width:1020px){.layout{grid-template-columns:1fr}.resources,.schools,.sector-grid,.pole-grid,.missions,.grid2{grid-template-columns:1fr}}
+@media (max-width:720px){.wrap{padding:14px 12px 44px}.hero,.panel{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="between">
+      <div>
+        <div class="tag">🧭 CAP ORIENTATION BFC</div>
+        <h1>Faire mûrir l'orientation, niveau par niveau</h1>
+        <p>Ce hub aide les élèves à se connaître, explorer des secteurs et formations de Bourgogne-Franche-Comté, puis produire une fiche utile pour le PsyEN. Le volet besoins / points d'appui relève d'un repérage pédagogique non diagnostique.</p>
+      </div>
+      <div class="actions">
+        <button class="btn main" onclick="goSuperHub()">Portail Vie Scolaire</button>
+        <button class="btn alt" onclick="scrollToReport()">Fiche PsyEN</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <div class="pill">👤 <span id="playerBadge">Aucun joueur</span></div>
+      <div class="pill">🎯 Niveau : <span id="levelBadge">6e</span></div>
+      <div class="pill">📝 Dossier : <span id="progressBadge">0%</span></div>
+      <div class="pill">🎓 Coeff. orientation : <span id="coeffBadge">×1,00</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="missionCount">0</strong><span>Missions cochées</span></div>
+      <div class="stat"><strong id="sectorCount">0</strong><span>Secteurs repérés</span></div>
+      <div class="stat"><strong id="resourceCount">0</strong><span>Ressources ouvertes</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="panel">
+        <h2>Parcours par niveau</h2>
+        <p class="sub">On ne demande pas la même maturité en 6e qu'en 3e. Le travail se raffine au fil des années.</p>
+        <div id="tabs" class="tabs"></div>
+        <div id="banner" class="banner"></div>
+        <div id="missions" class="missions"></div>
+      </section>
+
+      <section class="panel">
+        <div class="between">
+          <div>
+            <h2>Mon dossier</h2>
+            <p class="sub">Le dossier est enregistré pour le joueur connecté sur ce poste.</p>
+          </div>
+          <button class="btn alt" onclick="resetProfile()">Réinitialiser</button>
+        </div>
+        <div class="grid2">
+          <div><label for="studentName">Prénom / nom (optionnel)</label><input id="studentName" type="text" placeholder="Ex. Lina M."></div>
+          <div><label for="studentClass">Classe / groupe</label><input id="studentClass" type="text" placeholder="Ex. 5e A"></div>
+          <div><label for="projectIdea">Mon idée du moment</label><textarea id="projectIdea" placeholder="Je ne sais pas encore / j'hésite / j'aimerais découvrir..."></textarea></div>
+          <div><label for="familyNote">Ce qui est déjà évoqué à la maison</label><textarea id="familyNote" placeholder="Métiers connus, envies, contraintes, mobilité..."></textarea></div>
+        </div>
+        <div style="margin-top:14px"><label>Matières / activités que j'aime</label><div id="subjectChips" class="chips"></div></div>
+        <div style="margin-top:14px"><label>Contextes de travail que j'aime</label><div id="workChips" class="chips"></div></div>
+        <div class="grid2" style="margin-top:14px">
+          <div><label for="strengths">Mes forces / ce qu'on me reconnaît</label><textarea id="strengths" placeholder="Ex. manuel, patient, créatif, rigoureux, à l'aise à l'oral..."></textarea></div>
+          <div><label for="discoveries">Ce que j'aimerais découvrir</label><textarea id="discoveries" placeholder="Mini-stage, atelier, métier, entreprise, lycée, CFA, internat..."></textarea></div>
+        </div>
+        <div style="margin-top:14px"><label for="questions">Questions à garder pour le PsyEN / l'équipe</label><textarea id="questions" placeholder="Ex. Quels établissements regarder ? Que tester avant de choisir ? Comment parler de mes besoins ?"></textarea></div>
+      </section>
+
+      <section class="panel">
+        <h2>Points d'appui et besoins</h2>
+        <p class="sub">Pour aider à préparer un échange avec le PsyEN ou l'équipe éducative, sans enfermer l'élève dans une étiquette.</p>
+        <div style="margin-top:10px"><label>Ce qui m'aide vraiment</label><div id="supportChips" class="chips"></div></div>
+        <div style="margin-top:14px"><label>Ce qui me demande souvent plus d'effort</label><div id="effortChips" class="chips"></div></div>
+        <div class="grid2" style="margin-top:14px">
+          <div><label for="helpText">Ce que j'aimerais qu'un adulte comprenne mieux</label><textarea id="helpText" placeholder="J'ai besoin de temps, de reformulation, de concret, de calme, d'exemples..."></textarea></div>
+          <div><label for="adultNote">Observation éducative (optionnel)</label><textarea id="adultNote" placeholder="Points d'appui, vigilance pédagogique, autonomie, organisation, mobilité, expression..."></textarea></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Secteurs à explorer</h2>
+        <p class="sub">À partir des ressources locales Franche-Comté / Haute-Saône.</p>
+        <div id="sectorGrid" class="sector-grid"></div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="panel">
+        <h2>Repères locaux</h2>
+        <p class="sub">Lycées, MFR et CFA utiles pour parler concrètement de mobilité, de mini-stages et d'alternance.</p>
+        <div id="poleGrid" class="pole-grid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Ressources du dossier</h2>
+        <p class="sub">Les fichiers que tu as déposés ici servent de base au hub.</p>
+        <div id="resourceGrid" class="resources"></div>
+      </section>
+
+      <section id="reportPanel" class="panel">
+        <div class="between">
+          <div>
+            <h2>Fiche exportable PsyEN</h2>
+            <p class="sub">Téléchargeable, imprimable et formulée en repérage pédagogique non diagnostique.</p>
+          </div>
+          <div class="actions">
+            <button class="btn main" onclick="downloadReport()">Télécharger</button>
+            <button class="btn alt" onclick="printReport()">Imprimer / PDF</button>
+            <button class="btn gold" onclick="downloadJson()">JSON</button>
+          </div>
+        </div>
+        <div id="status"></div>
+        <div id="report" class="paper"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_PLAYER_KEY='pvs_phare_player';
+const STORE_KEY='pvs_orientation_profiles_v1';
+const BRIDGE_KEY='pvs_bridge_events';
+const LEVEL_BONUS_STEP={'6e':0.30,'5e':0.20,'4e':0.10,'3e':0.10};
+const LEVELS={
+  '6e':{badge:"6e · Explorer sans pression",title:"En 6e, on apprend surtout à se connaître.",summary:"On part des goûts, des réussites et des façons d'apprendre. Il ne s'agit pas de choisir un métier, mais d'ouvrir la curiosité.",missions:[
+    {id:'6e_1',title:"Nommer ce que j'aime",text:"Renseigner matières, activités et contextes de travail appréciés."},
+    {id:'6e_2',title:"Repérer des métiers autour de moi",text:"Noter ce que j'observe dans ma famille, mon quartier ou les ressources."},
+    {id:'6e_3',title:"Dire ce qui m'aide",text:"Choisir les aides utiles et les efforts plus coûteux."},
+    {id:'6e_4',title:"Garder des questions ouvertes",text:"Formuler ce qu'on aimerait découvrir plus tard."}
+  ]},
+  '5e':{badge:"5e · Observer le territoire",title:"En 5e, on relie mieux goûts, métiers et lieux.",summary:"On compare des secteurs, on regarde des établissements du territoire et on commence à trouver ses mots pour parler de soi.",missions:[
+    {id:'5e_1',title:"Comparer plusieurs secteurs",text:"Tester des domaines régionaux et repérer ceux qui attirent le plus."},
+    {id:'5e_2',title:"Repérer des établissements",text:"Identifier des lycées, MFR ou CFA à garder en tête."},
+    {id:'5e_3',title:"Mettre des mots sur mon profil",text:"Décrire ce qu'on aime faire, apprendre et découvrir."},
+    {id:'5e_4',title:"Nommer mes besoins",text:"Clarifier ce qui aide, rassure ou facilite les apprentissages."}
+  ]},
+  '4e':{badge:"4e · Préparer l'exploration",title:"En 4e, on prépare une exploration plus concrète.",summary:"On commence à comparer les voies, à parler de mobilité, d'immersion et de mini-stage, sans forcer un choix définitif.",missions:[
+    {id:'4e_1',title:"Comparer les voies",text:"Générale, technologique, professionnelle, apprentissage : qu'est-ce qui me parle ?"},
+    {id:'4e_2',title:"Préparer une immersion",text:"Identifier un secteur ou un établissement à tester."},
+    {id:'4e_3',title:"Penser mobilité",text:"Bus, train, internat, distance, besoin d'accompagnement."},
+    {id:'4e_4',title:"Clarifier mon profil d'élève",text:"Rendre visibles mes points d'appui et mes besoins."}
+  ]},
+  '3e':{badge:"3e · Préparer des choix argumentés",title:"En 3e, on transforme l'exploration en dossier utile.",summary:"On hiérarchise des pistes, on prépare l'entretien d'orientation et on formalise aussi les besoins d'accompagnement à prendre en compte.",missions:[
+    {id:'3e_1',title:"Hiérarchiser mes pistes",text:"Faire émerger quelques secteurs ou établissements qui reviennent souvent."},
+    {id:'3e_2',title:"Préparer l'entretien PsyEN",text:"Garder des questions utiles et concrètes."},
+    {id:'3e_3',title:"Rendre visibles mes besoins",text:"Exporter une fiche claire et non diagnostique."},
+    {id:'3e_4',title:"Nommer les prochaines étapes",text:"Mini-stage, portes ouvertes, échange famille, immersion, internat."}
+  ]}
+};
+const SUBJECTS=['Français','Maths','SVT','Technologie','Histoire-Géo','EPS','Arts','Musique','Langues','Sciences','Ateliers manuels','Numérique'];
+const WORKS=['Travailler avec les mains','Aider / prendre soin','Créer / imaginer','Résoudre des problèmes','Être dehors','Bouger beaucoup','Parler / accueillir','Utiliser des machines','Observer / analyser','Travailler seul au calme','Petit groupe','Apprendre par le concret'];
+const SUPPORTS=['Consignes reformulées','Exemples concrets','Temps supplémentaire','Étapes bien séparées','Plan visuel / agenda','Manipuler / tester','Lecture orale / audio','Petit groupe','Espace calme','Feedback rapide'];
+const EFFORTS=['Lire longtemps','Écrire longtemps','Copier vite','Mémoriser rapidement','Consignes à plusieurs étapes','Rester concentré longtemps','M\'organiser seul','Prendre la parole','Me repérer dans la page','Gérer le bruit / la fatigue'];
+const SECTORS=[
+  {id:'micro',title:'Microtechniques & horlogerie',text:"Besançon, Morteau et Morez portent les métiers de précision, de l'assemblage fin et du luxe technique."},
+  {id:'auto',title:'Automobile & mobilité',text:"Sochaux, Montbéliard, Vesoul et Gray relient industrie, maintenance, logistique et transport."},
+  {id:'agro',title:'Agroalimentaire',text:"Fromageries, métiers de bouche, agriculture et transformation alimentaire."},
+  {id:'bois',title:'Bois & ameublement',text:"Menuiserie, ébénisterie, charpente, panneaux et savoir-faire forestiers."},
+  {id:'sante',title:'Santé & biotechnologies',text:"Du soin au biomédical : aide à la personne, hôpital, labo, medtech."},
+  {id:'num',title:'Numérique & data',text:"Développement, robotique, logiciels, réseaux, maintenance et usages numériques."},
+  {id:'energie',title:'Énergie & ferroviaire',text:"Électrotechnique, maintenance, grands systèmes, mobilité et industrie stratégique."},
+  {id:'nature',title:'Nature, paysage & forêt',text:"Agriculture, milieux naturels, paysage, travaux forestiers et entretien du vivant."}
+];
+const POLES=[
+  {title:'Vesoul',subtitle:"Pôle le plus dense du 70",schools:[
+    {id:'pontarcher',name:'LP Pontarcher',note:'ASSP, commerce, accueil, cuisine, service.'},
+    {id:'luxembourg',name:'LP Luxembourg',note:'Maintenance, électricité, chaudronnerie, finition bâtiment.'},
+    {id:'jules_ferry_v',name:'Lycée Jules Ferry',note:'Transport, logistique, général et technologique.'},
+    {id:'belin',name:'Lycée Édouard Belin',note:'STMG et filières générales.'},
+    {id:'agrocampus',name:'Vesoul Agrocampus',note:'Nature, paysage, agriculture, élevage.'}
+  ]},
+  {title:'Gray',subtitle:"Technique, production et route",schools:[
+    {id:'fertet',name:'LP Henri Fertet',note:'Carrosserie, mécanique, conducteur routier, internat.'},
+    {id:'cournot',name:'Lycée Augustin Cournot',note:'Pilotage de ligne, STI2D, STMG.'},
+    {id:'spf',name:'Lycée Saint-Pierre Fourier',note:'ASSP, AEPE, services.'}
+  ]},
+  {title:'Lure / Luxeuil',subtitle:"Maillage utile vers le Nord-Franche-Comté",schools:[
+    {id:'gcolomb',name:'Lycée Georges Colomb',note:'ASSP, commerce, général et techno.'},
+    {id:'beauregard',name:'LP Beauregard',note:'Bois, menuiserie, services, commerce.'},
+    {id:'lumiere',name:'Lycée Lumière',note:'Général et technologique.'},
+    {id:'sainte_anne',name:'Lycée Sainte-Anne',note:'Service, commerce, tertiaire et social.'}
+  ]},
+  {title:'MFR / CFA',subtitle:"Alternance et terrain",schools:[
+    {id:'combeaufontaine',name:'MFR Combeaufontaine',note:'SAPAT et orientation après 4e / 3e.'},
+    {id:'fougerolles',name:'MFR Fougerolles',note:'Forêt, travaux forestiers, nature.'},
+    {id:'btpcfa',name:'BTP CFA Haute-Saône',note:'Maçonnerie, plomberie, menuiserie, peinture, électricité.'},
+    {id:'ccivesoul',name:'CFA CCI Vesoul',note:'Vente, commerce, management.'}
+  ]},
+  {title:'Voisins proches',subtitle:"Spécialités rares ou proximité géographique",schools:[
+    {id:'delle',name:'LP Jules Ferry Delle',note:'Logistique et transport.'},
+    {id:'viette',name:'Lycée Jules Viette Montbéliard',note:'Microtechniques, design industriel.'},
+    {id:'mandela',name:'Lycée Nelson Mandela Audincourt',note:'Métiers d’art, ébénisterie, bois.'},
+    {id:'pontarlier',name:'Lycée Toussaint Louverture Pontarlier',note:'Horlogerie et métiers de précision.'},
+    {id:'castel',name:'Lycée Le Castel Dijon',note:'Biotechnologies, laboratoire, cosmétique.'}
+  ]}
+];
+const RESOURCES=[
+  {id:'r70',title:'Répertoire Orientation Haute-Saône',file:"🧭 Le Répertoire de l'Orientation en Haute-Saône (70).pdf",tags:['70','lycées','MFR / CFA'],text:"Pôles de Vesoul, Gray, Lure / Luxeuil, MFR et CFA, avec internat, mini-stages et mobilité."},
+  {id:'onisep',title:'Recherche de formation BFC',file:'Bourgogne-Franche-Comté - Recherche de formation - Des ressources pour toute la communauté éducative - Bourgogne-Franche-Comté.pdf',tags:['Onisep','6504 formations','CAP à BTS'],text:"Panorama régional qui fait apparaître classes de 4e/3e, CAP, bacs pro, voies techno, BTS."},
+  {id:'eco',title:'Répertoire économique Franche-Comté',file:'compass_artifact_wf-a1238854-5b43-408a-968a-a07970110287_text_markdown.pdf',tags:['entreprises','stages 3e','secteurs porteurs'],text:"Microtechniques, automobile, agroalimentaire, bois, santé, numérique, énergie."},
+  {id:'atlas',title:'Atlas économique BFC',file:'Deep Research_ Economic Map BFC.pdf',tags:['25-39-70-90','territoire'],text:"Vue stratégique du maillage économique pour relier territoire, mobilité et orientation."}
+];
+
+let playerCode='';
+let state=null;
+
+function defaultState(player){
+  const sectors={}; SECTORS.forEach(s=>sectors[s.id]=0);
+  const missions={}; Object.keys(LEVELS).forEach(level=>{missions[level]={};LEVELS[level].missions.forEach(m=>missions[level][m.id]=false)});
+  return {player,currentLevel:'6e',studentName:'',studentClass:'',projectIdea:'',familyNote:'',strengths:'',discoveries:'',questions:'',helpText:'',adultNote:'',subjects:[],works:[],supports:[],efforts:[],sectors,schools:[],resources:[],missions,bridged:[],updatedAt:new Date().toISOString()};
+}
+function getPlayerCode(){
+  const q=new URLSearchParams(window.location.search).get('player');
+  const qp=String(q||'').trim().toUpperCase();
+  if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_PLAYER_KEY,qp);return qp}
+  return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_PLAYER_KEY)||'').trim().toUpperCase();
+}
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{}}catch(e){return {}}}
+function saveStore(store){localStorage.setItem(STORE_KEY,JSON.stringify(store))}
+function normArray(v){return Array.isArray(v)?v.slice():[]}
+function normalize(src,player){
+  const s=defaultState(player),x=src&&typeof src==='object'?src:{};
+  s.currentLevel=LEVELS[x.currentLevel]?x.currentLevel:'6e';
+  ['studentName','studentClass','projectIdea','familyNote','strengths','discoveries','questions','helpText','adultNote'].forEach(k=>s[k]=String(x[k]||''));
+  s.subjects=normArray(x.subjects); s.works=normArray(x.works); s.supports=normArray(x.supports); s.efforts=normArray(x.efforts); s.schools=normArray(x.schools); s.resources=normArray(x.resources);
+  s.bridged=normArray(x.bridged);
+  if(x.sectors&&typeof x.sectors==='object')SECTORS.forEach(sector=>s.sectors[sector.id]=Math.max(0,Math.min(3,Number(x.sectors[sector.id]||0))));
+  if(x.missions&&typeof x.missions==='object')Object.keys(LEVELS).forEach(level=>LEVELS[level].missions.forEach(m=>s.missions[level][m.id]=Boolean((x.missions[level]||{})[m.id])));
+  s.updatedAt=String(x.updatedAt||new Date().toISOString());
+  return s;
+}
+function loadState(){playerCode=getPlayerCode();const store=getStore();state=normalize(store[playerCode||'VISITEUR'],playerCode||'VISITEUR')}
+function persist(){const store=getStore();state.updatedAt=new Date().toISOString();store[playerCode||'VISITEUR']=state;saveStore(store);refreshHeader();renderReport()}
+function orientationModuleId(level,missionId){return `ORI_${String(level||'').toUpperCase()}_${String(missionId||'').toUpperCase()}`}
+function pushBridgeEvent(payload){
+  try{
+    const raw=localStorage.getItem(BRIDGE_KEY);
+    const arr=raw?JSON.parse(raw):[];
+    const safe=Array.isArray(arr)?arr:[];
+    safe.push(payload);
+    if(safe.length>500)safe.splice(0,safe.length-500);
+    localStorage.setItem(BRIDGE_KEY,JSON.stringify(safe));
+  }catch(e){}
+}
+function pushOrientationMission(level,missionId){
+  if(!playerCode)return;
+  const moduleId=orientationModuleId(level,missionId);
+  pushBridgeEvent({id:`ACAD-${moduleId}-${Date.now()}`,type:'ACAD_COMPLETE',player:playerCode,moduleId,d:new Date().toISOString(),source:'ORIENTATION'});
+}
+function ensureBridgeSync(){
+  if(!playerCode)return;
+  const doneIds=[];
+  Object.keys(state.missions||{}).forEach(level=>{
+    Object.entries(state.missions[level]||{}).forEach(([missionId,done])=>{
+      if(done)doneIds.push(orientationModuleId(level,missionId));
+    });
+  });
+  let changed=false;
+  doneIds.forEach((moduleId)=>{
+    if(!state.bridged.includes(moduleId)){
+      state.bridged.push(moduleId);
+      pushBridgeEvent({id:`ACAD-${moduleId}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,type:'ACAD_COMPLETE',player:playerCode,moduleId,d:new Date().toISOString(),source:'ORIENTATION'});
+      changed=true;
+    }
+  });
+  if(changed){
+    const store=getStore();
+    state.updatedAt=new Date().toISOString();
+    store[playerCode||'VISITEUR']=state;
+    saveStore(store);
+  }
+}
+function orientationCoeffFromState(){
+  let bonus=0;
+  Object.keys(state.missions||{}).forEach(level=>{
+    const step=Number(LEVEL_BONUS_STEP[level]||0);
+    Object.values(state.missions[level]||{}).forEach(done=>{if(done)bonus+=step});
+  });
+  return 1+bonus;
+}
+function toggleArray(list,val){const set=new Set(state[list]);set.has(val)?set.delete(val):set.add(val);state[list]=Array.from(set);persist();renderChoices()}
+function setLevel(level){state.currentLevel=level;persist();renderLevel()}
+function toggleMission(level,id){
+  if(state.missions[level][id])return;
+  state.missions[level][id]=true;
+  const moduleId=orientationModuleId(level,id);
+  if(!state.bridged.includes(moduleId)){
+    state.bridged.push(moduleId);
+    pushOrientationMission(level,id);
+  }
+  persist();
+  renderLevel();
+}
+function setRate(id,val){state.sectors[id]=val;persist();renderSectors()}
+function toggleSchool(id){const set=new Set(state.schools);set.has(id)?set.delete(id):set.add(id);state.schools=Array.from(set);persist();renderPoles()}
+function openResource(file,id){if(!state.resources.includes(id)){state.resources.push(id);persist();renderResources()}window.open(encodeURI(file),'_blank','noopener')}
+function escapeHtml(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function goSuperHub(){const suffix=playerCode?`?player=${encodeURIComponent(playerCode)}`:'';window.location.href=`index.html${suffix}`}
+function scrollToReport(){document.getElementById('reportPanel').scrollIntoView({behavior:'smooth',block:'start'})}
+
+function renderChoices(){
+  const render=(id,items,list,variant='')=>{const root=document.getElementById(id);root.innerHTML='';items.forEach(item=>{const b=document.createElement('button');b.type='button';b.className=`chip ${variant} ${state[list].includes(item)?'on':''}`.trim();b.textContent=item;b.onclick=()=>toggleArray(list,item);root.appendChild(b)})};
+  render('subjectChips',SUBJECTS,'subjects');
+  render('workChips',WORKS,'works');
+  render('supportChips',SUPPORTS,'supports');
+  render('effortChips',EFFORTS,'efforts','warn');
+}
+function renderLevel(){
+  const tabs=document.getElementById('tabs'); tabs.innerHTML='';
+  Object.keys(LEVELS).forEach(level=>{const b=document.createElement('button');b.type='button';b.className=`tab ${state.currentLevel===level?'on':''}`;b.dataset.level=level;b.textContent=level;b.onclick=()=>setLevel(level);tabs.appendChild(b)});
+  const info=LEVELS[state.currentLevel];
+  document.getElementById('banner').innerHTML=`<div class="tag">${info.badge}</div><h3 style="margin:0 0 8px;font-family:'Fraunces',serif">${info.title}</h3><p style="margin:0;color:#415466">${info.summary}</p><p style="margin:10px 0 0;color:#415466;font-weight:700">Bonus coefficient par mission validée : +${Number(LEVEL_BONUS_STEP[state.currentLevel]||0).toFixed(2)}</p>`;
+  const missions=document.getElementById('missions'); missions.innerHTML='';
+  info.missions.forEach(m=>{const on=state.missions[state.currentLevel][m.id];const el=document.createElement('article');el.className='mission';el.innerHTML=`<div class="head"><h4>${m.title}</h4><button type="button" class="tick ${on?'on':''}">${on?'✓':'○'}</button></div><p>${m.text}</p>`;el.querySelector('button').onclick=()=>toggleMission(state.currentLevel,m.id);missions.appendChild(el)});
+}
+function renderSectors(){
+  const root=document.getElementById('sectorGrid'); root.innerHTML='';
+  SECTORS.forEach(s=>{const art=document.createElement('article');art.className='sector';art.innerHTML=`<h4>${s.title}</h4><p>${s.text}</p><div class="rates">${[0,1,2,3].map(v=>`<button type="button" class="rate ${Number(state.sectors[s.id])===v?'on':''}" data-v="${v}">${v===0?'0':v}</button>`).join('')}</div>`;art.querySelectorAll('.rate').forEach(btn=>btn.onclick=()=>setRate(s.id,Number(btn.dataset.v)));root.appendChild(art)});
+}
+function renderPoles(){
+  const root=document.getElementById('poleGrid'); root.innerHTML='';
+  POLES.forEach(p=>{const art=document.createElement('article');art.className='pole';art.innerHTML=`<h4>${p.title}</h4><p>${p.subtitle}</p><div class="schools">${p.schools.map(s=>`<label class="school"><input type="checkbox" data-id="${s.id}" ${state.schools.includes(s.id)?'checked':''}><div><strong>${s.name}</strong><small>${s.note}</small></div></label>`).join('')}</div>`;art.querySelectorAll('input').forEach(i=>i.onchange=()=>toggleSchool(i.dataset.id));root.appendChild(art)});
+}
+function renderResources(){
+  const root=document.getElementById('resourceGrid'); root.innerHTML='';
+  RESOURCES.forEach(r=>{const opened=state.resources.includes(r.id);const art=document.createElement('article');art.className='resource';art.innerHTML=`<h4>${r.title}</h4><div class="row">${r.tags.map(tag=>`<span class="tag">${tag}</span>`).join('')}</div><p>${r.text}</p><p style="font-size:.83rem">${r.file}</p><button type="button" class="btn ${opened?'gold':'alt'}">Ouvrir</button>`;art.querySelector('button').onclick=()=>openResource(r.file,r.id);root.appendChild(art)});
+}
+function selectedSectors(){return SECTORS.filter(s=>Number(state.sectors[s.id])>0).sort((a,b)=>Number(state.sectors[b.id])-Number(state.sectors[a.id])).map(s=>`${s.title} (${state.sectors[s.id]}/3)`)}
+function selectedSchools(){const map={}; POLES.forEach(p=>p.schools.forEach(s=>map[s.id]=s.name)); return state.schools.map(id=>map[id]).filter(Boolean)}
+function completion(){
+  const fields=[state.studentName.trim(),state.studentClass.trim(),state.projectIdea.trim(),state.familyNote.trim(),state.strengths.trim(),state.discoveries.trim(),state.questions.trim(),state.helpText.trim(),state.subjects.length,state.works.length,state.supports.length,state.efforts.length,selectedSectors().length,selectedSchools().length];
+  const missionsTotal=Object.values(LEVELS).reduce((a,l)=>a+l.missions.length,0);
+  const missionsDone=Object.values(state.missions).reduce((a,row)=>a+Object.values(row).filter(Boolean).length,0);
+  return Math.round((fields.filter(Boolean).length/fields.length)*65+(missionsDone/missionsTotal)*35);
+}
+function refreshHeader(){
+  document.getElementById('playerBadge').textContent=playerCode||'Mode local';
+  document.getElementById('levelBadge').textContent=state.currentLevel;
+  document.getElementById('progressBadge').textContent=`${completion()}%`;
+  document.getElementById('coeffBadge').textContent=`×${orientationCoeffFromState().toFixed(2)}`;
+  document.getElementById('missionCount').textContent=String(Object.values(state.missions).reduce((a,row)=>a+Object.values(row).filter(Boolean).length,0));
+  document.getElementById('sectorCount').textContent=String(Object.values(state.sectors).filter(v=>Number(v)>0).length);
+  document.getElementById('resourceCount').textContent=String(state.resources.length);
+}
+function reportHtml(){
+  const level=LEVELS[state.currentLevel], sectors=selectedSectors(), schools=selectedSchools();
+  const recs=[];
+  if(state.currentLevel==='6e'||state.currentLevel==='5e')recs.push("Poursuivre l'exploration sans figer le projet trop tôt.","S'appuyer d'abord sur les goûts, la curiosité et la confiance.");
+  if(state.currentLevel==='4e')recs.push("Prévoir une immersion, une porte ouverte ou un mini-stage.","Commencer à discuter mobilité, internat et autonomie.");
+  if(state.currentLevel==='3e')recs.push("Hiérarchiser quelques pistes réalistes et argumentées.","Préparer l'entretien PsyEN avec questions précises.");
+  if(state.efforts.length)recs.push("Prendre en compte les besoins pédagogiques décrits avant toute projection exigeante.");
+  return `
+    <h3>Fiche de maturation du projet d'orientation</h3>
+    <blockquote>Document de travail pour l'élève, la famille, le PsyEN et l'équipe éducative. Les besoins repérés relèvent d'un appui pédagogique non diagnostique.</blockquote>
+    <section><h4>Identité du dossier</h4><ul>
+      <li>Code joueur : ${escapeHtml(playerCode||'VISITEUR')}</li>
+      <li>Élève : ${escapeHtml(state.studentName||'Non renseigné')}</li>
+      <li>Classe : ${escapeHtml(state.studentClass||'Non renseignée')}</li>
+      <li>Niveau de travail : ${escapeHtml(level.badge)}</li>
+      <li>Coefficient orientation acquis : ${escapeHtml('×'+orientationCoeffFromState().toFixed(2))}</li>
+      <li>Mise à jour : ${escapeHtml(new Date(state.updatedAt).toLocaleString('fr-FR'))}</li>
+    </ul></section>
+    <section><h4>Ce que l'élève exprime</h4><ul>
+      <li>Matières / activités appréciées : ${escapeHtml(state.subjects.join(', ')||'À compléter')}</li>
+      <li>Contextes de travail appréciés : ${escapeHtml(state.works.join(', ')||'À compléter')}</li>
+      <li>Forces / qualités : ${escapeHtml(state.strengths||'À compléter')}</li>
+      <li>Idée du moment : ${escapeHtml(state.projectIdea||'À compléter')}</li>
+      <li>Découvertes souhaitées : ${escapeHtml(state.discoveries||'À compléter')}</li>
+    </ul></section>
+    <section><h4>Pistes métiers / secteurs repérés</h4><ul>
+      <li>Secteurs retenus : ${escapeHtml(sectors.join(', ')||'Aucun secteur encore priorisé')}</li>
+      <li>Établissements cités : ${escapeHtml(schools.join(', ')||'Aucun établissement encore coché')}</li>
+      <li>Repères familiaux : ${escapeHtml(state.familyNote||'Non renseigné')}</li>
+    </ul></section>
+    <section><h4>Repérage pédagogique non diagnostique</h4><ul>
+      <li>Ce qui aide : ${escapeHtml(state.supports.join(', ')||'Non renseigné')}</li>
+      <li>Ce qui demande plus d'effort : ${escapeHtml(state.efforts.join(', ')||'Non renseigné')}</li>
+      <li>Demande exprimée par l'élève : ${escapeHtml(state.helpText||'À compléter')}</li>
+      <li>Observation adulte éventuelle : ${escapeHtml(state.adultNote||'Aucune observation ajoutée')}</li>
+    </ul></section>
+    <section><h4>Questions pour le PsyEN / l'équipe</h4><ul><li>${escapeHtml(state.questions||"À préciser : établissements à explorer, type de parcours, besoin d'accompagnement, mobilité.")}</li></ul></section>
+    <section><h4>Suites conseillées</h4><ul>${recs.map(r=>`<li>${escapeHtml(r)}</li>`).join('')}</ul></section>
+  `;
+}
+function renderReport(){
+  document.getElementById('report').innerHTML=reportHtml();
+  const status=document.getElementById('status'), pct=completion();
+  status.className=pct>=70?'ok':pct>=40?'warn':'bad';
+  status.textContent=pct>=70?"Fiche suffisamment remplie pour un premier échange utile.":pct>=40?"Le dossier avance bien, mais quelques champs clés méritent encore d'être complétés.":"Le dossier est encore très partiel. Mieux vaut compléter goûts, besoins et pistes locales avant export.";
+}
+function bindFields(){
+  [['studentName','studentName'],['studentClass','studentClass'],['projectIdea','projectIdea'],['familyNote','familyNote'],['strengths','strengths'],['discoveries','discoveries'],['questions','questions'],['helpText','helpText'],['adultNote','adultNote']].forEach(([id,key])=>{
+    const el=document.getElementById(id); el.value=state[key]; el.oninput=()=>{state[key]=el.value; persist()}
+  });
+}
+function renderAll(){bindFields();renderChoices();renderLevel();renderSectors();renderPoles();renderResources();refreshHeader();renderReport()}
+function resetProfile(){if(!confirm("Réinitialiser le dossier orientation local sur ce poste ? Cela n'annule pas les exercices déjà remontés dans le super-hub."))return;state=defaultState(playerCode||'VISITEUR');persist();renderAll()}
+function docHtml(){
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Fiche orientation</title><style>body{font-family:Arial,sans-serif;margin:32px;color:#162638;line-height:1.55;max-width:920px}h1,h2,h3,h4{font-family:Georgia,serif}blockquote{margin:12px 0;padding:12px 14px;border-left:4px solid #d1a54b;background:#f7f1e6;border-radius:0 12px 12px 0}section{margin-top:18px;padding-top:14px;border-top:1px solid #d8dee6}ul{padding-left:18px}</style></head><body><h1>Cap Orientation BFC</h1>${reportHtml()}</body></html>`;
+}
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
+function downloadReport(){const d=new Date().toISOString().slice(0,10);download(`fiche_orientation_${playerCode||'VISITEUR'}_${d}.html`,docHtml(),'text/html;charset=utf-8')}
+function printReport(){const w=window.open('','_blank','noopener,noreferrer,width=960,height=800');if(!w)return;w.document.open();w.document.write(docHtml());w.document.close();w.focus();setTimeout(()=>w.print(),250)}
+function downloadJson(){const d=new Date().toISOString().slice(0,10);download(`orientation_dossier_${playerCode||'VISITEUR'}_${d}.json`,JSON.stringify(state,null,2),'application/json;charset=utf-8')}
+document.addEventListener('DOMContentLoaded',()=>{loadState();ensureBridgeSync();renderAll()});
+</script>
+</body>
+</html>
