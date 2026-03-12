@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velo : equipement, controle et signalement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#160c08;--panel:#241410;--line:#ffffff1f;--text:#fff6f0;--muted:#e6c8b4;--accent:#fb923c;--accent2:#fbbf24;--ok:#8ae2ad;--danger:#ff9a76}
+*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(180deg,#1a0d09,#2a120a 45%,#3b1709);color:var(--text);min-height:100vh}.wrap{max-width:980px;margin:0 auto;padding:24px 16px 56px}.hero,.panel{background:rgba(36,20,16,.94);border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 42px rgba(0,0,0,.24)}.hero{padding:24px}.panel{padding:18px;margin-top:16px}.hero h1,.panel h2{font-family:'Fraunces',serif}.hero p,.panel p,.panel li,label{color:var(--muted);line-height:1.6}.row,.actions{display:flex;flex-wrap:wrap;gap:10px}.tag,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px}.tag{padding:8px 12px;border:1px solid #ffffff24;background:#ffffff10;font-size:.84rem}.btn{border:none;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer}.btn.main{background:linear-gradient(135deg,var(--accent),#ffc07e);color:#38180b}.btn.alt{background:#ffffff10;color:var(--text)}.btn.gold{background:linear-gradient(135deg,var(--accent2),#ffe7ac);color:#3a2900}.facts{padding:16px;border-radius:18px;background:rgba(255,255,255,.05)}.facts ul{margin:0;padding-left:18px}.q{padding:14px;border-radius:18px;background:#1a0f0c;border:1px solid #ffffff14;margin-top:12px}.q h3{margin:0 0 10px;font-size:1rem}.choices{display:grid;gap:8px}.choice{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:12px;background:#ffffff08}.choice input{margin-top:4px;accent-color:var(--accent)}.result{margin-top:14px;padding:14px;border-radius:18px;background:#ffffff08;border:1px solid #ffffff14}.ok{color:var(--ok)}.bad{color:var(--danger)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="row">
+      <div class="tag">HUB SECURITE ROUTIERE</div>
+      <div class="tag">Velo / SRAV</div>
+      <div class="tag">Quiz autonome</div>
+    </div>
+    <h1>Velo : equipement, controle et signalement</h1>
+    <p>Ce module prolonge le SRAV en travaillant la verification du velo, l'equipement utile et la lisibilite des intentions avant une sortie.</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn main" onclick="goHub()">Retour au hub</button>
+      <button class="btn alt" onclick="goSuperHub()">Portail Vie Scolaire</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Reperes utiles</h2>
+    <div class="facts"><ul><li>Avant de rouler, on verifie freins, pneus, selle, lumiere et elements retro-reflechissants.</li><li>Un cycliste lisible informe les autres de sa direction et evite les changements brusques.</li><li>Un bon equipement ne remplace pas la vigilance, mais il augmente la securite et le confort de conduite.</li></ul></div>
+  </section>
+
+  <section class="panel">
+    <h2>Quiz de validation</h2>
+    <div id="quizRoot"></div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn gold" onclick="gradeQuiz()">Valider mes reponses</button>
+    </div>
+    <div id="result" class="result"></div>
+  </section>
+</div>
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_PLAYER_KEY='pvs_phare_player';
+const STORE_KEY='pvs_sroute_progress_v1';
+const BRIDGE_KEY='pvs_bridge_events';
+const MODULE_ID='SR_VELO_02';
+const PASS_RATE=0.60;
+const QUESTIONS=[
+  {q:"Avant de partir a velo, quel controle est prioritaire ?",options:["Verifier freins et etat general du velo","Nettoyer le guidon uniquement","Gonfler au maximum sans regarder les pneus"],answer:0,why:"Le controle du materiel commence par les freins et l'etat d'ensemble du velo."},
+  {q:"Signaler un changement de direction sert surtout a...",options:["Faire joli pour les autres","Etre lisible et previsible","Rouler plus vite"],answer:1,why:"Un cycliste lisible laisse aux autres le temps d'anticiper."},
+  {q:"Si un equipement du velo semble defectueux, il vaut mieux...",options:["Partir quand meme pour ne pas etre en retard","Faire verifier ou reparer avant la sortie","Le cacher avec un sac"],answer:1,why:"Un materiel incertain peut faire basculer une situation banale en accident."},
+  {q:"Sur une sortie de groupe, la bonne attitude est de...",options:["Changer de place brutalement","Rester attentif et communiquer clairement","Doubler des camarades sans prevenir"],answer:1,why:"Le groupe reste plus sur quand chacun garde une trajectoire lisible."},
+  {q:"Le casque et les elements visibles ont pour interet principal de...",options:["Remplacer les regles de circulation","Aider a mieux voir et a mieux etre vu","Permettre de rouler sans freins"],answer:1,why:"L'equipement aide a la visibilite et a la protection, sans dispenser de prudence."}
+];
+function getPlayer(){const q=new URLSearchParams(window.location.search).get('player');const qp=String(q||'').trim().toUpperCase();if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_PLAYER_KEY,qp);return qp;}return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_PLAYER_KEY)||'VISITEUR').trim().toUpperCase()||'VISITEUR';}
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{};}catch(e){return {};}}
+function saveStore(store){localStorage.setItem(STORE_KEY,JSON.stringify(store));}
+function markDone(){const player=getPlayer();const store=getStore();const entry=store[player]&&typeof store[player]==='object'?store[player]:{done:[],bridged:[],updatedAt:''};if(!Array.isArray(entry.done))entry.done=[];if(!Array.isArray(entry.bridged))entry.bridged=[];if(!entry.done.includes(MODULE_ID))entry.done.push(MODULE_ID);if(!entry.bridged.includes(MODULE_ID)){entry.bridged.push(MODULE_ID);try{const arr=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]');const safe=Array.isArray(arr)?arr:[];safe.push({id:`ACAD-${MODULE_ID}-${Date.now()}`,type:'ACAD_COMPLETE',player,moduleId:MODULE_ID,d:new Date().toISOString(),source:'SECURITE_ROUTIERE'});if(safe.length>500)safe.splice(0,safe.length-500);localStorage.setItem(BRIDGE_KEY,JSON.stringify(safe));try{window.dispatchEvent(new StorageEvent('storage',{key:BRIDGE_KEY}));}catch(e){}}catch(e){}}entry.updatedAt=new Date().toISOString();store[player]=entry;saveStore(store);try{window.dispatchEvent(new StorageEvent('storage',{key:STORE_KEY}));}catch(e){}}
+function renderQuiz(){const root=document.getElementById('quizRoot');root.innerHTML='';QUESTIONS.forEach((item,index)=>{const block=document.createElement('div');block.className='q';block.innerHTML=`<h3>${index+1}. ${item.q}</h3><div class="choices">${item.options.map((opt,optIndex)=>`<label class="choice"><input type="radio" name="q_${index}" value="${optIndex}"><span>${opt}</span></label>`).join('')}</div>`;root.appendChild(block);});const player=getPlayer();const entry=(getStore()[player]||{});if(Array.isArray(entry.done)&&entry.done.includes(MODULE_ID)){document.getElementById('result').innerHTML='<div class="ok"><strong>Module deja valide.</strong> Tu peux le reprendre pour t entrainer.</div>';}}
+function gradeQuiz(){let score=0;const feedback=[];QUESTIONS.forEach((item,index)=>{const checked=document.querySelector(`input[name="q_${index}"]:checked`);const chosen=checked?Number(checked.value):-1;if(chosen===item.answer)score+=1;feedback.push(`<li><strong>${index+1}.</strong> ${item.why}</li>`);});const pct=QUESTIONS.length?score/QUESTIONS.length:0;const passed=pct>=PASS_RATE;if(passed)markDone();document.getElementById('result').innerHTML=`<div class="${passed?'ok':'bad'}"><strong>${passed?'Module valide':'Module a reprendre'}</strong> - score : ${score}/${QUESTIONS.length} (${Math.round(pct*100)}%).</div><ul>${feedback.join('')}</ul><p>${passed?'Le module est remonte vers le hub securite routiere et le super-hub.':'Il faut atteindre au moins 60 % pour valider.'}</p>`;}
+function goHub(){window.location.href='hub_securite_routiere.html?player='+encodeURIComponent(getPlayer());}
+function goSuperHub(){window.location.href='index.html?player='+encodeURIComponent(getPlayer());}
+document.addEventListener('DOMContentLoaded',renderQuiz);
+</script>
+</body>
+</html>

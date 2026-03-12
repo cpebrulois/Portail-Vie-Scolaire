@@ -1,10 +1,9 @@
-﻿
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hub Sécurité Routière</title>
+<title>Hub Securite Routiere</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,20 +17,20 @@
 <div class="wrap">
   <section class="hero">
     <div class="row">
-      <div class="tag">HUB SÉCURITÉ ROUTIÈRE</div>
-      <div class="tag">Piéton • Vélo • Trottinette • Passager • ASSR</div>
+      <div class="tag">HUB SECURITE ROUTIERE</div>
+      <div class="tag">Pieton • Velo • Trottinette • Passager • ASSR • Risques</div>
       <div class="tag">Bonus +0,10 / module</div>
     </div>
-    <h1>Prévenir, comprendre, circuler avec plus de justesse</h1>
-    <p>Ce hub reprend une logique proche de PIXHARe : un portail à piliers, des modules indépendants, et un panneau Admin pour revalider si besoin. Chaque module validé remonte vers le super-hub avec un bonus de coefficient de +0,10.</p>
+    <h1>Prevenir, comprendre, circuler avec plus de justesse</h1>
+    <p>Ce hub reprend la logique de PIXHARe avec des piliers, des modules independants et un panneau Admin. La deuxieme vague de contenu ouvre maintenant un vrai parcours progressif, de la circulation pietonne aux risques routiers des plus grands.</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn main" onclick="goSuperHub()">Portail Vie Scolaire</button>
       <button class="btn alt" onclick="copyHubLink(this)">Copier le lien</button>
     </div>
     <div class="stats">
       <div class="stat"><strong id="playerBadge">Aucun joueur</strong><span>Joueur actif</span></div>
-      <div class="stat"><strong id="doneBadge">0/5</strong><span>Modules validés</span></div>
-      <div class="stat"><strong id="coefBadge">x1,00</strong><span>Bonus sécurité routière</span></div>
+      <div class="stat"><strong id="doneBadge">0/11</strong><span>Modules valides</span></div>
+      <div class="stat"><strong id="coefBadge">x1,00</strong><span>Bonus securite routiere</span></div>
     </div>
   </section>
 
@@ -39,24 +38,26 @@
     <div class="stack">
       <section class="panel">
         <h2>Piliers et modules</h2>
-        <p class="sub">Premier lot de modules fondé sur le continuum éducatif, l'APER/SRAV, les ASSR et les grands réflexes de sécurité du quotidien.</p>
+        <p class="sub">Le hub couvre maintenant plusieurs vagues de modules autour du continuum educatif, du SRAV, des ASSR, de la mobilite du quotidien et des comportements a risque.</p>
         <div id="pillarGrid" class="pillars"></div>
       </section>
     </div>
     <div class="stack">
       <section class="panel">
-        <h2>Repères de contenu</h2>
-        <p>Les premiers modules s'appuient sur les objectifs officiels d'éducation à la route : élève piéton, passager, rouleur à vélo, préparation ASSR et accès progressif à la mobilité.</p>
+        <h2>Reperes de contenu</h2>
+        <p>Les modules s'appuient sur les competences de l'eleve pieton, passager ou rouleur, puis ouvrent vers la preparation ASSR, le permis AM, la vigilance face aux distracteurs et la comprehension du risque routier.</p>
         <div class="row" style="margin-top:10px">
-          <div class="pill">Continuum éducatif</div>
+          <div class="pill">Continuum educatif</div>
           <div class="pill">APER / SRAV</div>
           <div class="pill">ASSR 1 / ASSR 2</div>
           <div class="pill">Permis AM / BSR</div>
+          <div class="pill">Transport scolaire</div>
+          <div class="pill">Risque et vigilance</div>
         </div>
       </section>
       <section class="panel">
         <h2>Validation</h2>
-        <p>Un module peut être validé automatiquement après réussite du quiz, puis repris ou forcé depuis le panneau Admin. Le hub relit aussi les validations déjà connues du super-hub pour éviter les incohérences.</p>
+        <p>Un module peut etre valide automatiquement apres reussite du quiz, puis repris ou force depuis le panneau Admin. Le hub relit aussi les validations deja connues du super-hub pour eviter les incoherences de poste.</p>
       </section>
     </div>
   </div>
@@ -67,7 +68,7 @@
   <div class="modal">
     <div id="admin-login">
       <h3>Connexion Admin</h3>
-      <p>Entrez votre code secret pour valider ou réinitialiser les modules du joueur actif.</p>
+      <p>Entrez votre code secret pour valider ou reinitialiser les modules du joueur actif.</p>
       <input id="admin-pwd" class="ai" type="password" placeholder="Code administrateur..." onkeydown="if(event.key==='Enter')adminLogin()">
       <div class="actions" style="margin-top:12px">
         <button class="btn main" onclick="adminLogin()">Connexion</button>
@@ -80,8 +81,8 @@
       <p id="admin-player-info" class="sub"></p>
       <div id="admin-list" class="alist"></div>
       <div class="actions" style="margin-top:12px">
-        <button class="btn main" onclick="adminValidateSelected()">Valider la sélection</button>
-        <button class="btn gold" onclick="adminResetAll()">Réinitialiser ce hub</button>
+        <button class="btn main" onclick="adminValidateSelected()">Valider la selection</button>
+        <button class="btn gold" onclick="adminResetAll()">Reinitialiser ce hub</button>
         <button class="btn alt" onclick="closeAdmin()">Fermer</button>
       </div>
       <div id="admin-fb" class="ok"></div>
@@ -97,12 +98,31 @@ const BRIDGE_KEY='pvs_bridge_events';
 const ADMIN_PASS='CPE59!-Chateau-70+';
 const STEP_BONUS=0.10;
 const PILLARS=[
-  {id:'pieton',icon:'🚶',title:'Piéton',summary:"Voir, anticiper, traverser et partager l'espace public sans se mettre en danger.",modules:[{id:'SR_PIETON_01',name:'Piéton : voir, anticiper, traverser',file:'SR_Module_PIETON_01.html',blurb:"Trottoir, traversée, anticipation et analyse de l'environnement."}]},
-  {id:'velo',icon:'🚲',title:'Vélo / SRAV',summary:"Du savoir pédaler au savoir rouler en autonomie.",modules:[{id:'SR_VELO_01',name:'Vélo : savoir rouler en sécurité',file:'SR_Module_VELO_01.html',blurb:"Blocs SRAV, signalisation, intentions et équipement."}]},
-  {id:'edpm',icon:'🛴',title:'Trottinette / EDPM',summary:"Comprendre les grands repères de circulation et les bons réflexes avec une trottinette électrique.",modules:[{id:'SR_EDPM_01',name:'Trottinette : bons réflexes EDPM',file:'SR_Module_EDPM_01.html',blurb:"Âge minimal, zones de circulation, équipement et comportement responsable."}]},
-  {id:'passager',icon:'🚌',title:'Passager',summary:"Adopter un comportement sûr et citoyen dans la voiture ou les transports collectifs.",modules:[{id:'SR_PASSAGER_01',name:'Passager responsable',file:'SR_Module_PASSAGER_01.html',blurb:"Ceinture, comportement en bus, calme et vigilance collective."}]},
-  {id:'assr',icon:'📋',title:'ASSR / BSR',summary:"Comprendre les étapes officielles du parcours de mobilité au collège et après.",modules:[{id:'SR_ASSR_01',name:'ASSR, ASR et BSR',file:'SR_Module_ASSR_01.html',blurb:"ASSR 1, ASSR 2, ASR, AER et accès au permis AM."}]}
+  {id:'pieton',icon:'🚶',title:'Pieton',summary:"Voir, anticiper, traverser et rester visible dans l'espace public.",modules:[
+    {id:'SR_PIETON_01',name:'Pieton : voir, anticiper, traverser',file:'SR_Module_PIETON_01.html',blurb:"Trottoir, traversee, anticipation et analyse de l'environnement."},
+    {id:'SR_PIETON_02',name:'Pieton : visibilite et angles masques',file:'SR_Module_PIETON_02.html',blurb:"Bus, stationnement, ecran, visibilite reduite et choix du bon passage."}
+  ]},
+  {id:'velo',icon:'🚲',title:'Velo / SRAV',summary:"Du savoir pedaler au savoir rouler avec un materiel verifie et des intentions lisibles.",modules:[
+    {id:'SR_VELO_01',name:'Velo : savoir rouler en securite',file:'SR_Module_VELO_01.html',blurb:"Blocs SRAV, signalisation, intentions et equipement."},
+    {id:'SR_VELO_02',name:'Velo : equipement, controle et signalement',file:'SR_Module_VELO_02.html',blurb:"Freins, lumiere, verifications avant sortie et lisibilite pour les autres."}
+  ]},
+  {id:'edpm',icon:'🛴',title:'Trottinette / EDPM',summary:"Comprendre les reperes de circulation et le partage de l'espace public avec un EDPM.",modules:[
+    {id:'SR_EDPM_01',name:'Trottinette : bons reflexes EDPM',file:'SR_Module_EDPM_01.html',blurb:"Age minimal, zones de circulation, equipement et comportement responsable."},
+    {id:'SR_EDPM_02',name:'Trottinette : cohabiter sans surprendre',file:'SR_Module_EDPM_02.html',blurb:"Vitesse adaptee, espace partage, pluie, attention et respect des pietons."}
+  ]},
+  {id:'passager',icon:'🚌',title:'Passager',summary:"Adopter un comportement sur, calme et citoyen en voiture ou dans les transports collectifs.",modules:[
+    {id:'SR_PASSAGER_01',name:'Passager responsable',file:'SR_Module_PASSAGER_01.html',blurb:"Ceinture, comportement en bus, calme et vigilance collective."},
+    {id:'SR_PASSAGER_02',name:'Passager : arrets, montee et descente',file:'SR_Module_PASSAGER_02.html',blurb:"Zone d'arret, allees libres, montee sans poussee et sortie prudente."}
+  ]},
+  {id:'assr',icon:'📋',title:'ASSR / BSR',summary:"Comprendre les etapes officielles du parcours de mobilite au college et apres.",modules:[
+    {id:'SR_ASSR_01',name:'ASSR, ASR et BSR',file:'SR_Module_ASSR_01.html',blurb:"ASSR 1, ASSR 2, ASR, AER et acces au permis AM."},
+    {id:'SR_ASSR_02',name:'ASSR : epreuve, reussite et rattrapage',file:'SR_Module_ASSR_02.html',blurb:"20 questions, seuil de reussite, videos, calendrier et organisation."}
+  ]},
+  {id:'risques',icon:'⚠️',title:'Risques',summary:"Comprendre pourquoi vitesse, fatigue, alcool et distracteurs font basculer une situation.",modules:[
+    {id:'SR_RISQUES_01',name:'Risques routiers : vitesse, fatigue et distracteurs',file:'SR_Module_RISQUES_01.html',blurb:"Energie cinetique, telephone, fatigue, pression du groupe et prevention."}
+  ]}
 ];
+const KNOWN_MODULE_IDS=PILLARS.reduce((acc,pillar)=>acc.concat(pillar.modules.map(mod=>mod.id)),[]);
 let player='';
 let progress={done:[],bridged:[],updatedAt:''};
 let adminUnlocked=false;
@@ -115,6 +135,7 @@ function superHubRoadDone(){try{const raw=JSON.parse(localStorage.getItem(SUPER_
 function loadProgress(){player=getPlayer();const store=getStore();const key=player||'VISITEUR';const entry=store[key]||defaultProgress();progress={done:Array.isArray(entry.done)?entry.done.slice():[],bridged:Array.isArray(entry.bridged)?entry.bridged.slice():[],updatedAt:String(entry.updatedAt||'')};let changed=false;superHubRoadDone().forEach(id=>{if(!progress.done.includes(id)){progress.done.push(id);changed=true;}if(!progress.bridged.includes(id)){progress.bridged.push(id);changed=true;}});if(changed)persistProgress(false);}
 function persistProgress(dispatch=true){const store=getStore();progress.updatedAt=new Date().toISOString();store[player||'VISITEUR']=progress;saveStore(store);if(dispatch){try{window.dispatchEvent(new StorageEvent('storage',{key:STORE_KEY}));}catch(e){}}refreshStats();}
 function isDone(moduleId){return progress.done.includes(moduleId);}
+function validatedCount(){return KNOWN_MODULE_IDS.filter(id=>progress.done.includes(id)).length;}
 function pushBridge(moduleId){
   if(progress.bridged.includes(moduleId))return;
   progress.bridged.push(moduleId);
@@ -135,12 +156,12 @@ function validateModule(moduleId,silent){
   pushBridge(moduleId);
   refreshStats();
   render();
-  if(!silent)toast(`✅ ${moduleId} validé`);
+  if(!silent)toast(`✅ ${moduleId} valide`);
 }
 function openModule(file){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`${file}${suffix}`;}
 function goSuperHub(){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`index.html${suffix}`;}
-function copyHubLink(btn){navigator.clipboard.writeText(location.origin+'/hub_securite_routiere.html').then(()=>{const old=btn.textContent;btn.textContent='Copié';setTimeout(()=>btn.textContent=old,1400);});}
-function refreshStats(){document.getElementById('playerBadge').textContent=player||'Mode local';document.getElementById('doneBadge').textContent=`${progress.done.length}/${PILLARS.length}`;document.getElementById('coefBadge').textContent=`x${(1+progress.done.length*STEP_BONUS).toFixed(2)}`;}
+function copyHubLink(btn){navigator.clipboard.writeText(location.origin+'/hub_securite_routiere.html').then(()=>{const old=btn.textContent;btn.textContent='Copie';setTimeout(()=>btn.textContent=old,1400);});}
+function refreshStats(){document.getElementById('playerBadge').textContent=player||'Mode local';document.getElementById('doneBadge').textContent=`${validatedCount()}/${KNOWN_MODULE_IDS.length}`;document.getElementById('coefBadge').textContent=`x${(1+validatedCount()*STEP_BONUS).toFixed(2)}`;}
 function render(){
   const root=document.getElementById('pillarGrid');
   root.innerHTML='';
@@ -152,7 +173,7 @@ function render(){
       const done=isDone(mod.id);
       const modCard=document.createElement('div');
       modCard.className=`module-card ${done?'done':'open'}`;
-      modCard.innerHTML=`<h4>${mod.name}</h4><p>${mod.blurb}</p><div class="module-meta">${done?'Module déjà validé.':'Quiz autonome + validation admin disponible.'}</div>`;
+      modCard.innerHTML=`<h4>${mod.name}</h4><p>${mod.blurb}</p><div class="module-meta">${done?'Module deja valide.':'Quiz autonome + validation admin disponible.'}</div>`;
       const btn=document.createElement('button');
       btn.type='button';
       btn.className=`btn ${done?'gold':'main'}`;
@@ -200,17 +221,17 @@ function adminValidateSelected(){
   });
   buildAdminList();
   document.getElementById('admin-fb').className=count?'ok':'err';
-  document.getElementById('admin-fb').textContent=count?`✅ ${count} module(s) validé(s)`:'Aucun nouveau module à valider';
+  document.getElementById('admin-fb').textContent=count?`✅ ${count} module(s) valide(s)`:'Aucun nouveau module a valider';
 }
 function adminResetAll(){
   if(!adminUnlocked)return;
-  if(!confirm('Réinitialiser toutes les validations sécurité routière pour le joueur actif ?'))return;
+  if(!confirm('Reinitialiser toutes les validations securite routiere pour le joueur actif ?'))return;
   progress=defaultProgress();
   persistProgress(false);
   render();
   buildAdminList();
   document.getElementById('admin-fb').className='ok';
-  document.getElementById('admin-fb').textContent='🗑️ Hub sécurité routière réinitialisé';
+  document.getElementById('admin-fb').textContent='🗑️ Hub securite routiere reinitialise';
 }
 window.addEventListener('storage',event=>{if(!event.key||event.key===STORE_KEY||event.key===SUPER_KEY){loadProgress();render();}});
 document.addEventListener('DOMContentLoaded',()=>{loadProgress();render();});
