@@ -257,174 +257,226 @@
 
         /* Section validation */
         .validation-section {
-            max-width: 800px;
+            max-width: 820px;
             margin: 40px auto;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 15px;
-            padding: 30px;
+            padding: 28px 30px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(0, 212, 255, 0.2);
+            text-align: center;
         }
 
         .validation-section h2 {
             font-family: 'Orbitron', monospace;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             color: var(--hub-neon);
         }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .validation-section p {
             color: #aabbcc;
+            line-height: 1.6;
+            margin: 0 auto 10px;
+            max-width: 680px;
         }
 
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-        }
-
-        .btn-validate {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--hub-neon), var(--hub-gold));
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', monospace;
-        }
-
-        .btn-validate:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
-        }
-
-        .result-message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-            display: none;
-        }
-
-        .result-message.success {
-            background: rgba(50, 205, 50, 0.2);
-            border: 1px solid var(--p5-primary);
-            color: var(--p5-accent);
-        }
-
-        .result-message.error {
-            background: rgba(220, 20, 60, 0.2);
-            border: 1px solid var(--p2-primary);
-            color: var(--p2-accent);
-        }
-
-        /* Forge admin */
-        .admin-toggle {
+        /* Admin sécurisé */
+        #admin-fab {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 15px;
-            border-radius: 50px;
+            bottom: 18px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #aabbcc;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             cursor: pointer;
+            z-index: 1100;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
         }
 
-        .admin-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+        #admin-fab:hover {
+            background: rgba(255, 255, 255, 0.14);
         }
 
-        .admin-panel {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 400px;
-            max-height: 600px;
-            background: rgba(10, 10, 18, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            border: 2px solid var(--hub-gold);
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+        #admin-overlay {
             display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #admin-overlay.open {
+            display: flex;
+        }
+
+        #admin-box {
+            background: rgba(10, 10, 18, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 24px;
+            width: min(440px, 93vw);
+            max-height: 88vh;
             overflow-y: auto;
-            z-index: 999;
+            box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7);
         }
 
-        .admin-panel.active {
-            display: block;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .admin-panel h3 {
-            color: var(--hub-gold);
-            margin-bottom: 20px;
+        #admin-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            color: var(--hub-neon);
             font-family: 'Orbitron', monospace;
         }
 
-        .forge-group {
-            margin-bottom: 15px;
-        }
-
-        .forge-group select,
-        .forge-group input[type="number"],
-        .forge-group input[type="text"] {
+        .ai {
             width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: #fff;
-            margin-top: 5px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            margin-bottom: 10px;
         }
 
-        .btn-forge {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--hub-gold), #ff8c00);
-            color: #000;
+        .ai:focus {
+            outline: none;
+            border-color: var(--hub-neon);
+        }
+
+        .arow {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .ab {
+            padding: 8px 15px;
+            border-radius: 8px;
             border: none;
-            border-radius: 8px;
-            font-weight: 700;
             cursor: pointer;
-            margin-top: 15px;
+            font-weight: 700;
+            font-size: 0.84rem;
         }
 
-        .generated-code {
-            background: rgba(0, 212, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid var(--hub-neon);
-            word-break: break-all;
-            font-family: 'Courier New', monospace;
-            display: none;
+        .ab-p {
+            background: var(--hub-neon);
+            color: #000;
+        }
+
+        .ab-g {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .ab-r {
+            background: #ff4d6d;
+            color: #fff;
+        }
+
+        .ab-n {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .asec {
+            margin-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding-top: 12px;
+        }
+
+        .asec h4 {
+            font-size: 0.78rem;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .mcl {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .mc {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 10px;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .mc:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .mc input {
+            accent-color: var(--hub-neon);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .mc-lbl {
+            font-size: 0.84rem;
+            flex: 1;
+        }
+
+        .mc-done {
+            color: #00ff88;
+            font-size: 0.72rem;
+            margin-left: 6px;
+        }
+
+        .psep {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 4px 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            margin-top: 4px;
+        }
+
+        .psep:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        .aerr {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        .aok {
+            color: #00ff88;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        .aplayer {
+            font-size: 0.82rem;
+            padding: 8px 10px;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: 7px;
+            color: var(--hub-neon);
+            margin-bottom: 10px;
         }
 
         /* Stats progression */
@@ -474,7 +526,7 @@
             h1 { font-size: 2em; }
             .subtitle { font-size: 1em; }
             .matrix-container { grid-template-columns: 1fr; }
-            .admin-panel { width: 90%; right: 5%; }
+            #admin-box { width: 93vw; padding: 20px; }
         }
     </style>
 </head>
@@ -528,8 +580,6 @@
         });
     </script>
 
-</body>
-</html>
     <!-- Stats progression -->
     <div class="stats-panel">
         <h2 style="text-align: center; font-family: 'Orbitron', monospace; color: var(--hub-neon);">📊 VOTRE PROGRESSION</h2>
@@ -718,87 +768,79 @@
 
     </div>
 
-    <!-- Section validation codes -->
+    <!-- Section validation -->
     <div class="validation-section">
-        <h2>🔑 VALIDER UN MODULE</h2>
-        <div class="input-group">
-            <label for="codeInput">Entrez votre code de certification :</label>
-            <input type="text" id="codeInput" placeholder="Collez le code ici...">
-        </div>
-        <button class="btn-validate" onclick="validateCode()">VALIDER LA CERTIFICATION</button>
-        <div class="result-message" id="resultMessage"></div>
+        <h2>&#x1F512; VALIDATION SECURISEE</h2>
+        <p>La validation des modules PSC1 se fait désormais uniquement depuis le panneau Admin sécurisé, sur le même principe que le hub PIXHARe.</p>
+        <p>Connectez l'apprenant via le Portail Vie Scolaire, puis utilisez le bouton Admin avec votre code secret pour valider les modules concernés.</p>
     </div>
 
-    <!-- Toggle admin -->
-    <div class="admin-toggle" onclick="toggleAdmin()">
-        🔧 FORGE ADMIN
-    </div>
-
-    <!-- Panel admin -->
-    <div class="admin-panel" id="adminPanel">
-        <h3>⚙️ GÉNÉRATEUR DE CODES</h3>
-        
-        <div class="forge-group">
-            <label>Module :</label>
-            <select id="forgeModule">
-                <option value="PROTECT_01">P1.01 - Citoyen Sauveteur</option>
-                <option value="PROTECT_02">P1.02 - Protection + Dégagement</option>
-                <option value="PROTECT_03">P1.03 - Alerter [CERTIF]</option>
-                <option value="OVA_01">P2.01 - OVA Adulte</option>
-                <option value="OVA_02">P2.02 - OVA Nourrisson</option>
-                <option value="OVA_03">P2.03 - Synthèse OVA [CERTIF]</option>
-                <option value="HEMORRHAGE_01">P3.01 - Hémorragie Externe</option>
-                <option value="HEMORRHAGE_02">P3.02 - Garrot</option>
-                <option value="UNCONSCIOUS_01">P3.03 - Perte Connaissance</option>
-                <option value="HEMORRHAGE_UNCONS_SYNTH">P3.04 - Synthèse [CERTIF]</option>
-                <option value="CARDIAC_01">P4.01 - Reconnaître Arrêt</option>
-                <option value="CARDIAC_02">P4.02 - Compressions Thoraciques</option>
-                <option value="CARDIAC_03">P4.03 - RCP Complète</option>
-                <option value="CARDIAC_04">P4.04 - DAE [CERTIF]</option>
-                <option value="OTHER_01">P5.01 - Malaises</option>
-                <option value="OTHER_02">P5.02 - Plaies</option>
-                <option value="OTHER_03">P5.03 - Brûlures</option>
-                <option value="OTHER_04">P5.04 - Traumatismes [CERTIF]</option>
-            </select>
+    <button id="admin-fab" onclick="openAdmin()">&#x2699; Admin</button>
+    <div id="admin-overlay">
+        <div id="admin-box">
+            <h3>&#x2699; Administration PSC1</h3>
+            <div id="admin-login">
+                <p style="font-size:0.83rem;color:#aabbcc;margin-bottom:10px;">
+                    Entrez votre code CPE pour accéder à la validation manuelle des modules.
+                </p>
+                <input class="ai" type="password" id="admin-pwd" placeholder="Code administrateur..." onkeydown="if(event.key==='Enter')adminLogin()">
+                <div class="arow">
+                    <button class="ab ab-p" onclick="adminLogin()">Connexion</button>
+                    <button class="ab ab-n" onclick="closeAdmin()">Annuler</button>
+                </div>
+                <div class="aerr" id="admin-err"></div>
+            </div>
+            <div id="admin-panel" style="display:none;">
+                <div class="aplayer" id="admin-player-info"></div>
+                <div class="asec">
+                    <h4>Sélectionner les modules à valider</h4>
+                    <div class="mcl" id="admin-mod-list"></div>
+                </div>
+                <div class="asec">
+                    <div class="arow">
+                        <button class="ab ab-g" onclick="adminValidateSelected()">&#x2713; Valider la sélection</button>
+                        <button class="ab ab-r" onclick="adminResetAll()">&#x1F5D1; Tout réinitialiser</button>
+                        <button class="ab ab-n" onclick="closeAdmin()">&#x2715; Fermer</button>
+                    </div>
+                    <div id="admin-fb"></div>
+                </div>
+            </div>
         </div>
-
-        <div class="forge-group">
-            <label>Nom apprenant :</label>
-            <input type="text" id="forgeName" placeholder="Prénom Nom" value="Aurèle">
-        </div>
-
-        <div class="forge-group">
-            <label>Score :</label>
-            <input type="number" id="forgeScore" min="0" max="200" value="150">
-        </div>
-
-        <div class="forge-group">
-            <label>Quiz (%) :</label>
-            <input type="number" id="forgeQuiz" min="0" max="100" value="85">
-        </div>
-
-        <div class="forge-group">
-            <label>Scénario (%) :</label>
-            <input type="number" id="forgeScenario" min="0" max="100" value="90">
-        </div>
-
-        <button class="btn-forge" onclick="generateCode()">🔨 GÉNÉRER CODE</button>
-
-        <div class="generated-code" id="generatedCode"></div>
     </div>
 
     <script>
-        // État de la progression
-        let progression = {
-            p1: [],
-            p2: [],
-            p3: [],
-            p4: [],
-            p5: []
-        };
-
+        const ADMIN_PASS = 'CPE59!-Chateau-70+';
+        const MODULE_SEQUENCE = [
+            'PROTECT_01', 'PROTECT_02', 'PROTECT_03',
+            'OVA_01', 'OVA_02', 'OVA_03',
+            'HEMORRHAGE_01', 'HEMORRHAGE_02', 'UNCONSCIOUS_01', 'HEMORRHAGE_UNCONS_SYNTH',
+            'CARDIAC_01', 'CARDIAC_02', 'CARDIAC_03', 'CARDIAC_04',
+            'OTHER_01', 'OTHER_02', 'OTHER_03', 'OTHER_04'
+        ];
+        const PILLAR_KEYS = ['p1', 'p2', 'p3', 'p4', 'p5'];
         const SUPERHUB_ACTIVE_PLAYER_KEY = "pvs_current_player";
         const SUPERHUB_BRIDGE_KEY = "pvs_bridge_events";
+        let progression = createEmptyProgression();
+        let adminUnlocked = false;
+
+        function createEmptyProgression() {
+            return {
+                p1: [],
+                p2: [],
+                p3: [],
+                p4: [],
+                p5: []
+            };
+        }
+
+        function normalizeProgression(value) {
+            const safe = createEmptyProgression();
+            if (!value || typeof value !== 'object') return safe;
+            PILLAR_KEYS.forEach((key) => {
+                if (Array.isArray(value[key])) safe[key] = value[key].slice();
+            });
+            return safe;
+        }
 
         function getActivePlayerCode() {
             const params = new URLSearchParams(window.location.search);
@@ -850,164 +892,92 @@
             });
         }
 
-        // Charger progression depuis localStorage
         function loadProgression() {
             const saved = localStorage.getItem('psc1_progression');
             if (saved) {
-                progression = JSON.parse(saved);
-                updateUI();
+                try {
+                    progression = normalizeProgression(JSON.parse(saved));
+                } catch (e) {
+                    progression = createEmptyProgression();
+                }
             } else {
-                // Débloquer le premier module par défaut
-                unlockModule('PROTECT_01');
+                progression = createEmptyProgression();
             }
+            updateUI();
         }
 
-        // Sauvegarder progression
         function saveProgression() {
             localStorage.setItem('psc1_progression', JSON.stringify(progression));
         }
 
-        // Débloquer un module
         function unlockModule(moduleId) {
             const card = document.querySelector(`[data-module="${moduleId}"]`);
             if (card) {
-                card.classList.remove('locked');
+                card.classList.remove('locked', 'completed');
                 card.classList.add('unlocked');
                 card.querySelector('.status-txt').textContent = '🔓 DÉBLOQUÉ';
             }
         }
 
-        // Marquer module comme complété
         function completeModule(moduleId, pillar) {
             const card = document.querySelector(`[data-module="${moduleId}"]`);
             if (card) {
-                card.classList.remove('unlocked');
+                card.classList.remove('locked', 'unlocked');
                 card.classList.add('completed');
                 card.querySelector('.status-txt').textContent = '✅ COMPLÉTÉ';
             }
 
-            // Ajouter à la progression
             if (!progression[pillar].includes(moduleId)) {
                 progression[pillar].push(moduleId);
                 saveProgression();
                 bridgePsc1Progress(moduleId);
             }
 
-            // Débloquer le module suivant
             unlockNextModule(moduleId);
+            updateStats();
         }
 
-        // Débloquer module suivant
         function unlockNextModule(currentModule) {
-            const modules = [
-                // P1
-                'PROTECT_01', 'PROTECT_02', 'PROTECT_03',
-                // P2
-                'OVA_01', 'OVA_02', 'OVA_03',
-                // P3
-                'HEMORRHAGE_01', 'HEMORRHAGE_02', 'UNCONSCIOUS_01', 'HEMORRHAGE_UNCONS_SYNTH',
-                // P4
-                'CARDIAC_01', 'CARDIAC_02', 'CARDIAC_03', 'CARDIAC_04',
-                // P5
-                'OTHER_01', 'OTHER_02', 'OTHER_03', 'OTHER_04'
-            ];
-
-            const currentIndex = modules.indexOf(currentModule);
-            if (currentIndex !== -1 && currentIndex < modules.length - 1) {
-                unlockModule(modules[currentIndex + 1]);
+            const currentIndex = MODULE_SEQUENCE.indexOf(currentModule);
+            if (currentIndex !== -1 && currentIndex < MODULE_SEQUENCE.length - 1) {
+                unlockModule(MODULE_SEQUENCE[currentIndex + 1]);
             }
         }
 
-        // Valider code certification
-        function validateCode() {
-            const input = document.getElementById('codeInput').value.trim();
-            const result = document.getElementById('resultMessage');
-
-            if (!input) {
-                showResult('Veuillez entrer un code.', false);
-                return;
-            }
-
-            try {
-                // Décoder Base64
-                const decoded = atob(input);
-                const data = JSON.parse(decoded);
-
-                // Vérifier structure
-                if (!data.v || !data.m || !data.d) {
-                    throw new Error('Code invalide');
-                }
-
-                // Vérifier que le module existe
-                const moduleCard = document.querySelector(`[data-module="${data.m}"]`);
-                if (!moduleCard) {
-                    throw new Error('Module inconnu');
-                }
-
-                // Récupérer le pilier
-                const pillar = moduleCard.getAttribute('data-pillar');
-
-                // Marquer comme complété
-                completeModule(data.m, pillar);
-
-                // Afficher succès
-                showResult(`✅ MODULE VALIDÉ : ${data.m} | Score: ${data.s} | Quiz: ${data.q}% | Scénario: ${data.sc}%`, true);
-
-                // Mise à jour stats
-                updateStats();
-
-                // Vider input
-                document.getElementById('codeInput').value = '';
-
-            } catch (e) {
-                showResult('❌ Code invalide ou corrompu.', false);
-            }
+        function resetModuleCards() {
+            document.querySelectorAll('.module-card').forEach((card) => {
+                card.classList.remove('unlocked', 'completed');
+                card.classList.add('locked');
+                const status = card.querySelector('.status-txt');
+                if (status) status.textContent = '🔒 VERROUILLÉ';
+            });
         }
 
-        // Afficher résultat
-        function showResult(message, success) {
-            const result = document.getElementById('resultMessage');
-            result.textContent = message;
-            result.className = 'result-message ' + (success ? 'success' : 'error');
-            result.style.display = 'block';
-
-            setTimeout(() => {
-                result.style.display = 'none';
-            }, 5000);
+        function getAdminModuleGroups() {
+            return Array.from(document.querySelectorAll('.pillar-column')).map((column) => ({
+                title: column.querySelector('.pillar-title').textContent.trim(),
+                modules: Array.from(column.querySelectorAll('.module-card')).map((card) => ({
+                    id: card.getAttribute('data-module'),
+                    pillar: card.getAttribute('data-pillar'),
+                    name: card.querySelector('h4').textContent.trim()
+                }))
+            }));
         }
 
-        // Mise à jour UI
         function updateUI() {
-            // Marquer modules complétés
-            for (const pillar in progression) {
-                progression[pillar].forEach(moduleId => {
-                    const card = document.querySelector(`[data-module="${moduleId}"]`);
-                    if (card) {
-                        card.classList.add('completed');
-                        card.querySelector('.status-txt').textContent = '✅ COMPLÉTÉ';
-                    }
-                });
-            }
-
-            // Débloquer modules
-            const allModules = [
-                'PROTECT_01', 'PROTECT_02', 'PROTECT_03',
-                'OVA_01', 'OVA_02', 'OVA_03',
-                'HEMORRHAGE_01', 'HEMORRHAGE_02', 'UNCONSCIOUS_01', 'HEMORRHAGE_UNCONS_SYNTH',
-                'CARDIAC_01', 'CARDIAC_02', 'CARDIAC_03', 'CARDIAC_04',
-                'OTHER_01', 'OTHER_02', 'OTHER_03', 'OTHER_04'
-            ];
+            resetModuleCards();
 
             let shouldUnlock = true;
-            allModules.forEach(moduleId => {
+            MODULE_SEQUENCE.forEach((moduleId) => {
                 const card = document.querySelector(`[data-module="${moduleId}"]`);
+                if (!card) return;
+
                 const pillar = card.getAttribute('data-pillar');
-                
                 if (progression[pillar].includes(moduleId)) {
-                    // Déjà complété
+                    card.classList.remove('locked', 'unlocked');
                     card.classList.add('completed');
+                    card.querySelector('.status-txt').textContent = '✅ COMPLÉTÉ';
                 } else if (shouldUnlock) {
-                    // Débloquer le prochain module non complété
                     unlockModule(moduleId);
                     shouldUnlock = false;
                 }
@@ -1016,7 +986,6 @@
             updateStats();
         }
 
-        // Mise à jour statistiques
         function updateStats() {
             document.getElementById('stat-p1').textContent = `${progression.p1.length}/3`;
             document.getElementById('stat-p2').textContent = `${progression.p2.length}/3`;
@@ -1025,54 +994,119 @@
             document.getElementById('stat-p5').textContent = `${progression.p5.length}/4`;
         }
 
-        // Toggle admin panel
-        function toggleAdmin() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('active');
+        function openAdmin() {
+            adminUnlocked = false;
+            document.getElementById('admin-login').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-pwd').value = '';
+            document.getElementById('admin-err').textContent = '';
+            document.getElementById('admin-fb').textContent = '';
+            document.getElementById('admin-overlay').classList.add('open');
+            setTimeout(() => {
+                document.getElementById('admin-pwd').focus();
+            }, 80);
         }
 
-        // Générer code
-        function generateCode() {
-            const module = document.getElementById('forgeModule').value;
-            const name = document.getElementById('forgeName').value;
-            const score = parseInt(document.getElementById('forgeScore').value);
-            const quiz = parseInt(document.getElementById('forgeQuiz').value);
-            const scenario = parseInt(document.getElementById('forgeScenario').value);
-
-            const data = {
-                v: 1,
-                d: new Date().toISOString().split('T')[0],
-                m: module,
-                n: name,
-                s: score,
-                q: quiz,
-                sc: scenario,
-                f: true
-            };
-
-            const encoded = btoa(JSON.stringify(data));
-
-            const codeDisplay = document.getElementById('generatedCode');
-            codeDisplay.innerHTML = `
-                <strong>Code généré :</strong><br>
-                <span style="color: var(--hub-neon); font-size: 0.9em;">${encoded}</span><br><br>
-                <button onclick="navigator.clipboard.writeText('${encoded}')" style="padding: 8px 15px; background: var(--hub-gold); color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: 700;">
-                    📋 COPIER
-                </button>
-            `;
-            codeDisplay.style.display = 'block';
+        function closeAdmin() {
+            document.getElementById('admin-overlay').classList.remove('open');
+            adminUnlocked = false;
         }
 
-        // Initialisation
+        function adminLogin() {
+            const pwd = document.getElementById('admin-pwd').value.trim();
+            if (pwd !== ADMIN_PASS) {
+                document.getElementById('admin-err').textContent = '❌ Code incorrect';
+                return;
+            }
+
+            adminUnlocked = true;
+            document.getElementById('admin-login').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            buildAdminList();
+        }
+
+        function buildAdminList() {
+            const player = getActivePlayerCode();
+            document.getElementById('admin-player-info').textContent =
+                player
+                    ? `Joueur actif : ${player}`
+                    : '⚠️ Aucun joueur - ouvre ce hub depuis le Portail Vie Scolaire';
+
+            const list = document.getElementById('admin-mod-list');
+            list.innerHTML = '';
+
+            getAdminModuleGroups().forEach((group) => {
+                const sep = document.createElement('div');
+                sep.className = 'psep';
+                sep.textContent = group.title;
+                list.appendChild(sep);
+
+                group.modules.forEach((mod) => {
+                    const done = progression[mod.pillar].includes(mod.id);
+                    const wrap = document.createElement('label');
+                    wrap.className = 'mc';
+
+                    const chk = document.createElement('input');
+                    chk.type = 'checkbox';
+                    chk.value = mod.id;
+                    chk.checked = done;
+                    chk.dataset.pillar = mod.pillar;
+
+                    const lbl = document.createElement('span');
+                    lbl.className = 'mc-lbl';
+                    lbl.innerHTML = done
+                        ? `${mod.name}<span class="mc-done">✓ validé</span>`
+                        : mod.name;
+
+                    wrap.appendChild(chk);
+                    wrap.appendChild(lbl);
+                    list.appendChild(wrap);
+                });
+            });
+        }
+
+        function adminValidateSelected() {
+            if (!adminUnlocked) return;
+
+            const boxes = document.querySelectorAll('#admin-mod-list input[type=checkbox]');
+            let count = 0;
+
+            boxes.forEach((chk) => {
+                const pillar = chk.dataset.pillar;
+                if (chk.checked && !progression[pillar].includes(chk.value)) {
+                    completeModule(chk.value, pillar);
+                    count += 1;
+                }
+            });
+
+            const fb = document.getElementById('admin-fb');
+            if (count > 0) {
+                fb.className = 'aok';
+                fb.textContent = `✅ ${count} module(s) validé(s)`;
+                updateUI();
+                buildAdminList();
+            } else {
+                fb.className = 'aerr';
+                fb.textContent = 'Aucun nouveau module à valider';
+            }
+        }
+
+        function adminResetAll() {
+            if (!adminUnlocked) return;
+            if (!confirm('Supprimer TOUTE la progression PSC1 du joueur actuel ?')) return;
+
+            progression = createEmptyProgression();
+            saveProgression();
+            updateUI();
+            buildAdminList();
+
+            const fb = document.getElementById('admin-fb');
+            fb.className = 'aok';
+            fb.textContent = '🗑 Progression supprimée';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadProgression();
-        });
-
-        // Écouter Enter sur input code
-        document.getElementById('codeInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                validateCode();
-            }
         });
     </script>
 
