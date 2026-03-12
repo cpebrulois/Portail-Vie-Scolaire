@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pieton : voir, anticiper, traverser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#160c08;--panel:#241410;--line:#ffffff1f;--text:#fff6f0;--muted:#e6c8b4;--accent:#fb923c;--accent2:#fbbf24;--ok:#8ae2ad;--danger:#ff9a76}
+*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(180deg,#1a0d09,#2a120a 45%,#3b1709);color:var(--text);min-height:100vh}.wrap{max-width:980px;margin:0 auto;padding:24px 16px 56px}.hero,.panel{background:rgba(36,20,16,.94);border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 42px rgba(0,0,0,.24)}.hero{padding:24px}.panel{padding:18px;margin-top:16px}.hero h1,.panel h2{font-family:'Fraunces',serif}.hero p,.panel p,.panel li,label{color:var(--muted);line-height:1.6}.row,.actions{display:flex;flex-wrap:wrap;gap:10px}.tag,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px}.tag{padding:8px 12px;border:1px solid #ffffff24;background:#ffffff10;font-size:.84rem}.btn{border:none;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer}.btn.main{background:linear-gradient(135deg,var(--accent),#ffc07e);color:#38180b}.btn.alt{background:#ffffff10;color:var(--text)}.btn.gold{background:linear-gradient(135deg,var(--accent2),#ffe7ac);color:#3a2900}.facts{padding:16px;border-radius:18px;background:rgba(255,255,255,.05)}.facts ul{margin:0;padding-left:18px}.q{padding:14px;border-radius:18px;background:#1a0f0c;border:1px solid #ffffff14;margin-top:12px}.q h3{margin:0 0 10px;font-size:1rem}.choices{display:grid;gap:8px}.choice{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:12px;background:#ffffff08}.choice input{margin-top:4px;accent-color:var(--accent)}.result{margin-top:14px;padding:14px;border-radius:18px;background:#ffffff08;border:1px solid #ffffff14}.ok{color:var(--ok)}.bad{color:var(--danger)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="row">
+      <div class="tag">HUB S?CURIT? ROUTI?RE</div>
+      <div class="tag">Pieton</div>
+      <div class="tag">Quiz autonome</div>
+    </div>
+    <h1>Pieton : voir, anticiper, traverser</h1>
+    <p>Premier module centre sur les objectifs de base de l?eleve pieton : regarder, anticiper les dangers et traverser avec prudence.</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn main" onclick="goHub()">Retour au hub</button>
+      <button class="btn alt" onclick="goSuperHub()">Portail Vie Scolaire</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Rep?res utiles</h2>
+    <div class="facts"><ul><li>L?education a la route travaille l?eleve pieton, passager et rouleur de maniere progressive.</li><li>L?eleve pieton apprend a se deplacer seul ou accompagne sur le trottoir et a traverser en tenant compte des dangers.</li><li>Le but est d?aller vers une autonomie prudente, pas vers la prise de risque.</li></ul></div>
+  </section>
+
+  <section class="panel">
+    <h2>Quiz de validation</h2>
+    <div id="quizRoot"></div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn gold" onclick="gradeQuiz()">Valider mes r?ponses</button>
+    </div>
+    <div id="result" class="result"></div>
+  </section>
+</div>
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_PLAYER_KEY='pvs_phare_player';
+const STORE_KEY='pvs_sroute_progress_v1';
+const BRIDGE_KEY='pvs_bridge_events';
+const MODULE_ID='SR_PIETON_01';
+const PASS_RATE=0.60;
+const QUESTIONS=[{"q": "Avant de traverser, quel est le bon reflexe ?", "options": ["Courir vite si la route semble vide", "S?arreter, observer et tenir compte des dangers", "Suivre les autres sans regarder"], "answer": 1, "why": "On s?arrete, on observe et on anticipe avant toute traversee."}, {"q": "Quand un trottoir existe, ou le pieton doit-il se placer ?", "options": ["Sur le trottoir", "Au milieu de la chaussee", "Toujours sur la piste cyclable"], "answer": 0, "why": "Le trottoir reste l?espace de circulation normal du pieton lorsqu?il existe."}, {"q": "Pres d?un bus ou d?un car a l?arret, quelle attitude est la plus sure ?", "options": ["Traverser juste devant pour gagner du temps", "Attendre, bien voir et etre vu avant de traverser", "Passer entre les vehicules"], "answer": 1, "why": "La visibilite est souvent reduite pres d?un vehicule volumineux."}, {"q": "Pourquoi l?eleve pieton doit-il apprendre a anticiper ?", "options": ["Pour aller plus vite", "Pour mieux reperer les situations a risque", "Parce que les regles changent tout le temps"], "answer": 1, "why": "L?anticipation aide a reperer les dangers avant qu?ils ne deviennent critiques."}, {"q": "L?objectif final de cette education pieton, c?est surtout?", "options": ["Une autonomie prudente et responsable", "Traverser sans adulte le plus tot possible", "Eviter toutes les sorties"], "answer": 0, "why": "Le continuum educatif vise une autonomie progressive et responsable."}];
+function getPlayer(){const q=new URLSearchParams(window.location.search).get('player');const qp=String(q||'').trim().toUpperCase();if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_PLAYER_KEY,qp);return qp;}return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_PLAYER_KEY)||'VISITEUR').trim().toUpperCase()||'VISITEUR';}
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{};}catch(e){return {};}}
+function saveStore(store){localStorage.setItem(STORE_KEY,JSON.stringify(store));}
+function markDone(){const player=getPlayer();const store=getStore();const entry=store[player]&&typeof store[player]==='object'?store[player]:{done:[],bridged:[],updatedAt:''};if(!Array.isArray(entry.done))entry.done=[];if(!Array.isArray(entry.bridged))entry.bridged=[];let changed=false;if(!entry.done.includes(MODULE_ID)){entry.done.push(MODULE_ID);changed=true;}if(!entry.bridged.includes(MODULE_ID)){entry.bridged.push(MODULE_ID);try{const arr=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]');const safe=Array.isArray(arr)?arr:[];safe.push({id:`ACAD-${MODULE_ID}-${Date.now()}`,type:'ACAD_COMPLETE',player,moduleId:MODULE_ID,d:new Date().toISOString(),source:'SECURITE_ROUTIERE'});if(safe.length>500)safe.splice(0,safe.length-500);localStorage.setItem(BRIDGE_KEY,JSON.stringify(safe));try{window.dispatchEvent(new StorageEvent('storage',{key:BRIDGE_KEY}));}catch(e){}}catch(e){}changed=true;}entry.updatedAt=new Date().toISOString();store[player]=entry;saveStore(store);try{window.dispatchEvent(new StorageEvent('storage',{key:STORE_KEY}));}catch(e){}return changed;}
+function renderQuiz(){const root=document.getElementById('quizRoot');root.innerHTML='';QUESTIONS.forEach((item,index)=>{const block=document.createElement('div');block.className='q';block.innerHTML=`<h3>${index+1}. ${item.q}</h3><div class="choices">${item.options.map((opt,optIndex)=>`<label class="choice"><input type="radio" name="q_${index}" value="${optIndex}"><span>${opt}</span></label>`).join('')}</div>`;root.appendChild(block);});const player=getPlayer();const entry=(getStore()[player]||{});if(Array.isArray(entry.done)&&entry.done.includes(MODULE_ID)){const result=document.getElementById('result');result.innerHTML='<div class="ok"><strong>Module d?j? valid?.</strong> Tu peux le reprendre pour t?entra?ner ou v?rifier tes rep?res.</div>';}}
+function gradeQuiz(){let score=0;const feedback=[];QUESTIONS.forEach((item,index)=>{const checked=document.querySelector(`input[name="q_${index}"]:checked`);const chosen=checked?Number(checked.value):-1;if(chosen===item.answer)score+=1;feedback.push(`<li><strong>${index+1}.</strong> ${item.why}</li>`);});const pct=QUESTIONS.length?score/QUESTIONS.length:0;const passed=pct>=PASS_RATE;if(passed)markDone();document.getElementById('result').innerHTML=`<div class="${passed?'ok':'bad'}"><strong>${passed?'Module valid?':'Module ? reprendre'}</strong> ? score : ${score}/${QUESTIONS.length} (${Math.round(pct*100)}%).</div><ul>${feedback.join('')}</ul><p>${passed?'Le module est maintenant remont? vers le hub s?curit? routi?re et le super-hub.':'Il faut atteindre au moins 60 % pour valider.'}</p>`;}
+function goHub(){const suffix='?player='+encodeURIComponent(getPlayer());window.location.href='hub_securite_routiere.html'+suffix;}
+function goSuperHub(){const suffix='?player='+encodeURIComponent(getPlayer());window.location.href='index.html'+suffix;}
+document.addEventListener('DOMContentLoaded',renderQuiz);
+</script>
+</body>
+</html>

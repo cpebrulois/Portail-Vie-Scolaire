@@ -1,0 +1,219 @@
+﻿
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub Sécurité Routière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#120b08;--panel:#23130f;--line:#ffffff1f;--text:#fff6f0;--muted:#e6c8b4;--accent:#fb923c;--accent2:#fbbf24;--ok:#8ae2ad;--danger:#ff9a76}
+*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(180deg,#1a0d09,#2a120a 45%,#3b1709);color:var(--text);min-height:100vh}.wrap{max-width:1280px;margin:0 auto;padding:24px 16px 56px}.hero,.panel{background:rgba(35,19,15,.94);border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 42px rgba(0,0,0,.24)}.hero{padding:24px}.panel{padding:18px}.hero h1,.panel h2{font-family:'Fraunces',serif}.hero h1{margin:10px 0 8px;font-size:clamp(2.1rem,4vw,3.6rem);line-height:1}.hero p,.panel p,.sub{color:var(--muted);line-height:1.6}.row,.actions,.stats,.pillars{display:flex;flex-wrap:wrap;gap:12px}.tag,.pill,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px}.tag,.pill{padding:8px 12px;border:1px solid #ffffff24;background:#ffffff10;font-size:.85rem}.btn{border:none;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer;transition:transform .15s ease}.btn:hover{transform:translateY(-1px)}.btn.main{background:linear-gradient(135deg,var(--accent),#ffc07e);color:#38180b}.btn.alt{background:#ffffff10;color:var(--text)}.btn.gold{background:linear-gradient(135deg,var(--accent2),#ffe7ac);color:#3a2900}.layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}.stack{display:grid;gap:16px}.stats{margin-top:16px}.stat{flex:1;min-width:150px;padding:14px;border-radius:18px;background:#ffffff0c;border:1px solid #ffffff14}.stat strong{display:block;font-size:1.7rem;font-family:'Fraunces',serif}.pillars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.pillar{padding:16px;border-radius:20px;background:#1a0f0c;border:1px solid #ffffff14}.pillar h3{margin:0;font-family:'Fraunces',serif}.module-card{margin-top:12px;padding:14px;border-radius:18px;background:#2b1711;border-left:4px solid #795548;transition:.2s}.module-card.open{border-left-color:var(--accent)}.module-card.done{border-left-color:var(--ok);background:rgba(138,226,173,.08)}.module-card h4{margin:0 0 6px}.module-card p{margin:0 0 10px}.module-meta{font-size:.84rem;color:var(--muted);margin-bottom:10px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:999px;background:#1a0f0c;border:1px solid #ffffff24;color:#fff;opacity:0;pointer-events:none;transition:opacity .2s}.toast.show{opacity:1}.admin-fab{position:fixed;right:20px;bottom:20px;z-index:40}.overlay{position:fixed;inset:0;background:rgba(5,3,2,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}.overlay.open{display:flex}.modal{width:min(760px,100%);background:#22120e;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}.modal h3{margin:0 0 8px;font-family:'Fraunces',serif}.ai,.alist{width:100%;padding:12px 13px;border-radius:14px;border:1px solid #ffffff1f;background:#ffffff0c;color:var(--text);font:inherit}.alist{max-height:360px;overflow:auto}.mc{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #ffffff12}.mc:first-child{border-top:none;padding-top:0}.mc input{margin-top:4px;accent-color:var(--accent)}.mc small{display:block;color:var(--muted)}.err{color:var(--danger);min-height:22px}.ok{color:var(--ok);min-height:22px}
+@media (max-width:980px){.layout{grid-template-columns:1fr}.pillars{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="row">
+      <div class="tag">HUB SÉCURITÉ ROUTIÈRE</div>
+      <div class="tag">Piéton • Vélo • Trottinette • Passager • ASSR</div>
+      <div class="tag">Bonus +0,10 / module</div>
+    </div>
+    <h1>Prévenir, comprendre, circuler avec plus de justesse</h1>
+    <p>Ce hub reprend une logique proche de PIXHARe : un portail à piliers, des modules indépendants, et un panneau Admin pour revalider si besoin. Chaque module validé remonte vers le super-hub avec un bonus de coefficient de +0,10.</p>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn main" onclick="goSuperHub()">Portail Vie Scolaire</button>
+      <button class="btn alt" onclick="copyHubLink(this)">Copier le lien</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="playerBadge">Aucun joueur</strong><span>Joueur actif</span></div>
+      <div class="stat"><strong id="doneBadge">0/5</strong><span>Modules validés</span></div>
+      <div class="stat"><strong id="coefBadge">x1,00</strong><span>Bonus sécurité routière</span></div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="panel">
+        <h2>Piliers et modules</h2>
+        <p class="sub">Premier lot de modules fondé sur le continuum éducatif, l'APER/SRAV, les ASSR et les grands réflexes de sécurité du quotidien.</p>
+        <div id="pillarGrid" class="pillars"></div>
+      </section>
+    </div>
+    <div class="stack">
+      <section class="panel">
+        <h2>Repères de contenu</h2>
+        <p>Les premiers modules s'appuient sur les objectifs officiels d'éducation à la route : élève piéton, passager, rouleur à vélo, préparation ASSR et accès progressif à la mobilité.</p>
+        <div class="row" style="margin-top:10px">
+          <div class="pill">Continuum éducatif</div>
+          <div class="pill">APER / SRAV</div>
+          <div class="pill">ASSR 1 / ASSR 2</div>
+          <div class="pill">Permis AM / BSR</div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Validation</h2>
+        <p>Un module peut être validé automatiquement après réussite du quiz, puis repris ou forcé depuis le panneau Admin. Le hub relit aussi les validations déjà connues du super-hub pour éviter les incohérences.</p>
+      </section>
+    </div>
+  </div>
+</div>
+<button class="btn gold admin-fab" onclick="openAdmin()">Admin</button>
+<div id="toast" class="toast"></div>
+<div id="admin-overlay" class="overlay">
+  <div class="modal">
+    <div id="admin-login">
+      <h3>Connexion Admin</h3>
+      <p>Entrez votre code secret pour valider ou réinitialiser les modules du joueur actif.</p>
+      <input id="admin-pwd" class="ai" type="password" placeholder="Code administrateur..." onkeydown="if(event.key==='Enter')adminLogin()">
+      <div class="actions" style="margin-top:12px">
+        <button class="btn main" onclick="adminLogin()">Connexion</button>
+        <button class="btn alt" onclick="closeAdmin()">Annuler</button>
+      </div>
+      <div id="admin-err" class="err"></div>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <h3>Validation manuelle</h3>
+      <p id="admin-player-info" class="sub"></p>
+      <div id="admin-list" class="alist"></div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn main" onclick="adminValidateSelected()">Valider la sélection</button>
+        <button class="btn gold" onclick="adminResetAll()">Réinitialiser ce hub</button>
+        <button class="btn alt" onclick="closeAdmin()">Fermer</button>
+      </div>
+      <div id="admin-fb" class="ok"></div>
+    </div>
+  </div>
+</div>
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_PLAYER_KEY='pvs_phare_player';
+const STORE_KEY='pvs_sroute_progress_v1';
+const SUPER_KEY='pvs_hof_v2';
+const BRIDGE_KEY='pvs_bridge_events';
+const ADMIN_PASS='CPE59!-Chateau-70+';
+const STEP_BONUS=0.10;
+const PILLARS=[
+  {id:'pieton',icon:'🚶',title:'Piéton',summary:"Voir, anticiper, traverser et partager l'espace public sans se mettre en danger.",modules:[{id:'SR_PIETON_01',name:'Piéton : voir, anticiper, traverser',file:'SR_Module_PIETON_01.html',blurb:"Trottoir, traversée, anticipation et analyse de l'environnement."}]},
+  {id:'velo',icon:'🚲',title:'Vélo / SRAV',summary:"Du savoir pédaler au savoir rouler en autonomie.",modules:[{id:'SR_VELO_01',name:'Vélo : savoir rouler en sécurité',file:'SR_Module_VELO_01.html',blurb:"Blocs SRAV, signalisation, intentions et équipement."}]},
+  {id:'edpm',icon:'🛴',title:'Trottinette / EDPM',summary:"Comprendre les grands repères de circulation et les bons réflexes avec une trottinette électrique.",modules:[{id:'SR_EDPM_01',name:'Trottinette : bons réflexes EDPM',file:'SR_Module_EDPM_01.html',blurb:"Âge minimal, zones de circulation, équipement et comportement responsable."}]},
+  {id:'passager',icon:'🚌',title:'Passager',summary:"Adopter un comportement sûr et citoyen dans la voiture ou les transports collectifs.",modules:[{id:'SR_PASSAGER_01',name:'Passager responsable',file:'SR_Module_PASSAGER_01.html',blurb:"Ceinture, comportement en bus, calme et vigilance collective."}]},
+  {id:'assr',icon:'📋',title:'ASSR / BSR',summary:"Comprendre les étapes officielles du parcours de mobilité au collège et après.",modules:[{id:'SR_ASSR_01',name:'ASSR, ASR et BSR',file:'SR_Module_ASSR_01.html',blurb:"ASSR 1, ASSR 2, ASR, AER et accès au permis AM."}]}
+];
+let player='';
+let progress={done:[],bridged:[],updatedAt:''};
+let adminUnlocked=false;
+let toastTimer=null;
+function getPlayer(){const q=new URLSearchParams(window.location.search).get('player');const qp=String(q||'').trim().toUpperCase();if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_PLAYER_KEY,qp);return qp;}return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_PLAYER_KEY)||'').trim().toUpperCase();}
+function defaultProgress(){return{done:[],bridged:[],updatedAt:''};}
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{};}catch(e){return {};}}
+function saveStore(store){localStorage.setItem(STORE_KEY,JSON.stringify(store));}
+function superHubRoadDone(){try{const raw=JSON.parse(localStorage.getItem(SUPER_KEY)||'{}');const players=raw&&raw.players&&typeof raw.players==='object'?raw.players:{};const entry=players[player||'VISITEUR']||{};const done=entry.acadDone&&typeof entry.acadDone==='object'?Object.keys(entry.acadDone):[];return done.filter(id=>String(id||'').toUpperCase().startsWith('SR_'));}catch(e){return [];}}
+function loadProgress(){player=getPlayer();const store=getStore();const key=player||'VISITEUR';const entry=store[key]||defaultProgress();progress={done:Array.isArray(entry.done)?entry.done.slice():[],bridged:Array.isArray(entry.bridged)?entry.bridged.slice():[],updatedAt:String(entry.updatedAt||'')};let changed=false;superHubRoadDone().forEach(id=>{if(!progress.done.includes(id)){progress.done.push(id);changed=true;}if(!progress.bridged.includes(id)){progress.bridged.push(id);changed=true;}});if(changed)persistProgress(false);}
+function persistProgress(dispatch=true){const store=getStore();progress.updatedAt=new Date().toISOString();store[player||'VISITEUR']=progress;saveStore(store);if(dispatch){try{window.dispatchEvent(new StorageEvent('storage',{key:STORE_KEY}));}catch(e){}}refreshStats();}
+function isDone(moduleId){return progress.done.includes(moduleId);}
+function pushBridge(moduleId){
+  if(progress.bridged.includes(moduleId))return;
+  progress.bridged.push(moduleId);
+  try{
+    const arr=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'[]');
+    const safe=Array.isArray(arr)?arr:[];
+    safe.push({id:`ACAD-${moduleId}-${Date.now()}`,type:'ACAD_COMPLETE',player:player||'VISITEUR',moduleId,d:new Date().toISOString(),source:'SECURITE_ROUTIERE'});
+    if(safe.length>500)safe.splice(0,safe.length-500);
+    localStorage.setItem(BRIDGE_KEY,JSON.stringify(safe));
+    try{window.dispatchEvent(new StorageEvent('storage',{key:BRIDGE_KEY}));}catch(e){}
+  }catch(e){}
+  persistProgress(false);
+}
+function validateModule(moduleId,silent){
+  let changed=false;
+  if(!progress.done.includes(moduleId)){progress.done.push(moduleId);changed=true;}
+  if(changed)persistProgress(false);
+  pushBridge(moduleId);
+  refreshStats();
+  render();
+  if(!silent)toast(`✅ ${moduleId} validé`);
+}
+function openModule(file){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`${file}${suffix}`;}
+function goSuperHub(){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`index.html${suffix}`;}
+function copyHubLink(btn){navigator.clipboard.writeText(location.origin+'/hub_securite_routiere.html').then(()=>{const old=btn.textContent;btn.textContent='Copié';setTimeout(()=>btn.textContent=old,1400);});}
+function refreshStats(){document.getElementById('playerBadge').textContent=player||'Mode local';document.getElementById('doneBadge').textContent=`${progress.done.length}/${PILLARS.length}`;document.getElementById('coefBadge').textContent=`x${(1+progress.done.length*STEP_BONUS).toFixed(2)}`;}
+function render(){
+  const root=document.getElementById('pillarGrid');
+  root.innerHTML='';
+  PILLARS.forEach(pillar=>{
+    const card=document.createElement('article');
+    card.className='pillar';
+    card.innerHTML=`<div class="row"><div class="tag">${pillar.icon} ${pillar.title}</div></div><h3 style="margin-top:10px">${pillar.title}</h3><p>${pillar.summary}</p>`;
+    pillar.modules.forEach(mod=>{
+      const done=isDone(mod.id);
+      const modCard=document.createElement('div');
+      modCard.className=`module-card ${done?'done':'open'}`;
+      modCard.innerHTML=`<h4>${mod.name}</h4><p>${mod.blurb}</p><div class="module-meta">${done?'Module déjà validé.':'Quiz autonome + validation admin disponible.'}</div>`;
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className=`btn ${done?'gold':'main'}`;
+      btn.textContent=done?'Reprendre le module':'Ouvrir le module';
+      btn.onclick=()=>openModule(mod.file);
+      modCard.appendChild(btn);
+      card.appendChild(modCard);
+    });
+    root.appendChild(card);
+  });
+  refreshStats();
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function openAdmin(){adminUnlocked=false;document.getElementById('admin-overlay').classList.add('open');document.getElementById('admin-login').style.display='block';document.getElementById('admin-panel').style.display='none';document.getElementById('admin-pwd').value='';document.getElementById('admin-err').textContent='';document.getElementById('admin-fb').textContent='';setTimeout(()=>document.getElementById('admin-pwd').focus(),80);}
+function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open');adminUnlocked=false;}
+function adminLogin(){const pwd=document.getElementById('admin-pwd').value.trim();if(pwd!==ADMIN_PASS){document.getElementById('admin-err').textContent='Code incorrect';return;}adminUnlocked=true;document.getElementById('admin-login').style.display='none';document.getElementById('admin-panel').style.display='block';buildAdminList();}
+function buildAdminList(){
+  document.getElementById('admin-player-info').textContent=player?`Joueur actif : ${player}`:'Aucun joueur actif';
+  const root=document.getElementById('admin-list');
+  root.innerHTML='';
+  PILLARS.forEach(pillar=>{
+    const sep=document.createElement('div');
+    sep.style.margin='6px 0 10px';
+    sep.innerHTML=`<strong>${pillar.icon} ${pillar.title}</strong><div class="sub">${pillar.summary}</div>`;
+    root.appendChild(sep);
+    pillar.modules.forEach(mod=>{
+      const wrap=document.createElement('label');
+      wrap.className='mc';
+      wrap.innerHTML=`<input type="checkbox" value="${mod.id}" ${isDone(mod.id)?'checked':''}><div><strong>${mod.name}</strong><small>${mod.blurb}</small></div>`;
+      root.appendChild(wrap);
+    });
+  });
+}
+function adminValidateSelected(){
+  if(!adminUnlocked)return;
+  let count=0;
+  document.querySelectorAll('#admin-list input[type=checkbox]').forEach(box=>{
+    if(box.checked&&!isDone(box.value)){validateModule(box.value,true);count++;}
+  });
+  buildAdminList();
+  document.getElementById('admin-fb').className=count?'ok':'err';
+  document.getElementById('admin-fb').textContent=count?`✅ ${count} module(s) validé(s)`:'Aucun nouveau module à valider';
+}
+function adminResetAll(){
+  if(!adminUnlocked)return;
+  if(!confirm('Réinitialiser toutes les validations sécurité routière pour le joueur actif ?'))return;
+  progress=defaultProgress();
+  persistProgress(false);
+  render();
+  buildAdminList();
+  document.getElementById('admin-fb').className='ok';
+  document.getElementById('admin-fb').textContent='🗑️ Hub sécurité routière réinitialisé';
+}
+window.addEventListener('storage',event=>{if(!event.key||event.key===STORE_KEY||event.key===SUPER_KEY){loadProgress();render();}});
+document.addEventListener('DOMContentLoaded',()=>{loadProgress();render();});
+</script>
+</body>
+</html>

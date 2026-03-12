@@ -540,7 +540,7 @@ Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augment
           border-radius:20px;padding:3px 10px;
           font-size:0.68em;font-weight:700;color:#FB923C;
           white-space:nowrap;
-        ">ACCÈS LIBRE</div>
+        ">HUB ACTIF</div>
       </div>
       <!-- Description -->
       <p style="font-size:0.82em;color:#a08060;line-height:1.6;margin-bottom:12px">
@@ -555,18 +555,18 @@ Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augment
         <span style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#FCA5A5;border-radius:20px;padding:2px 9px;font-size:0.72em;font-weight:700">Tous niveaux</span>
         <span style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#666;border-radius:20px;padding:2px 9px;font-size:0.72em;font-weight:700">Indépendant PVS</span>
       </div>
-      <!-- Barre "en construction" -->
+      <!-- Barre active -->
       <div style="
         background:rgba(251,146,60,0.08);
-        border:1px dashed rgba(251,146,60,0.3);
+        border:1px solid rgba(251,146,60,0.24);
         border-radius:8px;padding:8px 12px;
         margin-bottom:12px;
         display:flex;align-items:center;gap:8px;
       ">
         <span style="font-size:1rem">🔧</span>
         <div>
-          <div style="font-size:0.72em;font-weight:700;color:#FB923C;margin-bottom:2px">EN CONSTRUCTION</div>
-          <div style="font-size:0.7em;color:#6a5040">Les modules seront disponibles prochainement — structure hub prête.</div>
+          <div style="font-size:0.72em;font-weight:700;color:#FB923C;margin-bottom:2px">PREMIERS MODULES DISPONIBLES</div>
+          <div style="font-size:0.7em;color:#6a5040">Hub à piliers actif avec premiers modules : piéton, vélo, trottinette, passager, ASSR / BSR.</div>
         </div>
       </div>
       <!-- Coefficient info -->
@@ -583,19 +583,19 @@ Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augment
       </div>
       <!-- Boutons -->
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button disabled style="
-          background:rgba(251,146,60,0.15);
-          color:rgba(251,146,60,0.5);
-          border:1px solid rgba(251,146,60,0.2);
+        <button onclick="openTracked('academy','SECURITE_ROUTIERE_HUB','hub_securite_routiere.html')" style="
+          background:linear-gradient(135deg,rgba(251,146,60,0.92),rgba(251,191,36,0.92));
+          color:#2b1207;
+          border:1px solid rgba(251,146,60,0.28);
           border-radius:10px;padding:9px 16px;
           font-family:Orbitron,monospace;font-size:0.78em;font-weight:700;
-          flex:1;cursor:not-allowed;
-        ">🔧 Bientôt disponible</button>
+          flex:1;cursor:pointer;
+        ">🚦 Ouvrir le hub</button>
         <button onclick="navigator.clipboard.writeText(location.origin+'/hub_securite_routiere.html').then(()=>{const t=this;t.textContent='✓ Copié !';setTimeout(()=>t.textContent='🔗 Lien',1500)})" style="
-          background:rgba(251,146,60,0.10);color:rgba(251,146,60,0.6);
+          background:rgba(251,146,60,0.10);color:#f7bb86;
           border:1px solid rgba(251,146,60,0.2);border-radius:10px;
           padding:9px 14px;font-size:0.78em;font-weight:700;
-          white-space:nowrap;cursor:not-allowed;opacity:0.6;
+          white-space:nowrap;cursor:pointer;opacity:1;
         ">🔗 Lien</button>
       </div>
     </div>
@@ -1047,6 +1047,8 @@ const ACAD_COEFF_STEP = 0.02;
 const ACAD_COEFF_MAX  = 0.40;
 const ACAD_PASS_RATE  = 0.60;
 const ORIENTATION_ACAD_STEPS = {'ORI_6E_':0.30,'ORI_5E_':0.20,'ORI_4E_':0.10,'ORI_3E_':0.10};
+const ROUTE_ACAD_PREFIX = 'SR_';
+const ROUTE_ACAD_STEP = 0.10;
 
 const ACAD_MODULES=[
 {id:'fr6_gram1',titre:'Nature des mots',matiere:'fr',niveau:'6e',icone:'📖',questions:[
@@ -1356,10 +1358,12 @@ function socialPendingG(p){return Number(p.witnessGiven||0)>0?0:socialRawG(p)}
 function citizenXp(p){return missionXp(p.code)+socialValidG(p)}
 function acadDoneKeys(p){return Object.keys((p&&p.acadDone&&typeof p.acadDone==='object')?p.acadDone:{})}
 function orientationAcadStep(id){const mid=String(id||'').toUpperCase();if(mid.startsWith('ORI_6E_'))return Number(ORIENTATION_ACAD_STEPS['ORI_6E_']||0);if(mid.startsWith('ORI_5E_'))return Number(ORIENTATION_ACAD_STEPS['ORI_5E_']||0);if(mid.startsWith('ORI_4E_'))return Number(ORIENTATION_ACAD_STEPS['ORI_4E_']||0);if(mid.startsWith('ORI_3E_'))return Number(ORIENTATION_ACAD_STEPS['ORI_3E_']||0);return 0}
+function routeAcadStep(id){const mid=String(id||'').toUpperCase();return mid.startsWith(ROUTE_ACAD_PREFIX)?Number(ROUTE_ACAD_STEP||0):0}
 function acadOrientationBonus(p){return acadDoneKeys(p).reduce((sum,id)=>sum+orientationAcadStep(id),0)}
-function acadRegularDoneCount(p){return acadDoneKeys(p).filter(id=>orientationAcadStep(id)===0).length}
-function acadCoeffLabelExtra(p){return acadOrientationBonus(p)>0?' + bonus orientation':''}
-function acadCoeff(p){return 1+Math.min(acadRegularDoneCount(p)*ACAD_COEFF_STEP,ACAD_COEFF_MAX)+acadOrientationBonus(p)}
+function acadRouteBonus(p){return acadDoneKeys(p).reduce((sum,id)=>sum+routeAcadStep(id),0)}
+function acadRegularDoneCount(p){return acadDoneKeys(p).filter(id=>orientationAcadStep(id)===0&&routeAcadStep(id)===0).length}
+function acadCoeffLabelExtra(p){const tags=[];if(acadOrientationBonus(p)>0)tags.push('bonus orientation');if(acadRouteBonus(p)>0)tags.push('bonus sécurité routière');return tags.length?` + ${tags.join(' + ')}`:''}
+function acadCoeff(p){return 1+Math.min(acadRegularDoneCount(p)*ACAD_COEFF_STEP,ACAD_COEFF_MAX)+acadOrientationBonus(p)+acadRouteBonus(p)}
 function xg(p){const base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}
 
 // ── Fonctions Académiques ──────────────────────────
