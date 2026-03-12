@@ -65,14 +65,14 @@ body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(
       <div class="tag">Validation admin</div>
     </div>
     <h1>Observer les stratégies utiles, sans étiqueter</h1>
-    <p>Ce sous-hub complète l'orientation avec des modules indépendants qui aident à repérer comment l'élève comprend, s'organise, s'exprime et garde le cap. Les validations passent par le panneau Admin, sur le même principe que PIXHARe.</p>
+    <p>Ce sous-hub complète l'orientation avec des modules indépendants qui aident à repérer comment l'élève comprend, s'organise, s'exprime, gère le tempo d'une tâche et lit une situation. Les validations passent par le panneau Admin, sur le même principe que PIXHARe.</p>
     <div class="actions" style="margin-top:14px">
       <button class="btn main" onclick="goOrientation()">Retour Orientation</button>
       <button class="btn alt" onclick="goSuperHub()">Portail Vie Scolaire</button>
     </div>
     <div class="stats">
       <div class="stat"><strong id="playerBadge">Aucun joueur</strong><span>Joueur actif</span></div>
-      <div class="stat"><strong id="doneBadge">0/5</strong><span>Modules validés</span></div>
+      <div class="stat"><strong id="doneBadge">0/11</strong><span>Modules validés</span></div>
       <div class="stat"><strong id="pillarBadge">5</strong><span>Piliers prêts</span></div>
     </div>
   </section>
@@ -81,7 +81,7 @@ body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(
     <div class="stack">
       <section class="panel">
         <h2>Piliers de l'atelier</h2>
-        <p class="sub">Le format est extensible : on peut ajouter d'autres modules par pilier sans casser la structure.</p>
+        <p class="sub">Le format est extensible : on peut ajouter d'autres modules par pilier sans casser la structure. Une deuxieme vague enrichit maintenant les reperes sur le tempo, la consigne complexe, les mots nouveaux, l'espace et les situations sociales.</p>
         <div id="pillarGrid" class="pillars"></div>
       </section>
     </div>
@@ -137,12 +137,29 @@ const LEGACY_PLAYER_KEY='pvs_phare_player';
 const STORE_KEY='pvs_appuis_progress_v1';
 const ADMIN_PASS='CPE59!-Chateau-70+';
 const PILLARS=[
-  {id:'observer',icon:'🧭',title:'Observer',summary:"Entrer dans la tâche, prendre ses repères, se lancer sans se perdre.",modules:[{id:'APP_OBS_01',name:'Se lancer dans une consigne',file:'APPUIS_Module_OBSERVER_01.html',blurb:"Observer comment l'élève commence une activité, ce qu'il demande, ce qui le rassure."}]},
-  {id:'comprendre',icon:'📘',title:'Comprendre',summary:"Lire, reformuler, suivre une consigne et relier les informations utiles.",modules:[{id:'APP_COM_01',name:'Comprendre une consigne',file:'APPUIS_Module_COMPRENDRE_01.html',blurb:"Repérer ce qui aide à comprendre le but, les étapes et les mots-clés."}]},
-  {id:'exprimer',icon:'🗣️',title:'Exprimer',summary:"Dire ce qu'on a compris, expliquer, raconter et garder le fil.",modules:[{id:'APP_EXP_01',name:"Dire ce que j'ai compris",file:'APPUIS_Module_EXPRIMER_01.html',blurb:"Observer la restitution orale ou écrite, l'accès au vocabulaire et la clarté."}]},
-  {id:'organiser',icon:'🧩',title:'Organiser',summary:"Planifier, mémoriser les étapes, garder le cap et gérer le matériel.",modules:[{id:'APP_ORG_01',name:'Planifier une tâche',file:'APPUIS_Module_ORGANISER_01.html',blurb:"Voir comment l'élève découpe une tâche, anticipe et s'appuie sur des repères."}]},
-  {id:'ajuster',icon:'🌿',title:"S'ajuster",summary:"Confiance, fatigue, bruit, régulation émotionnelle et endurance.",modules:[{id:'APP_AJU_01',name:'Réguler effort et confiance',file:'APPUIS_Module_AJUSTER_01.html',blurb:"Repérer ce qui freine, ce qui rassure et ce qui permet de repartir."}]}
+  {id:'observer',icon:'🧭',title:'Observer',summary:"Entrer dans la tâche, prendre ses repères, se lancer sans se perdre.",modules:[
+    {id:'APP_OBS_01',name:'Se lancer dans une consigne',file:'APPUIS_Module_OBSERVER_01.html',blurb:"Observer comment l'élève commence une activité, ce qu'il demande, ce qui le rassure."},
+    {id:'APP_OBS_02',name:'Observer le tempo de réponse',file:'APPUIS_Module_OBSERVER_02.html',blurb:"Repérer la latence de départ, la régularité et les variations de rythme sans conclure trop vite."}
+  ]},
+  {id:'comprendre',icon:'📘',title:'Comprendre',summary:"Lire, reformuler, suivre une consigne et relier les informations utiles.",modules:[
+    {id:'APP_COM_01',name:'Comprendre une consigne',file:'APPUIS_Module_COMPRENDRE_01.html',blurb:"Repérer ce qui aide à comprendre le but, les étapes et les mots-clés."},
+    {id:'APP_COM_02',name:'Suivre une consigne à plusieurs étapes',file:'APPUIS_Module_COMPRENDRE_02.html',blurb:"Observer l'ordre, la négation, les relations spatiales ou temporelles et la nécessité de reformuler."},
+    {id:'APP_COM_03',name:'Décoder des mots nouveaux',file:'APPUIS_Module_COMPRENDRE_03.html',blurb:"Voir comment l'élève lit des mots rares, nouveaux ou très peu familiers sans s'appuyer seulement sur le contexte."}
+  ]},
+  {id:'exprimer',icon:'🗣️',title:'Exprimer',summary:"Dire ce qu'on a compris, expliquer, raconter et garder le fil.",modules:[
+    {id:'APP_EXP_01',name:"Dire ce que j'ai compris",file:'APPUIS_Module_EXPRIMER_01.html',blurb:"Observer la restitution orale ou écrite, l'accès au vocabulaire et la clarté."},
+    {id:'APP_EXP_02',name:'Relier des mots et des idées',file:'APPUIS_Module_EXPRIMER_02.html',blurb:"Repérer l'évocation lexicale, les liens entre idées, les comparaisons et la formulation."}
+  ]},
+  {id:'organiser',icon:'🧩',title:'Organiser',summary:"Planifier, mémoriser les étapes, garder le cap et gérer le matériel.",modules:[
+    {id:'APP_ORG_01',name:'Planifier une tâche',file:'APPUIS_Module_ORGANISER_01.html',blurb:"Voir comment l'élève découpe une tâche, anticipe et s'appuie sur des repères."},
+    {id:'APP_ORG_02',name:'Assembler formes et repères spatiaux',file:'APPUIS_Module_ORGANISER_02.html',blurb:"Observer copie, puzzle, orientation spatiale et organisation de l'espace de travail."}
+  ]},
+  {id:'ajuster',icon:'🌿',title:"S'ajuster",summary:"Confiance, fatigue, bruit, régulation émotionnelle et endurance.",modules:[
+    {id:'APP_AJU_01',name:'Réguler effort et confiance',file:'APPUIS_Module_AJUSTER_01.html',blurb:"Repérer ce qui freine, ce qui rassure et ce qui permet de repartir."},
+    {id:'APP_AJU_02',name:'Lire une situation sociale',file:'APPUIS_Module_AJUSTER_02.html',blurb:"Observer la lecture des émotions, des tensions et des réponses qui apaisent ou aggravent."}
+  ]}
 ];
+const MODULE_IDS=PILLARS.reduce((acc,pillar)=>acc.concat(pillar.modules.map(mod=>mod.id)),[]);
 let player='';
 let progress={done:[],updatedAt:''};
 let adminUnlocked=false;
@@ -158,7 +175,8 @@ function bridgeAppuiProgress(moduleId){try{const arr=JSON.parse(localStorage.get
 function openModule(file){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`${file}${suffix}`;}
 function goOrientation(){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`hub_orientation.html${suffix}`;}
 function goSuperHub(){const suffix=player?`?player=${encodeURIComponent(player)}`:'';window.location.href=`index.html${suffix}`;}
-function refreshStats(){document.getElementById('playerBadge').textContent=player||'Mode local';document.getElementById('doneBadge').textContent=`${progress.done.length}/${PILLARS.length}`;document.getElementById('pillarBadge').textContent=String(PILLARS.length);}
+function doneCount(){return MODULE_IDS.filter(id=>progress.done.includes(id)).length;}
+function refreshStats(){document.getElementById('playerBadge').textContent=player||'Mode local';document.getElementById('doneBadge').textContent=`${doneCount()}/${MODULE_IDS.length}`;document.getElementById('pillarBadge').textContent=String(PILLARS.length);}
 function render(){const root=document.getElementById('pillarGrid');root.innerHTML='';PILLARS.forEach(pillar=>{const card=document.createElement('article');card.className='pillar';card.innerHTML=`<div class="row"><div class="tag">${pillar.icon} ${pillar.title}</div></div><h3 style="margin-top:10px">${pillar.title}</h3><p>${pillar.summary}</p>`;pillar.modules.forEach(mod=>{const done=isDone(mod.id);const modCard=document.createElement('div');modCard.className=`module-card ${done?'done':''}`;modCard.innerHTML=`<h4>${mod.name}</h4><p>${mod.blurb}</p><div class="module-meta">${done?'Module déjà validé par l\'admin.':'Validation pilotée depuis le panneau Admin.'}</div>`;const btn=document.createElement('button');btn.type='button';btn.className=`btn ${done?'gold':'alt'}`;btn.textContent=done?'Ouvrir à nouveau':'Ouvrir le module';btn.onclick=()=>openModule(mod.file);modCard.appendChild(btn);card.appendChild(modCard);});root.appendChild(card);});refreshStats();}
 function setAdminFeedback(text,ok){const el=document.getElementById('admin-fb');el.className=ok?'ok':'err';el.textContent=text;}
 function openAdmin(){adminUnlocked=false;document.getElementById('admin-overlay').classList.add('open');document.getElementById('admin-login').style.display='block';document.getElementById('admin-panel').style.display='none';document.getElementById('admin-pwd').value='';document.getElementById('admin-err').textContent='';document.getElementById('admin-fb').textContent='';setTimeout(()=>document.getElementById('admin-pwd').focus(),80);}
