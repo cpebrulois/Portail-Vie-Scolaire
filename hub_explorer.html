@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr" data-level="none">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorer les voies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08121d;--panel:rgba(14,34,52,.94);--line:rgba(255,255,255,.1);
+  --text:#edf5ff;--muted:#bfd0e1;--sub:#7a9ab8;
+  --lc:#56c8bb;--lb:rgba(86,200,187,.13);--ls:rgba(86,200,187,.35);
+  --ok:#8ae2ad;--gold:#f0bf57;--coral:#ff8f6d;--blue:#71a7ff;
+}
+[data-level="6e"]{--lc:#ff8f6d;--lb:rgba(255,143,109,.13);--ls:rgba(255,143,109,.4);}
+[data-level="5e"]{--lc:#56c8bb;--lb:rgba(86,200,187,.13);--ls:rgba(86,200,187,.4);}
+[data-level="4e"]{--lc:#71a7ff;--lb:rgba(113,167,255,.13);--ls:rgba(113,167,255,.4);}
+[data-level="3e"]{--lc:#f0bf57;--lb:rgba(240,191,87,.13);--ls:rgba(240,191,87,.4);}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'IBM Plex Sans',sans-serif;color:var(--text);min-height:100vh;
+  background:radial-gradient(ellipse at 80% 5%,rgba(113,167,255,.08),transparent 40%),
+             linear-gradient(170deg,#05101a,#08121d 50%,#0a1825);
+}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 72px;}
+
+/* HEADER */
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  padding:20px 22px;margin-bottom:16px;flex-wrap:wrap;
+  box-shadow:0 12px 32px rgba(0,0,0,.22);
+}
+.page-header h1{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3vw,2rem);line-height:1.1;}
+.page-header h1 em{font-style:italic;color:var(--lc);}
+.page-header p{color:var(--muted);font-size:.88rem;margin-top:6px;line-height:1.5;}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;border:none;cursor:pointer;font:600 .88rem 'IBM Plex Sans',sans-serif;transition:all .15s;text-decoration:none;}
+.btn.main{background:linear-gradient(135deg,var(--lc),color-mix(in srgb,var(--lc) 55%,white));color:#06141f;}
+.btn.main:hover{opacity:.9;transform:translateY(-1px);}
+.btn.alt{background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--line);}
+.btn.alt:hover{background:rgba(255,255,255,.13);}
+
+/* MATCH BANNER */
+.match-banner{
+  padding:14px 18px;border-radius:16px;background:var(--lb);border:1px solid var(--ls);
+  margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.match-banner strong{color:var(--lc);}
+.match-banner p{font-size:.88rem;color:var(--muted);}
+.match-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.match-tag{
+  padding:4px 10px;border-radius:999px;background:var(--lb);border:1px solid var(--ls);
+  font-size:.78rem;color:var(--lc);font-weight:600;
+}
+
+/* LAYOUT */
+.explorer-layout{display:grid;grid-template-columns:240px 1fr;gap:14px;align-items:start;}
+
+/* FILTERS SIDEBAR */
+.filters{
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:18px;position:sticky;top:16px;
+}
+.filters h3{font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:14px;color:var(--text);}
+.filter-group{margin-bottom:16px;}
+.filter-group label{display:block;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:8px;}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.fchip{
+  padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.05);font-size:.78rem;color:var(--muted);cursor:pointer;
+  transition:all .18s;
+}
+.fchip:hover{background:rgba(255,255,255,.1);}
+.fchip.on{background:var(--lb);border-color:var(--ls);color:var(--lc);font-weight:700;}
+.fchip.match{border-color:var(--ok);color:var(--ok);background:rgba(138,226,173,.1);}
+.fchip.match.on{background:rgba(138,226,173,.2);}
+
+/* RESULTS */
+.results-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.results-count{font-size:.88rem;color:var(--sub);}
+.sort-btn{padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:.78rem;color:var(--muted);cursor:pointer;}
+.sort-btn.on{background:var(--lb);border-color:var(--ls);color:var(--lc);}
+
+.schools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+
+/* SCHOOL CARD */
+.school-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:18px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden;
+}
+.school-card::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;
+  background:linear-gradient(135deg,var(--lc),transparent);opacity:0;
+}
+.school-card:hover{border-color:var(--ls);transform:translateY(-2px);box-shadow:0 14px 32px rgba(0,0,0,.28);}
+.school-card.matched{border-color:rgba(138,226,173,.35);}
+.school-card.matched::after{
+  content:'✓ Pour toi';position:absolute;top:12px;right:12px;
+  padding:3px 9px;border-radius:999px;background:rgba(138,226,173,.18);
+  border:1px solid rgba(138,226,173,.4);color:var(--ok);font-size:.72rem;font-weight:700;
+}
+.school-name{font-family:'Fraunces',serif;font-size:1.05rem;margin-bottom:4px;}
+.school-city{font-size:.82rem;color:var(--sub);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.school-city .pole-tag{
+  padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);font-size:.72rem;
+}
+.school-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.stag{
+  padding:4px 9px;border-radius:999px;font-size:.74rem;font-weight:600;
+  border:1px solid;
+}
+.stag.type-pro{background:rgba(113,167,255,.12);border-color:rgba(113,167,255,.3);color:#a0c0ff;}
+.stag.type-techno{background:rgba(240,191,87,.12);border-color:rgba(240,191,87,.3);color:#f0d080;}
+.stag.type-general{background:rgba(138,226,173,.12);border-color:rgba(138,226,173,.3);color:var(--ok);}
+.stag.type-cap{background:rgba(255,143,109,.12);border-color:rgba(255,143,109,.3);color:#ffb090;}
+.stag.type-apprentissage{background:rgba(180,140,255,.12);border-color:rgba(180,140,255,.3);color:#d0b0ff;}
+.stag.internat{background:rgba(86,200,187,.12);border-color:rgba(86,200,187,.3);color:#a0e8e0;}
+.school-specs{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:8px;}
+.school-specs strong{color:var(--text);display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.employer-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.etag{
+  padding:3px 8px;border-radius:999px;background:rgba(240,191,87,.1);
+  border:1px solid rgba(240,191,87,.25);font-size:.72rem;color:#d0a030;
+}
+.school-note{
+  margin-top:10px;padding:8px 10px;border-radius:10px;
+  background:rgba(255,255,255,.05);font-size:.78rem;color:var(--sub);font-style:italic;
+  border-left:3px solid var(--lc);
+}
+
+/* SECTOR OVERVIEW */
+.sectors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px;}
+.sector-card{
+  padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  cursor:pointer;transition:all .18s;
+}
+.sector-card:hover,.sector-card.on{background:var(--lb);border-color:var(--ls);}
+.sector-card .sc-icon{font-size:1.6rem;margin-bottom:6px;}
+.sector-card .sc-name{font-size:.88rem;font-weight:700;color:var(--text);}
+.sector-card .sc-count{font-size:.76rem;color:var(--sub);margin-top:2px;}
+
+/* LOCK SCREEN */
+.lock-screen{
+  text-align:center;padding:80px 24px;
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  box-shadow:0 12px 32px rgba(0,0,0,.22);
+}
+.lock-icon{font-size:3.5rem;display:block;margin-bottom:16px;}
+.lock-screen h2{font-family:'Fraunces',serif;font-size:1.6rem;margin-bottom:10px;}
+.lock-screen p{color:var(--muted);font-size:.95rem;max-width:460px;margin:0 auto 24px;line-height:1.6;}
+
+/* VIEW TOGGLE */
+.view-tabs{display:flex;gap:8px;margin-bottom:12px;}
+.vtab{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:.84rem;color:var(--muted);cursor:pointer;transition:all .18s;}
+.vtab.on{background:var(--lb);border-color:var(--ls);color:var(--lc);font-weight:700;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.school-card{animation:fadeUp .25s ease backwards;}
+
+@media(max-width:800px){
+  .explorer-layout{grid-template-columns:1fr;}
+  .filters{position:static;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOCK SCREEN (shown if fiche not complete enough) -->
+  <div id="lockScreen" style="display:none;">
+    <div class="lock-screen">
+      <span class="lock-icon">🔒</span>
+      <h2>Complète ta fiche d'abord</h2>
+      <p>Réponds aux questions de ta fiche orientation (au moins 25% de progression) pour débloquer l'exploration des voies et des établissements.</p>
+      <button class="btn main" onclick="goFiche()">Ouvrir ma fiche →</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent" style="display:none;">
+
+    <div class="page-header">
+      <div>
+        <div style="font-size:.78rem;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">EXPLORER LES VOIES · <span id="levelLabel" style="color:var(--lc);">—</span></div>
+        <h1>Formations & établissements<br><em id="heroSub">adaptés à ton profil</em></h1>
+        <p>Lycées, LP, MFR, CFA et filières de Haute-Saône et des territoires voisins. Filtré selon ta fiche.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn alt" onclick="goPortal()">← Portail</button>
+        <button class="btn main" onclick="goFiche()">Ma fiche</button>
+      </div>
+    </div>
+
+    <!-- MATCH BANNER -->
+    <div class="match-banner" id="matchBanner">
+      <div style="flex:1;">
+        <strong>✓ Suggestions basées sur ta fiche</strong>
+        <p>Les établissements marqués <strong>"Pour toi"</strong> correspondent aux secteurs que tu as repérés dans ta fiche.</p>
+        <div class="match-tags" id="matchTags"></div>
+      </div>
+    </div>
+
+    <!-- VIEW TABS -->
+    <div class="view-tabs">
+      <div class="vtab on" id="tabSchools" onclick="switchView('schools')">🏫 Établissements</div>
+      <div class="vtab" id="tabSectors" onclick="switchView('sectors')">🗂️ Secteurs</div>
+    </div>
+
+    <!-- SECTORS VIEW -->
+    <div id="sectorsView" style="display:none;">
+      <div class="sectors-grid" id="sectorsGrid"></div>
+    </div>
+
+    <!-- SCHOOLS VIEW -->
+    <div id="schoolsView">
+      <div class="explorer-layout">
+        <!-- FILTERS -->
+        <div class="filters">
+          <h3>Filtres</h3>
+
+          <div class="filter-group">
+            <label>Secteur</label>
+            <div class="filter-chips" id="sectorFilter"></div>
+          </div>
+
+          <div class="filter-group">
+            <label>Type de formation</label>
+            <div class="filter-chips" id="typeFilter">
+              <div class="fchip on" data-type="all" onclick="toggleType('all',this)">Tous</div>
+              <div class="fchip" data-type="pro" onclick="toggleType('pro',this)">Bac Pro</div>
+              <div class="fchip" data-type="techno" onclick="toggleType('techno',this)">Techno</div>
+              <div class="fchip" data-type="general" onclick="toggleType('general',this)">Général</div>
+              <div class="fchip" data-type="cap" onclick="toggleType('cap',this)">CAP</div>
+              <div class="fchip" data-type="apprentissage" onclick="toggleType('apprentissage',this)">Apprentissage</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label>Pôle géographique</label>
+            <div class="filter-chips" id="poleFilter">
+              <div class="fchip on" data-pole="all" onclick="togglePole('all',this)">Tous</div>
+              <div class="fchip" data-pole="vesoul" onclick="togglePole('vesoul',this)">Vesoul</div>
+              <div class="fchip" data-pole="gray" onclick="togglePole('gray',this)">Gray</div>
+              <div class="fchip" data-pole="lure" onclick="togglePole('lure',this)">Lure/Luxeuil</div>
+              <div class="fchip" data-pole="voisins" onclick="togglePole('voisins',this)">Voisins (25/39/90)</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label>Options</label>
+            <div class="filter-chips">
+              <div class="fchip" id="filterInternat" onclick="toggleInternat(this)">🏠 Avec internat</div>
+              <div class="fchip on" id="filterMatched" onclick="toggleMatched(this)">✓ Pour moi en premier</div>
+            </div>
+          </div>
+
+          <button class="btn alt" style="width:100%;margin-top:8px;" onclick="resetFilters()">Réinitialiser</button>
+        </div>
+
+        <!-- RESULTS -->
+        <div>
+          <div class="results-header">
+            <span class="results-count" id="resultsCount">— établissements</span>
+            <div style="display:flex;gap:6px;">
+              <div class="sort-btn on" id="sortMatch" onclick="setSort('match')">Pertinence</div>
+              <div class="sort-btn" id="sortPole" onclick="setSort('pole')">Pôle</div>
+            </div>
+          </div>
+          <div class="schools-grid" id="schoolsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_KEY='pvs_phare_player';
+const FICHE_KEY='pvs_fiche_v2';
+const STORE_KEY='pvs_orientation_profiles_v2';
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const SECTORS_DATA=[
+  {id:'sante',label:'Santé & Social',icon:'🏥',alt:['Santé & social']},
+  {id:'transport',label:'Transport & Logistique',icon:'🚚',alt:['Transport & logistique','Logistique']},
+  {id:'industrie',label:'Industrie & Maintenance',icon:'⚙️',alt:['Industrie & maintenance']},
+  {id:'tertiaire',label:'Commerce & Vente',icon:'💼',alt:['Commerce & vente','Tertiaire & Commerce']},
+  {id:'bois',label:'Bois & Menuiserie',icon:'🪵',alt:['Bois & menuiserie']},
+  {id:'nature',label:'Nature & Agriculture',icon:'🌿',alt:['Nature & agriculture']},
+  {id:'hotellerie',label:'Hôtellerie & Cuisine',icon:'🍽️',alt:['Hôtellerie & cuisine']},
+  {id:'numerique',label:'Numérique',icon:'💻',alt:['Numérique']},
+  {id:'batiment',label:'Bâtiment & BTP',icon:'🏗️',alt:['Bâtiment & BTP']},
+  {id:'auto',label:'Automobile',icon:'🚗',alt:['Automobile']},
+  {id:'micro',label:'Microtechniques & Horlogerie',icon:'⌚',alt:['Microtechniques & horlogerie']},
+  {id:'luxe',label:'Maroquinerie & Luxe',icon:'👜',alt:['Maroquinerie & luxe']},
+  {id:'optique',label:'Optique & Lunetterie',icon:'👓',alt:['Optique']},
+  {id:'energie',label:'Énergie & Électrotechnique',icon:'⚡',alt:['Énergie & électrotechnique']},
+];
+
+const SCHOOLS=[
+  // VESOUL
+  {id:'pontarcher',name:'LP Pontarcher',city:'Vesoul',pole:'vesoul',types:['pro','cap'],sectors:['sante','tertiaire','hotellerie'],specs:['ASSP','Commerce','Accueil','Cuisine','Service en hôtellerie'],employers:['EHPAD','Hôpitaux','Commerces'],internat:false,note:'Lycée polyvalent de référence pour le soin et la restauration à Vesoul.'},
+  {id:'luxembourg',name:'LP Luxembourg',city:'Vesoul',pole:'vesoul',types:['pro','cap'],sectors:['industrie','energie'],specs:['Maintenance MSPC','Électricité MELEC','Chaudronnerie','Finition bâtiment'],employers:['Stellantis Vesoul','Forges locales','BTP'],internat:false},
+  {id:'ferry_vesoul',name:'Lycée Jules Ferry',city:'Vesoul',pole:'vesoul',types:['pro','general','techno'],sectors:['transport','industrie'],specs:['Bac Pro Logistique','Bac Pro Transport','Filières générales','STMG'],employers:['Stellantis Vesoul','FM Logistic','Transporteurs 70'],internat:false},
+  {id:'belin',name:'Lycée Édouard Belin',city:'Vesoul',pole:'vesoul',types:['techno','general'],sectors:['tertiaire'],specs:['STMG Gestion & Finance','STMG Marketing','STMG RH & Communication','Bac général'],employers:[],internat:false},
+  {id:'haberges',name:'Lycée Les Haberges',city:'Vesoul',pole:'vesoul',types:['techno','general'],sectors:['sante'],specs:['Bac Techno ST2S (Santé & Social)','Bac général'],employers:[],internat:false},
+  {id:'agrocampus',name:'Vesoul Agrocampus',city:'Vesoul',pole:'vesoul',types:['pro','apprentissage'],sectors:['nature'],specs:['Aménagements paysagers','Gestion des milieux naturels','Élevage','Agroéquipement'],employers:['John Deere (Arc-lès-Gray)','Collectivités locales'],internat:true,note:'Agriculture et paysage, avec débouchés vers l\'agroéquipement et le milieu rural.'},
+  // GRAY
+  {id:'fertet',name:'LP Henri Fertet',city:'Gray',pole:'gray',types:['pro','cap'],sectors:['transport','auto'],specs:['Conducteur Routier (référence régionale)','Carrosserie','Mécanique automobile','Mécanique Poids Lourds'],employers:['Entreprises de transport (70/25/90)','Garages PL','Carrossiers'],internat:true,note:'Internat très dynamique. Réputation régionale pour la filière Conducteur Routier — recrutement direct par des transporteurs de toute la région.'},
+  {id:'cournot',name:'Lycée Augustin Cournot',city:'Gray',pole:'gray',types:['pro','techno','general'],sectors:['industrie'],specs:['Pilotage de ligne de production','STI2D Énergie & Environnement','STMG','Bac général'],employers:['Industriels locaux'],internat:false},
+  {id:'spierre',name:'Lycée St-Pierre Fourier',city:'Gray',pole:'gray',types:['pro','cap'],sectors:['sante'],specs:['Bac Pro ASSP','CAP AEPE (Petite enfance)'],employers:['Structures de soin','Crèches','EHPAD'],internat:false},
+  // LURE-LUXEUIL
+  {id:'colomb',name:'Lycée Georges Colomb',city:'Lure',pole:'lure',types:['pro','techno','general'],sectors:['tertiaire','sante','transport'],specs:['Commerce','ASSP','Logistique','Filières générales et techno'],employers:[],internat:false},
+  {id:'beauregard',name:'LP Beauregard',city:'Luxeuil',pole:'lure',types:['pro','cap'],sectors:['bois','sante','tertiaire'],specs:['Menuiserie-installateur','ASSP','EPC (Équipier Polyvalent de Commerce)'],employers:['Scieries','Menuisiers','EHPAD'],internat:false},
+  {id:'lumiere',name:'Lycée Lumière',city:'Luxeuil',pole:'lure',types:['techno','general'],sectors:['tertiaire'],specs:['STMG','Bac général'],employers:[],internat:false},
+  // CFAs & MFRs
+  {id:'btpcfa',name:'BTP CFA Haute-Saône',city:'Vesoul',pole:'vesoul',types:['apprentissage'],sectors:['batiment'],specs:['Maçonnerie','Plomberie','Menuiserie','Peinture','Électricité bâtiment'],employers:['Artisans BTP','Entreprises de construction'],internat:false,note:'Formation par alternance, pied dans le monde du travail dès le CAP.'},
+  {id:'mfr_comb',name:'MFR Combeaufontaine',city:'Combeaufontaine',pole:'lure',types:['apprentissage'],sectors:['sante','nature'],specs:['SAPAT (Services Aux Personnes)','Animation territoires'],employers:['Services à la personne','Territoires ruraux'],internat:true},
+  {id:'mfr_foug',name:'MFR Fougerolles',city:'Fougerolles',pole:'lure',types:['apprentissage'],sectors:['nature','bois'],specs:['Travaux forestiers','Nature et forêt'],employers:['ONF','Entreprises forestières'],internat:false},
+  {id:'cci_cfa',name:'CFA de la CCI',city:'Vesoul',pole:'vesoul',types:['apprentissage'],sectors:['tertiaire'],specs:['Vente','Management','Commerce en alternance'],employers:['Commerces locaux','GSB'],internat:false},
+  // VOISINS
+  {id:'ferry_delle',name:'LP Jules Ferry',city:'Delle (90)',pole:'voisins',types:['pro'],sectors:['transport'],specs:['Logistique','Transport','Manutention'],employers:['Amazon (Belfort)','Plateformes logistiques 90'],internat:false,note:'Pôle majeur pour la logistique et le transport dans le Territoire de Belfort.'},
+  {id:'mandela',name:'Lycée Nelson Mandela',city:'Audincourt (25)',pole:'voisins',types:['pro'],sectors:['auto','luxe','industrie'],specs:['Maintenance automobile (Label Campus Métiers)','Maroquinerie & cuir','Plasturgie','Mode'],employers:['Stellantis Sochaux','Hermès Seloncourt','Forvia'],internat:false,note:'Label "Campus des Métiers Automobile & Mobilités du Futur". Référence pour l\'automobile ET la maroquinerie de luxe.'},
+  {id:'louverture',name:'Lycée Toussaint Louverture',city:'Pontarlier (25)',pole:'voisins',types:['pro'],sectors:['bois','hotellerie'],specs:['Construction bois / Charpente','Menuiserie agenceur','Hôtellerie-Restauration'],employers:['Constructeurs bois','Hôtels et restaurants Haut-Doubs'],internat:true},
+  {id:'edgar_faure',name:'Lycée Edgar Faure',city:'Morteau (25)',pole:'voisins',types:['pro'],sectors:['micro','luxe'],specs:['Horlogerie (référence nationale)','Joaillerie','Microtechniques'],employers:['Pequignet','Breitling (Besançon)','ISA France'],internat:true,note:'Élèves venant de toute la France. Quasi-certitude d\'emploi grâce à la tension du marché franco-suisse.'},
+  {id:'victor_berard',name:'Lycée Victor Bérard',city:'Morez (39)',pole:'voisins',types:['pro'],sectors:['optique','micro'],specs:['Optique-Lunetterie (référence mondiale)','Microtechniques','Photonique','BTS Opticien-Lunetier'],employers:['Julbo','Oxibis','L\'Amy Luxe'],internat:true,note:'École d\'optique de renommée mondiale. Du CAP au BTS en un seul établissement.'},
+  {id:'btp_belfort',name:'Lycée Denis Diderot',city:'Bavilliers (90)',pole:'voisins',types:['pro'],sectors:['energie','industrie'],specs:['Électrotechnique','Énergie renouvelables','Usinage','Maintenance industrielle'],employers:['Alstom (Belfort)','GE Vernova','McPhy (hydrogène)'],internat:false,note:'Principal vivier pour les filières énergie et hydrogène à Belfort.'},
+  {id:'huisselets',name:'Lycée Les Huisselets',city:'Montbéliard (25)',pole:'voisins',types:['pro'],sectors:['luxe'],specs:['Maroquinerie & cuir (filière d\'excellence)','Mode & textile'],employers:['Hermès Seloncourt & Héricourt'],internat:false,note:'Établissement de référence pour les métiers du cuir, en lien direct avec Hermès.'},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let player='VISITEUR';
+let ficheSectors=[];
+let ficheLevel=null;
+let activeSectors=new Set();
+let activeType='all';
+let activePole='all';
+let filterInternat=false;
+let sortMatched=true;
+let sortMode='match';
+let currentView='schools';
+
+function getPlayer(){
+  const q=new URLSearchParams(location.search).get('player');
+  const qp=String(q||'').trim().toUpperCase();
+  if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_KEY,qp);return qp;}
+  return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_KEY)||'VISITEUR').trim().toUpperCase()||'VISITEUR';
+}
+function suf(){return '?player='+encodeURIComponent(player);}
+
+function loadFiche(){
+  try{
+    const store=JSON.parse(localStorage.getItem(FICHE_KEY)||'{}')||{};
+    const pf=store[player]||{};
+    ficheLevel=pf.level||null;
+    // Map fiche sector labels to sector IDs
+    const rawSectors=(pf.sectors||[]);
+    ficheSectors=[];
+    rawSectors.forEach(label=>{
+      const sd=SECTORS_DATA.find(s=>s.label===label||s.alt.includes(label));
+      if(sd)ficheSectors.push(sd.id);
+    });
+    if(!ficheLevel){
+      try{ficheLevel=(JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{})[player]?.level||null;}catch(e){}
+    }
+    // Compute completion
+    const chips=(pf.subjects||[]).length+(pf.works||[]).length+(pf.supports||[]).length+(pf.efforts||[]).length;
+    const texts=Object.values(pf.texts||{}).filter(v=>String(v||'').trim().length>15).length;
+    return Math.round(Math.min((chips/12*.5+texts/4*.5),1)*100);
+  }catch(e){return 0;}
+}
+
+function isSchoolMatched(s){
+  if(ficheSectors.length===0)return false;
+  return s.sectors.some(sec=>ficheSectors.includes(sec));
+}
+
+function renderSectors(){
+  const g=document.getElementById('sectorsGrid');
+  g.innerHTML='';
+  SECTORS_DATA.forEach(sec=>{
+    const schools=SCHOOLS.filter(s=>s.sectors.includes(sec.id));
+    if(!schools.length)return;
+    const matched=ficheSectors.includes(sec.id);
+    const div=document.createElement('div');
+    div.className='sector-card'+(matched?' on':'');
+    div.innerHTML=`<div class="sc-icon">${sec.icon}</div><div class="sc-name">${sec.label}${matched?' ✓':''}</div><div class="sc-count">${schools.length} établissement(s)</div>`;
+    div.onclick=()=>{
+      switchView('schools');
+      activeSectors.clear();activeSectors.add(sec.id);
+      buildSectorFilter();renderSchools();
+    };
+    g.appendChild(div);
+  });
+}
+
+function buildSectorFilter(){
+  const c=document.getElementById('sectorFilter');
+  c.innerHTML='';
+  const allChip=document.createElement('div');
+  allChip.className='fchip'+(activeSectors.size===0?' on':'');
+  allChip.textContent='Tous';
+  allChip.onclick=()=>{activeSectors.clear();buildSectorFilter();renderSchools();};
+  c.appendChild(allChip);
+  SECTORS_DATA.forEach(sec=>{
+    const schools=SCHOOLS.filter(s=>s.sectors.includes(sec.id));
+    if(!schools.length)return;
+    const div=document.createElement('div');
+    const isMatch=ficheSectors.includes(sec.id);
+    div.className='fchip'+(activeSectors.has(sec.id)?' on':'')+(isMatch?' match':'');
+    div.innerHTML=`${sec.icon} ${sec.label}`;
+    div.onclick=()=>{
+      if(activeSectors.has(sec.id))activeSectors.delete(sec.id);
+      else activeSectors.add(sec.id);
+      buildSectorFilter();renderSchools();
+    };
+    c.appendChild(div);
+  });
+}
+
+function toggleType(type,el){
+  activeType=type;
+  document.querySelectorAll('#typeFilter .fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderSchools();
+}
+function togglePole(pole,el){
+  activePole=pole;
+  document.querySelectorAll('#poleFilter .fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');renderSchools();
+}
+function toggleInternat(el){filterInternat=!filterInternat;el.classList.toggle('on',filterInternat);renderSchools();}
+function toggleMatched(el){sortMatched=!sortMatched;el.classList.toggle('on',sortMatched);renderSchools();}
+function setSort(mode){
+  sortMode=mode;
+  document.getElementById('sortMatch').classList.toggle('on',mode==='match');
+  document.getElementById('sortPole').classList.toggle('on',mode==='pole');
+  renderSchools();
+}
+function resetFilters(){
+  activeSectors.clear();activeType='all';activePole='all';filterInternat=false;sortMatched=true;sortMode='match';
+  document.querySelectorAll('#typeFilter .fchip').forEach((c,i)=>c.classList.toggle('on',i===0));
+  document.querySelectorAll('#poleFilter .fchip').forEach((c,i)=>c.classList.toggle('on',i===0));
+  document.getElementById('filterInternat').classList.remove('on');
+  document.getElementById('filterMatched').classList.add('on');
+  document.getElementById('sortMatch').classList.add('on');
+  document.getElementById('sortPole').classList.remove('on');
+  buildSectorFilter();renderSchools();
+}
+
+function renderSchools(){
+  let list=[...SCHOOLS];
+  if(activeSectors.size>0)list=list.filter(s=>s.sectors.some(sec=>activeSectors.has(sec)));
+  if(activeType!=='all')list=list.filter(s=>s.types.includes(activeType));
+  if(activePole!=='all')list=list.filter(s=>s.pole===activePole);
+  if(filterInternat)list=list.filter(s=>s.internat);
+  // Sort
+  list.sort((a,b)=>{
+    const am=isSchoolMatched(a)?0:1;
+    const bm=isSchoolMatched(b)?0:1;
+    if(sortMode==='match'){
+      if(sortMatched&&am!==bm)return am-bm;
+      const poleOrder=['vesoul','gray','lure','voisins'];
+      return poleOrder.indexOf(a.pole)-poleOrder.indexOf(b.pole);
+    }else{
+      const poleOrder=['vesoul','gray','lure','voisins'];
+      const pd=poleOrder.indexOf(a.pole)-poleOrder.indexOf(b.pole);
+      if(pd!==0)return pd;
+      if(sortMatched&&am!==bm)return am-bm;
+      return 0;
+    }
+  });
+  document.getElementById('resultsCount').textContent=`${list.length} établissement(s)`;
+  const g=document.getElementById('schoolsGrid');
+  g.innerHTML='';
+  list.forEach((s,i)=>{
+    const matched=isSchoolMatched(s);
+    const div=document.createElement('div');
+    div.className='school-card'+(matched?' matched':'');
+    div.style.animationDelay=(i*.03)+'s';
+    const typeTags=s.types.map(t=>`<span class="stag type-${t}">${{pro:'Bac Pro',techno:'Techno',general:'Général',cap:'CAP',apprentissage:'Apprentissage'}[t]||t}</span>`).join('');
+    const internatTag=s.internat?'<span class="stag internat">🏠 Internat</span>':'';
+    const sectorLabels=s.sectors.map(sid=>SECTORS_DATA.find(x=>x.id===sid)).filter(Boolean);
+    const specHtml=s.specs.slice(0,ficheLevel==='3e'?6:4).join(' · ');
+    const employerHtml=s.employers.length&&ficheLevel!=='6e'?`<div><strong>Employeurs</strong><div class="employer-tags">${s.employers.map(e=>`<span class="etag">${e}</span>`).join('')}</div></div>`:'';
+    const noteHtml=s.note?`<div class="school-note">${s.note}</div>`:'';
+    div.innerHTML=`
+      <div class="school-name">${s.name}</div>
+      <div class="school-city">
+        <span>${s.city}</span>
+        <span class="pole-tag">${{vesoul:'Vesoul',gray:'Gray',lure:'Lure/Luxeuil',voisins:'Hors 70'}[s.pole]||s.pole}</span>
+      </div>
+      <div class="school-tags">${typeTags}${internatTag}</div>
+      <div class="school-specs"><strong>Spécialités</strong>${specHtml}</div>
+      ${employerHtml}
+      ${noteHtml}`;
+    g.appendChild(div);
+  });
+  if(!list.length){
+    g.innerHTML='<div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--sub);">Aucun établissement ne correspond à ces filtres. Essaie de les élargir.</div>';
+  }
+}
+
+function buildMatchBanner(){
+  const tags=document.getElementById('matchTags');
+  tags.innerHTML='';
+  if(ficheSectors.length){
+    ficheSectors.forEach(sid=>{
+      const sec=SECTORS_DATA.find(s=>s.id===sid);
+      if(sec)tags.innerHTML+=`<span class="match-tag">${sec.icon} ${sec.label}</span>`;
+    });
+  }else{
+    document.getElementById('matchBanner').style.display='none';
+  }
+}
+
+function switchView(v){
+  currentView=v;
+  document.getElementById('tabSchools').classList.toggle('on',v==='schools');
+  document.getElementById('tabSectors').classList.toggle('on',v==='sectors');
+  document.getElementById('schoolsView').style.display=v==='schools'?'block':'none';
+  document.getElementById('sectorsView').style.display=v==='sectors'?'block':'none';
+}
+
+function goPortal(){window.location.href='hub_orientation.html'+suf();}
+function goFiche(){window.location.href='hub_fiche.html'+suf();}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  player=getPlayer();
+  const pct=loadFiche();
+  if(pct<25){
+    document.getElementById('lockScreen').style.display='block';
+    return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  if(ficheLevel){
+    document.documentElement.setAttribute('data-level',ficheLevel);
+    document.getElementById('levelLabel').textContent={
+      '6e':'6e · Explorateur·trice','5e':'5e · Découvreur·se',
+      '4e':'4e · Préparateur·se','3e':'3e · Décideur·se'
+    }[ficheLevel]||ficheLevel;
+    document.getElementById('heroSub').textContent={
+      '6e':'pour ton niveau 6e','5e':'pour ton niveau 5e',
+      '4e':'pour ton niveau 4e','3e':'pour tes choix de 3e'
+    }[ficheLevel]||'adaptés à ton profil';
+  }
+  buildMatchBanner();
+  buildSectorFilter();
+  renderSectors();
+  renderSchools();
+});
+</script>
+</body>
+</html>

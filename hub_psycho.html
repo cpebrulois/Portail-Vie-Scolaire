@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atelier : Me découvrir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07111c;--panel:rgba(12,28,44,.96);--line:rgba(255,255,255,.1);
+  --text:#edf5ff;--muted:#bfd0e1;--sub:#6a8aa8;
+  --a1:#7ec8e3;--a2:#9d8cff;--a3:#56c8bb;--a4:#f0bf57;--a5:#ff8f6d;--a6:#8ae2ad;
+  --paper:#f4efe4;--ink:#1a2e40;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'IBM Plex Sans',sans-serif;color:var(--text);min-height:100vh;
+  background:radial-gradient(ellipse at 80% 10%,rgba(126,200,227,.07),transparent 40%),
+             radial-gradient(ellipse at 15% 85%,rgba(157,140,255,.06),transparent 40%),
+             linear-gradient(160deg,#04090f,#07111c 55%,#0a1928);
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;opacity:.12;
+  background:radial-gradient(circle 1px,rgba(255,255,255,.5) 1px,transparent 0) 0 0/32px 32px;
+}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px 80px;position:relative;}
+
+/* HEADER */
+.ph{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  padding:20px 22px;margin-bottom:18px;box-shadow:0 14px 36px rgba(0,0,0,.26);
+}
+.ph h1{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3vw,2rem);line-height:1.1;}
+.ph h1 em{font-style:italic;color:var(--a1);}
+.ph p{color:var(--muted);font-size:.88rem;margin-top:6px;line-height:1.5;max-width:480px;}
+.ph-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;border:none;cursor:pointer;font:600 .86rem 'IBM Plex Sans',sans-serif;transition:all .15s;}
+.btn.alt{background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--line);}
+.btn.alt:hover{background:rgba(255,255,255,.13);}
+.btn.main{background:linear-gradient(135deg,var(--a1),#b5e8f5);color:#04141e;}
+.btn.main:hover{opacity:.9;transform:translateY(-1px);}
+.btn.main:disabled{opacity:.4;cursor:default;transform:none;}
+
+/* MISSION MAP */
+.mission-map{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;
+}
+.mcard{
+  padding:16px 14px;border-radius:18px;border:1px solid var(--line);
+  background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;
+  text-align:center;position:relative;overflow:hidden;
+}
+.mcard.active{border-color:var(--mc);box-shadow:0 0 0 1px var(--mc);}
+.mcard.done{border-color:rgba(138,226,173,.4);background:rgba(138,226,173,.06);}
+.mcard.done::after{content:'✓';position:absolute;top:8px;right:10px;font-size:.75rem;color:var(--a6);}
+.mcard.locked{opacity:.5;cursor:default;}
+.mcard .mi{font-size:1.8rem;margin-bottom:6px;display:block;}
+.mcard .mn{font-size:.82rem;font-weight:700;color:var(--text);display:block;}
+.mcard .ms{font-size:.72rem;color:var(--sub);display:block;margin-top:3px;}
+
+/* ACTIVITY PANEL */
+.act{
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  padding:24px;box-shadow:0 14px 36px rgba(0,0,0,.22);
+  min-height:320px;display:flex;flex-direction:column;gap:0;
+}
+.act-header{margin-bottom:18px;}
+.act-tag{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 11px;
+  border-radius:999px;border:1px solid;font-size:.75rem;font-weight:700;
+  margin-bottom:12px;
+}
+.act h2{font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:6px;}
+.act-desc{color:var(--muted);font-size:.9rem;line-height:1.5;}
+.act-body{flex:1;display:flex;flex-direction:column;gap:14px;}
+.act-footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.act-footer .hint{font-size:.82rem;color:var(--sub);}
+
+/* Sequence display */
+.seq-display{
+  font-family:'Fraunces',serif;font-size:2.8rem;text-align:center;
+  padding:24px;border-radius:16px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);letter-spacing:.3em;min-height:96px;
+  display:flex;align-items:center;justify-content:center;color:var(--a1);
+  transition:opacity .3s;
+}
+.seq-display.hidden{opacity:0;}
+
+/* Input */
+.act input[type=text],.act textarea{
+  width:100%;padding:12px 14px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+  color:var(--text);font:inherit;font-size:.95rem;transition:border-color .2s;
+}
+.act input[type=text]:focus,.act textarea:focus{outline:none;border-color:var(--a1);}
+.act textarea{min-height:80px;resize:vertical;}
+
+/* Choices grid */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.choice{
+  padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.05);cursor:pointer;transition:all .18s;
+  font-size:.9rem;line-height:1.4;text-align:center;
+}
+.choice:hover{background:rgba(255,255,255,.1);}
+.choice.selected{background:rgba(126,200,227,.15);border-color:rgba(126,200,227,.5);color:var(--a1);}
+.choice.correct{background:rgba(138,226,173,.15);border-color:rgba(138,226,173,.5);color:var(--a6);}
+.choice.wrong{background:rgba(255,143,109,.1);border-color:rgba(255,143,109,.3);color:var(--a5);}
+
+/* Reaction time */
+.react-zone{
+  height:160px;border-radius:20px;border:2px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .3s,border-color .3s;user-select:none;
+  font-size:1.1rem;font-weight:700;color:var(--sub);
+}
+.react-zone.ready{background:rgba(138,226,173,.18);border-color:rgba(138,226,173,.6);color:var(--a6);}
+.react-zone.go{background:rgba(138,226,173,.35);border-color:var(--a6);}
+.react-zone.early{background:rgba(255,143,109,.18);border-color:var(--a5);color:var(--a5);}
+
+/* Emotion faces */
+.emotion-faces{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:12px 0;}
+.eface{
+  width:72px;height:72px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;cursor:pointer;transition:all .2s;
+}
+.eface:hover,.eface.selected{border-color:var(--a1);background:rgba(126,200,227,.15);transform:scale(1.1);}
+
+/* Pseudo word */
+.pword{
+  font-family:'Fraunces',serif;font-size:2.2rem;text-align:center;padding:20px;
+  border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:var(--a2);letter-spacing:.05em;
+}
+
+/* Progress */
+.step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px;}
+.sdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;}
+.sdot.on{background:var(--a1);width:20px;border-radius:4px;}
+.sdot.done{background:var(--a6);}
+
+/* Timer indicator (subtle) */
+.timer-bar{height:3px;background:rgba(255,255,255,.08);border-radius:999px;margin-bottom:14px;overflow:hidden;}
+.timer-fill{height:100%;background:var(--a1);border-radius:999px;transition:width .1s linear;}
+
+/* REPORT */
+.report-wrap{
+  background:linear-gradient(170deg,var(--paper),#fffdf5);
+  border:2px solid rgba(240,191,87,.3);border-radius:22px;
+  padding:26px;margin-top:4px;color:var(--ink);
+  box-shadow:0 14px 36px rgba(0,0,0,.16);
+}
+.report-wrap h2{font-family:'Fraunces',serif;font-size:1.35rem;color:#1a3a50;margin-bottom:4px;}
+.report-sub{font-size:.83rem;color:#5a7a8a;margin-bottom:16px;line-height:1.4;}
+.report-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.report-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-paper{padding:8px 14px;border-radius:10px;border:1px solid rgba(26,46,64,.25);background:rgba(26,46,64,.07);font:600 .82rem 'IBM Plex Sans',sans-serif;color:#2a4a5e;cursor:pointer;transition:all .15s;}
+.btn-paper:hover{background:rgba(26,46,64,.13);}
+.btn-paper.gold{background:linear-gradient(135deg,#f0bf57,#ffe08a);color:#3d2800;border-color:transparent;}
+
+.obs-section{margin-top:14px;padding-top:14px;border-top:1px solid rgba(26,46,64,.12);}
+.obs-section h4{font-size:.9rem;font-weight:700;color:#1a3a50;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.obs-section h4 .oi{font-size:1rem;}
+.obs-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin-bottom:8px;font-size:.84rem;color:#2a4a5e;}
+.obs-label{font-weight:600;}
+.obs-bar-wrap{height:8px;background:rgba(26,46,64,.1);border-radius:999px;overflow:hidden;}
+.obs-bar{height:100%;border-radius:999px;transition:width .6s ease;}
+.obs-val{font-size:.78rem;color:#5a7a8a;white-space:nowrap;text-align:right;min-width:60px;}
+.obs-note{font-size:.8rem;color:#5a7a8a;line-height:1.45;margin-top:4px;padding-left:4px;border-left:3px solid rgba(26,46,64,.15);padding-left:8px;}
+.alert-box{padding:10px 12px;border-radius:12px;margin-top:8px;font-size:.82rem;line-height:1.5;}
+.alert-box.amber{background:#fff8e1;border:1px solid #ffcc02;color:#7c5d00;}
+.alert-box.green{background:#e8f5e9;border:1px solid #81c784;color:#1b5e20;}
+.disclaimer{margin-top:14px;padding:10px 12px;border-radius:10px;background:rgba(26,46,64,.06);font-size:.77rem;color:#7a9aaa;font-style:italic;line-height:1.5;border:1px solid rgba(26,46,64,.1);}
+
+/* Score badge */
+.score-ring{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:3px solid;font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;}
+.score-ring.high{border-color:#81c784;color:#2e7d32;background:#e8f5e9;}
+.score-ring.mid{border-color:#ffcc02;color:#f57f17;background:#fff8e1;}
+.score-ring.low{border-color:#ef9a9a;color:#c62828;background:#ffebee;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.act{animation:fadeUp .28s ease;}
+
+@media(max-width:600px){
+  .mission-map{grid-template-columns:repeat(2,1fr);}
+  .choices{grid-template-columns:1fr;}
+  .emotion-faces{gap:8px;}
+  .eface{width:58px;height:58px;font-size:1.8rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="ph">
+    <div>
+      <div style="font-size:.75rem;color:var(--sub);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">ATELIER · ME DÉCOUVRIR</div>
+      <h1>Six petites <em>activités</em><br>pour mieux te connaître</h1>
+      <p>Des jeux courts sur les façons de penser, de mémoriser et de ressentir. Il n'y a ni bonne ni mauvaise façon d'être — juste des façons différentes.</p>
+    </div>
+    <div class="ph-right">
+      <div style="font-size:.8rem;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--muted);">Joueur : <strong id="playerBadge">—</strong></div>
+      <button class="btn alt" onclick="goPortal()">← Portail</button>
+    </div>
+  </div>
+
+  <!-- MISSION MAP -->
+  <div class="mission-map" id="missionMap"></div>
+
+  <!-- STEP DOTS -->
+  <div class="step-dots" id="stepDots"></div>
+
+  <!-- TIMER BAR -->
+  <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%;"></div></div>
+
+  <!-- ACTIVITY AREA -->
+  <div id="actArea"></div>
+
+</div>
+
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_KEY='pvs_phare_player';
+const PSYCHO_KEY='pvs_psycho_v1';
+
+// ─── MISSIONS ────────────────────────────────────────────────────────────────
+const MISSIONS=[
+  {id:'ressemblances',label:'Ressemblances',sub:'Trouver ce qui lie',icon:'🔗',color:'var(--a1)'},
+  {id:'suites',label:'Suites logiques',sub:'Repérer un motif',icon:'🔢',color:'var(--a2)'},
+  {id:'memoire',label:'Mémo séquence',sub:'Retenir et répéter',icon:'🧠',color:'var(--a3)'},
+  {id:'mots',label:'Mots mystères',sub:'Décoder à voix haute',icon:'🔤',color:'var(--a4)'},
+  {id:'emotions',label:'Lire une scène',sub:'Comprendre les autres',icon:'🎭',color:'var(--a5)'},
+  {id:'reflexe',label:'Signal & réflexe',sub:'Rapidité de réponse',icon:'⚡',color:'var(--a6)'},
+];
+
+// ─── ITEMS ───────────────────────────────────────────────────────────────────
+const RESSEMBLANCES=[
+  {a:'Un marteau',b:'une scie',correct:'Ce sont des outils / on les utilise pour fabriquer ou construire',keywords:['outil','construire','fabriquer','travailler','bois','bricoler']},
+  {a:'La colère',b:'la tristesse',correct:'Ce sont des émotions / des sentiments / des états intérieurs',keywords:['émotion','sentiment','ressenti','intérieur','humeur','état']},
+  {a:'Une bicyclette',b:'un avion',correct:'Ce sont des moyens de transport / on les utilise pour se déplacer',keywords:['transport','déplacement','voyager','aller','rouler','voler','locomotion']},
+];
+
+const SUITES=[
+  {q:'2 — 4 — 6 — 8 — ?',choices:['9','10','11','12'],correct:1,explain:'On ajoute 2 à chaque fois.'},
+  {q:'🔴 🔵 🔴 🔵 🔴 — ?',choices:['🔴','🔵','🟡','🟢'],correct:1,explain:'La couleur alterne bleu / rouge.'},
+  {q:'A — C — E — G — ?',choices:['H','I','J','K'],correct:1,explain:'On saute une lettre à chaque fois.'},
+  {q:'1 — 4 — 9 — 16 — ?',choices:['20','24','25','36'],correct:2,explain:'Ce sont les carrés (1², 2², 3², 4², 5²).'},
+];
+
+const MEMOIRE_SEQS=[
+  [3,7,2],
+  [5,1,8,4],
+  [9,2,6,1,3],
+];
+
+const PSEUDO_WORDS=[
+  'bracho','mardion','flinpusse','trevoulade','clanquebis',
+];
+
+const EMOTIONS_SCENES=[
+  {
+    scene:'Lucas a passé une semaine à préparer un exposé. Le jour J, il trébuche en entrant dans la classe et tout le monde rit.',
+    question:'Quelle est sûrement l\'émotion principale de Lucas ?',
+    choices:['😊 Joyeux','😳 Honteux / gêné','😡 En colère contre ses camarades','😴 Fatigué'],
+    correct:1,
+    followup:'Qu\'est-ce qui pourrait aider Lucas dans ce moment ?',
+  },
+  {
+    scene:'Inès reçoit un message d\'une amie qui dit "C\'est bon !" sans rien ajouter. Hier elles s\'étaient disputées.',
+    question:'Comment Inès pourrait-elle se sentir en lisant ce message ?',
+    choices:['Rassurée — la dispute est peut-être terminée','Confuse — elle ne sait pas si c\'est sincère','Indifférente — ça ne change rien','Fière d\'elle'],
+    correct:1,
+    followup:'Que ferait Inès de mieux : répondre tout de suite, attendre, ou appeler ?',
+  },
+  {
+    scene:'Nathan aide toujours ses camarades mais personne ne le remercie jamais. Aujourd\'hui encore, on lui demande quelque chose sans "merci".',
+    question:'Quelle émotion ressent probablement Nathan ?',
+    choices:['De la fierté','De la frustration / un peu d\'amertume','De la surprise','De la peur'],
+    correct:1,
+    followup:'Est-ce que Nathan devrait parler de ce qu\'il ressent ? Comment ?',
+  },
+];
+
+const REACTION_TRIALS=5;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let player='VISITEUR';
+let currentMission=0;
+let missionDone=new Array(6).fill(false);
+let results={
+  ressemblances:{responses:[],latencies:[],abstractionScore:0},
+  suites:{correct:0,total:4,latencies:[]},
+  memoire:{directScores:[],reverseAttempt:'',reverseLatency:0,maxSpan:0},
+  mots:{inputs:[],latencies:[],errorPatterns:[]},
+  emotions:{sceneScores:[],followups:[],latencies:[]},
+  reflexe:{times:[],falseStarts:0,mean:0,cv:0},
+};
+let timerInterval=null;
+let timerStart=0;
+let itemStart=0;
+
+function getPlayer(){
+  const q=new URLSearchParams(location.search).get('player');
+  const qp=String(q||'').trim().toUpperCase();
+  if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_KEY,qp);return qp;}
+  return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_KEY)||'VISITEUR').trim().toUpperCase()||'VISITEUR';
+}
+function suf(){return '?player='+encodeURIComponent(player);}
+function saveResults(){
+  try{
+    const store=JSON.parse(localStorage.getItem(PSYCHO_KEY)||'{}')||{};
+    store[player]={...results,missionDone,savedAt:new Date().toISOString()};
+    localStorage.setItem(PSYCHO_KEY,JSON.stringify(store));
+  }catch(e){}
+}
+
+// ─── MISSION MAP ─────────────────────────────────────────────────────────────
+function buildMap(){
+  const c=document.getElementById('missionMap');
+  c.innerHTML='';
+  MISSIONS.forEach((m,i)=>{
+    const div=document.createElement('div');
+    div.style.setProperty('--mc',m.color);
+    const cls=['mcard'];
+    if(i===currentMission)cls.push('active');
+    if(missionDone[i])cls.push('done');
+    if(i>currentMission&&!missionDone[i])cls.push('locked');
+    div.className=cls.join(' ');
+    div.innerHTML=`<span class="mi">${m.icon}</span><span class="mn">${m.label}</span><span class="ms">${missionDone[i]?'Terminé':m.sub}</span>`;
+    if(!div.classList.contains('locked'))div.onclick=()=>{currentMission=i;buildMap();buildDots();showMission(i);};
+    c.appendChild(div);
+  });
+}
+
+function buildDots(){
+  const c=document.getElementById('stepDots');
+  c.innerHTML='';
+  MISSIONS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='sdot'+(i===currentMission?' on':missionDone[i]?' done':'');
+    c.appendChild(d);
+  });
+}
+
+// ─── TIMER ───────────────────────────────────────────────────────────────────
+function startTimer(seconds){
+  clearInterval(timerInterval);
+  const fill=document.getElementById('timerFill');
+  fill.style.width='100%';
+  fill.style.background='var(--a1)';
+  const end=Date.now()+seconds*1000;
+  timerInterval=setInterval(()=>{
+    const pct=Math.max(0,(end-Date.now())/(seconds*1000))*100;
+    fill.style.width=pct+'%';
+    if(pct<20)fill.style.background='var(--a5)';
+    else if(pct<50)fill.style.background='var(--a4)';
+    if(pct<=0)clearInterval(timerInterval);
+  },80);
+}
+function stopTimer(){clearInterval(timerInterval);document.getElementById('timerFill').style.width='100%';}
+function markItemStart(){itemStart=Date.now();}
+function getLatency(){return Date.now()-itemStart;}
+
+// ─── SHOW MISSION ────────────────────────────────────────────────────────────
+function showMission(i){
+  const act=document.getElementById('actArea');
+  const m=MISSIONS[i];
+  switch(m.id){
+    case 'ressemblances':showRessemblances(act);break;
+    case 'suites':showSuites(act,0);break;
+    case 'memoire':showMemoire(act,0,false);break;
+    case 'mots':showMots(act,0);break;
+    case 'emotions':showEmotions(act,0);break;
+    case 'reflexe':showReflexe(act,0);break;
+  }
+}
+
+// ─── 1. RESSEMBLANCES ────────────────────────────────────────────────────────
+function showRessemblances(act,idx=0){
+  if(idx>=RESSEMBLANCES.length){
+    computeAbstraction();
+    doneMission(0,'ressemblances');return;
+  }
+  const item=RESSEMBLANCES[idx];
+  startTimer(60);markItemStart();
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a1);border-color:rgba(126,200,227,.4);background:rgba(126,200,227,.1);">🔗 Ressemblances · ${idx+1}/${RESSEMBLANCES.length}</div>
+      <h2>Qu'est-ce qu'ils ont en commun ?</h2>
+      <p class="act-desc">Deux mots, une idée qui les relie. Dis comment <strong>${item.a}</strong> et <strong>${item.b}</strong> se ressemblent — en quoi sont-ils pareils ?</p>
+    </div>
+    <div class="act-body">
+      <textarea id="resp" placeholder="Ils se ressemblent parce que…" maxlength="300"></textarea>
+    </div>
+    <div class="act-footer">
+      <span class="hint">Pas de bonne ou mauvaise réponse — dis ce qui te vient naturellement.</span>
+      <button class="btn main" onclick="nextRessemblance(${idx})">Valider →</button>
+    </div>
+  </div>`;
+  document.getElementById('resp').focus();
+}
+function nextRessemblance(idx){
+  const val=document.getElementById('resp').value.trim();
+  const lat=getLatency();
+  results.ressemblances.responses.push({idx,response:val,latency:lat});
+  results.ressemblances.latencies.push(lat);
+  showRessemblances(document.getElementById('actArea'),idx+1);
+}
+function computeAbstraction(){
+  let score=0;
+  results.ressemblances.responses.forEach((r,i)=>{
+    const resp=r.response.toLowerCase();
+    const kw=RESSEMBLANCES[i].keywords;
+    if(kw.some(k=>resp.includes(k)))score+=2;
+    else if(resp.length>15)score+=1;
+  });
+  results.ressemblances.abstractionScore=score;
+}
+
+// ─── 2. SUITES ───────────────────────────────────────────────────────────────
+let suitesSelected=null;
+function showSuites(act,idx){
+  if(idx>=SUITES.length){doneMission(1,'suites');return;}
+  const item=SUITES[idx];
+  suitesSelected=null;
+  startTimer(40);markItemStart();
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a2);border-color:rgba(157,140,255,.4);background:rgba(157,140,255,.1);">🔢 Suites logiques · ${idx+1}/${SUITES.length}</div>
+      <h2>Quelle est la suite ?</h2>
+      <p class="act-desc">Repère le motif et choisis ce qui vient logiquement après.</p>
+    </div>
+    <div class="act-body">
+      <div style="font-family:'Fraunces',serif;font-size:1.6rem;text-align:center;padding:18px;border-radius:14px;background:rgba(255,255,255,.05);letter-spacing:.05em;color:var(--a2);">${item.q}</div>
+      <div class="choices">
+        ${item.choices.map((c,ci)=>`<div class="choice" id="c${ci}" onclick="selectSuite(${idx},${ci},${item.correct})">${c}</div>`).join('')}
+      </div>
+    </div>
+    <div class="act-footer">
+      <span class="hint">Une seule bonne réponse.</span>
+      <button class="btn main" id="suiteNext" onclick="nextSuite(${idx})" disabled>Valider →</button>
+    </div>
+  </div>`;
+}
+function selectSuite(idx,ci,correct){
+  if(suitesSelected!==null)return;
+  suitesSelected=ci;
+  document.querySelectorAll('.choice').forEach((el,i)=>el.classList.toggle('selected',i===ci));
+  document.getElementById('suiteNext').disabled=false;
+}
+function nextSuite(idx){
+  const lat=getLatency();
+  results.suites.latencies.push(lat);
+  if(suitesSelected===SUITES[idx].correct)results.suites.correct++;
+  showSuites(document.getElementById('actArea'),idx+1);
+}
+
+// ─── 3. MÉMOIRE ──────────────────────────────────────────────────────────────
+let memoPhase='show'; // show | input | reverse
+function showMemoire(act,idx,isReverse){
+  if(idx>=MEMOIRE_SEQS.length&&!isReverse){
+    // Now do reverse (last sequence)
+    showMemoireReverse(act);return;
+  }
+  if(idx>=MEMOIRE_SEQS.length&&isReverse){doneMission(2,'memoire');return;}
+  const seq=MEMOIRE_SEQS[idx];
+  startTimer(seq.length*2+8);
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a3);border-color:rgba(86,200,187,.4);background:rgba(86,200,187,.1);">🧠 Mémo séquence · Série ${idx+1}/${MEMOIRE_SEQS.length}</div>
+      <h2>Retiens, puis répète</h2>
+      <p class="act-desc">Observe bien la suite de chiffres. Elle va disparaître — tu devras la réécrire dans l'ordre.</p>
+    </div>
+    <div class="act-body">
+      <div class="seq-display" id="seqDisp">${seq.join(' — ')}</div>
+      <div id="seqInput" style="display:none;">
+        <input type="text" id="seqResp" placeholder="Tape les chiffres séparés par des espaces…" maxlength="20">
+      </div>
+    </div>
+    <div class="act-footer">
+      <span class="hint" id="seqHint">La séquence va disparaître dans <span id="cdown">${seq.length+3}</span>s.</span>
+      <button class="btn main" id="seqBtn" style="display:none;" onclick="validateMemoire(${idx},false)">Valider →</button>
+    </div>
+  </div>`;
+  let cd=seq.length+3;
+  const cdi=setInterval(()=>{
+    cd--;
+    const cdEl=document.getElementById('cdown');
+    if(cdEl)cdEl.textContent=cd;
+    if(cd<=0){
+      clearInterval(cdi);
+      const disp=document.getElementById('seqDisp');
+      const inp=document.getElementById('seqInput');
+      const btn=document.getElementById('seqBtn');
+      const hint=document.getElementById('seqHint');
+      if(disp)disp.classList.add('hidden');
+      if(inp)inp.style.display='block';
+      if(btn)btn.style.display='inline-flex';
+      if(hint)hint.textContent='À ton tour — tape la séquence.';
+      markItemStart();
+      const respEl=document.getElementById('seqResp');
+      if(respEl)respEl.focus();
+    }
+  },1000);
+}
+function showMemoireReverse(act){
+  const seq=MEMOIRE_SEQS[1]; // medium sequence for reverse
+  startTimer(seq.length*2+10);
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a3);border-color:rgba(86,200,187,.4);background:rgba(86,200,187,.1);">🧠 Mémo séquence · Défi inversé</div>
+      <h2>Cette fois, à l'envers !</h2>
+      <p class="act-desc">Observe la séquence, puis tape-la dans l'ordre <strong>inverse</strong> (du dernier au premier chiffre).</p>
+    </div>
+    <div class="act-body">
+      <div class="seq-display" id="seqDisp">${seq.join(' — ')}</div>
+      <div id="seqInput" style="display:none;">
+        <input type="text" id="seqResp" placeholder="À l'envers, séparés par des espaces…" maxlength="20">
+      </div>
+    </div>
+    <div class="act-footer">
+      <span class="hint" id="seqHint">La séquence disparaît dans <span id="cdown">${seq.length+3}</span>s.</span>
+      <button class="btn main" id="seqBtn" style="display:none;" onclick="validateMemoireReverse()">Valider →</button>
+    </div>
+  </div>`;
+  let cd=seq.length+3;
+  const cdi=setInterval(()=>{
+    cd--;
+    const cdEl=document.getElementById('cdown');
+    if(cdEl)cdEl.textContent=cd;
+    if(cd<=0){
+      clearInterval(cdi);
+      const disp=document.getElementById('seqDisp');
+      const inp=document.getElementById('seqInput');
+      const btn=document.getElementById('seqBtn');
+      const hint=document.getElementById('seqHint');
+      if(disp)disp.classList.add('hidden');
+      if(inp)inp.style.display='block';
+      if(btn)btn.style.display='inline-flex';
+      if(hint)hint.textContent='À l\'envers — tape la séquence.';
+      markItemStart();
+    }
+  },1000);
+}
+function validateMemoire(idx,isReverse){
+  const val=document.getElementById('seqResp')?.value.trim()||'';
+  const lat=getLatency();
+  const seq=MEMOIRE_SEQS[idx];
+  const given=val.replace(/[^\d\s]/g,'').trim().split(/\s+/).map(Number).filter(n=>!isNaN(n));
+  const correct=JSON.stringify(given)===JSON.stringify(seq);
+  results.memoire.directScores.push({idx,correct,given,expected:seq,latency:lat,spanLen:seq.length});
+  if(correct)results.memoire.maxSpan=Math.max(results.memoire.maxSpan,seq.length);
+  showMemoire(document.getElementById('actArea'),idx+1,false);
+}
+function validateMemoireReverse(){
+  const val=document.getElementById('seqResp')?.value.trim()||'';
+  const lat=getLatency();
+  const seq=[...MEMOIRE_SEQS[1]].reverse();
+  const given=val.replace(/[^\d\s]/g,'').trim().split(/\s+/).map(Number).filter(n=>!isNaN(n));
+  const correct=JSON.stringify(given)===JSON.stringify(seq);
+  results.memoire.reverseAttempt=val;
+  results.memoire.reverseLatency=lat;
+  results.memoire.reverseCorrect=correct;
+  doneMission(2,'memoire');
+}
+
+// ─── 4. MOTS MYSTÈRES ────────────────────────────────────────────────────────
+function showMots(act,idx){
+  if(idx>=PSEUDO_WORDS.length){analyzePseudo();doneMission(3,'mots');return;}
+  const word=PSEUDO_WORDS[idx];
+  startTimer(45);markItemStart();
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a4);border-color:rgba(240,191,87,.4);background:rgba(240,191,87,.1);">🔤 Mots mystères · ${idx+1}/${PSEUDO_WORDS.length}</div>
+      <h2>Comment se prononce ce mot ?</h2>
+      <p class="act-desc">Ce mot n'existe pas vraiment — il est inventé. Lis-le à voix haute, puis écris comment tu penses qu'il se prononce, lettre par lettre si tu veux.</p>
+    </div>
+    <div class="act-body">
+      <div class="pword">${word}</div>
+      <input type="text" id="motResp" placeholder="Comment le lis-tu ? Ex : bra-sho, ou écris les sons…" maxlength="100">
+    </div>
+    <div class="act-footer">
+      <span class="hint">Prononce-le à voix haute d'abord, puis écris ce que tu entends.</span>
+      <button class="btn main" onclick="nextMot(${idx})">Suivant →</button>
+    </div>
+  </div>`;
+  document.getElementById('motResp').focus();
+}
+function nextMot(idx){
+  const val=document.getElementById('motResp').value.trim();
+  const lat=getLatency();
+  const word=PSEUDO_WORDS[idx];
+  results.mots.inputs.push({word,response:val,latency:lat});
+  results.mots.latencies.push(lat);
+  showMots(document.getElementById('actArea'),idx+1);
+}
+function analyzePseudo(){
+  // Heuristic: check if responses show letter-by-letter decoding vs global guessing
+  let decoding=0,guessing=0;
+  results.mots.inputs.forEach(r=>{
+    const resp=(r.response||'').toLowerCase().replace(/\s+/g,'');
+    // If response includes hyphens or spaces between syllables, likely decoding
+    if(r.response.includes('-')||r.response.includes(' '))decoding++;
+    // Very short response (< 3 chars) might indicate avoidance
+    else if(resp.length<3)guessing++;
+    else decoding++;
+  });
+  const longLat=results.mots.latencies.filter(l=>l>12000).length;
+  results.mots.decodingResponses=decoding;
+  results.mots.longLatencies=longLat;
+  results.mots.avgLatency=results.mots.latencies.reduce((a,b)=>a+b,0)/(results.mots.latencies.length||1);
+}
+
+// ─── 5. ÉMOTIONS ─────────────────────────────────────────────────────────────
+let emotionSelected=null;
+function showEmotions(act,idx){
+  if(idx>=EMOTIONS_SCENES.length){doneMission(4,'emotions');return;}
+  const scene=EMOTIONS_SCENES[idx];
+  emotionSelected=null;
+  startTimer(90);markItemStart();
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a5);border-color:rgba(255,143,109,.4);background:rgba(255,143,109,.1);">🎭 Lire une scène · ${idx+1}/${EMOTIONS_SCENES.length}</div>
+      <h2>Que ressent cette personne ?</h2>
+      <p class="act-desc" style="background:rgba(255,255,255,.04);padding:12px;border-radius:12px;border-left:3px solid var(--a5);">${scene.scene}</p>
+    </div>
+    <div class="act-body">
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:8px;">${scene.question}</p>
+      <div class="choices">
+        ${scene.choices.map((c,ci)=>`<div class="choice" id="ec${ci}" onclick="selectEmotion(${idx},${ci},${scene.correct})">${c}</div>`).join('')}
+      </div>
+      <div id="emFollowup" style="display:none;margin-top:14px;">
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:6px;">${scene.followup}</p>
+        <textarea id="emText" placeholder="Ce que je pense…" maxlength="300"></textarea>
+      </div>
+    </div>
+    <div class="act-footer">
+      <span class="hint">Pas de mauvaise réponse — fais confiance à ton instinct.</span>
+      <button class="btn main" id="emNext" onclick="nextEmotion(${idx})" disabled>Suivant →</button>
+    </div>
+  </div>`;
+}
+function selectEmotion(idx,ci,correct){
+  if(emotionSelected!==null)return;
+  emotionSelected=ci;
+  document.querySelectorAll('.choice').forEach((el,i)=>el.classList.toggle('selected',i===ci));
+  document.getElementById('emFollowup').style.display='block';
+  document.getElementById('emNext').disabled=false;
+}
+function nextEmotion(idx){
+  const lat=getLatency();
+  const scene=EMOTIONS_SCENES[idx];
+  const followup=document.getElementById('emText')?.value.trim()||'';
+  const correct=emotionSelected===scene.correct;
+  results.emotions.sceneScores.push({idx,correct,chosen:emotionSelected,latency:lat});
+  results.emotions.followups.push({idx,text:followup});
+  results.emotions.latencies.push(lat);
+  showEmotions(document.getElementById('actArea'),idx+1);
+}
+
+// ─── 6. RÉFLEXE ──────────────────────────────────────────────────────────────
+let reactPhase='idle';
+let reactTimeout=null;
+let reactStart=0;
+let reactIdx=0;
+let reactTimes=[];
+let reactFalseStarts=0;
+function showReflexe(act,idx){
+  reactPhase='wait';
+  reactIdx=idx;
+  reactTimes=[];
+  reactFalseStarts=0;
+  startTimer(40);
+  act.innerHTML=`
+  <div class="act">
+    <div class="act-header">
+      <div class="act-tag" style="color:var(--a6);border-color:rgba(138,226,173,.4);background:rgba(138,226,173,.1);">⚡ Signal & réflexe · Tour 0/${REACTION_TRIALS}</div>
+      <h2>Clique dès que ça devient vert !</h2>
+      <p class="act-desc">La zone va changer de couleur — clique le plus vite possible dès qu'elle devient verte. Attends, n'anticipe pas.</p>
+    </div>
+    <div class="act-body">
+      <div class="react-zone" id="reactZone" onclick="handleReact()">Prêt ? Clique ici pour commencer…</div>
+      <div id="reactFeedback" style="text-align:center;min-height:28px;font-size:.88rem;color:var(--sub);margin-top:8px;"></div>
+      <div id="reactResults" style="display:none;text-align:center;margin-top:8px;font-family:'Fraunces',serif;font-size:1.4rem;color:var(--a6);"></div>
+    </div>
+    <div class="act-footer">
+      <span class="hint" id="reactHint">${REACTION_TRIALS} essais au total.</span>
+      <button class="btn main" id="reactDone" style="display:none;" onclick="finalizeReflexe()">Terminer →</button>
+    </div>
+  </div>`;
+}
+function handleReact(){
+  const zone=document.getElementById('reactZone');
+  const fb=document.getElementById('reactFeedback');
+  if(reactPhase==='idle'){
+    reactPhase='wait';
+    zone.textContent='Attends le vert…';
+    zone.className='react-zone';
+    const delay=1500+Math.random()*2500;
+    reactTimeout=setTimeout(()=>{
+      reactPhase='go';
+      zone.className='react-zone go';
+      zone.textContent='MAINTENANT !';
+      reactStart=Date.now();
+    },delay);
+  }else if(reactPhase==='wait'){
+    // False start
+    clearTimeout(reactTimeout);
+    reactFalseStarts++;
+    zone.className='react-zone early';
+    zone.textContent='Trop tôt ! Recommence…';
+    if(fb)fb.textContent='Trop tôt — attends que ça soit vert.';
+    reactPhase='idle';
+    setTimeout(()=>{
+      zone.className='react-zone';
+      zone.textContent='Clique pour relancer…';
+      zone.onclick=()=>handleReact();
+    },800);
+  }else if(reactPhase==='go'){
+    const rt=Date.now()-reactStart;
+    reactTimes.push(rt);
+    const trial=reactTimes.length;
+    if(fb)fb.textContent=`Essai ${trial}/${REACTION_TRIALS} — ${rt}ms`;
+    const results_el=document.getElementById('reactResults');
+    if(results_el&&trial>0)results_el.style.display='block';
+    const hint=document.getElementById('reactHint');
+    zone.className='react-zone';
+    if(trial>=REACTION_TRIALS){
+      const mean=Math.round(reactTimes.reduce((a,b)=>a+b,0)/reactTimes.length);
+      zone.textContent='Terminé ! ⚡';
+      if(fb)fb.textContent='';
+      if(results_el)results_el.textContent=`Temps moyen : ${mean}ms`;
+      if(hint)hint.textContent='';
+      const doneBtn=document.getElementById('reactDone');
+      if(doneBtn)doneBtn.style.display='inline-flex';
+      zone.onclick=null;
+      reactPhase='done';
+    }else{
+      zone.textContent='Encore…';
+      if(hint)hint.textContent=`${REACTION_TRIALS-trial} essais restants.`;
+      reactPhase='idle';
+      zone.onclick=()=>handleReact();
+    }
+  }
+}
+function finalizeReflexe(){
+  results.reflexe.times=reactTimes;
+  results.reflexe.falseStarts=reactFalseStarts;
+  const mean=reactTimes.reduce((a,b)=>a+b,0)/(reactTimes.length||1);
+  const variance=reactTimes.reduce((a,b)=>a+Math.pow(b-mean,2),0)/(reactTimes.length||1);
+  results.reflexe.mean=Math.round(mean);
+  results.reflexe.cv=mean>0?Math.round((Math.sqrt(variance)/mean)*100):0;
+  doneMission(5,'reflexe');
+}
+
+// ─── DONE MISSION ────────────────────────────────────────────────────────────
+function doneMission(idx,key){
+  stopTimer();
+  missionDone[idx]=true;
+  saveResults();
+  const allDone=missionDone.every(Boolean);
+  if(allDone){showFinalReport();return;}
+  // Advance to next undone
+  const next=missionDone.findIndex((v,i)=>!v&&i>idx);
+  if(next>=0){currentMission=next;}else{
+    const first=missionDone.findIndex(v=>!v);
+    currentMission=first>=0?first:idx;
+  }
+  buildMap();buildDots();
+  showTransition(idx,allDone);
+}
+
+function showTransition(idx,allDone){
+  const m=MISSIONS[idx];
+  const act=document.getElementById('actArea');
+  act.innerHTML=`
+  <div class="act" style="text-align:center;align-items:center;padding:40px 24px;">
+    <div style="font-size:3rem;margin-bottom:12px;">${m.icon}</div>
+    <h2>${m.label} — terminé !</h2>
+    <p style="color:var(--muted);margin:10px 0 24px;">
+      ${allDone?'Toutes les activités sont terminées !':'Activité suivante : '+MISSIONS[currentMission].label}</p>
+    <button class="btn main" onclick="${allDone?'showFinalReport()':'showMission('+currentMission+')'}">${allDone?'Voir mon profil →':'Continuer →'}</button>
+  </div>`;
+}
+
+// ─── FINAL REPORT ────────────────────────────────────────────────────────────
+function showFinalReport(){
+  const act=document.getElementById('actArea');
+  act.innerHTML='';
+
+  // ---- compute metrics ----
+  // Raisonnement verbal
+  const absScore=results.ressemblances.abstractionScore; // max 6
+  const absLevel=absScore>=5?'élevé':absScore>=3?'moyen':'à développer';
+  const absPct=Math.round(absScore/6*100);
+
+  // Raisonnement fluide
+  const suiteScore=results.suites.correct; // max 4
+  const suitePct=Math.round(suiteScore/4*100);
+  const suiteLevel=suiteScore>=4?'excellent':suiteScore>=3?'solide':suiteScore>=2?'moyen':'en construction';
+
+  // Mémoire de travail
+  const maxSpan=results.memoire.maxSpan||0;
+  const spanPct=Math.round(Math.min(maxSpan/5,1)*100);
+  const spanLevel=maxSpan>=5?'étendue':maxSpan>=4?'dans la norme':maxSpan>=3?'courte':'très courte';
+  const reverseOk=results.memoire.reverseCorrect;
+
+  // Décodage phonologique
+  const motAvgMs=Math.round(results.mots.latencies.reduce((a,b)=>a+b,0)/(results.mots.latencies.length||1));
+  const motLong=results.mots.longLatencies||0;
+  const motPct=Math.max(0,100-motLong*20);
+  const motLevel=motLong===0?'fluide':motLong<=1?'légère lenteur':motLong<=2?'lenteur notable':'lenteur importante';
+
+  // Compréhension émotionnelle
+  const emScore=results.emotions.sceneScores.filter(s=>s.correct).length; // max 3
+  const emPct=Math.round(emScore/3*100);
+  const emLevel=emScore===3?'fine':emScore===2?'bonne':emScore===1?'partielle':'à explorer';
+  const emFollowupRich=results.emotions.followups.filter(f=>(f.text||'').length>20).length;
+
+  // Vitesse de traitement
+  const rtMean=results.reflexe.mean;
+  const rtCV=results.reflexe.cv;
+  const falseStarts=results.reflexe.falseStarts;
+  let rtLevel='rapide';
+  if(rtMean>600)rtLevel='lent';
+  else if(rtMean>400)rtLevel='dans la norme';
+  const rtPct=Math.max(0,Math.min(100,Math.round((800-rtMean)/5)));
+  const rtVariabilityNote=rtCV>40?'variabilité élevée (possible instabilité attentionnelle)':rtCV>25?'variabilité modérée':' rythme régulier';
+
+  // Build report bar function
+  function bar(pct,color){return `<div class="obs-bar-wrap" style="flex:1;"><div class="obs-bar" style="width:${pct}%;background:${color};"></div></div>`;}
+
+  const today=new Date().toLocaleDateString('fr-FR');
+
+  const reportHtml=`
+  <div class="report-wrap">
+    <div class="report-head">
+      <div>
+        <h2>Profil d'exploration — usage PsyEN</h2>
+        <div class="report-sub">Joueur : ${player} &nbsp;|&nbsp; Date : ${today}<br>
+        Outil de repérage pédagogique interne. Ne constitue pas un diagnostic. Usage exclusivement professionnel.</div>
+      </div>
+      <div class="report-actions">
+        <button class="btn-paper gold" onclick="downloadReport()">⬇ Télécharger</button>
+        <button class="btn-paper" onclick="printReport()">🖨 Imprimer</button>
+      </div>
+    </div>
+
+    <div class="obs-section">
+      <h4><span class="oi">🔗</span> Raisonnement verbal (traitement conceptuel)</h4>
+      <div class="obs-row">
+        <span class="obs-label">Abstraction</span>
+        ${bar(absPct,'#7ec8e3')}
+        <span class="obs-val">${absScore}/6 · ${absLevel}</span>
+      </div>
+      <div class="obs-note">
+        Réponses produites aux épreuves de similitudes (3 paires). Un score élevé indique une capacité de catégorisation abstraite et de généralisation verbale (indicateur ICV / CHC Gc).
+        Temps moyen de latence : ${Math.round((results.ressemblances.latencies.reduce((a,b)=>a+b,0))/(results.ressemblances.latencies.length||1)/1000*10)/10}s.
+      </div>
+      ${results.ressemblances.responses.map((r,i)=>`<div style="margin-top:6px;font-size:.78rem;color:#5a7a8a;padding:6px 8px;background:rgba(26,46,64,.06);border-radius:8px;"><em>${RESSEMBLANCES[i].a} / ${RESSEMBLANCES[i].b}</em> → « ${r.response||'(sans réponse)'} » (${Math.round(r.latency/1000)}s)</div>`).join('')}
+    </div>
+
+    <div class="obs-section">
+      <h4><span class="oi">🔢</span> Raisonnement fluide (résolution logique)</h4>
+      <div class="obs-row">
+        <span class="obs-label">Logique</span>
+        ${bar(suitePct,'#9d8cff')}
+        <span class="obs-val">${suiteScore}/4 · ${suiteLevel}</span>
+      </div>
+      <div class="obs-note">
+        Épreuve de complétion de suites (analogie aux matrices / IRF, CHC Gf). ${suiteScore>=3?'Traitement logique efficace.':suiteScore===2?'Quelques difficultés sur les suites complexes (carrés parfaits, suites alpha).':'Difficultés marquées sur les raisonnements séquentiels et analogiques.'}
+        Temps moyen : ${Math.round((results.suites.latencies.reduce((a,b)=>a+b,0))/(results.suites.latencies.length||1)/1000*10)/10}s/item.
+      </div>
+    </div>
+
+    <div class="obs-section">
+      <h4><span class="oi">🧠</span> Mémoire de travail (empan)</h4>
+      <div class="obs-row">
+        <span class="obs-label">Empan direct</span>
+        ${bar(spanPct,'#56c8bb')}
+        <span class="obs-val">max ${maxSpan} chiffres · ${spanLevel}</span>
+      </div>
+      <div class="obs-note">
+        Empan max en ordre direct : ${maxSpan} chiffres. ${reverseOk?'Ordre inverse réussi (bon administrateur central, bonne manipulation mentale).':'Ordre inverse non réussi ou partiel (charge de manipulation mentale élevée).'} 
+        Indicateur de boucle phonologique et d'administrateur central (IMT / CHC Gsm). Un empan ≤ 3 en direct est un signal d'appel pour un examen approfondi.
+      </div>
+      <div style="margin-top:6px;font-size:.78rem;color:#5a7a8a;">
+        Détail des essais : ${results.memoire.directScores.map(s=>`Série ${s.spanLen} chiffres : ${s.correct?'✓':s.given?.join('-')||'?'} (${Math.round((s.latency||0)/1000)}s)`).join(' | ')}
+        | Ordre inverse : ${results.memoire.reverseAttempt||'(non saisi)'} — ${reverseOk?'correct':'incorrect'}
+      </div>
+    </div>
+
+    <div class="obs-section">
+      <h4><span class="oi">🔤</span> Décodage phonologique (traitement lexical)</h4>
+      <div class="obs-row">
+        <span class="obs-label">Fluidité de décodage</span>
+        ${bar(motPct,'#f0bf57')}
+        <span class="obs-val">${motLevel}</span>
+      </div>
+      <div class="obs-note">
+        Tâche de pseudo-mots (assemblage graphème-phonème, voie d'assemblage lexicale). Temps moyen de réponse : ${Math.round(motAvgMs/100)/10}s. 
+        ${motLong>=2?'⚠ Latences longues fréquentes (≥12s) : possible surcharge lors du décodage de mots non lexicalisés — à explorer avec un bilan orthophonique.':motLong===1?'Légère lenteur sur certains items, à surveiller.':'Fluidité de décodage observée.'} 
+        Indicateur proxy dyslexie / CHC Ga. Réponses brutes ci-dessous.
+      </div>
+      ${results.mots.inputs.map(r=>`<div style="margin-top:5px;font-size:.78rem;color:#5a7a8a;padding:5px 8px;background:rgba(26,46,64,.06);border-radius:8px;"><strong>${r.word}</strong> → « ${r.response||'(sans réponse)'} » (${Math.round(r.latency/1000)}s)</div>`).join('')}
+    </div>
+
+    <div class="obs-section">
+      <h4><span class="oi">🎭</span> Compréhension des situations socio-émotionnelles (QE)</h4>
+      <div class="obs-row">
+        <span class="obs-label">Lecture émotionnelle</span>
+        ${bar(emPct,'#ff8f6d')}
+        <span class="obs-val">${emScore}/3 · ${emLevel}</span>
+      </div>
+      <div class="obs-note">
+        Vignettes sociales : identification de l'émotion dominante et production d'une réponse régulative (modèle MSCEIT, branches 1 et 4). 
+        ${emScore===3?'Identification précise des états émotionnels dans les 3 situations.':emScore===2?'Bonne lecture dans la majorité des situations, une confusion notable.':'Difficultés d\'identification émotionnelle — à explorer lors de l\'entretien.'}
+        Richesse des réponses régulatives (question ouverte) : ${emFollowupRich}/3 réponse(s) développée(s).
+      </div>
+      ${results.emotions.sceneScores.map((s,i)=>`<div style="margin-top:5px;font-size:.78rem;color:#5a7a8a;padding:5px 8px;background:rgba(26,46,64,.06);border-radius:8px;">Scène ${i+1} : ${s.correct?'✓ correct':'✗ — '+EMOTIONS_SCENES[i].choices[s.chosen]} (${Math.round(s.latency/1000)}s) · Réponse ouverte : « ${results.emotions.followups[i]?.text||'—'} »</div>`).join('')}
+    </div>
+
+    <div class="obs-section">
+      <h4><span class="oi">⚡</span> Vitesse de traitement et régularité (IVT)</h4>
+      <div class="obs-row">
+        <span class="obs-label">Rapidité</span>
+        ${bar(rtPct,'#8ae2ad')}
+        <span class="obs-val">${rtMean}ms · ${rtLevel}</span>
+      </div>
+      <div class="obs-note">
+        Temps de réaction moyen sur ${results.reflexe.times.length} essais : <strong>${rtMean}ms</strong>. 
+        Coefficient de variation (régularité) : ${rtCV}% — ${rtVariabilityNote}. 
+        Départs anticipés : ${falseStarts} (${falseStarts>2?'⚠ impulsivité à investiguer':falseStarts>0?'quelques anticipations':' aucun'}).
+        Norme adulte ~250ms, collégien ~300-450ms. Un temps ≥ 600ms ou CV ≥ 40% est un signal de ralentissement ou d'instabilité attentionnelle (IVT / CHC Gs).
+      </div>
+      <div style="margin-top:6px;font-size:.78rem;color:#5a7a8a;">Essais individuels : ${results.reflexe.times.map(t=>t+'ms').join(' · ') || '(aucun)'}</div>
+    </div>
+
+    ${buildAlerts(absScore,suiteScore,maxSpan,motLong,emScore,rtMean,rtCV,falseStarts)}
+
+    <div class="disclaimer">
+      Cet outil est un support de repérage pédagogique à usage interne, destiné à faciliter le travail d'un psychologue de l'Éducation Nationale (PsyEN). Il ne constitue en aucun cas un diagnostic psychologique ou médical. Les observations doivent être intégrées dans un bilan complet incluant entretien clinique, anamnèse et outils standardisés (WISC-V, BALE, MSCEIT…). Seul un professionnel habilité peut poser un diagnostic.
+    </div>
+  </div>`;
+
+  act.innerHTML=reportHtml;
+  // Animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.obs-bar').forEach(b=>{
+      const w=b.style.width;b.style.width='0';
+      setTimeout(()=>b.style.width=w,100);
+    });
+  },100);
+}
+
+function buildAlerts(abs,suite,span,motLong,em,rtMean,rtCV,falseStarts){
+  const alerts=[];
+  if(span<=3)alerts.push({level:'amber',txt:'Empan mnésique court (≤3) : à investiguer dans un bilan mémoire de travail complet. Peut impacter significativement les apprentissages scolaires.'});
+  if(motLong>=2)alerts.push({level:'amber',txt:'Latences élevées sur pseudo-mots (décodage phonologique) : signal d\'appel compatible avec un profil dyslexique. Orienter vers un bilan orthophonique.'});
+  if(rtMean>600||rtCV>40)alerts.push({level:'amber',txt:'Vitesse de traitement ralentie ('+rtMean+'ms) et/ou variabilité élevée (CV '+rtCV+'%) : peut évoquer un profil avec coût attentionnel élevé ou instabilité attentionnelle (TDA/H à explorer).'});
+  if(falseStarts>2)alerts.push({level:'amber',txt:'Départs anticipés fréquents ('+falseStarts+') en tâche de réflexe : indicateur possible d\'impulsivité — à croiser avec les observations comportementales.'});
+  if(abs<=1&&suite<=1)alerts.push({level:'amber',txt:'Raisonnement verbal et logique tous deux faibles : chute concomitante pouvant indiquer une fragilité globale des fonctions exécutives supérieures, ou une difficulté de compréhension des consignes écrites.'});
+  if(alerts.length===0){
+    alerts.push({level:'green',txt:'Aucun signal d\'appel majeur identifié sur cet outil de repérage. Profil dans les attendus pour les compétences évaluées. À compléter par un entretien clinique.'});
+  }
+  return alerts.map(a=>`<div class="alert-box ${a.level}" style="margin-top:8px;">⚠ ${a.txt}</div>`).join('');
+}
+
+function downloadReport(){
+  const content=document.querySelector('.report-wrap')?.innerText||'';
+  const blob=new Blob([`PROFIL EXPLORATION - ${player}\nDate : ${new Date().toLocaleDateString('fr-FR')}\nUsage PsyEN · Non diagnostique\n\n${content}`],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`profil_decouverte_${player}_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+function printReport(){window.print();}
+function goPortal(){window.location.href='hub_orientation.html'+suf();}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  player=getPlayer();
+  document.getElementById('playerBadge').textContent=player;
+  // Try to restore partial progress
+  try{
+    const store=JSON.parse(localStorage.getItem(PSYCHO_KEY)||'{}')||{};
+    const saved=store[player];
+    if(saved){
+      Object.assign(results,saved);
+      if(saved.missionDone)missionDone=[...saved.missionDone];
+    }
+  }catch(e){}
+  buildMap();buildDots();
+  const allDone=missionDone.every(Boolean);
+  if(allDone){showFinalReport();}else{
+    const first=missionDone.findIndex(v=>!v);
+    currentMission=first>=0?first:0;
+    buildMap();buildDots();
+    showMission(currentMission);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="fr" data-level="none">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma Fiche Orientation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08121d;--panel:rgba(14,34,52,.94);--line:rgba(255,255,255,.1);
+  --text:#edf5ff;--muted:#bfd0e1;--sub:#7a9ab8;
+  --lc:#56c8bb;--lb:rgba(86,200,187,.13);--ls:rgba(86,200,187,.35);
+  --paper:#f4efe4;--ink:#1a2e40;
+}
+[data-level="6e"]{--lc:#ff8f6d;--lb:rgba(255,143,109,.13);--ls:rgba(255,143,109,.4);--glow:rgba(255,143,109,.06);}
+[data-level="5e"]{--lc:#56c8bb;--lb:rgba(86,200,187,.13);--ls:rgba(86,200,187,.4);--glow:rgba(86,200,187,.06);}
+[data-level="4e"]{--lc:#71a7ff;--lb:rgba(113,167,255,.13);--ls:rgba(113,167,255,.4);--glow:rgba(113,167,255,.06);}
+[data-level="3e"]{--lc:#f0bf57;--lb:rgba(240,191,87,.13);--ls:rgba(240,191,87,.4);--glow:rgba(240,191,87,.06);}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'IBM Plex Sans',sans-serif;color:var(--text);min-height:100vh;
+  background:radial-gradient(ellipse at 60% 0%,var(--glow,rgba(86,200,187,.05)),transparent 40%),
+             linear-gradient(170deg,#05101a,#08121d 50%,#0a1825);
+  transition:background .5s;
+}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 72px;position:relative;}
+
+/* PROGRESS STEPPER */
+.stepper{
+  display:flex;align-items:center;gap:0;margin-bottom:20px;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;overflow:hidden;
+}
+.step{
+  display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  font-size:.82rem;font-weight:600;color:var(--sub);cursor:pointer;transition:all .2s;flex:1;justify-content:center;
+}
+.step:hover{color:var(--muted);}
+.step.on{background:var(--lb);color:var(--lc);border:1px solid var(--ls);}
+.step.done{color:var(--muted);}
+.step.done .step-dot::before{content:'✓';}
+.step-dot{
+  width:24px;height:24px;border-radius:999px;border:2px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;
+}
+.step.on .step-dot{background:var(--lc);border-color:var(--lc);color:#06141f;}
+
+/* HERO */
+.hero{
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  padding:22px;margin-bottom:16px;box-shadow:0 12px 32px rgba(0,0,0,.22);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;
+}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.1;}
+.hero h1 em{font-style:italic;color:var(--lc);}
+.hero p{color:var(--muted);margin-top:6px;line-height:1.5;font-size:.92rem;}
+.nav-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;border:none;cursor:pointer;font:600 .88rem 'IBM Plex Sans',sans-serif;transition:all .15s;}
+.btn.main{background:linear-gradient(135deg,var(--lc),color-mix(in srgb,var(--lc) 55%,white));color:#06141f;}
+.btn.main:hover{opacity:.9;transform:translateY(-1px);}
+.btn.alt{background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--line);}
+.btn.alt:hover{background:rgba(255,255,255,.13);}
+
+/* PROGRESS BAR */
+.prog-track{height:4px;background:rgba(255,255,255,.08);border-radius:999px;margin-bottom:16px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--lc);border-radius:999px;transition:width .4s ease;}
+
+/* SECTION CARDS */
+.section-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;
+  padding:22px;margin-bottom:14px;box-shadow:0 10px 28px rgba(0,0,0,.18);
+  transition:border-color .2s;
+}
+.section-card.active{border-color:var(--ls);}
+.section-card h2{font-family:'Fraunces',serif;font-size:1.25rem;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+.section-card .section-icon{
+  width:38px;height:38px;border-radius:12px;background:var(--lb);border:1px solid var(--ls);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
+}
+.section-desc{color:var(--muted);font-size:.88rem;margin-bottom:16px;line-height:1.5;}
+
+/* CHIPS */
+.chip-group{margin-bottom:18px;}
+.chip-group label{display:block;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:8px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);font-size:.83rem;color:var(--muted);cursor:pointer;
+  transition:all .18s;user-select:none;
+}
+.chip:hover{background:rgba(255,255,255,.12);color:var(--text);}
+.chip.on{background:var(--lb);border-color:var(--ls);color:var(--lc);font-weight:600;}
+
+/* OPEN QUESTIONS */
+.q-group{margin-bottom:18px;}
+.q-group label{display:block;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.q-help{font-size:.8rem;color:var(--sub);margin-bottom:8px;line-height:1.4;}
+.q-group textarea{
+  width:100%;padding:12px 14px;border-radius:14px;min-height:100px;resize:vertical;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+  color:var(--text);font:inherit;font-size:.9rem;line-height:1.5;
+  transition:border-color .2s;
+}
+.q-group textarea:focus{outline:none;border-color:var(--ls);}
+.char-count{font-size:.75rem;color:var(--sub);text-align:right;margin-top:4px;}
+
+/* SECTION NAV */
+.section-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.section-nav .info{font-size:.82rem;color:var(--sub);}
+
+/* PSYEN REPORT */
+.psyen-section{
+  background:linear-gradient(170deg,var(--paper),#fffdf5);
+  border:2px solid rgba(240,191,87,.3);border-radius:22px;
+  padding:24px;margin-top:20px;color:var(--ink);
+  box-shadow:0 12px 32px rgba(0,0,0,.14);
+}
+.psyen-section h2{font-family:'Fraunces',serif;font-size:1.35rem;color:#1a3a50;margin-bottom:4px;}
+.psyen-section .sub{font-size:.85rem;color:#5a7a8a;margin-bottom:16px;line-height:1.4;}
+.psyen-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.report-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-paper{
+  padding:8px 14px;border-radius:10px;border:1px solid rgba(26,46,64,.25);
+  background:rgba(26,46,64,.07);font:600 .82rem 'IBM Plex Sans',sans-serif;
+  color:#2a4a5e;cursor:pointer;transition:all .15s;
+}
+.btn-paper:hover{background:rgba(26,46,64,.13);}
+.btn-paper.gold{background:linear-gradient(135deg,#f0bf57,#ffe08a);color:#3d2800;border-color:transparent;}
+.report-body{line-height:1.65;font-size:.9rem;color:#2a4a5e;}
+.report-section{margin-top:14px;padding-top:14px;border-top:1px solid rgba(26,46,64,.12);}
+.report-section h4{font-size:.92rem;font-weight:700;color:#1a3a50;margin-bottom:6px;}
+.report-tag{
+  display:inline-block;padding:3px 9px;border-radius:999px;margin:2px;
+  font-size:.78rem;background:rgba(26,46,64,.08);border:1px solid rgba(26,46,64,.15);color:#2a4a5e;
+}
+.completion-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;
+  font-size:.82rem;font-weight:700;margin-bottom:12px;
+}
+.completion-badge.low{background:#fff3e0;border:1px solid #ffcc80;color:#d44;}
+.completion-badge.mid{background:#e8f4fd;border:1px solid #90caf9;color:#1565c0;}
+.completion-badge.high{background:#e8f5e9;border:1px solid #a5d6a7;color:#2e7d32;}
+
+/* LOCK SCREEN */
+#lockScreen{
+  text-align:center;padding:60px 24px;
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;margin-top:16px;
+}
+#lockScreen .lock-icon{font-size:3rem;margin-bottom:16px;display:block;}
+#lockScreen h2{font-family:'Fraunces',serif;font-size:1.4rem;margin-bottom:8px;}
+#lockScreen p{color:var(--muted);font-size:.92rem;margin-bottom:20px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.section-card{animation:fadeUp .3s ease backwards;}
+.section-card:nth-child(2){animation-delay:.05s;}
+.section-card:nth-child(3){animation-delay:.1s;}
+.section-card:nth-child(4){animation-delay:.15s;}
+
+@media(max-width:600px){.stepper{padding:6px 8px;}.step .step-label{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- STEPPER -->
+  <div class="stepper" id="stepper">
+    <div class="step on" id="step1" onclick="scrollSection(1)">
+      <div class="step-dot">1</div><span class="step-label">Mes goûts</span>
+    </div>
+    <div class="step" id="step2" onclick="scrollSection(2)">
+      <div class="step-dot">2</div><span class="step-label">Mon profil</span>
+    </div>
+    <div class="step" id="step3" onclick="scrollSection(3)">
+      <div class="step-dot">3</div><span class="step-label">Mes pistes</span>
+    </div>
+    <div class="step" id="step4" onclick="scrollSection(4)">
+      <div class="step-dot">4</div><span class="step-label">Fiche PsyEN</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div style="font-size:.78rem;color:var(--sub);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">MA FICHE ORIENTATION · <span id="levelLabel" style="color:var(--lc);">—</span></div>
+      <h1 id="heroTitle">Construis <em>ton profil</em></h1>
+      <p id="heroDesc">Réponds aux questions selon ton niveau. Tes réponses resteront rattachées à ton identifiant anonyme et pourront être exportées pour la PsyEN.</p>
+    </div>
+    <div class="nav-btns">
+      <button class="btn main" onclick="goPortal()">← Portail</button>
+      <button class="btn alt" onclick="goExplorer()" id="exploBtn" disabled>Explorer les voies →</button>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+  <!-- SECTION 1 — GOÛTS & MATIÈRES -->
+  <div class="section-card active" id="sec1">
+    <h2><div class="section-icon">🌟</div><span id="sec1Title">Ce que j'aime</span></h2>
+    <p class="section-desc" id="sec1Desc">Sélectionne les matières, activités et contextes qui te donnent de l'énergie. Tu peux en choisir plusieurs.</p>
+
+    <div class="chip-group">
+      <label>Matières et activités que j'aime</label>
+      <div class="chips" id="subjectChips"></div>
+    </div>
+
+    <div class="chip-group">
+      <label>Contextes de travail qui me plaisent</label>
+      <div class="chips" id="workChips"></div>
+    </div>
+
+    <div class="q-group" id="q1Group">
+      <label id="q1Label">Ce que j'aime apprendre ou faire</label>
+      <div class="q-help" id="q1Help">Tu peux parler de ce qui t'intéresse en classe, hors école, ou dans ta vie de tous les jours.</div>
+      <textarea id="q1" placeholder="Ex. j'aime manipuler, dessiner, expliquer, bricoler, aider, observer..." maxlength="800"></textarea>
+      <div class="char-count" id="q1Count">0 / 800</div>
+    </div>
+
+    <div class="section-nav">
+      <span class="info" id="sec1Info">—</span>
+      <button class="btn main" onclick="scrollSection(2)">Suivant : Mon profil →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 2 — APPUIS & BESOINS -->
+  <div class="section-card" id="sec2">
+    <h2><div class="section-icon">🧩</div><span>Comment j'apprends</span></h2>
+    <p class="section-desc" id="sec2Desc">Ce qui facilite ton travail et ce qui te demande plus d'effort — sans jugement, juste pour mieux se connaître.</p>
+
+    <div class="chip-group">
+      <label>Ce qui m'aide vraiment</label>
+      <div class="chips" id="supportChips"></div>
+    </div>
+
+    <div class="chip-group">
+      <label>Ce qui me demande souvent plus d'effort</label>
+      <div class="chips" id="effortChips"></div>
+    </div>
+
+    <div class="q-group">
+      <label id="q2Label">Quand j'apprends le mieux</label>
+      <div class="q-help" id="q2Help">Pense au calme, aux exemples concrets, au travail en petit groupe, au fait de bouger ou de tester.</div>
+      <textarea id="q2" placeholder="Ex. je comprends mieux quand on me montre, quand je peux manipuler..." maxlength="800"></textarea>
+      <div class="char-count" id="q2Count">0 / 800</div>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn alt" onclick="scrollSection(1)">← Précédent</button>
+      <button class="btn main" onclick="scrollSection(3)">Suivant : Mes pistes →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 3 — PISTES (level-adaptive) -->
+  <div class="section-card" id="sec3">
+    <h2><div class="section-icon" id="sec3Icon">🗺️</div><span id="sec3Title">Mes pistes</span></h2>
+    <p class="section-desc" id="sec3Desc">Les secteurs qui t'attirent et tes premières idées de voies d'orientation.</p>
+
+    <div class="chip-group">
+      <label>Secteurs qui m'attirent</label>
+      <div class="chips" id="sectorChips"></div>
+    </div>
+
+    <div class="q-group">
+      <label id="q3Label">Ce que je vois autour de moi</label>
+      <div class="q-help" id="q3Help">Famille, quartier, métiers croisés au quotidien — qu'est-ce qui t'interpelle ?</div>
+      <textarea id="q3" placeholder="Ex. je vois souvent..., j'aimerais comprendre comment on devient..." maxlength="800"></textarea>
+      <div class="char-count" id="q3Count">0 / 800</div>
+    </div>
+
+    <div class="q-group">
+      <label id="q4Label">Ce que j'aimerais découvrir</label>
+      <div class="q-help" id="q4Help">Un secteur, un lieu, un métier, une question à garder pour plus tard.</div>
+      <textarea id="q4" placeholder="Ex. j'aimerais visiter..., comprendre comment on travaille dans..." maxlength="800"></textarea>
+      <div class="char-count" id="q4Count">0 / 800</div>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn alt" onclick="scrollSection(2)">← Précédent</button>
+      <button class="btn main" onclick="scrollSection(4)">Voir ma fiche PsyEN →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — PSYEN REPORT -->
+  <div class="section-card" id="sec4">
+    <div class="psyen-section">
+      <div class="psyen-header">
+        <div>
+          <h2>📄 Fiche exportable PsyEN</h2>
+          <div class="sub">Formulée en repérage pédagogique non diagnostique · Pour usage interne équipe éducative</div>
+        </div>
+        <div class="report-actions">
+          <button class="btn-paper gold" onclick="downloadReport()">⬇ Télécharger</button>
+          <button class="btn-paper" onclick="printReport()">🖨 Imprimer / PDF</button>
+        </div>
+      </div>
+      <div id="completionBadge"></div>
+      <div id="reportBody" class="report-body"></div>
+    </div>
+    <div class="section-nav" style="margin-top:14px;">
+      <button class="btn alt" onclick="scrollSection(3)">← Modifier mes pistes</button>
+      <button class="btn main" id="exploBtn2" onclick="goExplorer()" disabled>Explorer les voies →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PLAYER_KEY='pvs_current_player';
+const LEGACY_KEY='pvs_phare_player';
+const FICHE_KEY='pvs_fiche_v2';
+const STORE_KEY='pvs_orientation_profiles_v2';
+
+const SUBJECTS=['Français','Maths','SVT','Technologie','Histoire-Géo','EPS','Arts plastiques','Musique','Langues','Sciences physiques','Ateliers manuels','Numérique','Cuisine','Jardinage','Théâtre'];
+const WORKS=['Avec les mains','Aider / prendre soin','Créer / imaginer','Résoudre des problèmes','Dehors / en plein air','Bouger beaucoup','Parler / accueillir','Utiliser des machines','Observer / analyser','Seul·e au calme','En petit groupe','Par le concret','Bricoler / réparer','Organiser / planifier'];
+const SUPPORTS=['Consignes reformulées','Exemples concrets','Temps en plus','Étapes bien séparées','Plan visuel / agenda','Manipuler / tester','Lecture à voix haute','Petit groupe','Espace calme','Feedback rapide','Répétition','Encouragements'];
+const EFFORTS=['Lire longtemps','Écrire longtemps','Copier vite','Mémoriser vite','Consignes à étapes multiples','Rester concentré·e','M\'organiser seul·e','Prendre la parole','Me repérer dans la page','Gérer le bruit','Gérer le stress','Démarrer une tâche'];
+const SECTORS=['Santé & social','Transport & logistique','Industrie & maintenance','Commerce & vente','Bois & menuiserie','Nature & agriculture','Numérique','Hôtellerie & cuisine','Bâtiment & BTP','Microtechniques & horlogerie','Maroquinerie & luxe','Énergie & électrotechnique'];
+
+const LEVEL_CONFIG={
+  '6e':{
+    label:'6e · Explorateur·trice 🧭',
+    heroTitle:'Explore <em>ce que tu aimes</em>',
+    sec1Title:'Ce que j\'aime',
+    sec1Desc:'Sélectionne les matières, activités et contextes qui te donnent de l\'énergie. Il n\'y a pas de mauvaise réponse.',
+    q1Label:'Ce que j\'aime apprendre ou faire',
+    q1Help:'Tu peux parler de ce qui t\'intéresse en classe, hors école, ou dans ta vie de tous les jours.',
+    q1Placeholder:'Ex. j\'aime manipuler, dessiner, expliquer, bricoler, aider, observer...',
+    q2Label:'Quand j\'apprends le mieux',
+    q2Help:'Pense au calme, aux exemples concrets, au travail en petit groupe, au fait de bouger ou de tester.',
+    q2Placeholder:'Ex. je comprends mieux quand on me montre, quand je peux manipuler...',
+    sec3Icon:'🧭',
+    sec3Title:'Ce qui m\'intrigue',
+    sec3Desc:'Les secteurs, métiers ou activités du territoire qui éveillent ta curiosité.',
+    q3Label:'Ce que je vois autour de moi',
+    q3Help:'Famille, quartier, métiers croisés au quotidien — qu\'est-ce qui t\'interpelle ?',
+    q3Placeholder:'Ex. je vois souvent..., j\'aimerais comprendre comment on devient...',
+    q4Label:'Ce que j\'aimerais découvrir plus tard',
+    q4Help:'Un atelier, un secteur, un lieu, une question à garder pour plus tard.',
+    q4Placeholder:'Ex. j\'aimerais visiter..., savoir à quoi sert...',
+  },
+  '5e':{
+    label:'5e · Découvreur·se 🔭',
+    heroTitle:'Observe <em>le territoire</em>',
+    sec1Title:'Mes goûts et activités',
+    sec1Desc:'Sélectionne ce qui t\'attire vraiment — matières, contextes, manières de travailler.',
+    q1Label:'Les domaines qui m\'attirent',
+    q1Help:'Quels secteurs ou types d\'activités te donnent envie de regarder de plus près ?',
+    q1Placeholder:'Ex. santé, bois, numérique, cuisine, transport, soin, nature...',
+    q2Label:'Comment je travaille le mieux',
+    q2Help:'Parle de ton rythme, de ce qui t\'aide, de ce qui te convient le mieux.',
+    q2Placeholder:'Ex. j\'avance mieux quand..., j\'ai besoin de...',
+    sec3Icon:'🔭',
+    sec3Title:'Pistes et lieux repérés',
+    sec3Desc:'Lycées, MFR, villes ou secteurs que tu aurais envie d\'explorer plus tard.',
+    q3Label:'Des lieux ou formations à garder en tête',
+    q3Help:'Ce n\'est pas un choix définitif : on garde juste des pistes concrètes.',
+    q3Placeholder:'Ex. je voudrais voir..., je retiens..., parce que...',
+    q4Label:'Comment je me décris',
+    q4Help:'Comment te présenterais-tu à un adulte qui ne te connaît pas encore ?',
+    q4Placeholder:'Ex. je suis plutôt..., j\'aime quand..., on me dit souvent que je suis...',
+  },
+  '4e':{
+    label:'4e · Préparateur·se 🗺️',
+    heroTitle:'Prépare <em>ton exploration</em>',
+    sec1Title:'Mes goûts et points forts',
+    sec1Desc:'Sélectionne ce qui te correspond — les vrais points d\'appui que tu as confirmés cette année.',
+    q1Label:'Les voies qui me parlent',
+    q1Help:'Voie générale, technologique, professionnelle, apprentissage ? Ce qui t\'attire aujourd\'hui.',
+    q1Placeholder:'Ex. ce qui m\'attire aujourd\'hui, c\'est..., parce que...',
+    q2Label:'Mon profil d\'élève',
+    q2Help:'Quels points d\'appui et quelles vigilances faut-il garder visibles dans ton dossier ?',
+    q2Placeholder:'Ex. mes points d\'appui sont..., je réussis mieux quand...',
+    sec3Icon:'🗺️',
+    sec3Title:'Immersions et mobilité',
+    sec3Desc:'Mini-stages imaginés, questions pratiques de mobilité, premières pistes d\'établissements.',
+    q3Label:'Une immersion à imaginer',
+    q3Help:'Si tu pouvais tester un lieu ou un secteur, lequel choisirais-tu d\'abord ?',
+    q3Placeholder:'Ex. j\'aimerais aller voir..., pour vérifier si...',
+    q4Label:'Mobilité, rythme, autonomie',
+    q4Help:'Quels points pratiques doivent être regardés avant d\'avancer ? (trajets, internat, fatigue...)',
+    q4Placeholder:'Ex. il faudra faire attention à..., parce que...',
+  },
+  '3e':{
+    label:'3e · Décideur·se 🎯',
+    heroTitle:'Prépare <em>tes choix</em>',
+    sec1Title:'Mes goûts confirmés',
+    sec1Desc:'Sélectionne ce qui est vraiment confirmé — les goûts et contextes que tu connais bien maintenant.',
+    q1Label:'Mes pistes prioritaires',
+    q1Help:'Deux ou trois pistes bien argumentées valent mieux qu\'une longue liste.',
+    q1Placeholder:'Ex. je garde surtout..., car...',
+    q2Label:'Pourquoi ces pistes ont du sens',
+    q2Help:'Intérêts, qualités, rythme, environnement, projections, observations de terrain.',
+    q2Placeholder:'Ex. cela me correspond parce que..., je m\'y projette quand...',
+    sec3Icon:'🎯',
+    sec3Title:'Choix et besoins pour la suite',
+    sec3Desc:'Les pistes concrètes, les besoins d\'appui et les questions pour l\'entretien PsyEN.',
+    q3Label:'Les besoins à ne pas perdre de vue',
+    q3Help:'Temps, environnement, accompagnement, mobilité, fatigue, confiance — ce qui doit rester visible.',
+    q3Placeholder:'Ex. pour que cela se passe bien, il faut que...',
+    q4Label:'Les questions à poser au PsyEN',
+    q4Help:'Questions sur un établissement, un rythme, une passerelle, l\'internat, la mobilité...',
+    q4Placeholder:'Ex. je voudrais demander..., vérifier..., comprendre...',
+  }
+};
+
+let player='VISITEUR';
+let currentLevel=null;
+let data={subjects:[],works:[],supports:[],efforts:[],sectors:[],texts:{q1:'',q2:'',q3:'',q4:''}};
+
+function getPlayer(){
+  const q=new URLSearchParams(location.search).get('player');
+  const qp=String(q||'').trim().toUpperCase();
+  if(qp){localStorage.setItem(PLAYER_KEY,qp);localStorage.setItem(LEGACY_KEY,qp);return qp;}
+  return String(localStorage.getItem(PLAYER_KEY)||localStorage.getItem(LEGACY_KEY)||'VISITEUR').trim().toUpperCase()||'VISITEUR';
+}
+function suf(){return '?player='+encodeURIComponent(player);}
+
+function loadData(){
+  try{
+    const store=JSON.parse(localStorage.getItem(FICHE_KEY)||'{}')||{};
+    const pf=store[player]||{};
+    currentLevel=pf.level||null;
+    data.subjects=pf.subjects||[];
+    data.works=pf.works||[];
+    data.supports=pf.supports||[];
+    data.efforts=pf.efforts||[];
+    data.sectors=pf.sectors||[];
+    data.texts=pf.texts||{q1:'',q2:'',q3:'',q4:''};
+    if(!currentLevel){
+      try{currentLevel=(JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{})[player]?.level||null;}catch(e){}
+    }
+  }catch(e){}
+}
+
+function saveData(){
+  try{
+    const store=JSON.parse(localStorage.getItem(FICHE_KEY)||'{}')||{};
+    store[player]={level:currentLevel,...data};
+    localStorage.setItem(FICHE_KEY,JSON.stringify(store));
+    // Also update legacy store for PsyEN compatibility
+    const legStore=JSON.parse(localStorage.getItem(STORE_KEY)||'{}')||{};
+    legStore[player]=legStore[player]||{};
+    legStore[player].level=currentLevel;
+    legStore[player].subjects=data.subjects;
+    legStore[player].works=data.works;
+    legStore[player].supports=data.supports;
+    legStore[player].efforts=data.efforts;
+    legStore[player].sectors=data.sectors;
+    legStore[player].texts=data.texts;
+    localStorage.setItem(STORE_KEY,JSON.stringify(legStore));
+  }catch(e){}
+}
+
+function buildChips(containerId,items,dataKey){
+  const c=document.getElementById(containerId);
+  c.innerHTML='';
+  items.forEach(item=>{
+    const el=document.createElement('div');
+    el.className='chip'+(data[dataKey].includes(item)?' on':'');
+    el.textContent=item;
+    el.onclick=()=>{
+      if(data[dataKey].includes(item))data[dataKey]=data[dataKey].filter(x=>x!==item);
+      else data[dataKey].push(item);
+      el.classList.toggle('on',data[dataKey].includes(item));
+      saveData();refreshProgress();
+    };
+    c.appendChild(el);
+  });
+}
+
+function bindTextarea(id,key){
+  const el=document.getElementById(id);
+  const countEl=document.getElementById(id+'Count');
+  el.value=data.texts[key]||'';
+  updateCount(el,countEl);
+  el.oninput=()=>{
+    data.texts[key]=el.value;
+    updateCount(el,countEl);
+    saveData();refreshProgress();
+  };
+}
+function updateCount(el,countEl){
+  if(countEl)countEl.textContent=(el.value||'').length+' / '+el.maxLength;
+}
+
+function applyLevelConfig(lv){
+  const cfg=LEVEL_CONFIG[lv];
+  if(!cfg)return;
+  document.getElementById('levelLabel').textContent=cfg.label;
+  document.getElementById('heroTitle').innerHTML=cfg.heroTitle;
+  document.getElementById('sec1Title').textContent=cfg.sec1Title;
+  document.getElementById('sec1Desc').textContent=cfg.sec1Desc;
+  document.getElementById('q1Label').textContent=cfg.q1Label;
+  document.getElementById('q1Help').textContent=cfg.q1Help;
+  document.getElementById('q1').placeholder=cfg.q1Placeholder;
+  document.getElementById('q2Label').textContent=cfg.q2Label;
+  document.getElementById('q2Help').textContent=cfg.q2Help;
+  document.getElementById('q2').placeholder=cfg.q2Placeholder;
+  document.getElementById('sec3Icon').textContent=cfg.sec3Icon;
+  document.getElementById('sec3Title').textContent=cfg.sec3Title;
+  document.getElementById('sec3Desc').textContent=cfg.sec3Desc;
+  document.getElementById('q3Label').textContent=cfg.q3Label;
+  document.getElementById('q3Help').textContent=cfg.q3Help;
+  document.getElementById('q3').placeholder=cfg.q3Placeholder;
+  document.getElementById('q4Label').textContent=cfg.q4Label;
+  document.getElementById('q4Help').textContent=cfg.q4Help;
+  document.getElementById('q4').placeholder=cfg.q4Placeholder;
+}
+
+function refreshProgress(){
+  const chips=data.subjects.length+data.works.length+data.supports.length+data.efforts.length;
+  const texts=Object.values(data.texts).filter(v=>String(v||'').trim().length>15).length;
+  const pct=Math.round(Math.min((chips/12*.5+texts/4*.5),1)*100);
+  document.getElementById('progFill').style.width=pct+'%';
+
+  document.getElementById('sec1Info').textContent=
+    (data.subjects.length+data.works.length)+' goût(s) sélectionné(s)';
+
+  const unlocked=pct>=25;
+  document.getElementById('exploBtn').disabled=!unlocked;
+  document.getElementById('exploBtn2').disabled=!unlocked;
+
+  buildReport();
+}
+
+function scrollSection(n){
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('sec'+i).classList.toggle('active',i===n);
+    const stepEl=document.getElementById('step'+i);
+    stepEl.classList.toggle('on',i===n);
+  });
+  document.getElementById('sec'+n).scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>buildReport(),100);
+}
+
+function buildReport(){
+  const lv=currentLevel||'?';
+  const lvCfg=LEVEL_CONFIG[lv]||{};
+  const chips=data.subjects.length+data.works.length+data.supports.length+data.efforts.length;
+  const texts=Object.values(data.texts).filter(v=>String(v||'').trim().length>15).length;
+  const pct=Math.round(Math.min((chips/12*.5+texts/4*.5),1)*100);
+
+  // Completion badge
+  const badge=document.getElementById('completionBadge');
+  let bc='low',bt='Fiche peu avancée — à compléter';
+  if(pct>=70){bc='high';bt='Fiche bien avancée ✓';}
+  else if(pct>=35){bc='mid';bt='Fiche en cours de construction';}
+  badge.innerHTML=`<div class="completion-badge ${bc}">${bt} · ${pct}%</div>`;
+
+  const today=new Date().toLocaleDateString('fr-FR');
+  let html=`<p><strong>Identifiant :</strong> ${player} &nbsp;|&nbsp; <strong>Niveau :</strong> ${lv} &nbsp;|&nbsp; <strong>Date :</strong> ${today}</p>`;
+
+  if(data.subjects.length){
+    html+=`<div class="report-section"><h4>Matières et activités aimées</h4>`;
+    data.subjects.forEach(s=>html+=`<span class="report-tag">${s}</span>`);
+    html+=`</div>`;
+  }
+  if(data.works.length){
+    html+=`<div class="report-section"><h4>Contextes de travail valorisés</h4>`;
+    data.works.forEach(s=>html+=`<span class="report-tag">${s}</span>`);
+    html+=`</div>`;
+  }
+  if(data.supports.length){
+    html+=`<div class="report-section"><h4>Appuis identifiés comme efficaces</h4>`;
+    data.supports.forEach(s=>html+=`<span class="report-tag">${s}</span>`);
+    html+=`</div>`;
+  }
+  if(data.efforts.length){
+    html+=`<div class="report-section"><h4>Points nécessitant un effort accru</h4>`;
+    data.efforts.forEach(s=>html+=`<span class="report-tag">${s}</span>`);
+    html+=`</div>`;
+  }
+  if(data.sectors.length){
+    html+=`<div class="report-section"><h4>Secteurs d'intérêt repérés</h4>`;
+    data.sectors.forEach(s=>html+=`<span class="report-tag">${s}</span>`);
+    html+=`</div>`;
+  }
+  const labels={q1:lvCfg.q1Label||'Question 1',q2:lvCfg.q2Label||'Question 2',q3:lvCfg.q3Label||'Question 3',q4:lvCfg.q4Label||'Question 4'};
+  ['q1','q2','q3','q4'].forEach(k=>{
+    const v=String(data.texts[k]||'').trim();
+    if(v.length>5)html+=`<div class="report-section"><h4>${labels[k]}</h4><p>${v}</p></div>`;
+  });
+
+  if(chips===0&&texts===0){
+    html+='<p style="color:#5a7a8a;font-style:italic;margin-top:12px;">La fiche est vide pour le moment. Remonte dans les sections pour la compléter.</p>';
+  }
+
+  html+=`<div class="report-section" style="font-size:.8rem;color:#7a9ab8;"><p>Ce document est un outil de repérage pédagogique à usage interne. Il ne constitue en aucun cas un diagnostic. Seul un bilan pluridisciplinaire réalisé par un professionnel fait foi.</p></div>`;
+
+  document.getElementById('reportBody').innerHTML=html;
+}
+
+function downloadReport(){
+  buildReport();
+  const content=document.getElementById('reportBody').innerText;
+  const lv=currentLevel||'niveau';
+  const blob=new Blob([`FICHE ORIENTATION - ${player} - ${lv}\nDate : ${new Date().toLocaleDateString('fr-FR')}\n\n${content}`],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`fiche_orientation_${player}_${lv}.txt`;a.click();
+}
+function printReport(){
+  window.print();
+}
+
+function goPortal(){window.location.href='hub_orientation.html'+suf();}
+function goExplorer(){window.location.href='hub_explorer.html'+suf();}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  player=getPlayer();
+  loadData();
+  if(currentLevel){
+    document.documentElement.setAttribute('data-level',currentLevel);
+    applyLevelConfig(currentLevel);
+  }
+  buildChips('subjectChips',SUBJECTS,'subjects');
+  buildChips('workChips',WORKS,'works');
+  buildChips('supportChips',SUPPORTS,'supports');
+  buildChips('effortChips',EFFORTS,'efforts');
+  buildChips('sectorChips',SECTORS,'sectors');
+  bindTextarea('q1','q1');
+  bindTextarea('q2','q2');
+  bindTextarea('q3','q3');
+  bindTextarea('q4','q4');
+  refreshProgress();
+});
+</script>
+</body>
+</html>
