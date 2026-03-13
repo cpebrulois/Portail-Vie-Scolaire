@@ -136,7 +136,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
     <div class="prog-info">
       <span id="progLabel">Commence le Livre I pour entrer dans l'histoire</span>
-      <span id="progXp">0 / 6 000 XP</span>
+      <span id="progXp">0 / 19 500 XP</span>
     </div>
   </div>
 
@@ -191,7 +191,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       <span class="book-badge">Livre III</span>
       <span class="book-num">L'Épreuve des Piliers</span>
       <span class="book-class">Troisième année · 4e</span>
-      <span class="book-xp-req" id="req-livre3">5 500 XP</span>
+      <span class="book-xp-req" id="req-livre3">10 000 XP</span>
     </div>
     <div class="book-locked" id="locked-livre3">
       <span class="book-locked-icon">⚔️</span>
@@ -211,7 +211,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       <span class="book-badge">Livre IV</span>
       <span class="book-num">L'Ordre des Veilleurs</span>
       <span class="book-class">Quatrième année · 3e</span>
-      <span class="book-xp-req" id="req-livre4">6 000 XP</span>
+      <span class="book-xp-req" id="req-livre4">15 000 XP</span>
     </div>
     <div class="book-locked" id="locked-livre4">
       <span class="book-locked-icon">🌟</span>
@@ -275,10 +275,13 @@ var CHAPITRES=[
 ];
 
 // ── LIVRES FUTURS ─────────────────────────────────────────────────────────────
+// Livre II : ch1 à 5 000 XP puis +500/chap → dernier (ch10) à 9 500 XP
+// Livre III : ch1 à 10 000 XP puis +500/chap → dernier à 14 500 XP
+// Livre IV : ch1 à 15 000 XP puis +500/chap → dernier à 19 500 XP
 var FUTURS=[
   {xpReq:5000,barId:'bar-livre2',xpId:'xp-livre2',lockId:'locked-livre2',reqId:'req-livre2'},
-  {xpReq:5500,barId:'bar-livre3',xpId:'xp-livre3',lockId:'locked-livre3',reqId:'req-livre3'},
-  {xpReq:6000,barId:'bar-livre4',xpId:'xp-livre4',lockId:'locked-livre4',reqId:'req-livre4'},
+  {xpReq:10000,barId:'bar-livre3',xpId:'xp-livre3',lockId:'locked-livre3',reqId:'req-livre3'},
+  {xpReq:15000,barId:'bar-livre4',xpId:'xp-livre4',lockId:'locked-livre4',reqId:'req-livre4'},
 ];
 
 // ── LDVELH ────────────────────────────────────────────────────────────────────
@@ -345,16 +348,16 @@ function renderFuturs(xp){
 function renderProgress(xp){
   var done=getDone();
   var n=CHAPITRES.filter(function(c){return done[c.id];}).length;
-  // Série globale 0→6000
+  // Série globale 0→19500 (19 chapitres × 4 livres × 500 XP)
   var gf=document.getElementById('progFill');
   var gl=document.getElementById('progLabel');
   var gx=document.getElementById('progXp');
-  if(gf)gf.style.width=Math.min(100,Math.round(xp/60))+'%';
-  if(gx)gx.textContent=fxp(xp)+' / 6 000 XP';
+  if(gf)gf.style.width=Math.min(100,Math.round(xp/195))+'%';
+  if(gx)gx.textContent=fxp(xp)+' / 19 500 XP';
   if(gl){
-    if(xp>=6000)gl.textContent='Série complète ⭐';
-    else if(xp>=5500)gl.textContent='Livre III débloqué — Livre IV à 6 000 XP';
-    else if(xp>=5000)gl.textContent='Livre II débloqué — Livre III à 5 500 XP';
+    if(xp>=15000)gl.textContent='Livre IV débloqué — dernier livre du cycle !';
+    else if(xp>=10000)gl.textContent='Livre III débloqué — Livre IV à 15 000 XP';
+    else if(xp>=5000)gl.textContent='Livre II débloqué — Livre III à 10 000 XP';
     else if(xp>=4500)gl.textContent='Livre I terminé — Livre II à 5 000 XP';
     else{
       var nx=CHAPITRES.find(function(c){return xp<c.xpRequired&&!done[c.id];});
