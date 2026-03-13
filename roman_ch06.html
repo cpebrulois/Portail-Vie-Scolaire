@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch. VI — Ce que la Nuit Cache · Les Veilleurs de Valdurne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--r:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.1em;line-height:1.9;min-height:100vh;padding-bottom:100px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.05) 0%,transparent 55%)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+
+.wrap{max-width:700px;margin:0 auto;padding:32px 24px 60px;position:relative;z-index:1}
+
+/* NAV */
+.nav{display:flex;align-items:center;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:4px;color:var(--enc2);font-size:.78em;text-decoration:none;display:inline-block;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.ctag{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase}
+
+/* HEADER */
+.series-tag{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:4px;color:var(--or);opacity:.55;text-transform:uppercase;margin-bottom:8px}
+.ch-num{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:6px}
+.ch-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,5vw,2.2em);color:var(--or2);line-height:1.15;margin-bottom:10px;text-shadow:0 0 30px rgba(201,168,76,.15)}
+.ch-icon{font-size:3em;text-align:center;margin:20px 0;display:block;filter:drop-shadow(0 0 18px rgba(201,168,76,.4));animation:flicker 4s ease-in-out infinite}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 0 12px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 28px rgba(201,168,76,.6))}}
+.ch-meta{font-size:.78em;color:var(--enc2);opacity:.55;font-style:italic;margin-bottom:32px}
+
+/* DIVIDER */
+hr.rune{border:none;text-align:center;margin:36px 0;position:relative}
+hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Cinzel',serif;font-size:.75em;letter-spacing:4px}
+
+/* TEXTE */
+.story{font-size:1.05em;line-height:1.95}
+.story p{margin-bottom:1.4em;text-align:justify}
+.story .first-letter::first-letter{font-family:'Cinzel Decorative',serif;font-size:3.8em;float:left;line-height:.75;margin-right:.08em;color:var(--or2);text-shadow:0 0 20px rgba(201,168,76,.4)}
+.story em{color:var(--enc2);font-style:italic}
+.story strong{color:var(--or2);font-weight:600}
+.story .dialogue{margin:0 0 1.2em 0;padding-left:22px;border-left:2px solid rgba(201,168,76,.2);font-style:italic;color:var(--enc2)}
+.story .pensee{padding:16px 22px;margin:20px 0;background:rgba(201,168,76,.03);border-left:3px solid rgba(201,168,76,.2);border-radius:0 6px 6px 0;font-style:italic;color:var(--enc2)}
+.story .silence{padding:12px 0;margin:8px 0 16px;text-align:center;font-family:'Cinzel',serif;font-size:.7em;letter-spacing:5px;color:rgba(201,168,76,.25);text-transform:uppercase}
+
+/* SECTION HEADERS */
+.section-title{font-family:'Cinzel',serif;font-size:.75em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin:36px 0 18px;text-align:center}
+
+/* FIN DE CHAPITRE */
+.end-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:28px;margin-top:48px;text-align:center}
+.end-icon{font-size:2.5em;margin-bottom:12px;display:block;filter:drop-shadow(0 0 12px rgba(201,168,76,.4))}
+.end-title{font-family:'Cinzel',serif;font-size:.9em;color:var(--or2);margin-bottom:8px;letter-spacing:2px}
+.end-txt{font-style:italic;color:var(--enc2);font-size:.9em;line-height:1.7;margin-bottom:20px}
+.end-next{font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:16px}
+.btn{padding:10px 24px;border-radius:4px;cursor:pointer;font-size:.8em;margin:5px;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;text-decoration:none;display:inline-block}
+.btn-g{background:rgba(201,168,76,.1);border:1px solid var(--or);color:var(--or2)}
+.btn-g:hover{background:rgba(201,168,76,.25)}
+.btn-s{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
+.btn-s:hover{border-color:rgba(255,255,255,.3)}
+
+/* XP LOCK */
+.xp-lock{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px}
+.lock-icon{font-size:3em;filter:drop-shadow(0 0 12px rgba(201,168,76,.3))}
+.lock-title{font-family:'Cinzel Decorative',serif;font-size:1.3em;color:var(--or2)}
+.lock-body{color:var(--enc2);font-style:italic;max-width:380px;line-height:1.7}
+.lock-bar-wrap{width:260px;height:8px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+.lock-bar-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));border-radius:999px;transition:width .4s}
+.lock-xp{font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;color:var(--or);opacity:.7}
+
+/* XP FLASH */
+.xp-flash{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.88em;background:linear-gradient(135deg,#1a3a1a,#2a4a1a);border:1px solid rgba(100,200,100,.5);color:#b8e8b8;display:none;white-space:nowrap}
+
+/* ═══════════════════════════════════════════
+   LECTEUR AUDIO — barre fixe en bas de page
+   Fichier attendu : roman_ch06_nuit_cache.mp3
+   ═══════════════════════════════════════════ */
+.audio-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:linear-gradient(to top,rgba(10,8,5,.98),rgba(18,14,9,.95));
+  border-top:1px solid rgba(201,168,76,.18);
+  padding:10px 20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.audio-bar .ab-title{
+  font-family:'Cinzel',serif;font-size:.65em;letter-spacing:2px;
+  color:var(--or);opacity:.7;text-transform:uppercase;white-space:nowrap;
+  flex-shrink:0;
+}
+.audio-bar .ab-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid rgba(201,168,76,.35);
+  background:rgba(201,168,76,.07);color:var(--or2);font-size:1.1em;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:all .2s;flex-shrink:0;
+}
+.audio-bar .ab-btn:hover{background:rgba(201,168,76,.18);border-color:var(--or)}
+.audio-bar .ab-progress{
+  flex:1;min-width:80px;height:4px;background:rgba(255,255,255,.1);
+  border-radius:999px;cursor:pointer;position:relative;
+}
+.audio-bar .ab-progress-fill{
+  height:100%;border-radius:999px;
+  background:linear-gradient(90deg,var(--or),var(--or2));
+  pointer-events:none;transition:width .25s linear;
+}
+.audio-bar .ab-time{
+  font-family:'Cinzel',serif;font-size:.62em;color:var(--enc2);
+  opacity:.6;white-space:nowrap;flex-shrink:0;min-width:72px;text-align:right;
+}
+.audio-bar .ab-vol-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.audio-bar .ab-vol-ico{color:var(--enc2);opacity:.5;font-size:.85em}
+.audio-bar input[type=range]{
+  -webkit-appearance:none;height:3px;border-radius:999px;
+  background:rgba(255,255,255,.1);width:76px;cursor:pointer;accent-color:var(--or2);
+}
+.audio-bar input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:var(--or2);cursor:pointer;
+}
+.audio-bar .ab-status{font-size:.7em;color:var(--enc2);opacity:.45;font-style:italic;flex-shrink:0;white-space:nowrap}
+.audio-bar .ab-hint{
+  font-size:.64em;color:var(--enc2);opacity:.32;font-style:italic;
+  width:100%;text-align:center;margin-top:2px;
+  font-family:'Cinzel',serif;letter-spacing:1px;
+}
+
+@media(max-width:600px){
+  .wrap{padding:20px 14px 60px}.story{font-size:1em}
+  .audio-bar{padding:8px 12px;gap:10px}
+  .audio-bar .ab-hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ XP LOCK ═══ -->
+<div class="xp-lock" id="xpLock">
+  <div class="lock-icon">🌑</div>
+  <div class="lock-title">Chapitre VI · Non débloqué</div>
+  <div class="lock-body">Ce chapitre se débloque à 2 500 XP. Participe au Portail, témoigne pour tes camarades, complète des modules — et la nuit de Lyam t'attendra.</div>
+  <div class="lock-bar-wrap"><div class="lock-bar-fill" id="lockFill" style="width:0%"></div></div>
+  <div class="lock-xp"><span id="curXp">0</span> / 2 500 XP</div>
+  <a href="hub_narration.html" class="btn btn-g">Retour à la Bibliothèque</a>
+</div>
+
+<!-- ═══ CONTENU PRINCIPAL ═══ -->
+<div id="mainContent" style="display:none">
+<div class="wrap">
+
+  <div class="nav">
+    <a class="bk" href="roman_ch05.html">← Chapitre V</a>
+    <a class="bk" href="hub_narration.html">Bibliothèque</a>
+    <a class="bk" href="index.html">Portail</a>
+    <span class="ctag">Les Veilleurs de Valdurne</span>
+  </div>
+
+  <div class="series-tag">Roman Principal · Expédition de Valdurne</div>
+  <div class="ch-num">Chapitre Sixième</div>
+  <h1 class="ch-title">Ce que la Nuit Cache</h1>
+  <p class="ch-meta">Dans lequel Lyam voit quelque chose qu'il n'aurait pas dû voir — et découvre que le silence est lui aussi un choix, avec ses propres conséquences.</p>
+  <span class="ch-icon">🌑</span>
+
+  <div class="story">
+
+    <p class="first-letter">Il y a des nuits à Valdurne qui n'ont pas de nom dans le calendrier mais qui s'inscrivent dans la mémoire avec la précision d'une date. Pas parce qu'il se passe quelque chose d'extraordinaire — pas de tempête, pas de cérémonie, pas d'événement déclaré. Mais parce que l'esprit, à certaines heures, est dans un état particulier de réception, comme une surface qu'on a poncée et sur laquelle tout laisse maintenant une trace durable. La nuit du septième vendredi d'octobre était de celles-là.</p>
+
+    <p>Lyam ne dormait pas. Pas à cause d'une insomnie dramatique — pas de pensées en spirale, pas d'angoisse identifiable. Juste l'impossibilité ordinaire du sommeil quand le corps est fatigué mais que le cerveau refuse de fermer ses portes. Il avait relu ses notes de l'atelier jusqu'à ce que sa bougie soit trop basse, et maintenant il restait allongé dans le noir du dortoir du nord, à écouter la respiration des cinq autres garçons qui dormaient avec la facilité de gens qui n'avaient pas pris l'habitude de réfléchir après l'heure du dîner.</p>
+
+    <p>Kern, dans le lit au-dessus de lui, avait le souffle régulier des grandes fatigues honnêtes. Il avait travaillé six heures sur un problème de droit successoral dont la Maîtresse Elowen avait annoncé qu'il serait au centre de l'épreuve de fin de trimestre, et il avait produit quelque chose de solide, comme il produisait toujours des choses solides — sans brillance particulière mais sans failles non plus. C'était le type de travail qui ne vous vaut pas de compliments mais qui vous maintient dans le rang. Kern connaissait la valeur de ce type de travail. Il avait un frère aîné pour l'avoir appris.</p>
+
+    <p>À un moment que Lyam estima plus tard entre la deuxième et la troisième heure après minuit, il décida qu'il allait chercher de l'eau. Ce n'était pas une décision importante. C'était même, de toutes les décisions qu'il avait prises depuis son arrivée à Valdurne, la plus petite, la plus anodine, la plus dénuée de conséquences apparentes. Il se leva sans bruit — il avait l'habitude, son père commençait la forge avant l'aube et le village entier avait appris à habiter silencieusement dans les heures que le forgeron habitait à voix haute — et il prit ses chaussures à la main pour ne pas faire grincer les lames du plancher.</p>
+
+    <hr class="rune">
+    <div class="section-title">I. Le Couloir de l'Aile Est</div>
+
+    <p>La salle commune du rez-de-chaussée avait une cruche d'eau fraîche posée sur la tablette près de la porte — une règle pratique, pas officielle, instaurée par les années précédentes et maintenue par habitude. Pour y accéder depuis le dortoir du nord sans longer toute la façade principale, il y avait un raccourci que Kern lui avait montré à la fin de la troisième semaine : l'escalier de service de l'aile est, moins large, moins éclairé, mais deux fois plus court. Lyam le connaissait bien à présent. Il en connaissait les marches qui grinçaient — la quatrième depuis le bas, la onzième depuis le haut — et celles qui étaient sûres.</p>
+
+    <p>Ce qu'il ne connaissait pas, parce qu'il n'avait pas eu de raison de l'explorer, c'était le couloir qui se ramifiait à gauche au bas de cet escalier. Un couloir de service, plus bas de plafond que les autres, avec des murs dont la pierre conservait l'humidité de novembre depuis au moins un siècle. Il n'était pas formellement interdit — pas de panneau, pas de chaîne, rien dans le règlement qui mentionnait son nom ou ses coordonnées. Il était juste de ces endroits que tout le monde contournait sans se donner la peine de s'en expliquer la raison.</p>
+
+    <p>La raison, il la comprit en arrivant au bas de l'escalier et en voyant de la lumière.</p>
+
+    <p>Ce n'était pas une lumière de torche — pas ce tremblement orangé et irrégulier des flammes qu'on portait dans les couloirs la nuit. C'était la lumière stable, travaillée, d'une lampe à huile posée sur une surface fixe. La lumière de quelqu'un qui lit ou qui écrit, qui a besoin de voir précisément et qui ne va nulle part. Elle filtrait sous une porte — la troisième porte à gauche dans le couloir, une porte que Lyam reconnut après un moment de recalibration mentale : la porte du bureau annexe de l'administration, celui que le secrétaire Belart utilisait pour les archives courantes.</p>
+
+    <p>Lyam s'arrêta.</p>
+
+    <div class="pensee">Il y avait plusieurs raisons sensées de tourner les talons. La première était le froid — les couloirs de service n'étaient pas chauffés et il n'avait que sa tunique de nuit. La deuxième était l'heure — être trouvé dans un couloir de service à trois heures du matin était le genre de chose qu'on expliquait mal, même avec les meilleures intentions. La troisième était que ça ne le regardait probablement pas. Ce qui se passait derrière cette porte, à cette heure, était probablement une affaire ordinaire dont il ne savait rien et qui n'avait rien à voir avec lui. La quatrième raison était peut-être la plus honnête : il avait peur de ce qu'il pouvait voir si il regardait.</div>
+
+    <p>Il s'approcha de la porte.</p>
+
+    <hr class="rune">
+    <div class="section-title">II. Ce qu'on Voit Quand on N'est Pas Censé Regarder</div>
+
+    <p>La porte avait un défaut d'ajustement au niveau du montant droit — une légère déformation du bois sous l'effet des saisons successives, qui laissait entre le battant et le cadre un interstice d'environ deux centimètres à hauteur d'œil. Lyam ne le remarqua pas tout de suite. Il le remarqua parce que, en posant la main sur le bois pour s'y appuyer, il sentit la chaleur de la pièce filtrer à travers cet espace précis, et il comprit qu'il pouvait voir sans ouvrir.</p>
+
+    <p>Il vit deux personnes.</p>
+
+    <p>Belart, le secrétaire, était assis à sa table de travail habituelle. Il avait sa façon particulière de tenir la plume — très haut sur le manche, trois doigts écartés, comme s'il prévenait la plume de s'échapper plutôt que de l'accompagner. Il écrivait dans un registre épais à couverture de cuir sombre que Lyam reconnut après quelques secondes : c'était le registre des incidents et des modifications administratives. Lyam l'avait vu posé sur la table de Belart le jour où il était venu signaler l'absence de son nom sur le tableau. Belart l'avait ouvert, ce jour-là, et avait noté quelque chose — Lyam n'avait pas pu lire ce qu'il écrivait.</p>
+
+    <p>Daran de Mauren était debout derrière lui. Pas assis, pas dans le fauteuil que la pièce comportait contre le mur de gauche — debout, légèrement penché en avant, les deux poings appuyés sur le bord de la table. Il regardait la plume de Belart avec l'attention de quelqu'un qui vérifie que ce qu'on fait est conforme à ce qu'il a demandé.</p>
+
+    <p>Ce n'était pas une conversation. C'était une supervision.</p>
+
+    <p>Lyam ne pouvait pas lire ce que Belart écrivait. L'angle était mauvais et l'écriture de Belart était petite et serrée, celle d'un homme qui avait grandi dans les marges des documents. Mais il entendit Daran de Mauren dire, d'une voix basse et nette qui ne cherchait pas à être inaudible — il ne s'attendait manifestement pas à avoir des auditeurs à cette heure :</p>
+
+    <p class="dialogue">— Écris « erreur attribuée à la manipulation du registre de la semaine précédente, lors de la mise à jour effectuée par le page Kern, fils du marchand. » Pas de virgule entre les deux derniers groupes. C'est plus difficile à isoler comme accusation si ça vient en lecture rapide.</p>
+
+    <p>Un silence. Le bruit régulier de la plume.</p>
+
+    <p class="dialogue">— Et pour la date ? dit Belart, sans relever les yeux.</p>
+
+    <p class="dialogue">— Mets la date de la mise à jour réelle. Ce n'est pas un faux — c'est une annotation tardive. Il y a une différence.</p>
+
+    <p class="dialogue">— Une annotation tardive non datée comme telle, dit Belart, avec le ton de quelqu'un qui vérifie une catégorie juridique et non une objection morale.</p>
+
+    <p class="dialogue">— Exactement.</p>
+
+    <p>La plume reprit. Lyam ne bougeait pas. Il avait conscience de plusieurs choses simultanément : de ses pieds nus sur la pierre froide, du fait que sa respiration était trop audible à ses propres oreilles, de l'interstice dans la porte et de la façon dont la lumière de la lampe découpait un triangle de jaune sur les dalles du couloir à deux pas de lui. Il avait conscience aussi, avec une précision qui lui parut plus tard étrange dans son calme, de ce qu'il était en train de comprendre.</p>
+
+    <p>On était en train d'écrire dans le registre officiel que Kern avait commis une erreur. Une erreur qui n'avait pas eu lieu. Une erreur attribuée à quelqu'un d'autre que ceux qui l'avaient faite — si tant est qu'erreur était le bon mot pour quelque chose qui avait été, il le savait depuis des semaines, délibéré.</p>
+
+    <p>Kern ne savait pas.</p>
+
+    <p>Ce fut la pensée qui rompit l'immobilité de Lyam — pas la colère, pas la peur, mais cette pensée précise, simple et très froide : <em>Kern ne sait pas ce qu'on est en train de faire à son nom.</em></p>
+
+    <p>Il recula d'un pas. Puis d'un autre. Puis il tourna les talons dans le couloir sombre, retrouva l'escalier de service par la mémoire musculaire de ses deux mois de fréquentation, et remonta.</p>
+
+    <div class="silence">· · ·</div>
+
+    <p>Il ne prit pas l'eau.</p>
+
+    <hr class="rune">
+    <div class="section-title">III. Le Matin Qui Suit une Telle Nuit</div>
+
+    <p>Il y a une façon particulière d'être le matin quand on a passé la nuit à ne pas dormir et qu'on ne peut le dire à personne. Ce n'est pas la fatigue ordinaire — celle-là, on la connaît, elle a une texture familière et une durée prévisible. C'est autre chose : une légèreté bizarre de la tête, comme si les pensées circulaient dans trop d'espace, et en même temps une densité particulière de chaque moment, chaque geste plus présent que d'ordinaire parce qu'on l'accomplit depuis le dedans d'une information qu'on est seul à avoir.</p>
+
+    <p>Lyam mangea son gruau. Il écouta les conversations autour de lui avec la même attention habituelle, mais cette fois il n'en retint rien, parce que son cerveau consacrait toutes ses ressources disponibles à tenir ensemble les différents fils de ce qu'il savait et de ce qu'il devait en faire. Il avait réorganisé les informations plusieurs fois depuis son retour dans le dortoir. Elles ne changeaient pas de sens selon la façon dont on les disposait. Elles restaient ce qu'elles étaient : claires, précises, et très difficiles à utiliser.</p>
+
+    <p>Ce qu'il savait : Belart avait écrit dans le registre officiel que Kern était responsable d'une modification du tableau de la cinquième semaine. Cette modification n'existait pas — il n'y avait pas eu de modification ce jour-là, juste une absence, son absence à lui. Kern n'avait rien fait. L'absence avait été créée par quelqu'un d'autre, pour une raison que Lyam connaissait, avec l'aide d'une complicité administrative qu'il soupçonnait depuis le chapitre quatre et qu'il avait vue de ses propres yeux cette nuit. Ce qu'on écrivait dans le registre, maintenant, c'était une explication fausse qui désignait quelqu'un d'innocent.</p>
+
+    <p>Ce qu'il ne savait pas encore : pourquoi maintenant. Pourquoi cette annotation, deux mois après les faits. Ce qui avait rendu nécessaire de couvrir l'incident de façon rétroactive. Il y avait quelque chose qui avait déclenché ça — une enquête, une question posée par quelqu'un, une pression venant d'en haut. Il ne savait pas quoi.</p>
+
+    <p>Ce qu'il pouvait faire : au moins trois choses, dans des ordres différents, avec des conséquences différentes.</p>
+
+    <div class="pensee">Il pouvait ne rien faire. Attendre que les choses se déroulent, voir si Kern était effectivement convoqué ou si le registre restait ce qu'il était souvent dans les institutions — un document qui existe mais que personne ne lit, sauf quand on a besoin d'une explication. L'inaction avait cet avantage de ne rien risquer. Elle avait cet inconvénient de laisser quelqu'un porter quelque chose qui lui avait été mis sur le dos sans qu'il le sache. Ce n'était pas exactement de la passivité. C'était quelque chose d'actif, une décision déguisée en absence de décision.</div>
+
+    <hr class="rune">
+    <div class="section-title">IV. Kern ne Sait Pas</div>
+
+    <p>Ce midi-là, dans la queue de la salle à manger, Lyam regarda le secrétaire Belart traverser la grande cour. Il n'avait pas cherché à le voir — le secrétaire traversait la cour parce que la cour était entre les deux bâtiments qu'il reliait dans ses allers-retours habituels. Lyam le vit par accident, du coin de l'œil, et il suivit sa trajectoire avec l'attention involontaire qu'on a pour quelqu'un qu'on connaît mieux qu'il ne le sait.</p>
+
+    <p>Belart s'arrêta un instant près du tableau des écuyers. Il regarda quelque chose — pas longtemps, juste assez pour confirmer une information — puis il repartit. Son visage ne montrait rien. Il avait un visage professionnel, Belart, le visage de quelqu'un pour qui les émotions étaient un phénomène privé qu'on ne mélangeait pas avec les fonctions. Lyam se demanda si cette neutralité était innée ou acquise. Il se demanda si Belart dormirait cette nuit, et quelle forme prendraient pour lui les heures à ne pas dormir si elles existaient.</p>
+
+    <p>Kern arriva dans la queue derrière lui, avec son plateau, et dit :</p>
+
+    <p class="dialogue">— Tu as l'air d'avoir mal dormi.</p>
+
+    <p class="dialogue">— Un peu, dit Lyam.</p>
+
+    <p class="dialogue">— Moi aussi. J'ai passé la nuit sur le problème successoral. J'ai trouvé quelque chose d'intéressant dans les exceptions de l'article 31 — je te montrerai après le déjeuner si tu veux.</p>
+
+    <p>Lyam dit oui. Kern hocha la tête avec satisfaction et se mit à parler du problème successoral avec la précision modeste d'un artisan qui présente un travail soigné. Il n'avait pas l'air de quelqu'un qui savait qu'on était en train d'écrire son nom dans un registre officiel en face d'une faute qu'il n'avait pas commise. Il avait l'air de quelqu'un qui avait bien travaillé la nuit et qui en était content.</p>
+
+    <p>Lyam mangea son gruau.</p>
+
+    <p>La pensée qui l'occupait depuis le matin se reformula d'elle-même, avec plus de netteté :</p>
+
+    <div class="pensee">Il y a une différence entre ne pas mentir et ne pas protéger. On peut ne jamais mentir et laisser quelqu'un se retrouver seul face à une accusation fausse, et cela ne fait pas de vous quelqu'un d'honnête — cela fait de vous quelqu'un qui a préféré sa propre tranquillité à la vérité d'un autre. Ce n'est pas du courage. C'est de la prudence déguisée en neutralité. Et les deux choses ne sont pas équivalentes, même si elles peuvent se ressembler de l'extérieur.</div>
+
+    <hr class="rune">
+    <div class="section-title">V. Ce que Réna Dit Quand il Lui Dit</div>
+
+    <p>Il la trouva à la Salle des Cartes après l'atelier du soir. Elle était en train de corriger ses notes du cours de la Maîtresse Elowen avec deux teintes d'encre différentes — une pour les arguments qu'elle trouvait solides, une pour ceux qu'elle voulait creuser davantage. Sa façon d'organiser l'information sur le papier ressemblait à la façon dont elle organisait l'information dans sa tête : des colonnes parallèles, des relations tracées, des exceptions en marge.</p>
+
+    <p>Lyam ferma la porte. Il s'assit en face d'elle et lui dit ce qu'il avait vu, dans l'ordre chronologique, sans omissions et sans interprétations — juste les faits, l'heure, les mots qu'il avait entendus, la pièce, les deux personnes, ce qui avait été écrit.</p>
+
+    <p>Réna l'écouta sans l'interrompre. Elle posa sa plume à mi-récit — ce qu'elle ne faisait pas d'habitude, elle notait en écoutant, elle avait la capacité d'écrire et d'entendre simultanément — et elle l'écouta avec les mains à plat sur la table et le regard légèrement baissé, la façon dont elle écoutait quand quelque chose exigeait toute son attention.</p>
+
+    <p>Quand il eut fini, il y eut un silence. Un vrai silence, pas le silence de confort ordinaire de la Salle des Cartes, mais le silence de quelqu'un qui mesure quelque chose avant de répondre.</p>
+
+    <p class="dialogue">— Tu es sûr des mots exacts ? dit-elle enfin.</p>
+
+    <p class="dialogue">— « Erreur attribuée à la manipulation du registre de la semaine précédente, lors de la mise à jour effectuée par le page Kern, fils du marchand. » Et Daran a dit de ne pas mettre de virgule entre les deux derniers groupes pour que ça soit plus difficile à isoler comme accusation.</p>
+
+    <p>Elle ferma les yeux pendant une seconde. Juste une seconde.</p>
+
+    <p class="dialogue">— Tu sais ce que ça veut dire, la partie sur la virgule.</p>
+
+    <p class="dialogue">— Il sait comment les textes sont lus dans les enquêtes administratives. Il connaît la grammaire des documents officiels.</p>
+
+    <p class="dialogue">— Il est fils de baron, dit Réna. Son père préside une cour de justice secondaire dans l'ouest. Il a grandi dans les archives de son père. La virgule, c'est une compétence héritée. Elle rouvrit les yeux. Et le plus difficile, c'est que ça ne suffit pas comme preuve. Ce que tu as entendu, tu ne peux pas l'utiliser directement — tu étais dans un couloir de service à trois heures du matin, ce qui est une infraction au règlement article 22 alinéa 3, et Daran peut dire que tu mens ou que tu as mal compris. Belart peut dire que l'annotation existait déjà et que tu as inventé la conversation.</p>
+
+    <p class="dialogue">— Je sais.</p>
+
+    <p class="dialogue">— Ça ne change pas ce que tu as vu.</p>
+
+    <p class="dialogue">— Non.</p>
+
+    <p>Elle reprit sa plume. Pas pour écrire — elle la tenait juste, entre le pouce et l'index, la façon dont elle tenait les objets quand elle réfléchissait.</p>
+
+    <p class="dialogue">— Tu n'avais pas à me dire ça, dit-elle après un moment. Tu aurais pu garder ça pour toi. Ne rien faire. Attendre de voir si Kern était convoqué. Peut-être qu'il ne l'aurait jamais été. Peut-être que ce document reste dans le registre et que personne ne l'utilise jamais.</p>
+
+    <p class="dialogue">— Peut-être.</p>
+
+    <p class="dialogue">— Mais tu es venu quand même.</p>
+
+    <p class="dialogue">— Je pouvais m'en empêcher, dit Lyam. Je n'ai pas voulu.</p>
+
+    <hr class="rune">
+    <div class="section-title">VI. La Question</div>
+
+    <p>Ils restèrent dans la Salle des Cartes jusqu'à ce que la bougie de Réna soit trop basse pour lire. Le vent du dehors faisait quelque chose dans les fenêtres — pas un sifflement, plutôt une respiration lente et continue, comme si le château expirait lentement dans le froid de novembre. Ils avaient établi trois choses dans cet espace de deux heures : ce qu'ils savaient avec certitude, ce qu'ils ne pouvaient pas prouver, et ce que les règles leur permettaient de faire.</p>
+
+    <p>Ce qu'ils savaient avec certitude : Kern avait un nom inscrit dans un registre officiel en face d'une faute fictive. Ce registre pouvait rester inerte ou être activé si quelqu'un avait besoin d'une explication pour quelque chose. Il n'y avait pas de date butoir — c'était une menace dormante.</p>
+
+    <p>Ce qu'ils ne pouvaient pas prouver : la conversation de la nuit. La présence de Daran de Mauren dans ce bureau à cette heure. Les mots. La virgule délibérément absente. Tout ça existait dans la mémoire de Lyam et nulle part ailleurs.</p>
+
+    <p>Ce que les règles leur permettaient de faire : demander, selon l'article 8 — celui que Réna avait trouvé deux mois plus tôt pour la confirmation du statut de Lyam — un accès en présence d'un maître à tout document administratif les concernant ou concernant les membres de leur dortoir. Ce n'était pas le même article que la fois précédente. Mais c'était le même registre. Et si Kern demandait à voir ce registre, il lirait son nom dans des circonstances qui n'avaient aucune raison d'y être.</p>
+
+    <p class="dialogue">— Si on lui dit, dit Lyam lentement, Kern va vouloir contester. Et il va perdre, parce qu'il n'a pas de preuve du contraire — juste sa parole contre un document officiel signé par Belart.</p>
+
+    <p class="dialogue">— Si on lui dit, dit Réna, il sait au moins ce qui se passe. Il peut choisir comment il réagit. Ce n'est pas à nous de décider ça pour lui.</p>
+
+    <p class="dialogue">— Et si on ne lui dit pas ?</p>
+
+    <p>Elle le regarda. Il n'y avait pas de réponse dans son regard — pas d'indication, pas de direction. Elle ne répondait pas à cette question parce que c'était une question qu'il devait répondre lui-même, et elle le savait, et il le savait aussi.</p>
+
+    <div class="pensee">Il y avait une version de lui-même qui pouvait traverser le lendemain et le surlendemain et toutes les semaines qui suivraient en faisant comme si la nuit du septième vendredi d'octobre n'avait pas eu lieu. Cette version n'était pas lâche — elle était prudente, elle calculait les risques, elle préservait sa position dans un endroit où sa position avait déjà coûté beaucoup à tenir. Cette version comprenait qu'on ne gagnait pas les batailles qu'on ne pouvait pas gagner, et que témoigner contre un fils de baron avec comme seule preuve une conversation entendue à trois heures du matin dans un couloir non autorisé était le genre de chose qu'on ne gagnait pas. Cette version avait ses raisons.</div>
+
+    <p>Il souffla la bougie de son côté.</p>
+
+    <p>Dans le noir, il dit :</p>
+
+    <p class="dialogue">— Je vais lui dire demain matin.</p>
+
+    <p>Réna ne dit rien pendant un moment. Puis elle dit :</p>
+
+    <p class="dialogue">— Je sais. C'est pour ça que tu es venu ce soir.</p>
+
+    <p>Ce n'était pas de l'approbation. Ce n'était pas non plus une mise en garde. C'était une observation — la façon dont Réna disait toujours les choses, avec la précision de quelqu'un pour qui les mots avaient de l'importance parce qu'ils désignaient des réalités, pas des jugements.</p>
+
+    <p>Lyam remit ses chaussures. Il traversa la Salle des Cartes dans le noir, parce qu'il en connaissait maintenant chaque centimètre, et il ouvrit la porte sur le couloir qui sentait la pierre froide et l'encre vieille. Dehors, le vent avait changé — il venait du nord maintenant, avec cette netteté tranchante qui annonçait que l'hiver avait décidé d'arriver.</p>
+
+    <p>Il retourna vers le dortoir du nord.</p>
+
+    <p>Cette fois, il dormit.</p>
+
+  </div><!-- /story -->
+
+  <div class="end-block">
+    <span class="end-icon">🌑</span>
+    <div class="end-title">Fin du Chapitre VI</div>
+    <p class="end-txt">Lyam a décidé de parler. Ce n'est pas la décision facile. C'est la décision qu'il peut vivre avec. Au Chapitre VII, cette décision a des conséquences — et Kern se retrouve accusé avant même que la vérité ait pu prendre place dans la salle d'audience. Il y a un procès. Et le seul témoin vraiment fiable, c'est Réna — qu'on a décidé, ce matin-là, de ne pas écouter.</p>
+    <div class="end-next">Chapitre VII disponible à 3 000 XP · <em>Le Procès du Couloir Nord</em></div>
+    <div>
+      <a href="roman_ch05.html" class="btn btn-s">← Chapitre V</a>
+      <a href="hub_narration.html" class="btn btn-g">Bibliothèque</a>
+      <a href="roman_ch07.html" class="btn btn-s" id="btnNext" style="display:none">Chapitre VII →</a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+</div><!-- /mainContent -->
+
+<!-- ═══════════════════════════════════════════
+     BARRE AUDIO FIXE
+     Fichier MP3 attendu : roman_ch06_nuit_cache.mp3
+     (à placer dans le même répertoire que ce fichier HTML)
+     Durée estimée pour une lecture à voix haute : ~18 minutes
+     ═══════════════════════════════════════════ -->
+<div class="audio-bar" id="audioBar">
+  <span class="ab-title">🌑 Ch. VI — Narration</span>
+  <button class="ab-btn" id="abPlay" title="Lecture / Pause" aria-label="Lecture ou pause">▶</button>
+  <div class="ab-progress" id="abProgress" title="Avancement">
+    <div class="ab-progress-fill" id="abFill" style="width:0%"></div>
+  </div>
+  <span class="ab-time" id="abTime">0:00 / —:——</span>
+  <div class="ab-vol-wrap">
+    <span class="ab-vol-ico">🔊</span>
+    <input type="range" id="abVol" min="0" max="100" value="80" title="Volume" aria-label="Volume">
+  </div>
+  <span class="ab-status" id="abStatus">Prêt</span>
+  <span class="ab-hint">Fichier attendu : roman_ch06_nuit_cache.mp3</span>
+</div>
+
+<div class="xp-flash" id="xpFlash">+30 XP — Chapitre lu !</div>
+
+<audio id="chAudio" preload="none">
+  <source src="roman_ch06_nuit_cache.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* ─── AUDIO PLAYER ─── */
+(function(){
+  var audio=document.getElementById('chAudio');
+  var btnPlay=document.getElementById('abPlay');
+  var fill=document.getElementById('abFill');
+  var timeEl=document.getElementById('abTime');
+  var volEl=document.getElementById('abVol');
+  var statusEl=document.getElementById('abStatus');
+  var progress=document.getElementById('abProgress');
+
+  function fmt(s){
+    if(!isFinite(s))return'—:——';
+    var m=Math.floor(s/60),sec=Math.floor(s%60);
+    return m+':'+(sec<10?'0':'')+sec;
+  }
+  function setStatus(t){if(statusEl)statusEl.textContent=t;}
+
+  audio.volume=0.8;
+  volEl.addEventListener('input',function(){audio.volume=this.value/100;});
+
+  btnPlay.addEventListener('click',function(){
+    if(audio.paused){
+      audio.play().then(function(){
+        btnPlay.textContent='⏸';setStatus('En lecture');
+      }).catch(function(){
+        setStatus('Fichier non trouvé');
+        btnPlay.textContent='▶';
+      });
+    }else{
+      audio.pause();
+      btnPlay.textContent='▶';
+      setStatus('En pause');
+    }
+  });
+
+  audio.addEventListener('timeupdate',function(){
+    if(!audio.duration)return;
+    var pct=(audio.currentTime/audio.duration)*100;
+    fill.style.width=pct+'%';
+    timeEl.textContent=fmt(audio.currentTime)+' / '+fmt(audio.duration);
+  });
+
+  audio.addEventListener('ended',function(){
+    btnPlay.textContent='▶';fill.style.width='100%';setStatus('Terminé');
+  });
+
+  audio.addEventListener('waiting',function(){setStatus('Chargement…');});
+  audio.addEventListener('playing',function(){setStatus('En lecture');});
+  audio.addEventListener('error',function(){setStatus('Fichier non trouvé');btnPlay.textContent='▶';});
+
+  progress.addEventListener('click',function(e){
+    if(!audio.duration)return;
+    var rect=this.getBoundingClientRect();
+    var ratio=(e.clientX-rect.left)/rect.width;
+    audio.currentTime=ratio*audio.duration;
+  });
+})();
+
+/* ─── XP SYSTEM ─── */
+var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+var CIT={representant_ca:{xp:500}};
+var MODULE_ID='ch06';var XP_REQ=2500;var cur='';
+
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((l[k]||[]).indexOf(c)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
+function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
+function creditXP(amount){
+  if(!cur)return;var S=getS();if(!S.players||!S.players[cur])return;
+  var p=S.players[cur];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  S.logs.unshift({d:now,p:cur,t:'NARRATION_READ_'+MODULE_ID.toUpperCase(),target:'NARRATION',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10));
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  pending.push({id:'NARR-'+cur+'-'+MODULE_ID+'-'+Date.now(),type:'NARRATION_READ',player:cur,module:'ROMAN_'+MODULE_ID.toUpperCase(),xp:amount,d:now});
+  if(pending.length>700)pending=pending.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(pending));
+}
+(function(){
+  var raw=localStorage.getItem(AKEY)||'';
+  if(!raw){window.location.href='hub_narration.html';return}
+  cur=raw.trim().toUpperCase();
+  var p=getP(cur);if(!p){window.location.href='hub_narration.html';return}
+  var xp=xg(p);
+  if(xp<XP_REQ){
+    document.getElementById('xpLock').style.display='flex';
+    var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
+    if(fill)fill.style.width=Math.min(100,Math.round((xp/XP_REQ)*100))+'%';
+    if(xpEl)xpEl.textContent=xp;return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  var done=getDone();
+  if(!done[MODULE_ID]){markDone(MODULE_ID);creditXP(30);var f=document.getElementById('xpFlash');if(f){f.style.display='block';setTimeout(function(){f.style.display='none'},4000);}}
+  var btn=document.getElementById('btnNext');if(btn&&xp>=3000)btn.style.display='inline-block';
+})();
+</script>
+</body>
+</html>
