@@ -375,7 +375,7 @@ hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Ci
   progress.addEventListener('click',function(e){if(!audio.duration)return;var rect=this.getBoundingClientRect();audio.currentTime=((e.clientX-rect.left)/rect.width)*audio.duration;});
 })();
 var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
-var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60,liberte:60,fraternite:60};
 var CIT={representant_ca:{xp:500}};
 var MODULE_ID='ch08';var XP_REQ=3500;var cur='';
 function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
@@ -387,10 +387,12 @@ function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.
 function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
 function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
 function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
-function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function academyXp(p){var pxp=Number(p&&p.pixhareXp||0);var cp=(p&&p.cp)||{};var rest=Object.keys(W).filter(function(k){return k!=='pixhare';}).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0);return pxp+rest;}
 function videoXp(p){return Number(p&&p.videoG||0)}
-function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
-function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+var ACAD_COEFF_STEP=0.02;var ACAD_COEFF_MAX=0.40;
+function acadDoneKeys(p){var d=(p&&p.acadDone&&typeof p.acadDone==='object')?p.acadDone:{};return Object.keys(d)}
+function acadRegularDoneCount(p){return acadDoneKeys(p).length}
+function acadCoeff(p){return 1+Math.min(acadRegularDoneCount(p)*ACAD_COEFF_STEP,ACAD_COEFF_MAX)}
 function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
 function creditXP(amount){
   if(!cur)return;var S=getS();if(!S.players||!S.players[cur])return;
