@@ -237,7 +237,7 @@ body{padding-bottom:70px}
 </div>
 
 <!-- AUDIO PLAYER -->
-<audio id="chAudio" preload="auto" src="roman_ch01.mp3"></audio>
+<audio id="chAudio" preload="auto"></audio>
 <div id="audioBar">
   <div class="audio-inner">
     <button class="audio-play-btn" id="audioPlayBtn" aria-label="Lecture / Pause">▶</button>
@@ -325,8 +325,14 @@ function showFlash(amount){
   if(btnNext&&xp>=500){
     btnNext.style.display='inline-block';
   }
-// ── AUDIO PLAYER ─────────────────────────────────────────────────────────────
+// ── AUDIO PLAYER — LECTURE MULTI-PARTIES ─────────────────────────────────────
 (function(){
+  var PARTS=['roman_ch01_1.mp3','roman_ch01_2.mp3','roman_ch01_3.mp3'];
+  // Durées cumulées (en secondes) — remplies automatiquement à la volée
+  var partDurations=[0,0,0];   // durée réelle de chaque partie (remplie au chargement)
+  var partLoaded=[false,false,false];
+  var currentPart=0;
+
   var aud=document.getElementById('chAudio');
   var bar=document.getElementById('audioBar');
   var playBtn=document.getElementById('audioPlayBtn');
@@ -339,66 +345,175 @@ function showFlash(amount){
   var closeBtn=document.getElementById('audioClose');
   if(!aud)return;
 
+  // ── Utilitaires ─────────────────────────────────────────────────────────────
   function fmt(s){
-    if(!isFinite(s))return '—';
-    var m=Math.floor(s/60);
-    var sec=Math.floor(s%60);
+    if(!isFinite(s)||s<0)return '—';
+    s=Math.floor(s);
+    var h=Math.floor(s/3600);
+    var m=Math.floor((s%3600)/60);
+    var sec=s%60;
+    if(h>0)return h+':'+(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
     return m+':'+(sec<10?'0':'')+sec;
   }
 
-  // Volume init
-  aud.volume=0.85;
+  function totalDuration(){
+    return partDurations.reduce(function(a,b){return a+b;},0);
+  }
 
-  // Play / Pause
-  playBtn.addEventListener('click',function(){
-    if(aud.paused){aud.play();playBtn.textContent='⏸';}
-    else{aud.pause();playBtn.textContent='▶';}
+  function cumulBefore(idx){
+    var t=0;
+    for(var i=0;i<idx;i++)t+=partDurations[i];
+    return t;
+  }
+
+  function globalCurrent(){
+    return cumulBefore(currentPart)+(isFinite(aud.currentTime)?aud.currentTime:0);
+  }
+
+  // ── Préchargement des durées des 3 parties ───────────────────────────────────
+  // On crée des éléments audio fantômes juste pour lire la durée
+  PARTS.forEach(function(src,idx){
+    var ghost=new Audio();
+    ghost.preload='metadata';
+    ghost.src=src;
+    ghost.addEventListener('loadedmetadata',function(){
+      partDurations[idx]=ghost.duration||0;
+      partLoaded[idx]=true;
+      if(partLoaded.every(Boolean)){
+        durEl.textContent=fmt(totalDuration());
+      }
+    });
+    ghost.addEventListener('error',function(){
+      partLoaded[idx]=true; // on considère 0s pour cette partie manquante
+    });
   });
 
-  // Progress update
+  // ── Chargement d'une partie ──────────────────────────────────────────────────
+  function loadPart(idx,autoplay,seekTo){
+    if(idx>=PARTS.length)return;
+    currentPart=idx;
+    aud.src=PARTS[idx];
+    aud.load();
+    aud.volume=parseFloat(volSlider.value);
+    if(seekTo>0){
+      aud.addEventListener('canplay',function onCan(){
+        aud.removeEventListener('canplay',onCan);
+        aud.currentTime=seekTo;
+        if(autoplay){aud.play().catch(function(){});}
+      });
+    } else if(autoplay){
+      aud.addEventListener('canplay',function onCan(){
+        aud.removeEventListener('canplay',onCan);
+        aud.play().catch(function(){});
+      });
+    }
+  }
+
+  // Init : charge la partie 1 sans lancer la lecture
+  loadPart(0,false,0);
+
+  // ── Fin de partie → partie suivante ─────────────────────────────────────────
+  aud.addEventListener('ended',function(){
+    var next=currentPart+1;
+    if(next<PARTS.length){
+      loadPart(next,true,0);
+      playBtn.textContent='⏸';
+    } else {
+      // Fin de la narration complète
+      playBtn.textContent='↩';
+      progFill.style.width='100%';
+      elapsed.textContent=fmt(totalDuration());
+    }
+  });
+
+  // ── Play / Pause ─────────────────────────────────────────────────────────────
+  playBtn.addEventListener('click',function(){
+    if(aud.paused){
+      aud.play().catch(function(){});
+      playBtn.textContent='⏸';
+    } else {
+      aud.pause();
+      playBtn.textContent='▶';
+    }
+  });
+
+  // ── Progression (timeupdate) ─────────────────────────────────────────────────
   aud.addEventListener('timeupdate',function(){
-    if(!aud.duration)return;
-    var pct=(aud.currentTime/aud.duration)*100;
-    progFill.style.width=pct+'%';
-    elapsed.textContent=fmt(aud.currentTime);
+    var total=totalDuration();
+    var current=globalCurrent();
+    if(total>0){
+      progFill.style.width=(current/total*100)+'%';
+    }
+    elapsed.textContent=fmt(current);
+    // Mise à jour durée totale si pas encore connue
+    if(durEl.textContent==='—'&&total>0){
+      durEl.textContent=fmt(total);
+    }
   });
 
   aud.addEventListener('loadedmetadata',function(){
-    durEl.textContent=fmt(aud.duration);
+    // Met à jour la durée de la partie courante si le ghost n'a pas réussi
+    if(!partLoaded[currentPart]||partDurations[currentPart]===0){
+      partDurations[currentPart]=aud.duration||0;
+    }
+    if(partLoaded.every(Boolean)||partDurations.reduce(function(a,b){return a+b;},0)>0){
+      durEl.textContent=fmt(totalDuration());
+    }
   });
 
-  aud.addEventListener('ended',function(){
-    playBtn.textContent='↩';
-    progFill.style.width='100%';
-  });
-
-  // Seek on click
+  // ── Seek en cliquant sur la barre ────────────────────────────────────────────
   progWrap.addEventListener('click',function(e){
-    if(!aud.duration)return;
+    var total=totalDuration();
+    if(!total)return;
     var rect=progWrap.getBoundingClientRect();
     var ratio=(e.clientX-rect.left)/rect.width;
-    aud.currentTime=ratio*aud.duration;
+    var targetGlobal=ratio*total;
+
+    // Trouver dans quelle partie on tombe
+    var cumul=0;
+    for(var i=0;i<PARTS.length;i++){
+      var d=partDurations[i]||0;
+      if(targetGlobal<=cumul+d||i===PARTS.length-1){
+        var seekInPart=targetGlobal-cumul;
+        var wasPlaying=!aud.paused;
+        if(i===currentPart){
+          aud.currentTime=Math.max(0,seekInPart);
+        } else {
+          loadPart(i,wasPlaying,Math.max(0,seekInPart));
+          if(wasPlaying)playBtn.textContent='⏸';
+        }
+        break;
+      }
+      cumul+=d;
+    }
   });
 
-  // Volume slider
+  // ── Numéro de partie affiché dans le label ────────────────────────────────────
+  function updateLabel(){
+    var lbl=document.querySelector('.audio-label');
+    if(!lbl)return;
+    var suffix=PARTS.length>1?' · Partie '+(currentPart+1)+'/'+PARTS.length:'';
+    lbl.textContent='🎙 Narration · Chapitre I — Les Portes de Pierre'+suffix;
+  }
+  aud.addEventListener('play',updateLabel);
+
+  // ── Volume ───────────────────────────────────────────────────────────────────
+  aud.volume=0.85;
   volSlider.addEventListener('input',function(){
     aud.volume=parseFloat(volSlider.value);
     updateVolIcon();
   });
-
   function updateVolIcon(){
     if(aud.muted||aud.volume===0)volIcon.textContent='🔇';
     else if(aud.volume<0.4)volIcon.textContent='🔉';
     else volIcon.textContent='🔊';
   }
-
-  // Mute toggle on icon click
   volIcon.addEventListener('click',function(){
     aud.muted=!aud.muted;
     updateVolIcon();
   });
 
-  // Close bar (hide but keep playing)
+  // ── Fermeture de la barre ────────────────────────────────────────────────────
   closeBtn.addEventListener('click',function(){
     bar.classList.add('hidden');
     document.body.style.paddingBottom='0';
