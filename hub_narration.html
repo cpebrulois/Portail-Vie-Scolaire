@@ -69,6 +69,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 /* CHAPTERS */
 .chapters-list{display:flex;flex-direction:column;gap:8px}
 .chapter{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:14px;padding:14px 16px;border-radius:8px;border:1px solid rgba(201,168,76,.08);background:rgba(255,255,255,.02);transition:all .2s;user-select:none;position:relative}
+.chapter.has-img{grid-template-columns:72px 64px 1fr auto;padding:0 16px 0 0;overflow:hidden}
 .chapter.unlocked{cursor:pointer}
 .chapter.unlocked:hover{border-color:rgba(201,168,76,.4);transform:translateX(4px);box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .chapter.locked{opacity:.42}
@@ -80,6 +81,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .lock-icon{font-size:.9em;opacity:.4}
 .cta-read{font-family:'Cinzel',serif;font-size:.65em;letter-spacing:1px;padding:5px 12px;border-radius:4px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--or2);white-space:nowrap;display:inline-block}
 .done-tick{position:absolute;top:10px;right:14px;font-size:.75em;color:var(--or);opacity:.55}
+
+/* CHAPTER ILLUSTRATION THUMBNAIL */
+.ch-thumb{width:72px;height:100%;min-height:72px;object-fit:cover;object-position:center top;border-radius:7px 0 0 7px;flex-shrink:0;display:block;align-self:stretch}
+.ch-thumb-wrap{width:72px;align-self:stretch;overflow:hidden;border-radius:7px 0 0 7px;position:relative;flex-shrink:0}
+.ch-thumb-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.ch-thumb-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,rgba(13,11,8,.6));pointer-events:none}
+
+/* VIDEO INTRO OVERLAY */
+#videoOverlay{display:none;position:fixed;inset:0;z-index:9999;background:#000;align-items:center;justify-content:center;flex-direction:column}
+#videoOverlay.active{display:flex}
+#introVideo{max-width:min(820px,100vw);max-height:100vh;width:100%;outline:none}
+.vid-skip{position:absolute;top:20px;right:20px;padding:8px 20px;background:rgba(13,11,8,.8);border:1px solid rgba(201,168,76,.35);border-radius:4px;color:var(--or2);font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.vid-skip:hover{background:rgba(201,168,76,.15);border-color:var(--or)}
+.vid-title{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:.7em;letter-spacing:3px;color:rgba(201,168,76,.5);text-transform:uppercase;pointer-events:none}
+.vid-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.1)}
+.vid-bar-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));width:0%;transition:width .3s linear}
 
 /* LDVELH */
 .ldv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
@@ -97,6 +114,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 @media(max-width:700px){
   .chapter{grid-template-columns:46px 1fr}
+  .chapter.has-img{grid-template-columns:60px 46px 1fr}
   .chxp,.lock-icon,.cta-read{display:none}
   .ldv-grid{grid-template-columns:1fr 1fr}
   .nav-bar,.lib{padding-left:14px;padding-right:14px}
@@ -230,6 +248,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 <div class="xp-notif" id="xpNotif"></div>
 
+<!-- VIDEO INTRO OVERLAY -->
+<div id="videoOverlay">
+  <div class="vid-title" id="vidTitle">Les Veilleurs de Valdurne</div>
+  <video id="introVideo" playsinline preload="auto"></video>
+  <button class="vid-skip" id="vidSkip">Passer → </button>
+  <div class="vid-bar"><div class="vid-bar-fill" id="vidBarFill"></div></div>
+</div>
+
 <script>
 var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
 var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60,liberte:60,fraternite:60};
@@ -255,7 +281,8 @@ function fxp(n){return Number(n).toLocaleString('fr')}
 // ── CHAPITRES LIVRE I ────────────────────────────────────────────────────────
 var CHAPITRES=[
   {id:'ch01',file:'roman_ch01.html',num:'Chap. I',icon:'🗼',title:'Les Portes de Pierre',
-   meta:'Arrivée à Valdurne · La désorientation du premier soir',xpRequired:0},
+   meta:'Arrivée à Valdurne · La désorientation du premier soir',xpRequired:0,
+   img:'roman_ch01.jpg',video:'roman_ch01.mp4'},
   {id:'ch02',file:'roman_ch02.html',num:'Chap. II',icon:'📖',title:'La Fille qui Savait Trop',
    meta:'Rencontre avec Réna · Les règles non-écrites',xpRequired:500},
   {id:'ch03',file:'roman_ch03.html',num:'Chap. III',icon:'🔥',title:"L'Épreuve du Scriptorium",
@@ -306,6 +333,57 @@ var LDVELH=[
    unlockCond:'Complète un module pHARe',pillar:'phare'},
 ];
 
+// ── VIDEO INTRO ───────────────────────────────────────────────────────────────
+var _pendingNav=null;
+var _vid=null;
+
+function playIntroVideo(videoSrc,destFile,chTitle){
+  var overlay=document.getElementById('videoOverlay');
+  var vidEl=document.getElementById('introVideo');
+  var skipBtn=document.getElementById('vidSkip');
+  var barFill=document.getElementById('vidBarFill');
+  var vidTitle=document.getElementById('vidTitle');
+  if(!overlay||!vidEl)return void(window.location.href=destFile);
+
+  _pendingNav=destFile;
+  _vid=vidEl;
+
+  if(vidTitle)vidTitle.textContent=chTitle||'Les Veilleurs de Valdurne';
+  vidEl.src=videoSrc;
+  overlay.classList.add('active');
+  vidEl.load();
+
+  var doNav=function(){
+    overlay.classList.remove('active');
+    vidEl.pause();
+    vidEl.src='';
+    if(_pendingNav)window.location.href=_pendingNav;
+  };
+
+  vidEl.ontimeupdate=function(){
+    if(!vidEl.duration)return;
+    var pct=(vidEl.currentTime/vidEl.duration)*100;
+    if(barFill)barFill.style.width=pct+'%';
+  };
+  vidEl.onended=doNav;
+  vidEl.onerror=doNav; // si le fichier manque → navigation directe
+
+  var play=vidEl.play();
+  if(play&&typeof play.catch==='function'){
+    play.catch(function(){
+      // autoplay bloqué → nav directe
+      doNav();
+    });
+  }
+
+  if(skipBtn){
+    skipBtn.onclick=null;
+    skipBtn.onclick=doNav;
+  }
+  // Fermeture par touche Echap
+  document.onkeydown=function(e){if(e.key==='Escape')doNav();};
+}
+
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function renderChapitres(xp){
   var done=getDone();
@@ -314,18 +392,34 @@ function renderChapitres(xp){
   CHAPITRES.forEach(function(ch){
     var u=xp>=ch.xpRequired;
     var isDone=!!done[ch.id];
+    var hasImg=!!(ch.img);
     var div=document.createElement('div');
-    div.className='chapter'+(u?' unlocked':' locked')+(isDone?' done':'');
+    div.className='chapter'+(u?' unlocked':' locked')+(isDone?' done':'')+(hasImg?' has-img':'');
     var right=u
       ?'<span class="cta-read">'+(isDone?'Relire ↗':'Lire ↗')+'</span>'
       :'<span class="lock-icon">🔒</span>';
     var xpLbl=ch.xpRequired===0?'Gratuit':(fxp(ch.xpRequired)+' XP');
+
+    var thumbHtml='';
+    if(hasImg){
+      thumbHtml='<div class="ch-thumb-wrap"><img src="'+ch.img+'" alt="" loading="lazy" onerror="this.parentNode.style.display=\'none\'"></div>';
+    }
+
     div.innerHTML=
+      thumbHtml+
       '<div class="chnum">'+ch.num+'<br><span style="font-size:1.5em;line-height:1">'+ch.icon+'</span></div>'+
-      '<div><div class="chtitle">'+ch.title+'</div><div class="chmeta">'+ch.meta+'</div></div>'+
-      '<div style="text-align:right"><div class="chxp">'+xpLbl+'</div>'+right+'</div>'+
+      '<div style="padding:12px 0"><div class="chtitle">'+ch.title+'</div><div class="chmeta">'+ch.meta+'</div></div>'+
+      '<div style="text-align:right;padding:0 4px"><div class="chxp">'+xpLbl+'</div>'+right+'</div>'+
       (isDone?'<span class="done-tick">✓</span>':'');
-    if(u&&ch.file)div.onclick=(function(f){return function(){window.location.href=f};})(ch.file);
+
+    if(u&&ch.file){
+      div.onclick=(function(f,v,t){
+        return function(){
+          if(v) playIntroVideo(v,f,t);
+          else window.location.href=f;
+        };
+      })(ch.file,ch.video||null,ch.title);
+    }
     list.appendChild(div);
   });
 }
