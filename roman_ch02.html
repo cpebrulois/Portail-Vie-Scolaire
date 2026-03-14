@@ -43,6 +43,27 @@ hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Ci
 .btn-s{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--enc2)}
 .btn-s:hover{border-color:rgba(255,255,255,.3)}
 .xp-flash{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.88em;background:linear-gradient(135deg,#1a3a1a,#2a4a1a);border:1px solid rgba(100,200,100,.5);color:#b8e8b8;display:none}
+/* AUDIO PLAYER */
+#audioBar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,11,8,.97);border-top:1px solid rgba(201,168,76,.18);backdrop-filter:blur(10px);transition:transform .3s ease}
+#audioBar.hidden{transform:translateY(100%)}
+.audio-inner{max-width:700px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:10px 20px}
+.audio-play-btn{width:38px;height:38px;border-radius:50%;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.35);color:var(--or2);font-size:1.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s}
+.audio-play-btn:hover{background:rgba(201,168,76,.25);border-color:var(--or);transform:scale(1.07)}
+.audio-center{display:flex;flex-direction:column;gap:5px;min-width:0}
+.audio-label{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:2px;color:var(--or);opacity:.7;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.audio-prog-wrap{position:relative;height:4px;background:rgba(255,255,255,.08);border-radius:999px;cursor:pointer}
+.audio-prog-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));border-radius:999px;width:0%;pointer-events:none;transition:width .2s linear}
+.audio-time{font-family:'Cinzel',serif;font-size:.58em;letter-spacing:1px;color:var(--enc2);opacity:.5;margin-top:2px;display:flex;justify-content:space-between}
+.audio-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.audio-vol-icon{font-size:.9em;cursor:pointer;opacity:.6;transition:opacity .2s;flex-shrink:0}
+.audio-vol-icon:hover{opacity:1}
+input[type=range].audio-vol{-webkit-appearance:none;width:72px;height:3px;background:rgba(255,255,255,.12);border-radius:999px;outline:none;cursor:pointer}
+input[type=range].audio-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--or2);cursor:pointer;border:none}
+input[type=range].audio-vol::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--or2);cursor:pointer;border:none}
+.audio-close{font-size:.75em;opacity:.35;cursor:pointer;padding:4px;transition:opacity .2s;flex-shrink:0;color:var(--enc2)}
+.audio-close:hover{opacity:.7}
+body{padding-bottom:70px}
+@media(max-width:600px){.audio-inner{padding:10px 12px;gap:10px}input[type=range].audio-vol{width:52px}.audio-label{font-size:.55em}}
 .xp-lock{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,8,5,.92);z-index:999;display:flex;align-items:center;justify-content:center;text-align:center}
 .xp-lock-box{max-width:440px;padding:40px;background:var(--p1);border:1px solid rgba(201,168,76,.2);border-radius:12px}
 .xp-lock-icon{font-size:3em;margin-bottom:16px;display:block}
@@ -278,6 +299,29 @@ hr.rune::before{content:'— ✦ —';color:rgba(201,168,76,.35);font-family:'Ci
 
 <div class="xp-flash" id="xpFlash">+30 XP — Chapitre lu !</div>
 
+<!-- AUDIO PLAYER -->
+<audio id="chAudio" preload="auto"></audio>
+<div id="audioBar">
+  <div class="audio-inner">
+    <button class="audio-play-btn" id="audioPlayBtn" aria-label="Lecture / Pause">▶</button>
+    <div class="audio-center">
+      <div class="audio-label">🎙 Narration · Ch. II — La Fille qui Savait Trop · 1 / 3</div>
+      <div class="audio-prog-wrap" id="audioProgWrap">
+        <div class="audio-prog-fill" id="audioProgFill"></div>
+      </div>
+      <div class="audio-time">
+        <span id="audioElapsed">0:00</span>
+        <span id="audioDur">—</span>
+      </div>
+    </div>
+    <div class="audio-right">
+      <span class="audio-vol-icon" id="audioVolIcon">🔊</span>
+      <input type="range" class="audio-vol" id="audioVol" min="0" max="1" step="0.02" value="0.85">
+      <span class="audio-close" id="audioClose" title="Fermer">✕</span>
+    </div>
+  </div>
+</div>
+
 <script>
 var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
 var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};var CIT={representant_ca:{xp:500}};
@@ -326,7 +370,6 @@ function showFlash(){
   var xp=xg(p);
 
   if(xp<XP_REQ){
-    // Afficher le mur
     document.getElementById('xpLock').style.display='flex';
     var fill=document.getElementById('lockFill');
     var xpEl=document.getElementById('curXp');
@@ -342,9 +385,159 @@ function showFlash(){
     creditXP(cur,30);
     showFlash();
   }
-  // Bouton chapitre suivant
   var btnNext=document.getElementById('btnNext');
   if(btnNext&&xp>=1000)btnNext.style.display='inline-block';
+})();
+
+// ── AUDIO PLAYER ──────────────────────────────────────────────────────────────
+(function(){
+  var PARTS = [
+    'roman-ch02_1.mp3',
+    'roman-ch02_2.mp3',
+    'roman-ch02_3.mp3'
+  ];
+
+  var aud       = document.getElementById('chAudio');
+  var playBtn   = document.getElementById('audioPlayBtn');
+  var progFill  = document.getElementById('audioProgFill');
+  var progWrap  = document.getElementById('audioProgWrap');
+  var elapsed   = document.getElementById('audioElapsed');
+  var durEl     = document.getElementById('audioDur');
+  var volSlider = document.getElementById('audioVol');
+  var volIcon   = document.getElementById('audioVolIcon');
+  var closeBtn  = document.getElementById('audioClose');
+  var barEl     = document.getElementById('audioBar');
+  if (!aud || !playBtn) return;
+
+  var partIdx   = 0;
+  var durations = [0, 0, 0];
+  var cumuls    = [0, 0, 0];
+  var totalKnown = 0;
+
+  function fmt(s) {
+    if (!isFinite(s) || s < 0) return '0:00';
+    s = Math.floor(s);
+    var m = Math.floor(s / 60), sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function updateTotals() {
+    totalKnown = 0; cumuls = [];
+    for (var i = 0; i < durations.length; i++) {
+      cumuls[i] = totalKnown;
+      totalKnown += (durations[i] || 0);
+    }
+    if (totalKnown > 0) durEl.textContent = fmt(totalKnown);
+  }
+
+  function globalTime() {
+    return (cumuls[partIdx] || 0) + (aud.currentTime || 0);
+  }
+
+  function updateLabel() {
+    var lbl = document.querySelector('.audio-label');
+    if (lbl) lbl.textContent =
+      '🎙 Narration · Ch. II — La Fille qui Savait Trop  ·  ' +
+      (partIdx + 1) + ' / ' + PARTS.length;
+  }
+
+  function goTo(idx, play) {
+    if (idx >= PARTS.length) return;
+    partIdx = idx;
+    aud.src = PARTS[idx];
+    aud.volume = parseFloat(volSlider.value) || 0.85;
+    if (play) { var p = aud.play(); if (p && p.catch) p.catch(function(){}); }
+    updateLabel();
+  }
+
+  // Init
+  aud.src = PARTS[0];
+  aud.volume = 0.85;
+  aud.preload = 'auto';
+
+  aud.addEventListener('loadedmetadata', function() {
+    durations[partIdx] = aud.duration || 0;
+    updateTotals();
+  });
+
+  aud.addEventListener('ended', function() {
+    durations[partIdx] = aud.duration || durations[partIdx];
+    updateTotals();
+    if (partIdx + 1 < PARTS.length) {
+      goTo(partIdx + 1, true);
+      playBtn.textContent = '⏸';
+    } else {
+      playBtn.textContent = '↩';
+      progFill.style.width = '100%';
+      elapsed.textContent = fmt(totalKnown);
+    }
+  });
+
+  aud.addEventListener('timeupdate', function() {
+    var cur = globalTime();
+    elapsed.textContent = fmt(cur);
+    if (totalKnown > 0) progFill.style.width = (cur / totalKnown * 100) + '%';
+  });
+
+  playBtn.addEventListener('click', function() {
+    if (aud.paused) {
+      var p = aud.play();
+      if (p && p.catch) p.catch(function(err){ console.warn('play() bloqué:', err); });
+      playBtn.textContent = '⏸';
+    } else {
+      aud.pause();
+      playBtn.textContent = '▶';
+    }
+  });
+
+  progWrap.addEventListener('click', function(e) {
+    if (!aud.duration) return;
+    var rect = progWrap.getBoundingClientRect();
+    var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (totalKnown > 0) {
+      var targetGlobal = ratio * totalKnown;
+      var cumul = 0;
+      for (var i = 0; i < PARTS.length; i++) {
+        var d = durations[i] || 0;
+        if (targetGlobal < cumul + d || i === PARTS.length - 1) {
+          var seekInPart = Math.max(0, targetGlobal - cumul);
+          if (i === partIdx) {
+            aud.currentTime = Math.min(seekInPart, aud.duration);
+          } else {
+            var wasPlaying = !aud.paused;
+            goTo(i, false);
+            aud.addEventListener('loadedmetadata', function onMeta() {
+              aud.removeEventListener('loadedmetadata', onMeta);
+              aud.currentTime = Math.min(seekInPart, aud.duration);
+              if (wasPlaying) { var p=aud.play(); if(p&&p.catch)p.catch(function(){}); }
+            });
+          }
+          break;
+        }
+        cumul += d;
+      }
+    } else {
+      aud.currentTime = ratio * aud.duration;
+    }
+  });
+
+  volSlider.addEventListener('input', function() {
+    aud.volume = parseFloat(volSlider.value);
+    refreshVolIcon();
+  });
+  function refreshVolIcon() {
+    volIcon.textContent = (aud.muted || aud.volume === 0) ? '🔇'
+                        : (aud.volume < 0.4) ? '🔉' : '🔊';
+  }
+  volIcon.addEventListener('click', function() {
+    aud.muted = !aud.muted;
+    refreshVolIcon();
+  });
+
+  closeBtn.addEventListener('click', function() {
+    barEl.classList.add('hidden');
+    document.body.style.paddingBottom = '0';
+  });
 })();
 </script>
 </body>
