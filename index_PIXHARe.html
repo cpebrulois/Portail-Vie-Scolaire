@@ -98,6 +98,192 @@ h1 span{color:#fff;}
 #toast.show{opacity:1;}
 
 @media(max-width:768px){.pillar-column{width:100%;}.welcome-box{margin:20px;padding:25px;}}
+
+/* ═══════════════════════════════════════════════════
+   SECTION JDR VALDURNE
+═══════════════════════════════════════════════════ */
+.valdurne-section {
+  margin: 50px auto 0;
+  max-width: 1300px;
+  padding: 0 10px 80px;
+}
+.valdurne-header {
+  text-align: center;
+  margin-bottom: 32px;
+  position: relative;
+}
+.valdurne-header::before {
+  content: '';
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ffd700 30%, #ffd700 70%, transparent);
+  margin-bottom: 28px;
+  opacity: .4;
+}
+.valdurne-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4em;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255,215,0,.4);
+  margin-bottom: 6px;
+}
+.valdurne-subtitle {
+  color: #888;
+  font-size: .85em;
+  font-style: italic;
+}
+.valdurne-lock-note {
+  display: inline-block;
+  background: rgba(255,215,0,.07);
+  border: 1px solid rgba(255,215,0,.2);
+  color: #ffd700;
+  font-size: .75em;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-top: 10px;
+  letter-spacing: .5px;
+}
+
+/* Grille des piliers JdR */
+.valdurne-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* Carte pilier JdR */
+.jdr-pillar {
+  width: 240px;
+  background: rgba(255,215,0,.04);
+  border: 1px solid rgba(255,215,0,.15);
+  border-radius: 12px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: .3s;
+}
+.jdr-pillar:hover { border-color: rgba(255,215,0,.35); }
+.jdr-pillar-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.jdr-pillar-icon { font-size: 1.5em; }
+.jdr-pillar-name {
+  font-size: .85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.jdr-pillar-prereq {
+  font-size: .68em;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 2px;
+}
+
+/* Slot JdR individuel */
+.jdr-slot {
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px;
+  padding: 12px 12px 10px;
+  position: relative;
+  transition: .25s;
+}
+.jdr-slot.jdr-open {
+  border-color: rgba(255,215,0,.35);
+  background: rgba(255,215,0,.06);
+  cursor: pointer;
+}
+.jdr-slot.jdr-open:hover {
+  border-color: #ffd700;
+  box-shadow: 0 0 18px rgba(255,215,0,.15);
+  transform: translateY(-2px);
+}
+.jdr-slot.jdr-done {
+  border-color: rgba(0,255,136,.3);
+  background: rgba(0,255,136,.05);
+}
+.jdr-slot.jdr-locked {
+  opacity: .4;
+  pointer-events: none;
+}
+.jdr-slot-year {
+  font-size: .62em;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.jdr-slot-title {
+  font-size: .82em;
+  font-weight: 700;
+  color: #e2c87a;
+  margin-bottom: 3px;
+}
+.jdr-slot-desc {
+  font-size: .72em;
+  color: #888;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.jdr-slot-status {
+  font-size: .65em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.jdr-slot-status.s-open  { color: #ffd700; }
+.jdr-slot-status.s-done  { color: var(--neon-green); }
+.jdr-slot-status.s-locked{ color: #444; }
+.jdr-slot-xp {
+  font-size: .65em;
+  color: var(--muted);
+  font-family: 'Courier New', monospace;
+  float: right;
+  margin-top: -16px;
+}
+.jdr-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  text-align: center;
+  font-size: .78em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: .2s;
+  text-decoration: none;
+}
+.jdr-btn:hover { background: #ffd700; color: #000; }
+
+/* Slot vide (à venir) */
+.jdr-slot-future {
+  border: 1px dashed rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: center;
+  color: #333;
+  font-size: .7em;
+  font-style: italic;
+}
+
+@media(max-width:768px){
+  .jdr-pillar { width: 100%; }
+  .valdurne-grid { gap: 16px; }
+}
 </style>
 </head>
 <body>
@@ -139,6 +325,16 @@ h1 span{color:#fff;}
 
 <!-- MATRICE DES MODULES -->
 <div class="matrix-container" id="matrixRoot"></div>
+
+<!-- SECTION JDR VALDURNE -->
+<div class="valdurne-section">
+  <div class="valdurne-header">
+    <div class="valdurne-title">⚔️ Les Veilleurs de Valdurne — Jeux de Rôle</div>
+    <div class="valdurne-subtitle">Cinq aventures narratives débloquées après validation de chaque pilier</div>
+    <div class="valdurne-lock-note">📖 Chaque JdR se débloque après le 5ᵉ module du pilier correspondant · +100 XP</div>
+  </div>
+  <div class="valdurne-grid" id="valdurneGrid"></div>
+</div>
 
 <!-- TOAST -->
 <div id="toast"></div>
@@ -533,10 +729,275 @@ window.addEventListener('storage', function(e){
   }
 });
 
+// ═══════════════════════════════════════════════════════════════
+// JDR VALDURNE — Données & Rendu
+// ═══════════════════════════════════════════════════════════════
+
+// Nomenclature fichiers (à renseigner par pilier / année) :
+//   HTML  : JDR_[PILIER]_A[N].html          ex: JDR_GROUPE_A1.html
+//   Illus : jdr_[pilier]_a[n]_[scene].jpg   ex: jdr_groupe_a1_scene1.jpg
+//   Narr  : jdr_[pilier]_a[n]_[scene].mp3   ex: jdr_groupe_a1_scene1.mp3
+//   Ambiance : valdurne_ambiance_[pilier].mp3 ex: valdurne_ambiance_groupe.mp3
+
+var JDR_PILLARS = [
+  {
+    key: 'GROUPE',
+    icon: '🔮',
+    name: 'Pilier Groupe',
+    color: '#a855f7',
+    prereqModule: 'GROUPE_05',     // module dont la validation débloque le JdR A1
+    prereqLabel: 'Valide "Ambassadeur en Action" pour débloquer',
+    jdrs: [
+      {
+        year: 1, label: 'Année 1 — Les Veilleurs',
+        title: 'La Deuxième Liste',
+        desc: 'Lyam arrive à Valdurne. Dans la cour d\'armes, les groupes se forment. Qui vas-tu approcher ?',
+        file: 'JDR_GROUPE_A1.html',
+        certKey: 'CERT_JDR_GROUPE_A1',
+        xp: 100,
+        available: true   // true = ce JdR existe, false = à venir
+      },
+      { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_GROUPE_A2', xp: 100, available: false },
+      { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_GROUPE_A3', xp: 100, available: false },
+      { year: 4, label: 'Année 4 — Les Chevaliers', title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_GROUPE_A4', xp: 100, available: false }
+    ]
+  },
+  {
+    key: 'HISTOIRE',
+    icon: '📜',
+    name: 'Pilier Histoire',
+    color: '#f59e0b',
+    prereqModule: 'HISTOIRE_05',
+    prereqLabel: 'Valide "Résistances et Renaissances" pour débloquer',
+    jdrs: [
+      {
+        year: 1, label: 'Année 1 — Les Veilleurs',
+        title: 'La Nuit du Registre',
+        desc: 'Lyam descend pour de l\'eau. Il entend quelque chose dans le couloir de service. Que fait-il ?',
+        file: 'JDR_HISTOIRE_A1.html',
+        certKey: 'CERT_JDR_HISTOIRE_A1',
+        xp: 100,
+        available: true
+      },
+      { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_HISTOIRE_A2', xp: 100, available: false },
+      { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_HISTOIRE_A3', xp: 100, available: false },
+      { year: 4, label: 'Année 4 — Les Chevaliers', title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_HISTOIRE_A4', xp: 100, available: false }
+    ]
+  },
+  {
+    key: 'NEURO',
+    icon: '🧠',
+    name: 'Pilier Neuro',
+    color: '#10b981',
+    prereqModule: 'NEURO_05',
+    prereqLabel: 'Valide "Résilience Neuronale" pour débloquer',
+    jdrs: [
+      {
+        year: 1, label: 'Année 1 — Les Veilleurs',
+        title: 'La Joute des Arguments',
+        desc: 'Réna monte seule sur l\'estrade. Daran contre-attaque. Lyam ressent quelque chose de fort.',
+        file: 'JDR_NEURO_A1.html',
+        certKey: 'CERT_JDR_NEURO_A1',
+        xp: 100,
+        available: true
+      },
+      { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NEURO_A2', xp: 100, available: false },
+      { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NEURO_A3', xp: 100, available: false },
+      { year: 4, label: 'Année 4 — Les Chevaliers', title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NEURO_A4', xp: 100, available: false }
+    ]
+  },
+  {
+    key: 'NUMERIQUE',
+    icon: '💻',
+    name: 'Pilier Numérique',
+    color: '#00d4ff',
+    prereqModule: 'NUMERIQUE_05',
+    prereqLabel: 'Valide "Maître du Feed" pour débloquer',
+    jdrs: [
+      {
+        year: 1, label: 'Année 1 — Les Veilleurs',
+        title: 'Les Cartes de Réna',
+        desc: 'Une rumeur court dans le château. Elle déforme quelque chose de vrai. Comment arrêter ça ?',
+        file: 'JDR_NUMERIQUE_A1.html',
+        certKey: 'CERT_JDR_NUMERIQUE_A1',
+        xp: 100,
+        available: true
+      },
+      { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NUMERIQUE_A2', xp: 100, available: false },
+      { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NUMERIQUE_A3', xp: 100, available: false },
+      { year: 4, label: 'Année 4 — Les Chevaliers', title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NUMERIQUE_A4', xp: 100, available: false }
+    ]
+  },
+  {
+    key: 'JURIDIQUE',
+    icon: '⚖️',
+    name: 'Pilier Juridique',
+    color: '#3b82f6',
+    prereqModule: 'JURIDIQUE_05',
+    prereqLabel: 'Valide "Maître de la Loi" pour débloquer',
+    jdrs: [
+      {
+        year: 1, label: 'Année 1 — Les Veilleurs',
+        title: 'Le Procès du Couloir Nord',
+        desc: 'Kern est accusé à tort. Réna prépare sa défense. Lyam doit choisir quelles preuves avancer.',
+        file: 'JDR_JURIDIQUE_A1.html',
+        certKey: 'CERT_JDR_JURIDIQUE_A1',
+        xp: 100,
+        available: true
+      },
+      { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_JURIDIQUE_A2', xp: 100, available: false },
+      { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_JURIDIQUE_A3', xp: 100, available: false },
+      { year: 4, label: 'Année 4 — Les Chevaliers', title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_JURIDIQUE_A4', xp: 100, available: false }
+    ]
+  }
+];
+
+// ── Helpers JdR ─────────────────────────────────────────────────
+function jdrIsDone(certKey) {
+  return !!localStorage.getItem(certKey);
+}
+function jdrPillarUnlocked(jp) {
+  return isDone(jp.prereqModule);
+}
+function jdrTotalXP() {
+  var xp = 0;
+  JDR_PILLARS.forEach(function(jp){
+    jp.jdrs.forEach(function(j){ if(jdrIsDone(j.certKey)) xp += (j.xp||0); });
+  });
+  return xp;
+}
+
+// ── Ouverture JdR ───────────────────────────────────────────────
+function openJdr(file, certKey) {
+  var player = getPlayer();
+  if(player){
+    localStorage.setItem('pvs_current_player', player);
+    localStorage.setItem('pvs_phare_player', player);
+  }
+  localStorage.setItem('pvs_jdr_pending', certKey);
+  var sep = file.includes('?') ? '&' : '?';
+  var url = player ? file + sep + 'player=' + encodeURIComponent(player) : file;
+  window.location.href = url;
+}
+
+// ── Rendu section Valdurne ───────────────────────────────────────
+function renderValdurne() {
+  var grid = document.getElementById('valdurneGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+
+  JDR_PILLARS.forEach(function(jp) {
+    var pillarUnlocked = jdrPillarUnlocked(jp);
+
+    var col = document.createElement('div');
+    col.className = 'jdr-pillar';
+    col.style.borderColor = pillarUnlocked
+      ? 'rgba(255,215,0,.3)'
+      : 'rgba(255,255,255,.07)';
+
+    // En-tête pilier
+    col.innerHTML =
+      '<div class="jdr-pillar-head">' +
+        '<span class="jdr-pillar-icon">' + jp.icon + '</span>' +
+        '<span class="jdr-pillar-name" style="color:' + jp.color + '">' + jp.name + '</span>' +
+      '</div>' +
+      (!pillarUnlocked
+        ? '<div class="jdr-pillar-prereq">🔒 ' + jp.prereqLabel + '</div>'
+        : '<div class="jdr-pillar-prereq" style="color:#ffd700;font-style:normal">✅ Pilier validé — aventures disponibles</div>'
+      );
+
+    // Slots JdR
+    jp.jdrs.forEach(function(jdr) {
+      var done    = jdrIsDone(jdr.certKey);
+      var open    = pillarUnlocked && jdr.available && !done;
+      var locked  = !pillarUnlocked || !jdr.available;
+
+      if(!jdr.available) {
+        // Slot futur
+        var fut = document.createElement('div');
+        fut.className = 'jdr-slot-future';
+        fut.textContent = jdr.label + ' — à venir';
+        col.appendChild(fut);
+        return;
+      }
+
+      var slot = document.createElement('div');
+      var slotClass = done ? 'jdr-done' : (open ? 'jdr-open' : 'jdr-locked');
+      slot.className = 'jdr-slot ' + slotClass;
+
+      var statusClass = done ? 's-done' : (open ? 's-open' : 's-locked');
+      var statusText  = done ? '✅ Aventure terminée' : (open ? '⚔️ Prêt à jouer' : '🔒 Verrouillé');
+
+      slot.innerHTML =
+        '<div class="jdr-slot-year">' + jdr.label + '</div>' +
+        '<div class="jdr-slot-title">' + jdr.title + '</div>' +
+        '<div class="jdr-slot-xp">+' + jdr.xp + ' XP</div>' +
+        (jdr.desc ? '<div class="jdr-slot-desc">' + jdr.desc + '</div>' : '') +
+        '<div class="jdr-slot-status ' + statusClass + '">' + statusText + '</div>';
+
+      if(open) {
+        var btn = document.createElement('button');
+        btn.className = 'jdr-btn';
+        btn.textContent = '▶ Commencer l\'aventure';
+        btn.addEventListener('click', function(){ openJdr(jdr.file, jdr.certKey); });
+        slot.appendChild(btn);
+      } else if(done) {
+        var rbtn = document.createElement('button');
+        rbtn.className = 'jdr-btn';
+        rbtn.style.borderColor = '#00ff88';
+        rbtn.style.color = '#00ff88';
+        rbtn.textContent = '↺ Rejouer';
+        rbtn.addEventListener('click', function(){ openJdr(jdr.file, jdr.certKey); });
+        slot.appendChild(rbtn);
+      }
+
+      col.appendChild(slot);
+    });
+
+    grid.appendChild(col);
+  });
+}
+
+// ── Vérification retour depuis JdR ──────────────────────────────
+function checkJdrReturn() {
+  var pending = localStorage.getItem('pvs_jdr_pending');
+  if(!pending) return;
+  // Si le cert est posé, on pousse le bridge +100 XP
+  if(localStorage.getItem(pending)) {
+    localStorage.removeItem('pvs_jdr_pending');
+    pushJdrBridge(pending);
+    renderValdurne();
+  }
+}
+
+function pushJdrBridge(certKey) {
+  var player = getPlayer();
+  var xp = 100;
+  try {
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+    evts.push({
+      id: 'JDR-' + certKey + '-' + Date.now(),
+      type: 'PIXHARE_PROGRESS',
+      player: player,
+      module: certKey,
+      cpTotal: doneCount(),
+      hubXpTotal: totalXP() + jdrTotalXP(),
+      jdrXp: xp,
+      d: new Date().toISOString()
+    });
+    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+    toast('⚔️ Aventure validée ! +' + xp + ' XP');
+  } catch(e) {}
+}
+
 // ── Init ────────────────────────────────────────────────────────
 initPlayer();
 checkReturn();
+checkJdrReturn();
 render();
+renderValdurne();
 </script>
 </body>
 </html>

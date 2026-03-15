@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Veilleurs de Valdurne — La Deuxième Liste</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══ VARIABLES ═══════════════════════════════════════════════ */
+:root {
+  --bg:       #0d0c0a;
+  --bg2:      #141210;
+  --panel:    #1a1714;
+  --gold:     #c8a84b;
+  --gold-l:   #e2c87a;
+  --gold-d:   #8a6d28;
+  --stone:    #2e2a24;
+  --stone-l:  #3d3830;
+  --text:     #d4c9b0;
+  --text-m:   #8a7e6a;
+  --text-d:   #5a5040;
+  --accent:   #7c3aed;
+  --accent-l: #a855f7;
+  --green:    #2d6a4f;
+  --green-l:  #52b788;
+  --border:   rgba(200,168,75,.15);
+  --border-l: rgba(200,168,75,.35);
+  --shadow:   0 8px 40px rgba(0,0,0,.7);
+}
+
+/* ═══ RESET & BASE ════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body {
+  font-family: 'Crimson Text', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══ PARCHEMIN DE FOND ═══════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(200,168,75,.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(124,58,237,.05) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ═══ LAYOUT PRINCIPAL ════════════════════════════════════════ */
+#app {
+  position: relative; z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+
+/* ═══ BARRE AUDIO GLOBALE (ambiance) ═════════════════════════ */
+#ambient-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(13,12,10,.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 20px;
+  font-size: .78rem;
+}
+.amb-label {
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.amb-toggle {
+  background: none;
+  border: 1px solid var(--border-l);
+  color: var(--gold);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: .2s; flex-shrink: 0;
+}
+.amb-toggle:hover { background: var(--gold); color: #000; }
+.amb-vol {
+  -webkit-appearance: none;
+  width: 90px; height: 3px;
+  background: var(--stone-l);
+  border-radius: 2px; outline: none; cursor: pointer; flex-shrink: 0;
+}
+.amb-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+}
+.amb-status {
+  color: var(--text-m); font-size: .7rem; flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pb-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(200,168,75,.07);
+  border: 1px solid var(--border);
+  padding: 3px 10px; border-radius: 20px;
+  font-size: .7rem; color: var(--gold-l); flex-shrink: 0;
+}
+
+/* ═══ SCÈNE ═══════════════════════════════════════════════════ */
+.scene {
+  padding-top: 56px; /* espace barre ambiance */
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+  animation: sceneFade .6s ease-out;
+}
+.scene.active { display: flex; }
+@keyframes sceneFade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Illustration */
+.scene-art {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  background: var(--stone);
+}
+.scene-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: opacity .5s;
+}
+.scene-art .art-fallback {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5rem;
+  background: linear-gradient(180deg, var(--stone) 0%, var(--bg) 100%);
+}
+.scene-art .art-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 40%, var(--bg) 100%);
+}
+
+/* Chapeau de scène */
+.scene-header {
+  padding: 24px 32px 0;
+}
+.scene-crumb {
+  display: flex; gap: 10px; align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: .65rem; letter-spacing: 2px;
+  color: var(--text-d); text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.scene-crumb span { color: var(--gold-d); }
+.scene-num {
+  font-family: 'Cinzel', serif;
+  font-size: .7rem; letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold-d);
+  margin-bottom: 6px;
+}
+.scene-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  color: var(--gold-l);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+/* Barre audio narration */
+.narr-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(200,168,75,.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 0 32px 20px;
+  font-size: .75rem;
+}
+.narr-toggle {
+  background: none;
+  border: 1px solid var(--border-l);
+  color: var(--gold);
+  width: 28px; height: 28px;
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; transition: .2s; flex-shrink: 0;
+}
+.narr-toggle:hover { background: var(--gold); color: #000; }
+.narr-vol {
+  -webkit-appearance: none;
+  width: 80px; height: 3px;
+  background: var(--stone-l); border-radius: 2px;
+  outline: none; cursor: pointer; flex-shrink: 0;
+}
+.narr-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px; height: 10px;
+  border-radius: 50%; background: var(--gold); cursor: pointer;
+}
+.narr-label {
+  color: var(--text-m); font-size: .7rem; flex: 1;
+  font-family: 'Cinzel', serif; letter-spacing: .5px;
+}
+.narr-status { color: var(--text-d); font-size: .68rem; }
+
+/* Corps narratif */
+.scene-body {
+  padding: 0 32px;
+  flex: 1;
+}
+.scene-text {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.1rem;
+  line-height: 1.85;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+.scene-text p { margin-bottom: 14px; }
+.scene-text em { color: var(--gold-l); font-style: italic; }
+.scene-text strong { color: #e8dfc8; }
+
+/* Citation */
+.scene-quote {
+  border-left: 3px solid var(--gold-d);
+  padding: 10px 18px;
+  margin: 0 0 24px;
+  background: rgba(200,168,75,.04);
+  border-radius: 0 6px 6px 0;
+}
+.scene-quote p {
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-m);
+  line-height: 1.7;
+}
+
+/* Pensée intérieure */
+.scene-thought {
+  background: rgba(124,58,237,.08);
+  border: 1px solid rgba(124,58,237,.2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 0 0 24px;
+  font-style: italic;
+  color: #c4b5fd;
+  font-size: .95rem;
+  line-height: 1.7;
+}
+.scene-thought::before { content: '💭  '; }
+
+/* Prompt de choix */
+.scene-prompt {
+  font-family: 'Cinzel', serif;
+  font-size: .85rem;
+  letter-spacing: 1px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Boutons de choix */
+.choices { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+
+.choice-btn {
+  background: var(--stone);
+  border: 1px solid var(--stone-l);
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: .25s;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  position: relative;
+  overflow: hidden;
+}
+.choice-btn::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--gold-d);
+  transition: .25s;
+}
+.choice-btn:hover {
+  background: var(--stone-l);
+  border-color: var(--gold);
+  transform: translateX(4px);
+}
+.choice-btn:hover::before { background: var(--gold); }
+.choice-badge {
+  font-family: 'Cinzel', serif;
+  font-size: .65rem;
+  letter-spacing: 2px;
+  color: var(--gold-d);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.choice-title {
+  font-weight: 600;
+  color: var(--gold-l);
+  display: block;
+  margin-bottom: 3px;
+}
+.choice-sub { color: var(--text-m); font-size: .9rem; }
+
+/* Bouton neutre / retour */
+.btn-neutral {
+  background: none;
+  border: 1px solid var(--stone-l);
+  color: var(--text-m);
+  padding: 10px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Crimson Text', serif;
+  font-size: .9rem;
+  transition: .2s;
+}
+.btn-neutral:hover { border-color: var(--text-m); color: var(--text); }
+
+/* ═══ ÉCRAN INTRO ═════════════════════════════════════════════ */
+#scene-intro {
+  align-items: center;
+  justify-content: center;
+  padding-top: 56px;
+  text-align: center;
+}
+.intro-sigil { font-size: 4rem; margin-bottom: 20px; animation: glow 3s ease-in-out infinite; }
+@keyframes glow {
+  0%,100% { filter: drop-shadow(0 0 8px rgba(200,168,75,.3)); }
+  50%      { filter: drop-shadow(0 0 24px rgba(200,168,75,.7)); }
+}
+.intro-pretitle {
+  font-family: 'Cinzel', serif;
+  font-size: .7rem; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold-d); margin-bottom: 10px;
+}
+.intro-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 2.4rem; color: var(--gold-l);
+  line-height: 1.2; margin-bottom: 8px;
+}
+.intro-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.1rem; color: var(--text-m);
+  font-style: italic; margin-bottom: 30px;
+}
+.intro-sep {
+  width: 200px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-d), transparent);
+  margin: 0 auto 28px;
+}
+.intro-desc {
+  max-width: 560px; margin: 0 auto 32px;
+  font-size: 1.05rem; line-height: 1.8;
+  color: var(--text-m);
+}
+.intro-note {
+  background: rgba(200,168,75,.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 20px;
+  max-width: 480px; margin: 0 auto 32px;
+  font-size: .85rem; color: var(--text-d);
+  line-height: 1.6;
+}
+.btn-start {
+  background: var(--gold-d);
+  color: #f5ead0;
+  border: none;
+  padding: 14px 40px;
+  font-family: 'Cinzel', serif;
+  font-size: .9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: .25s;
+  box-shadow: 0 4px 20px rgba(200,168,75,.2);
+}
+.btn-start:hover {
+  background: var(--gold);
+  color: #000;
+  box-shadow: 0 4px 30px rgba(200,168,75,.4);
+  transform: translateY(-2px);
+}
+
+/* ═══ ÉCRAN FIN ═══════════════════════════════════════════════ */
+#scene-fin {
+  align-items: center;
+  justify-content: center;
+  padding: 56px 32px 80px;
+  text-align: center;
+}
+.fin-sigil { font-size: 3.5rem; margin-bottom: 20px; }
+.fin-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem; color: var(--gold-l);
+  margin-bottom: 10px;
+}
+.fin-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic; color: var(--text-m);
+  font-size: 1.1rem; margin-bottom: 28px;
+}
+.fin-xp {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,168,75,.1);
+  border: 1px solid var(--border-l);
+  padding: 8px 22px; border-radius: 30px;
+  font-family: 'Cinzel', serif;
+  font-size: .9rem; color: var(--gold);
+  margin-bottom: 28px;
+  box-shadow: 0 0 20px rgba(200,168,75,.15);
+}
+.fin-legacy-box {
+  background: rgba(124,58,237,.08);
+  border: 1px solid rgba(124,58,237,.25);
+  border-radius: 10px;
+  padding: 20px 24px;
+  max-width: 520px; margin: 0 auto 28px;
+  text-align: left;
+}
+.fin-legacy-title {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem; letter-spacing: 2px;
+  text-transform: uppercase; color: #a855f7;
+  margin-bottom: 10px;
+}
+.fin-legacy-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 8px;
+  font-size: .92rem; color: var(--text-m);
+  line-height: 1.5;
+}
+.fin-legacy-item .dot { color: var(--gold-d); flex-shrink: 0; margin-top: 3px; }
+.fin-cps {
+  background: rgba(45,106,79,.1);
+  border: 1px solid rgba(82,183,136,.2);
+  border-radius: 10px;
+  padding: 16px 20px;
+  max-width: 520px; margin: 0 auto 28px;
+  text-align: left;
+}
+.fin-cps-title {
+  font-family: 'Cinzel', serif;
+  font-size: .72rem; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--green-l);
+  margin-bottom: 10px;
+}
+.fin-cps-item {
+  font-size: .9rem; color: var(--text-m);
+  line-height: 1.6; margin-bottom: 4px;
+}
+.fin-cps-item::before { content: '✦ '; color: var(--green-l); }
+.fin-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn-fin-primary {
+  background: var(--gold-d); color: #f5ead0;
+  border: none; padding: 12px 28px;
+  font-family: 'Cinzel', serif; font-size: .82rem;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; border-radius: 6px; transition: .25s;
+}
+.btn-fin-primary:hover { background: var(--gold); color: #000; }
+.btn-fin-secondary {
+  background: none;
+  border: 1px solid var(--stone-l); color: var(--text-m);
+  padding: 12px 22px;
+  font-family: 'Cinzel', serif; font-size: .78rem;
+  letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; border-radius: 6px; transition: .2s;
+}
+.btn-fin-secondary:hover { border-color: var(--text-m); color: var(--text); }
+
+/* ═══ BARRE DE PROGRESSION ════════════════════════════════════ */
+.progress-strip {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 900;
+  background: rgba(13,12,10,.9);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  padding: 6px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.prog-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--stone-l);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.prog-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-d), var(--gold));
+  border-radius: 2px;
+  transition: width .5s ease;
+}
+.prog-label {
+  font-family: 'Cinzel', serif;
+  font-size: .65rem; letter-spacing: 1px;
+  color: var(--gold-d); flex-shrink: 0;
+}
+.prog-step {
+  font-size: .68rem; color: var(--text-d); flex-shrink: 0;
+}
+
+/* ═══ RESPONSIVE ══════════════════════════════════════════════ */
+@media(max-width: 640px) {
+  .scene-header, .scene-body { padding-left: 18px; padding-right: 18px; }
+  .narr-bar { margin-left: 18px; margin-right: 18px; }
+  .scene-title { font-size: 1.3rem; }
+  .scene-art { height: 220px; }
+  .intro-title { font-size: 1.8rem; }
+  .fin-actions { flex-direction: column; align-items: stretch; }
+}
+</style>
+</head>
+<body>
+
+<!-- BARRE AMBIANCE MUSICALE -->
+<div id="ambient-bar">
+  <span class="amb-label">🎵 Ambiance</span>
+  <button class="amb-toggle" id="ambToggle" title="Musique d'ambiance">▶</button>
+  <input class="amb-vol" type="range" id="ambVol" min="0" max="100" value="35">
+  <span class="amb-status" id="ambStatus">Silence du château…</span>
+  <div class="pb-chip">⚔️ <span id="pbName">–</span></div>
+</div>
+
+<!-- BARRE DE PROGRESSION -->
+<div class="progress-strip">
+  <span class="prog-label">Valdurne</span>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
+  <span class="prog-step" id="progStep">Intro</span>
+</div>
+
+<!-- APPLICATION -->
+<div id="app">
+
+  <!-- ═══ INTRO ═══════════════════════════════════════════════ -->
+  <div class="scene active" id="scene-intro">
+    <div style="padding:60px 32px 40px;max-width:620px;margin:0 auto;">
+      <div class="intro-sigil">⚔️</div>
+      <div class="intro-pretitle">Les Veilleurs de Valdurne · Année 1</div>
+      <div class="intro-title">La Deuxième Liste</div>
+      <div class="intro-subtitle">Un jeu de rôle narratif</div>
+      <div class="intro-sep"></div>
+      <div class="intro-desc">
+        C'est ton premier soir à Valdurne. Dans la cour d'armes, les groupes se forment
+        avec cette logique invisible que personne n'a expliquée mais que tout le monde
+        semble avoir comprise.<br><br>
+        Ton nom est en bas de la liste. À l'encre plus pâle.
+        Tu dois décider qui tu vas être ici.
+      </div>
+      <div class="intro-note">
+        🎭 Dans ce jeu, il n'y a pas de bonne ou mauvaise réponse.
+        Tes choix façonnent Lyam — et laisseront des traces dans les aventures suivantes.
+      </div>
+      <button class="btn-start" id="btnStart">▶ Commencer l'aventure</button>
+    </div>
+  </div>
+
+  <!-- ═══ SCÈNE 1 : L'arrivée ════════════════════════════════ -->
+  <div class="scene" id="scene-1" data-step="1">
+    <div class="scene-art">
+      <img src="jdr_groupe_a1_scene1.jpg" alt="La cour d'armes de Valdurne" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🏰</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Deuxième Liste</div>
+      <div class="scene-num">Scène 1 — L'arrivée</div>
+      <div class="scene-title">La cour d'armes</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_groupe_a1_scene1.mp3" title="Narration">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>La charrette de Basile s'est éloignée depuis une heure. Tu as ton sac sur le dos — le même
+        que ta mère a cousu et recousu — et tu es au milieu de la cour d'armes de Valdurne.</p>
+        <p>Les autres pages se regroupent. Pas par ordre alphabétique, pas par région d'origine.
+        Ils se regroupent par <em>quelque chose</em> que tu ne comprends pas encore —
+        une connivence de vêtements, d'accent, de façon de tenir les épaules.</p>
+        <p>Le Maître Renauld vient de terminer l'appel. Il t'a appelé par ton prénom suivi
+        du métier de ton père. <strong>Lyam, fils du forgeron.</strong> Pas comme les autres.</p>
+      </div>
+      <div class="scene-thought">
+        Tout le monde a entendu. Certains ont regardé — pas méchamment, juste <em>informativement</em>.
+        Tu as gardé les yeux droit devant toi.
+      </div>
+      <div class="scene-text">
+        <p>Et là, appuyé contre la muraille du fond, les bras croisés — un garçon seul.
+        Vêtements propres mais sans ornement. Il attend quelque chose, ou personne.</p>
+      </div>
+      <div class="scene-prompt">Qu'est-ce que tu ressens, en ce moment précis ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(1,'colere')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Une colère froide</span>
+          <span class="choice-sub">Le "fils du forgeron" t'a marqué. Tu vas montrer ce que ça veut dire.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'observation')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Une curiosité calme</span>
+          <span class="choice-sub">Tu écoutes. Tu observes. Tu comprends d'abord, tu agis ensuite.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'incertitude')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Une incertitude honnête</span>
+          <span class="choice-sub">Tu ne sais pas encore ce que c'est, cet endroit. Et c'est correct de ne pas savoir.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCÈNE 2 : L'approche ════════════════════════════════ -->
+  <div class="scene" id="scene-2" data-step="2">
+    <div class="scene-art">
+      <img src="jdr_groupe_a1_scene2.jpg" alt="Lyam s'approche de Kern" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🧍</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Deuxième Liste</div>
+      <div class="scene-num">Scène 2 — L'approche</div>
+      <div class="scene-title">Le garçon contre le mur</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_groupe_a1_scene2.mp3" title="Narration">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Tu t'approches. Il s'appelle <strong>Kern</strong>. Fils d'un marchand de bois.
+        Il te regarde sans bouger — pas de méfiance, pas d'enthousiasme non plus.
+        Juste une attention tranquille.</p>
+        <p>Il n'a pas l'air d'être du genre à avoir besoin d'encouragements.
+        Ni du genre à en donner. Mais il est là, seul,
+        et tu as choisi de traverser la cour.</p>
+      </div>
+      <div class="scene-quote">
+        <p id="approche-quote">"Ils se regroupent vite."</p>
+      </div>
+      <div class="scene-text">
+        <p>C'est tout ce qu'il dit. Ce n'est ni une accusation ni une invitation —
+        c'est une observation. Il attend ta réponse.</p>
+      </div>
+      <div class="scene-prompt">Comment tu lui réponds ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(2,'direct')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">"Ouais. Et nous, on est en dehors."</span>
+          <span class="choice-sub">Direct. Tu nommes ce qui est, sans détour ni amertume.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'observe')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">"Je regardais justement comment ça marche ici."</span>
+          <span class="choice-sub">Tu montres que tu analyses plutôt que tu subis.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'question')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">"Tu sais pourquoi ?"</span>
+          <span class="choice-sub">Tu ouvres une conversation. Tu choisis la curiosité.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCÈNE 3 : La deuxième liste ══════════════════════════ -->
+  <div class="scene" id="scene-3" data-step="3">
+    <div class="scene-art">
+      <img src="jdr_groupe_a1_scene3.jpg" alt="Le tableau avec les deux listes" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">📋</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Deuxième Liste</div>
+      <div class="scene-num">Scène 3 — La révélation</div>
+      <div class="scene-title">L'encre plus pâle</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_groupe_a1_scene3.mp3" title="Narration">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Plus tard, Kern t'explique ce que tu avais commencé à comprendre.
+        Il y a deux listes à Valdurne. La première : les admis par lignage ou par titre.
+        La seconde : les admis par <em>aptitude démontrée</em>.</p>
+        <p>Même formation. Mêmes cours. Mêmes dortoirs.
+        Mais une encre différente sur le registre.
+        Et le Maître Renauld qui sait laquelle lire à voix haute.</p>
+      </div>
+      <div class="scene-thought">
+        Kern ajoute, sans amertume particulière :
+        <em>"Ça ne change rien à ce qu'on est capable de faire. Mais ça change
+        ce que les autres croient qu'on est capable de faire."</em>
+      </div>
+      <div class="scene-text">
+        <p>Tu restes silencieux un moment. La cour s'est vidée.
+        Deux groupes d'élèves rient près du puits. Ils ne regardent pas dans ta direction.</p>
+        <p>Kern attend ta réaction. Pas de la pitié — de la curiosité,
+        sur ce que tu vas faire de cette information.</p>
+      </div>
+      <div class="scene-prompt">Qu'est-ce que cette découverte change pour toi ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(3,'injuste')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">"C'est une injustice, et je vais m'en souvenir."</span>
+          <span class="choice-sub">Tu nommer l'injustice. Pas pour te plaindre — pour ne pas l'oublier.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'strategie')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">"Alors il faut être meilleur que ce qu'ils attendent."</span>
+          <span class="choice-sub">Tu transformes le défi en moteur. C'est une force — si elle ne devient pas une obsession.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'comprendre')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">"Je veux comprendre pourquoi ce système existe avant de le juger."</span>
+          <span class="choice-sub">Tu choisis la nuance. Comprendre n'est pas accepter — mais c'est la première étape pour changer.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCÈNE 4 : La première nuit ════════════════════════════ -->
+  <div class="scene" id="scene-4" data-step="4">
+    <div class="scene-art">
+      <img src="jdr_groupe_a1_scene4.jpg" alt="Le dortoir du nord, nuit" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🌙</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Deuxième Liste</div>
+      <div class="scene-num">Scène 4 — La nuit</div>
+      <div class="scene-title">Le dortoir du nord</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_groupe_a1_scene4.mp3" title="Narration">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Le dortoir du nord. Six lits en bois superposés. Une fenêtre si étroite
+        qu'elle semble avoir honte d'elle-même.</p>
+        <p>Kern est dans le lit au-dessus. Ses pas dans l'escalier, sa façon de se
+        tourner dans le silence — tu as déjà appris quelque chose sur lui aujourd'hui.
+        Pas son histoire. Juste sa façon d'être dans un endroit inconnu.</p>
+        <p>Tu éteinds ta bougie en dernier.</p>
+      </div>
+      <div class="scene-thought">
+        Dans le noir, tu penses à deux choses simultanément.
+        C'est contradictoire, mais dans le froid patient du dortoir du nord,
+        ça a une logique parfaite.
+      </div>
+      <div class="scene-text">
+        <p>Demain, tout recommence. Et tu seras encore sur la deuxième liste.</p>
+      </div>
+      <div class="scene-prompt">Dans le noir, quelle est la première de tes deux pensées ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(4,'colere_froide')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">La colère contre l'injustice du système</span>
+          <span class="choice-sub">Un feu qui ne s'éteint pas. Qui peut construire ou brûler selon comment tu le portes.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'curiosite')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">La curiosité sur ce que cache ce château</span>
+          <span class="choice-sub">Valdurne est plus complexe que prévu. Et les endroits complexes ont des ressources insoupçonnées.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'resolution')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">La résolution silencieuse de ne pas être seul</span>
+          <span class="choice-sub">Tu penses à Kern au-dessus de toi. Tu as trouvé quelqu'un aujourd'hui. C'est déjà quelque chose.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FIN ═══════════════════════════════════════════════════ -->
+  <div class="scene" id="scene-fin">
+    <div class="fin-sigil">🏰</div>
+    <div class="fin-title">Première nuit à Valdurne</div>
+    <div class="fin-subtitle">L'aventure a commencé. Elle laisse déjà des traces.</div>
+    <div class="fin-xp">⭐ +100 XP envoyés au Portail</div>
+
+    <div class="fin-legacy-box">
+      <div class="fin-legacy-title">📖 Ce que Lyam emporte — Mémoire du Tome I</div>
+      <div id="legacyItems"></div>
+    </div>
+
+    <div class="fin-cps">
+      <div class="fin-cps-title">🌱 Compétences travaillées aujourd'hui</div>
+      <div class="fin-cps-item">Conscience de soi dans un groupe inconnu</div>
+      <div class="fin-cps-item">Régulation émotionnelle face à une injustice</div>
+      <div class="fin-cps-item">Prise de perspective et empathie situationnelle</div>
+      <div class="fin-cps-item">Initiation d'un lien social dans un contexte difficile</div>
+    </div>
+
+    <div class="fin-actions">
+      <button class="btn-fin-primary" onclick="returnToHub()">← Retour au Hub pHARe</button>
+      <button class="btn-fin-secondary" onclick="restartGame()">↺ Rejouer l'aventure</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- AUDIO ÉLÉMENTS -->
+<audio id="ambAudio" loop preload="none">
+  <source src="valdurne_ambiance_groupe.mp3" type="audio/mpeg">
+</audio>
+<audio id="narrAudio" preload="none"></audio>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+var MODULE_ID  = 'JDR_GROUPE_A1';
+var CERT_KEY   = 'CERT_JDR_GROUPE_A1';
+var XP_AMOUNT  = 100;
+var HUB_URL    = 'index_PIXHARe.html';
+var TOTAL_STEPS = 4;
+
+// Nomenclature fichiers attendus :
+// Illustrations : jdr_groupe_a1_scene1.jpg … jdr_groupe_a1_scene4.jpg
+// Narrations    : jdr_groupe_a1_scene1.mp3 … jdr_groupe_a1_scene4.mp3
+// Ambiance      : valdurne_ambiance_groupe.mp3
+
+// ═══════════════════════════════════════════════════════════════
+// ÉTAT DU JEU
+// ═══════════════════════════════════════════════════════════════
+var state = {
+  player:   '',
+  choices:  {},   // { '1': 'colere', '2': 'observe', ... }
+  current:  'intro'
+};
+
+// ═══════════════════════════════════════════════════════════════
+// INIT JOUEUR
+// ═══════════════════════════════════════════════════════════════
+(function initPlayer() {
+  var p = new URLSearchParams(window.location.search).get('player');
+  if(p && p.length > 1) {
+    localStorage.setItem('pvs_current_player', p);
+    localStorage.setItem('pvs_phare_player', p);
+  }
+  state.player = localStorage.getItem('pvs_current_player')
+               || localStorage.getItem('pvs_phare_player') || '–';
+  document.getElementById('pbName').textContent = state.player;
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION SCÈNES
+// ═══════════════════════════════════════════════════════════════
+function showScene(id) {
+  document.querySelectorAll('.scene').forEach(function(s){ s.classList.remove('active'); });
+  var el = document.getElementById('scene-' + id);
+  if(el) { el.classList.add('active'); state.current = id; }
+  updateProgress(id);
+  stopNarration();
+  window.scrollTo(0, 0);
+}
+
+function updateProgress(step) {
+  var n = parseInt(step) || 0;
+  var pct = step === 'fin' ? 100 : Math.round(n / TOTAL_STEPS * 90);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progStep').textContent =
+    step === 'intro' ? 'Intro' :
+    step === 'fin'   ? 'Terminé ✓' :
+    'Scène ' + step + ' / ' + TOTAL_STEPS;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOGIQUE DES CHOIX
+// ═══════════════════════════════════════════════════════════════
+// Textes de citation modulés par le choix de la scène 1
+var approcheCitations = {
+  'colere':      '"Ils se regroupent vite." — Il n\'y a pas de fierté dans sa voix. Juste le constat.',
+  'observation': '"Ils se regroupent vite." — Il t\'observe observer. C\'est une forme de reconnaissance.',
+  'incertitude': '"Ils se regroupent vite." — Comme si cette phrase était une permission de ne pas encore choisir.'
+};
+
+function choose(scene, path) {
+  state.choices[scene] = path;
+
+  // Adapter le texte de la scène 2 selon le choix de la scène 1
+  if(scene === 1) {
+    var quote = approcheCitations[path] || approcheCitations['observation'];
+    var el = document.getElementById('approche-quote');
+    if(el) el.textContent = quote;
+  }
+
+  // Avancer
+  var next = scene + 1;
+  if(next > TOTAL_STEPS) {
+    finishGame();
+  } else {
+    showScene(next);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FIN DE JEU
+// ═══════════════════════════════════════════════════════════════
+var legacyTexts = {
+  '1_colere':      'Lyam a gardé la colère froide — un feu à tenir, pas à éteindre.',
+  '1_observation': 'Lyam a choisi d\'observer avant d\'agir — une force qui lui servira.',
+  '1_incertitude': 'Lyam a accepté l\'incertitude — la sagesse de ne pas tout décider d\'avance.',
+  '2_direct':      'Kern se souvient : Lyam a nommé les choses sans esquiver.',
+  '2_observe':     'Kern se souvient : Lyam cherche à comprendre les mécanismes.',
+  '2_question':    'Kern se souvient : Lyam lui a posé une vraie question. Ça compte.',
+  '3_injuste':     'Lyam a nommé l\'injustice. Il ne l\'oubliera pas.',
+  '3_strategie':   'Lyam transforme le défi en moteur. À surveiller — force ou pression.',
+  '3_comprendre':  'Lyam cherche à comprendre avant de juger. Réna le remarquera.',
+  '4_colere_froide': 'La première nuit : la colère. Elle reviendra au moment où il en aura besoin.',
+  '4_curiosite':   'La première nuit : la curiosité. Valdurne réserve encore des surprises.',
+  '4_resolution':  'La première nuit : Kern. Une alliance qui commence dans le silence.'
+};
+
+function buildLegacy() {
+  var container = document.getElementById('legacyItems');
+  if(!container) return;
+  container.innerHTML = '';
+  Object.keys(state.choices).forEach(function(scene) {
+    var path = state.choices[scene];
+    var key = scene + '_' + path;
+    var text = legacyTexts[key] || '';
+    if(text) {
+      var div = document.createElement('div');
+      div.className = 'fin-legacy-item';
+      div.innerHTML = '<span class="dot">◆</span><span>' + text + '</span>';
+      container.appendChild(div);
+    }
+  });
+}
+
+function finishGame() {
+  // Sauvegarder les choix pour le Tome II
+  try {
+    localStorage.setItem('VALDURNE_LEGACY_GROUPE_A1', JSON.stringify({
+      choices: state.choices,
+      player:  state.player,
+      d:       new Date().toISOString()
+    }));
+  } catch(e) {}
+
+  // CERT + Bridge
+  try {
+    localStorage.setItem(CERT_KEY, JSON.stringify({
+      v:1, d:new Date().toISOString(), m:MODULE_ID, f:true, xp:XP_AMOUNT
+    }));
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({
+      id:       'JDR-' + MODULE_ID + '-' + Date.now(),
+      type:     'PIXHARE_PROGRESS',
+      player:   state.player,
+      module:   MODULE_ID,
+      certKey:  CERT_KEY,
+      jdrXp:    XP_AMOUNT,
+      choices:  state.choices,
+      d:        new Date().toISOString()
+    });
+    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+  } catch(e) {}
+
+  buildLegacy();
+  showScene('fin');
+}
+
+function returnToHub() {
+  window.location.href = HUB_URL;
+}
+
+function restartGame() {
+  state.choices = {};
+  stopNarration();
+  showScene('intro');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUDIO — AMBIANCE
+// ═══════════════════════════════════════════════════════════════
+var ambAudio   = document.getElementById('ambAudio');
+var ambPlaying = false;
+
+document.getElementById('ambToggle').addEventListener('click', function() {
+  if(ambPlaying) {
+    ambAudio.pause();
+    ambPlaying = false;
+    this.textContent = '▶';
+    document.getElementById('ambStatus').textContent = 'Silence du château…';
+  } else {
+    ambAudio.volume = document.getElementById('ambVol').value / 100;
+    ambAudio.play().then(function() {
+      ambPlaying = true;
+      document.getElementById('ambToggle').textContent = '⏸';
+      document.getElementById('ambStatus').textContent = 'Musique d\'ambiance en cours…';
+    }).catch(function() {
+      document.getElementById('ambStatus').textContent = 'Fichier : valdurne_ambiance_groupe.mp3';
+    });
+  }
+});
+
+document.getElementById('ambVol').addEventListener('input', function() {
+  ambAudio.volume = this.value / 100;
+});
+
+// ═══════════════════════════════════════════════════════════════
+// AUDIO — NARRATION PAR SCÈNE
+// ═══════════════════════════════════════════════════════════════
+var narrAudio = document.getElementById('narrAudio');
+var narrPlaying = false;
+var narrCurrent = null;
+
+function stopNarration() {
+  narrAudio.pause();
+  narrAudio.src = '';
+  narrPlaying = false;
+  narrCurrent = null;
+  document.querySelectorAll('.narr-toggle').forEach(function(btn){
+    btn.textContent = '🔊';
+  });
+  document.querySelectorAll('.narr-status').forEach(function(s){
+    s.textContent = 'Cliquer pour lancer';
+  });
+}
+
+document.querySelectorAll('.narr-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var bar    = this.closest('.narr-bar');
+    var src    = this.getAttribute('data-audio');
+    var vol    = bar.querySelector('.narr-vol').value / 100;
+    var status = bar.querySelector('.narr-status');
+
+    if(narrPlaying && narrCurrent === src) {
+      narrAudio.pause();
+      narrPlaying = false;
+      this.textContent = '🔊';
+      status.textContent = 'En pause';
+    } else {
+      stopNarration();
+      narrAudio.src = src;
+      narrAudio.volume = vol;
+      narrAudio.play().then(function() {
+        narrPlaying = true;
+        narrCurrent = src;
+        btn.textContent = '⏸';
+        status.textContent = 'Narration en cours…';
+      }).catch(function() {
+        status.textContent = 'Fichier : ' + src;
+      });
+    }
+  });
+});
+
+document.querySelectorAll('.narr-vol').forEach(function(slider) {
+  slider.addEventListener('input', function() {
+    if(narrPlaying) narrAudio.volume = this.value / 100;
+  });
+});
+
+narrAudio.addEventListener('ended', function() {
+  narrPlaying = false; narrCurrent = null;
+  document.querySelectorAll('.narr-toggle').forEach(function(b){ b.textContent = '🔊'; });
+  document.querySelectorAll('.narr-status').forEach(function(s){ s.textContent = 'Narration terminée'; });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// BOUTON START
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('btnStart').addEventListener('click', function() {
+  showScene(1);
+});
+
+// Init progress
+updateProgress('intro');
+</script>
+</body>
+</html>
