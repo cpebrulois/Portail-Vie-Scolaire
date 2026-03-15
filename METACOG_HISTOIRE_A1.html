@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retour réflexif — La Nuit du Registre</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090e;--panel:#10131c;--panel2:#151926;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --text:#d4cfc8;--text-m:#8a8278;--text-d:#52504a;
+  --blue:#1d4ed8;--blue-l:#60a5fa;--blue-d:#1e3a8a;
+  --green:#2d6a4f;--green-l:#52b788;
+  --teal:#0d9488;--teal-l:#2dd4bf;
+  --red:#991b1b;--red-l:#ef4444;
+  --border:rgba(200,168,75,.14);--border-l:rgba(200,168,75,.32);
+  --card-bg:rgba(21,25,38,.96);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 25% 0%,rgba(29,78,216,.05) 0%,transparent 50%),
+             radial-gradient(ellipse at 75% 100%,rgba(13,148,136,.04) 0%,transparent 50%);}
+#app{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:32px 20px 100px;}
+
+.mc-header{text-align:center;margin-bottom:40px;}
+.mc-pretitle{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
+.mc-title{font-family:'Cinzel',serif;font-size:1.9rem;color:var(--gold-l);line-height:1.2;margin-bottom:8px;}
+.mc-subtitle{color:var(--text-m);font-size:.95rem;line-height:1.6;margin-bottom:20px;}
+.mc-sep{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 auto 20px;}
+.mc-xp-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;font-size:.82rem;color:var(--gold);margin-bottom:8px;}
+.mc-note{font-size:.8rem;color:var(--text-d);line-height:1.5;}
+
+.mc-phase{margin-bottom:40px;}
+.phase-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-d);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.phase-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06);}
+
+.mirror-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;transition:.3s;}
+.mirror-card.highlight{border-color:rgba(200,168,75,.4);background:rgba(200,168,75,.04);}
+.mirror-choice-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.mirror-icon{font-size:1.5rem;flex-shrink:0;margin-top:2px;}
+.mirror-choice-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-d);margin-bottom:4px;}
+.mirror-choice-text{font-size:.95rem;color:var(--gold-l);font-family:'Crimson Text',serif;font-style:italic;line-height:1.6;}
+.mirror-divider{height:1px;background:rgba(255,255,255,.06);margin:14px 0;}
+
+.research-block{background:rgba(13,148,136,.06);border:1px solid rgba(45,212,191,.18);border-radius:10px;padding:14px 18px;margin-bottom:12px;}
+.research-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--teal-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.research-text{font-size:.9rem;color:#99f6e4;line-height:1.7;}
+.research-text strong{color:#2dd4bf;}
+.research-source{font-size:.72rem;color:rgba(45,212,191,.5);margin-top:6px;font-style:italic;}
+
+.self-block{background:rgba(29,78,216,.07);border:1px solid rgba(96,165,250,.2);border-radius:10px;padding:14px 18px;margin-bottom:12px;}
+.self-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--blue-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.self-text{font-size:.9rem;color:#bfdbfe;line-height:1.7;}
+
+.tension-block{background:rgba(153,27,27,.06);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px 18px;margin-bottom:4px;}
+.tension-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:#fca5a5;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.tension-text{font-size:.9rem;color:#fed7aa;line-height:1.7;}
+
+.question-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+.question-num{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-d);margin-bottom:8px;}
+.question-text{font-size:1.05rem;color:var(--gold-l);font-family:'Crimson Text',serif;line-height:1.7;margin-bottom:16px;}
+.question-hint{font-size:.82rem;color:var(--text-d);font-style:italic;margin-bottom:14px;line-height:1.5;}
+
+.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;text-align:left;}
+.q-opt:hover{border-color:rgba(200,168,75,.3);background:rgba(200,168,75,.05);}
+.q-opt.selected{border-color:var(--gold-d);background:rgba(200,168,75,.08);}
+.q-opt.selected.correct{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.07);}
+.q-opt.selected.wrong{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05);}
+.q-opt-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;transition:.2s;}
+.q-opt.selected .q-opt-dot{background:var(--gold-d);border-color:var(--gold);}
+.q-opt.selected.correct .q-opt-dot{background:#52b788;border-color:#52b788;}
+.q-opt.selected.wrong .q-opt-dot{background:#ef4444;border-color:#ef4444;}
+.q-opt-text{font-size:.92rem;color:var(--text);line-height:1.5;}
+.q-feedback{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.88rem;line-height:1.6;display:none;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.25);color:#86efac;}
+.q-feedback.ko{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#fca5a5;}
+.q-validate{margin-top:12px;display:none;}
+.q-validate.show{display:block;}
+.btn-validate{background:rgba(200,168,75,.15);border:1px solid var(--border-l);color:var(--gold);padding:9px 20px;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;transition:.2s;}
+.btn-validate:hover{background:rgba(200,168,75,.25);}
+
+.open-question{margin-bottom:16px;}
+.open-label{font-size:.82rem;color:var(--text-m);margin-bottom:8px;display:block;line-height:1.5;}
+.open-textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;line-height:1.6;min-height:90px;resize:vertical;transition:.2s;}
+.open-textarea:focus{outline:none;border-color:var(--gold-d);background:rgba(200,168,75,.04);}
+.open-textarea::placeholder{color:var(--text-d);}
+.open-save-btn{padding:7px 16px;background:rgba(200,168,75,.1);border:1px solid var(--border);color:var(--gold-d);border-radius:6px;cursor:pointer;font-size:.8rem;margin-top:8px;transition:.2s;}
+.open-save-btn:hover{background:rgba(200,168,75,.18);color:var(--gold);}
+
+.transfer-card{background:rgba(45,106,79,.08);border:1px solid rgba(82,183,136,.22);border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+.transfer-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-l);margin-bottom:12px;}
+.transfer-scenario{font-size:.95rem;color:#86efac;font-family:'Crimson Text',serif;font-style:italic;line-height:1.7;margin-bottom:14px;padding-left:12px;border-left:3px solid rgba(82,183,136,.3);}
+.transfer-options{display:flex;flex-direction:column;gap:8px;}
+.transfer-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;}
+.transfer-opt:hover{border-color:rgba(82,183,136,.3);background:rgba(82,183,136,.05);}
+.transfer-opt.selected{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.08);}
+.transfer-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;}
+.transfer-opt.selected .transfer-dot{background:#52b788;border-color:#52b788;}
+.transfer-text{font-size:.92rem;color:var(--text);line-height:1.5;}
+.transfer-feedback{margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);font-size:.88rem;color:#86efac;line-height:1.6;display:none;}
+.transfer-feedback.show{display:block;}
+
+.mc-complete-zone{text-align:center;margin-top:40px;padding:30px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;}
+.mc-complete-title{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold-l);margin-bottom:8px;}
+.mc-complete-sub{color:var(--text-m);font-size:.88rem;margin-bottom:20px;line-height:1.6;}
+.mc-complete-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;font-size:.85rem;color:var(--gold);margin-bottom:20px;}
+.btn-complete{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0d0c0a;border:none;padding:14px 36px;font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:8px;transition:.25s;font-weight:700;box-shadow:0 4px 20px rgba(200,168,75,.25);}
+.btn-complete:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btn-complete:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-return{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text-m);padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.88rem;font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase;transition:.2s;display:block;margin:10px auto 0;}
+.btn-return:hover{border-color:rgba(255,255,255,.25);color:var(--text);}
+
+#mc-progress-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:999;background:rgba(255,255,255,.05);}
+#mc-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue-d),var(--blue-l));width:0%;transition:width .5s ease;}
+
+@media(max-width:600px){#app{padding:20px 14px 80px;}.mc-title{font-size:1.5rem;}.mirror-card,.question-card,.transfer-card{padding:16px 16px;}}
+</style>
+</head>
+<body>
+<div id="mc-progress-bar"><div id="mc-progress-fill"></div></div>
+
+<div id="app">
+
+  <div class="mc-header">
+    <div class="mc-pretitle">Retour réflexif · Pilier Histoire · Année 1</div>
+    <div class="mc-title">La Nuit du Registre</div>
+    <div class="mc-subtitle">
+      Tu viens de traverser la nuit du septième vendredi d'octobre avec Lyam.
+      Ce module te permet de regarder tes choix en face — et de comprendre
+      ce qu'ils révèlent, avec l'appui de la recherche.
+    </div>
+    <div class="mc-sep"></div>
+    <div class="mc-xp-badge">🧠 +100 XP supplémentaires à la clé</div>
+    <p class="mc-note">Les questions ouvertes sont privées — jamais transmises. Les QCM ont une réponse attendue, jamais contre toi.</p>
+  </div>
+
+  <!-- ══ PHASE 1 — ANALYSE MIROIR ══ -->
+  <div class="mc-phase">
+    <div class="phase-label">Phase 1 — Analyse de tes choix</div>
+
+    <!-- Miroir S1 : pourquoi s'approcher -->
+    <div class="mirror-card" id="m1">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 1</div>
+          <div class="mirror-choice-text" id="m1-choice">Tu t'es approché de la porte.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="m1-research">
+          Face à une information potentiellement risquée, la réponse comportementale
+          dépend du <strong>style d'attachement</strong> (Bowlby) et du niveau
+          d'<strong>intolérance à l'ambiguïté</strong> (Budner, 1962).
+          Les individus à faible intolérance à l'ambiguïté ont tendance à chercher
+          l'information même quand elle comporte un risque — parce que l'incertitude
+          est vécue comme plus coûteuse que le danger connu.
+          <br><br>
+          Bandura (1986) décrit ce comportement comme de l'<strong>agentivité</strong> —
+          la tendance à agir sur son environnement plutôt qu'à le subir.
+          Elle est fortement prédictive de la capacité à prendre des décisions
+          difficiles dans des situations ambiguës.
+        </div>
+        <div class="research-source">Sources : Bowlby (1988), Budner (1962) — intolérance à l'ambiguïté, Bandura (1986) — auto-efficacité</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m1-self">
+          Ta motivation à t'approcher révèle ton rapport à l'incertitude et à l'action.
+          C'est un marqueur important de ta façon de fonctionner dans les situations où l'information est incomplète.
+        </div>
+      </div>
+    </div>
+
+    <!-- Miroir S2 : ce qu'il ressent -->
+    <div class="mirror-card" id="m2">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 2</div>
+          <div class="mirror-choice-text" id="m2-choice">Tu as entendu la conversation.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="m2-research">
+          Être témoin d'une injustice envers autrui active des circuits
+          neurologiques distincts de ceux activés par une injustice personnelle.
+          <strong>Singer et Lamm (2009)</strong> ont montré que l'empathie affective
+          (ressentir la détresse de l'autre) et l'empathie cognitive
+          (comprendre la position de l'autre) recrutent des réseaux différents.
+          <br><br>
+          La <strong>colère morale</strong> face à l'injustice d'un tiers est une émotion
+          distincte de la colère personnelle — elle est liée à l'activation du
+          cortex préfrontal ventromédian et est associée aux comportements
+          prosociaux et au sens de la justice (Haidt, 2003).
+          La peur, elle, active l'amygdale et pousse à l'évaluation des risques
+          avant toute décision — ce qui est une forme de réalisme adaptatif.
+        </div>
+        <div class="research-source">Sources : Singer & Lamm (2009) — neurosciences de l'empathie, Haidt (2003) — émotions morales</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m2-self">
+          Ta première réaction émotionnelle face à l'injustice dit quelque chose
+          de fondamental sur ta façon de traiter l'information morale —
+          est-ce que tu traites d'abord par le ressenti, par le calcul, ou par la compréhension ?
+        </div>
+      </div>
+    </div>
+
+    <!-- Miroir S3 : première réaction -->
+    <div class="mirror-card" id="m3">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 3</div>
+          <div class="mirror-choice-text" id="m3-choice">De retour dans le dortoir.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="m3-research">
+          Le modèle de Darley et Latané (1968) sur l'<strong>intervention du témoin</strong>
+          identifie cinq étapes avant qu'une personne agisse :
+          remarquer l'événement → l'interpréter comme un problème →
+          se sentir responsable → savoir quoi faire → décider d'agir.
+          <br><br>
+          La troisième étape — se sentir responsable — est la plus discriminante.
+          La recherche sur le <strong>bystander effect</strong> montre que plus on est seul
+          à savoir, plus la responsabilité perçue augmente.
+          Lyam est le seul témoin : il ne peut pas se diluer dans un groupe.
+          <br><br>
+          Attendre peut être une stratégie d'<strong>incubation</strong> (laisser
+          l'information décanter avant d'agir, ce qui améliore la qualité de la décision)
+          ou une forme de <strong>procrastination défensive</strong> (éviter
+          l'inconfort d'une décision difficile). La différence tient à l'intention consciente.
+        </div>
+        <div class="research-source">Sources : Darley & Latané (1968) — bystander effect, Salmivalli (1999) — rôles des témoins</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m3-self">Ta première impulsion révèle ta stratégie naturelle face au dilemme du témoin.</div>
+      </div>
+      <div class="tension-block" id="m3-tension">
+        <div class="tension-label">⚠️ Point à travailler</div>
+        <div class="tension-text" id="m3-tension-text">
+          Quelle que soit ta première impulsion, la question centrale est :
+          est-ce que tu agis depuis une décision réfléchie, ou pour éviter l'inconfort
+          de la décision elle-même ?
+        </div>
+      </div>
+    </div>
+
+    <!-- Miroir S4 : face à Réna -->
+    <div class="mirror-card" id="m4">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 4</div>
+          <div class="mirror-choice-text" id="m4-choice">Face à l'impossibilité de prouver.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="m4-research">
+          Le <strong>courage moral</strong> (Kidder, 2003) est distinct du courage physique.
+          Il implique d'agir conformément à ses valeurs même quand :
+          le coût est réel, la réussite est incertaine, et personne ne nous y oblige.
+          <br><br>
+          Les recherches de Kohlberg sur le développement moral montrent que
+          la capacité à agir selon des principes (stade post-conventionnel)
+          plutôt que selon les règles ou la pression sociale (stade conventionnel)
+          se développe progressivement et n'est pas universelle à l'adolescence.
+          <br><br>
+          Reconnaître qu'une preuve est insuffisante tout en maintenant la décision d'agir
+          correspond à ce que les psychologues appellent la <strong>tolérance à l'ambiguïté morale</strong> —
+          une compétence rare et précieuse.
+        </div>
+        <div class="research-source">Sources : Kidder (2003) — courage moral, Kohlberg (1969) — développement moral</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m4-self">
+          Ta façon de recevoir l'impossibilité de prouver révèle ton rapport
+          entre la réalité et les règles du jeu institutionnel —
+          et jusqu'où tu es prêt à aller quand les deux divergent.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PHASE 2 — CONSOLIDATION ══ -->
+  <div class="mc-phase">
+    <div class="phase-label">Phase 2 — Questions de consolidation</div>
+
+    <!-- Q1 : Bystander effect -->
+    <div class="question-card" id="q1-card">
+      <div class="question-num">Question 1 / 4 — Compréhension</div>
+      <div class="question-text">
+        Selon Darley et Latané, parmi les cinq étapes nécessaires pour qu'un témoin intervienne,
+        laquelle est la plus discriminante — celle qui fait le plus souvent défaut ?
+      </div>
+      <div class="question-hint">💡 C'est la question de la responsabilité individuelle.</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q1','a')"><div class="q-opt-dot"></div><div class="q-opt-text">Remarquer l'événement — la plupart des gens ne voient pas ce qui se passe.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','b')"><div class="q-opt-dot"></div><div class="q-opt-text">Se sentir personnellement responsable d'agir — surtout quand d'autres pourraient aussi intervenir.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','c')"><div class="q-opt-dot"></div><div class="q-opt-text">Savoir physiquement quoi faire dans la situation.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','d')"><div class="q-opt-dot"></div><div class="q-opt-text">Décider de passer à l'action — c'est la dernière étape et donc la plus rare.</div></div>
+      </div>
+      <div class="q-validate show" id="q1-validate"><button class="btn-validate" onclick="validateQ('q1','b')">Valider ma réponse</button></div>
+      <div class="q-feedback" id="q1-feedback"></div>
+    </div>
+
+    <!-- Q2 : Courage moral -->
+    <div class="question-card" id="q2-card">
+      <div class="question-num">Question 2 / 4 — Application</div>
+      <div class="question-text">
+        Lyam décide de parler à Kern malgré l'impossibilité de prouver ce qu'il a vu.
+        Selon Kohlberg, à quel stade du développement moral ce type de décision correspond-il ?
+      </div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q2','a')"><div class="q-opt-dot"></div><div class="q-opt-text">Stade pré-conventionnel — il agit pour éviter une punition ou obtenir une récompense.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','b')"><div class="q-opt-dot"></div><div class="q-opt-text">Stade conventionnel — il suit les règles de Valdurne et ce qu'on attend d'un bon page.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','c')"><div class="q-opt-dot"></div><div class="q-opt-text">Stade post-conventionnel — il agit selon un principe (la vérité que Kern mérite) même quand aucune règle ne l'y oblige et que le coût est réel.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','d')"><div class="q-opt-dot"></div><div class="q-opt-text">Aucun stade — il agit par instinct, pas par raisonnement moral.</div></div>
+      </div>
+      <div class="q-validate show" id="q2-validate"><button class="btn-validate" onclick="validateQ('q2','c')">Valider ma réponse</button></div>
+      <div class="q-feedback" id="q2-feedback"></div>
+    </div>
+
+    <!-- Q3 : Ouverte -->
+    <div class="question-card" id="q3-card">
+      <div class="question-num">Question 3 / 4 — Réflexion personnelle</div>
+      <div class="question-text">
+        As-tu déjà été dans la position de Lyam — tu sais quelque chose d'important
+        qui concerne quelqu'un d'autre, mais en parler a un coût réel pour toi ?
+        Qu'est-ce que tu as fait ? Ou qu'est-ce que tu aurais fait ?
+      </div>
+      <div class="open-question">
+        <label class="open-label" for="q3-text">Ta réflexion — privée, jamais transmise.</label>
+        <textarea class="open-textarea" id="q3-text" placeholder="Écris ici…"></textarea>
+        <button class="open-save-btn" onclick="saveOpen('q3')">💾 Enregistrer</button>
+        <div id="q3-saved" style="font-size:.75rem;color:#52b788;margin-top:6px;display:none;">✓ Enregistrée</div>
+      </div>
+    </div>
+
+    <!-- Q4 : Transfert -->
+    <div class="transfer-card" id="q4-card">
+      <div class="transfer-label">Question 4 / 4 — Transfert dans la vraie vie</div>
+      <div class="question-text" style="margin-bottom:14px;color:#86efac;">
+        Situation : Tu sais qu'un camarade a été accusé à tort d'avoir fait quelque chose
+        — tu étais là, tu as vu ce qui s'est vraiment passé. Mais si tu parles,
+        ça risque de te créer des problèmes avec un groupe d'élèves.
+      </div>
+      <div class="transfer-scenario">
+        La réunion avec le CPE a lieu demain matin. Ce soir, personne ne sait que tu as vu.
+      </div>
+      <div class="transfer-options">
+        <div class="transfer-opt" onclick="selectTransfer(this,'a')"><div class="transfer-dot"></div><div class="transfer-text">Je ne dis rien — ce n'est pas mon problème et je ne veux pas de complications.</div></div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'b')"><div class="transfer-dot"></div><div class="transfer-text">Je parle au CPE avant la réunion, en privé, en expliquant ce que j'ai vu.</div></div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'c')"><div class="transfer-opt-dot" style="display:none"></div><div class="transfer-text">J'en parle d'abord au camarade accusé pour qu'il sache que j'ai vu — et je le laisse décider s'il veut que j'intervienne.</div></div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'d')"><div class="transfer-dot"></div><div class="transfer-text">J'essaie de trouver d'autres personnes qui auraient aussi vu, pour ne pas être seul à témoigner.</div></div>
+      </div>
+      <div class="transfer-feedback" id="transfer-feedback"></div>
+      <div id="transfer-validate" style="margin-top:12px;display:none;">
+        <button class="btn-validate" onclick="validateTransfer()">Voir l'analyse</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-complete-zone">
+    <div class="mc-complete-title">Réflexion terminée</div>
+    <div class="mc-complete-sub">Tu as analysé ce que révèlent tes choix face au dilemme du témoin — l'une des situations les plus complexes de la vie en collectivité.</div>
+    <div class="mc-complete-xp">🧠 +100 XP</div><br>
+    <button class="btn-complete" id="completeBtn" onclick="completeModule()" disabled>Valider le module réflexif</button>
+    <button class="btn-return" onclick="window.location.href='index_PIXHARe.html'">← Retour au Hub PIXHARe</button>
+  </div>
+
+</div>
+
+<script>
+var MODULE_ID='METACOG_HISTOIRE_A1', CERT_KEY='CERT_METACOG_HISTOIRE_A1',
+    XP_AMOUNT=100, LEGACY_KEY='VALDURNE_LEGACY_HISTOIRE_A1', HUB_URL='index_PIXHARe.html';
+
+var playerCode='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p&&p.length>1)localStorage.setItem('pvs_current_player',p);playerCode=localStorage.getItem('pvs_current_player')||'';})();
+
+var legacy=null;
+try{legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||'null');}catch(e){}
+var choices=legacy?(legacy.choices||{}):{};
+
+var MIRRORS={
+  s1:{
+    instinct:{
+      choice:"Tu t'es approché par instinct — l'anomalie ne pouvait pas rester sans être regardée.",
+      self:"Cette agentivité instinctive — agir sur son environnement plutôt que le subir — est l'un des prédicteurs les plus solides de la capacité à intervenir dans des situations difficiles. Elle peut aussi conduire à des prises de risque non calculées : à surveiller avec bienveillance."
+    },
+    raison:{
+      choice:"Tu as calculé avant d'agir — l'information avait de la valeur, et tu le savais.",
+      self:"Cette approche analytique avant l'action est un marqueur d'<strong>intelligence situationnelle</strong>. Elle protège des décisions impulsives et améliore la qualité de l'intervention. La limite : parfois le calcul prolongé masque une hésitation à s'engager."
+    },
+    incapable:{
+      choice:"Tu ne pouvais pas ignorer l'anomalie — ce n'est pas un choix, c'est ta nature.",
+      self:"Reconnaître une force interne plutôt que de se l'attribuer comme mérite moral, c'est une forme rare d'<strong>honnêteté sur soi</strong>. Et cette force — ne pas pouvoir laisser une injustice sans la regarder — est précieuse dans un monde où beaucoup choisissent de ne pas voir."
+    }
+  },
+  s2:{
+    colere:{
+      choice:"Face à l'injustice : une colère froide, précise, sans rage.",
+      self:"La colère morale bien régulée est une ressource, pas un problème. Elle signale une violation de valeurs fondamentales et mobilise l'énergie pour agir. La recherche montre qu'elle est associée aux comportements prosociaux — à condition de rester froide, pas brûlante.",
+      research:"Haidt (2003) distingue la colère morale (réponse à l'injustice envers autrui) de la colère personnelle. La première est liée au sens de la justice et prédit les comportements d'aide — même quand ils comportent un coût personnel."
+    },
+    peur:{
+      choice:"Face à l'injustice : la mesure claire du rapport de forces.",
+      self:"Percevoir le danger réel avant de décider, ce n'est pas de la lâcheté — c'est du <strong>réalisme adaptatif</strong>. La peur qui évalue est une ressource de survie. La recherche de Singer montre qu'elle peut coexister avec l'empathie affective : ressentir pour l'autre tout en calculant ce qu'on peut faire.",
+      research:"L'évaluation cognitive du danger (appraisal theory, Lazarus, 1991) précède souvent les décisions morales difficiles. Ceux qui évaluent les risques avant d'agir ne sont pas moins courageux — ils agissent mieux préparés."
+    },
+    clarte:{
+      choice:"Face à l'injustice : une clarté soudaine — tout s'assemble.",
+      self:"Cette reconnaissance soudaine d'un pattern caché est ce que les psychologues appellent l'<strong>insight</strong> — un moment où les pièces s'assemblent d'un coup. Neurologiquement, il est associé à une activation du lobe temporal droit et produit une certitude subjective forte. À utiliser comme signal, pas comme preuve.",
+      research:"Bowden & Jung-Beeman (2003) ont montré que les moments d'insight activent des zones différentes du cerveau que la résolution analytique. Cette clarté subite est réelle — mais elle peut aussi être une rationalisation a posteriori d'une décision déjà prise émotionnellement."
+    }
+  },
+  s3:{
+    attendre:{
+      choice:"Première impulsion : attendre. Observer. Une preuve fragile mal utilisée peut aggraver.",
+      self:"Attendre peut être la décision la plus intelligente — si c'est pour recueillir de l'information, identifier les bonnes options, préparer une intervention efficace. La distinction avec la procrastination défensive est l'intention : est-ce que l'attente <em>sert</em> quelque chose ?",
+      tension:"Si attendre devient un moyen d'éviter le risque indéfiniment, ça n'est plus de la stratégie — c'est de l'inaction déguisée. La question à se poser : à quel point est-ce que j'attends quelque chose de précis, ou est-ce que j'attends que la décision se prenne toute seule ?"
+    },
+    rena:{
+      choice:"Première impulsion : Réna. Comprendre les leviers avant d'agir.",
+      self:"Chercher une alliance avant d'agir seul est une compétence sociale de haut niveau. Elle réduit le risque d'erreur, renforce la légitimité de l'action, et évite l'isolement du témoin unique. C'est aussi ce que font les organisations de défense des droits les plus efficaces.",
+      tension:"La dépendance à l'appui d'autrui peut aussi être un moyen de différer la responsabilité personnelle. Vérification utile : est-ce que tu irais quand même si Réna disait non ?"
+    },
+    kern:{
+      choice:"Première impulsion : dire à Kern. L'asymétrie est intenable.",
+      self:"Réagir à l'asymétrie d'information (lui sait, l'autre ne sait pas) comme à une injustice en soi révèle un sens aigu de la <strong>dignité informationnelle</strong> — le droit de chacun à savoir ce qui le concerne. C'est une valeur fondamentale dans la théorie de la justice d'accès à l'information (Floridi, 2006).",
+      tension:"Agir vite pour rétablir l'équité peut aussi conduire à agir sans filet — sans préparation, sans allié, dans une situation où la préparation améliorerait significativement les chances de succès."
+    }
+  },
+  s4:{
+    accepte:{
+      choice:"Face à l'impossibilité de prouver : « Ça ne change pas ce que j'ai vu. »",
+      self:"Cette posture — distinguer la réalité des faits de leur preuve institutionnelle — est le fondement du courage moral selon Kidder. Elle requiert une forte <strong>cohérence entre valeurs et actions</strong>, même quand les règles du jeu pénalisent cette cohérence.",
+      research:"Kohlberg (1969) : stade post-conventionnel — agir selon des principes éthiques personnels au-delà des règles sociales. Rare chez les adolescents, pas impossible."
+    },
+    cherche:{
+      choice:"Face à l'impossibilité de prouver : chercher une voie légale — l'article 8.",
+      self:"Transformer la contrainte (pas de preuve directe) en stratégie (trouver une preuve indirecte via les voies légales) est une forme d'<strong>intelligence adaptative</strong>. C'est aussi ce que font les avocats, les journalistes d'investigation, les lanceurs d'alerte efficaces.",
+      research:"La recherche de Salmivalli sur les témoins actifs montre que les interventions les plus efficaces dans les situations d'injustice sont celles qui mobilisent des ressources institutionnelles existantes plutôt que des confrontations directes."
+    },
+    doute:{
+      choice:"Face à l'impossibilité de prouver : un moment de doute réel.",
+      self:"Reconnaître honnêtement le doute — sans se l'interdire ni s'y noyer — est une compétence métacognitive avancée. La plupart des gens soit suppriment le doute (ils s'en protègent), soit le laissent les paralyser. Le tenir conscient tout en continuant d'agir, c'est de la <strong>tolérance à l'ambiguïté morale</strong>.",
+      research:"Kramer (2009) a montré que les leaders les plus efficaces dans les situations ambiguës sont ceux qui maintiennent ouvertes les questions difficiles plutôt que de les refermer prématurément — ce qu'il appelle 'ruminative thought' positif."
+    }
+  }
+};
+
+var Q_FEEDBACK={
+  q1:{correct:'b',
+    ok:'✓ Exact. La diffusion de responsabilité — se sentir moins personnellement obligé d\'agir quand d\'autres pourraient le faire — est le mécanisme central du bystander effect. Lyam est seul à savoir : pas de diffusion possible. C\'est pour ça que sa responsabilité perçue est si forte.',
+    ko:{a:'Non. Remarquer l\'événement est la première étape, mais elle n\'est pas la plus discriminante — la plupart des gens voient bien ce qui se passe. Le problème est ce qui vient après.',c:'Pas tout à fait. Ne pas savoir quoi faire intervient, mais c\'est la quatrième étape, pas la plus déterminante. Beaucoup de témoins savent quoi faire mais ne le font pas.',d:'Non. La décision d\'agir (dernière étape) est souvent moins problématique que la question de la responsabilité personnelle qui la précède.'}
+  },
+  q2:{correct:'c',
+    ok:'✓ Exact. Agir selon un principe éthique personnel (la vérité que Kern mérite) au-delà des règles de Valdurne et des pressions sociales, sans récompense garantie et avec un coût réel — c\'est la définition du stade post-conventionnel de Kohlberg.',
+    ko:{a:'Non. Le stade pré-conventionnel implique une logique de punition/récompense personnelle. Lyam ne gagne rien concrètement à parler — au contraire.',b:'Non. Le stade conventionnel impliquerait de suivre les règles de Valdurne ou les attentes du groupe. Ici, Lyam agit contre la prudence attendue dans son contexte social.',d:'Non. L\'impulsion de Lyam est explicitement réfléchie dans le texte — il a pesé les options toute la nuit. Ce n\'est pas de l\'instinct.'}
+  }
+};
+
+var TRANSFER_FEEDBACK={
+  a:{text:'C\'est la réponse la plus fréquente — et elle illustre exactement le bystander effect que Darley et Latané ont décrit. "Ce n\'est pas mon problème" est le signal classique de la diffusion de responsabilité. Dans une situation réelle, cette réponse a un coût : tu sais que quelqu\'un a été injustement accusé, et tu portes ça.'},
+  b:{text:'✓ Parler au CPE en privé avant la réunion est la réponse la plus directement efficace. Elle respecte le rôle institutionnel de l\'adulte référent, minimise les risques de confrontation de groupe, et donne à la décision le maximum de légitimité.'},
+  c:{text:'✓ Informer d\'abord la personne concernée lui rend son autonomie — c\'est une forme de respect de sa dignité. La limite : si elle dit non par peur ou par résignation, tu te retrouves à devoir décider seul de toute façon. C\'est une première étape utile, pas une réponse finale.'},
+  d:{text:'✓ Chercher d\'autres témoins est une stratégie efficace — elle réduit l\'isolement, renforce la crédibilité du témoignage, et dilue le risque personnel. La limite : ça demande du temps, et parfois il n\'y a pas d\'autres témoins disponibles.'}
+};
+
+var qState={q1:null,q2:null,q3:false,transfer:null};
+
+function applyMirrors(){
+  var s1=choices['1']||'instinct', s2=choices['2']||'colere',
+      s3=choices['3']||'rena',    s4=choices['4']||'accepte';
+
+  var d1=MIRRORS.s1[s1]||MIRRORS.s1.instinct;
+  document.getElementById('m1-choice').textContent=d1.choice;
+  document.getElementById('m1-self').innerHTML=d1.self;
+
+  var d2=MIRRORS.s2[s2]||MIRRORS.s2.colere;
+  document.getElementById('m2-choice').textContent=d2.choice;
+  document.getElementById('m2-self').innerHTML=d2.self;
+  if(d2.research){ var rb2=document.querySelector('#m2 .research-text'); if(rb2)rb2.innerHTML=d2.research+'<br><br>'+rb2.innerHTML.split('<br>').pop(); }
+
+  var d3=MIRRORS.s3[s3]||MIRRORS.s3.rena;
+  document.getElementById('m3-choice').textContent=d3.choice;
+  document.getElementById('m3-self').innerHTML=d3.self;
+  document.getElementById('m3-tension-text').innerHTML=d3.tension||'';
+
+  var d4=MIRRORS.s4[s4]||MIRRORS.s4.accepte;
+  document.getElementById('m4-choice').textContent=d4.choice;
+  document.getElementById('m4-self').innerHTML=d4.self;
+  if(d4.research){ var rb4=document.querySelector('#m4 .research-text'); if(rb4)rb4.innerHTML=d4.research+'<br><br>'+rb4.innerHTML.split('<br>').pop(); }
+
+  if(legacy){['m1','m2','m3','m4'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('highlight');});}
+}
+applyMirrors();
+
+function checkCompletion(){
+  var done=qState.q1!==null&&qState.q2!==null&&qState.q3&&qState.transfer!==null;
+  document.getElementById('completeBtn').disabled=!done;
+  var n=[qState.q1!==null,qState.q2!==null,qState.q3,qState.transfer!==null].filter(Boolean).length;
+  document.getElementById('mc-progress-fill').style.width=(25+n*18)+'%';
+}
+
+function selectOpt(el,qid,val){
+  el.closest('.q-options').querySelectorAll('.q-opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  var vb=document.getElementById(qid+'-validate');if(vb)vb.style.display='block';
+  el.closest('.question-card').dataset.selected=val;
+}
+
+function validateQ(qid,correctVal){
+  var card=document.getElementById(qid+'-card');
+  var selected=card.dataset.selected; if(!selected)return;
+  var fb=document.getElementById(qid+'-feedback');
+  var qdata=Q_FEEDBACK[qid];
+  var vb=document.getElementById(qid+'-validate'); if(vb)vb.style.display='none';
+  card.querySelectorAll('.q-opt').forEach(function(o){o.style.pointerEvents='none';});
+  if(selected===correctVal){
+    card.querySelector('.q-opt[onclick*="\''+selected+'\'"]').classList.add('correct');
+    fb.className='q-feedback show ok'; fb.innerHTML=qdata.ok;
+    qState[qid]='correct';
+  } else {
+    card.querySelector('.q-opt[onclick*="\''+selected+'\'"]').classList.add('wrong');
+    fb.className='q-feedback show ko';
+    fb.innerHTML='✗ '+(qdata.ko[selected]||'Pas tout à fait.')+'<br><br><strong style="color:#86efac">Réponse attendue :</strong> '+qdata.ok;
+    qState[qid]='done';
+    card.querySelectorAll('.q-opt').forEach(function(o){if(o.getAttribute('onclick')&&o.getAttribute('onclick').includes("'"+correctVal+"'"))o.classList.add('correct');});
+  }
+  checkCompletion();
+}
+
+function saveOpen(qid){
+  var txt=document.getElementById(qid+'-text').value.trim(); if(!txt)return;
+  try{localStorage.setItem('pvs_metacog_'+MODULE_ID+'_'+qid,txt);}catch(e){}
+  var el=document.getElementById(qid+'-saved'); if(el)el.style.display='block';
+  qState.q3=true; checkCompletion();
+}
+
+function selectTransfer(el,val){
+  el.closest('.transfer-options').querySelectorAll('.transfer-opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  var vb=document.getElementById('transfer-validate'); if(vb){vb.style.display='block';vb.dataset.val=val;}
+}
+
+function validateTransfer(){
+  var vb=document.getElementById('transfer-validate'); var val=vb?vb.dataset.val:''; if(!val)return;
+  var data=TRANSFER_FEEDBACK[val]||TRANSFER_FEEDBACK.b;
+  var fb=document.getElementById('transfer-feedback'); fb.className='transfer-feedback show'; fb.innerHTML=data.text;
+  vb.style.display='none';
+  document.querySelectorAll('.transfer-opt').forEach(function(o){o.style.pointerEvents='none';});
+  qState.transfer=val; checkCompletion();
+}
+
+function completeModule(){
+  try{
+    localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP_AMOUNT}));
+    var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({id:'METACOG-'+MODULE_ID+'-'+Date.now(),type:'METACOG_COMPLETE',player:playerCode,module:MODULE_ID,jdrModule:'JDR_HISTOIRE_A1',metacogXp:XP_AMOUNT,d:new Date().toISOString()});
+    if(evts.length>500)evts.splice(0,evts.length-500);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(e){}
+  document.getElementById('completeBtn').textContent='✓ Module validé !';
+  document.getElementById('completeBtn').disabled=true;
+  document.getElementById('mc-progress-fill').style.width='100%';
+  setTimeout(function(){window.location.href=HUB_URL;},2000);
+}
+
+checkCompletion();
+document.getElementById('mc-progress-fill').style.width='20%';
+</script>
+</body>
+</html>
