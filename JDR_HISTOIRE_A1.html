@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Veilleurs de Valdurne — La Nuit du Registre</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#09080a;--bg2:#110f14;--panel:#181520;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --stone:#252030;--stone-l:#332d40;
+  --text:#d4c9b0;--text-m:#8a7e6a;--text-d:#5a5040;
+  --accent:#1d4ed8;--accent-l:#3b82f6;
+  --violet:#7c3aed;--violet-l:#a855f7;
+  --red:#991b1b;--red-l:#ef4444;
+  --green:#2d6a4f;--green-l:#52b788;
+  --border:rgba(200,168,75,.15);--border-l:rgba(200,168,75,.35);
+  --shadow:0 8px 40px rgba(0,0,0,.8);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Crimson Text',Georgia,serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse at 30% 0%,rgba(29,78,216,.05) 0%,transparent 50%),
+    radial-gradient(ellipse at 70% 100%,rgba(124,58,237,.06) 0%,transparent 50%);
+}
+
+/* ── Layout ── */
+#app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 0 80px;}
+
+/* ── Barre ambiance ── */
+#ambient-bar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(9,8,10,.93);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:14px;padding:8px 20px;
+}
+.amb-label{color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:1px;white-space:nowrap;flex-shrink:0;}
+.amb-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);
+  width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;}
+.amb-toggle:hover{background:var(--gold);color:#000;}
+.amb-vol{-webkit-appearance:none;width:90px;height:3px;background:var(--stone-l);
+  border-radius:2px;outline:none;cursor:pointer;flex-shrink:0;}
+.amb-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;
+  border-radius:50%;background:var(--gold);cursor:pointer;}
+.amb-status{color:var(--text-m);font-size:.7rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pb-chip{display:flex;align-items:center;gap:6px;background:rgba(200,168,75,.07);
+  border:1px solid var(--border);padding:3px 10px;border-radius:20px;
+  font-size:.7rem;color:var(--gold-l);flex-shrink:0;}
+
+/* ── Scène ── */
+.scene{padding-top:56px;min-height:100vh;display:none;flex-direction:column;
+  animation:sceneFade .6s ease-out;}
+.scene.active{display:flex;}
+@keyframes sceneFade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* Art */
+.scene-art{position:relative;width:100%;height:300px;overflow:hidden;background:var(--stone);}
+.scene-art img{width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity .5s;}
+.scene-art .art-fallback{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:5rem;
+  background:linear-gradient(180deg,#1a1025 0%,var(--bg) 100%);}
+.scene-art .art-overlay{position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 35%,var(--bg) 100%);}
+
+/* Header scène */
+.scene-header{padding:20px 32px 0;}
+.scene-crumb{display:flex;gap:10px;align-items:center;
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;
+  color:var(--text-d);text-transform:uppercase;margin-bottom:10px;}
+.scene-crumb span{color:var(--gold-d);}
+.scene-num{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold-d);margin-bottom:6px;}
+.scene-title{font-family:'Cinzel',serif;font-size:1.55rem;color:var(--gold-l);
+  line-height:1.2;margin-bottom:14px;}
+
+/* Barre narration */
+.narr-bar{display:flex;align-items:center;gap:10px;
+  background:rgba(200,168,75,.06);border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;margin:0 32px 20px;font-size:.75rem;}
+.narr-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);
+  width:28px;height:28px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:.2s;flex-shrink:0;}
+.narr-toggle:hover{background:var(--gold);color:#000;}
+.narr-vol{-webkit-appearance:none;width:80px;height:3px;background:var(--stone-l);
+  border-radius:2px;outline:none;cursor:pointer;flex-shrink:0;}
+.narr-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;
+  border-radius:50%;background:var(--gold);cursor:pointer;}
+.narr-label{color:var(--text-m);font-size:.7rem;flex:1;font-family:'Cinzel',serif;letter-spacing:.5px;}
+.narr-status{color:var(--text-d);font-size:.68rem;}
+
+/* Corps */
+.scene-body{padding:0 32px;flex:1;}
+.scene-text{font-size:1.08rem;line-height:1.88;color:var(--text);margin-bottom:22px;}
+.scene-text p{margin-bottom:14px;}
+.scene-text em{color:var(--gold-l);font-style:italic;}
+.scene-text strong{color:#e8dfc8;}
+
+/* Dialogue entendu */
+.scene-dialogue{
+  background:rgba(29,78,216,.06);border:1px solid rgba(29,78,216,.2);
+  border-radius:8px;padding:14px 18px;margin:0 0 22px;
+  font-style:italic;color:#a5b4fc;font-size:.95rem;line-height:1.75;
+}
+.scene-dialogue .speaker{font-style:normal;font-weight:600;color:#6366f1;
+  font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:1px;
+  text-transform:uppercase;display:block;margin-bottom:4px;}
+
+/* Pensée intérieure */
+.scene-thought{
+  background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.18);
+  border-radius:8px;padding:14px 18px;margin:0 0 22px;
+  font-style:italic;color:#c4b5fd;font-size:.95rem;line-height:1.7;
+}
+.scene-thought::before{content:'💭  ';}
+
+/* Citation */
+.scene-quote{
+  border-left:3px solid var(--gold-d);padding:10px 18px;
+  margin:0 0 22px;background:rgba(200,168,75,.04);border-radius:0 6px 6px 0;
+}
+.scene-quote p{font-style:italic;font-size:1rem;color:var(--text-m);line-height:1.7;}
+
+/* Tension — compteur visuel */
+.tension-meter{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(153,27,27,.06);border:1px solid rgba(239,68,68,.2);
+  border-radius:8px;padding:10px 16px;margin:0 0 22px;
+}
+.tension-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1px;
+  text-transform:uppercase;color:#fca5a5;white-space:nowrap;}
+.tension-dots{display:flex;gap:5px;}
+.tension-dot{width:10px;height:10px;border-radius:50%;
+  background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.3);}
+.tension-dot.on{background:#ef4444;border-color:#ef4444;
+  box-shadow:0 0 6px rgba(239,68,68,.5);}
+
+/* Prompt + choix */
+.scene-prompt{
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;
+  color:var(--gold);text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.choices{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.choice-btn{
+  background:var(--stone);border:1px solid var(--stone-l);
+  border-radius:8px;padding:16px 20px;text-align:left;cursor:pointer;
+  transition:.25s;color:var(--text);font-family:'Crimson Text',serif;
+  font-size:1rem;line-height:1.5;position:relative;overflow:hidden;
+}
+.choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--gold-d);transition:.25s;}
+.choice-btn:hover{background:var(--stone-l);border-color:var(--gold);transform:translateX(4px);}
+.choice-btn:hover::before{background:var(--gold);}
+.choice-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;
+  color:var(--gold-d);text-transform:uppercase;display:block;margin-bottom:4px;}
+.choice-title{font-weight:600;color:var(--gold-l);display:block;margin-bottom:3px;}
+.choice-sub{color:var(--text-m);font-size:.9rem;}
+
+/* Boutons neutres */
+.btn-neutral{background:none;border:1px solid var(--stone-l);color:var(--text-m);
+  padding:10px 22px;border-radius:6px;cursor:pointer;
+  font-family:'Crimson Text',serif;font-size:.9rem;transition:.2s;}
+.btn-neutral:hover{border-color:var(--text-m);color:var(--text);}
+
+/* ── Intro ── */
+#scene-intro{align-items:center;justify-content:center;padding-top:56px;text-align:center;}
+.intro-sigil{font-size:3.8rem;margin-bottom:20px;
+  animation:glow 3s ease-in-out infinite;}
+@keyframes glow{
+  0%,100%{filter:drop-shadow(0 0 8px rgba(29,78,216,.4));}
+  50%{filter:drop-shadow(0 0 24px rgba(29,78,216,.8));}
+}
+.intro-pretitle{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:4px;
+  text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
+.intro-title{font-family:'IM Fell English',serif;font-size:2.3rem;color:var(--gold-l);
+  line-height:1.2;margin-bottom:8px;}
+.intro-subtitle{font-family:'IM Fell English',serif;font-size:1.1rem;
+  color:var(--text-m);font-style:italic;margin-bottom:30px;}
+.intro-sep{width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-d),transparent);
+  margin:0 auto 28px;}
+.intro-desc{max-width:560px;margin:0 auto 28px;font-size:1.05rem;line-height:1.85;color:var(--text-m);}
+.intro-badge{
+  display:inline-block;background:rgba(153,27,27,.1);border:1px solid rgba(239,68,68,.25);
+  border-radius:8px;padding:10px 18px;margin:0 auto 32px;
+  font-size:.82rem;color:#fca5a5;line-height:1.6;max-width:480px;
+}
+.intro-badge strong{color:#ef4444;}
+.intro-note{background:rgba(200,168,75,.06);border:1px solid var(--border);
+  border-radius:8px;padding:14px 20px;max-width:480px;margin:0 auto 32px;
+  font-size:.85rem;color:var(--text-d);line-height:1.6;}
+.btn-start{background:var(--gold-d);color:#f5ead0;border:none;
+  padding:14px 40px;font-family:'Cinzel',serif;font-size:.9rem;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  border-radius:6px;transition:.25s;box-shadow:0 4px 20px rgba(200,168,75,.2);}
+.btn-start:hover{background:var(--gold);color:#000;transform:translateY(-2px);
+  box-shadow:0 4px 30px rgba(200,168,75,.4);}
+
+/* ── Fin ── */
+#scene-fin{align-items:center;justify-content:center;padding:56px 32px 80px;text-align:center;}
+.fin-sigil{font-size:3.2rem;margin-bottom:18px;}
+.fin-title{font-family:'Cinzel',serif;font-size:1.75rem;color:var(--gold-l);margin-bottom:8px;}
+.fin-subtitle{font-family:'IM Fell English',serif;font-style:italic;
+  color:var(--text-m);font-size:1.1rem;margin-bottom:26px;}
+.fin-xp{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,168,75,.1);border:1px solid var(--border-l);
+  padding:8px 22px;border-radius:30px;font-family:'Cinzel',serif;
+  font-size:.9rem;color:var(--gold);margin-bottom:26px;
+  box-shadow:0 0 20px rgba(200,168,75,.15);}
+.fin-legacy-box{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);
+  border-radius:10px;padding:20px 24px;max-width:540px;margin:0 auto 24px;text-align:left;}
+.fin-legacy-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;
+  text-transform:uppercase;color:#a855f7;margin-bottom:10px;}
+.fin-legacy-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;
+  font-size:.92rem;color:var(--text-m);line-height:1.5;}
+.fin-legacy-item .dot{color:var(--gold-d);flex-shrink:0;margin-top:3px;}
+.fin-cps{background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);
+  border-radius:10px;padding:16px 20px;max-width:540px;margin:0 auto 26px;text-align:left;}
+.fin-cps-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--green-l);margin-bottom:10px;}
+.fin-cps-item{font-size:.9rem;color:var(--text-m);line-height:1.6;margin-bottom:4px;}
+.fin-cps-item::before{content:'✦ ';color:var(--green-l);}
+.fin-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-fin-primary{background:var(--gold-d);color:#f5ead0;border:none;
+  padding:12px 28px;font-family:'Cinzel',serif;font-size:.82rem;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.25s;}
+.btn-fin-primary:hover{background:var(--gold);color:#000;}
+.btn-fin-secondary{background:none;border:1px solid var(--stone-l);color:var(--text-m);
+  padding:12px 22px;font-family:'Cinzel',serif;font-size:.78rem;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.2s;}
+.btn-fin-secondary:hover{border-color:var(--text-m);color:var(--text);}
+
+/* ── Barre progression ── */
+.progress-strip{position:fixed;bottom:0;left:0;right:0;z-index:900;
+  background:rgba(9,8,10,.92);border-top:1px solid var(--border);
+  backdrop-filter:blur(8px);padding:6px 20px;
+  display:flex;align-items:center;gap:14px;}
+.prog-bar-wrap{flex:1;height:3px;background:var(--stone-l);border-radius:2px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));
+  border-radius:2px;transition:width .5s ease;}
+.prog-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;color:var(--gold-d);flex-shrink:0;}
+.prog-step{font-size:.68rem;color:var(--text-d);flex-shrink:0;}
+
+@media(max-width:640px){
+  .scene-header,.scene-body{padding-left:18px;padding-right:18px;}
+  .narr-bar{margin-left:18px;margin-right:18px;}
+  .scene-title{font-size:1.3rem;}
+  .scene-art{height:220px;}
+  .intro-title{font-size:1.8rem;}
+  .fin-actions{flex-direction:column;align-items:stretch;}
+}
+</style>
+</head>
+<body>
+
+<!-- Ambiance -->
+<div id="ambient-bar">
+  <span class="amb-label">🎵 Ambiance</span>
+  <button class="amb-toggle" id="ambToggle">▶</button>
+  <input class="amb-vol" type="range" id="ambVol" min="0" max="100" value="30">
+  <span class="amb-status" id="ambStatus">Les couloirs de service restent silencieux…</span>
+  <div class="pb-chip">📜 <span id="pbName">–</span></div>
+</div>
+
+<!-- Progression -->
+<div class="progress-strip">
+  <span class="prog-label">Valdurne</span>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
+  <span class="prog-step" id="progStep">Intro</span>
+</div>
+
+<div id="app">
+
+  <!-- ══ INTRO ═══════════════════════════════════════════════════ -->
+  <div class="scene active" id="scene-intro">
+    <div style="padding:60px 32px 40px;max-width:620px;margin:0 auto;">
+      <div class="intro-sigil">🌑</div>
+      <div class="intro-pretitle">Les Veilleurs de Valdurne · Année 1 · Pilier Histoire</div>
+      <div class="intro-title">La Nuit du Registre</div>
+      <div class="intro-subtitle">Ce que la nuit cache — et ce qu'on choisit de faire avec</div>
+      <div class="intro-sep"></div>
+      <div class="intro-desc">
+        C'est le septième vendredi d'octobre. Lyam n'arrive pas à dormir.
+        Il descend chercher de l'eau dans l'escalier de service de l'aile est.
+        En bas, il y a de la lumière sous une porte qui devrait être fermée à cette heure.<br><br>
+        Ce qui se passe derrière cette porte peut rester invisible.
+        Ou pas.
+      </div>
+      <div class="intro-badge">
+        <strong>⚠️ Ce JdR explore</strong> ce qu'on fait quand on sait quelque chose
+        que personne d'autre ne sait — et quand agir a un coût réel.
+      </div>
+      <div class="intro-note">
+        🎭 Aucune bonne réponse. Tes choix révèlent qui Lyam est en train de devenir,
+        et laisseront des traces dans les aventures suivantes.
+      </div>
+      <button class="btn-start" id="btnStart">▶ Entrer dans la nuit</button>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 1 : L'escalier ════════════════════════════════════ -->
+  <div class="scene" id="scene-1" data-step="1">
+    <div class="scene-art">
+      <img src="jdr_histoire_a1_scene1.jpg" alt="L'escalier de service, nuit" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🕯️</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Nuit du Registre</div>
+      <div class="scene-num">Scène 1 — L'escalier de service</div>
+      <div class="scene-title">La lumière sous la porte</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_histoire_a1_scene1.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Trois heures du matin, environ. Lyam a pris l'escalier de service de l'aile est —
+        le raccourci que Kern lui a montré à la fin de la troisième semaine.
+        Il en connaît chaque marche, celles qui grincent et celles qui tiennent.</p>
+        <p>Au bas de l'escalier, le couloir se ramifie à gauche.
+        Un couloir de service — personne ne l'utilise, pas d'interdiction formelle,
+        juste un endroit que tout le monde contourne sans s'en expliquer la raison.</p>
+        <p>Il y a de la lumière sous la troisième porte à gauche.
+        Pas une torche — <em>la lumière stable d'une lampe à huile posée sur une surface fixe.</em>
+        La lumière de quelqu'un qui écrit.</p>
+      </div>
+      <div class="tension-meter">
+        <span class="tension-label">Tension</span>
+        <div class="tension-dots" id="tension-1">
+          <div class="tension-dot on"></div>
+          <div class="tension-dot"></div>
+          <div class="tension-dot"></div>
+          <div class="tension-dot"></div>
+        </div>
+      </div>
+      <div class="scene-thought">
+        Plusieurs raisons sensées de tourner les talons : le froid, l'heure,
+        le fait que ça ne le regarde probablement pas. Et peut-être la plus honnête —
+        il a peur de ce qu'il peut voir si il regarde.
+      </div>
+      <div class="scene-prompt">Il s'approche de la porte. Qu'est-ce qui le pousse ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(1,'instinct')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">L'instinct du fils de forgeron</span>
+          <span class="choice-sub">Son père vérifiait toujours ce qu'il ne comprenait pas, même tard la nuit. On ne laisse pas une anomalie sans la regarder en face.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'raison')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Le calcul froid</span>
+          <span class="choice-sub">Il évalue le risque. Être trouvé ici serait difficile à expliquer. Mais l'information que cette lumière représente peut avoir de la valeur — pour lui, pour d'autres.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'incapable')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Il ne peut pas faire autrement</span>
+          <span class="choice-sub">Ce n'est pas du courage. Ce n'est pas de la curiosité. C'est simplement qu'il est physiquement incapable de passer devant une anomalie sans comprendre.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 2 : Ce qu'on entend ══════════════════════════════ -->
+  <div class="scene" id="scene-2" data-step="2">
+    <div class="scene-art">
+      <img src="jdr_histoire_a1_scene2.jpg" alt="Lyam écoute à la porte" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">👂</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Nuit du Registre</div>
+      <div class="scene-num">Scène 2 — L'interstice</div>
+      <div class="scene-title">Ce qu'on n'est pas censé entendre</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_histoire_a1_scene2.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>La porte a un défaut d'ajustement — une légère déformation du bois.
+        Un interstice de deux centimètres à hauteur d'œil.
+        Lyam sent la chaleur filtrer à travers cet espace, et comprend qu'il peut voir sans ouvrir.</p>
+        <p>Deux personnes. <strong>Belart</strong>, le secrétaire, assis à sa table — il écrit dans le
+        registre des incidents. <strong>Daran de Mauren</strong>, debout derrière lui,
+        les deux poings sur le bord de la table. Il supervise. Ce n'est pas une conversation.</p>
+      </div>
+      <div class="scene-dialogue">
+        <span class="speaker">Daran de Mauren — voix basse, nette</span>
+        « Écris : <em>erreur attribuée à la manipulation du registre de la semaine précédente,
+        lors de la mise à jour effectuée par le page Kern, fils du marchand.</em>
+        Pas de virgule entre les deux derniers groupes.
+        C'est plus difficile à isoler comme accusation si ça vient en lecture rapide. »
+      </div>
+      <div class="scene-dialogue">
+        <span class="speaker">Belart — sans relever les yeux</span>
+        « Et pour la date ? »
+        <br><br>
+        <span class="speaker">Daran de Mauren</span>
+        « Mets la date de la mise à jour réelle. Ce n'est pas un faux —
+        c'est une annotation tardive. Il y a une différence. »
+      </div>
+      <div class="tension-meter">
+        <span class="tension-label">Tension</span>
+        <div class="tension-dots">
+          <div class="tension-dot on"></div>
+          <div class="tension-dot on"></div>
+          <div class="tension-dot on"></div>
+          <div class="tension-dot"></div>
+        </div>
+      </div>
+      <div class="scene-thought">
+        On est en train d'écrire dans le registre officiel que Kern a commis une erreur.
+        Une erreur qui n'a pas eu lieu. Kern ne sait pas.
+        <em>C'est la pensée qui rompt l'immobilité.</em>
+      </div>
+      <div class="scene-prompt">Lyam entend tout. Qu'est-ce qu'il ressent d'abord ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(2,'colere')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Une colère froide et précise</span>
+          <span class="choice-sub">Pas de la rage. Quelque chose de plus calme et plus dangereux — la reconnaissance d'une injustice délibérée, construite mot par mot.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'peur')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">De la peur — pour lui et pour Kern</span>
+          <span class="choice-sub">Il mesure ce qu'il vient de voir. Daran est fils de baron. Belart est le secrétaire officiel. Et lui est le fils du forgeron, seul dans un couloir à trois heures du matin.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'clarte')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Une clarté étrange, presque froide</span>
+          <span class="choice-sub">Comme si tout devenait soudain lisible. Les semaines passées, les listes, les regards — tout ça avait une logique, et il vient de voir où elle menait.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 3 : Le retour ═════════════════════════════════════ -->
+  <div class="scene" id="scene-3" data-step="3">
+    <div class="scene-art">
+      <img src="jdr_histoire_a1_scene3.jpg" alt="Lyam dans le couloir sombre" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🌑</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Nuit du Registre</div>
+      <div class="scene-num">Scène 3 — Le couloir, le retour</div>
+      <div class="scene-title">Ce qu'on fait de ce qu'on sait</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_histoire_a1_scene3.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Lyam recule. Un pas. Puis un autre.
+        Il tourne les talons dans le couloir sombre et remonte vers le dortoir.
+        Il n'a pas pris l'eau.</p>
+        <p>Dans le lit du bas, dans le froid du dortoir du nord,
+        il ne dort pas. Il organise ce qu'il sait — les différents fils,
+        dans des ordres différents. Ils ne changent pas de sens selon la façon
+        dont on les dispose.</p>
+      </div>
+      <div class="scene-quote">
+        <p>Il y a une différence entre ne pas mentir et ne pas protéger.
+        On peut ne jamais mentir et laisser quelqu'un se retrouver seul face à une accusation fausse,
+        et cela ne fait pas de vous quelqu'un d'honnête.</p>
+      </div>
+      <div class="scene-text">
+        <p>Au-dessus de lui, Kern dort avec le souffle régulier
+        des grandes fatigues honnêtes. Il a travaillé six heures sur un problème de droit.
+        Il a produit quelque chose de solide. Il n'a pas l'air de quelqu'un
+        dont le nom est en train d'être inscrit dans un registre en face d'une faute fictive.</p>
+      </div>
+      <div class="tension-meter">
+        <span class="tension-label">Le choix approche</span>
+        <div class="tension-dots">
+          <div class="tension-dot on"></div>
+          <div class="tension-dot on"></div>
+          <div class="tension-dot on"></div>
+          <div class="tension-dot on"></div>
+        </div>
+      </div>
+      <div class="scene-prompt">Dans le noir, Lyam pense aux trois choses qu'il peut faire. Laquelle l'attire d'abord ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(3,'attendre')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Attendre et observer</span>
+          <span class="choice-sub">Ce document peut rester inerte. Personne n'utilise peut-être jamais ce registre. Agir trop vite avec une preuve aussi fragile pourrait tout aggraver.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'rena')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Aller voir Réna d'abord</span>
+          <span class="choice-sub">Elle connaît les textes, elle sait comment les institutions fonctionnent. Avant d'agir, il faut comprendre ce qu'on peut réellement faire avec ce qu'il a vu.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'kern')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Dire à Kern dès le lendemain matin</span>
+          <span class="choice-sub">Il sait. Kern ne sait pas. Cette asymétrie est intenable. Peu importe les risques — Kern a le droit de savoir ce qu'on fait à son nom.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 4 : La Salle des Cartes ══════════════════════════ -->
+  <div class="scene" id="scene-4" data-step="4">
+    <div class="scene-art">
+      <img src="jdr_histoire_a1_scene4.jpg" alt="La Salle des Cartes, Lyam et Réna" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🗺️</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Nuit du Registre</div>
+      <div class="scene-num">Scène 4 — La Salle des Cartes</div>
+      <div class="scene-title">Ce qu'on dit à Réna</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_histoire_a1_scene4.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Le soir suivant. La Salle des Cartes.
+        Réna corrige ses notes avec deux teintes d'encre — une pour les arguments solides,
+        une pour ceux à creuser. Lyam ferme la porte.</p>
+        <p>Il lui dit ce qu'il a vu. Dans l'ordre chronologique, sans omissions,
+        sans interprétations — juste les faits, l'heure, les mots exacts,
+        la pièce, les deux personnes. Réna l'écoute. Elle pose sa plume à mi-récit.</p>
+      </div>
+      <div class="scene-dialogue">
+        <span class="speaker">Réna — après le silence</span>
+        « Tu es sûr des mots exacts ? »
+        <br><br>
+        <span class="speaker">Lyam</span>
+        « <em>Erreur attribuée à la manipulation du registre... le page Kern, fils du marchand.
+        Pas de virgule entre les deux derniers groupes.</em> »
+      </div>
+      <div class="scene-text">
+        <p>Elle ferme les yeux une seconde. Puis : « Tu sais ce que ça veut dire, la partie sur la virgule. »
+        Il dit oui. Elle dit : <em>Il est fils de baron. Son père préside une cour de justice.
+        La virgule, c'est une compétence héritée.</em></p>
+        <p>Et puis : <em>Ce que tu as entendu, tu ne peux pas l'utiliser directement —
+        tu étais dans un couloir de service à trois heures du matin,
+        ce qui est une infraction au règlement article 22 alinéa 3.</em></p>
+      </div>
+      <div class="scene-prompt">Réna vient de dire que ce qu'il sait ne suffit pas comme preuve. Comment Lyam reçoit ça ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(4,'accepte')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">"Je sais. Ça ne change pas ce que j'ai vu."</span>
+          <span class="choice-sub">La réalité ne dépend pas de ce qu'on peut prouver. Ce qui s'est passé s'est passé, avec ou sans témoin valide. Et Kern mérite de savoir.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'cherche')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">"Alors on cherche une preuve qu'on peut utiliser."</span>
+          <span class="choice-sub">Si l'article 8 permet à Kern de demander son dossier — et le registre en fait partie — alors la preuve peut venir de Kern lui-même, pas de la nuit.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'doute')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Un moment de doute réel</span>
+          <span class="choice-sub">Et si Belart dit que l'annotation existait avant ? Et si tout le monde croit Daran plutôt que lui ? Les conséquences pour Kern si ça se retourne contre eux...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FIN ═════════════════════════════════════════════════════ -->
+  <div class="scene" id="scene-fin">
+    <div class="fin-sigil">🌑</div>
+    <div class="fin-title">La nuit du septième vendredi</div>
+    <div class="fin-subtitle">Ce que Lyam a choisi de faire avec ce qu'il sait.</div>
+    <div class="fin-xp">⭐ +100 XP envoyés au Portail</div>
+
+    <div class="fin-legacy-box">
+      <div class="fin-legacy-title">📜 Mémoire de Lyam — Tome I · Pilier Histoire</div>
+      <div id="legacyItems"></div>
+    </div>
+
+    <div class="fin-cps">
+      <div class="fin-cps-title">🌱 Compétences travaillées aujourd'hui</div>
+      <div class="fin-cps-item">Témoin d'une injustice : entre silence et action</div>
+      <div class="fin-cps-item">Gestion d'une information sensible — responsabilité et risque</div>
+      <div class="fin-cps-item">Compréhension des mécanismes institutionnels de falsification</div>
+      <div class="fin-cps-item">Loyauté envers un ami face à un rapport de force inégal</div>
+    </div>
+
+    <div class="fin-actions">
+      <button class="btn-fin-primary" onclick="returnToHub()">← Retour au Hub pHARe</button>
+      <button class="btn-fin-secondary" onclick="restartGame()">↺ Rejouer l'aventure</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<audio id="ambAudio" loop preload="none">
+  <source src="valdurne_ambiance_histoire.mp3" type="audio/mpeg">
+</audio>
+<audio id="narrAudio" preload="none"></audio>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+// Nomenclature fichiers :
+// Illustrations : jdr_histoire_a1_scene1.jpg … scene4.jpg
+// Narrations    : jdr_histoire_a1_scene1.mp3 … scene4.mp3
+// Ambiance      : valdurne_ambiance_histoire.mp3
+
+var MODULE_ID   = 'JDR_HISTOIRE_A1';
+var CERT_KEY    = 'CERT_JDR_HISTOIRE_A1';
+var XP_AMOUNT   = 100;
+var HUB_URL     = 'index_PIXHARe.html';
+var TOTAL_STEPS = 4;
+
+var state = { player: '', choices: {}, current: 'intro' };
+
+// ── Init joueur ───────────────────────────────────────────────
+(function initPlayer() {
+  var p = new URLSearchParams(window.location.search).get('player');
+  if(p && p.length > 1) {
+    localStorage.setItem('pvs_current_player', p);
+    localStorage.setItem('pvs_phare_player', p);
+  }
+  state.player = localStorage.getItem('pvs_current_player')
+               || localStorage.getItem('pvs_phare_player') || '–';
+  document.getElementById('pbName').textContent = state.player;
+})();
+
+// ── Navigation ────────────────────────────────────────────────
+function showScene(id) {
+  document.querySelectorAll('.scene').forEach(function(s){ s.classList.remove('active'); });
+  var el = document.getElementById('scene-' + id);
+  if(el) { el.classList.add('active'); state.current = id; }
+  updateProgress(id);
+  stopNarration();
+  window.scrollTo(0, 0);
+}
+
+function updateProgress(step) {
+  var n = parseInt(step) || 0;
+  var pct = step === 'fin' ? 100 : Math.round(n / TOTAL_STEPS * 90);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progStep').textContent =
+    step === 'intro' ? 'Intro' :
+    step === 'fin'   ? 'Terminé ✓' :
+    'Scène ' + step + ' / ' + TOTAL_STEPS;
+}
+
+// ── Choix & Legacy ────────────────────────────────────────────
+var legacyTexts = {
+  // Scène 1 — pourquoi s'approcher
+  '1_instinct':    'Lyam s\'approche parce qu\'il ne laisse pas une anomalie sans la regarder. Son père lui a appris ça.',
+  '1_raison':      'Lyam calcule avant d\'agir. L\'information a de la valeur — il le sait avant de savoir laquelle.',
+  '1_incapable':   'Lyam est fait ainsi : il ne peut pas ignorer ce qu\'il ne comprend pas. Ce n\'est pas un choix.',
+  // Scène 2 — ce qu'il ressent
+  '2_colere':      'Face à l\'injustice : une colère froide, précise, sans rage. Durable.',
+  '2_peur':        'Face à l\'injustice : la mesure claire du rapport de forces. Pas de la lâcheté — du réalisme.',
+  '2_clarte':      'Face à l\'injustice : une clarté soudaine. Tout s\'assemble. Il voit la logique de ce qui était invisible.',
+  // Scène 3 — première réaction
+  '3_attendre':    'Première impulsion : attendre. Observer. Agir avec une preuve fragile peut aggraver les choses.',
+  '3_rena':        'Première impulsion : Réna. Comprendre avant d\'agir. Trouver la bonne arme avant de s\'en servir.',
+  '3_kern':        'Première impulsion : dire à Kern. L\'asymétrie est intenable — Kern a le droit de savoir.',
+  // Scène 4 — face à Réna
+  '4_accepte':     'Face à l\'impossibilité de prouver : « Ça ne change pas ce que j\'ai vu. » La réalité ne dépend pas des preuves.',
+  '4_cherche':     'Face à l\'impossibilité de prouver : chercher une voie légale. L\'article 8 peut faire venir la preuve de Kern lui-même.',
+  '4_doute':       'Face à l\'impossibilité de prouver : un moment de doute réel. Le courage, c\'est aller malgré ça.',
+};
+
+function choose(scene, path) {
+  state.choices[scene] = path;
+  var next = scene + 1;
+  if(next > TOTAL_STEPS) { finishGame(); }
+  else { showScene(next); }
+}
+
+function buildLegacy() {
+  var container = document.getElementById('legacyItems');
+  if(!container) return;
+  container.innerHTML = '';
+  Object.keys(state.choices).sort().forEach(function(scene) {
+    var path = state.choices[scene];
+    var key  = scene + '_' + path;
+    var text = legacyTexts[key] || '';
+    if(text) {
+      var div = document.createElement('div');
+      div.className = 'fin-legacy-item';
+      div.innerHTML = '<span class="dot">◆</span><span>' + text + '</span>';
+      container.appendChild(div);
+    }
+  });
+}
+
+function finishGame() {
+  // Sauvegarder legacy Tome II
+  try {
+    localStorage.setItem('VALDURNE_LEGACY_HISTOIRE_A1', JSON.stringify({
+      choices: state.choices,
+      player:  state.player,
+      d:       new Date().toISOString()
+    }));
+  } catch(e) {}
+
+  // CERT + Bridge
+  try {
+    localStorage.setItem(CERT_KEY, JSON.stringify({
+      v:1, d:new Date().toISOString(), m:MODULE_ID, f:true, xp:XP_AMOUNT
+    }));
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({
+      id:      'JDR-' + MODULE_ID + '-' + Date.now(),
+      type:    'PIXHARE_PROGRESS',
+      player:  state.player,
+      module:  MODULE_ID,
+      certKey: CERT_KEY,
+      jdrXp:   XP_AMOUNT,
+      choices: state.choices,
+      d:       new Date().toISOString()
+    });
+    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+  } catch(e) {}
+
+  buildLegacy();
+  showScene('fin');
+}
+
+function returnToHub() { window.location.href = HUB_URL; }
+function restartGame() { state.choices = {}; stopNarration(); showScene('intro'); }
+
+// ── Audio ambiance ────────────────────────────────────────────
+var ambAudio   = document.getElementById('ambAudio');
+var ambPlaying = false;
+
+document.getElementById('ambToggle').addEventListener('click', function() {
+  if(ambPlaying) {
+    ambAudio.pause(); ambPlaying = false;
+    this.textContent = '▶';
+    document.getElementById('ambStatus').textContent = 'Les couloirs de service restent silencieux…';
+  } else {
+    ambAudio.volume = document.getElementById('ambVol').value / 100;
+    ambAudio.play().then(function() {
+      ambPlaying = true;
+      document.getElementById('ambToggle').textContent = '⏸';
+      document.getElementById('ambStatus').textContent = 'Ambiance nocturne en cours…';
+    }).catch(function() {
+      document.getElementById('ambStatus').textContent = 'Fichier : valdurne_ambiance_histoire.mp3';
+    });
+  }
+});
+document.getElementById('ambVol').addEventListener('input', function() {
+  ambAudio.volume = this.value / 100;
+});
+
+// ── Audio narration ───────────────────────────────────────────
+var narrAudio    = document.getElementById('narrAudio');
+var narrPlaying  = false;
+var narrCurrent  = null;
+
+function stopNarration() {
+  narrAudio.pause(); narrAudio.src = '';
+  narrPlaying = false; narrCurrent = null;
+  document.querySelectorAll('.narr-toggle').forEach(function(b){ b.textContent = '🔊'; });
+  document.querySelectorAll('.narr-status').forEach(function(s){ s.textContent = 'Cliquer pour lancer'; });
+}
+
+document.querySelectorAll('.narr-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var bar    = this.closest('.narr-bar');
+    var src    = this.getAttribute('data-audio');
+    var vol    = bar.querySelector('.narr-vol').value / 100;
+    var status = bar.querySelector('.narr-status');
+
+    if(narrPlaying && narrCurrent === src) {
+      narrAudio.pause(); narrPlaying = false;
+      this.textContent = '🔊'; status.textContent = 'En pause';
+    } else {
+      stopNarration();
+      narrAudio.src = src; narrAudio.volume = vol;
+      var self = this;
+      narrAudio.play().then(function() {
+        narrPlaying = true; narrCurrent = src;
+        self.textContent = '⏸'; status.textContent = 'Narration en cours…';
+      }).catch(function() {
+        status.textContent = 'Fichier : ' + src;
+      });
+    }
+  });
+});
+
+document.querySelectorAll('.narr-vol').forEach(function(slider) {
+  slider.addEventListener('input', function() {
+    if(narrPlaying) narrAudio.volume = this.value / 100;
+  });
+});
+
+narrAudio.addEventListener('ended', function() {
+  narrPlaying = false; narrCurrent = null;
+  document.querySelectorAll('.narr-toggle').forEach(function(b){ b.textContent = '🔊'; });
+  document.querySelectorAll('.narr-status').forEach(function(s){ s.textContent = 'Narration terminée'; });
+});
+
+// ── Start ─────────────────────────────────────────────────────
+document.getElementById('btnStart').addEventListener('click', function() { showScene(1); });
+updateProgress('intro');
+</script>
+</body>
+</html>

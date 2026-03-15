@@ -3,102 +3,297 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nouveautes du Portail Vie Scolaire</title>
+<title>Nouveautés du Portail Vie Scolaire</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07111a;--panel:#0d1c31;--panel2:#102744;--line:#ffffff1c;--text:#eaf2ff;--muted:#bfd0e8;--gold:#ffd66b;--cyan:#6dd6ff;--mint:#7ce2b1;--orange:#ffb873}
-*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',sans-serif;background:radial-gradient(circle at top,#17345e 0%,#0b1830 35%,#07111a 100%);color:var(--text);min-height:100vh}.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 40px}.hero,.panel{background:linear-gradient(180deg,rgba(13,28,49,.96),rgba(16,39,68,.94));border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 46px rgba(0,0,0,.24)}.hero{padding:24px}.panel{padding:18px}.hero h1,.panel h2{font-family:'Orbitron',monospace}.hero h1{margin:10px 0 8px;font-size:clamp(2rem,4vw,3rem);line-height:1.05}.hero p,.panel p,.meta{color:var(--muted);line-height:1.65}.row,.stats,.actions,.chips{display:flex;flex-wrap:wrap;gap:12px}.chip,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px}.chip{padding:8px 12px;border:1px solid #ffffff20;background:#ffffff0c;font-size:.82rem}.btn{padding:11px 16px;border:none;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}.btn.main{background:linear-gradient(135deg,var(--gold),#fff1bc);color:#3d2c00}.btn.alt{background:#ffffff10;color:var(--text);border:1px solid #ffffff1f}.stats{margin-top:16px}.stat{flex:1;min-width:160px;padding:14px;border-radius:18px;background:#ffffff08;border:1px solid #ffffff12}.stat strong{display:block;font-size:1.7rem;color:#fff}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.card{padding:16px;border-radius:20px;background:#0a1728;border:1px solid #ffffff14}.card h3{margin:0 0 8px;color:#fff}.card ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.6}.accent-gold{color:var(--gold)}.accent-cyan{color:var(--cyan)}.accent-mint{color:var(--mint)}.accent-orange{color:var(--orange)}.foot{margin-top:16px;padding:14px;border-radius:18px;background:#081321;border:1px solid #ffffff12;color:var(--muted)}@media (max-width:900px){.grid{grid-template-columns:1fr}}
+:root{
+  --bg:#07111a;--panel:#0d1c31;--panel2:#102744;--line:#ffffff1c;
+  --text:#eaf2ff;--muted:#bfd0e8;--gold:#ffd66b;--cyan:#6dd6ff;
+  --mint:#7ce2b1;--orange:#ffb873;--violet:#c4a8ff;--rose:#ff8fab;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'IBM Plex Sans',sans-serif;
+  background:radial-gradient(circle at top,#17345e 0%,#0b1830 35%,#07111a 100%);
+  color:var(--text);min-height:100vh}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 40px}
+
+/* Hero */
+.hero{padding:28px;background:linear-gradient(180deg,rgba(13,28,49,.96),rgba(16,39,68,.94));
+  border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 46px rgba(0,0,0,.28)}
+.hero h1{font-family:'Orbitron',monospace;margin:10px 0 8px;
+  font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.1}
+.hero p{color:var(--muted);line-height:1.65;margin:0 0 16px}
+
+/* Bande version */
+.version-band{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.vchip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;
+  border-radius:999px;border:1px solid #ffffff20;background:#ffffff0c;
+  font-size:.78rem;color:var(--muted)}
+.vchip.new{border-color:rgba(255,214,107,.4);background:rgba(255,214,107,.08);color:var(--gold)}
+.vchip.fix{border-color:rgba(109,214,255,.3);background:rgba(109,214,255,.07);color:var(--cyan)}
+
+/* Stats */
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+.stat{flex:1;min-width:140px;padding:14px;border-radius:18px;
+  background:#ffffff08;border:1px solid #ffffff12}
+.stat strong{display:block;font-size:1.7rem;color:#fff}
+.stat span{color:var(--muted);font-size:.85rem}
+
+/* Actions */
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 18px;border:none;border-radius:999px;font:inherit;
+  font-weight:700;cursor:pointer;text-decoration:none;font-size:.88rem;transition:.2s}
+.btn.main{background:linear-gradient(135deg,var(--gold),#fff1bc);color:#3d2c00}
+.btn.main:hover{filter:brightness(1.08)}
+.btn.alt{background:#ffffff10;color:var(--text);border:1px solid #ffffff1f}
+.btn.alt:hover{background:#ffffff18}
+
+/* Grille cartes */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.card{padding:20px;border-radius:20px;background:#0a1728;border:1px solid #ffffff14}
+.card h2{font-family:'Orbitron',monospace;font-size:.95rem;margin:0 0 4px}
+.card h3{margin:0 0 10px;color:#fff;font-size:1rem}
+.card ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.7;font-size:.9rem}
+.card ul li{margin-bottom:3px}
+
+/* Chips dans cartes */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{padding:4px 10px;border-radius:999px;border:1px solid #ffffff1a;
+  background:#ffffff08;font-size:.74rem;color:var(--muted)}
+.chip.hot{border-color:rgba(255,214,107,.35);color:var(--gold);background:rgba(255,214,107,.07)}
+.chip.new{border-color:rgba(124,226,177,.3);color:var(--mint);background:rgba(124,226,177,.06)}
+
+/* Badge NOUVEAU */
+.badge-new{display:inline-block;padding:2px 8px;border-radius:6px;
+  background:linear-gradient(135deg,var(--gold),#fff08a);color:#3d2c00;
+  font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+  margin-left:8px;vertical-align:middle}
+.badge-fix{display:inline-block;padding:2px 8px;border-radius:6px;
+  background:rgba(109,214,255,.15);color:var(--cyan);border:1px solid rgba(109,214,255,.3);
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  margin-left:8px;vertical-align:middle}
+
+/* Pied de page */
+.foot{margin-top:16px;padding:14px 18px;border-radius:18px;
+  background:#081321;border:1px solid #ffffff12;color:var(--muted);font-size:.88rem;line-height:1.6}
+.foot strong{color:var(--text)}
+
+/* Séparateur de version */
+.version-sep{display:flex;align-items:center;gap:12px;margin:24px 0 4px}
+.version-sep span{font-family:'Orbitron',monospace;font-size:.7rem;
+  letter-spacing:2px;text-transform:uppercase;color:#4a6a9a;white-space:nowrap}
+.version-sep::before,.version-sep::after{content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,#ffffff14,transparent)}
+
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+@media(max-width:500px){.stats{flex-direction:column}.actions{flex-direction:column}}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <!-- ══ HERO ══════════════════════════════════════════════════ -->
   <section class="hero">
-    <div class="row">
-      <div class="chip">PORTAIL VIE SCOLAIRE</div>
-      <div class="chip">Mise a jour du 12 mars 2026</div>
-      <div class="chip">Nouvelles creations et correctifs</div>
+    <div class="version-band">
+      <span class="vchip new">✦ Mise à jour — 15 mars 2026</span>
+      <span class="vchip new">🆕 Baromètre émotionnel</span>
+      <span class="vchip new">⚔️ JdR Valdurne</span>
+      <span class="vchip fix">🔧 Corrections PIXHARe</span>
     </div>
-    <h1>Nouveautes du portail</h1>
-    <p>Cette mise a jour ajoute de nouveaux hubs, etend les parcours d'orientation et de securite routiere, renforce les espaces admin et corrige plusieurs points de coherence sur la plateforme.</p>
+    <h1>Nouveautés du Portail</h1>
+    <p>
+      Cette mise à jour majeure ajoute le <strong style="color:var(--gold)">baromètre émotionnel quotidien</strong>
+      pour mesurer le climat scolaire, lance les premiers
+      <strong style="color:var(--violet)">Jeux de Rôle Valdurne</strong>
+      (compétences psychosociales en situation narrative),
+      et corrige les modules PIXHARe qui bloquaient sur page noire.
+      Les versions antérieures restent accessibles ci-dessous.
+    </p>
     <div class="stats">
-      <div class="stat"><strong>3</strong><span>Nouveaux hubs ou sous-hubs actifs</span></div>
-      <div class="stat"><strong>22</strong><span>Modules ajoutes aujourd'hui</span></div>
-      <div class="stat"><strong>Admin</strong><span>Validation securisee et uniforme</span></div>
+      <div class="stat"><strong>5</strong><span>JdR Valdurne disponibles (1 par pilier)</span></div>
+      <div class="stat"><strong>7</strong><span>Émotions au baromètre — +5 à +50 XP</span></div>
+      <div class="stat"><strong>25</strong><span>Modules PIXHARe corrigés (déverrouillage auto)</span></div>
+      <div class="stat"><strong>Supabase</strong><span>7 vues analytiques humeurs</span></div>
     </div>
-    <div class="actions" style="margin-top:16px">
-      <a class="btn main" href="index.html" target="_top">Ouvrir le super-hub</a>
-      <a class="btn alt" href="hub_orientation.html" target="_top">Voir le hub orientation</a>
-      <a class="btn alt" href="hub_securite_routiere.html" target="_top">Voir le hub securite routiere</a>
+    <div class="actions">
+      <a class="btn main" href="index.html" target="_top">⚡ Ouvrir le super-hub</a>
+      <a class="btn alt" href="index_PIXHARe.html" target="_top">🔮 Hub PIXHARe + JdR</a>
+      <a class="btn alt" href="hub_orientation.html" target="_top">🧭 Orientation BFC</a>
     </div>
   </section>
 
+  <!-- ══ VERSION 15 MARS 2026 ══════════════════════════════════ -->
+  <div class="version-sep"><span>Version 15 mars 2026</span></div>
   <div class="grid">
-    <section class="panel card">
-      <h2 class="accent-gold">Orientation BFC</h2>
-      <h3>Nouveau hub progressif 6e a 3e</h3>
+
+    <!-- Baromètre humeur -->
+    <section class="card">
+      <h2 class="accent-gold" style="color:var(--gold)">
+        😊 Baromètre émotionnel
+        <span class="badge-new">Nouveau</span>
+      </h2>
+      <h3>Thermomètre du climat scolaire</h3>
       <ul>
-        <li>Parcours differencies selon le niveau avec fiche exportable pour le PsyEN.</li>
-        <li>Coefficient orientation favorable aux 6e et 5e.</li>
-        <li>Base de ressources locales Haute-Saone / Franche-Comte.</li>
+        <li>Fenêtre d'accueil à chaque connexion (jours scolaires uniquement).</li>
+        <li>7 émotions : Joyeux, Calme, Fatigué, Anxieux, Triste, Énervé, En colère.</li>
+        <li><strong style="color:var(--gold)">+5 XP</strong> par déclaration,
+            <strong style="color:var(--gold)">+50 XP</strong> si déclaration tous les jours lun–ven.</li>
+        <li>Alertes automatiques CPE pour Triste / Énervé / En colère (email Resend).</li>
+        <li>Dashboard admin : graphiques jour + 30 jours + export CSV.</li>
+        <li>Données stockées dans Supabase — table <code style="color:var(--cyan)">pvs_moods</code>.</li>
       </ul>
-      <div class="chips" style="margin-top:12px">
-        <span class="chip">hub_orientation.html</span>
+      <div class="chips">
+        <span class="chip hot">index.html</span>
+        <span class="chip new">pvs_moods_schema.sql</span>
+        <span class="chip new">Edge Function alerte</span>
+      </div>
+    </section>
+
+    <!-- JdR Valdurne -->
+    <section class="card">
+      <h2 style="color:var(--violet)">
+        ⚔️ Les Veilleurs de Valdurne
+        <span class="badge-new">Nouveau</span>
+      </h2>
+      <h3>Jeux de Rôle PIXHARe — Année 1</h3>
+      <ul>
+        <li>5 aventures narratives débloquées après le 5ᵉ module de chaque pilier.</li>
+        <li>Chaque JdR : illustrations JPG, narration MP3 par scène, musique d'ambiance.</li>
+        <li>Pas de bonne/mauvaise réponse — les choix façonnent Lyam et laissent des traces pour le Tome II.</li>
+        <li><strong style="color:var(--violet)">+100 XP</strong> par aventure validée, remontés au super-hub.</li>
+        <li>Premier JdR disponible : <em>La Deuxième Liste</em> (pilier Groupe).</li>
+        <li>Mémoire des choix sauvegardée pour les aventures futures (Année 2).</li>
+      </ul>
+      <div class="chips">
+        <span class="chip hot">index_PIXHARe.html</span>
+        <span class="chip new">JDR_GROUPE_A1.html</span>
+        <span class="chip">4 slots / pilier</span>
+      </div>
+    </section>
+
+    <!-- Corrections PIXHARe -->
+    <section class="card">
+      <h2 style="color:var(--cyan)">
+        🔧 Corrections PIXHARe
+        <span class="badge-fix">Correctif</span>
+      </h2>
+      <h3>Modules 02–05 de chaque pilier</h3>
+      <ul>
+        <li>Bug résolu : les modules 02 à 05 affichaient une page noire au lieu du contenu.</li>
+        <li>Cause : mécanisme de code base64 supprimé sans remplacer le déverrouillage.</li>
+        <li>Correctif : déverrouillage automatique via <code style="color:var(--cyan)">CERT_PHARE_*</code> (localStorage).</li>
+        <li>Si le module précédent est validé → accès direct. Sinon → message clair + retour hub.</li>
+        <li>Lecture <code style="color:var(--cyan)">?player=</code> URL corrigée sur tous les modules.</li>
+        <li>25 fichiers patchés (5 piliers × 5 modules).</li>
+      </ul>
+      <div class="chips">
+        <span class="chip hot">GROUPE_02–05</span>
+        <span class="chip hot">HISTOIRE_02–05</span>
+        <span class="chip hot">NEURO / NUMERIQUE / JURIDIQUE</span>
+      </div>
+    </section>
+
+    <!-- Supabase humeurs -->
+    <section class="card">
+      <h2 style="color:var(--mint)">
+        📊 Analytics humeurs Supabase
+        <span class="badge-new">Nouveau</span>
+      </h2>
+      <h3>7 vues SQL prêtes à l'emploi</h3>
+      <ul>
+        <li><code style="color:var(--mint)">pvs_moods_stats_today</code> — % par humeur aujourd'hui.</li>
+        <li><code style="color:var(--mint)">pvs_moods_stats_30j</code> — tendance sur 30 jours.</li>
+        <li><code style="color:var(--mint)">pvs_moods_stats_annee</code> — bilan année scolaire (sept. auto).</li>
+        <li><code style="color:var(--mint)">pvs_moods_alertes_recentes</code> — élèves critiques 7 jours.</li>
+        <li><code style="color:var(--mint)">pvs_moods_evolution_semaine</code> — évolution jour/jour.</li>
+        <li>Export CSV en un clic depuis le Table Editor Supabase.</li>
+        <li>Requête bonus : détecte les élèves avec 3+ jours critiques consécutifs.</li>
+      </ul>
+      <div class="chips">
+        <span class="chip new">pvs_moods_schema.sql</span>
+        <span class="chip">Table Editor Supabase</span>
+        <span class="chip">Export CSV</span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══ VERSION 12 MARS 2026 ══════════════════════════════════ -->
+  <div class="version-sep"><span>Version 12 mars 2026</span></div>
+  <div class="grid">
+
+    <section class="card">
+      <h2 style="color:var(--gold)">Orientation BFC</h2>
+      <h3>Nouveau hub progressif 6e à 3e</h3>
+      <ul>
+        <li>Parcours différenciés selon le niveau avec fiche exportable pour le PsyEN.</li>
+        <li>Coefficient orientation favorable aux 6e et 5e.</li>
+        <li>Base de ressources locales Haute-Saône / Franche-Comté.</li>
+      </ul>
+      <div class="chips">
+        <span class="chip hot">hub_orientation.html</span>
         <span class="chip">Export PsyEN</span>
         <span class="chip">Progression par niveau</span>
       </div>
     </section>
 
-    <section class="panel card">
-      <h2 class="accent-cyan">Atelier des appuis</h2>
+    <section class="card">
+      <h2 style="color:var(--cyan)">Atelier des appuis</h2>
       <h3>Sous-hub discret enrichi</h3>
       <ul>
-        <li>Passage de 5 a 11 modules pour observer les appuis sans etiquetage.</li>
-        <li>Nouveaux reperes sur le tempo de reponse, la consigne complexe, les mots nouveaux, l'espace et les situations sociales.</li>
-        <li>Validation admin conservee sur le modele PIXHARe.</li>
+        <li>Passage de 5 à 11 modules pour observer les appuis sans étiquetage.</li>
+        <li>Nouveaux repères : tempo de réponse, consigne complexe, mots nouveaux, espace et situations sociales.</li>
+        <li>Validation admin conservée sur le modèle PIXHARe.</li>
       </ul>
-      <div class="chips" style="margin-top:12px">
-        <span class="chip">index_APPUIS.html</span>
+      <div class="chips">
+        <span class="chip hot">index_APPUIS.html</span>
         <span class="chip">11 modules</span>
         <span class="chip">Repérage non diagnostique</span>
       </div>
     </section>
 
-    <section class="panel card">
-      <h2 class="accent-orange">Securite routiere</h2>
-      <h3>Nouveau hub a piliers</h3>
+    <section class="card">
+      <h2 style="color:var(--orange)">Sécurité routière</h2>
+      <h3>Nouveau hub à piliers</h3>
       <ul>
-        <li>Hub independant avec validation admin et remontee vers le super-hub.</li>
-        <li>Catalogue passe a 11 modules : pieton, velo, trottinette, passager, ASSR et facteurs de risque.</li>
-        <li>Chaque module valide ajoute un bonus de coefficient de +0,10.</li>
+        <li>Hub indépendant avec validation admin et remontée vers le super-hub.</li>
+        <li>Catalogue : 11 modules — piéton, vélo, trottinette, passager, ASSR et facteurs de risque.</li>
+        <li>Chaque module validé ajoute un bonus de coefficient de +0,10.</li>
       </ul>
-      <div class="chips" style="margin-top:12px">
-        <span class="chip">hub_securite_routiere.html</span>
+      <div class="chips">
+        <span class="chip hot">hub_securite_routiere.html</span>
         <span class="chip">11 modules</span>
-        <span class="chip">Admin securise</span>
+        <span class="chip">Admin sécurisé</span>
       </div>
     </section>
 
-    <section class="panel card">
-      <h2 class="accent-mint">Corrections et securisation</h2>
-      <h3>Stabilite generale du portail</h3>
+    <section class="card">
+      <h2 style="color:var(--mint)">Corrections et sécurisation</h2>
+      <h3>Stabilité générale du portail</h3>
       <ul>
-        <li>Hub PSC1 securise pour empecher l'auto-validation des modules.</li>
-        <li>Correctif applique sur les cartes PIXHARe qui laissaient la question en surimpression apres rotation.</li>
-        <li>Nettoyage du super-hub pour mieux fiabiliser synchronisation, connexion et Hall des heros.</li>
+        <li>Hub PSC1 sécurisé pour empêcher l'auto-validation des modules.</li>
+        <li>Correctif sur les cartes PIXHARe (question en surimpression après rotation).</li>
+        <li>Nettoyage du super-hub : synchronisation, connexion et Hall des héros.</li>
       </ul>
-      <div class="chips" style="margin-top:12px">
-        <span class="chip">index_PSC1.html</span>
-        <span class="chip">index_PIXHARe.html</span>
-        <span class="chip">index.html</span>
+      <div class="chips">
+        <span class="chip hot">index_PSC1.html</span>
+        <span class="chip hot">index_PIXHARe.html</span>
+        <span class="chip hot">index.html</span>
       </div>
     </section>
+
   </div>
 
   <div class="foot">
-    Le petit bouton <strong>N</strong> du super-hub permet de rouvrir cette page a tout moment. Cette version a ete publiee pour le cycle de mise a jour du <strong>12 mars 2026</strong>.
+    Le bouton <strong>N</strong> du super-hub permet de rouvrir cette page à tout moment.
+    Dernière mise à jour : <strong>15 mars 2026</strong> —
+    Version précédente : 12 mars 2026.
+    Pour toute question : <strong>M. Brulois, CPE</strong> — Collège Château Rance.
   </div>
+
 </div>
 </body>
 </html>
