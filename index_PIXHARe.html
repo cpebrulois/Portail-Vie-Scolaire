@@ -284,6 +284,48 @@ h1 span{color:#fff;}
   .jdr-pillar { width: 100%; }
   .valdurne-grid { gap: 16px; }
 }
+
+/* Bouton métacognition */
+.jdr-metacog-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(124,58,237,.1);
+  border: 1px solid rgba(124,58,237,.35);
+  color: #a855f7;
+  text-align: center;
+  font-size: .75em;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: .2s;
+  text-decoration: none;
+}
+.jdr-metacog-btn:hover { background: rgba(124,58,237,.22); border-color: #a855f7; }
+.jdr-metacog-btn.done  { border-color: rgba(0,255,136,.3); color: #00ff88;
+  background: rgba(0,255,136,.05); pointer-events: none; }
+.jdr-metacog-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: .62em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: 6px;
+  background: rgba(124,58,237,.1);
+  border: 1px solid rgba(124,58,237,.25);
+  color: #a855f7;
+}
+.jdr-metacog-tag.done {
+  background: rgba(0,255,136,.08);
+  border-color: rgba(0,255,136,.25);
+  color: #00ff88;
+}
+
 </style>
 </head>
 <body>
@@ -296,9 +338,12 @@ h1 span{color:#fff;}
     <p><strong>Comment ça fonctionne ?</strong></p>
     <ul>
       <li>&#x1F4DA; <strong>5 Piliers thématiques</strong> : Groupe, Histoire, Juridique, Neuro, Numérique</li>
+      <li>&#x2694;&#xFE0F; <strong>5 JdR Valdurne</strong> : un par pilier, débloqué après le module 5</li>
       <li>&#x1F3AF; <strong>Progression par niveaux</strong> : Chaque pilier contient 5 modules progressifs</li>
       <li>&#x1F513; <strong>Validation automatique</strong> : Complète un module, la progression est enregistrée</li>
       <li>&#x1F3AE; <strong>Zone Arcade</strong> : Bonus débloqué dès ton premier module validé !</li>
+      <li>&#x2694;&#xFE0F; <strong>JdR Valdurne</strong> : Aventures narratives débloquées après le 5ᵉ module de chaque pilier (+100 XP)</li>
+      <li>&#x1F9E0; <strong>Modules réflexifs</strong> : Après chaque JdR, un module de métacognition (+100 XP supplémentaires)</li>
     </ul>
     <p><strong>Conseil :</strong> Commence par le <strong>Niveau 1</strong> de chaque pilier.</p>
     <button class="btn-welcome-close" onclick="closeWelcome()">COMMENCER L'AVENTURE</button>
@@ -682,14 +727,54 @@ function buildAdminList() {
       wrap.appendChild(chk); wrap.appendChild(lbl); list.appendChild(wrap);
     });
   });
+
+  // ── JdR Valdurne + modules métacognition ──
+  var jdrSep = document.createElement('div');
+  jdrSep.className = 'psep';
+  jdrSep.textContent = '⚔️ JdR Valdurne + Métacognition';
+  list.appendChild(jdrSep);
+  JDR_PILLARS.forEach(function(jp) {
+    jp.jdrs.forEach(function(jdr) {
+      if(!jdr.available) return;
+      // JdR
+      var jdrDone = jdrIsDone(jdr.certKey);
+      var jdrWrap = document.createElement('label'); jdrWrap.className = 'mc';
+      var jdrChk = document.createElement('input');
+      jdrChk.type = 'checkbox'; jdrChk.value = jdr.certKey; jdrChk.checked = jdrDone;
+      var jdrLbl = document.createElement('span'); jdrLbl.className = 'mc-lbl';
+      jdrLbl.innerHTML = '⚔️ ' + jdr.title + (jdrDone ? '<span class="mc-done">\u2713 validé</span>' : '');
+      jdrWrap.appendChild(jdrChk); jdrWrap.appendChild(jdrLbl); list.appendChild(jdrWrap);
+      // Métacognition
+      if(jdr.metacogCert) {
+        var mcDone = jdrIsMetacogDone(jdr.metacogCert);
+        var mcWrap = document.createElement('label'); mcWrap.className = 'mc';
+        var mcChk = document.createElement('input');
+        mcChk.type = 'checkbox'; mcChk.value = jdr.metacogCert; mcChk.checked = mcDone;
+        var mcLbl = document.createElement('span'); mcLbl.className = 'mc-lbl';
+        mcLbl.innerHTML = '🧠 Réflexion — ' + jdr.title + (mcDone ? '<span class="mc-done">\u2713 validé</span>' : '');
+        mcWrap.appendChild(mcChk); mcWrap.appendChild(mcLbl); list.appendChild(mcWrap);
+      }
+    });
+  });
 }
 function adminValidateSelected() {
   if(!adminUnlocked) return;
   var boxes = document.querySelectorAll('#admin-mod-list input[type=checkbox]');
   var count = 0;
   boxes.forEach(function(chk){
-    if(chk.checked && !isDone(chk.value)){
-      validateModule(chk.value, true);
+    var val = chk.value;
+    if(!chk.checked) return;
+    // JdR Valdurne
+    if(val.startsWith('CERT_JDR_') && !jdrIsDone(val)) {
+      localStorage.setItem(val, JSON.stringify({v:1,d:new Date().toISOString(),m:val,f:true,admin:true}));
+      count++;
+    // Métacognition
+    } else if(val.startsWith('CERT_METACOG_') && !jdrIsMetacogDone(val)) {
+      localStorage.setItem(val, JSON.stringify({v:1,d:new Date().toISOString(),m:val,f:true,admin:true}));
+      count++;
+    // Modules PIXHARe classiques
+    } else if(!val.startsWith('CERT_JDR_') && !val.startsWith('CERT_METACOG_') && !isDone(val)) {
+      validateModule(val, true);
       count++;
     }
   });
@@ -707,7 +792,17 @@ function adminResetAll() {
   PILLARS.forEach(function(p){
     p.modules.forEach(function(m){ localStorage.removeItem(ckey(m.id)); });
   });
+  // Effacer JdR et Métacognition
+  JDR_PILLARS.forEach(function(jp){
+    jp.jdrs.forEach(function(jdr){
+      localStorage.removeItem(jdr.certKey);
+      if(jdr.metacogCert) localStorage.removeItem(jdr.metacogCert);
+      localStorage.removeItem('VALDURNE_LEGACY_' + jp.key + '_A1');
+    });
+  });
   localStorage.removeItem('pvs_phare_pending');
+  localStorage.removeItem('pvs_jdr_pending');
+  localStorage.removeItem('pvs_metacog_pending');
   var fb = document.getElementById('admin-fb');
   fb.className = 'aok'; fb.textContent = '\u{1F5D1} Progression supprimée';
   buildAdminList(); render();
@@ -755,7 +850,9 @@ var JDR_PILLARS = [
         file: 'JDR_GROUPE_A1.html',
         certKey: 'CERT_JDR_GROUPE_A1',
         xp: 100,
-        available: true   // true = ce JdR existe, false = à venir
+        available: true,
+        metacogFile: 'METACOG_GROUPE_A1.html',
+        metacogCert: 'CERT_METACOG_GROUPE_A1'   // true = ce JdR existe, false = à venir
       },
       { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_GROUPE_A2', xp: 100, available: false },
       { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_GROUPE_A3', xp: 100, available: false },
@@ -777,7 +874,9 @@ var JDR_PILLARS = [
         file: 'JDR_HISTOIRE_A1.html',
         certKey: 'CERT_JDR_HISTOIRE_A1',
         xp: 100,
-        available: true
+        available: true,
+        metacogFile: 'METACOG_HISTOIRE_A1.html',
+        metacogCert: 'CERT_METACOG_HISTOIRE_A1'
       },
       { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_HISTOIRE_A2', xp: 100, available: false },
       { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_HISTOIRE_A3', xp: 100, available: false },
@@ -799,7 +898,9 @@ var JDR_PILLARS = [
         file: 'JDR_NEURO_A1.html',
         certKey: 'CERT_JDR_NEURO_A1',
         xp: 100,
-        available: true
+        available: true,
+        metacogFile: 'METACOG_NEURO_A1.html',
+        metacogCert: 'CERT_METACOG_NEURO_A1'
       },
       { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NEURO_A2', xp: 100, available: false },
       { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NEURO_A3', xp: 100, available: false },
@@ -862,9 +963,29 @@ function jdrPillarUnlocked(jp) {
 function jdrTotalXP() {
   var xp = 0;
   JDR_PILLARS.forEach(function(jp){
-    jp.jdrs.forEach(function(j){ if(jdrIsDone(j.certKey)) xp += (j.xp||0); });
+    jp.jdrs.forEach(function(j){
+      if(jdrIsDone(j.certKey)) xp += (j.xp||0);
+      if(j.metacogCert && jdrIsMetacogDone(j.metacogCert)) xp += 100;
+    });
   });
   return xp;
+}
+
+// ── Helpers métacognition ────────────────────────────────────
+function jdrIsMetacogDone(certKey) {
+  return !!localStorage.getItem(certKey);
+}
+
+function openMetacog(file, certKey) {
+  var player = getPlayer();
+  if(player) {
+    localStorage.setItem('pvs_current_player', player);
+    localStorage.setItem('pvs_phare_player', player);
+  }
+  localStorage.setItem('pvs_metacog_pending', certKey);
+  var sep = file.includes('?') ? '&' : '?';
+  var url = player ? file + sep + 'player=' + encodeURIComponent(player) : file;
+  window.location.href = url;
 }
 
 // ── Ouverture JdR ───────────────────────────────────────────────
@@ -951,6 +1072,27 @@ function renderValdurne() {
         slot.appendChild(rbtn);
       }
 
+      // ── Bouton métacognition (si disponible) ──
+      if(jdr.metacogFile && jdr.available) {
+        var metacogDone = jdrIsMetacogDone(jdr.metacogCert);
+        var mbtn = document.createElement('button');
+        mbtn.className = 'jdr-metacog-btn' + (metacogDone ? ' done' : '');
+        if(metacogDone) {
+          mbtn.textContent = '✅ Réflexion validée (+100 XP)';
+        } else if(done) {
+          mbtn.textContent = '🧠 Module réflexif — +100 XP';
+          (function(file, cert) {
+            mbtn.addEventListener('click', function(){ openMetacog(file, cert); });
+          })(jdr.metacogFile, jdr.metacogCert);
+        } else {
+          mbtn.textContent = '🧠 Réflexion — débloquer après le JdR';
+          mbtn.disabled = true;
+          mbtn.style.opacity = '0.4';
+          mbtn.style.cursor = 'not-allowed';
+        }
+        slot.appendChild(mbtn);
+      }
+
       col.appendChild(slot);
     });
 
@@ -960,12 +1102,18 @@ function renderValdurne() {
 
 // ── Vérification retour depuis JdR ──────────────────────────────
 function checkJdrReturn() {
+  // Vérifier retour JdR
   var pending = localStorage.getItem('pvs_jdr_pending');
-  if(!pending) return;
-  // Si le cert est posé, on pousse le bridge +100 XP
-  if(localStorage.getItem(pending)) {
+  if(pending && localStorage.getItem(pending)) {
     localStorage.removeItem('pvs_jdr_pending');
     pushJdrBridge(pending);
+    renderValdurne();
+  }
+  // Vérifier retour module métacognition
+  var metacogPending = localStorage.getItem('pvs_metacog_pending');
+  if(metacogPending && localStorage.getItem(metacogPending)) {
+    localStorage.removeItem('pvs_metacog_pending');
+    pushMetacogBridge(metacogPending);
     renderValdurne();
   }
 }
@@ -989,6 +1137,28 @@ function pushJdrBridge(certKey) {
     localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
     window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
     toast('⚔️ Aventure validée ! +' + xp + ' XP');
+  } catch(e) {}
+}
+
+function pushMetacogBridge(certKey) {
+  var player = getPlayer();
+  var xp = 100;
+  try {
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+    evts.push({
+      id: 'METACOG-' + certKey + '-' + Date.now(),
+      type: 'METACOG_COMPLETE',
+      player: player,
+      module: certKey,
+      cpTotal: doneCount(),
+      hubXpTotal: totalXP() + jdrTotalXP(),
+      metacogXp: xp,
+      d: new Date().toISOString()
+    });
+    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+    toast('🧠 Réflexion validée ! +' + xp + ' XP');
   } catch(e) {}
 }
 

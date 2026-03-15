@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retour réflexif — La Deuxième Liste</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090e;--panel:#10131c;--panel2:#151926;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --text:#d4cfc8;--text-m:#8a8278;--text-d:#52504a;
+  --violet:#7c3aed;--violet-l:#a855f7;
+  --green:#2d6a4f;--green-l:#52b788;
+  --teal:#0d9488;--teal-l:#2dd4bf;
+  --orange:#c2410c;--orange-l:#f97316;
+  --border:rgba(200,168,75,.14);--border-l:rgba(200,168,75,.32);
+  --card-bg:rgba(21,25,38,.96);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);
+  color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 30% 0%,rgba(200,168,75,.04) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(124,58,237,.05) 0%,transparent 50%);}
+
+/* ── Layout ── */
+#app{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:32px 20px 100px;}
+
+/* ── Header ── */
+.mc-header{text-align:center;margin-bottom:40px;}
+.mc-pretitle{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
+.mc-title{font-family:'Cinzel',serif;font-size:1.9rem;color:var(--gold-l);
+  line-height:1.2;margin-bottom:8px;}
+.mc-subtitle{color:var(--text-m);font-size:.95rem;line-height:1.6;margin-bottom:20px;}
+.mc-sep{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);
+  margin:0 auto 20px;}
+.mc-xp-badge{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,168,75,.1);border:1px solid var(--border-l);
+  padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;
+  font-size:.82rem;color:var(--gold);margin-bottom:8px;}
+.mc-note{font-size:.8rem;color:var(--text-d);line-height:1.5;}
+
+/* ── Phase ── */
+.mc-phase{margin-bottom:40px;}
+.phase-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:3px;
+  text-transform:uppercase;color:var(--text-d);margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;}
+.phase-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06);}
+
+/* ── Carte analyse miroir ── */
+.mirror-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;padding:22px 24px;margin-bottom:16px;
+  transition:.3s;
+}
+.mirror-card.highlight{border-color:rgba(200,168,75,.4);
+  background:rgba(200,168,75,.04);}
+.mirror-choice-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.mirror-icon{font-size:1.5rem;flex-shrink:0;margin-top:2px;}
+.mirror-choice-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--gold-d);margin-bottom:4px;}
+.mirror-choice-text{font-size:.95rem;color:var(--gold-l);font-family:'Crimson Text',serif;
+  font-style:italic;line-height:1.6;}
+.mirror-divider{height:1px;background:rgba(255,255,255,.06);margin:14px 0;}
+
+/* Bloc "Ce que la recherche dit" */
+.research-block{
+  background:rgba(13,148,136,.06);border:1px solid rgba(45,212,191,.18);
+  border-radius:10px;padding:14px 18px;margin-bottom:12px;
+}
+.research-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--teal-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.research-text{font-size:.9rem;color:#99f6e4;line-height:1.7;}
+.research-text strong{color:#2dd4bf;}
+.research-source{font-size:.72rem;color:rgba(45,212,191,.5);margin-top:6px;font-style:italic;}
+
+/* Bloc "Ce que ça dit de toi" */
+.self-block{
+  background:rgba(124,58,237,.07);border:1px solid rgba(168,85,247,.2);
+  border-radius:10px;padding:14px 18px;margin-bottom:12px;
+}
+.self-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--violet-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.self-text{font-size:.9rem;color:#c4b5fd;line-height:1.7;}
+
+/* Bloc tension / point à travailler */
+.tension-block{
+  background:rgba(194,65,12,.06);border:1px solid rgba(249,115,22,.2);
+  border-radius:10px;padding:14px 18px;margin-bottom:4px;
+}
+.tension-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--orange-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.tension-text{font-size:.9rem;color:#fed7aa;line-height:1.7;}
+
+/* ── Questions de consolidation ── */
+.question-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;padding:22px 24px;margin-bottom:16px;
+}
+.question-num{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text-d);margin-bottom:8px;}
+.question-text{font-size:1.05rem;color:var(--gold-l);font-family:'Crimson Text',serif;
+  line-height:1.7;margin-bottom:16px;}
+.question-hint{font-size:.82rem;color:var(--text-d);font-style:italic;margin-bottom:14px;line-height:1.5;}
+
+/* Options de réponse */
+.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;
+  border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  cursor:pointer;transition:.2s;text-align:left;}
+.q-opt:hover{border-color:rgba(200,168,75,.3);background:rgba(200,168,75,.05);}
+.q-opt.selected{border-color:var(--gold-d);background:rgba(200,168,75,.08);}
+.q-opt.selected.correct{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.07);}
+.q-opt.selected.wrong{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05);}
+.q-opt-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);
+  flex-shrink:0;margin-top:1px;transition:.2s;}
+.q-opt.selected .q-opt-dot{background:var(--gold-d);border-color:var(--gold);}
+.q-opt.selected.correct .q-opt-dot{background:#52b788;border-color:#52b788;}
+.q-opt.selected.wrong .q-opt-dot{background:#ef4444;border-color:#ef4444;}
+.q-opt-text{font-size:.92rem;color:var(--text);line-height:1.5;}
+.q-feedback{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.88rem;
+  line-height:1.6;display:none;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.25);color:#86efac;}
+.q-feedback.ko{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#fca5a5;}
+.q-validate{margin-top:12px;display:none;}
+.q-validate.show{display:block;}
+.btn-validate{background:rgba(200,168,75,.15);border:1px solid var(--border-l);
+  color:var(--gold);padding:9px 20px;border-radius:8px;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;
+  transition:.2s;}
+.btn-validate:hover{background:rgba(200,168,75,.25);}
+
+/* ── Texte libre ── */
+.open-question{margin-bottom:16px;}
+.open-label{font-size:.82rem;color:var(--text-m);margin-bottom:8px;display:block;line-height:1.5;}
+.open-textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);
+  font-family:'Crimson Text',serif;font-size:1rem;line-height:1.6;
+  min-height:90px;resize:vertical;transition:.2s;}
+.open-textarea:focus{outline:none;border-color:var(--gold-d);background:rgba(200,168,75,.04);}
+.open-textarea::placeholder{color:var(--text-d);}
+.open-save-btn{padding:7px 16px;background:rgba(200,168,75,.1);border:1px solid var(--border);
+  color:var(--gold-d);border-radius:6px;cursor:pointer;font-size:.8rem;margin-top:8px;transition:.2s;}
+.open-save-btn:hover{background:rgba(200,168,75,.18);color:var(--gold);}
+
+/* ── Transfert ── */
+.transfer-card{
+  background:rgba(45,106,79,.08);border:1px solid rgba(82,183,136,.22);
+  border-radius:14px;padding:22px 24px;margin-bottom:16px;
+}
+.transfer-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--green-l);margin-bottom:12px;}
+.transfer-scenario{font-size:.95rem;color:#86efac;font-family:'Crimson Text',serif;
+  font-style:italic;line-height:1.7;margin-bottom:14px;padding-left:12px;
+  border-left:3px solid rgba(82,183,136,.3);}
+.transfer-options{display:flex;flex-direction:column;gap:8px;}
+.transfer-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;
+  border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  cursor:pointer;transition:.2s;}
+.transfer-opt:hover{border-color:rgba(82,183,136,.3);background:rgba(82,183,136,.05);}
+.transfer-opt.selected{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.08);}
+.transfer-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;}
+.transfer-opt.selected .transfer-dot{background:#52b788;border-color:#52b788;}
+.transfer-text{font-size:.92rem;color:var(--text);line-height:1.5;}
+.transfer-feedback{margin-top:12px;padding:12px 14px;border-radius:8px;
+  background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);
+  font-size:.88rem;color:#86efac;line-height:1.6;display:none;}
+.transfer-feedback.show{display:block;}
+
+/* ── Bouton final ── */
+.mc-complete-zone{text-align:center;margin-top:40px;padding:30px;
+  background:var(--card-bg);border:1px solid var(--border);border-radius:16px;}
+.mc-complete-title{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold-l);margin-bottom:8px;}
+.mc-complete-sub{color:var(--text-m);font-size:.88rem;margin-bottom:20px;line-height:1.6;}
+.mc-complete-xp{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,168,75,.1);border:1px solid var(--border-l);
+  padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;
+  font-size:.85rem;color:var(--gold);margin-bottom:20px;}
+.btn-complete{background:linear-gradient(135deg,var(--gold-d),var(--gold));
+  color:#0d0c0a;border:none;padding:14px 36px;font-family:'Cinzel',serif;
+  font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  border-radius:8px;transition:.25s;font-weight:700;
+  box-shadow:0 4px 20px rgba(200,168,75,.25);}
+.btn-complete:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btn-complete:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-return{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text-m);
+  padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.88rem;
+  font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase;margin-top:10px;
+  transition:.2s;display:block;margin:10px auto 0;}
+.btn-return:hover{border-color:rgba(255,255,255,.25);color:var(--text);}
+
+/* Progress bar */
+#mc-progress-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:999;
+  background:rgba(255,255,255,.05);}
+#mc-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));width:0%;transition:width .5s ease;}
+
+@media(max-width:600px){
+  #app{padding:20px 14px 80px;}
+  .mc-title{font-size:1.5rem;}
+  .mirror-card,.question-card,.transfer-card{padding:16px 16px;}
+}
+</style>
+</head>
+<body>
+<div id="mc-progress-bar"><div id="mc-progress-fill"></div></div>
+
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="mc-header">
+    <div class="mc-pretitle">Retour réflexif · Pilier Groupe · Année 1</div>
+    <div class="mc-title">La Deuxième Liste</div>
+    <div class="mc-subtitle">
+      Tu viens de vivre une situation. Ce module te permet de regarder
+      tes choix avec un peu de recul — et de comprendre ce qu'ils disent
+      de toi, avec l'aide de la recherche en psychologie sociale.
+    </div>
+    <div class="mc-sep"></div>
+    <div class="mc-xp-badge">🧠 +100 XP supplémentaires à la clé</div>
+    <p class="mc-note">
+      Il n'y a pas de bonne réponse aux questions ouvertes.
+      Les questions de compréhension ont une réponse attendue — elle n'est jamais contre toi.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- PHASE 1 : ANALYSE MIROIR                       -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="mc-phase">
+    <div class="phase-label">Phase 1 — Analyse de tes choix</div>
+
+    <!-- Miroir scène 1 : l'approche de Kern -->
+    <div class="mirror-card" id="mirror-s1">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 1</div>
+          <div class="mirror-choice-text" id="mirror-s1-text">
+            Tu as choisi d'approcher le garçon seul contre le mur.
+          </div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="mirror-s1-research">
+          Dans les situations de groupe nouvelles, la majorité des individus
+          rejoignent spontanément des <strong>groupes déjà formés</strong> plutôt que d'approcher
+          les personnes isolées — un mécanisme décrit par Asch (1951) comme
+          la <strong>conformité sociale</strong>. Approcher quelqu'un d'isolé demande
+          de résister à cette pression sans même en être conscient.
+          <br><br>
+          La recherche sur <strong>l'affiliation en contexte de stress</strong> (Schachter, 1959)
+          montre qu'en situation d'incertitude, on est plus susceptible d'initier
+          des contacts sociaux — la nouveauté de Valdurne crée cet état.
+        </div>
+        <div class="research-source">Sources : Asch (1951), Schachter (1959), Salmivalli (2010) sur les rôles dans les groupes</div>
+      </div>
+
+      <div class="self-block" id="mirror-s1-self">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text">
+          Le fait d'avoir approché Kern révèle une disposition à l'<strong>indépendance sociale</strong> —
+          tu ne laisses pas la pression du groupe invisible décider de tes affiliations.
+          C'est une compétence rare à développer, surtout en début d'année.
+        </div>
+      </div>
+    </div>
+
+    <!-- Miroir scène 2 : la réponse à Kern -->
+    <div class="mirror-card" id="mirror-s2">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 2</div>
+          <div class="mirror-choice-text" id="mirror-s2-text">
+            Tu as répondu à Kern.
+          </div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="mirror-s2-research">
+          La façon dont on répond dans les premières interactions
+          détermine souvent la <strong>qualité relationnelle à long terme</strong>.
+          Les recherches de Gottman sur les dyades montrent que les échanges fondateurs
+          créent des <strong>scripts relationnels</strong> — des attentes mutuelles
+          qui persistent longtemps après la première rencontre.
+          <br><br>
+          Nommer les choses directement (comme Lyam peut le faire) active
+          la <strong>reconnaissance mutuelle de la situation</strong> — un puissant
+          créateur de lien horizontal entre pairs dans des contextes hiérarchisés.
+        </div>
+        <div class="research-source">Sources : Gottman (1994), Bowlby (1988) sur l'attachement, Tajfel sur l'identité sociale</div>
+      </div>
+
+      <div class="self-block" id="mirror-s2-self">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="mirror-s2-self-text">
+          Ta façon de répondre montre comment tu crées des alliances :
+          par la franchise, l'analyse, ou la curiosité.
+          Chacune de ces approches a ses forces et ses limites selon le contexte.
+        </div>
+      </div>
+    </div>
+
+    <!-- Miroir scène 3 : la deuxième liste -->
+    <div class="mirror-card" id="mirror-s3">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 3</div>
+          <div class="mirror-choice-text" id="mirror-s3-text">
+            Tu as découvert la deuxième liste.
+          </div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="mirror-s3-research">
+          Face à une injustice systémique, les individus adoptent généralement
+          trois stratégies : <strong>mobilité individuelle</strong> (prouver qu'on mérite malgré tout),
+          <strong>créativité sociale</strong> (redéfinir les critères de valeur),
+          ou <strong>compétition sociale</strong> (contester le système).
+          <br><br>
+          Tajfel et Turner (1979) montrent que la stratégie choisie dépend
+          de la <strong>perméabilité perçue des frontières de groupe</strong> —
+          si on croit pouvoir "passer dans l'autre groupe", on mobilise individuellement.
+          Si les frontières semblent fermées, la réponse collective devient plus probable.
+          <br><br>
+          Bandura (1986) ajoute que les personnes avec une <strong>haute auto-efficacité</strong>
+          tendent à transformer le défi en moteur — sans pour autant en faire une obsession.
+        </div>
+        <div class="research-source">Sources : Tajfel & Turner (1979) — Théorie de l'identité sociale, Bandura (1986) — Auto-efficacité</div>
+      </div>
+
+      <div class="self-block" id="mirror-s3-self">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="mirror-s3-self-text">
+          Ta réaction face à l'injustice de la liste révèle ta stratégie de base.
+          Aucune n'est "meilleure" — chacune a une logique interne et des conditions
+          où elle est la plus efficace.
+        </div>
+      </div>
+
+      <div class="tension-block" id="mirror-s3-tension">
+        <div class="tension-label">⚠️ Point à travailler</div>
+        <div class="tension-text" id="mirror-s3-tension-text">
+          Transformer le défi en moteur peut être très efficace — mais si cette énergie
+          n'est pas régulée, elle peut devenir une source de pression chronique.
+          La distinction entre <em>motivation intrinsèque</em> et <em>besoin de prouver</em>
+          est essentielle à surveiller.
+        </div>
+      </div>
+    </div>
+
+    <!-- Miroir scène 4 : la nuit -->
+    <div class="mirror-card" id="mirror-s4">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 4</div>
+          <div class="mirror-choice-text" id="mirror-s4-text">
+            Dans le noir, tu as choisi une première pensée.
+          </div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text" id="mirror-s4-research">
+          Les <strong>pensées de fin de journée</strong> ont un impact documenté sur la consolidation
+          mémorielle (Walker & Stickgold, 2004). Ce sur quoi on se concentre au moment
+          de s'endormir tend à être traité prioritairement pendant le sommeil.
+          <br><br>
+          Les travaux de Fredrickson (2001) sur la <strong>théorie broaden-and-build</strong>
+          montrent que les émotions positives (curiosité, lien social, résolution)
+          élargissent les ressources cognitives et comportementales disponibles,
+          tandis que les émotions négatives focalisées (colère, injustice) les réduisent
+          — utiles à court terme pour mobiliser, nuisibles à long terme si dominantes.
+        </div>
+        <div class="research-source">Sources : Walker & Stickgold (2004) — sommeil et mémoire, Fredrickson (2001) — broaden-and-build</div>
+      </div>
+
+      <div class="self-block" id="mirror-s4-self">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="mirror-s4-self-text">
+          La pensée que tu as mise en premier révèle ton <strong>moteur émotionnel dominant</strong>
+          dans les situations nouvelles. Ce n'est pas figé — c'est un point de départ.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- PHASE 2 : QUESTIONS DE CONSOLIDATION           -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="mc-phase">
+    <div class="phase-label">Phase 2 — Questions de consolidation</div>
+
+    <!-- Q1 : Compréhension conformité sociale -->
+    <div class="question-card" id="q1-card">
+      <div class="question-num">Question 1 / 4 — Compréhension</div>
+      <div class="question-text">
+        La recherche d'Asch sur la conformité sociale montre que dans un groupe,
+        la majorité des individus ont tendance à rejoindre les sous-groupes déjà formés.
+        Quelle est la principale raison de ce comportement ?
+      </div>
+      <div class="question-hint">
+        💡 Pense à ce que tu ferais toi-même en arrivant dans un endroit inconnu.
+      </div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q1','a')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">Les groupes formés sont toujours plus sympathiques que les personnes seules.</div>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','b')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">La pression sociale invisible pousse à imiter les comportements du groupe majoritaire pour réduire l'incertitude.</div>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','c')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">Les personnes seules ont généralement demandé à l'être.</div>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','d')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">C'est une règle biologique qui ne dépend pas du contexte.</div>
+        </div>
+      </div>
+      <div class="q-validate show" id="q1-validate">
+        <button class="btn-validate" onclick="validateQ('q1','b')">Valider ma réponse</button>
+      </div>
+      <div class="q-feedback" id="q1-feedback"></div>
+    </div>
+
+    <!-- Q2 : Application Tajfel -->
+    <div class="question-card" id="q2-card">
+      <div class="question-num">Question 2 / 4 — Application</div>
+      <div class="question-text">
+        Dans la situation de Lyam, il y a deux listes — une pour les élèves de lignage,
+        une pour ceux admis par aptitude. Selon la théorie de Tajfel et Turner,
+        si Lyam croit qu'il est <em>impossible</em> de "passer" dans le groupe de la première liste,
+        quelle stratégie va-t-il probablement développer ?
+      </div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q2','a')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">Il va tout faire pour individudellement prouver sa valeur supérieure et être admis dans la première liste.</div>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','b')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">Il va se résigner et accepter sa position sans réagir.</div>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','c')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">Il va soit redéfinir ce qui donne de la valeur (créativité sociale), soit chercher à contester le système des deux listes (compétition sociale).</div>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','d')">
+          <div class="q-opt-dot"></div>
+          <div class="q-opt-text">Il va quitter Valdurne car les frontières sont perçues comme fermées.</div>
+        </div>
+      </div>
+      <div class="q-validate show" id="q2-validate">
+        <button class="btn-validate" onclick="validateQ('q2','c')">Valider ma réponse</button>
+      </div>
+      <div class="q-feedback" id="q2-feedback"></div>
+    </div>
+
+    <!-- Q3 : Question ouverte réflexive -->
+    <div class="question-card" id="q3-card">
+      <div class="question-num">Question 3 / 4 — Réflexion personnelle</div>
+      <div class="question-text">
+        Dans ta propre vie (au collège, dans tes groupes d'amis, en sport…),
+        est-ce que tu as déjà vécu une situation où tu étais "sur la deuxième liste" —
+        où quelque chose de ton identité (ton origine, ton niveau, ta façon d'être)
+        était perçu différemment des autres ?
+      </div>
+      <div class="open-question">
+        <label class="open-label" for="q3-text">
+          Décris brièvement la situation — ou dis pourquoi tu n'as jamais ressenti ça.
+          (Réponse privée, jamais transmise.)
+        </label>
+        <textarea class="open-textarea" id="q3-text" placeholder="Écris ici…"></textarea>
+        <button class="open-save-btn" onclick="saveOpen('q3')">💾 Enregistrer ma réflexion</button>
+        <div id="q3-saved" style="font-size:.75rem;color:var(--green-l);margin-top:6px;display:none;">✓ Réflexion enregistrée</div>
+      </div>
+    </div>
+
+    <!-- Q4 : Transfert — situation réelle -->
+    <div class="transfer-card" id="q4-card">
+      <div class="transfer-label">Question 4 / 4 — Transfert dans la vraie vie</div>
+      <div class="question-text" style="margin-bottom:14px;color:var(--green-l);">
+        Situation : Tu arrives dans un nouveau groupe (classe, club, équipe).
+        Tu remarques qu'un élève reste toujours seul, un peu à l'écart.
+        Que fais-tu selon toi, en appliquant ce que tu as appris aujourd'hui ?
+      </div>
+      <div class="transfer-scenario">
+        Le groupe est bien constitué, les autres semblent contents entre eux.
+        L'élève seul ne cherche pas visiblement à rejoindre quelqu'un.
+      </div>
+      <div class="transfer-options">
+        <div class="transfer-opt" onclick="selectTransfer(this,'a')">
+          <div class="transfer-dot"></div>
+          <div class="transfer-text">Je ne fais rien — s'il voulait qu'on l'approche, il le montrerait.</div>
+        </div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'b')">
+          <div class="transfer-dot"></div>
+          <div class="transfer-text">Je l'approche naturellement, sans pression — une remarque simple, sans forcer.</div>
+        </div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'c')">
+          <div class="transfer-dot"></div>
+          <div class="transfer-text">J'observe d'abord pour comprendre pourquoi il est seul, puis je décide.</div>
+        </div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'d')">
+          <div class="transfer-dot"></div>
+          <div class="transfer-text">Je le présente à quelqu'un du groupe — pour ne pas qu'il soit seul face à moi.</div>
+        </div>
+      </div>
+      <div class="transfer-feedback" id="transfer-feedback"></div>
+      <div id="transfer-validate" style="margin-top:12px;display:none;">
+        <button class="btn-validate" onclick="validateTransfer()">Voir l'analyse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOUTON COMPLÉTION ══ -->
+  <div class="mc-complete-zone" id="completeZone">
+    <div class="mc-complete-title">Réflexion terminée</div>
+    <div class="mc-complete-sub">
+      Tu as analysé tes choix, compris les mécanismes scientifiques,
+      et commencé à transférer ces apprentissages dans ta propre vie.
+      C'est exactement ce que la métacognition permet de construire.
+    </div>
+    <div class="mc-complete-xp">🧠 +100 XP</div>
+    <br>
+    <button class="btn-complete" id="completeBtn" onclick="completeModule()" disabled>
+      Valider le module réflexif
+    </button>
+    <button class="btn-return" onclick="window.location.href='index_PIXHARe.html'">
+      ← Retour au Hub PIXHARe
+    </button>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+var MODULE_ID  = 'METACOG_GROUPE_A1';
+var CERT_KEY   = 'CERT_METACOG_GROUPE_A1';
+var XP_AMOUNT  = 100;
+var LEGACY_KEY = 'VALDURNE_LEGACY_GROUPE_A1';
+var HUB_URL    = 'index_PIXHARe.html';
+
+// Textes d'analyse miroir personnalisés par choix
+var MIRROR_TEXTS = {
+  s1: {
+    instinct: {
+      choice: "Tu t'es approché par instinct — l'anomalie ne pouvait pas rester sans explication.",
+      self: "Cette disposition à l'action directe sans sur-calcul est un marqueur de confiance situationnelle. Attention à ce qu'elle ne devienne pas impulsivité — mais ici, elle t'a bien servi."
+    },
+    observation: {
+      choice: "Tu t'es approché après observation — tu avais déjà commencé à comprendre le système.",
+      self: "Cette approche analytique avant l'action révèle une forte <strong>intelligence situationnelle</strong>. La limite : parfois l'observation prolongée devient une façon d'éviter l'action."
+    },
+    incapable: {
+      choice: "Tu ne pouvais pas faire autrement — la curiosité et l'inconfort face à l'anomalie t'ont guidé.",
+      self: "Reconnaître une force intrinsèque (ne pas pouvoir ignorer une anomalie) plutôt que de se l'attribuer comme vertu, c'est un signe de <strong>connaissance de soi honnête</strong>. C'est précieux."
+    }
+  },
+  s2: {
+    direct: {
+      choice: "Tu as dit directement : \"Ouais. Et nous, on est en dehors.\"",
+      self: "Nommer les choses dès le début crée un registre relationnel de franchise. Kern s'en souviendra — les premières phrases installent un <strong>contrat implicite</strong> de comment on se parle.",
+      research: "La directivité dans l'entrée en relation crée des liens plus durables que la politesse de surface (Gottman, 1994). Elle suppose une confiance de base — et l'offre à l'autre."
+    },
+    observe: {
+      choice: "Tu as montré que tu analysais plutôt que tu subissais.",
+      self: "Cette réponse signale à Kern que tu es en train de <strong>comprendre le système</strong>, pas de le subir. C'est une façon d'offrir une alliance basée sur la lucidité commune.",
+      research: "La prise de perspective partagée (\"on comprend tous les deux ce qui se passe\") est l'un des fondateurs les plus solides du lien social horizontal (Decety, 2004)."
+    },
+    question: {
+      choice: "Tu as ouvert une conversation en posant une vraie question.",
+      self: "Commencer par une question plutôt qu'une affirmation place l'autre en position d'<strong>expert de sa propre situation</strong>. C'est une marque de respect — et un excellent outil de création de lien.",
+      research: "Les questions ouvertes dans les premières interactions augmentent significativement la probabilité d'une réponse approfondie — et donc d'une alliance réelle (Collins, 2010)."
+    }
+  },
+  s3: {
+    injuste: {
+      choice: "Tu as nommé l'injustice. Pas pour te plaindre — pour ne pas l'oublier.",
+      self: "Nommer l'injustice sans passer à l'action immédiate, c'est une forme de <strong>mémoire morale</strong>. Elle alimente l'indignation saine — pas le ressentiment, si tu restes dans l'action.",
+      tension: "L'injustice nommée doit mener quelque part. Si elle reste en tête sans déboucher sur une action ou une transformation, elle peut devenir une source de rumination chronique."
+    },
+    strategie: {
+      choice: "Tu as transformé le défi en moteur : être meilleur que ce qu'ils attendent.",
+      self: "Cette stratégie de <strong>mobilité individuelle</strong> (Tajfel) est puissante à court terme. Elle peut construire une excellence réelle. La limite : elle peut aussi amener à jouer selon les règles d'un jeu injuste sans les contester.",
+      tension: "\"Prouver\" quelque chose à quelqu'un d'autre comme moteur principal crée une dépendance à la reconnaissance externe. A surveiller : agis-tu pour toi, ou pour leur montrer ?"
+    },
+    comprendre: {
+      choice: "Tu as voulu comprendre avant de juger.",
+      self: "La <strong>suspension du jugement</strong> est une compétence rare et précieuse. Elle distingue la réaction impulsive de la réponse réfléchie. Comprendre n'est pas accepter — c'est la première condition pour changer.",
+      tension: "La compréhension peut parfois masquer une difficulté à nommer l'injustice clairement. Distinguer \"je comprends\" de \"j'accepte\" est essentiel pour ne pas confondre lucidité et résignation."
+    }
+  },
+  s4: {
+    colere_froide: {
+      choice: "La première nuit : la colère froide contre l'injustice du système.",
+      self: "La colère froide (pas la rage) est une émotion <strong>moralement informée</strong> — elle signale qu'une valeur centrale a été violée. Fredrickson distingue la colère mobilisatrice (ressource) de la colère ruminante (coût).",
+      research: "Les recherches sur la régulation émotionnelle montrent que reconnaître et nommer sa colère (plutôt que la supprimer ou la ruminer) est le mécanisme le plus efficace pour la transformer en action."
+    },
+    curiosite: {
+      choice: "La première nuit : la curiosité sur ce que cache Valdurne.",
+      self: "Transformer l'inconfort en curiosité est l'une des formes les plus puissantes de <strong>régulation cognitive</strong>. Elle ouvre les ressources cognitives plutôt que de les fermer.",
+      research: "Fredrickson (2001) — théorie broaden-and-build : les émotions positives comme la curiosité élargissent le répertoire d'actions disponibles et construisent des ressources durables."
+    },
+    resolution: {
+      choice: "La première nuit : la résolution — ne pas être seul. Kern, là-haut.",
+      self: "Faire de la <strong>connexion sociale</strong> le premier ancrage face à la difficulté est un signe de santé psychologique fondamentale. Bowlby appelait ça la \"base sécure\" — la conscience qu'on n'est pas seul change tout.",
+      research: "Les recherches sur la résilience (Cyrulnik, Masten) montrent que le facteur de protection le plus fiable n'est pas la force individuelle, mais la présence d'au moins un lien de confiance."
+    }
+  }
+};
+
+// Feedbacks des questions de compréhension
+var Q_FEEDBACK = {
+  q1: {
+    correct: 'b',
+    ok: '✓ Exact. La conformité sociale (Asch) est une pression invisible mais puissante — on rejoint les groupes formés principalement pour réduire l\'incertitude et l\'inconfort de l\'isolement, pas parce que ces groupes sont "meilleurs".',
+    ko: {
+      a: 'Pas tout à fait. Les groupes formés ne sont pas nécessairement plus sympathiques — on les rejoint surtout pour réduire l\'incertitude. La pression sociale est largement inconsciente.',
+      c: 'Non. L\'isolement d\'une personne peut avoir de nombreuses causes — timidité, arrivée tardive, différence de culture. Ne pas faire cette hypothèse, c\'est déjà une compétence empathique.',
+      d: 'Non. La conformité sociale est un phénomène psychologique et contextuel, pas biologique. Elle varie selon les cultures et les situations.'
+    }
+  },
+  q2: {
+    correct: 'c',
+    ok: '✓ Exact. Selon Tajfel et Turner, quand les frontières de groupe paraissent imperméables, les stratégies de mobilité individuelle deviennent moins probables. On se tourne vers la redéfinition des critères (créativité sociale) ou la contestation du système (compétition sociale).',
+    ko: {
+      a: 'Pas tout à fait. La mobilité individuelle (\"prouver que je vaux plus\") est plus fréquente quand on croit encore pouvoir franchir la frontière. Si elle paraît fermée, cette stratégie semble inutile.',
+      b: 'Non. La résignation pure est rare en cas d\'injustice perçue. Plus souvent, on développe des stratégies d\'adaptation — actives ou passives.',
+      d: 'Non. Quitter le groupe n\'est pas la seule réponse aux frontières fermées, et dans la réalité sociale (école, travail) ce n\'est souvent pas possible.'
+    }
+  }
+};
+
+// Feedbacks transfert
+var TRANSFER_FEEDBACK = {
+  a: { text: 'Cette position est compréhensible — et très courante. Mais la recherche (Salmivalli) montre que l\'isolement social est rarement choisi librement. Dans la majorité des cas, la personne attend qu\'on fasse le premier pas, sans oser le demander. Le \"s\'il voulait\" est souvent une projection de nos propres normes sur quelqu\'un qui a d\'autres barrières.', type: 'info' },
+  b: { text: '✓ Cette approche est soutenue par la recherche. Une prise de contact légère, sans pression, respecte l\'autonomie de l\'autre tout en ouvrant une porte. "Naturellement, sans forcer" est exactement la nuance qui distingue l\'inclusion bienveillante de l\'intrusion.', type: 'ok' },
+  c: { text: '✓ Bonne approche également. Observer avant d\'agir permet d\'ajuster sa réponse au contexte. La limite : ne pas laisser l\'observation se transformer en prétexte pour ne rien faire. L\'observation est utile si elle mène à une décision, pas pour l\'éviter.', type: 'ok' },
+  d: { text: '✓ Excellente stratégie sociale. Intégrer via un tiers réduit la pression dyadique et permet à l\'isolé de rejoindre un groupe de façon naturelle plutôt que de se retrouver face à face avec quelqu\'un qu\'il ne connaît pas. C\'est une technique documentée dans les programmes d\'inclusion scolaire.', type: 'ok' }
+};
+
+// ── Init joueur ───────────────────────────────────────────────
+var playerCode = '';
+(function(){
+  var p = new URLSearchParams(window.location.search).get('player');
+  if(p && p.length > 1){ localStorage.setItem('pvs_current_player', p); }
+  playerCode = localStorage.getItem('pvs_current_player') || '';
+})();
+
+// ── Charger legacy et adapter les textes ────────────────────
+var legacy = null;
+try{ legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null'); }catch(e){}
+var choices = legacy ? (legacy.choices || {}) : {};
+
+function applyMirrors(){
+  var s1 = choices['1'] || 'observation';
+  var s2 = choices['2'] || 'observe';
+  var s3 = choices['3'] || 'comprendre';
+  var s4 = choices['4'] || 'curiosite';
+
+  // S1
+  var d1 = MIRROR_TEXTS.s1[s1] || MIRROR_TEXTS.s1.observation;
+  document.getElementById('mirror-s1-text').textContent = d1.choice;
+  document.getElementById('mirror-s1-self').querySelector('.self-text').innerHTML = d1.self;
+
+  // S2
+  var d2 = MIRROR_TEXTS.s2[s2] || MIRROR_TEXTS.s2.observe;
+  document.getElementById('mirror-s2-text').textContent = d2.choice;
+  if(d2.research) document.getElementById('mirror-s1-research').innerHTML += ''; // déjà OK
+  document.getElementById('mirror-s2-self').querySelector('.self-text').innerHTML = d2.self;
+  if(d2.research){
+    var rb = document.getElementById('mirror-s2').querySelector('.research-text');
+    if(rb) rb.innerHTML = d2.research;
+  }
+
+  // S3
+  var d3 = MIRROR_TEXTS.s3[s3] || MIRROR_TEXTS.s3.comprendre;
+  document.getElementById('mirror-s3-text').textContent = d3.choice;
+  document.getElementById('mirror-s3-self-text').innerHTML = d3.self;
+  document.getElementById('mirror-s3-tension-text').innerHTML = d3.tension || '';
+
+  // S4
+  var d4 = MIRROR_TEXTS.s4[s4] || MIRROR_TEXTS.s4.curiosite;
+  document.getElementById('mirror-s4-text').textContent = d4.choice;
+  document.getElementById('mirror-s4-self-text').innerHTML = d4.self;
+  if(d4.research){
+    var rb4 = document.getElementById('mirror-s4').querySelector('.research-text');
+    if(rb4) rb4.innerHTML = d4.research;
+  }
+
+  // Highlight si legacy disponible
+  if(legacy){
+    ['mirror-s1','mirror-s2','mirror-s3','mirror-s4'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.classList.add('highlight');
+    });
+  }
+}
+applyMirrors();
+
+// ── Questions QCM ────────────────────────────────────────────
+var qState = { q1: null, q2: null, q3: false, transfer: null };
+
+function checkCompletion(){
+  var done = qState.q1 !== null && qState.q2 !== null && qState.q3 && qState.transfer !== null;
+  var btn = document.getElementById('completeBtn');
+  if(btn) btn.disabled = !done;
+  // Progress bar
+  var n = [qState.q1!==null, qState.q2!==null, qState.q3, qState.transfer!==null].filter(Boolean).length;
+  document.getElementById('mc-progress-fill').style.width = (25 + n*18) + '%';
+}
+
+function selectOpt(el, qid, val){
+  // Désélectionner les autres
+  el.closest('.q-options').querySelectorAll('.q-opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  // Stocker et afficher le bouton valider
+  var vb = document.getElementById(qid+'-validate');
+  if(vb) vb.style.display = 'block';
+  // Stocker le choix temporaire
+  el.closest('.question-card').dataset.selected = val;
+}
+
+function validateQ(qid, correctVal){
+  var card = document.getElementById(qid+'-card');
+  var selected = card.dataset.selected;
+  if(!selected) return;
+  var fb = document.getElementById(qid+'-feedback');
+  var qdata = Q_FEEDBACK[qid];
+  var vb = document.getElementById(qid+'-validate');
+  if(vb) vb.style.display = 'none';
+
+  // Désactiver les options
+  card.querySelectorAll('.q-opt').forEach(function(o){ o.style.pointerEvents='none'; });
+
+  if(selected === correctVal){
+    card.querySelector('.q-opt[onclick*="\''+selected+'\'"]').classList.add('correct');
+    fb.className = 'q-feedback show ok';
+    fb.innerHTML = qdata.ok;
+    qState[qid] = 'correct';
+  } else {
+    card.querySelector('.q-opt[onclick*="\''+selected+'\'"]').classList.add('wrong');
+    fb.className = 'q-feedback show ko';
+    fb.innerHTML = '✗ ' + (qdata.ko[selected] || 'Pas tout à fait. La bonne réponse était différente.') +
+      '<br><br><strong style="color:#86efac">Réponse attendue :</strong> ' + qdata.ok;
+    qState[qid] = 'done';
+    // Marquer la bonne réponse
+    card.querySelectorAll('.q-opt').forEach(function(o){
+      if(o.getAttribute('onclick') && o.getAttribute('onclick').includes("'"+correctVal+"'")){
+        o.classList.add('correct');
+      }
+    });
+  }
+  checkCompletion();
+}
+
+// ── Question ouverte ────────────────────────────────────────
+function saveOpen(qid){
+  var txt = document.getElementById(qid+'-text').value.trim();
+  if(!txt) return;
+  try{ localStorage.setItem('pvs_metacog_'+MODULE_ID+'_'+qid, txt); }catch(e){}
+  var el = document.getElementById(qid+'-saved');
+  if(el){ el.style.display='block'; }
+  qState.q3 = true;
+  checkCompletion();
+}
+
+// ── Transfert ────────────────────────────────────────────────
+function selectTransfer(el, val){
+  el.closest('.transfer-options').querySelectorAll('.transfer-opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  var vb = document.getElementById('transfer-validate');
+  if(vb){ vb.style.display='block'; vb.dataset.val = val; }
+}
+
+function validateTransfer(){
+  var vb = document.getElementById('transfer-validate');
+  var val = vb ? vb.dataset.val : '';
+  if(!val) return;
+  var data = TRANSFER_FEEDBACK[val] || TRANSFER_FEEDBACK.b;
+  var fb = document.getElementById('transfer-feedback');
+  fb.className = 'transfer-feedback show';
+  fb.innerHTML = data.text;
+  vb.style.display = 'none';
+  document.querySelectorAll('.transfer-opt').forEach(function(o){ o.style.pointerEvents='none'; });
+  qState.transfer = val;
+  checkCompletion();
+}
+
+// ── Complétion finale ────────────────────────────────────────
+function completeModule(){
+  // CERT + bridge METACOG_COMPLETE
+  try{
+    localStorage.setItem(CERT_KEY, JSON.stringify({
+      v:1, d:new Date().toISOString(), m:MODULE_ID, f:true, xp:XP_AMOUNT,
+      choices_jdr: choices, q1: qState.q1, q2: qState.q2
+    }));
+    var evts = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({
+      id:       'METACOG-' + MODULE_ID + '-' + Date.now(),
+      type:     'METACOG_COMPLETE',
+      player:   playerCode,
+      module:   MODULE_ID,
+      jdrModule:'JDR_GROUPE_A1',
+      metacogXp: XP_AMOUNT,
+      d:        new Date().toISOString()
+    });
+    if(evts.length > 500) evts.splice(0, evts.length - 500);
+    localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+  }catch(e){}
+
+  // UI
+  document.getElementById('completeBtn').textContent = '✓ Module validé !';
+  document.getElementById('completeBtn').disabled = true;
+  document.getElementById('mc-progress-fill').style.width = '100%';
+
+  setTimeout(function(){ window.location.href = HUB_URL; }, 2000);
+}
+
+// ── Init ────────────────────────────────────────────────────
+checkCompletion();
+document.getElementById('mc-progress-fill').style.width = '20%';
+</script>
+</body>
+</html>

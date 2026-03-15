@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Veilleurs de Valdurne — La Joute des Arguments</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a12;--bg2:#0f0f1a;--panel:#181828;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --stone:#1e1e2e;--stone-l:#2a2a3e;
+  --text:#d4c9d0;--text-m:#8a7e8a;--text-d:#5a5060;
+  --violet:#7c3aed;--violet-l:#a855f7;--violet-d:#4c1d95;
+  --teal:#0d9488;--teal-l:#2dd4bf;
+  --ember:#c2410c;--ember-l:#f97316;
+  --green:#2d6a4f;--green-l:#52b788;
+  --border:rgba(200,168,75,.15);--border-l:rgba(200,168,75,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(124,58,237,.08) 0%,transparent 55%),
+             radial-gradient(ellipse at 20% 80%,rgba(13,148,136,.05) 0%,transparent 45%);}
+#app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 0 80px;}
+
+/* ── Ambiance ── */
+#ambient-bar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,18,.93);
+  border-bottom:1px solid var(--border);backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:14px;padding:8px 20px;}
+.amb-label{color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:1px;white-space:nowrap;flex-shrink:0;}
+.amb-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);width:30px;height:30px;
+  border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;}
+.amb-toggle:hover{background:var(--gold);color:#000;}
+.amb-vol{-webkit-appearance:none;width:90px;height:3px;background:var(--stone-l);border-radius:2px;outline:none;cursor:pointer;flex-shrink:0;}
+.amb-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold);cursor:pointer;}
+.amb-status{color:var(--text-m);font-size:.7rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pb-chip{display:flex;align-items:center;gap:6px;background:rgba(200,168,75,.07);border:1px solid var(--border);
+  padding:3px 10px;border-radius:20px;font-size:.7rem;color:var(--gold-l);flex-shrink:0;}
+
+/* ── Scène ── */
+.scene{padding-top:56px;min-height:100vh;display:none;flex-direction:column;animation:sceneFade .6s ease-out;}
+.scene.active{display:flex;}
+@keyframes sceneFade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.scene-art{position:relative;width:100%;height:300px;overflow:hidden;background:var(--stone);}
+.scene-art img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:opacity .5s;}
+.scene-art .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5rem;
+  background:linear-gradient(180deg,#1a1030 0%,var(--bg) 100%);}
+.scene-art .art-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,var(--bg) 100%);}
+
+.scene-header{padding:20px 32px 0;}
+.scene-crumb{display:flex;gap:10px;align-items:center;font-family:'Cinzel',serif;font-size:.65rem;
+  letter-spacing:2px;color:var(--text-d);text-transform:uppercase;margin-bottom:10px;}
+.scene-crumb span{color:var(--gold-d);}
+.scene-num{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:6px;}
+.scene-title{font-family:'Cinzel',serif;font-size:1.55rem;color:var(--gold-l);line-height:1.2;margin-bottom:14px;}
+
+/* Narration */
+.narr-bar{display:flex;align-items:center;gap:10px;background:rgba(200,168,75,.06);border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;margin:0 32px 20px;}
+.narr-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);width:28px;height:28px;
+  border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:.2s;flex-shrink:0;}
+.narr-toggle:hover{background:var(--gold);color:#000;}
+.narr-vol{-webkit-appearance:none;width:80px;height:3px;background:var(--stone-l);border-radius:2px;outline:none;cursor:pointer;flex-shrink:0;}
+.narr-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);cursor:pointer;}
+.narr-label{color:var(--text-m);font-size:.7rem;flex:1;font-family:'Cinzel',serif;letter-spacing:.5px;}
+.narr-status{color:var(--text-d);font-size:.68rem;}
+
+/* Corps */
+.scene-body{padding:0 32px;flex:1;}
+.scene-text{font-size:1.08rem;line-height:1.88;color:var(--text);margin-bottom:22px;}
+.scene-text p{margin-bottom:14px;}
+.scene-text em{color:var(--gold-l);font-style:italic;}
+.scene-text strong{color:#e8dfc8;}
+
+/* Émotion intérieure — spécial NEURO */
+.emotion-pulse{
+  background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.22);
+  border-radius:10px;padding:14px 20px;margin:0 0 22px;
+}
+.emotion-pulse-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--violet-l);margin-bottom:10px;display:block;}
+.emotion-list{display:flex;gap:8px;flex-wrap:wrap;}
+.emotion-tag{padding:5px 12px;border-radius:999px;font-size:.82rem;
+  border:1px solid rgba(124,58,237,.3);background:rgba(124,58,237,.08);color:#c4b5fd;}
+.emotion-tag.active{background:rgba(124,58,237,.2);border-color:var(--violet-l);color:#e9d5ff;}
+
+/* Débat — carte adversaire */
+.debate-card{
+  background:rgba(200,64,50,.07);border:1px solid rgba(239,68,68,.2);
+  border-radius:10px;padding:14px 20px;margin:0 0 22px;
+}
+.debate-speaker{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1.5px;
+  text-transform:uppercase;color:#fca5a5;margin-bottom:8px;display:block;}
+.debate-text{font-style:italic;color:#fecaca;font-size:.98rem;line-height:1.75;}
+
+/* Réponse Réna */
+.rena-card{
+  background:rgba(13,148,136,.07);border:1px solid rgba(45,212,191,.22);
+  border-radius:10px;padding:14px 20px;margin:0 0 22px;
+}
+.rena-speaker{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--teal-l);margin-bottom:8px;display:block;}
+.rena-text{font-style:italic;color:#99f6e4;font-size:.98rem;line-height:1.75;}
+
+/* Pensée */
+.scene-thought{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.18);
+  border-radius:8px;padding:14px 18px;margin:0 0 22px;
+  font-style:italic;color:#c4b5fd;font-size:.95rem;line-height:1.7;}
+.scene-thought::before{content:'💭  ';}
+
+/* Citation */
+.scene-quote{border-left:3px solid var(--gold-d);padding:10px 18px;margin:0 0 22px;
+  background:rgba(200,168,75,.04);border-radius:0 6px 6px 0;}
+.scene-quote p{font-style:italic;font-size:1rem;color:var(--text-m);line-height:1.7;}
+
+/* Thermomètre émotionnel */
+.emotion-meter{
+  background:rgba(10,10,18,.5);border:1px solid rgba(124,58,237,.2);
+  border-radius:10px;padding:12px 16px;margin:0 0 22px;
+}
+.emotion-meter-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text-d);margin-bottom:8px;display:block;}
+.emotion-meter-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:4px;}
+.emotion-meter-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.emotion-meter-name{font-size:.72rem;color:var(--text-m);display:flex;justify-content:space-between;}
+
+/* Choix */
+.scene-prompt{font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;color:var(--gold);
+  text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.choices{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.choice-btn{background:var(--stone);border:1px solid var(--stone-l);border-radius:8px;
+  padding:16px 20px;text-align:left;cursor:pointer;transition:.25s;color:var(--text);
+  font-family:'Crimson Text',serif;font-size:1rem;line-height:1.5;position:relative;overflow:hidden;}
+.choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold-d);transition:.25s;}
+.choice-btn:hover{background:var(--stone-l);border-color:var(--gold);transform:translateX(4px);}
+.choice-btn:hover::before{background:var(--gold);}
+.choice-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;color:var(--gold-d);
+  text-transform:uppercase;display:block;margin-bottom:4px;}
+.choice-title{font-weight:600;color:var(--gold-l);display:block;margin-bottom:3px;}
+.choice-sub{color:var(--text-m);font-size:.9rem;}
+
+/* ── Intro ── */
+#scene-intro{align-items:center;justify-content:center;padding-top:56px;text-align:center;}
+.intro-sigil{font-size:3.8rem;margin-bottom:20px;animation:glow 3s ease-in-out infinite;}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 8px rgba(124,58,237,.5))}50%{filter:drop-shadow(0 0 28px rgba(124,58,237,.9))}}
+.intro-pretitle{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
+.intro-title{font-family:'IM Fell English',serif;font-size:2.3rem;color:var(--gold-l);line-height:1.2;margin-bottom:8px;}
+.intro-subtitle{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--text-m);font-style:italic;margin-bottom:30px;}
+.intro-sep{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 auto 28px;}
+.intro-desc{max-width:560px;margin:0 auto 28px;font-size:1.05rem;line-height:1.85;color:var(--text-m);}
+.intro-badge{display:inline-block;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);
+  border-radius:8px;padding:10px 18px;margin:0 auto 32px;font-size:.82rem;color:#c4b5fd;line-height:1.6;max-width:480px;}
+.intro-badge strong{color:var(--violet-l);}
+.intro-note{background:rgba(200,168,75,.06);border:1px solid var(--border);border-radius:8px;
+  padding:14px 20px;max-width:480px;margin:0 auto 32px;font-size:.85rem;color:var(--text-d);line-height:1.6;}
+.btn-start{background:var(--gold-d);color:#f5ead0;border:none;padding:14px 40px;font-family:'Cinzel',serif;
+  font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:6px;
+  transition:.25s;box-shadow:0 4px 20px rgba(200,168,75,.2);}
+.btn-start:hover{background:var(--gold);color:#000;transform:translateY(-2px);box-shadow:0 4px 30px rgba(200,168,75,.4);}
+
+/* ── Fin ── */
+#scene-fin{align-items:center;justify-content:center;padding:56px 32px 80px;text-align:center;}
+.fin-sigil{font-size:3.2rem;margin-bottom:18px;}
+.fin-title{font-family:'Cinzel',serif;font-size:1.75rem;color:var(--gold-l);margin-bottom:8px;}
+.fin-subtitle{font-family:'IM Fell English',serif;font-style:italic;color:var(--text-m);font-size:1.1rem;margin-bottom:26px;}
+.fin-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);
+  border:1px solid var(--border-l);padding:8px 22px;border-radius:30px;font-family:'Cinzel',serif;
+  font-size:.9rem;color:var(--gold);margin-bottom:14px;box-shadow:0 0 20px rgba(200,168,75,.15);}
+.fin-metacog-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.35);
+  padding:12px 24px;border-radius:10px;font-family:'Cinzel',serif;
+  font-size:.82rem;color:var(--violet-l);margin-bottom:26px;cursor:pointer;transition:.2s;
+  text-decoration:none;letter-spacing:1px;text-transform:uppercase;
+}
+.fin-metacog-btn:hover{background:rgba(124,58,237,.22);border-color:var(--violet-l);}
+.fin-legacy-box{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);
+  border-radius:10px;padding:20px 24px;max-width:540px;margin:0 auto 24px;text-align:left;}
+.fin-legacy-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--violet-l);margin-bottom:10px;}
+.fin-legacy-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;
+  font-size:.92rem;color:var(--text-m);line-height:1.5;}
+.fin-legacy-item .dot{color:var(--gold-d);flex-shrink:0;margin-top:3px;}
+.fin-cps{background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);
+  border-radius:10px;padding:16px 20px;max-width:540px;margin:0 auto 26px;text-align:left;}
+.fin-cps-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--green-l);margin-bottom:10px;}
+.fin-cps-item{font-size:.9rem;color:var(--text-m);line-height:1.6;margin-bottom:4px;}
+.fin-cps-item::before{content:'✦ ';color:var(--green-l);}
+.fin-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-fin-primary{background:var(--gold-d);color:#f5ead0;border:none;padding:12px 28px;
+  font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;border-radius:6px;transition:.25s;}
+.btn-fin-primary:hover{background:var(--gold);color:#000;}
+.btn-fin-secondary{background:none;border:1px solid var(--stone-l);color:var(--text-m);
+  padding:12px 22px;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:1px;
+  text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.2s;}
+.btn-fin-secondary:hover{border-color:var(--text-m);color:var(--text);}
+
+/* Progression */
+.progress-strip{position:fixed;bottom:0;left:0;right:0;z-index:900;background:rgba(10,10,18,.92);
+  border-top:1px solid var(--border);backdrop-filter:blur(8px);padding:6px 20px;
+  display:flex;align-items:center;gap:14px;}
+.prog-bar-wrap{flex:1;height:3px;background:var(--stone-l);border-radius:2px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--violet-d),var(--violet-l));
+  border-radius:2px;transition:width .5s ease;}
+.prog-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;color:var(--gold-d);flex-shrink:0;}
+.prog-step{font-size:.68rem;color:var(--text-d);flex-shrink:0;}
+
+@media(max-width:640px){
+  .scene-header,.scene-body{padding-left:18px;padding-right:18px;}
+  .narr-bar{margin-left:18px;margin-right:18px;}
+  .scene-title{font-size:1.3rem;}.scene-art{height:220px;}
+  .intro-title{font-size:1.8rem;}.fin-actions{flex-direction:column;align-items:stretch;}
+}
+</style>
+</head>
+<body>
+
+<div id="ambient-bar">
+  <span class="amb-label">🎵 Ambiance</span>
+  <button class="amb-toggle" id="ambToggle">▶</button>
+  <input class="amb-vol" type="range" id="ambVol" min="0" max="100" value="35">
+  <span class="amb-status" id="ambStatus">La grande salle attend…</span>
+  <div class="pb-chip">🧠 <span id="pbName">–</span></div>
+</div>
+
+<div class="progress-strip">
+  <span class="prog-label">Valdurne</span>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
+  <span class="prog-step" id="progStep">Intro</span>
+</div>
+
+<div id="app">
+
+  <!-- ══ INTRO ══ -->
+  <div class="scene active" id="scene-intro">
+    <div style="padding:60px 32px 40px;max-width:620px;margin:0 auto;">
+      <div class="intro-sigil">⚡</div>
+      <div class="intro-pretitle">Les Veilleurs de Valdurne · Année 1 · Pilier Neuro</div>
+      <div class="intro-title">La Joute des Arguments</div>
+      <div class="intro-subtitle">Ce qu'on ressent quand quelqu'un qu'on respecte est attaqué</div>
+      <div class="intro-sep"></div>
+      <div class="intro-desc">
+        C'est vendredi soir. Les tables ont été poussées sur les côtés.
+        Réna vient de monter sur l'estrade avec une ardoise.
+        Elle a écrit un sujet que personne n'avait osé poser.<br><br>
+        Daran de Mauren traverse la salle et monte à son tour.
+        Tu es dans le public. Ce que tu ressens va changer plusieurs fois
+        en dix minutes.
+      </div>
+      <div class="intro-badge">
+        <strong>🧠 Ce JdR explore</strong> la régulation émotionnelle en temps réel —
+        reconnaître ce qu'on ressent, comprendre pourquoi,
+        et choisir comment on agit depuis cet état.
+      </div>
+      <div class="intro-note">
+        🎭 Tes émotions ne sont pas des erreurs. Ce sont des informations.
+        Ce JdR t'apprend à les lire — pas à les effacer.
+      </div>
+      <button class="btn-start" id="btnStart">▶ Entrer dans la grande salle</button>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 1 : L'estrade ══ -->
+  <div class="scene" id="scene-1" data-step="1">
+    <div class="scene-art">
+      <img src="jdr_neuro_a1_scene1.jpg" alt="Réna sur l'estrade, la grande salle de Valdurne" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">⚡</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Joute des Arguments</div>
+      <div class="scene-num">Scène 1 — L'estrade</div>
+      <div class="scene-title">Réna pose le sujet</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_neuro_a1_scene1.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Réna monte sur l'estrade improvisée. Elle a une ardoise dans les mains.
+        Elle écrit, d'une écriture nette et sans ornement :</p>
+      </div>
+      <div class="rena-card">
+        <span class="rena-speaker">Réna — sur l'ardoise</span>
+        <span class="rena-text">L'aptitude suffit-elle à justifier l'accès au rang,
+        indépendamment de l'origine et du sexe ?</span>
+      </div>
+      <div class="scene-text">
+        <p>Il y a un silence. Pas de politesse — un silence de reconfiguration.
+        Personne n'avait jamais posé ça aussi directement, en public,
+        avec cette ardoise dans les mains.</p>
+        <p>Depuis le fond de la salle, Daran de Mauren dit que c'est un sujet personnel,
+        pas institutionnel. Réna répond sans se retourner :
+        <em>« Tous les sujets institutionnels sont personnels pour quelqu'un.
+        C'est pour ça qu'ils méritent d'être débattus. »</em></p>
+        <p>Personne ne monte pendant trente secondes. Puis Daran traverse la salle.</p>
+      </div>
+      <div class="emotion-pulse">
+        <span class="emotion-pulse-label">🧠 Ce que ton cerveau traite en ce moment</span>
+        <div class="emotion-list">
+          <span class="emotion-tag active">Admiration</span>
+          <span class="emotion-tag">Inquiétude</span>
+          <span class="emotion-tag">Curiosité</span>
+          <span class="emotion-tag">Inconfort</span>
+        </div>
+      </div>
+      <div class="scene-prompt">Lyam regarde Réna sur l'estrade. Qu'est-ce qu'il ressent en premier ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(1,'admiration')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">De l'admiration — et quelque chose qui ressemble à de la fierté</span>
+          <span class="choice-sub">Elle a osé poser la question que tout le monde évite. Il ne sait pas encore ce que ça va coûter, mais il sait que c'est courageux.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'inquiet')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">De l'inquiétude — pour elle</span>
+          <span class="choice-sub">Ce sujet est personnel. Réna vient de s'exposer devant tout le château. Si le débat tourne mal, c'est elle qui en paie le prix.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'reconnait')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Une reconnaissance — il comprend de quoi elle parle</span>
+          <span class="choice-sub">La deuxième liste. L'encre plus pâle. Ce sujet, c'est aussi le sien. Elle le dit pour eux deux, même si son nom n'est pas sur l'ardoise.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 2 : Le débat ══ -->
+  <div class="scene" id="scene-2" data-step="2">
+    <div class="scene-art">
+      <img src="jdr_neuro_a1_scene2.jpg" alt="Daran contre-attaque, Réna tient bon" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">⚔️</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Joute des Arguments</div>
+      <div class="scene-num">Scène 2 — Le débat</div>
+      <div class="scene-title">Daran contre-attaque</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_neuro_a1_scene2.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Daran parle bien. Lyam note ça d'abord, parce que c'est vrai —
+        il a la fluidité de quelqu'un entraîné à parler en public depuis l'enfance.
+        Son argument : le rang, c'est un héritage collectif, pas seulement
+        une récompense individuelle. Les familles nobles ont accumulé des générations
+        de savoir pratique. Ce savoir-là aussi est une compétence.</p>
+      </div>
+      <div class="debate-card">
+        <span class="debate-speaker">Daran de Mauren — contre-argument</span>
+        <span class="debate-text">« Tu parles de l'aptitude comme si elle était neutre.
+        Mais ce qu'on mesure dans les épreuves dépend de qui les a conçues.
+        Ce que tu appelles aptitude, c'est la capacité à réussir dans un système
+        fait par et pour une certaine façon d'apprendre. »</span>
+      </div>
+      <div class="scene-text">
+        <p>Silence dans la salle. Lyam voit quelque chose sur le visage de Réna
+        qu'il n'y avait jamais vu — une surprise brève, une réorganisation rapide.
+        <em>Elle reconnaît que l'argument est meilleur qu'elle ne l'attendait.</em></p>
+      </div>
+      <div class="rena-card">
+        <span class="rena-speaker">Réna — en réponse</span>
+        <span class="rena-text">« C'est juste. Et c'est un argument que je prends au sérieux.
+        Si les épreuves sont biaisées, il faut les réformer — pas conserver
+        le système qui les a produites. L'un des deux arguments justifie le changement.
+        Lequel préfères-tu ? »</span>
+      </div>
+      <div class="emotion-meter">
+        <span class="emotion-meter-label">Thermomètre émotionnel — ce que Lyam ressent maintenant</span>
+        <div class="emotion-meter-bar"><div class="emotion-meter-fill" style="width:75%;background:linear-gradient(90deg,#4c1d95,#a855f7)"></div></div>
+        <div class="emotion-meter-name"><span>Tension interne</span><span>élevée</span></div>
+        <div class="emotion-meter-bar" style="margin-top:8px"><div class="emotion-meter-fill" style="width:60%;background:linear-gradient(90deg,#065f46,#2dd4bf)"></div></div>
+        <div class="emotion-meter-name"><span>Admiration pour Réna</span><span>forte</span></div>
+        <div class="emotion-meter-bar" style="margin-top:8px"><div class="emotion-meter-fill" style="width:45%;background:linear-gradient(90deg,#7c2d12,#f97316)"></div></div>
+        <div class="emotion-meter-name"><span>Irritation envers Daran</span><span>modérée</span></div>
+      </div>
+      <div class="scene-prompt">Daran vient de marquer un point réel. Comment Lyam gère ce qu'il ressent ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(2,'regule')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Il reconnaît l'irritation et la met de côté</span>
+          <span class="choice-sub">Ce n'est pas parce que Daran l'énerve que son argument est faux. Lyam respire, écoute le fond, pas la personne. L'irritation est une information — pas un guide.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'emporte')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">L'irritation colore tout — il cherche la faille dans l'argument</span>
+          <span class="choice-sub">Il veut que Daran ait tort. Il cherche l'erreur non pas parce qu'elle est là, mais parce qu'il a besoin qu'elle y soit. C'est humain. Et c'est risqué.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'equitable')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Il s'oblige à être équitable — c'est un bon argument</span>
+          <span class="choice-sub">Même si ça l'énerve d'admettre. Daran a trouvé quelque chose de vrai. Et Réna l'a reconnu. Ce moment d'honnêteté intellectuelle, Lyam peut le respecter depuis le public.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 3 : La cour, après ══ -->
+  <div class="scene" id="scene-3" data-step="3">
+    <div class="scene-art">
+      <img src="jdr_neuro_a1_scene3.jpg" alt="La cour, Lyam et Réna près du puits" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🌙</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Joute des Arguments</div>
+      <div class="scene-num">Scène 3 — La cour</div>
+      <div class="scene-title">Après la joute</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_neuro_a1_scene3.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Le public se disperse sans désigner de vainqueur.
+        Lyam rejoint Réna à la sortie. Elle marche vite, les bras croisés.
+        Il marche avec elle — il comprend qu'elle a besoin de marcher avant de parler.</p>
+        <p>Dans la cour, elle dit : <em>« Il avait partiellement raison. Et ça m'énerve. »</em>
+        Lyam dit : <em>« Pourquoi ça t'énerve s'il avait raison ? »</em>
+        Elle : <em>« Parce que son argument justifie le statu quo. »</em></p>
+      </div>
+      <div class="scene-thought">
+        Lyam écoute Réna parler du biais des épreuves, de la discrimination de sexe
+        qu'elle n'a pas nommée pendant le débat pour que ça ne devienne pas
+        « une fille qui se plaint ». Il entend quelque chose d'important :
+        elle a fait un choix stratégique — ne pas dire la vraie raison pour
+        que l'argument porte plus loin. Ce n'est pas de la lâcheté.
+        C'est une forme de lucidité sur comment les mots sont entendus.
+      </div>
+      <div class="scene-quote">
+        <p>« Maintenant j'ai quelqu'un dans mon angle mort.
+        Ce n'est pas rien. C'est beaucoup, en réalité. » — Réna</p>
+      </div>
+      <div class="scene-prompt">Réna vient de dire qu'il est dans son angle mort. Comment Lyam reçoit ça ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(3,'touche')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Il est touché — et un peu déstabilisé</span>
+          <span class="choice-sub">Réna ne dit jamais les choses pour faire bien. Si elle dit ça, c'est que c'est vrai et important. Et il ne sait pas encore quoi faire de l'importance de ça.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'reciproque')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Il pense à la réciprocité — elle est aussi dans son angle mort</span>
+          <span class="choice-sub">Sans Réna, il n'aurait pas vu la deuxième liste comme un mécanisme. Il aurait juste souffert. L'alliance va dans les deux sens, même si c'est elle qui l'a formulé.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'responsabilite')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Il mesure ce que ça demande</span>
+          <span class="choice-sub">Être dans l'angle mort de quelqu'un, c'est une responsabilité. Pas juste un honneur. Ça veut dire qu'on compte sur lui pour voir ce qu'elle ne voit pas. Il prend ça au sérieux.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCÈNE 4 : La décision ══ -->
+  <div class="scene" id="scene-4" data-step="4">
+    <div class="scene-art">
+      <img src="jdr_neuro_a1_scene4.jpg" alt="Le tableau des écuyers, Lyam seul dans le couloir" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">📋</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> La Joute des Arguments</div>
+      <div class="scene-num">Scène 4 — Le couloir</div>
+      <div class="scene-title">Ce que Lyam décide</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_neuro_a1_scene4.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>En remontant au dortoir, Lyam s'arrête devant le tableau des écuyers.
+        Son nom y est — bien à sa place. Il le regarde.</p>
+        <p>Il pense à son père, à la forge. <em>Le métal chauffé cède et prend
+        la forme qu'on lui donne — mais seulement si on sait où appuyer.</em>
+        Il pense à Réna sur l'estrade. La façon dont elle n'avait pas cherché
+        à écraser, juste à convaincre.</p>
+      </div>
+      <div class="scene-quote">
+        <p>Être fils de forgeron n'était pas une chose dont il fallait s'excuser
+        ou se défendre. C'était une façon de voir le monde — pratique, précise,
+        attentive aux structures — qui avait autant de valeur que n'importe quelle autre.
+        Pas la même valeur. Autant de valeur.</p>
+      </div>
+      <div class="emotion-meter">
+        <span class="emotion-meter-label">État émotionnel final — après la régulation</span>
+        <div class="emotion-meter-bar"><div class="emotion-meter-fill" style="width:80%;background:linear-gradient(90deg,#065f46,#2dd4bf)"></div></div>
+        <div class="emotion-meter-name"><span>Ancrage identitaire</span><span>solide</span></div>
+        <div class="emotion-meter-bar" style="margin-top:8px"><div class="emotion-meter-fill" style="width:55%;background:linear-gradient(90deg,#4c1d95,#a855f7)"></div></div>
+        <div class="emotion-meter-name"><span>Tension résiduelle</span><span>présente, utile</span></div>
+        <div class="emotion-meter-bar" style="margin-top:8px"><div class="emotion-meter-fill" style="width:30%;background:linear-gradient(90deg,#7c2d12,#f97316)"></div></div>
+        <div class="emotion-meter-name"><span>Irritation envers Daran</span><span>en baisse</span></div>
+      </div>
+      <div class="scene-prompt">Ce soir, Lyam a appris quelque chose sur lui-même. Quoi ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(4,'emotion_info')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Ses émotions sont des informations, pas des obstacles</span>
+          <span class="choice-sub">L'irritation lui a dit quelque chose de vrai sur l'injustice. L'admiration lui a dit quelque chose de vrai sur ses valeurs. L'émotion bien lue, c'est une boussole.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'controle')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Il peut ne pas laisser ses émotions décider à sa place</span>
+          <span class="choice-sub">Ce n'est pas les éteindre — c'est les regarder sans qu'elles prennent le volant. Ce soir, il a réussi à penser clairement même en étant touché. C'est ça, la régulation.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'identite')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Son identité n'est pas une faiblesse à cacher</span>
+          <span class="choice-sub">Réna défend la sienne sur une estrade. Lui l'a portée comme un poids. Ce soir, quelque chose a changé dans la façon dont il regarde son propre nom sur le tableau.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FIN ══ -->
+  <div class="scene" id="scene-fin">
+    <div class="fin-sigil">⚡</div>
+    <div class="fin-title">La Joute des Arguments</div>
+    <div class="fin-subtitle">Ce qu'on ressent quand quelqu'un qu'on respecte est attaqué — et ce qu'on en fait.</div>
+    <div class="fin-xp">⭐ +100 XP envoyés au Portail</div>
+    <a class="fin-metacog-btn" id="metacogLink" href="METACOG_NEURO_A1.html">
+      🧠 Module de réflexion — +100 XP supplémentaires
+    </a>
+    <div class="fin-legacy-box">
+      <div class="fin-legacy-title">🧠 Mémoire de Lyam — Tome I · Pilier Neuro</div>
+      <div id="legacyItems"></div>
+    </div>
+    <div class="fin-cps">
+      <div class="fin-cps-title">🌱 Compétences travaillées aujourd'hui</div>
+      <div class="fin-cps-item">Reconnaissance et nomination des émotions en temps réel</div>
+      <div class="fin-cps-item">Régulation émotionnelle face à l'injustice et à l'adversité</div>
+      <div class="fin-cps-item">Empathie cognitive et émotionnelle envers Réna</div>
+      <div class="fin-cps-item">Équité intellectuelle — reconnaître un bon argument même chez l'adversaire</div>
+      <div class="fin-cps-item">Ancrage identitaire — valeur de son propre parcours</div>
+    </div>
+    <div class="fin-actions">
+      <button class="btn-fin-primary" onclick="returnToHub()">← Retour au Hub pHARe</button>
+      <button class="btn-fin-secondary" onclick="restartGame()">↺ Rejouer l'aventure</button>
+    </div>
+  </div>
+
+</div>
+
+<audio id="ambAudio" loop preload="none"><source src="valdurne_ambiance_neuro.mp3" type="audio/mpeg"></audio>
+<audio id="narrAudio" preload="none"></audio>
+
+<script>
+// Nomenclature :
+// jdr_neuro_a1_scene1.jpg … scene4.jpg
+// jdr_neuro_a1_scene1.mp3 … scene4.mp3
+// valdurne_ambiance_neuro.mp3
+
+var MODULE_ID='JDR_NEURO_A1',CERT_KEY='CERT_JDR_NEURO_A1',XP_AMOUNT=100,HUB_URL='index_PIXHARe.html',TOTAL_STEPS=4;
+var state={player:'',choices:{},current:'intro'};
+
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p&&p.length>1){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p)}state.player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'–';document.getElementById('pbName').textContent=state.player;})();
+
+function showScene(id){document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});var el=document.getElementById('scene-'+id);if(el){el.classList.add('active');state.current=id}updateProgress(id);stopNarration();window.scrollTo(0,0);}
+function updateProgress(step){var n=parseInt(step)||0;var pct=step==='fin'?100:Math.round(n/TOTAL_STEPS*90);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progStep').textContent=step==='intro'?'Intro':step==='fin'?'Terminé ✓':'Scène '+step+' / '+TOTAL_STEPS;}
+
+var legacyTexts={
+  '1_admiration':'Lyam voit Réna sur l\'estrade et ressent de l\'admiration — et quelque chose qui ressemble à de la fierté.',
+  '1_inquiet':'Lyam voit Réna s\'exposer et s\'inquiète pour elle. La protection vient avant l\'analyse.',
+  '1_reconnait':'Lyam reconnaît dans le sujet de Réna son propre combat. La deuxième liste. L\'encre plus pâle.',
+  '2_regule':'Face à l\'argument valide de Daran : Lyam régule. L\'irritation est une information, pas un guide.',
+  '2_emporte':'Face à l\'argument valide de Daran : l\'irritation colore le jugement. Il cherche la faille avant de chercher la vérité.',
+  '2_equitable':'Face à l\'argument valide de Daran : équité intellectuelle. Il reconnaît la qualité même là où il n\'aime pas.',
+  '3_touche':'L\'angle mort de Réna le touche — et le déstabilise un peu. Il ne sait pas quoi faire de l\'importance de ça.',
+  '3_reciproque':'Il pense à la réciprocité. Elle est aussi dans son angle mort. L\'alliance va dans les deux sens.',
+  '3_responsabilite':'Il mesure la responsabilité. Être dans l\'angle mort de quelqu\'un, c\'est devoir voir ce qu\'elle ne voit pas.',
+  '4_emotion_info':'Apprentissage : ses émotions sont des informations, pas des obstacles. La boussole intérieure.',
+  '4_controle':'Apprentissage : il peut ne pas laisser ses émotions décider à sa place. C\'est ça, la régulation.',
+  '4_identite':'Apprentissage : son identité n\'est pas une faiblesse. Quelque chose a changé ce soir dans sa façon de voir son nom.',
+};
+
+function choose(scene,path){state.choices[scene]=path;var next=scene+1;if(next>TOTAL_STEPS)finishGame();else showScene(next);}
+function buildLegacy(){var c=document.getElementById('legacyItems');if(!c)return;c.innerHTML='';Object.keys(state.choices).sort().forEach(function(s){var p=state.choices[s],k=s+'_'+p,t=legacyTexts[k]||'';if(t){var d=document.createElement('div');d.className='fin-legacy-item';d.innerHTML='<span class="dot">◆</span><span>'+t+'</span>';c.appendChild(d)}});}
+
+function finishGame(){
+  try{localStorage.setItem('VALDURNE_LEGACY_NEURO_A1',JSON.stringify({choices:state.choices,player:state.player,d:new Date().toISOString()}));}catch(e){}
+  try{
+    localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP_AMOUNT}));
+    var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({id:'JDR-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:state.player,module:MODULE_ID,certKey:CERT_KEY,jdrXp:XP_AMOUNT,choices:state.choices,d:new Date().toISOString()});
+    if(evts.length>500)evts.splice(0,evts.length-500);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(e){}
+  // Mettre à jour le lien du module métacognition avec le joueur
+  var ml=document.getElementById('metacogLink');
+  if(ml&&state.player&&state.player!=='–'){
+    ml.href='METACOG_NEURO_A1.html?player='+encodeURIComponent(state.player);
+  }
+  buildLegacy();showScene('fin');
+}
+function returnToHub(){window.location.href=HUB_URL;}
+function restartGame(){state.choices={};stopNarration();showScene('intro');}
+
+// Audio ambiance
+var ambAudio=document.getElementById('ambAudio'),ambPlaying=false;
+document.getElementById('ambToggle').addEventListener('click',function(){if(ambPlaying){ambAudio.pause();ambPlaying=false;this.textContent='▶';document.getElementById('ambStatus').textContent='La grande salle attend…';}else{ambAudio.volume=document.getElementById('ambVol').value/100;ambAudio.play().then(function(){ambPlaying=true;document.getElementById('ambToggle').textContent='⏸';document.getElementById('ambStatus').textContent='Ambiance de la joute…';}).catch(function(){document.getElementById('ambStatus').textContent='Fichier : valdurne_ambiance_neuro.mp3';});}});
+document.getElementById('ambVol').addEventListener('input',function(){ambAudio.volume=this.value/100;});
+
+// Audio narration
+var narrAudio=document.getElementById('narrAudio'),narrPlaying=false,narrCurrent=null;
+function stopNarration(){narrAudio.pause();narrAudio.src='';narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊'});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Cliquer pour lancer'});}
+document.querySelectorAll('.narr-toggle').forEach(function(btn){btn.addEventListener('click',function(){var bar=this.closest('.narr-bar'),src=this.getAttribute('data-audio'),vol=bar.querySelector('.narr-vol').value/100,status=bar.querySelector('.narr-status');if(narrPlaying&&narrCurrent===src){narrAudio.pause();narrPlaying=false;this.textContent='🔊';status.textContent='En pause';}else{stopNarration();narrAudio.src=src;narrAudio.volume=vol;var self=this;narrAudio.play().then(function(){narrPlaying=true;narrCurrent=src;self.textContent='⏸';status.textContent='Narration en cours…';}).catch(function(){status.textContent='Fichier : '+src;});}});});
+document.querySelectorAll('.narr-vol').forEach(function(s){s.addEventListener('input',function(){if(narrPlaying)narrAudio.volume=this.value/100;});});
+narrAudio.addEventListener('ended',function(){narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊'});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Narration terminée'});});
+
+document.getElementById('btnStart').addEventListener('click',function(){showScene(1);});
+updateProgress('intro');
+</script>
+</body>
+</html>
