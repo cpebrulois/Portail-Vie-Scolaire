@@ -112,6 +112,13 @@ function awardXP(){
 function App(){
   const [step,setStep]=React.useState('intro');
   const [qIdx,setQIdx]=React.useState(0);
+
+  const finish=()=>{
+    const cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};
+    localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+    awardXP();
+    setStep('complete');
+  };
   const goBack=()=>{window.location.href=BACK_URL;};
   const PlayerChip=()=>e('div',{className:'player-chip'},'🎮 ',getPlayer());
 
