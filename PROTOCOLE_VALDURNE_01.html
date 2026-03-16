@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocole Valdurne — Le Village de Bournac</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080b;--bg2:#0d0f14;--panel:#131720;--panel2:#1a1f2e;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;--gold-dim:rgba(200,168,75,.15);
+  --text:#d6d0c4;--text-m:#8a8478;--text-d:#454038;
+  --kern:#7c3aed;--kern-l:#a78bfa;--kern-bg:rgba(124,58,237,.08);
+  --rena:#0d9488;--rena-l:#2dd4bf;--rena-bg:rgba(13,148,136,.08);
+  --lyam:#b45309;--lyam-l:#f59e0b;--lyam-bg:rgba(180,83,9,.08);
+  --green:#166534;--green-l:#4ade80;
+  --red:#991b1b;--red-l:#f87171;
+  --border:rgba(200,168,75,.12);--border-l:rgba(200,168,75,.28);
+  --chrono-ok:#4ade80;--chrono-warn:#f59e0b;--chrono-crit:#ef4444;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--text);user-select:none;}
+
+/* ─── LAYOUT PRINCIPAL ─── */
+#game{width:100vw;height:100vh;position:relative;display:flex;flex-direction:column;}
+#top-bar{flex-shrink:0;height:48px;background:rgba(7,8,11,.95);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;padding:0 20px;backdrop-filter:blur(8px);z-index:100;}
+.tb-phase{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-d);}
+.tb-phase.active{color:var(--gold);}
+.tb-sep{width:1px;height:20px;background:var(--border);}
+.tb-player{font-family:'Cinzel',serif;font-size:.7rem;color:var(--text-m);margin-left:auto;}
+.tb-xp{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--gold-l);}
+
+#main-area{flex:1;display:flex;overflow:hidden;}
+
+/* ─── PANEL LATÉRAL PERSONNAGES (Lyam phase) ─── */
+#char-panel{width:240px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);
+  overflow-y:auto;padding:12px 8px;display:none;flex-direction:column;gap:8px;}
+#char-panel.visible{display:flex;}
+
+.char-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.char-card.char-kern{border-color:rgba(124,58,237,.3);}
+.char-card.char-rena{border-color:rgba(13,148,136,.3);}
+.char-card.char-ewen{border-color:rgba(239,68,68,.25);}
+.char-card.char-mira{border-color:rgba(245,158,11,.25);}
+.char-card.char-tomas{border-color:rgba(59,130,246,.25);}
+.char-card.char-aldric{border-color:rgba(200,168,75,.3);}
+
+.cc-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.cc-portrait{width:36px;height:36px;border-radius:50%;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;overflow:hidden;}
+.cc-portrait img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.cc-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-m);}
+.cc-status{font-size:.72rem;font-style:italic;color:var(--text-d);margin-top:1px;line-height:1.3;}
+
+.gauge-row{margin-bottom:4px;}
+.gauge-label{font-size:.62rem;color:var(--text-d);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;display:flex;justify-content:space-between;}
+.gauge-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.gauge-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+.gauge-confiance .gauge-fill{background:var(--green-l);}
+.gauge-tension .gauge-fill{background:var(--red-l);}
+.gauge-ouverture .gauge-fill{background:var(--gold-l);}
+.gauge-peur .gauge-fill{background:#818cf8;}
+.gauge-colere .gauge-fill{background:#f87171;}
+.gauge-ecoute .gauge-fill{background:#34d399;}
+.gauge-fierte .gauge-fill{background:#fb923c;}
+.gauge-verite .gauge-fill{background:#38bdf8;}
+.gauge-mefiancejauge .gauge-fill{background:#c084fc;}
+
+.cc-aldric-btn{width:100%;padding:6px;background:var(--gold-dim);border:1px solid var(--gold-d);
+  color:var(--gold);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;
+  border-radius:6px;cursor:pointer;transition:.2s;margin-top:6px;}
+.cc-aldric-btn:hover:not(:disabled){background:rgba(200,168,75,.25);}
+.cc-aldric-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ─── ZONE CENTRALE ─── */
+#scene-area{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+
+/* ─── IMAGE DE SCÈNE ─── */
+#scene-img{width:100%;height:220px;flex-shrink:0;position:relative;overflow:hidden;background:var(--panel);}
+#scene-img img{width:100%;height:100%;object-fit:cover;transition:opacity .5s;}
+#scene-img .fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:4rem;
+  background:linear-gradient(180deg,#0d1020 0%,var(--bg) 100%);}
+#scene-img .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,var(--bg) 100%);}
+#scene-img .phase-badge{position:absolute;top:14px;left:14px;padding:4px 12px;border-radius:20px;
+  font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;backdrop-filter:blur(8px);}
+.badge-kern{background:rgba(124,58,237,.7);color:#e9d5ff;border:1px solid rgba(167,139,250,.4);}
+.badge-rena{background:rgba(13,148,136,.7);color:#ccfbf1;border:1px solid rgba(45,212,191,.4);}
+.badge-lyam{background:rgba(180,83,9,.7);color:#fef3c7;border:1px solid rgba(245,158,11,.4);}
+.badge-intro{background:rgba(200,168,75,.3);color:#fde68a;border:1px solid rgba(200,168,75,.5);}
+
+/* ─── NARRATION AUDIO ─── */
+#narr-bar{flex-shrink:0;background:rgba(13,15,20,.9);border-bottom:1px solid var(--border);
+  padding:6px 16px;display:flex;align-items:center;gap:10px;}
+.narr-btn{background:none;border:1px solid var(--border-l);color:var(--gold);
+  width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:.8rem;transition:.2s;flex-shrink:0;}
+.narr-btn:hover{background:var(--gold);color:#000;}
+.narr-vol{-webkit-appearance:none;width:70px;height:3px;background:rgba(255,255,255,.1);
+  border-radius:2px;outline:none;cursor:pointer;}
+.narr-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);}
+.narr-info{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.5px;color:var(--text-d);flex:1;}
+
+/* ─── CHRONO ─── */
+#chrono-wrap{flex-shrink:0;padding:4px 16px;display:none;}
+#chrono-wrap.visible{display:block;}
+#chrono-bar-bg{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+#chrono-bar-fill{height:100%;border-radius:3px;transition:width .25s linear,background .5s;}
+#chrono-label{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--text-m);
+  text-align:right;margin-top:2px;}
+
+/* ─── CONTENU SCROLLABLE ─── */
+#content{flex:1;overflow-y:auto;padding:16px 20px 24px;}
+#content::-webkit-scrollbar{width:4px;}
+#content::-webkit-scrollbar-thumb{background:rgba(200,168,75,.2);border-radius:2px;}
+
+.scene-title{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold-l);margin-bottom:6px;}
+.scene-sub{font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-d);margin-bottom:14px;}
+.scene-text{font-size:1.05rem;line-height:1.85;color:var(--text);margin-bottom:18px;}
+.scene-text p{margin-bottom:12px;}
+.scene-text em{color:var(--gold-l);font-style:italic;}
+.scene-text strong{color:#e8dfc8;}
+
+/* ─── DIALOGUE PERSONNAGE ─── */
+.dialogue-box{border-radius:10px;padding:12px 16px;margin-bottom:14px;}
+.dialogue-box.kern{background:var(--kern-bg);border:1px solid rgba(124,58,237,.25);}
+.dialogue-box.rena{background:var(--rena-bg);border:1px solid rgba(13,148,136,.25);}
+.dialogue-box.lyam{background:var(--lyam-bg);border:1px solid rgba(180,83,9,.25);}
+.dialogue-box.aldric{background:var(--gold-dim);border:1px solid var(--border-l);}
+.dialogue-box.ado{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);}
+.db-speaker{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.db-speaker.kern{color:var(--kern-l);}
+.db-speaker.rena{color:var(--rena-l);}
+.db-speaker.lyam{color:var(--lyam-l);}
+.db-speaker.aldric{color:var(--gold-l);}
+.db-speaker.ewen{color:#c084fc;}
+.db-speaker.mira{color:#fbbf24;}
+.db-speaker.tomas{color:#60a5fa;}
+.db-text{font-style:italic;font-size:1rem;line-height:1.7;}
+
+/* ─── INDICES (Phase Kern) ─── */
+.clue-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.clue-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;cursor:pointer;transition:.25s;position:relative;}
+.clue-card:hover{border-color:var(--kern-l);background:var(--kern-bg);}
+.clue-card.selected{border-color:var(--kern-l);background:var(--kern-bg);}
+.clue-card.selected::after{content:'✓';position:absolute;top:8px;right:10px;
+  color:var(--kern-l);font-size:.9rem;}
+.clue-card.wrong{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05);}
+.clue-card.correct{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.05);}
+.clue-icon{font-size:1.4rem;margin-bottom:6px;}
+.clue-text{font-size:.88rem;line-height:1.5;color:var(--text-m);}
+
+/* ─── TIMELINE DRAG (Phase Kern scène C) ─── */
+.timeline-area{margin-bottom:18px;}
+.timeline-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-d);margin-bottom:10px;}
+.timeline-slots{display:flex;flex-direction:column;gap:6px;}
+.tl-slot{background:var(--panel);border:1px dashed rgba(124,58,237,.3);border-radius:6px;
+  padding:8px 12px;min-height:36px;display:flex;align-items:center;gap:8px;transition:.2s;}
+.tl-slot.filled{border-style:solid;border-color:rgba(124,58,237,.4);background:var(--kern-bg);}
+.tl-slot.correct{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.05);}
+.tl-slot.wrong{border-color:rgba(239,68,68,.4);}
+.tl-num{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--kern-l);flex-shrink:0;}
+.tl-content{font-size:.88rem;color:var(--text-m);font-style:italic;}
+.tl-pool{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.tl-chip{background:var(--panel2);border:1px solid rgba(124,58,237,.3);border-radius:20px;
+  padding:5px 12px;font-size:.82rem;color:var(--kern-l);cursor:pointer;transition:.2s;}
+.tl-chip:hover{background:var(--kern-bg);border-color:var(--kern-l);}
+.tl-chip.used{opacity:.3;pointer-events:none;}
+
+/* ─── RESSOURCES RÉNA ─── */
+.resource-bar{background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.rb-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text-d);flex-shrink:0;}
+.rb-units{display:flex;gap:3px;flex:1;}
+.rb-unit{width:12px;height:20px;border-radius:2px;background:rgba(13,148,136,.4);transition:.3s;}
+.rb-unit.spent{background:rgba(255,255,255,.06);}
+.rb-count{font-family:'Share Tech Mono',monospace;font-size:.85rem;color:var(--rena-l);flex-shrink:0;}
+
+/* ─── CHOIX / OPTIONS ─── */
+.prompt-label{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.choices{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.choice-btn{background:var(--panel);border:1px solid var(--panel2);border-radius:8px;
+  padding:14px 16px;text-align:left;cursor:pointer;transition:.25s;color:var(--text);
+  font-family:'Crimson Text',serif;font-size:.98rem;line-height:1.5;position:relative;overflow:hidden;}
+.choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--gold-d);transition:.25s;}
+.choice-btn:hover{border-color:var(--gold);transform:translateX(4px);}
+.choice-btn:hover::before{background:var(--gold);}
+.choice-btn.phase-kern::before{background:var(--kern);}
+.choice-btn.phase-kern:hover{border-color:var(--kern-l);}
+.choice-btn.phase-rena::before{background:var(--rena);}
+.choice-btn.phase-rena:hover{border-color:var(--rena-l);}
+.choice-btn.phase-lyam::before{background:var(--lyam);}
+.choice-btn.phase-lyam:hover{border-color:var(--lyam-l);}
+.choice-btn .cb-cost{font-size:.72rem;color:var(--text-d);margin-top:3px;font-family:'Cinzel',serif;}
+.choice-btn .cb-badge{font-size:.65rem;font-family:'Cinzel',serif;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--gold-d);display:block;margin-bottom:3px;}
+.choice-btn .cb-title{font-weight:600;color:var(--gold-l);display:block;margin-bottom:2px;}
+.choice-btn .cb-sub{color:var(--text-m);font-size:.88rem;}
+.choice-btn.locked{opacity:.4;cursor:not-allowed;transform:none !important;}
+.choice-btn.locked::after{content:'🔒';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.9rem;}
+
+/* ─── ÉCRANS SPÉCIAUX ─── */
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px 32px;min-height:100%;animation:fadeIn .5s ease;}
+.screen.active{display:flex;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.screen-sigil{font-size:4rem;margin-bottom:20px;filter:drop-shadow(0 0 20px currentColor);}
+.screen-pre{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold-d);margin-bottom:10px;}
+.screen-title{font-family:'IM Fell English',serif;font-size:2.2rem;color:var(--gold-l);
+  line-height:1.2;margin-bottom:10px;}
+.screen-sub{font-family:'IM Fell English',serif;font-style:italic;color:var(--text-m);
+  font-size:1.05rem;margin-bottom:24px;max-width:480px;}
+.screen-sep{width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);
+  margin:0 auto 24px;}
+.screen-body{max-width:520px;font-size:1rem;line-height:1.85;color:var(--text-m);margin-bottom:28px;}
+.screen-body p{margin-bottom:12px;}
+.screen-body em{color:var(--gold-l);font-style:italic;}
+
+.score-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:24px;}
+.score-chip{padding:6px 16px;border-radius:20px;font-family:'Cinzel',serif;font-size:.72rem;
+  letter-spacing:1px;text-transform:uppercase;}
+.chip-kern{background:var(--kern-bg);border:1px solid rgba(124,58,237,.35);color:var(--kern-l);}
+.chip-rena{background:var(--rena-bg);border:1px solid rgba(13,148,136,.35);color:var(--rena-l);}
+.chip-lyam{background:var(--lyam-bg);border:1px solid rgba(180,83,9,.35);color:var(--lyam-l);}
+
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);
+  border:1px solid var(--border-l);padding:8px 20px;border-radius:30px;
+  font-family:'Cinzel',serif;font-size:.88rem;color:var(--gold);margin-bottom:20px;}
+
+.btn-primary{background:var(--gold-d);color:#f5ead0;border:none;padding:13px 36px;
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;border-radius:6px;transition:.25s;box-shadow:0 4px 20px rgba(200,168,75,.2);}
+.btn-primary:hover{background:var(--gold);color:#000;transform:translateY(-2px);}
+.btn-secondary{background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-m);
+  padding:10px 22px;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;
+  text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:rgba(255,255,255,.25);color:var(--text);}
+
+/* ─── ÉCRAN DE TRANSITION ─── */
+.transition-screen{position:fixed;inset:0;background:var(--bg);z-index:999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:40px;}
+.ts-icon{font-size:3rem;margin-bottom:20px;opacity:0;animation:tsIn .6s ease .2s forwards;}
+.ts-title{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold-l);opacity:0;
+  animation:tsIn .6s ease .4s forwards;margin-bottom:12px;}
+.ts-sub{color:var(--text-m);font-size:.95rem;opacity:0;animation:tsIn .6s ease .6s forwards;
+  line-height:1.7;max-width:480px;margin-bottom:24px;}
+.ts-score-row{display:flex;gap:12px;opacity:0;animation:tsIn .6s ease .8s forwards;}
+@keyframes tsIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ─── RÉSULTATS PHASE ─── */
+.result-banner{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+  padding:14px 18px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;}
+.rb-icon{font-size:1.6rem;flex-shrink:0;}
+.rb-title{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;
+  color:var(--gold-l);margin-bottom:4px;}
+.rb-desc{font-size:.9rem;color:var(--text-m);line-height:1.5;}
+
+/* ─── PROGRESS BOTTOM ─── */
+#bottom-bar{flex-shrink:0;height:32px;background:rgba(7,8,11,.95);border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;padding:0 16px;}
+#prog-fill{flex:1;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+#prog-inner{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));
+  transition:width .5s ease;}
+#prog-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;}
+
+/* ─── AMBIANCE AUDIO ─── */
+#amb-wrap{display:flex;align-items:center;gap:8px;}
+.amb-btn{background:none;border:1px solid var(--border);color:var(--gold);
+  width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:.75rem;transition:.2s;}
+.amb-btn:hover{background:var(--gold-dim);}
+.amb-vol-s{-webkit-appearance:none;width:60px;height:2px;background:rgba(255,255,255,.08);
+  border-radius:1px;outline:none;cursor:pointer;}
+.amb-vol-s::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:8px;border-radius:50%;background:var(--gold);}
+
+/* ─── MOBILE ─── */
+@media(max-width:640px){
+  #char-panel{width:180px;}
+  .clue-grid{grid-template-columns:1fr;}
+  #scene-img{height:160px;}
+}
+</style>
+</head>
+<body>
+<div id="game">
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <span class="tb-phase" id="tp-kern">① Kern</span>
+    <div class="tb-sep"></div>
+    <span class="tb-phase" id="tp-rena">② Réna</span>
+    <div class="tb-sep"></div>
+    <span class="tb-phase" id="tp-lyam">③ Lyam</span>
+    <div class="tb-sep"></div>
+    <div id="amb-wrap">
+      <button class="amb-btn" id="ambBtn">♪</button>
+      <input class="amb-vol-s" type="range" id="ambVol" min="0" max="100" value="30">
+    </div>
+    <span class="tb-player" id="tbPlayer"></span>
+    <span class="tb-xp" id="tbXp"></span>
+  </div>
+
+  <div id="main-area">
+    <!-- PANEL PERSONNAGES -->
+    <div id="char-panel">
+      <!-- Kern -->
+      <div class="char-card char-kern">
+        <div class="cc-header">
+          <div class="cc-portrait"><img src="portrait_kern.jpg" alt="" onerror="this.parentNode.textContent='🔮'"></div>
+          <div><div class="cc-name">Kern</div><div class="cc-status" id="st-kern">Observateur</div></div>
+        </div>
+        <div class="gauge-row gauge-confiance">
+          <div class="gauge-label"><span>Confiance</span><span id="gv-kern-conf">50</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-kern-conf" style="width:50%"></div></div>
+        </div>
+      </div>
+      <!-- Réna -->
+      <div class="char-card char-rena">
+        <div class="cc-header">
+          <div class="cc-portrait"><img src="portrait_rena.jpg" alt="" onerror="this.parentNode.textContent='⚡'"></div>
+          <div><div class="cc-name">Réna</div><div class="cc-status" id="st-rena">Stratège</div></div>
+        </div>
+        <div class="gauge-row gauge-confiance">
+          <div class="gauge-label"><span>Lucidité</span><span id="gv-rena-luc">60</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-rena-luc" style="width:60%"></div></div>
+        </div>
+      </div>
+      <!-- Ewen -->
+      <div class="char-card char-ewen">
+        <div class="cc-header">
+          <div class="cc-portrait"><img src="portrait_ewen.jpg" alt="" onerror="this.parentNode.textContent='👤'"></div>
+          <div><div class="cc-name">Ewen</div><div class="cc-status" id="st-ewen">Méfiant</div></div>
+        </div>
+        <div class="gauge-row gauge-peur">
+          <div class="gauge-label"><span>Méfiance</span><span id="gv-ewen-mef">80</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-ewen-mef" style="width:80%"></div></div>
+        </div>
+        <div class="gauge-row gauge-ouverture">
+          <div class="gauge-label"><span>Ouverture</span><span id="gv-ewen-ouv">20</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-ewen-ouv" style="width:20%"></div></div>
+        </div>
+      </div>
+      <!-- Mira -->
+      <div class="char-card char-mira">
+        <div class="cc-header">
+          <div class="cc-portrait"><img src="portrait_mira.jpg" alt="" onerror="this.parentNode.textContent='🔥'"></div>
+          <div><div class="cc-name">Mira</div><div class="cc-status" id="st-mira">Convaincue</div></div>
+        </div>
+        <div class="gauge-row gauge-colere">
+          <div class="gauge-label"><span>Certitude</span><span id="gv-mira-col">70</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-mira-col" style="width:70%"></div></div>
+        </div>
+        <div class="gauge-row gauge-ecoute">
+          <div class="gauge-label"><span>Écoute</span><span id="gv-mira-eco">30</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-mira-eco" style="width:30%"></div></div>
+        </div>
+      </div>
+      <!-- Tomas -->
+      <div class="char-card char-tomas">
+        <div class="cc-header">
+          <div class="cc-portrait"><img src="portrait_tomas.jpg" alt="" onerror="this.parentNode.textContent='🛡️'"></div>
+          <div><div class="cc-name">Tomas</div><div class="cc-status" id="st-tomas">Fermé</div></div>
+        </div>
+        <div class="gauge-row gauge-fierte">
+          <div class="gauge-label"><span>Fierté</span><span id="gv-tomas-fie">85</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-tomas-fie" style="width:85%"></div></div>
+        </div>
+        <div class="gauge-row gauge-verite">
+          <div class="gauge-label"><span>Vérité</span><span id="gv-tomas-ver">15</span></div>
+          <div class="gauge-bar"><div class="gauge-fill" id="g-tomas-ver" style="width:15%"></div></div>
+        </div>
+      </div>
+      <!-- Maître Aldric -->
+      <div class="char-card char-aldric">
+        <div class="cc-header">
+          <div class="cc-portrait"><img src="portrait_aldric.jpg" alt="" onerror="this.parentNode.textContent='⚖️'"></div>
+          <div><div class="cc-name">M. Aldric</div><div class="cc-status">Ressource</div></div>
+        </div>
+        <button class="cc-aldric-btn" id="aldricBtn" onclick="consultAldric()">
+          Consulter (<span id="aldricCount">2</span> restant·s)
+        </button>
+      </div>
+    </div>
+
+    <!-- ZONE SCÈNE -->
+    <div id="scene-area">
+      <div id="scene-img">
+        <img id="sceneImgEl" src="" alt="" onerror="this.style.display='none'">
+        <div class="fallback" id="sceneImgFallback">🏘️</div>
+        <div class="overlay"></div>
+        <div class="phase-badge badge-intro" id="phaseBadge">Protocole Valdurne</div>
+      </div>
+
+      <div id="narr-bar">
+        <button class="narr-btn" id="narrBtn">🔊</button>
+        <input class="narr-vol" type="range" id="narrVol" min="0" max="100" value="80">
+        <span class="narr-info" id="narrInfo">Cliquer pour la narration</span>
+      </div>
+
+      <div id="chrono-wrap">
+        <div id="chrono-bar-bg"><div id="chrono-bar-fill"></div></div>
+        <div id="chrono-label">--</div>
+      </div>
+
+      <div id="content"></div>
+
+      <div id="bottom-bar">
+        <span id="prog-label">Intro</span>
+        <div id="prog-fill"><div id="prog-inner" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIO -->
+<audio id="ambAudio" loop preload="none"></audio>
+<audio id="narrAudio" preload="none"></audio>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════
+// ÉTAT GLOBAL
+// ══════════════════════════════════════════════════════════════
+var G = {
+  player: '',
+  phase: 'intro',     // intro | kern | transition_kr | rena | transition_rl | lyam | fin
+  step: 0,
+
+  // Scores
+  kernScore: 0,       // 0-3 indices clés
+  renaCapital: 20,    // unités restantes
+  renaState: 'favorable', // favorable | tendu | degrade
+  aldricLeft: 2,
+
+  // Jauges Lyam
+  gauges: {
+    ewen:  { mefiance:80, ouverture:20 },
+    mira:  { certitude:70, ecoute:30 },
+    tomas: { fierte:85, verite:15 },
+    kern:  { confiance:50 },
+    rena:  { lucidite:60 }
+  },
+
+  // Historique choix
+  lyamChoices: [],
+  kernClues: [],       // indices sélectionnés
+  renaDecisions: [],
+
+  // Partie
+  plays: 0,
+  bestFin: 0,         // 1-4
+  currentFin: 0,
+  chronoTimer: null,
+  chronoSec: 0,
+  tlSelected: {},     // timeline slots
+
+  // Aldric
+  aldricUsed: false,
+  aldricMsg: ''
+};
+
+// Récupérer joueur
+(function(){
+  var p = new URLSearchParams(window.location.search).get('player');
+  if(p) { localStorage.setItem('pvs_current_player',p); localStorage.setItem('pvs_phare_player',p); }
+  G.player = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || '';
+  document.getElementById('tbPlayer').textContent = G.player || '–';
+
+  // Charger historique
+  try {
+    var saved = JSON.parse(localStorage.getItem('CERT_PROTOCOLE_VALDURNE_01') || 'null');
+    if(saved) { G.plays = saved.plays||0; G.bestFin = saved.bestFin||0; }
+  } catch(e){}
+})();
+
+// ══════════════════════════════════════════════════════════════
+// AUDIO
+// ══════════════════════════════════════════════════════════════
+var ambAudio = document.getElementById('ambAudio');
+var narrAudio = document.getElementById('narrAudio');
+var ambPlaying = false;
+var narrPlaying = false;
+
+var AMB_FILES = {
+  intro: 'protocole_valdurne_intro.mp3',
+  kern:  'protocole_valdurne_kern.mp3',
+  rena:  'protocole_valdurne_rena.mp3',
+  lyam:  'protocole_valdurne_lyam.mp3',
+  crise: 'protocole_valdurne_crise.mp3',
+  fin:   'protocole_valdurne_intro.mp3'
+};
+
+function setAmbiance(key) {
+  var file = AMB_FILES[key] || AMB_FILES.intro;
+  if(ambAudio.src.endsWith(file)) return;
+  ambAudio.src = file;
+  ambAudio.volume = document.getElementById('ambVol').value / 100;
+  if(ambPlaying) ambAudio.play().catch(function(){});
+}
+
+document.getElementById('ambBtn').addEventListener('click', function(){
+  if(ambPlaying){ ambAudio.pause(); ambPlaying=false; this.textContent='♪'; }
+  else { ambAudio.volume = document.getElementById('ambVol').value/100; ambAudio.play().then(function(){ ambPlaying=true; document.getElementById('ambBtn').textContent='⏸'; }).catch(function(){}); }
+});
+document.getElementById('ambVol').addEventListener('input', function(){ ambAudio.volume = this.value/100; });
+
+function playNarr(file) {
+  narrAudio.src = file;
+  narrAudio.volume = document.getElementById('narrVol').value/100;
+  narrAudio.play().then(function(){ narrPlaying=true; document.getElementById('narrBtn').textContent='⏸'; document.getElementById('narrInfo').textContent='Narration en cours…'; }).catch(function(){ document.getElementById('narrInfo').textContent='Fichier : '+file; });
+}
+document.getElementById('narrBtn').addEventListener('click', function(){
+  if(narrPlaying){ narrAudio.pause(); narrPlaying=false; this.textContent='🔊'; document.getElementById('narrInfo').textContent='En pause'; }
+  else if(narrAudio.src){ narrAudio.play().then(function(){ narrPlaying=true; document.getElementById('narrBtn').textContent='⏸'; }); }
+});
+document.getElementById('narrVol').addEventListener('input', function(){ narrAudio.volume=this.value/100; });
+narrAudio.addEventListener('ended', function(){ narrPlaying=false; document.getElementById('narrBtn').textContent='🔊'; document.getElementById('narrInfo').textContent='Narration terminée'; });
+
+function stopNarr(){ narrAudio.pause(); narrAudio.src=''; narrPlaying=false; document.getElementById('narrBtn').textContent='🔊'; document.getElementById('narrInfo').textContent='Cliquer pour la narration'; }
+
+// ══════════════════════════════════════════════════════════════
+// CHRONO
+// ══════════════════════════════════════════════════════════════
+function startChrono(sec, onExpire) {
+  G.chronoSec = sec;
+  document.getElementById('chrono-wrap').classList.add('visible');
+  if(G.chronoTimer) clearInterval(G.chronoTimer);
+  updateChronoDisplay(sec, sec);
+  G.chronoTimer = setInterval(function(){
+    G.chronoSec--;
+    updateChronoDisplay(G.chronoSec, sec);
+    if(G.chronoSec <= 0) {
+      clearInterval(G.chronoTimer);
+      document.getElementById('chrono-wrap').classList.remove('visible');
+      if(onExpire) onExpire();
+    }
+  }, 1000);
+}
+
+function stopChrono(){
+  if(G.chronoTimer) clearInterval(G.chronoTimer);
+  document.getElementById('chrono-wrap').classList.remove('visible');
+}
+
+function updateChronoDisplay(cur, max){
+  var pct = Math.max(0, cur/max*100);
+  var fill = document.getElementById('chrono-bar-fill');
+  fill.style.width = pct+'%';
+  if(pct > 50) fill.style.background = 'var(--chrono-ok)';
+  else if(pct > 20) fill.style.background = 'var(--chrono-warn)';
+  else fill.style.background = 'var(--chrono-crit)';
+  document.getElementById('chrono-label').textContent = cur + 's';
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILITAIRES UI
+// ══════════════════════════════════════════════════════════════
+function setScene(imgFile, fallbackEmoji, phaseCls, badgeText){
+  var img = document.getElementById('sceneImgEl');
+  var fallback = document.getElementById('sceneImgFallback');
+  img.src = imgFile || '';
+  img.style.display = imgFile ? 'block' : 'none';
+  fallback.textContent = fallbackEmoji || '🏘️';
+  document.getElementById('phaseBadge').className = 'phase-badge ' + (phaseCls||'badge-intro');
+  document.getElementById('phaseBadge').textContent = badgeText || '';
+}
+
+function setNarrFile(file){ document.getElementById('narrInfo').textContent = file ? 'Cliquer pour écouter' : 'Pas de narration'; if(file) narrAudio.src=file; }
+
+function setProgress(label, pct){
+  document.getElementById('prog-label').textContent = label;
+  document.getElementById('prog-inner').style.width = pct+'%';
+}
+
+function setTopBar(phase){
+  ['kern','rena','lyam'].forEach(function(p){
+    document.getElementById('tp-'+p).classList.remove('active');
+  });
+  if(phase) document.getElementById('tp-'+phase).classList.add('active');
+}
+
+function showCharPanel(show){ document.getElementById('char-panel').classList.toggle('visible', show); }
+
+function e(tag, attrs, content){
+  var el = document.createElement(tag);
+  if(attrs) Object.keys(attrs).forEach(function(k){ el.setAttribute(k,attrs[k]); });
+  if(typeof content === 'string') el.innerHTML = content;
+  return el;
+}
+
+function html(str){ document.getElementById('content').innerHTML = str; }
+
+function updateGauge(charId, gaugeKey, val){
+  val = Math.max(0, Math.min(100, val));
+  var el = document.getElementById('g-'+charId+'-'+gaugeKey);
+  var vl = document.getElementById('gv-'+charId+'-'+gaugeKey);
+  if(el) el.style.width = val+'%';
+  if(vl) vl.textContent = val;
+  G.gauges[charId] = G.gauges[charId] || {};
+  G.gauges[charId][gaugeKey] = val;
+}
+
+function updateStatus(charId, txt){ var el = document.getElementById('st-'+charId); if(el) el.textContent = txt; }
+
+function updateRenaCapital(units){
+  G.renaCapital = Math.max(0, units);
+  var wrap = document.getElementById('rb-units');
+  if(!wrap) return;
+  for(var i=0;i<20;i++){
+    var u = wrap.children[i];
+    if(u) u.classList.toggle('spent', i >= G.renaCapital);
+  }
+  var cnt = document.getElementById('rb-count');
+  if(cnt) cnt.textContent = G.renaCapital;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TRANSITION ENTRE PHASES
+// ══════════════════════════════════════════════════════════════
+function showTransition(opts, callback){
+  stopChrono(); stopNarr();
+  var ts = document.createElement('div');
+  ts.className = 'transition-screen';
+  ts.innerHTML = '<div class="ts-icon">'+opts.icon+'</div>'
+    +'<div class="ts-title">'+opts.title+'</div>'
+    +'<div class="ts-sub">'+opts.sub+'</div>'
+    +'<div class="ts-score-row">'+opts.scores+'</div>';
+  document.getElementById('game').appendChild(ts);
+  setTimeout(function(){
+    ts.remove();
+    if(callback) callback();
+  }, opts.delay || 4000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE INTRO
+// ══════════════════════════════════════════════════════════════
+function startIntro(){
+  G.phase = 'intro';
+  setTopBar(null);
+  showCharPanel(false);
+  setScene('bournac_arrivee.jpg','🏘️','badge-intro','Protocole Valdurne');
+  setNarrFile('protocole_intro.mp3');
+  setAmbiance('intro');
+  setProgress('Introduction', 5);
+
+  html('<div class="screen active" id="scr-intro">'
+    +'<div class="screen-sigil" style="color:var(--gold)">⚖️</div>'
+    +'<div class="screen-pre">Les Veilleurs de Valdurne · Mission de Terrain</div>'
+    +'<div class="screen-title">Le Village de Bournac</div>'
+    +'<div class="screen-sub">Jeudi de novembre. Le Maître Aldric tient sa séance hebdomadaire de paix.</div>'
+    +'<div class="screen-sep"></div>'
+    +'<div class="screen-body">'
+    +'<p>Lyam, Kern et Réna l\'accompagnent pour la première fois en mission réelle. <em>Pas d\'observation. Pas de théorie. Ce qui se passe aujourd\'hui compte pour de vrai.</em></p>'
+    +'<p>Mais quelque chose déraille dès l\'arrivée. Les adultes sont nombreux, la voix monte, le Maître est retenu.</p>'
+    +'<p>Il se retourne vers ses trois pages. <em>« Je vous fais confiance. Allez voir les jeunes. Écoutez avant d\'agir. »</em></p>'
+    +'<p>Ce que vous ferez dans la prochaine heure — <strong>Kern d\'abord, Réna ensuite, Lyam en dernier</strong> — décidera si Tomas rentre chez lui la tête haute, si Ewen ose enfin parler, et si Mira comprend ce qu\'elle a vraiment dit.</p>'
+    +'</div>'
+    +(G.plays > 0 ? '<div class="score-chips"><span class="score-chip chip-lyam">Partie '+(G.plays+1)+' · XP dégressifs</span></div>' : '')
+    +'<button class="btn-primary" onclick="startKern()">▶ Commencer avec Kern</button>'
+    +'</div>');
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE KERN — L'ENQUÊTEUR
+// ══════════════════════════════════════════════════════════════
+var KERN_SCENES = [
+  {
+    id:'kA',
+    img:'bournac_place.jpg', fallback:'👁️',
+    narr:'kern_scene_a.mp3',
+    title:'La place du village',
+    sub:'Scène A — Observer avant d\'entendre',
+    text:'<p>La place de Bournac. Quatre adolescents — ou presque. <strong>Tomas</strong> est debout contre le mur du puits, bras croisés, regard loin. <strong>Mira</strong> parle fort à un groupe de deux filles. <strong>Ewen</strong> est assis à l\'écart, sur une borne, les mains sur les genoux.</p>'
+      +'<p>Un quatrième garçon n\'est pas là. Kern note l\'absence avant même de noter les présences.</p>'
+      +'<p><em>Qu\'est-ce que la disposition des corps révèle sur ce groupe ?</em></p>',
+    prompt:'Kern observe. Quels indices retient-il ?',
+    clues:[
+      {id:'kA1', icon:'👁️', text:'Ewen évite le regard de Tomas — mais surveille ses mains.', correct:true},
+      {id:'kA2', icon:'💬', text:'Mira parle beaucoup : elle construit une version et cherche des témoins.', correct:true},
+      {id:'kA3', icon:'🧱', text:'Tomas est contre un mur : position défensive, il attend d\'être attaqué.', correct:false, leurre:true},
+      {id:'kA4', icon:'🚪', text:'L\'absence du quatrième adolescent n\'est pas mentionnée par les autres — personne ne demande où il est.', correct:true}
+    ]
+  },
+  {
+    id:'kB',
+    img:'bournac_place.jpg', fallback:'🗣️',
+    narr:'kern_scene_b.mp3',
+    title:'Trois versions',
+    sub:'Scène B — Interroger sans influencer',
+    text:'<p>Kern s\'approche chacun séparément. Il ne pose pas de questions directes — il laisse des silences.</p>'
+      +'<p>Mira dit : <em>« Tomas l\'a pris pour se faire respecter. Tout le monde le sait. »</em> — mais elle ajoute, après un silence : <em>« C\'est Joris qui m\'a dit. »</em></p>'
+      +'<p>Tomas dit : <em>« Je n\'ai rien touché. »</em> Et il ne dit rien d\'autre.</p>'
+      +'<p>Ewen ne dit rien. Mais ses mains tremblent légèrement quand Kern mentionne le couteau.</p>',
+    prompt:'Que retient Kern de ces trois non-dits ?',
+    clues:[
+      {id:'kB1', icon:'🔗', text:'Mira cite Joris comme source — elle répète, elle ne témoigne pas.', correct:true},
+      {id:'kB2', icon:'🤐', text:'Le silence de Tomas est de la fierté blessée, pas de la culpabilité.', correct:true},
+      {id:'kB3', icon:'✋', text:'Les mains d\'Ewen tremblent : il sait quelque chose qu\'il n\'a pas dit.', correct:true},
+      {id:'kB4', icon:'😠', text:'Tomas est agressif : signe probable de culpabilité.', correct:false, leurre:true}
+    ]
+  },
+  {
+    id:'kC',
+    img:'bournac_forge.jpg', fallback:'⚔️',
+    narr:'kern_scene_c.mp3',
+    title:'Reconstituer la timeline',
+    sub:'Scène C — Mettre les événements dans l\'ordre',
+    text:'<p>Kern a collecté des fragments. Maintenant il doit les ordonner.</p>'
+      +'<p>Les événements ne correspondent pas à l\'histoire officielle. L\'ordre qu\'il reconstituera sera la base sur laquelle Lyam négociera.</p>',
+    prompt:'Remets les événements dans le bon ordre (du plus ancien au plus récent).',
+    isTimeline: true,
+    events:[
+      {id:'e1', text:'Joris menace Tomas discrètement depuis plusieurs semaines.'},
+      {id:'e2', text:'Ewen voit la menace et décide d\'agir seul — il prend le couteau pour le donner à Tomas.'},
+      {id:'e3', text:'Joris souffle la rumeur à Mira : "Tomas a volé le couteau pour se défendre."'},
+      {id:'e4', text:'Mira, convaincue, répète l\'accusation devant les adultes.'},
+      {id:'e5', text:'Tomas nie. La séance du Maître Aldric est convoquée.'}
+    ],
+    correctOrder:['e1','e2','e3','e4','e5']
+  }
+];
+
+var kernSceneIdx = 0;
+var kernClueSelections = {};
+
+function startKern(){
+  G.phase = 'kern';
+  G.kernScore = 0;
+  G.kernClues = [];
+  kernSceneIdx = 0;
+  kernClueSelections = {};
+  setTopBar('kern');
+  showCharPanel(false);
+  setAmbiance('kern');
+  renderKernScene();
+}
+
+function renderKernScene(){
+  var sc = KERN_SCENES[kernSceneIdx];
+  setScene(sc.img, sc.fallback, 'badge-kern', '① Kern — L\'Enquêteur');
+  setNarrFile(sc.narr);
+  stopChrono();
+  setProgress('Kern — Scène '+(kernSceneIdx+1)+'/3', 10 + kernSceneIdx*12);
+
+  if(sc.isTimeline){
+    renderKernTimeline(sc);
+    return;
+  }
+
+  var cluesHtml = '<div class="clue-grid">';
+  sc.clues.forEach(function(cl){
+    cluesHtml += '<div class="clue-card" id="cl-'+cl.id+'" onclick="selectClue(\''+cl.id+'\',\''+sc.id+'\')">'
+      +'<div class="clue-icon">'+cl.icon+'</div>'
+      +'<div class="clue-text">'+cl.text+'</div></div>';
+  });
+  cluesHtml += '</div>';
+
+  html('<div class="scene-title">'+sc.title+'</div>'
+    +'<div class="scene-sub">'+sc.sub+'</div>'
+    +'<div class="scene-text">'+sc.text+'</div>'
+    +'<div class="prompt-label">'+sc.prompt+'</div>'
+    +cluesHtml
+    +'<button class="btn-primary" id="kern-validate" onclick="validateKernScene()" style="display:none">Valider mes observations →</button>');
+}
+
+function selectClue(clueId, sceneId){
+  var el = document.getElementById('cl-'+clueId);
+  if(!el) return;
+  el.classList.toggle('selected');
+  if(!kernClueSelections[sceneId]) kernClueSelections[sceneId] = [];
+  var arr = kernClueSelections[sceneId];
+  var idx = arr.indexOf(clueId);
+  if(idx >= 0) arr.splice(idx,1); else arr.push(clueId);
+  var any = Object.values(kernClueSelections).some(function(a){ return a.length>0; });
+  var btn = document.getElementById('kern-validate');
+  var scSelected = kernClueSelections[sceneId]||[];
+  if(btn) btn.style.display = scSelected.length > 0 ? 'block' : 'none';
+}
+
+function validateKernScene(){
+  var sc = KERN_SCENES[kernSceneIdx];
+  var selected = kernClueSelections[sc.id] || [];
+  var score = 0;
+  sc.clues.forEach(function(cl){
+    var el = document.getElementById('cl-'+cl.id);
+    if(!el) return;
+    var isSelected = selected.indexOf(cl.id) >= 0;
+    if(cl.correct && isSelected){ el.classList.add('correct'); score++; G.kernClues.push(cl.id); }
+    else if(!cl.correct && isSelected){ el.classList.add('wrong'); }
+    else if(cl.correct && !isSelected){ el.classList.add('correct'); }
+    el.style.pointerEvents = 'none';
+  });
+  G.kernScore += Math.min(score, 1); // max 1 point par scène correcte
+  var btn = document.getElementById('kern-validate');
+  if(btn){ btn.textContent = 'Scène suivante →'; btn.onclick = nextKernScene; }
+}
+
+function nextKernScene(){
+  kernSceneIdx++;
+  if(kernSceneIdx >= KERN_SCENES.length){ endKern(); return; }
+  renderKernScene();
+}
+
+// ─── TIMELINE ───
+var tlOrder = [];
+
+function renderKernTimeline(sc){
+  var slots = '';
+  for(var i=0;i<sc.events.length;i++){
+    slots += '<div class="tl-slot" id="tls-'+i+'" data-slot="'+i+'">'
+      +'<span class="tl-num">'+(i+1)+'.</span><span class="tl-content" id="tlc-'+i+'">—</span></div>';
+  }
+  var pool = '';
+  sc.events.forEach(function(ev){
+    pool += '<div class="tl-chip" id="tlchip-'+ev.id+'" onclick="placeEvent(\''+ev.id+'\')">'+ev.text.substring(0,50)+'…</div>';
+  });
+  tlOrder = new Array(sc.events.length).fill(null);
+  html('<div class="scene-title">'+sc.title+'</div>'
+    +'<div class="scene-sub">'+sc.sub+'</div>'
+    +'<div class="scene-text">'+sc.text+'</div>'
+    +'<div class="prompt-label">'+sc.prompt+'</div>'
+    +'<div class="timeline-area">'
+    +'<div class="timeline-label">Ordre chronologique</div>'
+    +'<div class="timeline-slots">'+slots+'</div>'
+    +'<div class="timeline-label" style="margin-top:14px">Événements à placer</div>'
+    +'<div class="tl-pool" id="tl-pool">'+pool+'</div>'
+    +'</div>'
+    +'<button class="btn-primary" id="tl-validate" onclick="validateTimeline()" style="display:none">Valider la chronologie →</button>');
+}
+
+var tlNextSlot = 0;
+function placeEvent(evId){
+  if(tlNextSlot >= KERN_SCENES[2].events.length) return;
+  var chip = document.getElementById('tlchip-'+evId);
+  if(chip && chip.classList.contains('used')) return;
+  var sc = KERN_SCENES[2];
+  var ev = sc.events.find(function(e){ return e.id===evId; });
+  if(!ev) return;
+  var slot = document.getElementById('tlc-'+tlNextSlot);
+  var slotWrap = document.getElementById('tls-'+tlNextSlot);
+  if(slot){ slot.textContent = ev.text; slotWrap.classList.add('filled'); }
+  tlOrder[tlNextSlot] = evId;
+  if(chip){ chip.classList.add('used'); }
+  tlNextSlot++;
+  if(tlNextSlot >= sc.events.length){
+    var vb = document.getElementById('tl-validate');
+    if(vb) vb.style.display = 'block';
+  }
+}
+
+function validateTimeline(){
+  var sc = KERN_SCENES[2];
+  var correct = 0;
+  tlOrder.forEach(function(evId, i){
+    var slotWrap = document.getElementById('tls-'+i);
+    if(!slotWrap) return;
+    if(evId === sc.correctOrder[i]){ slotWrap.classList.add('correct'); correct++; }
+    else { slotWrap.classList.remove('filled'); }
+  });
+  if(correct >= 4) G.kernScore++;
+  var btn = document.getElementById('tl-validate');
+  if(btn){ btn.textContent = correct>=4 ? 'Excellent ! Continuer →' : 'Continuer →'; btn.onclick = endKern; }
+}
+
+function endKern(){
+  var finalScore = Math.min(G.kernScore, 3);
+  G.kernScore = finalScore;
+  var labels = ['Peu d\'informations','Un fil directeur','Enquête solide','Enquête complète'];
+  showTransition({
+    icon: '🔮',
+    title: 'Kern a terminé',
+    sub: labels[finalScore]+' — Réna prend le relais avec '+(finalScore)+' indice'+(finalScore>1?'s':'')+' clé'+(finalScore>1?'s':'')+' transmis.',
+    scores: '<span class="score-chip chip-kern">Kern : '+finalScore+'/3 indices</span>',
+    delay: 3500
+  }, startRena);
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE RÉNA — LA STRATÈGE
+// ══════════════════════════════════════════════════════════════
+var RENA_DECISIONS = [
+  {
+    id:'rD1',
+    title:'Qui approcher en premier ?',
+    narr:'rena_decision_1.mp3',
+    options:[
+      {id:'rD1a', label:'Approcher Ewen en premier', cost:2, desc:'Il cache quelque chose. Si on crée la confiance avec lui, Lyam aura une porte d\'entrée directe.', effect:function(){ G.gauges.ewen.ouverture=35; updateStatus('ewen','Légèrement ouvert'); }},
+      {id:'rD1b', label:'Approcher Mira en premier', cost:4, desc:'Démonter l\'accusation à la source. Mais Mira est convaincue — ça prend du temps et ça braque Tomas.', effect:function(){ G.gauges.mira.ecoute=45; G.gauges.tomas.fierte=95; updateStatus('mira','Perturbée'); updateStatus('tomas','Sur le départ'); }},
+      {id:'rD1c', label:'Approcher Tomas en premier', cost:3, desc:'Stabiliser l\'accusé. Mais Mira interprète ça comme de la partialité.', effect:function(){ G.gauges.tomas.verite=30; G.gauges.mira.certitude=85; updateStatus('tomas','Stabilisé'); }}
+    ]
+  },
+  {
+    id:'rD2',
+    title:'Solliciter le Maître Aldric maintenant ?',
+    narr:'rena_decision_2.mp3',
+    options:[
+      {id:'rD2a', label:'Oui — utiliser sa crédibilité maintenant', cost:5, desc:'Sa présence calme les parents. Mais il ne restera qu\'une consultation pour Lyam.', effect:function(){ G.aldricLeft=1; G.renaCapital-=3; document.getElementById('aldricCount').textContent='1'; }},
+      {id:'rD2b', label:'Non — garder les deux consultations pour Lyam', cost:0, desc:'Lyam aura plus de ressources. Mais la situation reste tendue maintenant.', effect:function(){ G.gauges.ewen.mefiance=Math.min(90,G.gauges.ewen.mefiance+5); }}
+    ]
+  },
+  {
+    id:'rD3',
+    title:'Séparer les trois adolescents ?',
+    narr:'rena_decision_3.mp3',
+    options:[
+      {id:'rD3a', label:'Oui — les parler individuellement', cost:3, desc:'Réduit la pression de groupe. Mais Ewen isolé a tendance à se refermer davantage.', effect:function(){ G.gauges.mira.ecoute+=10; G.gauges.tomas.verite+=10; G.gauges.ewen.ouverture=Math.max(10,G.gauges.ewen.ouverture-10); }},
+      {id:'rD3b', label:'Non — laisser la dynamique de groupe visible', cost:1, desc:'Économise le temps. Mais Mira continue à construire sa version devant les autres.', effect:function(){ G.gauges.mira.certitude=Math.min(90,G.gauges.mira.certitude+5); }}
+    ]
+  },
+  {
+    id:'rD4',
+    title:'Demander à Kern de rester avec Lyam ?',
+    narr:'rena_decision_4.mp3',
+    options:[
+      {id:'rD4a', label:'Oui — Kern peut souffler un indice à Lyam', cost:2, desc:'Kern reste en soutien silencieux. Il peut intervenir une fois pour rappeler un indice clé.', effect:function(){ G.gauges.kern.confiance=75; updateStatus('kern','En soutien'); }},
+      {id:'rD4b', label:'Non — Lyam travaille seul', cost:0, desc:'Lyam n\'est pas distrait par les conseils de Kern. Mais il n\'a pas de filet.', effect:function(){ G.gauges.kern.confiance=50; }}
+    ]
+  }
+];
+
+var renaDIdx = 0;
+
+function startRena(){
+  G.phase = 'rena';
+  G.renaCapital = 20;
+  G.renaDecisions = [];
+  renaDIdx = 0;
+  setTopBar('rena');
+  showCharPanel(false);
+  setAmbiance('rena');
+  renderRenaIntro();
+}
+
+function renderRenaIntro(){
+  setScene('bournac_salle.jpg','⚡','badge-rena','② Réna — La Stratège');
+  setNarrFile('rena_intro.mp3');
+  setProgress('Réna — Introduction', 40);
+  var kernSummary = '';
+  if(G.kernScore >= 1) kernSummary += '<li>Ewen cache quelque chose lié au couteau</li>';
+  if(G.kernScore >= 2) kernSummary += '<li>Ewen a pris le couteau pour protéger Tomas</li>';
+  if(G.kernScore >= 3) kernSummary += '<li>Joris est à l\'origine de la rumeur — il est absent</li>';
+  if(!kernSummary) kernSummary = '<li>Peu d\'informations — Réna travaille à l\'aveugle</li>';
+
+  html('<div class="scene-title">Ce que Kern a transmis</div>'
+    +'<div class="scene-sub">② Réna — Choisir ses batailles</div>'
+    +'<div class="scene-text">'
+    +'<p>Réna reçoit les notes de Kern. Elle a <strong>20 unités de temps</strong> — chaque décision a un coût. Le temps qui reste deviendra le chrono de Lyam.</p>'
+    +'<p>Ce que Kern a trouvé :</p>'
+    +'<ul style="margin-left:20px;margin-bottom:12px;line-height:1.8">'+kernSummary+'</ul>'
+    +'<p><em>Plus Réna dépense prudemment, plus Lyam aura de temps. Plus elle dépense bien, plus la situation sera favorable.</em></p>'
+    +'</div>'
+    +'<div class="resource-bar">'
+    +'<span class="rb-label">Temps</span>'
+    +'<div class="rb-units" id="rb-units">'+Array(20).fill('<div class="rb-unit"></div>').join('')+'</div>'
+    +'<span class="rb-count" id="rb-count">20</span>'
+    +'</div>'
+    +'<button class="btn-primary" onclick="renderRenaDecision()">Commencer la planification →</button>');
+}
+
+function renderRenaDecision(){
+  if(renaDIdx >= RENA_DECISIONS.length){ endRena(); return; }
+  var dec = RENA_DECISIONS[renaDIdx];
+  setProgress('Réna — Décision '+(renaDIdx+1)+'/4', 42 + renaDIdx*5);
+  setNarrFile(dec.narr);
+
+  var opts = '';
+  dec.options.forEach(function(opt){
+    var canAfford = G.renaCapital >= opt.cost;
+    opts += '<button class="choice-btn phase-rena'+(canAfford?'':' locked')+'" onclick="chooseRena(\''+opt.id+'\','+opt.cost+')">'
+      +'<span class="cb-title">'+opt.label+'</span>'
+      +'<span class="cb-sub">'+opt.desc+'</span>'
+      +(opt.cost > 0 ? '<span class="cb-cost">Coût : '+opt.cost+' unité'+(opt.cost>1?'s':'')+'</span>' : '<span class="cb-cost">Gratuit</span>')
+      +'</button>';
+  });
+
+  html('<div class="scene-title">'+dec.title+'</div>'
+    +'<div class="scene-sub">② Réna — Planification</div>'
+    +'<div class="resource-bar">'
+    +'<span class="rb-label">Temps</span>'
+    +'<div class="rb-units" id="rb-units">'+Array(20).fill(0).map(function(_,i){ return '<div class="rb-unit'+(i>=G.renaCapital?' spent':'')+'"></div>'; }).join('')+'</div>'
+    +'<span class="rb-count" id="rb-count">'+G.renaCapital+'</span>'
+    +'</div>'
+    +'<div class="prompt-label">'+dec.title+'</div>'
+    +'<div class="choices">'+opts+'</div>');
+}
+
+function chooseRena(optId, cost){
+  if(G.renaCapital < cost) return;
+  var dec = RENA_DECISIONS[renaDIdx];
+  var opt = dec.options.find(function(o){ return o.id===optId; });
+  if(!opt) return;
+  G.renaDecisions.push(optId);
+  G.renaCapital -= cost;
+  if(opt.effect) opt.effect();
+  renaDIdx++;
+  setTimeout(renderRenaDecision, 300);
+}
+
+function endRena(){
+  // Calculer l'état de situation
+  if(G.renaCapital >= 14) G.renaState = 'favorable';
+  else if(G.renaCapital >= 8) G.renaState = 'tendu';
+  else G.renaState = 'degrade';
+
+  var stateLabel = {favorable:'Situation favorable',tendu:'Situation tendue',degrade:'Situation dégradée'}[G.renaState];
+  var chronoBase = {favorable:40, tendu:25, degrade:15}[G.renaState];
+
+  showTransition({
+    icon: '⚡',
+    title: 'Réna a planifié',
+    sub: stateLabel+' — Lyam aura '+chronoBase+' secondes par décision. Il hérite de ce que Kern a trouvé et de ce que Réna a préparé.',
+    scores: '<span class="score-chip chip-kern">Kern : '+G.kernScore+'/3</span>'
+           +'<span class="score-chip chip-rena">Réna : '+G.renaCapital+'/20 temps</span>',
+    delay: 4000
+  }, startLyam);
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE LYAM — LE NÉGOCIATEUR
+// ══════════════════════════════════════════════════════════════
+var chronoPerDecision = {favorable:40, tendu:25, degrade:15};
+var lyamStep = 0;
+
+// Arbre de dialogue — les options disponibles dépendent du score Kern
+function getLyamScenes(){
+  var base = chronoPerDecision[G.renaState];
+  var k = G.kernScore;
+  return [
+    // ACTE 1 — Premier contact
+    {
+      id:'lA',
+      img:'bournac_salle.jpg', fallback:'👥',
+      narr:'lyam_acte1.mp3',
+      title:'Premier contact',
+      sub:'Acte 1 — Poser le cadre',
+      text:'<p>Lyam entre dans la cour. Ewen sur sa borne. Mira qui s\'arrête de parler. Tomas qui relève les yeux.</p>'
+        +'<p>Trois regards. Trois façons de dire <em>qu\'est-ce que tu veux</em>.</p>'
+        +'<p>Lyam a '+base+' secondes pour chaque décision.</p>',
+      chrono: base,
+      prompt:'Comment Lyam entre dans le groupe ?',
+      choices:[
+        {id:'lA1', title:'Se présenter calmement — "Je suis ici pour écouter, pas pour juger."', sub:'Approche CNV. Réduit la méfiance mais peut sembler naïf.', effect:function(){ gaugeChange('ewen','ouverture',+15); gaugeChange('mira','ecoute',+10); updateStatus('ewen','Légèrement curieux'); }},
+        {id:'lA2', title:'Reconnaître le conflit directement — "Il y a un problème ici. Je veux comprendre lequel."', sub:'Direct. Gagne du temps mais peut braquer.', effect:function(){ gaugeChange('tomas','verite',+15); gaugeChange('mira','certitude',+10); updateStatus('tomas','Attentif'); }},
+        {id:'lA3', title:'Parler d\'abord à Ewen — l\'isoler brièvement du groupe.', sub:k>=1?'Indice Kern : Ewen cache quelque chose. Option débloquée.':'Option nécessite un indice Kern.', locked:k<1, effect:function(){ gaugeChange('ewen','ouverture',+25); gaugeChange('ewen','mefiance',-20); updateStatus('ewen','Surpris — quelqu\'un le voit'); }}
+      ]
+    },
+    // ACTE 2 — La friction
+    {
+      id:'lB',
+      img:'bournac_salle.jpg', fallback:'⚡',
+      narr:'lyam_acte2.mp3',
+      title:'La friction',
+      sub:'Acte 2 — Tenir la tension',
+      text:'<p>Mira répète son accusation. Sa voix est ferme — elle croit vraiment ce qu\'elle dit.</p>'
+        +'<div class="dialogue-box ado"><span class="db-speaker mira">Mira</span><span class="db-text">« C\'est Tomas. Joris me l\'a dit. Il était là. »</span></div>'
+        +'<p>Tomas se lève à moitié.</p>'
+        +'<div class="dialogue-box ado"><span class="db-speaker tomas">Tomas</span><span class="db-text">« Je sors. »</span></div>'
+        +'<p>Ewen regarde ses mains.</p>',
+      chrono: Math.round(base*0.8),
+      prompt:'Comment Lyam tient simultanément les trois ?',
+      choices:[
+        {id:'lB1', title:'Valider Mira sans valider l\'accusation — "Tu as entendu quelque chose. Ça compte."', sub:'CNV : distinguer observation et interprétation. Mira reste, Tomas aussi.', effect:function(){ gaugeChange('mira','ecoute',+20); gaugeChange('mira','certitude',-10); gaugeChange('tomas','fierte',-10); updateStatus('mira','Écoutée'); }},
+        {id:'lB2', title:'Bloquer le départ de Tomas directement — "Une minute. Juste une."', sub:'Direct. Tomas reste mais se ferme davantage.', effect:function(){ gaugeChange('tomas','verite',+5); gaugeChange('tomas','fierte',+15); updateStatus('tomas','Contenu — pas convaincu'); }},
+        {id:'lB3', title:'Pointer l\'absence de Joris — "La seule personne qui n\'est pas là, c\'est celui qui a dit quelque chose."', sub:k>=3?'Indice Kern : Joris est à l\'origine. Option débloquée.':'Option nécessite l\'indice Joris.', locked:k<3, effect:function(){ gaugeChange('mira','certitude',-25); gaugeChange('mira','ecoute',+30); gaugeChange('tomas','verite',+20); updateStatus('mira','Déstabilisée — bonne façon'); updateStatus('tomas','Surpris'); }}
+      ]
+    },
+    // ACTE 3 — Le nœud (chrono critique)
+    {
+      id:'lC',
+      img:'bournac_crise.jpg', fallback:'⏱️',
+      narr:'lyam_acte3.mp3',
+      title:'Le nœud',
+      sub:'Acte 3 — La décision de crise',
+      text:'<p>Tomas se lève. Il va partir pour de vrai cette fois.</p>'
+        +'<p>Ewen le regarde — ses lèvres bougent légèrement sans qu\'aucun son ne sorte.</p>'
+        +'<p>Il reste '+Math.round(base*0.5)+' secondes.</p>',
+      chrono: Math.round(base*0.5),
+      isCrisis: true,
+      prompt:'Moment de crise — décision immédiate.',
+      choices:[
+        {id:'lC1', title:'Parler à Ewen devant les autres — "Ewen, tu sais quelque chose. Tu peux le dire."', sub:k>=2?'Indice Kern : Ewen a pris le couteau pour protéger Tomas. Option débloquée.':'Option nécessite l\'indice Ewen.', locked:k<2, effect:function(){ gaugeChange('ewen','ouverture',+40); gaugeChange('ewen','mefiance',-40); gaugeChange('tomas','fierte',-20); gaugeChange('tomas','verite',+50); updateStatus('ewen','Parle enfin'); updateStatus('tomas','Bouleversé — vérité qui sort'); }},
+        {id:'lC2', title:'Arrêter Tomas physiquement — poser la main sur l\'épaule.', sub:'Il reste. Mais tout ce qui suit dépend de ce qu\'on dit dans les 10 prochaines secondes.', effect:function(){ gaugeChange('tomas','fierte',+20); gaugeChange('tomas','verite',-10); updateStatus('tomas','Stoppé — toujours fermé'); }},
+        {id:'lC3', title:'Laisser Tomas partir — se concentrer sur Ewen et Mira.', sub:'Tomas sort. Mais Ewen peut parler plus librement sans lui dans la pièce.', effect:function(){ gaugeChange('ewen','ouverture',+20); gaugeChange('mira','ecoute',+15); updateStatus('tomas','Parti'); updateStatus('ewen','Plus à l\'aise'); }}
+      ]
+    },
+    // RAPPORT FINAL
+    {
+      id:'lD',
+      img:'bournac_salle.jpg', fallback:'⚖️',
+      narr:'lyam_rapport.mp3',
+      title:'Rapport au Maître Aldric',
+      sub:'Décision finale — Que dire ?',
+      text:'<p>Le Maître Aldric est libre. Il attend le rapport de Lyam.</p>'
+        +'<p>Ce que Lyam dit maintenant définira ce que l\'institution fait de cette situation.</p>',
+      chrono: 30,
+      isFinal: true,
+      prompt:'Que rapporte Lyam au Maître Aldric ?',
+      choices:[
+        {id:'lD1', title:'Version partielle — "Le couteau est retrouvé, pas de vol caractérisé."', sub:'Sûr. Clôt le dossier. Mais Joris n\'est pas nommé et la menace sur Tomas continue.', fin:1},
+        {id:'lD2', title:'Version complète — "Ewen a pris le couteau pour protéger Tomas d\'une menace réelle. Joris doit être entendu."', sub:k>=2?'Débloqué par Kern. Nomme Joris. Expose la menace.':'Nécessite les indices Kern 2+3.', locked:k<2, fin:2},
+        {id:'lD3', title:'Version CNV — "Chacun a dit quelque chose de vrai. Voilà ce que j\'ai compris de chacun."', sub:checkCNV()?'Jauges suffisantes. Version la plus complète humainement.':'Nécessite que les jauges soient suffisamment positives.', locked:!checkCNV(), fin:3},
+        {id:'lD4', title:'Version institutionnelle — consulter le Maître Aldric pour une procédure formelle.', sub:G.aldricLeft>0?'Consultation disponible. Lance une procédure officielle sur Joris.':'Plus de consultation disponible.', locked:G.aldricLeft<=0, fin:4}
+      ]
+    }
+  ];
+}
+
+function checkCNV(){
+  return G.gauges.ewen.ouverture >= 45 && G.gauges.mira.ecoute >= 45 && G.gauges.tomas.verite >= 35;
+}
+
+function gaugeChange(char, key, delta){
+  var current = G.gauges[char][key] || 50;
+  updateGauge(char, key.substring(0,3), current + delta);
+  // Mise à jour interne
+  G.gauges[char][key] = Math.max(0, Math.min(100, current + delta));
+}
+
+function startLyam(){
+  G.phase = 'lyam';
+  lyamStep = 0;
+  setTopBar('lyam');
+  showCharPanel(true);
+  setAmbiance('lyam');
+  // Initialiser les jauges selon les décisions de Réna
+  updateGauge('ewen','ouv', G.gauges.ewen.ouverture);
+  updateGauge('ewen','mef', G.gauges.ewen.mefiance);
+  updateGauge('mira','col', G.gauges.mira.certitude);
+  updateGauge('mira','eco', G.gauges.mira.ecoute);
+  updateGauge('tomas','fie', G.gauges.tomas.fierte);
+  updateGauge('tomas','ver', G.gauges.tomas.verite);
+  updateGauge('kern','conf', G.gauges.kern.confiance);
+  updateGauge('rena','luc', G.gauges.rena.lucidite);
+  renderLyamStep();
+}
+
+function renderLyamStep(){
+  var scenes = getLyamScenes();
+  if(lyamStep >= scenes.length){ endLyam(1); return; }
+  var sc = scenes[lyamStep];
+  setScene(sc.img, sc.fallback, 'badge-lyam', '③ Lyam — Le Négociateur');
+  setNarrFile(sc.narr);
+  setProgress('Lyam — '+sc.sub, 60 + lyamStep*8);
+
+  if(sc.isCrisis) setAmbiance('crise');
+
+  var choicesHtml = '<div class="choices">';
+  sc.choices.forEach(function(ch){
+    var isLocked = ch.locked;
+    choicesHtml += '<button class="choice-btn phase-lyam'+(isLocked?' locked':'')+'" '
+      +(isLocked?'disabled':('onclick="chooseLyam(\''+ch.id+'\')"'))+'>'
+      +'<span class="cb-title">'+ch.title+'</span>'
+      +'<span class="cb-sub">'+ch.sub+'</span>'
+      +(ch.fin?'':'')
+      +'</button>';
+  });
+  choicesHtml += '</div>';
+
+  html('<div class="scene-title">'+sc.title+'</div>'
+    +'<div class="scene-sub">'+sc.sub+'</div>'
+    +'<div class="scene-text">'+sc.text+'</div>'
+    +'<div class="prompt-label">'+sc.prompt+'</div>'
+    +choicesHtml);
+
+  startChrono(sc.chrono, function(){
+    // Timeout — choix neutre par défaut
+    var defaultChoice = sc.choices.find(function(c){ return !c.locked; });
+    if(defaultChoice){ chooseLyam(defaultChoice.id, true); }
+  });
+}
+
+function chooseLyam(choiceId, isTimeout){
+  stopChrono();
+  var scenes = getLyamScenes();
+  var sc = scenes[lyamStep];
+  var ch = sc.choices.find(function(c){ return c.id===choiceId; });
+  if(!ch) return;
+
+  G.lyamChoices.push({step:lyamStep, choice:choiceId, timeout:!!isTimeout});
+
+  if(ch.effect) ch.effect();
+
+  // Si c'est la décision finale
+  if(sc.isFinal && ch.fin){ endLyam(ch.fin); return; }
+
+  lyamStep++;
+  setAmbiance('lyam');
+  setTimeout(renderLyamStep, 400);
+}
+
+function consultAldric(){
+  if(G.aldricLeft <= 0) return;
+  G.aldricLeft--;
+  document.getElementById('aldricCount').textContent = G.aldricLeft;
+  if(G.aldricLeft <= 0) document.getElementById('aldricBtn').disabled = true;
+
+  // Message socratique selon la situation
+  var msgs = [
+    'Le Maître dit : <em>« Qui sait quelque chose ici — et qui a peur de le dire ? »</em>',
+    'Le Maître dit : <em>« Dans chaque accusation, cherche d\'abord celui qui n\'est pas dans la pièce. »</em>'
+  ];
+  var msg = msgs[G.aldricLeft] || msgs[0];
+
+  var box = document.createElement('div');
+  box.className = 'dialogue-box aldric';
+  box.style.cssText = 'position:fixed;bottom:50px;left:50%;transform:translateX(-50%);max-width:420px;z-index:200;animation:fadeIn .4s ease;';
+  box.innerHTML = '<span class="db-speaker aldric">Maître Aldric</span><span class="db-text">'+msg+'</span>';
+  document.body.appendChild(box);
+
+  // Débloquer potentiellement un indice
+  if(G.kernScore < 2) G.kernScore = Math.min(G.kernScore+1, 2);
+
+  setTimeout(function(){ box.remove(); }, 5000);
+}
+
+function endLyam(fin){ G.currentFin = fin; showFin(fin); }
+
+// ══════════════════════════════════════════════════════════════
+// FINS NARRÉES
+// ══════════════════════════════════════════════════════════════
+var FIN_DATA = {
+  1: {
+    icon:'🌫️', color:'var(--text-m)',
+    img:'bournac_fin_partielle.jpg',
+    narr:'fin_partielle.mp3',
+    badge:'Médiateur en Formation',
+    title:'Le feu visible est éteint',
+    sub:'Le feu caché brûle encore.',
+    text:'<p>Le couteau a été retrouvé. Tomas n\'est pas condamné. C\'est déjà quelque chose.</p>'
+      +'<p>Mais Ewen est reparti sans avoir parlé. Et Joris, lui, n\'a pas été nommé.</p>'
+      +'<p>Le Maître Aldric range ses documents en silence. Il dit, sans regarder : <em>« Vous avez éteint le feu visible. Le feu caché brûle encore. »</em></p>'
+      +'<p>Ce n\'est pas un échec. C\'est une première fois. La prochaine, vous saurez regarder plus loin.</p>',
+    xpBase:150
+  },
+  2: {
+    icon:'⚖️', color:'var(--lyam-l)',
+    img:'bournac_fin_complete.jpg',
+    narr:'fin_complete.mp3',
+    badge:'Médiateur Confirmé',
+    title:'Nommer ce qui existe',
+    sub:'Ce qui est nommé doit être regardé en face.',
+    text:'<p>Tomas est resté. Ewen a parlé — pas beaucoup, mais assez. Et Joris a été nommé.</p>'
+      +'<p>Pas accusé, pas puni — juste nommé. Ce qui existe sans nom peut continuer indéfiniment. Ce qui est nommé doit être regardé en face.</p>'
+      +'<p>Le Maître Aldric pose la main sur l\'épaule de Lyam. <em>« Vous avez fait le travail difficile. Pas le travail propre — le travail vrai. »</em></p>',
+    xpBase:150
+  },
+  3: {
+    icon:'🌿', color:'var(--rena-l)',
+    img:'bournac_fin_cnv.jpg',
+    narr:'fin_cnv.mp3',
+    badge:'Médiateur Confirmé',
+    title:'Rendre possible',
+    sub:'Pas résoudre. Rendre possible.',
+    text:'<p>Quelque chose de rare s\'est passé dans ce village aujourd\'hui. Trois adolescents qui ne se parlaient plus — ou mal — ont dit ce qu\'ils ressentaient.</p>'
+      +'<p>Pas tout. Jamais tout, la première fois. Mais assez pour que la prochaine conversation soit possible.</p>'
+      +'<p>Réna observe de loin. Elle dit à voix basse : <em>« C\'est ça, la médiation. Pas résoudre. Rendre possible. »</em></p>',
+    xpBase:150
+  },
+  4: {
+    icon:'⭐', color:'var(--gold-l)',
+    img:'bournac_fin_veilleur.jpg',
+    narr:'fin_veilleur.mp3',
+    badge:'Veilleur de Paix',
+    title:'C\'est pour ça qu\'on refuse la magie',
+    sub:'Ce que vous venez de faire — ça, ça dure.',
+    text:'<p>Le Maître Aldric met longtemps avant de parler. Puis il dit : <em>« Je vous ai regardés travailler. »</em></p>'
+      +'<p><em>« Kern a vu ce que je n\'aurais peut-être pas vu si vite. Réna a décidé sans panique. Et Lyam — tu as donné à chacun une porte de sortie qui ne ressemblait pas à une défaite. »</em></p>'
+      +'<p>Un silence.</p>'
+      +'<p><em>« C\'est pour ça qu\'on refuse la magie. Pas parce qu\'elle est interdite. Parce qu\'elle court-circuite exactement ça. »</em></p>'
+      +'<p>Il désigne les trois adolescents qui s\'éloignent ensemble. <em>« Ce que vous venez de faire — ça, ça dure. »</em></p>',
+    xpBase:150
+  }
+};
+
+function showFin(fin){
+  stopChrono(); stopNarr();
+  showCharPanel(false);
+  setTopBar(null);
+  setAmbiance('fin');
+  G.plays++;
+
+  var fd = FIN_DATA[fin] || FIN_DATA[1];
+  setScene(fd.img, fd.icon, 'badge-intro', 'Protocole Valdurne');
+  setNarrFile(fd.narr);
+  setProgress('Fin — '+fd.badge, 100);
+
+  // Calcul XP dégressif
+  var xp = 0;
+  var prevBest = G.bestFin;
+  if(G.plays === 1){ xp = 150; }
+  else if(fin > prevBest){ xp = 75; }
+  else if(G.plays === 2){ xp = 30; }
+  else { xp = 15; }
+  if(fin > G.bestFin) G.bestFin = fin;
+
+  // Sauvegarder
+  try {
+    localStorage.setItem('CERT_PROTOCOLE_VALDURNE_01', JSON.stringify({
+      v:1, d:new Date().toISOString(), plays:G.plays, bestFin:G.bestFin,
+      lastFin:fin, f:true, xp:xp
+    }));
+    if(xp > 0){
+      var evts = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+      evts.push({
+        id:'PROTOCOLE-VALDURNE-'+Date.now(),
+        type:'PIXHARE_PROGRESS',
+        player:G.player,
+        module:'PROTOCOLE_VALDURNE_01',
+        certKey:'CERT_PROTOCOLE_VALDURNE_01',
+        jdrXp:xp,
+        fin:fin,
+        d:new Date().toISOString()
+      });
+      if(evts.length>500) evts.splice(0,evts.length-500);
+      localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+      window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+    }
+  } catch(e){}
+
+  document.getElementById('tbXp').textContent = xp > 0 ? '+'+xp+' XP' : '';
+
+  var replayNote = '';
+  if(G.plays === 1) replayNote = '<p style="font-size:.82rem;color:var(--text-d);margin-top:8px">Tu peux rejouer — les XP sont dégressifs (75 → 30 → 15 XP). Chaque partie améliore la précision.</p>';
+  else if(G.plays < 4) replayNote = '<p style="font-size:.82rem;color:var(--text-d);margin-top:8px">Partie '+(G.plays)+' · Meilleure fin atteinte : '+FIN_DATA[G.bestFin].badge+'</p>';
+
+  html('<div class="screen active">'
+    +'<div class="screen-sigil" style="color:'+fd.color+'">'+fd.icon+'</div>'
+    +'<div class="screen-pre">Protocole Valdurne — Village de Bournac</div>'
+    +'<div class="screen-title">'+fd.title+'</div>'
+    +'<div class="screen-sub">'+fd.sub+'</div>'
+    +'<div class="screen-sep"></div>'
+    +'<div class="screen-body">'+fd.text+'</div>'
+    +'<div class="score-chips">'
+    +'<span class="score-chip chip-kern">Kern : '+G.kernScore+'/3</span>'
+    +'<span class="score-chip chip-rena">Réna : '+G.renaState+'</span>'
+    +'<span class="score-chip chip-lyam">'+fd.badge+'</span>'
+    +'</div>'
+    +(xp>0 ? '<div class="xp-badge">⭐ +'+xp+' XP'+(G.plays>1?' · partie '+G.plays:'')+'</div>' : '<div class="xp-badge" style="opacity:.4">XP déjà maximal pour cette fin</div>')
+    +replayNote
+    +'<div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:8px">'
+    +'<button class="btn-primary" onclick="restartGame()">↺ Rejouer</button>'
+    +'<button class="btn-secondary" onclick="returnHub()">← Retour au Hub pHARe</button>'
+    +'</div>'
+    +'</div>');
+}
+
+function restartGame(){
+  stopChrono(); stopNarr();
+  G.phase='intro'; G.step=0;
+  G.kernScore=0; G.renaCapital=20; G.renaState='favorable';
+  G.aldricLeft=2; G.lyamChoices=[]; G.kernClues=[]; G.renaDecisions=[];
+  G.gauges={ ewen:{mefiance:80,ouverture:20}, mira:{certitude:70,ecoute:30}, tomas:{fierte:85,verite:15}, kern:{confiance:50}, rena:{lucidite:60} };
+  G.currentFin=0;
+  kernSceneIdx=0; kernClueSelections={}; renaDIdx=0; lyamStep=0; tlOrder=[]; tlNextSlot=0;
+  document.getElementById('aldricCount').textContent='2';
+  document.getElementById('aldricBtn').disabled=false;
+  document.getElementById('tbXp').textContent='';
+  startIntro();
+}
+
+function returnHub(){ window.location.href = 'index_PIXHARe.html'; }
+
+// ══════════════════════════════════════════════════════════════
+// DÉMARRAGE
+// ══════════════════════════════════════════════════════════════
+startIntro();
+</script>
+</body>
+</html>
