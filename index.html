@@ -1379,8 +1379,21 @@ function syncPixharePlayerProgress(p){
   if(!p.pixhareDone||typeof p.pixhareDone!=='object')p.pixhareDone={};
   const countFromDone=pixhareDoneCount(p);
   const xpFromDone=pixhareXpFromDone(p.pixhareDone);
+  // Comptage : toujours prendre le max
   p.cp.pixhare=Math.max(Math.max(0,Number(p.cp.pixhare||0)),countFromDone);
-  p.pixhareXp=Math.max(Math.max(0,Number(p.pixhareXp||0)),xpFromDone);
+  // XP : ajouter seulement le delta des nouveaux modules classiques
+  // (p.pixhareXp inclut aussi JdR et metacog → ne pas écraser avec xpFromDone)
+  const prevXpFromDone=Number(p._prevXpFromDone||0);
+  const delta=xpFromDone-prevXpFromDone;
+  if(delta>0){
+    p.pixhareXp=(Number(p.pixhareXp||0)+delta);
+    p._prevXpFromDone=xpFromDone;
+  } else if(p._prevXpFromDone===undefined){
+    // Premier sync : initialiser sans écraser les JdR déjà comptés
+    p._prevXpFromDone=xpFromDone;
+    if(Number(p.pixhareXp||0)<xpFromDone)p.pixhareXp=xpFromDone;
+  }
+  p.pixhareXp=Math.max(0,Number(p.pixhareXp||0));
   return{count:Number(p.cp.pixhare||0),xp:Number(p.pixhareXp||0)};
 }
 function touchPlayer(p){if(p&&typeof p==='object')p.up=new Date().toISOString()}
