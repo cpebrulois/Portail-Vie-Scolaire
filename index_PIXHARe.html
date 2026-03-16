@@ -922,7 +922,9 @@ var JDR_PILLARS = [
         file: 'JDR_NUMERIQUE_A1.html',
         certKey: 'CERT_JDR_NUMERIQUE_A1',
         xp: 100,
-        available: true
+        available: true,
+        metacogFile: 'METACOG_NUMERIQUE_A1.html',
+        metacogCert: 'CERT_METACOG_NUMERIQUE_A1'
       },
       { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NUMERIQUE_A2', xp: 100, available: false },
       { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NUMERIQUE_A3', xp: 100, available: false },
@@ -944,7 +946,9 @@ var JDR_PILLARS = [
         file: 'JDR_JURIDIQUE_A1.html',
         certKey: 'CERT_JDR_JURIDIQUE_A1',
         xp: 100,
-        available: true
+        available: true,
+        metacogFile: 'METACOG_JURIDIQUE_A1.html',
+        metacogCert: 'CERT_METACOG_JURIDIQUE_A1'
       },
       { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_JURIDIQUE_A2', xp: 100, available: false },
       { year: 3, label: 'Année 3 — Les Apprentis',  title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_JURIDIQUE_A3', xp: 100, available: false },
@@ -958,6 +962,8 @@ function jdrIsDone(certKey) {
   return !!localStorage.getItem(certKey);
 }
 function jdrPillarUnlocked(jp) {
+  // En mode admin : tous les piliers sont visibles pour les tests
+  if(adminUnlocked) return true;
   return isDone(jp.prereqModule);
 }
 function jdrTotalXP() {
@@ -1022,9 +1028,12 @@ function renderValdurne() {
         '<span class="jdr-pillar-icon">' + jp.icon + '</span>' +
         '<span class="jdr-pillar-name" style="color:' + jp.color + '">' + jp.name + '</span>' +
       '</div>' +
-      (!pillarUnlocked
+      (!pillarUnlocked && !adminUnlocked
         ? '<div class="jdr-pillar-prereq">🔒 ' + jp.prereqLabel + '</div>'
-        : '<div class="jdr-pillar-prereq" style="color:#ffd700;font-style:normal">✅ Pilier validé — aventures disponibles</div>'
+        : (isDone(jp.prereqModule)
+            ? '<div class="jdr-pillar-prereq" style="color:#ffd700;font-style:normal">✅ Pilier validé — aventures disponibles</div>'
+            : '<div class="jdr-pillar-prereq" style="color:#ff8800;font-style:normal">🔧 Mode admin — accès forcé (pilier non validé)</div>'
+          )
       );
 
     // Slots JdR
