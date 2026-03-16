@@ -3,31 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Les Veilleurs de Valdurne — Les Cartes de Réna</title>
+<title>Les Veilleurs de Valdurne — Les Cartes de la Joute</title>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#060d12;--bg2:#09121a;--panel:#0f1e2d;
+  --bg:#08090a;--stone:#1a1e26;--stone-l:#232a36;
   --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
-  --stone:#142030;--stone-l:#1e3045;
-  --text:#ccd9e0;--text-m:#7a9ab0;--text-d:#445a6a;
-  --cyan:#00d4ff;--cyan-l:#67e8f9;--cyan-d:#0e7490;
-  --teal:#0d9488;--teal-l:#2dd4bf;
+  --text:#cdd5e0;--text-m:#7a8699;--text-d:#3d4a5c;
+  --cyan:#0891b2;--cyan-l:#22d3ee;--cyan-d:#164e63;
+  --emerald:#059669;--emerald-l:#34d399;
   --green:#2d6a4f;--green-l:#52b788;
-  --red:#991b1b;--red-l:#ef4444;
-  --border:rgba(200,168,75,.15);--border-l:rgba(200,168,75,.35);
+  --border:rgba(200,168,75,.14);--border-l:rgba(200,168,75,.32);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse at 60% 0%,rgba(0,212,255,.06) 0%,transparent 50%),
-             radial-gradient(ellipse at 20% 90%,rgba(13,148,136,.05) 0%,transparent 45%);}
+  background:radial-gradient(ellipse at 30% 0%,rgba(8,145,178,.07) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(5,150,105,.05) 0%,transparent 50%);}
 #app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 0 80px;}
-
-/* Ambiance */
-#ambient-bar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,13,18,.93);
-  border-bottom:1px solid var(--border);backdrop-filter:blur(12px);
-  display:flex;align-items:center;gap:14px;padding:8px 20px;}
+#ambient-bar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,9,10,.93);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);display:flex;align-items:center;gap:14px;padding:8px 20px;}
 .amb-label{color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:1px;white-space:nowrap;flex-shrink:0;}
 .amb-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;}
 .amb-toggle:hover{background:var(--gold);color:#000;}
@@ -35,24 +29,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .amb-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold);cursor:pointer;}
 .amb-status{color:var(--text-m);font-size:.7rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pb-chip{display:flex;align-items:center;gap:6px;background:rgba(200,168,75,.07);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:.7rem;color:var(--gold-l);flex-shrink:0;}
-
-/* Scène */
 .scene{padding-top:56px;min-height:100vh;display:none;flex-direction:column;animation:sceneFade .6s ease-out;}
 .scene.active{display:flex;}
 @keyframes sceneFade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-
 .scene-art{position:relative;width:100%;height:300px;overflow:hidden;background:var(--stone);}
-.scene-art img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:opacity .5s;}
-.scene-art .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5rem;
-  background:linear-gradient(180deg,#071828 0%,var(--bg) 100%);}
+.scene-art img{width:100%;height:100%;object-fit:cover;transition:opacity .5s;}
+.scene-art .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(180deg,#0a1525 0%,var(--bg) 100%);}
 .scene-art .art-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,var(--bg) 100%);}
-
 .scene-header{padding:20px 32px 0;}
 .scene-crumb{display:flex;gap:10px;align-items:center;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;margin-bottom:10px;}
 .scene-crumb span{color:var(--gold-d);}
 .scene-num{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:6px;}
 .scene-title{font-family:'Cinzel',serif;font-size:1.55rem;color:var(--gold-l);line-height:1.2;margin-bottom:14px;}
-
 .narr-bar{display:flex;align-items:center;gap:10px;background:rgba(200,168,75,.06);border:1px solid var(--border);border-radius:8px;padding:8px 14px;margin:0 32px 20px;}
 .narr-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:.2s;flex-shrink:0;}
 .narr-toggle:hover{background:var(--gold);color:#000;}
@@ -60,102 +48,57 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .narr-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);cursor:pointer;}
 .narr-label{color:var(--text-m);font-size:.7rem;flex:1;font-family:'Cinzel',serif;letter-spacing:.5px;}
 .narr-status{color:var(--text-d);font-size:.68rem;}
-
 .scene-body{padding:0 32px;flex:1;}
 .scene-text{font-size:1.08rem;line-height:1.88;color:var(--text);margin-bottom:22px;}
 .scene-text p{margin-bottom:14px;}
 .scene-text em{color:var(--gold-l);font-style:italic;}
 .scene-text strong{color:#e8dfc8;}
-
-/* Carte "donnée manquante" — spécial NUMÉRIQUE */
-.data-missing{
-  background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.22);
-  border-radius:10px;padding:14px 18px;margin:0 0 22px;
-  font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.5px;
-  color:#fca5a5;line-height:1.7;
-}
-.data-missing::before{content:'⚠️  ';font-size:1rem;}
-
-/* Carte "source à vérifier" */
-.source-card{
-  background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);
-  border-radius:10px;padding:14px 18px;margin:0 0 22px;
-}
-.source-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;
-  text-transform:uppercase;color:var(--cyan-l);margin-bottom:8px;display:block;}
-.source-text{font-size:.95rem;color:#a5f3fc;line-height:1.75;font-style:italic;}
-
-/* Réna parle */
-.rena-card{
-  background:rgba(13,148,136,.07);border:1px solid rgba(45,212,191,.22);
-  border-radius:10px;padding:14px 18px;margin:0 0 22px;
-}
-.rena-speaker{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--teal-l);margin-bottom:8px;display:block;}
-.rena-text{font-style:italic;color:#99f6e4;font-size:.98rem;line-height:1.75;}
-
-/* Pensée */
-.scene-thought{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);
-  border-radius:8px;padding:14px 18px;margin:0 0 22px;
-  font-style:italic;color:#a5f3fc;font-size:.95rem;line-height:1.7;}
+.annonce-card{background:rgba(8,145,178,.06);border:1px solid rgba(34,211,238,.22);border-radius:8px;padding:14px 20px;margin:0 0 22px;font-family:'IM Fell English',serif;}
+.annonce-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan-l);margin-bottom:8px;display:block;}
+.annonce-text{font-size:.95rem;color:#a5f3fc;line-height:1.75;font-style:italic;}
+.rena-card{background:rgba(5,150,105,.07);border:1px solid rgba(52,211,153,.22);border-radius:10px;padding:14px 20px;margin:0 0 22px;}
+.rena-speaker{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--emerald-l);margin-bottom:8px;display:block;}
+.rena-text{font-style:italic;color:#6ee7b7;font-size:.98rem;line-height:1.75;}
+.obs-card{background:rgba(8,145,178,.05);border:1px solid rgba(34,211,238,.15);border-radius:10px;padding:14px 18px;margin:0 0 22px;}
+.obs-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan-l);margin-bottom:10px;display:block;}
+.obs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.obs-item{background:rgba(8,145,178,.07);border:1px solid rgba(34,211,238,.12);border-radius:6px;padding:8px 12px;}
+.obs-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--cyan-l);margin-bottom:3px;}
+.obs-desc{font-size:.82rem;color:#a5f3fc;line-height:1.4;}
+.scene-thought{background:rgba(8,145,178,.07);border:1px solid rgba(34,211,238,.18);border-radius:8px;padding:14px 18px;margin:0 0 22px;font-style:italic;color:#a5f3fc;font-size:.95rem;line-height:1.7;}
 .scene-thought::before{content:'💭  ';}
-
-/* Citation */
-.scene-quote{border-left:3px solid var(--gold-d);padding:10px 18px;margin:0 0 22px;
-  background:rgba(200,168,75,.04);border-radius:0 6px 6px 0;}
+.scene-quote{border-left:3px solid var(--gold-d);padding:10px 18px;margin:0 0 22px;background:rgba(200,168,75,.04);border-radius:0 6px 6px 0;}
 .scene-quote p{font-style:italic;font-size:1rem;color:var(--text-m);line-height:1.7;}
-
-/* Indicateur "données" — jauge visuelle */
-.data-meter{
-  background:rgba(6,13,18,.6);border:1px solid rgba(0,212,255,.18);
-  border-radius:10px;padding:12px 16px;margin:0 0 22px;
-}
-.data-meter-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--text-d);margin-bottom:8px;display:block;}
-.data-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-.data-bar{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden;}
-.data-fill{height:100%;border-radius:4px;transition:width .8s ease;}
-.data-name{font-size:.72rem;color:var(--text-m);width:140px;flex-shrink:0;}
-.data-val{font-size:.7rem;color:var(--text-d);width:40px;text-align:right;flex-shrink:0;}
-
-/* Choix */
-.scene-prompt{font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;color:var(--gold);
-  text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.scene-prompt{font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .choices{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
-.choice-btn{background:var(--stone);border:1px solid var(--stone-l);border-radius:8px;
-  padding:16px 20px;text-align:left;cursor:pointer;transition:.25s;color:var(--text);
-  font-family:'Crimson Text',serif;font-size:1rem;line-height:1.5;position:relative;overflow:hidden;}
+.choice-btn{background:var(--stone);border:1px solid var(--stone-l);border-radius:8px;padding:16px 20px;text-align:left;cursor:pointer;transition:.25s;color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;line-height:1.5;position:relative;overflow:hidden;}
 .choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold-d);transition:.25s;}
 .choice-btn:hover{background:var(--stone-l);border-color:var(--gold);transform:translateX(4px);}
 .choice-btn:hover::before{background:var(--gold);}
 .choice-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;color:var(--gold-d);text-transform:uppercase;display:block;margin-bottom:4px;}
 .choice-title{font-weight:600;color:var(--gold-l);display:block;margin-bottom:3px;}
 .choice-sub{color:var(--text-m);font-size:.9rem;}
-
-/* Intro */
 #scene-intro{align-items:center;justify-content:center;padding-top:56px;text-align:center;}
 .intro-sigil{font-size:3.8rem;margin-bottom:20px;animation:glow 3s ease-in-out infinite;}
-@keyframes glow{0%,100%{filter:drop-shadow(0 0 8px rgba(0,212,255,.4))}50%{filter:drop-shadow(0 0 28px rgba(0,212,255,.9))}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 8px rgba(8,145,178,.5))}50%{filter:drop-shadow(0 0 28px rgba(34,211,238,.8))}}
 .intro-pretitle{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
 .intro-title{font-family:'IM Fell English',serif;font-size:2.3rem;color:var(--gold-l);line-height:1.2;margin-bottom:8px;}
 .intro-subtitle{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--text-m);font-style:italic;margin-bottom:30px;}
 .intro-sep{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 auto 28px;}
 .intro-desc{max-width:560px;margin:0 auto 28px;font-size:1.05rem;line-height:1.85;color:var(--text-m);}
-.intro-badge{display:inline-block;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:8px;padding:10px 18px;margin:0 auto 32px;font-size:.82rem;color:#a5f3fc;line-height:1.6;max-width:480px;}
+.intro-badge{display:inline-block;background:rgba(8,145,178,.1);border:1px solid rgba(34,211,238,.25);border-radius:8px;padding:10px 18px;margin:0 auto 32px;font-size:.82rem;color:#a5f3fc;line-height:1.6;max-width:480px;}
 .intro-badge strong{color:var(--cyan-l);}
 .intro-note{background:rgba(200,168,75,.06);border:1px solid var(--border);border-radius:8px;padding:14px 20px;max-width:480px;margin:0 auto 32px;font-size:.85rem;color:var(--text-d);line-height:1.6;}
 .btn-start{background:var(--gold-d);color:#f5ead0;border:none;padding:14px 40px;font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.25s;box-shadow:0 4px 20px rgba(200,168,75,.2);}
 .btn-start:hover{background:var(--gold);color:#000;transform:translateY(-2px);}
-
-/* Fin */
 #scene-fin{align-items:center;justify-content:center;padding:56px 32px 80px;text-align:center;}
 .fin-sigil{font-size:3.2rem;margin-bottom:18px;}
 .fin-title{font-family:'Cinzel',serif;font-size:1.75rem;color:var(--gold-l);margin-bottom:8px;}
 .fin-subtitle{font-family:'IM Fell English',serif;font-style:italic;color:var(--text-m);font-size:1.1rem;margin-bottom:26px;}
 .fin-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:8px 22px;border-radius:30px;font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold);margin-bottom:14px;}
-.fin-metacog-btn{display:inline-flex;align-items:center;gap:10px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3);padding:12px 24px;border-radius:10px;font-family:'Cinzel',serif;font-size:.82rem;color:var(--cyan-l);margin-bottom:26px;cursor:pointer;transition:.2s;text-decoration:none;letter-spacing:1px;text-transform:uppercase;}
-.fin-metacog-btn:hover{background:rgba(0,212,255,.18);border-color:var(--cyan-l);}
-.fin-legacy-box{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:20px 24px;max-width:540px;margin:0 auto 24px;text-align:left;}
+.fin-metacog-btn{display:inline-flex;align-items:center;gap:10px;background:rgba(8,145,178,.12);border:1px solid rgba(34,211,238,.35);padding:12px 24px;border-radius:10px;font-family:'Cinzel',serif;font-size:.82rem;color:var(--cyan-l);margin-bottom:26px;cursor:pointer;transition:.2s;text-decoration:none;letter-spacing:1px;text-transform:uppercase;}
+.fin-metacog-btn:hover{background:rgba(8,145,178,.22);}
+.fin-legacy-box{background:rgba(8,145,178,.08);border:1px solid rgba(34,211,238,.25);border-radius:10px;padding:20px 24px;max-width:540px;margin:0 auto 24px;text-align:left;}
 .fin-legacy-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan-l);margin-bottom:10px;}
 .fin-legacy-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:.92rem;color:var(--text-m);line-height:1.5;}
 .fin-legacy-item .dot{color:var(--gold-d);flex-shrink:0;margin-top:3px;}
@@ -168,491 +111,355 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .btn-fin-primary:hover{background:var(--gold);color:#000;}
 .btn-fin-secondary{background:none;border:1px solid var(--stone-l);color:var(--text-m);padding:12px 22px;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.2s;}
 .btn-fin-secondary:hover{border-color:var(--text-m);color:var(--text);}
-
-/* Progression */
-.progress-strip{position:fixed;bottom:0;left:0;right:0;z-index:900;background:rgba(6,13,18,.92);border-top:1px solid var(--border);backdrop-filter:blur(8px);padding:6px 20px;display:flex;align-items:center;gap:14px;}
+.progress-strip{position:fixed;bottom:0;left:0;right:0;z-index:900;background:rgba(8,9,10,.92);border-top:1px solid var(--border);backdrop-filter:blur(8px);padding:6px 20px;display:flex;align-items:center;gap:14px;}
 .prog-bar-wrap{flex:1;height:3px;background:var(--stone-l);border-radius:2px;overflow:hidden;}
 .prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan-d),var(--cyan-l));border-radius:2px;transition:width .5s ease;}
 .prog-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;color:var(--gold-d);flex-shrink:0;}
 .prog-step{font-size:.68rem;color:var(--text-d);flex-shrink:0;}
-
-@media(max-width:640px){
-  .scene-header,.scene-body{padding-left:18px;padding-right:18px;}
-  .narr-bar{margin-left:18px;margin-right:18px;}
-  .scene-title{font-size:1.3rem;}.scene-art{height:220px;}
-  .intro-title{font-size:1.8rem;}.fin-actions{flex-direction:column;align-items:stretch;}
-}
+@media(max-width:640px){.scene-header,.scene-body{padding-left:18px;padding-right:18px;}.narr-bar{margin-left:18px;margin-right:18px;}.scene-title{font-size:1.3rem;}.scene-art{height:220px;}.obs-grid{grid-template-columns:1fr;}.fin-actions{flex-direction:column;align-items:stretch;}}
 </style>
 </head>
 <body>
-
 <div id="ambient-bar">
   <span class="amb-label">🎵 Ambiance</span>
   <button class="amb-toggle" id="ambToggle">▶</button>
   <input class="amb-vol" type="range" id="ambVol" min="0" max="100" value="35">
-  <span class="amb-status" id="ambStatus">Le tableau des écuyers attend…</span>
-  <div class="pb-chip">💻 <span id="pbName">–</span></div>
+  <span class="amb-status" id="ambStatus">La grande salle de la Joute…</span>
+  <div class="pb-chip">🧭 <span id="pbName">–</span></div>
 </div>
-
 <div class="progress-strip">
   <span class="prog-label">Valdurne</span>
   <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
   <span class="prog-step" id="progStep">Intro</span>
 </div>
-
 <div id="app">
 
-  <!-- ══ INTRO ══ -->
   <div class="scene active" id="scene-intro">
     <div style="padding:60px 32px 40px;max-width:620px;margin:0 auto;">
-      <div class="intro-sigil">🗺️</div>
+      <div class="intro-sigil">🧭</div>
       <div class="intro-pretitle">Les Veilleurs de Valdurne · Année 1 · Pilier Numérique</div>
-      <div class="intro-title">Les Cartes de Réna</div>
-      <div class="intro-subtitle">Ce qui n'est pas écrit n'existe pas — jusqu'à ce qu'on l'écrive soi-même</div>
+      <div class="intro-title">Les Cartes de la Joute</div>
+      <div class="intro-subtitle">Lire ce qu'un texte dit, ne dit pas — et révèle par l'écart entre les deux</div>
       <div class="intro-sep"></div>
-      <div class="intro-desc">
-        Un matin du début de la cinquième semaine,
-        le nom de Lyam n'est plus sur le tableau des écuyers.
-        Pas barré. Pas remplacé. Juste <em>absent</em>.<br><br>
-        Quelqu'un a effacé son existence administrative.
-        Sans lever la main, sans laisser de trace,
-        en profitant des habitudes et des silences.
-      </div>
-      <div class="intro-badge">
-        <strong>💻 Ce JdR explore</strong> comment on efface et on falsifie une identité —
-        et comment on utilise les règles et les sources
-        pour se défendre contre l'information manipulée.
-      </div>
-      <div class="intro-note">
-        🗺️ Les "cartes" à Valdurne, c'est la donnée — ce qui est écrit et vérifiable.
-        Ce JdR t'apprend à lire derrière ce qui est affiché.
-      </div>
-      <button class="btn-start" id="btnStart">▶ Aller au tableau</button>
+      <div class="intro-desc">La Joute des Savoirs. Tirage au sort ce matin.
+        Ce ne sont plus les connaissances qui comptent le plus —
+        c'est la capacité à lire les gens rapidement, à trouver l'ambiguïté dans les textes,
+        et à décider si un document qui dit "nous sommes d'accord" devrait parfois dire "pas tout à fait".</div>
+      <div class="intro-badge"><strong>🧭 Ce JdR explore</strong> l'analyse de l'information —
+        ce qu'un texte dit, ce qu'il tait, et ce que la différence entre les deux
+        révèle sur l'intention de celui qui l'a rédigé.</div>
+      <div class="intro-note">🎭 Lyam gagne ex aequo avec l'équipe de Réna.
+        Ce qui compte ici, ce sont les décisions qui y mènent.</div>
+      <button class="btn-start" id="btnStart">▶ Entrer dans la Joute</button>
     </div>
   </div>
 
-  <!-- ══ SCÈNE 1 : Le tableau ══ -->
   <div class="scene" id="scene-1" data-step="1">
     <div class="scene-art">
-      <img src="jdr_numerique_a1_scene1.jpg" alt="Le tableau des écuyers — nom absent" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="art-fallback" style="display:none">👤</div>
+      <img src="jdr_numerique_a1_scene1.jpg" alt="Tirage au sort dans la grande cour" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🎲</div>
       <div class="art-overlay"></div>
     </div>
     <div class="scene-header">
-      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de Réna</div>
-      <div class="scene-num">Scène 1 — Le tableau des écuyers</div>
-      <div class="scene-title">Le nom qui n'est plus là</div>
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de la Joute</div>
+      <div class="scene-num">Scène 1 — La grande cour, matin de décembre</div>
+      <div class="scene-title">Le tirage au sort</div>
     </div>
     <div class="narr-bar">
       <button class="narr-toggle" data-audio="jdr_numerique_a1_scene1.mp3">🔊</button>
       <input class="narr-vol" type="range" min="0" max="100" value="80">
-      <span class="narr-label">Narration</span>
-      <span class="narr-status">Cliquer pour lancer</span>
+      <span class="narr-label">Narration</span><span class="narr-status">Cliquer pour lancer</span>
     </div>
     <div class="scene-body">
       <div class="scene-text">
-        <p>Le tableau des écuyers. Grande ardoise dans le couloir principal de l'aile pédagogique.
-        Mis à jour chaque semaine. Noms, ateliers, rangs provisoires.
-        <em>Si ton nom est dessus, tu existes à Valdurne.
-        Si ton nom n'y est pas, tu n'es nulle part.</em></p>
-        <p>Lyam cherche son nom. Une fois. Deux fois. Trois fois.</p>
+        <p>La modification est en bas de la feuille d'annonce, dans une formulation
+        qui a l'air anodine précisément parce qu'elle ne l'est pas :</p>
       </div>
-      <div class="data-missing">
-        Le nom de Lyam, fils du forgeron — absent.
-        Pas barré, pas remplacé, pas signalé comme modification.
-        Juste effacé. Comme s'il n'avait jamais été écrit.
+      <div class="annonce-card">
+        <span class="annonce-label">📋 Annonce — Joute des Savoirs</span>
+        <span class="annonce-text">Pour la première fois cette année, les équipes seront constituées
+        par le tirage au sort du matin même, et non par inscription préalable.</span>
       </div>
       <div class="scene-text">
-        <p>Kern est là, juste après dans l'ordre alphabétique. Les deux pages
-        qui précèdent Lyam sont là. Son nom seul a disparu.</p>
-        <p>Sa première réaction : vérifier qu'il lit correctement.
-        Sa deuxième : vérifier que c'est le bon tableau.
-        Sa troisième — celle qu'il a du mal à reconnaître comme telle —
-        quelque chose entre la honte et une colère froide
-        <em>qui n'a pas encore de direction.</em></p>
+        <p>Résultat du tirage : Réna est dans l'équipe d'en face — avec Daran de Mauren.
+        Il y a quelque chose d'inconfortable dans cette donnée.
+        Lyam prend une seconde pour en identifier la nature précise.
+        Ce n'est pas de la jalousie.</p>
+        <p>Il regarde Réna. Elle regarde la liste de son équipe comme un problème de topographie.
+        Elle lève les yeux vers lui brièvement.
+        Son expression dit : <em>je sais. C'est correct.</em></p>
       </div>
-      <div class="data-meter">
-        <span class="data-meter-label">Informations disponibles à ce moment</span>
-        <div class="data-row">
-          <span class="data-name">Fait constaté</span>
-          <div class="data-bar"><div class="data-fill" style="width:100%;background:linear-gradient(90deg,#0e7490,#00d4ff)"></div></div>
-          <span class="data-val">✓ sûr</span>
-        </div>
-        <div class="data-row">
-          <span class="data-name">Cause de l'absence</span>
-          <div class="data-bar"><div class="data-fill" style="width:15%;background:linear-gradient(90deg,#7c2d12,#f97316)"></div></div>
-          <span class="data-val">inconnue</span>
-        </div>
-        <div class="data-row">
-          <span class="data-name">Responsable</span>
-          <div class="data-bar"><div class="data-fill" style="width:8%;background:linear-gradient(90deg,#991b1b,#ef4444)"></div></div>
-          <span class="data-val">inconnu</span>
-        </div>
-      </div>
-      <div class="scene-prompt">Il va en cours comme si de rien n'était. Pourquoi ?</div>
+      <div class="scene-prompt">Lyam regarde Réna dans l'équipe de Daran. Qu'est-ce qu'il fait de cet inconfort ?</div>
       <div class="choices">
-        <button class="choice-btn" onclick="choose(1,'calcul')">
+        <button class="choice-btn" onclick="choose(1,'confiance')">
           <span class="choice-badge">Chemin A</span>
-          <span class="choice-title">Le calcul — ne pas agir avant de comprendre</span>
-          <span class="choice-sub">Accuser sans savoir ce qui s'est passé, c'est se mettre en tort. Il faut d'abord recueillir l'information. Agir vite avec des données incomplètes, c'est souvent agir mal.</span>
+          <span class="choice-title">Il fait confiance au signal — et se concentre sur son équipe</span>
+          <span class="choice-sub">Réna a évalué la situation et l'a trouvée gérable. Il détourne le regard et active la cartographie des dix jours d'observation.</span>
         </button>
-        <button class="choice-btn" onclick="choose(1,'honte')">
+        <button class="choice-btn" onclick="choose(1,'observe')">
           <span class="choice-badge">Chemin B</span>
-          <span class="choice-title">La honte — comme si c'était sa faute</span>
-          <span class="choice-sub">Ce réflexe — se demander si on n'a pas mérité d'être effacé — est la première conséquence de l'effacement. Il se referme pour ne pas montrer que ça l'atteint.</span>
+          <span class="choice-title">Il note l'inconfort comme une donnée sur lui-même</span>
+          <span class="choice-sub">Pas pour protéger Réna — pour comprendre pourquoi ça l'affecte. Cette question sur lui-même est une information utile.</span>
         </button>
-        <button class="choice-btn" onclick="choose(1,'observation')">
+        <button class="choice-btn" onclick="choose(1,'focusse')">
           <span class="choice-badge">Chemin C</span>
-          <span class="choice-title">L'observation — regarder qui d'autre l'a vu</span>
-          <span class="choice-sub">Quelqu'un d'autre a peut-être remarqué. Observer les réactions autour de lui peut donner des informations sur qui sait quoi — et depuis combien de temps.</span>
+          <span class="choice-title">Il met l'inconfort de côté — Réna gère sa situation, lui gère la sienne</span>
+          <span class="choice-sub">Dix jours d'observation. Il a une cartographie mentale des profils disponibles. C'est maintenant que ça sert.</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ══ SCÈNE 2 : Réna ══ -->
   <div class="scene" id="scene-2" data-step="2">
     <div class="scene-art">
-      <img src="jdr_numerique_a1_scene2.jpg" alt="Réna à la bibliothèque, parchemin et notes" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="art-fallback" style="display:none">📜</div>
-      <div class="art-overlay"></div>
-    </div>
-    <div class="scene-header">
-      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de Réna</div>
-      <div class="scene-num">Scène 2 — La bibliothèque</div>
-      <div class="scene-title">Ce que Réna a déjà compris</div>
-    </div>
-    <div class="narr-bar">
-      <button class="narr-toggle" data-audio="jdr_numerique_a1_scene2.mp3">🔊</button>
-      <input class="narr-vol" type="range" min="0" max="100" value="80">
-      <span class="narr-label">Narration</span>
-      <span class="narr-status">Cliquer pour lancer</span>
-    </div>
-    <div class="scene-body">
-      <div class="scene-text">
-        <p>Réna à la pause de mi-journée. Elle lève les yeux quand Lyam entre.
-        Son expression change légèrement — <em>de façon à peine perceptible,
-        mais elle transporte beaucoup d'information dans peu d'espace.</em></p>
-        <p>— Tu l'as vu, dit-elle. Ce n'est pas une question.</p>
-      </div>
-      <div class="rena-card">
-        <span class="rena-speaker">Réna — hypothèse</span>
-        <span class="rena-text">« Il y a un écuyer de deuxième année qui s'appelle Daran de Mauren.
-        Fils d'un baron. Il a passé une partie de la semaine dernière
-        à poser des questions sur les admissions par voie d'aptitude
-        auprès du bureau d'administration.
-        Plusieurs personnes l'ont vu.
-        La coïncidence temporelle me semble significative. »</span>
-      </div>
-      <div class="rena-card">
-        <span class="rena-speaker">Réna — définition</span>
-        <span class="rena-text">« Il n'a probablement rien fait lui-même.
-        Il a créé les conditions pour qu'une erreur administrative devienne commode.
-        C'est ça, une discrimination indirecte :
-        personne ne fait rien d'illégal —
-        quelqu'un crée simplement une ambiguïté
-        et laisse les habitudes faire le reste. »</span>
-      </div>
-      <div class="source-card">
-        <span class="source-label">🗺️ Méthode de Réna — croiser les sources</span>
-        <span class="source-text">Elle sort un bout de parchemin.
-        « Tu m'expliques exactement ce que tu as vu ce matin —
-        heure précise, ce qui était là et ce qui n'était pas là.
-        Je note. »<br><br>
-        Elle ne part pas de l'accusation. Elle part des faits vérifiables.</span>
-      </div>
-      <div class="scene-prompt">Lyam écoute Réna. Qu'est-ce qui lui semble le plus utile dans ce qu'elle dit ?</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="choose(2,'distinction')">
-          <span class="choice-badge">Chemin A</span>
-          <span class="choice-title">La distinction fait/hypothèse</span>
-          <span class="choice-sub">Elle sépare ce qu'on sait avec certitude (le nom absent) de ce qu'on suppose (le rôle de Daran). Cette séparation est la base de toute enquête sérieuse.</span>
-        </button>
-        <button class="choice-btn" onclick="choose(2,'methode')">
-          <span class="choice-badge">Chemin B</span>
-          <span class="choice-title">La méthode — documenter avant d'agir</span>
-          <span class="choice-sub">Prendre note des faits précis, dans l'ordre, avec les heures. Construire un dossier plutôt que de réagir à chaud. C'est ce qui rend une contestation crédible.</span>
-        </button>
-        <button class="choice-btn" onclick="choose(2,'vocabulaire')">
-          <span class="choice-badge">Chemin C</span>
-          <span class="choice-title">Le vocabulaire — nommer ce qui s'est passé</span>
-          <span class="choice-sub">"Discrimination indirecte" — mettre un nom précis sur ce qui s'est passé, c'est déjà une forme de pouvoir. Ce qu'on ne peut pas nommer, on ne peut pas contester.</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ SCÈNE 3 : Le bureau ══ -->
-  <div class="scene" id="scene-3" data-step="3">
-    <div class="scene-art">
-      <img src="jdr_numerique_a1_scene3.jpg" alt="Lyam face au secrétaire du bureau d'administration" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="art-fallback" style="display:none">⚖️</div>
-      <div class="art-overlay"></div>
-    </div>
-    <div class="scene-header">
-      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de Réna</div>
-      <div class="scene-num">Scène 3 — Le bureau d'administration</div>
-      <div class="scene-title">Utiliser les règles comme armure</div>
-    </div>
-    <div class="narr-bar">
-      <button class="narr-toggle" data-audio="jdr_numerique_a1_scene3.mp3">🔊</button>
-      <input class="narr-vol" type="range" min="0" max="100" value="80">
-      <span class="narr-label">Narration</span>
-      <span class="narr-status">Cliquer pour lancer</span>
-    </div>
-    <div class="scene-body">
-      <div class="scene-text">
-        <p>Lyam seul au bureau d'administration.
-        Réna avait dit : <em>« Si je viens avec toi, ils voient deux perturbateurs
-        qui contestent le système. Si tu y vas seul, ils voient un élève
-        qui signale une erreur administrative. Ce n'est pas la même chose. »</em></p>
-        <p>Le secrétaire l'écoute avec une façon d'enregistrer chaque mot
-        pour le classifier dans une catégorie préalablement définie.</p>
-        <p>Lyam expose les faits : son nom absent, l'heure, son acte de présence
-        qui confirme son affectation. Il reste factuel.
-        <strong>Il ne formule pas d'hypothèse sur les causes.</strong></p>
-      </div>
-      <div class="rena-card">
-        <span class="rena-speaker">Le secrétaire</span>
-        <span class="rena-text">« Il peut arriver que des noms soient omis lors des mises à jour.
-        Ce n'est pas une décision institutionnelle. »</span>
-      </div>
-      <div class="scene-thought">
-        C'est une réponse préparée. Elle ne nie pas les faits.
-        Elle les noie dans une catégorie floue.
-        Il faut quelque chose de précis pour lui répondre.
-        Quelque chose que le secrétaire ne peut pas classer comme une contestation.
-      </div>
-      <div class="source-card">
-        <span class="source-label">📜 Article 8 du règlement</span>
-        <span class="source-text">« Un page peut demander confirmation écrite de son statut
-        d'inscription à tout moment. »<br><br>
-        Réna l'a trouvé la veille. Elle l'a lu et relu.
-        Il dit exactement ce qu'elle croit qu'il dit.</span>
-      </div>
-      <div class="scene-prompt">Le secrétaire marque une pause. Lyam dit : "Le règlement article 8 prévoit..." Comment il se sent en disant ça ?</div>
-      <div class="choices">
-        <button class="choice-btn" onclick="choose(3,'solide')">
-          <span class="choice-badge">Chemin A</span>
-          <span class="choice-title">Solide — la règle est une armure réelle</span>
-          <span class="choice-sub">Citer un article précis, c'est sortir du registre de la plainte pour entrer dans celui du droit. Il ne demande plus — il exige ce qui est prévu. Ce n'est pas la même position.</span>
-        </button>
-        <button class="choice-btn" onclick="choose(3,'gratitude')">
-          <span class="choice-badge">Chemin B</span>
-          <span class="choice-title">Reconnaissance envers Réna — il n'aurait pas trouvé ça seul</span>
-          <span class="choice-sub">Cette règle existe depuis longtemps. Sans Réna, il aurait soit accusé sans preuves, soit attendu que ça se résolve. L'information utile, c'est souvent quelqu'un d'autre qui la détient.</span>
-        </button>
-        <button class="choice-btn" onclick="choose(3,'systeme')">
-          <span class="choice-badge">Chemin C</span>
-          <span class="choice-title">Lucidité — il joue à l'intérieur d'un système injuste</span>
-          <span class="choice-sub">Utiliser les règles du système pour se défendre du système, c'est efficace. Mais ça ne change pas le système. Ça crée juste un espace où on peut tenir debout — et c'est déjà beaucoup.</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ SCÈNE 4 : La Salle des Cartes ══ -->
-  <div class="scene" id="scene-4" data-step="4">
-    <div class="scene-art">
-      <img src="jdr_numerique_a1_scene4.jpg" alt="La Salle des Cartes, Lyam et Réna, soir" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <img src="jdr_numerique_a1_scene2.jpg" alt="L'équipe travaille sur la première épreuve" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="art-fallback" style="display:none">🗺️</div>
       <div class="art-overlay"></div>
     </div>
     <div class="scene-header">
-      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de Réna</div>
-      <div class="scene-num">Scène 4 — La Salle des Cartes</div>
-      <div class="scene-title">Ce que l'alliance signifie vraiment</div>
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de la Joute</div>
+      <div class="scene-num">Scène 2 — Première épreuve : cartographie institutionnelle</div>
+      <div class="scene-title">Lire les gens avant de lire le problème</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_numerique_a1_scene2.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span><span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Vingt minutes. Identifier dans un problème fictif le point de bifurcation
+        d'une décision institutionnelle —
+        <em>pas annuler, pas bloquer. Changer l'angle.</em></p>
+        <p>Lyam regarde son équipe avant de regarder le problème.</p>
+      </div>
+      <div class="obs-card">
+        <span class="obs-label">🧭 Cartographie mentale de l'équipe</span>
+        <div class="obs-grid">
+          <div class="obs-item">
+            <div class="obs-name">Page juriste</div>
+            <div class="obs-desc">Parle bien. Posture de salle d'audience. Connaît les institutions mieux que les autres.</div>
+          </div>
+          <div class="obs-item">
+            <div class="obs-name">Page 1re promo</div>
+            <div class="obs-desc">Moins à l'aise physiquement mais annote tout en écoutant — pense par écrit, structure bien.</div>
+          </div>
+          <div class="obs-item">
+            <div class="obs-name">Kern</div>
+            <div class="obs-desc">Trouve les angles inattendus — cherche où les conditions ont été créées, pas où elles ont bifurqué.</div>
+          </div>
+          <div class="obs-item">
+            <div class="obs-name">Deux autres pages</div>
+            <div class="obs-desc">Éléments périphériques — l'un donnera peut-être la bonne formulation finale.</div>
+          </div>
+        </div>
+      </div>
+      <div class="scene-text">
+        <p>Lyam distribue : <em>«Tu notes et tu structures, tu portes à la fin.»</em>
+        <em>«Tu parles en premier sur le fond.»</em>
+        Personne ne proteste.</p>
+        <p>Kern identifie la bifurcation non là où elle s'est produite,
+        mais <em>là où elle a été rendue possible</em> — un niveau en amont.
+        Beaucoup plus intéressant.</p>
+      </div>
+      <div class="scene-prompt">Lyam vient de distribuer les rôles selon ce qu'il a observé. Comment cette décision s'est prise ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(2,'observation')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">En lisant les gens — avant de lire le problème</span>
+          <span class="choice-sub">Les dix jours de préparation n'étaient pas pour mémoriser des textes. C'était pour cartographier comment les gens pensent. La compétence, c'est ça.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'efficacite')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Par calcul d'efficacité — bonnes personnes, bonnes places</span>
+          <span class="choice-sub">La page juriste connaît les institutions, la page qui écrit bien structure mieux. C'est logique — comme on répartit les outils dans un atelier.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'intuition')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Par intuition — quelque chose qu'il ne sait pas encore nommer</span>
+          <span class="choice-sub">Il n'a pas réfléchi longtemps. Il a regardé les deux personnes et quelque chose dans leur façon de tenir leur corps lui a dit qui ferait quoi.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene" id="scene-3" data-step="3">
+    <div class="scene-art">
+      <img src="jdr_numerique_a1_scene3.jpg" alt="Lyam et Réna à la fenêtre, la pause" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🌬️</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de la Joute</div>
+      <div class="scene-num">Scène 3 — La pause (10 minutes)</div>
+      <div class="scene-title">L'ambiguïté dans le texte</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_numerique_a1_scene3.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span><span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Dix minutes. Lyam va à la fenêtre — la cour, le puits en fer forgé.
+        Réna vient se mettre à côté de lui. Elle regarde la cour.</p>
+      </div>
+      <div class="rena-card">
+        <span class="rena-speaker">Réna — à voix très basse</span>
+        <span class="rena-text">Il y a quelque chose dans la deuxième épreuve.
+        La formulation du sujet annoncé hier soir est inhabituelle —
+        elle laisse une ambiguïté dans le protocole de réponse
+        qui n'est peut-être pas accidentelle.</span>
+      </div>
+      <div class="scene-thought">
+        «Tu penses que c'est une épreuve dans l'épreuve.»
+        «Je pense que le premier groupe qui demandera une clarification va apprendre quelque chose.
+        Ou se faire piéger. Je n'ai pas encore décidé.»
+      </div>
+      <div class="scene-quote">
+        <p>«Demande la clarification. Si c'est un piège, c'est un piège qui apprend quelque chose.
+        Et si ce n'est pas un piège, tu gagnes un avantage.» — Lyam</p>
+      </div>
+      <div class="scene-text">
+        <p>Réna réfléchit deux secondes. Elle dit : <em>«Oui.»</em>
+        Elle repart vers son équipe sans se retourner.</p>
+      </div>
+      <div class="scene-prompt">Lyam conseille Réna en deux phrases sans savoir si c'est juste. Sur quoi repose sa réponse ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(3,'principe')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Sur un principe — l'information vaut toujours le risque</span>
+          <span class="choice-sub">Si demander peut apprendre quelque chose même en cas d'échec, le rapport risque/bénéfice penche vers la question. C'est un raisonnement général, pas une intuition sur cette situation précise.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'rena')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Sur la confiance en Réna — elle a déjà fait la moitié du travail</span>
+          <span class="choice-sub">Elle a repéré l'ambiguïté, évalué les deux options, formulé l'hésitation. Ce qu'elle cherche, c'est une confirmation. Son hésitation à lui signifie qu'elle sait déjà.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'courage')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Sur l'idée que se taire par peur coûte toujours plus</span>
+          <span class="choice-sub">L'ambiguïté repérée mais non questionnée, c'est une information qu'on laisse aux autres. Si c'est un piège, il vaut mieux savoir qu'on y est tombé que ne jamais savoir ce qu'il cachait.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene" id="scene-4" data-step="4">
+    <div class="scene-art">
+      <img src="jdr_numerique_a1_scene4.jpg" alt="Lyam propose la dissidence dans le document" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">✒️</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Les Cartes de la Joute</div>
+      <div class="scene-num">Scène 4 — Deuxième épreuve : analyse de texte</div>
+      <div class="scene-title">Un document qui reconnaît sa limite</div>
     </div>
     <div class="narr-bar">
       <button class="narr-toggle" data-audio="jdr_numerique_a1_scene4.mp3">🔊</button>
       <input class="narr-vol" type="range" min="0" max="100" value="80">
-      <span class="narr-label">Narration</span>
-      <span class="narr-status">Cliquer pour lancer</span>
+      <span class="narr-label">Narration</span><span class="narr-status">Cliquer pour lancer</span>
     </div>
     <div class="scene-body">
       <div class="scene-text">
-        <p>Le lendemain matin, le nom de Lyam est revenu sur le tableau.
-        Pas ajouté discrètement en marge. À sa place exacte.
-        Comme si l'erreur n'avait jamais eu lieu.</p>
-        <p>Ce soir-là, dans la Salle des Cartes, Lyam dit à Réna :
-        <em>« Tu m'as appris à trouver l'article 8. Tu m'as appris
-        comment formuler la demande. Sans toi, j'aurais soit accusé
-        des gens sans preuves, soit attendu que ça se résolve tout seul.
-        Ni l'un ni l'autre n'aurait fonctionné. »</em></p>
-        <p>Il demande : <em>« Est-ce que tu as déjà eu quelqu'un
-        qui faisait ça pour toi ? »</em></p>
+        <p>La deuxième épreuve : identifier ce qu'un texte dit, ce qu'il ne dit pas,
+        et ce que <em>la différence entre les deux révèle sur l'intention</em>
+        de celui qui l'a rédigé. Document unique, signé par toute l'équipe.</p>
+        <p>L'équipe de Réna a demandé la clarification.
+        Réponse du Maître : la signature atteste la participation, pas l'accord.
+        On peut signer en formulant sa dissidence dans le document.</p>
+        <p>Lyam apprend ça en entendant l'échange de loin.
+        Il reste dix minutes. Il propose à la page juriste
+        d'intégrer sa dissidence sur un point précis.</p>
       </div>
-      <div class="rena-card">
-        <span class="rena-speaker">Réna — réponse</span>
-        <span class="rena-text">« Non. Pas de cette façon.
-        Mon père m'a appris à chercher les règles moi-même.
-        Mais savoir qu'une règle existe et avoir quelqu'un avec toi
-        pour aller l'utiliser, c'est différent. »</span>
+      <div class="rena-card" style="background:rgba(200,168,75,.06);border-color:rgba(200,168,75,.2);">
+        <span class="rena-speaker" style="color:var(--gold-l);">Page juriste</span>
+        <span class="rena-text" style="color:#fde68a;">«Tu es sûr ? Ça peut être lu comme une division de l'équipe.»</span>
       </div>
       <div class="scene-quote">
-        <p>« C'est pour ça que ça s'appelle une alliance. Pas un service. » — Réna</p>
+        <p>«Ça peut aussi être lu comme une équipe qui sait ce qu'elle ne sait pas encore.» — Lyam</p>
       </div>
       <div class="scene-text">
-        <p>Lyam pense à la discrimination indirecte —
-        <em>une règle neutre qui défavorise systématiquement une catégorie.</em>
-        Son effacement n'était pas un acte de violence.
-        C'était un geste qui profitait des habitudes, des silences,
-        des espaces où rien n'est explicitement interdit
-        mais où certaines personnes sont attendues et d'autres non.</p>
-        <p><strong>La règle écrite est une armure.
-        Ça ne t'empêche pas d'être attaqué.
-        Ça te donne de quoi riposter.</strong></p>
+        <p>La page juriste réfléchit. Elle écrit.</p>
+        <p>Résultat : ex aequo avec l'équipe de Réna.
+        Le jury a distingué deux approches différentes de la même compréhension.</p>
       </div>
-      <div class="scene-prompt">Ce soir, qu'est-ce que Lyam a vraiment appris — au-delà de l'article 8 ?</div>
+      <div class="scene-prompt">Lyam vient de dire qu'un document qui reconnaît sa limite est plus solide. Quelle est l'idée derrière ?</div>
       <div class="choices">
-        <button class="choice-btn" onclick="choose(4,'verifier')">
+        <button class="choice-btn" onclick="choose(4,'honnete')">
           <span class="choice-badge">Chemin A</span>
-          <span class="choice-title">Vérifier avant d'accuser — toujours</span>
-          <span class="choice-sub">Les faits d'abord, les hypothèses ensuite, les accusations jamais sans preuves. Cette discipline protège autant celui qui l'applique que ceux qu'il pourrait accuser à tort.</span>
+          <span class="choice-title">Un document honnête est plus crédible qu'un document parfait</span>
+          <span class="choice-sub">Montrer ce qu'on ne sait pas encore, c'est montrer qu'on a cherché jusqu'aux bords de ce qu'on sait. Les lecteurs attentifs trouvent les doutes cachés de toute façon.</span>
         </button>
-        <button class="choice-btn" onclick="choose(4,'regles')">
+        <button class="choice-btn" onclick="choose(4,'complet')">
           <span class="choice-badge">Chemin B</span>
-          <span class="choice-title">Les règles existent — encore faut-il les connaître</span>
-          <span class="choice-sub">L'information comme pouvoir. L'article 8 existait avant cette histoire. La différence, c'est de savoir qu'il existe. Connaître les règles, c'est la première forme d'autonomie.</span>
+          <span class="choice-title">La dissidence complète l'analyse — elle n'en est pas l'ennemie</span>
+          <span class="choice-sub">Ce que la page juriste conteste ajoute une couche de profondeur. Un document qui intègre ses propres contradictions est plus proche de la réalité qu'un document qui les efface.</span>
         </button>
-        <button class="choice-btn" onclick="choose(4,'alliance')">
+        <button class="choice-btn" onclick="choose(4,'veilleur')">
           <span class="choice-badge">Chemin C</span>
-          <span class="choice-title">Une alliance change ce qu'on peut faire</span>
-          <span class="choice-sub">Seul, il aurait mal réagi ou pas réagi. Avec Réna, il a agi au bon moment, au bon endroit, avec les bons mots. L'information utile se trouve souvent chez quelqu'un d'autre.</span>
+          <span class="choice-title">C'est ce qu'un Veilleur produit — pas un consensus, une vision</span>
+          <span class="choice-sub">L'épreuve demande ce qu'un texte dit, ne dit pas, révèle. Un document qui montre ses propres angles morts fait exactement ça sur lui-même. C'est plus que la réponse attendue.</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ══ FIN ══ -->
   <div class="scene" id="scene-fin">
-    <div class="fin-sigil">🗺️</div>
-    <div class="fin-title">Les Cartes de Réna</div>
-    <div class="fin-subtitle">Ce qui n'est pas écrit n'existe pas — jusqu'à ce qu'on l'écrive soi-même.</div>
+    <div class="fin-sigil">🧭</div>
+    <div class="fin-title">Les Cartes de la Joute</div>
+    <div class="fin-subtitle">Ce qu'on apprend aujourd'hui qu'on ne savait pas ce matin.</div>
     <div class="fin-xp">⭐ +100 XP envoyés au Portail</div>
-    <a class="fin-metacog-btn" id="metacogLink" href="METACOG_NUMERIQUE_A1.html">
-      🧠 Module réflexif — +100 XP supplémentaires
-    </a>
+    <a class="fin-metacog-btn" id="metacogLink" href="METACOG_NUMERIQUE_A1.html">🧠 Module réflexif — +100 XP supplémentaires</a>
     <div class="fin-legacy-box">
-      <div class="fin-legacy-title">🗺️ Mémoire de Lyam — Tome I · Pilier Numérique</div>
+      <div class="fin-legacy-title">🧭 Mémoire de Lyam — Tome I · Pilier Numérique</div>
       <div id="legacyItems"></div>
     </div>
     <div class="fin-cps">
       <div class="fin-cps-title">🌱 Compétences travaillées aujourd'hui</div>
-      <div class="fin-cps-item">Distinguer fait vérifié, hypothèse et accusation</div>
-      <div class="fin-cps-item">Reconnaître la désinformation et la manipulation indirecte</div>
-      <div class="fin-cps-item">Utiliser les règles écrites comme outil de défense</div>
-      <div class="fin-cps-item">Documenter une situation avant d'agir</div>
-      <div class="fin-cps-item">Comprendre la valeur de l'alliance informationnelle</div>
+      <div class="fin-cps-item">Lire les profils cognitifs avant de lire la tâche</div>
+      <div class="fin-cps-item">Identifier l'ambiguïté dans un texte et décider quoi en faire</div>
+      <div class="fin-cps-item">Distinguer ce qu'un document dit / ne dit pas / révèle par l'écart</div>
+      <div class="fin-cps-item">Intégrer une dissidence dans un document collectif sans le fragiliser</div>
+      <div class="fin-cps-item">Collaborer avec des inconnus sous contrainte de temps</div>
     </div>
     <div class="fin-actions">
       <button class="btn-fin-primary" onclick="returnToHub()">← Retour au Hub pHARe</button>
-      <button class="btn-fin-secondary" onclick="restartGame()">↺ Rejouer l'aventure</button>
+      <button class="btn-fin-secondary" onclick="restartGame()">↺ Rejouer</button>
     </div>
   </div>
-
 </div>
 
 <audio id="ambAudio" loop preload="none"><source src="valdurne_ambiance_numerique.mp3" type="audio/mpeg"></audio>
 <audio id="narrAudio" preload="none"></audio>
 
 <script>
-// Nomenclature :
-// jdr_numerique_a1_scene1.jpg … scene4.jpg
-// jdr_numerique_a1_scene1.mp3 … scene4.mp3
-// valdurne_ambiance_numerique.mp3
-
-var MODULE_ID='JDR_NUMERIQUE_A1', CERT_KEY='CERT_JDR_NUMERIQUE_A1',
-    XP_AMOUNT=100, HUB_URL='index_PIXHARe.html', TOTAL_STEPS=4;
+var MODULE_ID='JDR_NUMERIQUE_A1',CERT_KEY='CERT_JDR_NUMERIQUE_A1',
+    XP_AMOUNT=100,HUB_URL='index_PIXHARe.html',TOTAL_STEPS=4;
 var state={player:'',choices:{},current:'intro'};
-
-(function(){
-  var p=new URLSearchParams(window.location.search).get('player');
-  if(p&&p.length>1){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}
-  state.player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'–';
-  document.getElementById('pbName').textContent=state.player;
-})();
-
-function showScene(id){
-  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active');});
-  var el=document.getElementById('scene-'+id);if(el){el.classList.add('active');state.current=id;}
-  updateProgress(id);stopNarration();window.scrollTo(0,0);
-}
-function updateProgress(step){
-  var n=parseInt(step)||0;
-  var pct=step==='fin'?100:Math.round(n/TOTAL_STEPS*90);
-  document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('progStep').textContent=step==='intro'?'Intro':step==='fin'?'Terminé ✓':'Scène '+step+' / '+TOTAL_STEPS;
-}
-
-var legacyTexts={
-  '1_calcul':      'Face à l\'effacement : calcul froid. Pas agir avant de comprendre. L\'information d\'abord.',
-  '1_honte':       'Face à l\'effacement : honte réflexe. Comme si être effacé était sa faute. Première conséquence de la manipulation indirecte.',
-  '1_observation': 'Face à l\'effacement : observer qui d\'autre sait. L\'information sur les témoins est aussi une donnée.',
-  '2_distinction':  'Retenu de Réna : séparer fait certain et hypothèse. La base de toute enquête honnête.',
-  '2_methode':     'Retenu de Réna : documenter avant d\'agir. Un dossier factuel est plus solide qu\'une réaction.',
-  '2_vocabulaire': 'Retenu de Réna : nommer ce qui s\'est passé. "Discrimination indirecte" — ce qu\'on nomme, on peut le contester.',
-  '3_solide':      'En citant l\'article 8 : sentiment de solidité. La règle transforme une demande en exigence.',
-  '3_gratitude':   'En citant l\'article 8 : reconnaissance envers Réna. L\'information utile vient souvent de quelqu\'un d\'autre.',
-  '3_systeme':     'En citant l\'article 8 : lucidité. Utiliser les règles du système contre le système — efficace, mais pas suffisant pour changer le fond.',
-  '4_verifier':    'Apprentissage : vérifier avant d\'accuser, toujours. Cette discipline protège tout le monde.',
-  '4_regles':      'Apprentissage : les règles existent — encore faut-il les connaître. Connaître ses droits, c\'est la première autonomie.',
-  '4_alliance':    'Apprentissage : une alliance change ce qu\'on peut faire. L\'information utile se trouve souvent chez quelqu\'un d\'autre.',
-};
-
-function choose(scene,path){
-  state.choices[scene]=path;
-  var next=scene+1;
-  if(next>TOTAL_STEPS)finishGame();else showScene(next);
-}
-
-function buildLegacy(){
-  var c=document.getElementById('legacyItems');if(!c)return;c.innerHTML='';
-  Object.keys(state.choices).sort().forEach(function(s){
-    var p=state.choices[s],k=s+'_'+p,t=legacyTexts[k]||'';
-    if(t){var d=document.createElement('div');d.className='fin-legacy-item';d.innerHTML='<span class="dot">◆</span><span>'+t+'</span>';c.appendChild(d);}
-  });
-}
-
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p&&p.length>1){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}state.player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'–';document.getElementById('pbName').textContent=state.player;})();
+function showScene(id){document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active');});var el=document.getElementById('scene-'+id);if(el){el.classList.add('active');state.current=id;}updateProgress(id);stopNarration();window.scrollTo(0,0);}
+function updateProgress(step){var n=parseInt(step)||0;var pct=step==='fin'?100:Math.round(n/TOTAL_STEPS*90);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progStep').textContent=step==='intro'?'Intro':step==='fin'?'Terminé ✓':'Scène '+step+' / '+TOTAL_STEPS;}
+var legacyTexts={'1_confiance':'Face au tirage : Lyam fait confiance au signal de Réna et active la cartographie des dix jours.','1_observe':'Face au tirage : Lyam note son propre inconfort comme une donnée à comprendre.','1_focusse':'Face au tirage : Lyam met l\'inconfort de côté — Réna gère sa situation, lui gère la sienne.','2_observation':'Distribuer les rôles : en lisant les gens avant le problème — la vraie compétence préparée.','2_efficacite':'Distribuer les rôles : par calcul d\'efficacité — bonnes personnes, bonnes places.','2_intuition':'Distribuer les rôles : par intuition — quelque chose qu\'il ne peut pas encore nommer.','3_principe':'Conseiller Réna : sur un principe — l\'information vaut toujours le risque de la demander.','3_rena':'Conseiller Réna : sur la confiance — elle a déjà fait la moitié du travail.','3_courage':'Conseiller Réna : se taire par peur coûte toujours plus que poser la question.','4_honnete':'La dissidence : un document honnête est plus crédible qu\'un document parfait.','4_complet':'La dissidence : elle complète l\'analyse — elle n\'en est pas l\'ennemie.','4_veilleur':'La dissidence : c\'est ce qu\'un Veilleur produit — une vision, pas un consensus.'};
+function choose(scene,path){state.choices[scene]=path;var next=scene+1;if(next>TOTAL_STEPS)finishGame();else showScene(next);}
+function buildLegacy(){var c=document.getElementById('legacyItems');if(!c)return;c.innerHTML='';Object.keys(state.choices).sort().forEach(function(s){var p=state.choices[s],k=s+'_'+p,t=legacyTexts[k]||'';if(t){var d=document.createElement('div');d.className='fin-legacy-item';d.innerHTML='<span class="dot">◆</span><span>'+t+'</span>';c.appendChild(d);}});}
 function finishGame(){
   try{localStorage.setItem('VALDURNE_LEGACY_NUMERIQUE_A1',JSON.stringify({choices:state.choices,player:state.player,d:new Date().toISOString()}));}catch(e){}
-  try{
-    localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP_AMOUNT}));
-    var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
-    evts.push({id:'JDR-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:state.player,module:MODULE_ID,certKey:CERT_KEY,jdrXp:XP_AMOUNT,choices:state.choices,d:new Date().toISOString()});
-    if(evts.length>500)evts.splice(0,evts.length-500);
-    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
-    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
-  }catch(e){}
-  var ml=document.getElementById('metacogLink');
-  if(ml&&state.player&&state.player!=='–')ml.href='METACOG_NUMERIQUE_A1.html?player='+encodeURIComponent(state.player);
+  try{localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP_AMOUNT}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'JDR-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:state.player,module:MODULE_ID,certKey:CERT_KEY,jdrXp:XP_AMOUNT,choices:state.choices,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}
+  var ml=document.getElementById('metacogLink');if(ml&&state.player&&state.player!=='–')ml.href='METACOG_NUMERIQUE_A1.html?player='+encodeURIComponent(state.player);
   buildLegacy();showScene('fin');
 }
 function returnToHub(){window.location.href=HUB_URL;}
 function restartGame(){state.choices={};stopNarration();showScene('intro');}
-
-// Audio ambiance
 var ambAudio=document.getElementById('ambAudio'),ambPlaying=false;
-document.getElementById('ambToggle').addEventListener('click',function(){
-  if(ambPlaying){ambAudio.pause();ambPlaying=false;this.textContent='▶';document.getElementById('ambStatus').textContent='Le tableau des écuyers attend…';}
-  else{ambAudio.volume=document.getElementById('ambVol').value/100;ambAudio.play().then(function(){ambPlaying=true;document.getElementById('ambToggle').textContent='⏸';document.getElementById('ambStatus').textContent='Ambiance Valdurne en cours…';}).catch(function(){document.getElementById('ambStatus').textContent='Fichier : valdurne_ambiance_numerique.mp3';});}
-});
+document.getElementById('ambToggle').addEventListener('click',function(){if(ambPlaying){ambAudio.pause();ambPlaying=false;this.textContent='▶';document.getElementById('ambStatus').textContent='La grande salle de la Joute…';}else{ambAudio.volume=document.getElementById('ambVol').value/100;ambAudio.play().then(function(){ambPlaying=true;document.getElementById('ambToggle').textContent='⏸';document.getElementById('ambStatus').textContent='Ambiance de la Joute…';}).catch(function(){document.getElementById('ambStatus').textContent='Fichier : valdurne_ambiance_numerique.mp3';});}});
 document.getElementById('ambVol').addEventListener('input',function(){ambAudio.volume=this.value/100;});
-
-// Audio narration
 var narrAudio=document.getElementById('narrAudio'),narrPlaying=false,narrCurrent=null;
-function stopNarration(){narrAudio.pause();narrAudio.src='';narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊'});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Cliquer pour lancer'});}
-document.querySelectorAll('.narr-toggle').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    var bar=this.closest('.narr-bar'),src=this.getAttribute('data-audio'),
-        vol=bar.querySelector('.narr-vol').value/100,status=bar.querySelector('.narr-status');
-    if(narrPlaying&&narrCurrent===src){narrAudio.pause();narrPlaying=false;this.textContent='🔊';status.textContent='En pause';}
-    else{stopNarration();narrAudio.src=src;narrAudio.volume=vol;var self=this;narrAudio.play().then(function(){narrPlaying=true;narrCurrent=src;self.textContent='⏸';status.textContent='Narration en cours…';}).catch(function(){status.textContent='Fichier : '+src;});}
-  });
-});
+function stopNarration(){narrAudio.pause();narrAudio.src='';narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊';});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Cliquer pour lancer';});}
+document.querySelectorAll('.narr-toggle').forEach(function(btn){btn.addEventListener('click',function(){var bar=this.closest('.narr-bar'),src=this.getAttribute('data-audio'),vol=bar.querySelector('.narr-vol').value/100,status=bar.querySelector('.narr-status');if(narrPlaying&&narrCurrent===src){narrAudio.pause();narrPlaying=false;this.textContent='🔊';status.textContent='En pause';}else{stopNarration();narrAudio.src=src;narrAudio.volume=vol;var self=this;narrAudio.play().then(function(){narrPlaying=true;narrCurrent=src;self.textContent='⏸';status.textContent='Narration en cours…';}).catch(function(){status.textContent='Fichier : '+src;});}});});
 document.querySelectorAll('.narr-vol').forEach(function(s){s.addEventListener('input',function(){if(narrPlaying)narrAudio.volume=this.value/100;});});
-narrAudio.addEventListener('ended',function(){narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊'});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Narration terminée'});});
-
+narrAudio.addEventListener('ended',function(){narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊';});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Narration terminée';});});
 document.getElementById('btnStart').addEventListener('click',function(){showScene(1);});
 updateProgress('intro');
 </script>

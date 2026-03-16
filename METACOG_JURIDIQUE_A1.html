@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retour réflexif — Le Procès du Couloir Nord</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090e;--panel:#10131c;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --text:#d4cfc8;--text-m:#8a8278;--text-d:#52504a;
+  --blue:#1d4ed8;--blue-l:#60a5fa;--blue-d:#1e3a8a;
+  --amber:#b45309;--amber-l:#f59e0b;
+  --teal:#0d9488;--teal-l:#2dd4bf;
+  --green:#2d6a4f;--green-l:#52b788;
+  --red:#991b1b;--red-l:#ef4444;
+  --orange:#c2410c;--orange-l:#f97316;
+  --border:rgba(200,168,75,.14);--border-l:rgba(200,168,75,.32);
+  --card-bg:rgba(21,25,38,.96);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 25% 0%,rgba(29,78,216,.06) 0%,transparent 50%),
+             radial-gradient(ellipse at 75% 100%,rgba(180,83,9,.04) 0%,transparent 50%);}
+#app{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:32px 20px 100px;}
+
+.mc-header{text-align:center;margin-bottom:40px;}
+.mc-pretitle{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
+.mc-title{font-family:'Cinzel',serif;font-size:1.9rem;color:var(--gold-l);line-height:1.2;margin-bottom:8px;}
+.mc-subtitle{color:var(--text-m);font-size:.95rem;line-height:1.6;margin-bottom:20px;}
+.mc-sep{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 auto 20px;}
+.mc-xp-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;font-size:.82rem;color:var(--gold);margin-bottom:8px;}
+.mc-note{font-size:.8rem;color:var(--text-d);line-height:1.5;}
+
+.mc-phase{margin-bottom:40px;}
+.phase-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-d);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.phase-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06);}
+
+.mirror-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;transition:.3s;}
+.mirror-card.highlight{border-color:rgba(200,168,75,.4);background:rgba(200,168,75,.04);}
+.mirror-choice-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.mirror-icon{font-size:1.5rem;flex-shrink:0;margin-top:2px;}
+.mirror-choice-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-d);margin-bottom:4px;}
+.mirror-choice-text{font-size:.95rem;color:var(--gold-l);font-family:'Crimson Text',serif;font-style:italic;line-height:1.6;}
+.mirror-divider{height:1px;background:rgba(255,255,255,.06);margin:14px 0;}
+
+.research-block{background:rgba(13,148,136,.06);border:1px solid rgba(45,212,191,.18);border-radius:10px;padding:14px 18px;margin-bottom:12px;}
+.research-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--teal-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.research-text{font-size:.9rem;color:#99f6e4;line-height:1.7;}
+.research-text strong{color:#2dd4bf;}
+.research-source{font-size:.72rem;color:rgba(45,212,191,.5);margin-top:6px;font-style:italic;}
+
+.self-block{background:rgba(29,78,216,.07);border:1px solid rgba(96,165,250,.2);border-radius:10px;padding:14px 18px;margin-bottom:12px;}
+.self-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--blue-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.self-text{font-size:.9rem;color:#bfdbfe;line-height:1.7;}
+
+.tension-block{background:rgba(194,65,12,.06);border:1px solid rgba(249,115,22,.2);border-radius:10px;padding:14px 18px;margin-bottom:4px;}
+.tension-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--orange-l);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.tension-text{font-size:.9rem;color:#fed7aa;line-height:1.7;}
+
+.question-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+.question-num{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-d);margin-bottom:8px;}
+.question-text{font-size:1.05rem;color:var(--gold-l);font-family:'Crimson Text',serif;line-height:1.7;margin-bottom:16px;}
+.question-hint{font-size:.82rem;color:var(--text-d);font-style:italic;margin-bottom:14px;line-height:1.5;}
+
+.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;text-align:left;}
+.q-opt:hover{border-color:rgba(200,168,75,.3);background:rgba(200,168,75,.05);}
+.q-opt.selected{border-color:var(--gold-d);background:rgba(200,168,75,.08);}
+.q-opt.selected.correct{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.07);}
+.q-opt.selected.wrong{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05);}
+.q-opt-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;transition:.2s;}
+.q-opt.selected .q-opt-dot{background:var(--gold-d);border-color:var(--gold);}
+.q-opt.selected.correct .q-opt-dot{background:#52b788;border-color:#52b788;}
+.q-opt.selected.wrong .q-opt-dot{background:#ef4444;border-color:#ef4444;}
+.q-opt-text{font-size:.92rem;color:var(--text);line-height:1.5;}
+.q-feedback{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.88rem;line-height:1.6;display:none;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.25);color:#86efac;}
+.q-feedback.ko{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#fca5a5;}
+.q-validate{margin-top:12px;display:none;}
+.q-validate.show{display:block;}
+.btn-validate{background:rgba(200,168,75,.15);border:1px solid var(--border-l);color:var(--gold);padding:9px 20px;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;transition:.2s;}
+.btn-validate:hover{background:rgba(200,168,75,.25);}
+
+.open-question{margin-bottom:16px;}
+.open-label{font-size:.82rem;color:var(--text-m);margin-bottom:8px;display:block;line-height:1.5;}
+.open-textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;line-height:1.6;min-height:90px;resize:vertical;transition:.2s;}
+.open-textarea:focus{outline:none;border-color:var(--gold-d);background:rgba(200,168,75,.04);}
+.open-textarea::placeholder{color:var(--text-d);}
+.open-save-btn{padding:7px 16px;background:rgba(200,168,75,.1);border:1px solid var(--border);color:var(--gold-d);border-radius:6px;cursor:pointer;font-size:.8rem;margin-top:8px;transition:.2s;}
+.open-save-btn:hover{background:rgba(200,168,75,.18);color:var(--gold);}
+
+.transfer-card{background:rgba(45,106,79,.08);border:1px solid rgba(82,183,136,.22);border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+.transfer-label{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-l);margin-bottom:12px;}
+.transfer-scenario{font-size:.95rem;color:#86efac;font-family:'Crimson Text',serif;font-style:italic;line-height:1.7;margin-bottom:14px;padding-left:12px;border-left:3px solid rgba(82,183,136,.3);}
+.transfer-options{display:flex;flex-direction:column;gap:8px;}
+.transfer-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;}
+.transfer-opt:hover{border-color:rgba(82,183,136,.3);background:rgba(82,183,136,.05);}
+.transfer-opt.selected{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.08);}
+.transfer-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;}
+.transfer-opt.selected .transfer-dot{background:#52b788;border-color:#52b788;}
+.transfer-text{font-size:.92rem;color:var(--text);line-height:1.5;}
+.transfer-feedback{margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);font-size:.88rem;color:#86efac;line-height:1.6;display:none;}
+.transfer-feedback.show{display:block;}
+
+.mc-complete-zone{text-align:center;margin-top:40px;padding:30px;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;}
+.mc-complete-title{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold-l);margin-bottom:8px;}
+.mc-complete-sub{color:var(--text-m);font-size:.88rem;margin-bottom:20px;line-height:1.6;}
+.mc-complete-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;font-size:.85rem;color:var(--gold);margin-bottom:20px;}
+.btn-complete{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0d0c0a;border:none;padding:14px 36px;font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:8px;transition:.25s;font-weight:700;box-shadow:0 4px 20px rgba(200,168,75,.25);}
+.btn-complete:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btn-complete:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-return{background:none;border:1px solid rgba(255,255,255,.12);color:var(--text-m);padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.88rem;font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase;transition:.2s;display:block;margin:10px auto 0;}
+.btn-return:hover{border-color:rgba(255,255,255,.25);color:var(--text);}
+
+#mc-progress-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:999;background:rgba(255,255,255,.05);}
+#mc-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue-d),var(--amber-l));width:0%;transition:width .5s ease;}
+
+@media(max-width:600px){#app{padding:20px 14px 80px;}.mc-title{font-size:1.5rem;}.mirror-card,.question-card,.transfer-card{padding:16px 16px;}}
+</style>
+</head>
+<body>
+<div id="mc-progress-bar"><div id="mc-progress-fill"></div></div>
+<div id="app">
+
+  <div class="mc-header">
+    <div class="mc-pretitle">Retour réflexif · Pilier Juridique · Année 1</div>
+    <div class="mc-title">Le Procès du Couloir Nord</div>
+    <div class="mc-subtitle">
+      Tu viens de traverser un procès sans juge, sans avocat,
+      avec pour seules armes un Recueil des usages et trois élèves qui savent écouter.
+      Ce module te permet de comprendre ce que tes choix révèlent
+      sur ta façon de te défendre — et de défendre les autres.
+    </div>
+    <div class="mc-sep"></div>
+    <div class="mc-xp-badge">🧠 +100 XP supplémentaires à la clé</div>
+    <p class="mc-note">Questions ouvertes privées, jamais transmises. Les QCM ont une réponse attendue — jamais contre toi.</p>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="mc-phase">
+    <div class="phase-label">Phase 1 — Analyse de tes choix</div>
+
+    <div class="mirror-card" id="m1">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 1</div>
+          <div class="mirror-choice-text" id="m1-choice">Kern entend la nouvelle et dit immédiatement : "On va voir Réna."</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text">
+          La <strong>recherche d'aide en situation d'adversité</strong>
+          (Cutrona & Russell, 1990) distingue deux types de soutien :
+          le soutien instrumental (quelqu'un qui aide concrètement)
+          et le soutien émotionnel (quelqu'un qui valide ce qu'on ressent).
+          <br><br>
+          Dire immédiatement "on va voir Réna" révèle que Kern cherche
+          du soutien <strong>instrumental</strong> — pas de la consolation,
+          une ressource opérationnelle. Cette orientation vers l'action
+          plutôt que vers la plainte est associée aux personnes
+          ayant un fort <strong>locus of control interne</strong>
+          (Rotter, 1966) : la conviction que ce qui leur arrive
+          peut être influencé par leurs propres décisions.
+          <br><br>
+          Lyam interprète ce réflexe. Cette interprétation révèle
+          ce qu'il valorise dans les réponses à l'adversité.
+        </div>
+        <div class="research-source">Sources : Cutrona & Russell (1990) — soutien social, Rotter (1966) — locus of control</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m1-self">
+          Ta lecture du geste de Kern révèle ce que tu valorises
+          face à l'adversité — l'efficacité, l'alliance, ou le contrôle.
+          Aucune n'est moins valide que les autres : elles correspondent
+          à des forces réelles selon le contexte.
+        </div>
+      </div>
+    </div>
+
+    <div class="mirror-card" id="m2">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 2</div>
+          <div class="mirror-choice-text" id="m2-choice">Réna explique la présomption de bonne foi.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text">
+          La distinction entre <strong>présomption d'innocence</strong>
+          (je n'ai pas à prouver que je n'ai pas fait)
+          et <strong>présomption de bonne foi</strong>
+          (tout le monde est supposé avoir agi honnêtement,
+          y compris celui qui a écrit le registre)
+          est centrale en droit institutionnel.
+          <br><br>
+          La recherche en <strong>psychologie de la justice procédurale</strong>
+          (Tyler & Lind, 1992) montre que les individus perçoivent
+          une décision comme juste non pas seulement en fonction
+          du résultat obtenu, mais en fonction de la qualité
+          du processus — ont-ils eu voix au chapitre ?
+          leurs arguments ont-ils été entendus ?
+          <br><br>
+          Comprendre les règles d'un système pour s'en servir
+          plutôt que de les subir est ce qu'on appelle
+          la <strong>littératie juridique</strong> —
+          une compétence inégalement distribuée dans la société.
+        </div>
+        <div class="research-source">Sources : Tyler & Lind (1992) — justice procédurale, Silbey (2005) — conscience du droit</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m2-self">
+          Ta façon de recevoir l'explication de Réna révèle
+          ton rapport aux règles institutionnelles —
+          les vois-tu comme des obstacles, des outils, ou des territoires encore inconnus ?
+        </div>
+      </div>
+    </div>
+
+    <div class="mirror-card" id="m3">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 3</div>
+          <div class="mirror-choice-text" id="m3-choice">Dans le couloir, Lyam entend la voix de Daran.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text">
+          Le concept de <strong>capital social</strong> (Bourdieu, 1986)
+          désigne les ressources qu'on peut mobiliser grâce à son réseau
+          et à ses appartenances sociales.
+          Daran de Mauren est dans la salle non parce qu'il a enfreint
+          une règle, mais parce qu'il possède un capital social
+          qui lui permet de demander et d'obtenir des choses
+          que d'autres ne sauraient même pas demander.
+          <br><br>
+          Ce n'est pas de la corruption — c'est de l'<strong>inégalité de compétences</strong>
+          face aux institutions. Les travaux de Bourdieu montrent que
+          les institutions traitent tout le monde formellement de façon égale,
+          tout en favorisant structurellement ceux qui connaissent
+          les codes implicites du jeu.
+          <br><br>
+          Attendre dans le couloir peut être subi (je n'ai pas le choix)
+          ou choisi (c'est la décision stratégique correcte).
+          La différence est dans l'agentivité — Lyam a-t-il décidé
+          d'attendre, ou a-t-il simplement attendu ?
+        </div>
+        <div class="research-source">Sources : Bourdieu (1986) — capital social et culturel, Lareau (2003) — inégalités et institutions</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m3-self">
+          Ta façon de gérer le couloir révèle
+          si tu vis l'attente comme une contrainte subie
+          ou comme une décision active.
+          Cette distinction est au cœur de l'agentivité
+          dans les situations où on n'a pas le contrôle direct.
+        </div>
+      </div>
+      <div class="tension-block">
+        <div class="tension-label">⚠️ Point à travailler</div>
+        <div class="tension-text" id="m3-tension">
+          La compétence que Daran maîtrise — savoir utiliser les espaces
+          laissés par les règles — n'est pas réservée aux fils de baron.
+          Elle s'apprend. La question est : est-ce que tu as envie de l'apprendre,
+          et pour quoi faire ?
+        </div>
+      </div>
+    </div>
+
+    <div class="mirror-card" id="m4">
+      <div class="mirror-choice-row">
+        <div class="mirror-icon">🪞</div>
+        <div>
+          <div class="mirror-choice-label">Ton choix — Scène 4</div>
+          <div class="mirror-choice-text" id="m4-choice">Le dossier est classé sans suite.</div>
+        </div>
+      </div>
+      <div class="mirror-divider"></div>
+      <div class="research-block">
+        <div class="research-label">🔬 Ce que la recherche dit</div>
+        <div class="research-text">
+          La <strong>théorie de la résignation adaptée</strong>
+          (Janoff-Bulman, 1992) distingue deux réponses
+          à un résultat injuste mais irréversible :
+          la rumination (rester bloqué sur l'injustice)
+          et l'intégration (reconnaître l'injustice sans en faire
+          le centre de sa vie).
+          <br><br>
+          Accepter un résultat imparfait ne signifie pas
+          approuver l'injustice qui l'a rendu nécessaire.
+          C'est une forme de sagesse pratique que les philosophes stoïciens
+          appelaient <em>discernement</em> — distinguer ce qui dépend de nous
+          de ce qui n'en dépend pas.
+          <br><br>
+          La recherche sur la <strong>résilience institutionnelle</strong>
+          montre que les individus qui font confiance
+          aux processus légaux et institutionnels
+          — même imparfaits — ont une meilleure santé mentale à long terme
+          que ceux qui en attendent une justice absolue.
+        </div>
+        <div class="research-source">Sources : Janoff-Bulman (1992) — reconstruction des croyances, Tyler (1990) — confiance dans les institutions</div>
+      </div>
+      <div class="self-block">
+        <div class="self-label">💡 Ce que ça dit de toi</div>
+        <div class="self-text" id="m4-self">
+          Ta lecture du résultat révèle ton rapport à la justice imparfaite —
+          est-ce que tu peux agir dans un système défaillant
+          sans perdre ni ta combativité ni ta lucidité sur ses limites ?
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="mc-phase">
+    <div class="phase-label">Phase 2 — Questions de consolidation</div>
+
+    <div class="question-card" id="q1-card">
+      <div class="question-num">Question 1 / 4 — Compréhension</div>
+      <div class="question-text">
+        Selon Tyler et Lind, quand est-ce qu'une personne perçoit une décision
+        institutionnelle comme juste — même si le résultat ne lui est pas favorable ?
+      </div>
+      <div class="question-hint">💡 Ce n'est pas une question de résultat.</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q1','a')"><div class="q-opt-dot"></div><div class="q-opt-text">Quand elle gagne — la justice se mesure au résultat obtenu.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','b')"><div class="q-opt-dot"></div><div class="q-opt-text">Quand le processus a été équitable — qu'elle a eu voix au chapitre, que ses arguments ont été entendus et pris en compte, même si la décision finale lui est défavorable.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','c')"><div class="q-opt-dot"></div><div class="q-opt-text">Quand les règles ont été appliquées à la lettre, sans exception.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','d')"><div class="q-opt-dot"></div><div class="q-opt-text">Quand elle comprend les raisons de la décision — la transparence suffit.</div></div>
+      </div>
+      <div class="q-validate show" id="q1-validate"><button class="btn-validate" onclick="validateQ('q1','b')">Valider ma réponse</button></div>
+      <div class="q-feedback" id="q1-feedback"></div>
+    </div>
+
+    <div class="question-card" id="q2-card">
+      <div class="question-num">Question 2 / 4 — Application</div>
+      <div class="question-text">
+        Daran de Mauren est dans la salle du Conseil sans avoir enfreint aucune règle.
+        Selon Bourdieu, comment appelle-t-on ce type d'avantage
+        qui ne vient pas de la triche mais de la maîtrise des codes implicites d'une institution ?
+      </div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q2','a')"><div class="q-opt-dot"></div><div class="q-opt-text">Capital économique — la richesse de sa famille lui donne accès à des avantages.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','b')"><div class="q-opt-dot"></div><div class="q-opt-text">Corruption — il contourne les règles en utilisant son influence.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','c')"><div class="q-opt-dot"></div><div class="q-opt-text">Capital social et culturel — il mobilise son réseau et sa maîtrise des codes institutionnels, ce qui lui donne accès à des espaces que d'autres ne savent pas demander.</div></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','d')"><div class="q-opt-dot"></div><div class="q-opt-text">Privilège formel — les règles lui accordent explicitement plus de droits qu'aux autres.</div></div>
+      </div>
+      <div class="q-validate show" id="q2-validate"><button class="btn-validate" onclick="validateQ('q2','c')">Valider ma réponse</button></div>
+      <div class="q-feedback" id="q2-feedback"></div>
+    </div>
+
+    <div class="question-card" id="q3-card">
+      <div class="question-num">Question 3 / 4 — Réflexion personnelle</div>
+      <div class="question-text">
+        Est-ce que tu as déjà vécu une situation dans une institution
+        (école, club, association…) où les règles ont été appliquées "à la lettre"
+        mais où le résultat t'a semblé injuste quand même ?
+        Qu'est-ce qui n'allait pas — le résultat, ou le processus ?
+      </div>
+      <div class="open-question">
+        <label class="open-label" for="q3-text">Ta réflexion — privée, jamais transmise.</label>
+        <textarea class="open-textarea" id="q3-text" placeholder="Écris ici…"></textarea>
+        <button class="open-save-btn" onclick="saveOpen('q3')">💾 Enregistrer</button>
+        <div id="q3-saved" style="font-size:.75rem;color:#52b788;margin-top:6px;display:none;">✓ Enregistrée</div>
+      </div>
+    </div>
+
+    <div class="transfer-card" id="q4-card">
+      <div class="transfer-label">Question 4 / 4 — Transfert dans la vraie vie</div>
+      <div class="question-text" style="margin-bottom:14px;color:#86efac;">
+        Situation : Un camarade de ta classe est accusé d'avoir triché à un devoir.
+        Tu sais que c'est faux — vous étiez ensemble au moment où la supposée triche
+        a eu lieu. Le prof a déjà rendu sa conclusion provisoire.
+      </div>
+      <div class="transfer-scenario">
+        Il reste 48 heures avant que la sanction soit définitivement prononcée.
+        Tu n'as pas de preuve écrite — seulement ton témoignage.
+      </div>
+      <div class="transfer-options">
+        <div class="transfer-opt" onclick="selectTransfer(this,'a')"><div class="transfer-dot"></div><div class="transfer-text">Je ne fais rien — une décision déjà prise ne changera pas, et m'impliquer me ferait risquer des problèmes.</div></div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'b')"><div class="transfer-dot"></div><div class="transfer-text">Je vais directement voir le prof et je lui dis ce que je sais, avec les détails précis.</div></div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'c')"><div class="transfer-dot"></div><div class="transfer-text">Je cherche d'abord s'il existe une procédure formelle de recours, pour que mon témoignage soit versé dans un cadre officiel plutôt qu'en conversation informelle.</div></div>
+        <div class="transfer-opt" onclick="selectTransfer(this,'d')"><div class="transfer-dot"></div><div class="transfer-text">J'en parle d'abord au camarade concerné pour qu'il sache que je peux témoigner — et je le laisse décider s'il veut s'en servir et comment.</div></div>
+      </div>
+      <div class="transfer-feedback" id="transfer-feedback"></div>
+      <div id="transfer-validate" style="margin-top:12px;display:none;">
+        <button class="btn-validate" onclick="validateTransfer()">Voir l'analyse</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-complete-zone">
+    <div class="mc-complete-title">Réflexion terminée</div>
+    <div class="mc-complete-sub">Tu as exploré ce que signifie utiliser les règles pour se défendre — et ce que ça révèle sur ta façon de te situer face aux institutions.</div>
+    <div class="mc-complete-xp">🧠 +100 XP</div><br>
+    <button class="btn-complete" id="completeBtn" onclick="completeModule()" disabled>Valider le module réflexif</button>
+    <button class="btn-return" onclick="window.location.href='index_PIXHARe.html'">← Retour au Hub PIXHARe</button>
+  </div>
+
+</div>
+
+<script>
+var MODULE_ID='METACOG_JURIDIQUE_A1',CERT_KEY='CERT_METACOG_JURIDIQUE_A1',
+    XP_AMOUNT=100,LEGACY_KEY='VALDURNE_LEGACY_JURIDIQUE_A1',HUB_URL='index_PIXHARe.html';
+
+var playerCode='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p&&p.length>1)localStorage.setItem('pvs_current_player',p);playerCode=localStorage.getItem('pvs_current_player')||'';})();
+
+var legacy=null;
+try{legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||'null');}catch(e){}
+var choices=legacy?(legacy.choices||{}):{};
+
+var MIRRORS={
+  s1:{
+    pragmatisme:{choice:"Tu y vois du pragmatisme — la colère peut attendre, l'action non.",self:"Valoriser l'efficacité avant l'expression émotionnelle révèle une orientation vers l'<strong>action instrumentale</strong>. C'est une force réelle dans les crises — à condition de ne pas confondre absence de plainte et absence de souffrance."},
+    confiance:{choice:"Tu y vois de la confiance — dans Réna, et dans l'alliance des trois.",self:"Lire le réflexe de Kern comme un geste de confiance révèle ta sensibilité aux liens de solidarité. Tu perçois l'injustice comme quelque chose qui se combat ensemble, pas seul. C'est une lecture relationnelle — aussi valide que la lecture pragmatique."},
+    controle:{choice:"Tu y vois une façon de garder le contrôle — agir plutôt que subir.",self:"Interpréter la réponse de Kern comme une stratégie de contrôle révèle ta conscience du <strong>locus of control</strong> — la conviction qu'on peut influencer ce qui nous arrive. C'est l'un des facteurs de résilience les plus documentés."}
+  },
+  s2:{
+    systeme:{choice:"Tu comprends que la présomption de bonne foi protège le système — pas la vérité.",self:"Cette lecture critique est juste et lucide. La présomption de bonne foi est à double tranchant : elle protège aussi Kern. Réna l'a compris avant tout le monde. Voir comment un mécanisme peut être retourné, c'est le début de la littératie juridique.",
+    tension:"La lucidité sur les défauts d'un système peut parfois conduire à ne plus essayer de s'en servir. La compétence est de voir les failles ET de trouver les leviers."},
+    arme:{choice:"Tu comprends que Réna a retourné la règle — si tout le monde est de bonne foi, Kern l'est aussi.",self:"Cette lecture stratégique est exactement ce que Réna a fait. Comprendre qu'une règle peut servir dans les deux sens révèle une intelligence du droit comme outil — pas comme vérité."},
+    apprend:{choice:"Tu comprends que tu ne comprends pas encore — et que Réna voit ce que tu ne vois pas.",self:"Reconnaître honnêtement les limites de sa propre compréhension est une forme de <strong>métacognition</strong> avancée. Beaucoup préfèrent prétendre comprendre. Toi tu nommes l'ignorance — ce qui est la première condition pour la réduire."}
+  },
+  s3:{
+    tient:{choice:"Dans le couloir, tu tiens — ne pas entrer c'est aussi une décision active.",self:"Reconnaître l'attente comme une décision plutôt qu'une contrainte subie, c'est de l'<strong>agentivité</strong>. Tu n'es pas passif — tu as choisi d'être là, dehors, parce que c'est la meilleure position possible. C'est une forme de discipline stratégique."},
+    ecoute:{choice:"Dans le couloir, tu écoutes — chaque information peut servir.",self:"Rester attentif même dans une situation de contrainte révèle une <strong>veille informationnelle</strong> active. Tu ne subis pas le couloir — tu travailles dedans. C'est un réflexe de praticien."},
+    comprend:{choice:"Dans le couloir, tu comprends quelque chose sur comment le pouvoir utilise les espaces des règles.",self:"Cette prise de conscience — que les codes implicites des institutions sont une compétence, pas un privilège figé — est ce que Bourdieu appelle la <strong>prise de conscience de l'habitus</strong>. Voir le mécanisme, c'est la première étape pour s'en emparer."}
+  },
+  s4:{
+    insatisfait:{choice:"Ce résultat n'est pas juste — Kern méritait mieux.",self:"Cette insatisfaction est moralement honnête. Elle refuse de confondre 'classé' et 'réparé'. Elle maintient vivant le souvenir de l'injustice réelle sous la formulation administrative. C'est une mémoire morale nécessaire — à condition de ne pas en faire une rumination.",
+    tension:"La résignation peut devenir un piège si elle empêche d'agir la prochaine fois. Garder l'insatisfaction vivante, c'est la convertir en compétence pour la prochaine bataille — pas en amertume permanente."},
+    realiste:{choice:"Moins que ce qu'on voulait, plus qu'au départ. C'est à ça que ressemble ne pas perdre.",self:"Cette posture — accepter un résultat imparfait sans perdre de vue l'injustice réelle — est ce que les stoïciens appelaient le <em>discernement</em>. Les recherches sur la résilience confirment que c'est l'une des postures les plus saines face aux institutions imparfaites."},
+    apprend:{choice:"Ce qui compte c'est ce qu'ils savent maintenant faire — une compétence acquise.",self:"Lire l'issue d'un conflit institutionnel en termes d'apprentissage plutôt que de victoire/défaite révèle un <strong>growth mindset</strong> appliqué au domaine juridique. La prochaine fois, tu seras plus armé. C'est réel."}
+  }
+};
+
+var Q_FEEDBACK={
+  q1:{correct:'b',
+    ok:'✓ Exact. Tyler et Lind ont montré de façon robuste que la <em>justice procédurale</em> — la qualité du processus — influence la perception d\'équité autant sinon plus que le résultat. Kern n\'a pas été acquitté, mais il a eu voix au chapitre. C\'est pour ça que la Maîtresse Elowen signe la demande : pour que sa voix soit entendue dans un cadre formel.',
+    ko:{a:'Non. Si la justice se mesurait seulement au résultat, personne n\'accepterait jamais une décision défavorable. Tyler et Lind ont montré qu\'on peut accepter une décision difficile si on perçoit le processus comme équitable.',c:'L\'application stricte des règles ne suffit pas — les règles peuvent être appliquées à la lettre de façon inégale selon les ressources culturelles des parties. Kern et Daran ont eu accès aux mêmes règles formellement, mais pas les mêmes chances de les utiliser.',d:'La transparence aide, mais elle ne remplace pas la participation. Savoir pourquoi une décision a été prise est différent d\'avoir eu l\'occasion d\'y contribuer.'}
+  },
+  q2:{correct:'c',
+    ok:'✓ Exact. Bourdieu distingue le capital économique (argent), le capital social (réseau de relations) et le capital culturel (maîtrise des codes, savoirs, façons de se comporter dans les institutions). Daran utilise les deux derniers : il connaît quelqu\'un dans le Conseil, et il sait que demander à être présent n\'est pas une infraction. C\'est un avantage structurel, pas de la triche.',
+    ko:{a:'Le capital économique joue un rôle dans l\'arrière-plan, mais ce n\'est pas ce qui explique sa présence dans la salle. Sa richesse ne lui a pas ouvert la porte — c\'est sa maîtrise des codes qui l\'a fait.',b:'Non. Ce n\'est pas de la corruption — Daran n\'a enfreint aucune règle. Il a demandé à être là, et personne n\'avait de raison formelle de dire non. C\'est précisément le cœur du concept bourdieusien : l\'avantage ne requiert pas d\'infraction.',d:'Non. Les règles de Valdurne traitent formellement Daran comme n\'importe quel autre élève. C\'est l\'inégalité dans la maîtrise des codes implicites — pas dans les droits explicites — qui fait la différence.'}
+  }
+};
+
+var TRANSFER_FEEDBACK={
+  a:{text:'Cette réponse correspond au bystander effect appliqué au contexte institutionnel — "une décision déjà prise ne changera pas" est souvent inexact, et le risque personnel est fréquemment surestimé. Tyler & Lind montrent que les institutions responsables ont des mécanismes de recours précisément parce que les décisions provisoires peuvent être révisées.'},
+  b:{text:'✓ Aller directement voir le prof avec les détails précis est efficace et direct. La limite : une conversation informelle peut être contournée plus facilement qu\'un témoignage versé dans une procédure formelle. Si tu as aussi le temps de chercher s\'il existe une procédure de recours, les deux combinés seraient plus solides.'},
+  c:{text:'✓ Chercher la procédure formelle avant d\'agir informellement, c\'est exactement ce que Réna fait avec le Recueil. Un témoignage dans un cadre officiel est beaucoup plus difficile à ignorer qu\'une conversation de couloir. La limite : ça prend du temps, et les 48 heures peuvent être courtes.'},
+  d:{text:'✓ Redonner à ton camarade l\'autonomie sur son propre dossier est une forme de respect de sa dignité. Il peut avoir des raisons de ne pas vouloir utiliser ton témoignage — et il a le droit de les avoir. C\'est la posture de Lyam vis-à-vis de Kern : être une ressource disponible, pas une ressource imposée.'}
+};
+
+var qState={q1:null,q2:null,q3:false,transfer:null};
+
+function applyMirrors(){
+  var s1=choices['1']||'pragmatisme',s2=choices['2']||'arme',
+      s3=choices['3']||'comprend',   s4=choices['4']||'realiste';
+  var d1=MIRRORS.s1[s1]||MIRRORS.s1.pragmatisme;
+  document.getElementById('m1-choice').textContent=d1.choice;
+  document.getElementById('m1-self').innerHTML=d1.self;
+  var d2=MIRRORS.s2[s2]||MIRRORS.s2.arme;
+  document.getElementById('m2-choice').textContent=d2.choice;
+  document.getElementById('m2-self').innerHTML=d2.self;
+  if(d2.tension){var t2=document.querySelector('#m2 .tension-text');if(t2)t2.innerHTML=d2.tension;}
+  var d3=MIRRORS.s3[s3]||MIRRORS.s3.comprend;
+  document.getElementById('m3-choice').textContent=d3.choice;
+  document.getElementById('m3-self').innerHTML=d3.self;
+  var d4=MIRRORS.s4[s4]||MIRRORS.s4.realiste;
+  document.getElementById('m4-choice').textContent=d4.choice;
+  document.getElementById('m4-self').innerHTML=d4.self;
+  if(d4.tension){var t4=document.querySelector('#m4 .tension-block');if(t4){t4.style.display='block';t4.querySelector('.tension-text').innerHTML=d4.tension;}};
+  if(legacy){['m1','m2','m3','m4'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('highlight');});}
+}
+applyMirrors();
+
+// Cacher le bloc tension de m4 si pas pertinent
+(function(){var t=document.querySelector('#m4 .tension-block');var s4=choices['4']||'realiste';if(s4!=='insatisfait'&&t)t.style.display='none';})();
+
+function checkCompletion(){
+  var done=qState.q1!==null&&qState.q2!==null&&qState.q3&&qState.transfer!==null;
+  document.getElementById('completeBtn').disabled=!done;
+  var n=[qState.q1!==null,qState.q2!==null,qState.q3,qState.transfer!==null].filter(Boolean).length;
+  document.getElementById('mc-progress-fill').style.width=(25+n*18)+'%';
+}
+
+function selectOpt(el,qid,val){el.closest('.q-options').querySelectorAll('.q-opt').forEach(function(o){o.classList.remove('selected');});el.classList.add('selected');var vb=document.getElementById(qid+'-validate');if(vb)vb.style.display='block';el.closest('.question-card').dataset.selected=val;}
+
+function validateQ(qid,correctVal){var card=document.getElementById(qid+'-card');var selected=card.dataset.selected;if(!selected)return;var fb=document.getElementById(qid+'-feedback');var qdata=Q_FEEDBACK[qid];var vb=document.getElementById(qid+'-validate');if(vb)vb.style.display='none';card.querySelectorAll('.q-opt').forEach(function(o){o.style.pointerEvents='none';});if(selected===correctVal){card.querySelector('.q-opt[onclick*="\''+selected+'\'"]').classList.add('correct');fb.className='q-feedback show ok';fb.innerHTML=qdata.ok;qState[qid]='correct';}else{card.querySelector('.q-opt[onclick*="\''+selected+'\'"]').classList.add('wrong');fb.className='q-feedback show ko';fb.innerHTML='✗ '+(qdata.ko[selected]||'Pas tout à fait.')+'<br><br><strong style="color:#86efac">Réponse attendue :</strong> '+qdata.ok;qState[qid]='done';card.querySelectorAll('.q-opt').forEach(function(o){if(o.getAttribute('onclick')&&o.getAttribute('onclick').includes("'"+correctVal+"'"))o.classList.add('correct');});}checkCompletion();}
+
+function saveOpen(qid){var txt=document.getElementById(qid+'-text').value.trim();if(!txt)return;try{localStorage.setItem('pvs_metacog_'+MODULE_ID+'_'+qid,txt);}catch(e){}var el=document.getElementById(qid+'-saved');if(el)el.style.display='block';qState.q3=true;checkCompletion();}
+
+function selectTransfer(el,val){el.closest('.transfer-options').querySelectorAll('.transfer-opt').forEach(function(o){o.classList.remove('selected');});el.classList.add('selected');var vb=document.getElementById('transfer-validate');if(vb){vb.style.display='block';vb.dataset.val=val;}}
+
+function validateTransfer(){var vb=document.getElementById('transfer-validate');var val=vb?vb.dataset.val:'';if(!val)return;var data=TRANSFER_FEEDBACK[val]||TRANSFER_FEEDBACK.c;var fb=document.getElementById('transfer-feedback');fb.className='transfer-feedback show';fb.innerHTML=data.text;vb.style.display='none';document.querySelectorAll('.transfer-opt').forEach(function(o){o.style.pointerEvents='none';});qState.transfer=val;checkCompletion();}
+
+function completeModule(){try{localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP_AMOUNT}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'METACOG-'+MODULE_ID+'-'+Date.now(),type:'METACOG_COMPLETE',player:playerCode,module:MODULE_ID,jdrModule:'JDR_JURIDIQUE_A1',metacogXp:XP_AMOUNT,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}document.getElementById('completeBtn').textContent='✓ Module validé !';document.getElementById('completeBtn').disabled=true;document.getElementById('mc-progress-fill').style.width='100%';setTimeout(function(){window.location.href=HUB_URL;},2000);}
+
+checkCompletion();
+document.getElementById('mc-progress-fill').style.width='20%';
+</script>
+</body>
+</html>

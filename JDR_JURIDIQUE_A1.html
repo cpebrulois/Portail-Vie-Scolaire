@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Veilleurs de Valdurne — Le Procès du Couloir Nord</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09080c;--bg2:#10100e;--panel:#181620;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --stone:#201e2a;--stone-l:#2c2a38;
+  --text:#d4cec0;--text-m:#8a8070;--text-d:#504e44;
+  --blue:#1d4ed8;--blue-l:#3b82f6;--blue-d:#1e3a8a;
+  --amber:#b45309;--amber-l:#f59e0b;
+  --green:#2d6a4f;--green-l:#52b788;
+  --red:#991b1b;--red-l:#ef4444;
+  --border:rgba(200,168,75,.15);--border-l:rgba(200,168,75,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 40% 0%,rgba(29,78,216,.06) 0%,transparent 50%),
+             radial-gradient(ellipse at 60% 100%,rgba(180,83,9,.05) 0%,transparent 50%);}
+#app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 0 80px;}
+
+/* Ambiance */
+#ambient-bar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(9,8,12,.93);
+  border-bottom:1px solid var(--border);backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:14px;padding:8px 20px;}
+.amb-label{color:var(--gold);font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:1px;white-space:nowrap;flex-shrink:0;}
+.amb-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;}
+.amb-toggle:hover{background:var(--gold);color:#000;}
+.amb-vol{-webkit-appearance:none;width:90px;height:3px;background:var(--stone-l);border-radius:2px;outline:none;cursor:pointer;flex-shrink:0;}
+.amb-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold);cursor:pointer;}
+.amb-status{color:var(--text-m);font-size:.7rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pb-chip{display:flex;align-items:center;gap:6px;background:rgba(200,168,75,.07);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:.7rem;color:var(--gold-l);flex-shrink:0;}
+
+/* Scène */
+.scene{padding-top:56px;min-height:100vh;display:none;flex-direction:column;animation:sceneFade .6s ease-out;}
+.scene.active{display:flex;}
+@keyframes sceneFade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.scene-art{position:relative;width:100%;height:300px;overflow:hidden;background:var(--stone);}
+.scene-art img{width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity .5s;}
+.scene-art .art-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(180deg,#120e20 0%,var(--bg) 100%);}
+.scene-art .art-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,var(--bg) 100%);}
+
+.scene-header{padding:20px 32px 0;}
+.scene-crumb{display:flex;gap:10px;align-items:center;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;margin-bottom:10px;}
+.scene-crumb span{color:var(--gold-d);}
+.scene-num{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:6px;}
+.scene-title{font-family:'Cinzel',serif;font-size:1.55rem;color:var(--gold-l);line-height:1.2;margin-bottom:14px;}
+
+.narr-bar{display:flex;align-items:center;gap:10px;background:rgba(200,168,75,.06);border:1px solid var(--border);border-radius:8px;padding:8px 14px;margin:0 32px 20px;}
+.narr-toggle{background:none;border:1px solid var(--border-l);color:var(--gold);width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:.2s;flex-shrink:0;}
+.narr-toggle:hover{background:var(--gold);color:#000;}
+.narr-vol{-webkit-appearance:none;width:80px;height:3px;background:var(--stone-l);border-radius:2px;outline:none;cursor:pointer;flex-shrink:0;}
+.narr-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);cursor:pointer;}
+.narr-label{color:var(--text-m);font-size:.7rem;flex:1;font-family:'Cinzel',serif;letter-spacing:.5px;}
+.narr-status{color:var(--text-d);font-size:.68rem;}
+
+.scene-body{padding:0 32px;flex:1;}
+.scene-text{font-size:1.08rem;line-height:1.88;color:var(--text);margin-bottom:22px;}
+.scene-text p{margin-bottom:14px;}
+.scene-text em{color:var(--gold-l);font-style:italic;}
+.scene-text strong{color:#e8dfc8;}
+
+/* Document officiel */
+.doc-card{background:rgba(245,240,225,.06);border:1px solid rgba(180,83,9,.3);border-radius:8px;padding:16px 20px;margin:0 0 22px;font-family:'IM Fell English',serif;}
+.doc-header{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber-l);margin-bottom:10px;}
+.doc-text{font-size:.95rem;color:#fde68a;line-height:1.75;font-style:italic;}
+.doc-seal{font-size:.72rem;color:rgba(245,158,11,.4);margin-top:8px;font-style:normal;}
+
+/* Dialogue Réna */
+.rena-card{background:rgba(13,148,136,.07);border:1px solid rgba(45,212,191,.22);border-radius:10px;padding:14px 20px;margin:0 0 22px;}
+.rena-speaker{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4bf;margin-bottom:8px;display:block;}
+.rena-text{font-style:italic;color:#99f6e4;font-size:.98rem;line-height:1.75;}
+
+/* Dialogue Elowen */
+.elowen-card{background:rgba(180,83,9,.07);border:1px solid rgba(245,158,11,.22);border-radius:10px;padding:14px 20px;margin:0 0 22px;}
+.elowen-speaker{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber-l);margin-bottom:8px;display:block;}
+.elowen-text{font-style:italic;color:#fde68a;font-size:.98rem;line-height:1.75;}
+
+/* Pensée */
+.scene-thought{background:rgba(29,78,216,.07);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:14px 18px;margin:0 0 22px;font-style:italic;color:#bfdbfe;font-size:.95rem;line-height:1.7;}
+.scene-thought::before{content:'💭  ';}
+
+/* Citation clé */
+.scene-quote{border-left:3px solid var(--gold-d);padding:10px 18px;margin:0 0 22px;background:rgba(200,168,75,.04);border-radius:0 6px 6px 0;}
+.scene-quote p{font-style:italic;font-size:1rem;color:var(--text-m);line-height:1.7;}
+
+/* Choix */
+.scene-prompt{font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.choices{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.choice-btn{background:var(--stone);border:1px solid var(--stone-l);border-radius:8px;padding:16px 20px;text-align:left;cursor:pointer;transition:.25s;color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;line-height:1.5;position:relative;overflow:hidden;}
+.choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold-d);transition:.25s;}
+.choice-btn:hover{background:var(--stone-l);border-color:var(--gold);transform:translateX(4px);}
+.choice-btn:hover::before{background:var(--gold);}
+.choice-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;color:var(--gold-d);text-transform:uppercase;display:block;margin-bottom:4px;}
+.choice-title{font-weight:600;color:var(--gold-l);display:block;margin-bottom:3px;}
+.choice-sub{color:var(--text-m);font-size:.9rem;}
+
+/* Intro */
+#scene-intro{align-items:center;justify-content:center;padding-top:56px;text-align:center;}
+.intro-sigil{font-size:3.8rem;margin-bottom:20px;animation:glow 3s ease-in-out infinite;}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 8px rgba(29,78,216,.4))}50%{filter:drop-shadow(0 0 28px rgba(245,158,11,.7))}}
+.intro-pretitle{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;}
+.intro-title{font-family:'IM Fell English',serif;font-size:2.3rem;color:var(--gold-l);line-height:1.2;margin-bottom:8px;}
+.intro-subtitle{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--text-m);font-style:italic;margin-bottom:30px;}
+.intro-sep{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 auto 28px;}
+.intro-desc{max-width:560px;margin:0 auto 28px;font-size:1.05rem;line-height:1.85;color:var(--text-m);}
+.intro-badge{display:inline-block;background:rgba(29,78,216,.1);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px 18px;margin:0 auto 32px;font-size:.82rem;color:#bfdbfe;line-height:1.6;max-width:480px;}
+.intro-badge strong{color:var(--blue-l);}
+.intro-note{background:rgba(200,168,75,.06);border:1px solid var(--border);border-radius:8px;padding:14px 20px;max-width:480px;margin:0 auto 32px;font-size:.85rem;color:var(--text-d);line-height:1.6;}
+.btn-start{background:var(--gold-d);color:#f5ead0;border:none;padding:14px 40px;font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.25s;box-shadow:0 4px 20px rgba(200,168,75,.2);}
+.btn-start:hover{background:var(--gold);color:#000;transform:translateY(-2px);}
+
+/* Fin */
+#scene-fin{align-items:center;justify-content:center;padding:56px 32px 80px;text-align:center;}
+.fin-sigil{font-size:3.2rem;margin-bottom:18px;}
+.fin-title{font-family:'Cinzel',serif;font-size:1.75rem;color:var(--gold-l);margin-bottom:8px;}
+.fin-subtitle{font-family:'IM Fell English',serif;font-style:italic;color:var(--text-m);font-size:1.1rem;margin-bottom:26px;}
+.fin-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:8px 22px;border-radius:30px;font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold);margin-bottom:14px;}
+.fin-metacog-btn{display:inline-flex;align-items:center;gap:10px;background:rgba(29,78,216,.12);border:1px solid rgba(59,130,246,.35);padding:12px 24px;border-radius:10px;font-family:'Cinzel',serif;font-size:.82rem;color:var(--blue-l);margin-bottom:26px;cursor:pointer;transition:.2s;text-decoration:none;letter-spacing:1px;text-transform:uppercase;}
+.fin-metacog-btn:hover{background:rgba(29,78,216,.22);border-color:var(--blue-l);}
+.fin-legacy-box{background:rgba(29,78,216,.08);border:1px solid rgba(59,130,246,.25);border-radius:10px;padding:20px 24px;max-width:540px;margin:0 auto 24px;text-align:left;}
+.fin-legacy-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--blue-l);margin-bottom:10px;}
+.fin-legacy-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;font-size:.92rem;color:var(--text-m);line-height:1.5;}
+.fin-legacy-item .dot{color:var(--gold-d);flex-shrink:0;margin-top:3px;}
+.fin-cps{background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);border-radius:10px;padding:16px 20px;max-width:540px;margin:0 auto 26px;text-align:left;}
+.fin-cps-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-l);margin-bottom:10px;}
+.fin-cps-item{font-size:.9rem;color:var(--text-m);line-height:1.6;margin-bottom:4px;}
+.fin-cps-item::before{content:'✦ ';color:var(--green-l);}
+.fin-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-fin-primary{background:var(--gold-d);color:#f5ead0;border:none;padding:12px 28px;font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.25s;}
+.btn-fin-primary:hover{background:var(--gold);color:#000;}
+.btn-fin-secondary{background:none;border:1px solid var(--stone-l);color:var(--text-m);padding:12px 22px;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:.2s;}
+.btn-fin-secondary:hover{border-color:var(--text-m);color:var(--text);}
+
+/* Progress */
+.progress-strip{position:fixed;bottom:0;left:0;right:0;z-index:900;background:rgba(9,8,12,.92);border-top:1px solid var(--border);backdrop-filter:blur(8px);padding:6px 20px;display:flex;align-items:center;gap:14px;}
+.prog-bar-wrap{flex:1;height:3px;background:var(--stone-l);border-radius:2px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue-d),var(--blue-l));border-radius:2px;transition:width .5s ease;}
+.prog-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1px;color:var(--gold-d);flex-shrink:0;}
+.prog-step{font-size:.68rem;color:var(--text-d);flex-shrink:0;}
+
+@media(max-width:640px){.scene-header,.scene-body{padding-left:18px;padding-right:18px;}.narr-bar{margin-left:18px;margin-right:18px;}.scene-title{font-size:1.3rem;}.scene-art{height:220px;}.intro-title{font-size:1.8rem;}.fin-actions{flex-direction:column;align-items:stretch;}}
+</style>
+</head>
+<body>
+
+<div id="ambient-bar">
+  <span class="amb-label">🎵 Ambiance</span>
+  <button class="amb-toggle" id="ambToggle">▶</button>
+  <input class="amb-vol" type="range" id="ambVol" min="0" max="100" value="30">
+  <span class="amb-status" id="ambStatus">Les couloirs de l'aile administrative…</span>
+  <div class="pb-chip">⚖️ <span id="pbName">–</span></div>
+</div>
+
+<div class="progress-strip">
+  <span class="prog-label">Valdurne</span>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
+  <span class="prog-step" id="progStep">Intro</span>
+</div>
+
+<div id="app">
+
+  <!-- INTRO -->
+  <div class="scene active" id="scene-intro">
+    <div style="padding:60px 32px 40px;max-width:620px;margin:0 auto;">
+      <div class="intro-sigil">⚖️</div>
+      <div class="intro-pretitle">Les Veilleurs de Valdurne · Année 1 · Pilier Juridique</div>
+      <div class="intro-title">Le Procès du Couloir Nord</div>
+      <div class="intro-subtitle">Quand les règles sont des outils — à condition de savoir s'en servir</div>
+      <div class="intro-sep"></div>
+      <div class="intro-desc">
+        Kern a reçu une convocation. Son nom est dans un registre officiel
+        en face d'une faute qu'il n'a pas commise.<br><br>
+        Il n'y a pas de preuve directe. Il y a Réna, qui connaît les textes.
+        Il y a la Maîtresse Elowen, qui ne peut pas faire les choses à votre place
+        — mais qui peut rendre possible ce que vous devez faire vous-mêmes.
+      </div>
+      <div class="intro-badge">
+        <strong>⚖️ Ce JdR explore</strong> ce que signifie utiliser les règles
+        d'une institution pour se défendre — et ce que ça coûte
+        quand on ne les connaît pas.
+      </div>
+      <div class="intro-note">
+        🎭 Il n'y a pas de victoire nette dans ce chapitre. Il y a un résultat
+        qu'on peut vivre avec — obtenu par des voies qu'on pourrait refaire.
+      </div>
+      <button class="btn-start" id="btnStart">▶ Entrer dans le Procès</button>
+    </div>
+  </div>
+
+  <!-- SCÈNE 1 : L'escalier — Lyam dit à Kern -->
+  <div class="scene" id="scene-1" data-step="1">
+    <div class="scene-art">
+      <img src="jdr_juridique_a1_scene1.jpg" alt="Lyam et Kern dans l'escalier de service" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🌅</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Le Procès du Couloir Nord</div>
+      <div class="scene-num">Scène 1 — L'escalier de service</div>
+      <div class="scene-title">Lyam dit à Kern</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_juridique_a1_scene1.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Le lendemain matin. L'escalier de service, avant l'heure des cours.
+        Lyam a répété la formulation plusieurs fois pendant la nuit —
+        pas pour l'embellir, pas pour l'atténuer.
+        <em>Pour être sûr de ne rien omettre et de ne rien ajouter.</em></p>
+        <p>Il dit les faits dans l'ordre. Les mots exacts. L'heure, la porte,
+        la lampe à huile, la façon dont Daran se tenait debout derrière Belart.</p>
+        <p>Il ne dit pas : voilà ce que ça signifie pour toi.
+        Kern était assez intelligent pour le comprendre seul.</p>
+      </div>
+      <div class="scene-thought">
+        Lyam avait craint une réaction immédiate — une colère qui court-circuiterait
+        l'information. Mais Kern écoute les mauvaises nouvelles comme on écoute
+        un problème de mathématiques : jusqu'au bout, avec l'intention d'en identifier
+        les composantes avant de chercher la solution.
+      </div>
+      <div class="scene-text">
+        <p>Kern reste silencieux. L'escalier est froid.
+        Quelqu'un, deux étages plus haut, renverse un seau d'eau.
+        Kern regarde ses mains.</p>
+        <p>Puis il dit : <em>« Il faut qu'on aille voir Réna. »</em></p>
+      </div>
+      <div class="scene-prompt">Kern vient de nommer la solution avant même de réagir à l'injustice. Comment Lyam interprète ça ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(1,'pragmatisme')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">C'est du pragmatisme pur — la colère peut attendre</span>
+          <span class="choice-sub">Kern sait que s'énerver maintenant ne changerait rien. Identifier le bon levier avant d'agir, c'est une intelligence de la situation que peu de gens ont sous le choc.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'confiance')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">C'est de la confiance en Réna — et indirectement en Lyam</span>
+          <span class="choice-sub">En disant "Réna", Kern reconnaît implicitement que l'alliance des trois fonctionne. Il ne cherche pas à gérer seul quelque chose qui est trop grand pour lui.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(1,'controle')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">C'est une façon de garder le contrôle — agir plutôt que subir</span>
+          <span class="choice-sub">Kern transforme l'annonce d'une injustice en problème à résoudre. Ce n'est pas de l'indifférence — c'est une stratégie pour ne pas se laisser écraser par l'impuissance.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCÈNE 2 : La préparation — Réna lit le Recueil -->
+  <div class="scene" id="scene-2" data-step="2">
+    <div class="scene-art">
+      <img src="jdr_juridique_a1_scene2.jpg" alt="Réna avec le Recueil des usages, Salle des Cartes" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">📜</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Le Procès du Couloir Nord</div>
+      <div class="scene-num">Scène 2 — La Salle des Cartes, veille du Conseil</div>
+      <div class="scene-title">Ce que Réna a trouvé</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_juridique_a1_scene2.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Trois jours de préparation. La veille du Conseil, dans la Salle des Cartes.
+        Réna a le Recueil des usages institutionnels devant elle — rubans de couleur
+        glissés entre les pages.</p>
+      </div>
+      <div class="rena-card">
+        <span class="rena-speaker">Réna — la veille du Conseil</span>
+        <span class="rena-text">Le Conseil fonctionne selon la <em>présomption de bonne foi</em>.
+        Ce n'est pas la même chose que la présomption d'innocence — c'est une nuance importante.
+        Ça veut dire qu'on ne cherche pas un coupable : on cherche une explication.
+        Et si l'explication dans le registre est fausse — alors on doit montrer
+        qu'elle est fausse. Ce qui est différent de dire que quelqu'un a menti.</span>
+      </div>
+      <div class="scene-text">
+        <p>Les documents ont plus de poids que les témoignages.
+        Mais les témoignages peuvent contester les documents
+        <em>s'ils sont suffisamment précis et concordants.</em></p>
+        <p>Kern dit : « Et si ce signalement que Daran a mentionné n'existe pas ? »</p>
+      </div>
+      <div class="rena-card">
+        <span class="rena-speaker">Réna</span>
+        <span class="rena-text">S'il n'existe pas, ils devront le dire officiellement
+        en réponse à une demande officielle.
+        Et un mensonge qui doit être dit officiellement
+        est beaucoup plus difficile à maintenir
+        qu'un mensonge qu'on n'a jamais eu à formuler.</span>
+      </div>
+      <div class="scene-prompt">Réna vient d'expliquer la différence entre présomption de bonne foi et présomption d'innocence. Pour Lyam, c'est quoi la vraie différence ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(2,'systeme')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Le système protège ses propres membres — pas la vérité</span>
+          <span class="choice-sub">La bonne foi présumée pour Belart, c'est aussi la bonne foi présumée pour Daran. Le système ne cherche pas ce qui s'est passé — il cherche une explication qui convient à tout le monde.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'arme')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">C'est une arme à double tranchant — et Réna vient de le retourner</span>
+          <span class="choice-sub">Si tout le monde est présumé de bonne foi, y compris Kern, alors son témoignage vaut autant que le document. Réna a trouvé la fissure dans le mur.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(2,'apprend')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Il comprend qu'il ne comprend pas encore — et que Réna le voit</span>
+          <span class="choice-sub">Ces distinctions juridiques lui échappent encore. Mais il comprend que Réna les maîtrise, et que c'est précisément pour ça qu'elle est là — pas à sa place, à côté.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCÈNE 3 : Le couloir pendant le Conseil -->
+  <div class="scene" id="scene-3" data-step="3">
+    <div class="scene-art">
+      <img src="jdr_juridique_a1_scene3.jpg" alt="Lyam seul dans le couloir de l'aile administrative" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">🚪</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Le Procès du Couloir Nord</div>
+      <div class="scene-num">Scène 3 — Le couloir de l'aile administrative</div>
+      <div class="scene-title">Attendre est une compétence</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_juridique_a1_scene3.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>Lyam n'entre pas dans la salle. Il attend dans le couloir de l'aile administrative —
+        mieux éclairé que celui de service, bancs de pierre contre les murs,
+        fenêtre sur la cour intérieure.</p>
+        <p>À travers la porte : des voix. Pas les mots — juste les tonalités.
+        Plusieurs voix adultes. La voix de Kern.
+        La voix de Réna, précise, posée, sans montées ni descentes.
+        Puis une troisième voix — assurée, avec la décélération légère
+        des gens habitués à parler devant des assemblées.</p>
+        <p><em>Daran de Mauren est dans la salle.</em>
+        Ce n'était pas dans la procédure.</p>
+      </div>
+      <div class="scene-thought">
+        Il y a des gens pour qui les règles fonctionnent différemment.
+        Pas parce qu'on les leur applique différemment —
+        souvent mot pour mot identiquement —
+        mais parce qu'ils savent exactement jusqu'où on peut les plier
+        sans les enfreindre.
+        Un fils de baron dans la salle d'un Conseil de discipline,
+        ce n'est pas une infraction.
+        C'est quelqu'un qui a demandé à être là
+        et à qui on a dit oui, parce que personne n'avait de raison formelle de dire non.
+      </div>
+      <div class="scene-quote">
+        <p>Attendre est une compétence. Ce n'est pas une compétence qu'on apprend dans les livres.
+        C'est quelque chose qui s'apprend dans les salles d'attente et les couloirs
+        et les matins où quelque chose d'important se joue ailleurs
+        et où il n'y a rien à faire qu'être là et tenir.</p>
+      </div>
+      <div class="scene-prompt">Lyam est dans le couloir, il entend la voix de Daran qui n'aurait pas dû être là. Qu'est-ce qu'il fait de cette information ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(3,'tient')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Il tient — ce n'est pas sa bataille à ce moment</span>
+          <span class="choice-sub">Entrer maintenant ne ferait qu'aggraver les choses. Il est dans le couloir parce que sa présence dans la salle serait une arme pour Daran. Tenir c'est aussi une décision active.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'ecoute')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">Il écoute — chaque information peut servir</span>
+          <span class="choice-sub">Il se rapproche de la porte. Il ne peut pas comprendre les mots, mais il peut noter les tonalités, les longueurs de silence, les moments où la voix de Réna monte ou reste plate.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(3,'comprend')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Il comprend quelque chose de plus grand sur comment le pouvoir fonctionne</span>
+          <span class="choice-sub">Ce n'est pas de la triche. Ce n'est pas une infraction. C'est une compétence héritée — savoir que les règles laissent des espaces, et savoir lesquels. Et cette compétence s'apprend.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCÈNE 4 : La Maîtresse Elowen -->
+  <div class="scene" id="scene-4" data-step="4">
+    <div class="scene-art">
+      <img src="jdr_juridique_a1_scene4.jpg" alt="Kern et Réna face à la Maîtresse Elowen" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="art-fallback" style="display:none">✒️</div>
+      <div class="art-overlay"></div>
+    </div>
+    <div class="scene-header">
+      <div class="scene-crumb">Les Veilleurs de Valdurne <span>›</span> Année 1 <span>›</span> Le Procès du Couloir Nord</div>
+      <div class="scene-num">Scène 4 — Le bureau de la Maîtresse Elowen</div>
+      <div class="scene-title">Les documents qui existent</div>
+    </div>
+    <div class="narr-bar">
+      <button class="narr-toggle" data-audio="jdr_juridique_a1_scene4.mp3">🔊</button>
+      <input class="narr-vol" type="range" min="0" max="100" value="80">
+      <span class="narr-label">Narration</span>
+      <span class="narr-status">Cliquer pour lancer</span>
+    </div>
+    <div class="scene-body">
+      <div class="scene-text">
+        <p>La Maîtresse Elowen reçoit Kern et Réna dans son bureau méticuleux.
+        Kern expose les faits — bien, sobrement.
+        Il dit ce qu'il n'a pas fait.
+        Il dit ce que le registre dit.
+        Il demande une contresignature sur la demande de consultation.</p>
+        <p>La Maîtresse Elowen lit le document de Réna lentement, sans hâte.
+        Elle s'arrête à un endroit. Repart. S'arrête encore.</p>
+      </div>
+      <div class="elowen-card">
+        <span class="elowen-speaker">Maîtresse Elowen</span>
+        <span class="elowen-text">L'article que vous citez pour fonder la demande
+        est l'article 34 du Recueil des usages institutionnels.
+        C'est le bon article.
+        <br><br>
+        Mais sachez que si ce signalement existe et qu'on vous en donne lecture,
+        vous ne pourrez pas l'utiliser directement dans la procédure en cours.
+        Vous pourriez seulement en demander la vérification par un tiers indépendant.</span>
+      </div>
+      <div class="rena-card">
+        <span class="rena-speaker">Réna</span>
+        <span class="rena-text">Je sais. Mais un signalement qu'on vérifie
+        et qui ne correspond pas à ce qu'on en a dit
+        est lui-même une information.</span>
+      </div>
+      <div class="elowen-card">
+        <span class="elowen-speaker">Maîtresse Elowen — en signant</span>
+        <span class="elowen-text">Je vais aussi écrire une lettre au Conseil
+        pour attester de la qualité du travail de Kern depuis le début de l'année.
+        Ce n'est pas un témoignage de procédure — c'est une lettre d'un maître sur un élève.
+        Elle ne sera pas versée au dossier comme une preuve.
+        Mais elle existera.
+        <br><br>
+        Les documents qui existent ont une façon de peser dans les décisions,
+        même quand ils ne sont pas cités formellement.</span>
+      </div>
+      <div class="scene-quote">
+        <p>Il y a des gens qui ne font pas les choses à ta place.
+        Ils rendent possible ce que tu dois faire toi-même. — Réna</p>
+      </div>
+      <div class="scene-prompt">Le dossier sera classé — sans acquittement formel, juste classé. Kern reçoit ce résultat. Comment Lyam l'interprète ?</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="choose(4,'insatisfait')">
+          <span class="choice-badge">Chemin A</span>
+          <span class="choice-title">Ce n'est pas juste — Kern méritait mieux</span>
+          <span class="choice-sub">L'annotation est toujours dans le registre. Daran n'a rien subi. "Classé sans suite" n'efface pas l'injustice — ça la rend simplement invisible pour ceux qui n'étaient pas là.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'realiste')">
+          <span class="choice-badge">Chemin B</span>
+          <span class="choice-title">C'est moins que ce qu'on voulait et plus qu'au départ — c'est réel</span>
+          <span class="choice-sub">Pas une victoire. Un résultat qu'on peut vivre avec, obtenu par des voies qu'on pourrait refaire. Dans la plupart des batailles qui ressemblent à celle-là, c'est à ça que ressemble ne pas perdre complètement.</span>
+        </button>
+        <button class="choice-btn" onclick="choose(4,'apprend')">
+          <span class="choice-badge">Chemin C</span>
+          <span class="choice-title">Ce qui compte c'est ce qu'ils savent maintenant faire</span>
+          <span class="choice-sub">Ils ont appris à lire le Recueil. À rédiger une demande fondée sur le bon article. À trouver un adulte qui ne fait pas les choses à leur place mais rend possible ce qu'ils doivent faire. C'est une compétence acquise.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIN -->
+  <div class="scene" id="scene-fin">
+    <div class="fin-sigil">⚖️</div>
+    <div class="fin-title">Le Procès du Couloir Nord</div>
+    <div class="fin-subtitle">Pas une victoire. Un résultat qu'on peut vivre avec — et des voies qu'on pourrait refaire.</div>
+    <div class="fin-xp">⭐ +100 XP envoyés au Portail</div>
+    <a class="fin-metacog-btn" id="metacogLink" href="METACOG_JURIDIQUE_A1.html">
+      🧠 Module réflexif — +100 XP supplémentaires
+    </a>
+    <div class="fin-legacy-box">
+      <div class="fin-legacy-title">⚖️ Mémoire de Lyam — Tome I · Pilier Juridique</div>
+      <div id="legacyItems"></div>
+    </div>
+    <div class="fin-cps">
+      <div class="fin-cps-title">🌱 Compétences travaillées aujourd'hui</div>
+      <div class="fin-cps-item">Comprendre la différence entre règle écrite et usage réel</div>
+      <div class="fin-cps-item">Utiliser les textes officiels comme levier de défense</div>
+      <div class="fin-cps-item">Distinguer vérité et preuve recevable en procédure</div>
+      <div class="fin-cps-item">Identifier les adultes ressources — et comment les solliciter</div>
+      <div class="fin-cps-item">Accepter un résultat imparfait sans perdre de vue l'injustice réelle</div>
+    </div>
+    <div class="fin-actions">
+      <button class="btn-fin-primary" onclick="returnToHub()">← Retour au Hub pHARe</button>
+      <button class="btn-fin-secondary" onclick="restartGame()">↺ Rejouer</button>
+    </div>
+  </div>
+
+</div>
+
+<audio id="ambAudio" loop preload="none"><source src="valdurne_ambiance_juridique.mp3" type="audio/mpeg"></audio>
+<audio id="narrAudio" preload="none"></audio>
+
+<script>
+// Nomenclature :
+// jdr_juridique_a1_scene1.jpg … scene4.jpg
+// jdr_juridique_a1_scene1.mp3 … scene4.mp3
+// valdurne_ambiance_juridique.mp3
+
+var MODULE_ID='JDR_JURIDIQUE_A1',CERT_KEY='CERT_JDR_JURIDIQUE_A1',
+    XP_AMOUNT=100,HUB_URL='index_PIXHARe.html',TOTAL_STEPS=4;
+var state={player:'',choices:{},current:'intro'};
+
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p&&p.length>1){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}state.player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'–';document.getElementById('pbName').textContent=state.player;})();
+
+function showScene(id){document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active');});var el=document.getElementById('scene-'+id);if(el){el.classList.add('active');state.current=id;}updateProgress(id);stopNarration();window.scrollTo(0,0);}
+function updateProgress(step){var n=parseInt(step)||0;var pct=step==='fin'?100:Math.round(n/TOTAL_STEPS*90);document.getElementById('progFill').style.width=pct+'%';document.getElementById('progStep').textContent=step==='intro'?'Intro':step==='fin'?'Terminé ✓':'Scène '+step+' / '+TOTAL_STEPS;}
+
+var legacyTexts={
+  '1_pragmatisme':'Kern transforme l\'annonce d\'une injustice en problème à résoudre. Lyam y voit du pragmatisme : la colère peut attendre.',
+  '1_confiance':'Kern dit "Réna" sans hésiter. Lyam y voit de la confiance — dans Réna, et indirectement dans l\'alliance des trois.',
+  '1_controle':'Kern agit plutôt que subir. Lyam y voit une façon de garder la main sur ce qui peut encore être tenu.',
+  '2_systeme':'Lyam comprend que la présomption de bonne foi protège le système — pas forcément la vérité.',
+  '2_arme':'Lyam comprend que Réna a retourné la règle : si tout le monde est de bonne foi, le témoignage de Kern vaut le document.',
+  '2_apprend':'Lyam reconnaît ce qu\'il ne maîtrise pas encore — et ce que Réna apporte que lui ne peut pas donner.',
+  '3_tient':'Dans le couloir, Lyam tient. Ne pas entrer c\'est aussi une décision active, peut-être la bonne.',
+  '3_ecoute':'Dans le couloir, Lyam écoute ce qu\'il peut — les tonalités, les silences, les moments où Réna ne cède pas.',
+  '3_comprend':'Dans le couloir, Lyam comprend quelque chose sur le pouvoir : les règles laissent des espaces, et cette compétence s\'apprend.',
+  '4_insatisfait':'Résultat : insatisfaisant. L\'annotation reste. Daran n\'a rien subi. "Classé sans suite" ne répare pas.',
+  '4_realiste':'Résultat : réaliste. Moins que ce qu\'on voulait, plus qu\'au départ. C\'est à ça que ressemble ne pas perdre complètement.',
+  '4_apprend':'Résultat : une compétence acquise. Ils savent maintenant lire le Recueil, rédiger une demande, trouver un adulte ressource.',
+};
+
+function choose(scene,path){state.choices[scene]=path;var next=scene+1;if(next>TOTAL_STEPS)finishGame();else showScene(next);}
+
+function buildLegacy(){var c=document.getElementById('legacyItems');if(!c)return;c.innerHTML='';Object.keys(state.choices).sort().forEach(function(s){var p=state.choices[s],k=s+'_'+p,t=legacyTexts[k]||'';if(t){var d=document.createElement('div');d.className='fin-legacy-item';d.innerHTML='<span class="dot">◆</span><span>'+t+'</span>';c.appendChild(d);}});}
+
+function finishGame(){
+  try{localStorage.setItem('VALDURNE_LEGACY_JURIDIQUE_A1',JSON.stringify({choices:state.choices,player:state.player,d:new Date().toISOString()}));}catch(e){}
+  try{
+    localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP_AMOUNT}));
+    var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({id:'JDR-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:state.player,module:MODULE_ID,certKey:CERT_KEY,jdrXp:XP_AMOUNT,choices:state.choices,d:new Date().toISOString()});
+    if(evts.length>500)evts.splice(0,evts.length-500);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(e){}
+  var ml=document.getElementById('metacogLink');
+  if(ml&&state.player&&state.player!=='–')ml.href='METACOG_JURIDIQUE_A1.html?player='+encodeURIComponent(state.player);
+  buildLegacy();showScene('fin');
+}
+function returnToHub(){window.location.href=HUB_URL;}
+function restartGame(){state.choices={};stopNarration();showScene('intro');}
+
+// Audio
+var ambAudio=document.getElementById('ambAudio'),ambPlaying=false;
+document.getElementById('ambToggle').addEventListener('click',function(){if(ambPlaying){ambAudio.pause();ambPlaying=false;this.textContent='▶';document.getElementById('ambStatus').textContent='Les couloirs de l\'aile administrative…';}else{ambAudio.volume=document.getElementById('ambVol').value/100;ambAudio.play().then(function(){ambPlaying=true;document.getElementById('ambToggle').textContent='⏸';document.getElementById('ambStatus').textContent='Ambiance du Conseil en cours…';}).catch(function(){document.getElementById('ambStatus').textContent='Fichier : valdurne_ambiance_juridique.mp3';});}});
+document.getElementById('ambVol').addEventListener('input',function(){ambAudio.volume=this.value/100;});
+
+var narrAudio=document.getElementById('narrAudio'),narrPlaying=false,narrCurrent=null;
+function stopNarration(){narrAudio.pause();narrAudio.src='';narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊';});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Cliquer pour lancer';});}
+document.querySelectorAll('.narr-toggle').forEach(function(btn){btn.addEventListener('click',function(){var bar=this.closest('.narr-bar'),src=this.getAttribute('data-audio'),vol=bar.querySelector('.narr-vol').value/100,status=bar.querySelector('.narr-status');if(narrPlaying&&narrCurrent===src){narrAudio.pause();narrPlaying=false;this.textContent='🔊';status.textContent='En pause';}else{stopNarration();narrAudio.src=src;narrAudio.volume=vol;var self=this;narrAudio.play().then(function(){narrPlaying=true;narrCurrent=src;self.textContent='⏸';status.textContent='Narration en cours…';}).catch(function(){status.textContent='Fichier : '+src;});}});});
+document.querySelectorAll('.narr-vol').forEach(function(s){s.addEventListener('input',function(){if(narrPlaying)narrAudio.volume=this.value/100;});});
+narrAudio.addEventListener('ended',function(){narrPlaying=false;narrCurrent=null;document.querySelectorAll('.narr-toggle').forEach(function(b){b.textContent='🔊';});document.querySelectorAll('.narr-status').forEach(function(s){s.textContent='Narration terminée';});});
+
+document.getElementById('btnStart').addEventListener('click',function(){showScene(1);});
+updateProgress('intro');
+</script>
+</body>
+</html>
