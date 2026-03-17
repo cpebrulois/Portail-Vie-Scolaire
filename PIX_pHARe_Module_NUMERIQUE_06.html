@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · NUMERIQUE 06 · Citoyen Numérique Actif</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#00d4ff;--primary-dim:rgba(0,212,255,.1);--primary-glow:rgba(0,212,255,.35);--bg:#000a10;--panel:#041420;--panel2:#071e2c;--text:#c8f0ff;--text-m:#4a8fa8;--text-d:#1a4a60;--gold:#f59e0b;--green:#10b981;--red:#ef4444;--border:rgba(0,212,255,.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 20% 0%,rgba(0,212,255,.1) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(0,212,255,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#7dd3fc);transition:width .5s ease;}
+.level-nav{display:flex;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;}
+.narr-block strong{color:#7dd3fc;}
+.narr-block em{color:var(--gold);font-style:italic;}
+.spectrum{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.spec-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.spec-title{font-size:.72rem;font-family:'Orbitron',sans-serif;margin-bottom:6px;letter-spacing:.5px;}
+.spec-passive{color:var(--text-d);}
+.spec-defensive{color:var(--gold);}
+.spec-active{color:var(--primary);}
+.spec-text{font-size:.82rem;color:var(--text-m);line-height:1.5;}
+.spec-eg{font-size:.78rem;font-style:italic;color:var(--text-d);margin-top:6px;}
+.reflect-q{font-size:1rem;color:#7dd3fc;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(0,212,255,.08);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#bae6fd;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+/* Feed simulé */
+.feed-intro{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:.9rem;line-height:1.7;}
+.feed-counter{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--text-d);}
+.feed-counter span{color:var(--primary);}
+.feed-post{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.post-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.post-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.post-meta{font-size:.75rem;color:var(--text-d);}
+.post-name{font-size:.82rem;color:var(--text-m);font-weight:600;}
+.post-content{font-size:.92rem;line-height:1.65;margin-bottom:12px;}
+.post-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;margin-right:4px;margin-bottom:8px;}
+.tag-info{background:rgba(0,212,255,.12);color:var(--primary);}
+.tag-fake{background:rgba(239,68,68,.12);color:#f87171;}
+.tag-harass{background:rgba(124,58,237,.12);color:#c084fc;}
+.tag-opinion{background:rgba(245,158,11,.1);color:#fde68a;}
+.tag-humor{background:rgba(16,185,129,.1);color:#6ee7b7;}
+.post-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.action-btn{padding:5px 12px;border-radius:20px;font-size:.72rem;font-family:'Orbitron',sans-serif;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:none;color:var(--text-m);transition:.2s;letter-spacing:.5px;}
+.action-btn:hover{border-color:var(--primary);color:var(--primary);}
+.action-btn.chosen{border-color:var(--primary);background:var(--primary-dim);color:var(--primary);}
+.action-btn.chosen-bad{border-color:var(--red);background:rgba(239,68,68,.08);color:#f87171;}
+.post-fb{margin-top:10px;padding:8px 12px;border-radius:6px;font-size:.82rem;line-height:1.5;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);display:none;}
+.post-fb.show{display:block;}
+/* Impact meter */
+.impact-bar-wrap{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;}
+.impact-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);margin-bottom:8px;letter-spacing:1px;}
+.impact-rows{display:flex;flex-direction:column;gap:6px;}
+.impact-row{display:flex;align-items:center;gap:10px;}
+.impact-name{font-size:.72rem;color:var(--text-m);width:80px;flex-shrink:0;}
+.impact-bg{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.impact-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.fill-bad{background:var(--red);}
+.fill-good{background:var(--green);}
+.fill-neutral{background:var(--text-d);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#7dd3fc;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){.spectrum{grid-template-columns:1fr;}#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">🌐</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Numérique · Niveau 06</div>
+      <div class="mod-title">Citoyen Numérique Actif</div>
+      <div class="mod-sub">De la défense à l'offensive positive — agir sur le réseau</div>
+      <div class="mod-ref">Réf. : Benkler (2006) · Citron &amp; Norton (2011) · Production par les pairs · Contre-discours</div>
+    </div>
+    <div class="xp-chip">175 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Déconstruction</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Expérimentation</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">De la défense à l'offensive positive</div>
+    <div class="narr-block">Les modules précédents t'ont équipé pour te <strong>protéger</strong> : comprendre les algorithmes, identifier les bulles, connaître tes droits. C'est indispensable. Mais c'est la moitié du tableau.</div>
+    <div class="narr-block">Le juriste Yochai <strong>Benkler</strong> a théorisé en 2006 comment les réseaux permettent à des individus ordinaires de produire collectivement des contre-narratifs — sans budget, sans institution. Ce qu'il appelle la <em>production par les pairs</em>. L'information ne coûte plus rien à diffuser. La question est de savoir qui la diffuse, et comment.</div>
+    <div class="narr-block">Danielle <strong>Citron</strong> et Helen <strong>Norton</strong> ont montré que le meilleur antidote à la désinformation n'est pas la censure — c'est le <strong>contre-discours abondant et sourcé</strong>. Supprimer une fausse information crée un vide que d'autres comblent. La contrer avec des faits crée une densité d'information qui rend la propagation plus difficile.</div>
+    <div class="spectrum">
+      <div class="spec-card">
+        <div class="spec-title spec-passive">● Passif</div>
+        <div class="spec-text">Consomme sans agir. Reçoit, ne produit pas.</div>
+        <div class="spec-eg">Scroll, like, partage automatique.</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-title spec-defensive">◆ Défensif</div>
+        <div class="spec-text">Se protège. Signale, filtre, bloque.</div>
+        <div class="spec-eg">Signalement, paramètres de confidentialité.</div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-title spec-active">★ Actif</div>
+        <div class="spec-text">Produit, contredit, amplifie ce qui est juste.</div>
+        <div class="spec-eg">Contre-discours sourcé, relais d'info fiable.</div>
+      </div>
+    </div>
+    <div class="reflect-q">Sur un réseau que tu utilises, as-tu déjà agi — pas juste consommé ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Partager, c\'est déjà un acte — tu amplifies quelque chose. La question de Benkler : amplifier quoi, et pourquoi ? Le citoyen actif se pose cette question avant de partager.')">Oui — j'ai partagé des posts ou des vidéos.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Signaler est un acte défensif — important et sous-utilisé. Citron et Norton diraient qu\'il est complémentaire au contre-discours, mais pas suffisant seul. Le signalement retire, le contre-discours replace.')">Oui — j'ai déjà signalé du contenu inapproprié.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Commenter pour contredire est l\'un des actes les plus puissants du citoyen numérique selon Citron. Même un commentaire factuel sous une fausse info en réduit la propagation.')">Oui — j'ai commenté pour corriger quelque chose de faux.</button>
+      <button class="opt-btn" onclick="selectN1(this,'C\'est honnête. La plupart des gens consomment sans agir. Ce module va précisément t\'équiper pour passer à l\'étape suivante — sans devoir devenir un militant ou passer des heures en ligne.')">Non — je consomme surtout sans interagir.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer à l'expérimentation →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">La cellule de veille</div>
+    <div class="feed-intro">Tu reçois un feed de <strong>8 posts fictifs</strong>. Pour chacun, tu choisis une action. Le compteur d'impact montre l'effet de tes décisions sur la propagation de chaque type de contenu.</div>
+
+    <div class="impact-bar-wrap">
+      <div class="impact-label">Impact de tes actions</div>
+      <div class="impact-rows">
+        <div class="impact-row"><div class="impact-name">Désinformation</div><div class="impact-bg"><div class="impact-fill fill-bad" id="imp-fake" style="width:60%"></div></div></div>
+        <div class="impact-row"><div class="impact-name">Harcèlement</div><div class="impact-bg"><div class="impact-fill fill-bad" id="imp-harass" style="width:50%"></div></div></div>
+        <div class="impact-row"><div class="impact-name">Info fiable</div><div class="impact-bg"><div class="impact-fill fill-good" id="imp-info" style="width:20%"></div></div></div>
+      </div>
+    </div>
+
+    <div class="feed-counter">Posts traités : <span id="postCount">0</span>/8</div>
+    <div id="feed-container"></div>
+    <div id="feed-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:1.8rem;color:var(--primary);margin-bottom:8px;" id="feedScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="feedLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — Une rumeur numérique</div>
+      <div class="xfer-scenario">Un story sur un réseau répand une rumeur sur un camarade. Elle est fausse, mais déjà vue par des dizaines de personnes de ta classe.</div>
+      <div class="xfer-q">Selon Citron et Norton, quelle action a le plus d'impact ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'C\'est la première étape défensive — utile, mais le signalement prend du temps à être traité. Entre-temps, la rumeur continue. C\'est nécessaire mais insuffisant.')">Signaler le contenu à la plateforme.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'C\'est du contre-discours — mais privé. Il n\'est visible que pour toi et l\'auteur. L\'algorithme ne le compte pas comme une réponse publique.')">Envoyer un message privé à l'auteur pour lui dire que c'est faux.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C\'est le contre-discours de Citron. Un commentaire public factuel sous le post d\'origine crée une friction pour tous ceux qui le lisent après. Il ne supprime pas — il conteste, ce qui est plus durable.')">Commenter publiquement sous le post avec des faits concrets qui contredisent la rumeur.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'C\'est la production par les pairs de Benkler — créer du contenu positif pour noyer le négatif. Efficace à long terme. Moins direct que le contre-discours ciblé sur ce post précis.')">Créer un post factuel pour donner la vraie version.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — Signaler ou dénoncer</div>
+      <div class="xfer-scenario">Un camarade dit que si tu signales un compte qui harcèle, "c'est de la délation".</div>
+      <div class="xfer-q">Comment tu distingues signaler et dénoncer ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Cette distinction existe dans certains contextes — mais elle s\'applique mal ici. Signaler un contenu harcelant ne nuit pas à l\'auteur injustement : ça l\'expose à une règle qu\'il a lui-même enfreinte.')">Il a raison — les deux sont similaires, ça dépend du contexte.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'C\'est la distinction juste. La dénonciation cible une personne pour nuire. Le signalement cible un comportement pour faire respecter une règle commune. Le premier est personnel et partial — le second est structurel et impersonnel.')">Dénoncer vise une personne pour lui nuire. Signaler vise un comportement pour faire respecter une règle commune.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'C\'est une vraie limite — l\'anonymat peut être utilisé abusivement. Mais ça ne rend pas le signalement équivalent à la délation. La réponse, c\'est de signaler uniquement ce qui enfreint clairement une règle.')">Signaler est bien, mais les faux signalements anonymes sont un problème réel.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Non — l\'inaction face au harcèlement en ligne n\'est pas la meilleure posture. Les plateformes ont des systèmes de signalement précisément parce que le harcèlement enfreint leurs propres règles.')">Il vaut mieux éviter de signaler pour ne pas créer de conflit.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — Contredire une rumeur sur un camarade</div>
+      <div class="xfer-scenario">Une rumeur circule sur un camarade. Tu sais qu'elle est fausse et tu as des éléments concrets pour la contredire. Tu veux créer un post pour rétablir la vérité.</div>
+      <div class="xfer-q">Comment tu formules ce post pour qu'il soit efficace selon Citron et Norton ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Attaquer l\'auteur de la rumeur transforme un contre-discours en conflit personnel. La cible devient toi et ta relation avec cet auteur, pas la fausse information.')">Tu begins par dire que l'auteur de la rumeur a tort et ment.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C\'est le contre-discours optimal selon Citron et Norton : factuel, sourcé, non personnel, positif. Il ne cible pas l\'auteur de la rumeur — il remplace la fausse information par une vraie. Les algorithmes amplifient aussi ce qui génère de l\'engagement positif.')">Tu présentes les faits que tu connais, clairement et sans attaquer personne. Tu encourages ceux qui le peuvent à partager.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'C\'est une forme de contre-discours. La limite : sans partage, la portée est limitée à tes abonnés. Et le style émotionnel peut déclencher de la défensive plutôt que de la réflexion.')">Tu exprimes ton indignation face à la rumeur et tu défends ton camarade passionnément.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'La prudence est compréhensible, mais Benkler montrerait que l\'inaction dans les réseaux n\'est jamais neutre : ne pas contre-dire une rumeur, c\'est laisser le champ libre à ceux qui la propagent.')">Tu ne fais rien — un post de plus ne changera rien.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <!-- FIN -->
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">🌐</div>
+      <div class="fin-title">Citoyen Numérique Actif</div>
+      <div class="fin-sub">Le meilleur antidote à la désinformation n'est pas le silence — c'est le contre-discours abondant et sourcé. Tu n'as pas besoin d'être une institution pour être une force d'équilibre sur un réseau.</div>
+      <div class="xp-badge">⭐ +175 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var MODULE_ID='NUMERIQUE_06',XP=175,XP=175,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2done:0,n3done:[false,false,false],impFake:60,impHarass:50,impInfo:20};
+
+// Feed data
+var POSTS=[
+  {id:1,avatar:'👩',name:'Maya_L',time:'il y a 2h',tag:'fake',label:'tag-fake',labelTxt:'⚠️ Info douteuse',
+   content:'VRAI : les vaccins contre la grippe contiennent des micropuces pour suivre les gens. Mon cousin qui travaille dans un hôpital me l\'a dit.',
+   actions:['Ignorer','Liker','Partager','Commenter (correction)','Signaler'],
+   best:['Commenter (correction)','Signaler'],
+   bad:['Liker','Partager'],
+   feedbacks:{
+     'Ignorer':'Neutre. La fausse info continue à circuler sans résistance.',
+     'Liker':'❌ Tu amplifies une fausse info — l\'algorithme va la montrer à tes contacts.',
+     'Partager':'❌ Tu multiplies sa portée. C\'est la pire action pour une fausse info.',
+     'Commenter (correction)':'✅ Excellent. Un commentaire factuel crée une friction pour tous les lecteurs suivants.',
+     'Signaler':'✅ Bien. Le signalement peut mener à la suppression — mais prend du temps.'
+   },
+   impactFake:-15,impactInfo:+10
+  },
+  {id:2,avatar:'🧑',name:'kevin_lol',time:'il y a 30min',tag:'harass',label:'tag-harass',labelTxt:'🚨 Contenu harcelant',
+   content:'Quelqu\'un m\'a dit que @clara_f11 avait triché à l\'exam. C\'est une menteuse et une arnaqueuse lol. Partagez si vous êtes d\'accord',
+   actions:['Ignorer','Liker','Partager','Commenter (réponse)','Signaler'],
+   best:['Signaler','Commenter (réponse)'],
+   bad:['Liker','Partager'],
+   feedbacks:{
+     'Ignorer':'Neutre mais insuffisant. Ce contenu cible une personne identifiable.',
+     'Liker':'❌ Tu valides une accusation non vérifiée contre une personne réelle.',
+     'Partager':'❌ Tu participas activement au harcèlement — même si tu ne l\'as pas initié.',
+     'Commenter (réponse)':'✅ Bien. Contester publiquement réduit la propagation et montre à la cible qu\'elle n\'est pas seule.',
+     'Signaler':'✅ Excellent. Ce contenu enfreint les règles — signalement justifié.'
+   },
+   impactHarass:-20,impactInfo:+5
+  },
+  {id:3,avatar:'📰',name:'ActuCollège',time:'il y a 1h',tag:'info',label:'tag-info',labelTxt:'✅ Source fiable',
+   content:'[Résultats officiels] Selon l\'OCDE 2024, les collégiens français ont amélioré leurs scores en lecture de 4 points. Lien vers le rapport complet dans les commentaires.',
+   actions:['Ignorer','Liker','Partager','Commenter','Signaler'],
+   best:['Partager','Liker'],
+   bad:['Signaler'],
+   feedbacks:{
+     'Ignorer':'Info fiable laissée sans amplification. Benkler dirait que ne pas relayer, c\'est laisser le champ aux autres.',
+     'Liker':'✅ Bon. Tu envoies un signal positif à l\'algorithme.',
+     'Partager':'✅ Excellent. Amplifier les sources fiables est l\'acte citoyen le plus utile selon Benkler.',
+     'Commenter':'✅ Bien — tu ajoutes de l\'engagement positif.',
+     'Signaler':'❌ Une source officielle ne mérite pas d\'être signalée. Ça peut pénaliser du bon contenu.'
+   },
+   impactInfo:+20
+  },
+  {id:4,avatar:'😎',name:'Romain_T',time:'il y a 3h',tag:'opinion',label:'tag-opinion',labelTxt:'💬 Opinion',
+   content:'Franchement les profs devraient être notés par les élèves. On passerait les notes sur Snapchat. Qui est d\'accord ?',
+   actions:['Ignorer','Liker','Partager','Commenter','Signaler'],
+   best:['Commenter','Ignorer'],
+   bad:['Signaler'],
+   feedbacks:{
+     'Ignorer':'Correct. C\'est une opinion — pas de désinformation, pas de harcèlement. Ignorer est valide.',
+     'Liker':'Neutre — c\'est une opinion, pas un problème.',
+     'Partager':'Neutre — tu amplifies une opinion avec laquelle tu es peut-être d\'accord.',
+     'Commenter':'✅ Bien. Débattre d\'une opinion, c\'est exactement ce que fait un citoyen actif.',
+     'Signaler':'❌ Signaler une opinion qu\'on n\'aime pas n\'est pas l\'usage prévu du signalement.'
+   },
+   impactInfo:+5
+  },
+  {id:5,avatar:'👧',name:'Inès_M',time:'il y a 45min',tag:'fake',label:'tag-fake',labelTxt:'⚠️ Info douteuse',
+   content:'ATTENTION ! Une nouvelle loi oblige tous les lycéens à payer pour utiliser Instagram. Partagez avant que ça soit supprimé !!',
+   actions:['Ignorer','Liker','Partager','Commenter (correction)','Signaler'],
+   best:['Commenter (correction)','Signaler'],
+   bad:['Partager','Liker'],
+   feedbacks:{
+     'Ignorer':'Neutre mais insuffisant — la fausse alerte va se propager.',
+     'Liker':'❌ Tu valides une fausse information.',
+     'Partager':'❌ La structure \"partagez avant que ça soit supprimé\" est un signal classique de désinformation. La partager, c\'est amplifier un mécanisme de manipulation.',
+     'Commenter (correction)':'✅ Parfait. Expliquer le mécanisme de la fausse alerte est plus utile que la simple suppression.',
+     'Signaler':'✅ Bien.'
+   },
+   impactFake:-12,impactInfo:+8
+  },
+  {id:6,avatar:'🎮',name:'GamerPro77',time:'il y a 2h',tag:'humor',label:'tag-humor',labelTxt:'😄 Humour',
+   content:'Quand le prof demande \"vous avez des questions ?\" et que tout le monde se lève pour partir 😂',
+   actions:['Ignorer','Liker','Partager','Commenter','Signaler'],
+   best:['Liker','Ignorer','Commenter'],
+   bad:['Signaler'],
+   feedbacks:{
+     'Ignorer':'Correct. Ce n\'est pas un problème à traiter.',
+     'Liker':'✅ Humour inoffensif — liker est totalement approprié.',
+     'Partager':'Neutre.',
+     'Commenter':'Neutre.',
+     'Signaler':'❌ Signaler du contenu humoristique inoffensif est un usage abusif du signalement.'
+   }
+  },
+  {id:7,avatar:'📣',name:'InfoSanté',time:'il y a 1h',tag:'info',label:'tag-info',labelTxt:'✅ Source fiable',
+   content:'Le CHU de Besançon publie ses résultats sur le bien-être des adolescents en milieu scolaire. 1 ado sur 4 dit se sentir isolé. Rapport complet en lien.',
+   actions:['Ignorer','Liker','Partager','Commenter','Signaler'],
+   best:['Partager','Liker'],
+   bad:['Signaler'],
+   feedbacks:{
+     'Ignorer':'Info utile laissée sans amplification.',
+     'Liker':'✅ Bien.',
+     'Partager':'✅ Excellent. Ce type de contenu mérite d\'être amplifié — il change la perception du problème.',
+     'Commenter':'✅ Engagement positif.',
+     'Signaler':'❌ Source officielle — signalement injustifié.'
+   },
+   impactInfo:+15
+  },
+  {id:8,avatar:'😡',name:'anon_user_99',time:'il y a 20min',tag:'harass',label:'tag-harass',labelTxt:'🚨 Contenu harcelant',
+   content:'@thomas_b4 est une balance. Tout le monde le sait. Si vous avez été trahis par quelqu\'un partagez ce post pour lui faire payer.',
+   actions:['Ignorer','Liker','Partager','Commenter (réponse)','Signaler'],
+   best:['Signaler','Commenter (réponse)'],
+   bad:['Liker','Partager'],
+   feedbacks:{
+     'Ignorer':'Insuffisant. Ce contenu cible et mobilise contre une personne nommée.',
+     'Liker':'❌ Tu participes à la mobilisation contre quelqu\'un.',
+     'Partager':'❌ Tu deviens complice actif du harcèlement.',
+     'Commenter (réponse)':'✅ Bien — contester publiquement ce type d\'appel à la haine réduit son efficacité.',
+     'Signaler':'✅ Prioritaire. Ce contenu enfreint clairement les règles.'
+   },
+   impactHarass:-18,impactInfo:+5
+  }
+];
+
+var postsDone=0,feedScore=0;
+
+function initFeed(){
+  var c=document.getElementById('feed-container');
+  c.innerHTML='';
+  POSTS.forEach(function(post,i){
+    var div=document.createElement('div');
+    div.className='feed-post';
+    div.id='post-'+post.id;
+    div.innerHTML='<div class="post-header">'
+      +'<div class="post-avatar">'+post.avatar+'</div>'
+      +'<div><div class="post-name">'+post.name+'</div><div class="post-meta">'+post.time+'</div></div>'
+      +'</div>'
+      +'<span class="post-tag '+post.label+'">'+post.labelTxt+'</span>'
+      +'<div class="post-content">'+post.content+'</div>'
+      +'<div class="post-actions" id="pa-'+post.id+'"></div>'
+      +'<div class="post-fb" id="pfb-'+post.id+'"></div>';
+    c.appendChild(div);
+    var pa=document.getElementById('pa-'+post.id);
+    post.actions.forEach(function(action){
+      var btn=document.createElement('button');
+      btn.className='action-btn';
+      btn.textContent=action;
+      btn.onclick=function(){doAction(post,action,btn);};
+      pa.appendChild(btn);
+    });
+  });
+}
+
+function doAction(post,action,btn){
+  var pa=document.getElementById('pa-'+post.id);
+  pa.querySelectorAll('.action-btn').forEach(function(b){b.style.pointerEvents='none';});
+  var isBest=post.best&&post.best.indexOf(action)>=0;
+  var isBad=post.bad&&post.bad.indexOf(action)>=0;
+  btn.classList.add(isBad?'chosen-bad':'chosen');
+  var fb=document.getElementById('pfb-'+post.id);
+  if(post.feedbacks&&post.feedbacks[action]){fb.textContent=post.feedbacks[action];fb.classList.add('show');}
+  if(isBest)feedScore+=2;
+  else if(!isBad)feedScore+=1;
+  // Update impact
+  if(post.impactFake&&!isBad){state.impFake=Math.max(0,state.impFake+post.impactFake);updateImpact();}
+  if(post.impactHarass&&!isBad){state.impHarass=Math.max(0,state.impHarass+post.impactHarass);updateImpact();}
+  if(post.impactInfo&&isBest){state.impInfo=Math.min(100,state.impInfo+post.impactInfo);updateImpact();}
+  postsDone++;
+  document.getElementById('postCount').textContent=postsDone;
+  if(postsDone>=8){setTimeout(showFeedResult,800);}
+}
+
+function updateImpact(){
+  document.getElementById('imp-fake').style.width=state.impFake+'%';
+  document.getElementById('imp-harass').style.width=state.impHarass+'%';
+  document.getElementById('imp-info').style.width=state.impInfo+'%';
+}
+
+function showFeedResult(){
+  document.getElementById('feed-result').style.display='block';
+  document.getElementById('feedScore').textContent=feedScore+'/16';
+  var lbl=feedScore<=6?'Continue à affiner tes réflexes':feedScore<=11?'Bon équilibre — tu différencies bien les contenus':'Excellent — tu as les réflexes d\'un citoyen numérique actif';
+  document.getElementById('feedLabel').textContent=lbl;
+  updateProgress();
+}
+
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});if(n===2&&postsDone===0)initFeed();updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(postsDone>=8)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_NUMERIQUE_06',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>

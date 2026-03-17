@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · NEURO 06 · Neuroplasticité</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#10b981;--primary-dim:rgba(16,185,129,.1);--primary-glow:rgba(16,185,129,.35);--bg:#00100a;--panel:#081e14;--panel2:#0c2418;--text:#d0f0e0;--text-m:#60a87a;--text-d:#1e5040;--gold:#f59e0b;--blue:#3b82f6;--red:#ef4444;--border:rgba(16,185,129,.22);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 30% 0%,rgba(16,185,129,.1) 0%,transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(16,185,129,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#6ee7b7);transition:width .5s ease;}
+.level-nav{display:flex;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--gold);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;}
+.narr-block strong{color:#6ee7b7;}
+.narr-block em{color:var(--gold);font-style:italic;}
+.mindset-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.mindset-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.mindset-title{font-size:.75rem;font-family:'Orbitron',sans-serif;margin-bottom:8px;letter-spacing:.5px;}
+.fixed{color:#f87171;}
+.growth{color:#6ee7b7;}
+.mindset-eg{font-size:.82rem;color:var(--text-m);font-style:italic;margin-bottom:8px;padding:8px 12px;border-radius:6px;}
+.fixed-bg{background:rgba(239,68,68,.08);}
+.growth-bg{background:rgba(16,185,129,.08);}
+.mindset-text{font-size:.82rem;color:var(--text-m);line-height:1.55;}
+.reflect-q{font-size:1rem;color:#6ee7b7;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(16,185,129,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#a7f3d0;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+/* Journal neuronal */
+.journal-intro{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px;font-size:.9rem;line-height:1.7;}
+.week-indicator{display:flex;gap:8px;margin-bottom:16px;}
+.week-dot{flex:1;height:6px;border-radius:3px;background:var(--panel2);border:1px solid var(--border);transition:.4s;}
+.week-dot.active{background:var(--primary);}
+.week-dot.done{background:#6ee7b7;}
+.sim-week{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.week-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.week-state{font-size:.88rem;color:var(--text-m);font-style:italic;margin-bottom:12px;padding:8px 12px;background:var(--panel2);border-radius:6px;}
+.week-q{font-size:.88rem;color:#6ee7b7;margin-bottom:12px;}
+.week-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.week-choice:hover{border-color:var(--primary);}
+.week-choice.good{border-color:var(--primary);background:var(--primary-dim);}
+.week-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.week-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.week-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.week-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+/* Visualisation connexions */
+.brain-viz{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;text-align:center;}
+.brain-label{font-size:.7rem;font-family:'Orbitron',sans-serif;color:var(--text-d);margin-bottom:10px;letter-spacing:1px;}
+.connections{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;}
+.conn-node{width:12px;height:12px;border-radius:50%;background:var(--panel);border:1px solid var(--border);transition:.5s;}
+.conn-node.lit{background:var(--primary);border-color:var(--primary);box-shadow:0 0 6px var(--primary-glow);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#6ee7b7;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--primary);background:var(--primary-dim);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#fff;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){.mindset-grid{grid-template-columns:1fr;}#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">🧠</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Neuro · Niveau 06</div>
+      <div class="mod-title">Neuroplasticité</div>
+      <div class="mod-sub">Le cerveau se réécrit — et tu peux choisir comment</div>
+      <div class="mod-ref">Réf. : Dweck (2006) · LeDoux (2015) · Growth mindset · Reconsolidation mémorielle</div>
+    </div>
+    <div class="xp-chip">150 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Déconstruction</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Expérimentation</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">Le cerveau qui se réécrit</div>
+    <div class="narr-block">Le neuroscientifique Joseph <strong>LeDoux</strong> a découvert quelque chose de surprenant : chaque fois qu'on rappelle un souvenir, on ne le rejoue pas — on le <strong>réécrit légèrement</strong>. C'est ce qu'on appelle la <em>reconsolidation mémorielle</em>.</div>
+    <div class="narr-block">Ce n'est pas un bug du cerveau. C'est une fonction. Elle permet de modifier la <strong>charge émotionnelle</strong> d'un souvenir — de réduire l'intensité d'une douleur passée en la recontextualisant. C'est pour ça que parler d'un traumatisme avec un professionnel peut changer la façon dont on le ressent.</div>
+    <div class="narr-block">Carol <strong>Dweck</strong> a montré qu'il existe deux façons de se voir : le <em>fixed mindset</em> (mes capacités sont fixes — j'ai ou j'ai pas) et le <em>growth mindset</em> (mes capacités se construisent — je peux devenir). Ce n'est pas qu'une question d'attitude. Ça change littéralement quelles zones du cerveau s'activent face à un échec.</div>
+    <div class="mindset-grid">
+      <div class="mindset-card">
+        <div class="mindset-title fixed">Fixed Mindset</div>
+        <div class="mindset-eg fixed-bg">"Je suis nul(le) en maths."</div>
+        <div class="mindset-text">L'échec confirme une identité. La menace est existentielle. Le cerveau évite les défis pour se protéger.</div>
+      </div>
+      <div class="mindset-card">
+        <div class="mindset-title growth">Growth Mindset</div>
+        <div class="mindset-eg growth-bg">"Je n'ai pas encore compris ce chapitre."</div>
+        <div class="mindset-text">L'échec est une information. La menace est circonstancielle. Le cerveau cherche des stratégies.</div>
+      </div>
+    </div>
+    <div class="reflect-q">Tu as une compétence dans laquelle tu t'es amélioré(e) grâce à de la pratique. Laquelle ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Parfait. Tu viens de confirmer que ton cerveau est capable de construire une compétence qui n\'existait pas. C\'est la preuve vivante du growth mindset — et de la neuroplasticité.')">Un sport ou une activité physique.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Intéressant. Les compétences sociales sont souvent vécues comme \"innées\" — mais elles s\'apprennent comme n\'importe quoi. Le fait que tu les nommes comme \"apprises\" est déjà un indice de growth mindset.')">Parler à des inconnus ou gérer des conflits.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Excellent. Les compétences artistiques ou techniques laissent des traces visibles de la progression — ce qui les rend utiles pour visualiser ce que \"progresser\" veut dire concrètement.')">Une compétence créative ou technique (instrument, dessin, code...).</button>
+      <button class="opt-btn" onclick="selectN1(this,'Ça peut arriver — surtout dans les domaines où on n\'a pas encore trouvé la bonne méthode. LeDoux et Dweck diraient tous les deux : le problème n\'est peut-être pas dans la capacité, mais dans la stratégie.')">Je ne vois pas vraiment — j'ai du mal à m'améliorer.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer à l'expérimentation →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">Le journal neuronal</div>
+    <div class="journal-intro">Après un épisode difficile (conflit, remarque blessante, exclusion), on suit un personnage pendant 4 semaines. À chaque semaine, tu choisis comment il traite ce souvenir. <strong>La visualisation des connexions évolue selon tes choix.</strong></div>
+    <div class="week-indicator">
+      <div class="week-dot active" id="wd1"></div>
+      <div class="week-dot" id="wd2"></div>
+      <div class="week-dot" id="wd3"></div>
+      <div class="week-dot" id="wd4"></div>
+    </div>
+    <div class="brain-viz">
+      <div class="brain-label">Connexions actives — Réseau émotionnel</div>
+      <div class="connections" id="brainNodes"></div>
+    </div>
+
+    <div id="week1">
+      <div class="sim-week">
+        <div class="week-label">Semaine 1 — Immédiatement après</div>
+        <div class="week-state">Le souvenir est vif. Chaque fois qu'il pense à la scène, il ressent la même intensité émotionnelle qu'au moment où c'est arrivé.</div>
+        <div class="week-q">Comment il traite ce souvenir cette semaine ?</div>
+        <div onclick="weekChoice(1,'a','bad','La rumination rejoue le souvenir sans le recontextualiser — elle renforce les connexions émotionnelles associées à la douleur, selon LeDoux. Le souvenir devient de plus en plus douloureux à rappeler.')" class="week-choice">Il y pense sans arrêt — rejoue la scène en boucle.</div>
+        <div onclick="weekChoice(1,'b','medium','L\'évitement protège à court terme en ne déclenchant pas la reconsolidation douloureuse. Mais il empêche aussi la reconfiguration du souvenir. Le problème reste intact.')" class="week-choice">Il essaie de ne plus y penser — change de sujet dès que ça revient.</div>
+        <div onclick="weekChoice(1,'c','good','Externaliser un souvenir — en parler à quelqu\'un de confiance — permet d\'activer la reconsolidation dans un contexte sécurisé. LeDoux appelle ça l\'encodage contextuel : le souvenir se réécrit avec de nouvelles informations.')" class="week-choice">Il en parle à quelqu'un en qui il a confiance — pas pour se plaindre, pour comprendre.</div>
+        <div class="week-fb" id="wfb1"></div>
+      </div>
+    </div>
+
+    <div id="week2" style="display:none">
+      <div class="sim-week">
+        <div class="week-label">Semaine 2 — La phase de traitement</div>
+        <div class="week-state" id="week2-state">Il commence à avoir un peu de distance. Mais par moments, la douleur revient aussi forte qu'au début.</div>
+        <div class="week-q">Comment il interprète ce recul ?</div>
+        <div onclick="weekChoice(2,'a','bad','C\'est le fixed mindset appliqué à la guérison. \"Je devrais être guéri\" suppose qu\'il y a un seuil fixe à atteindre. La reconsolidation mémorielle est un processus, pas un événement.')" class="week-choice">"Je devrais aller mieux — pourquoi c'est encore là ?"</div>
+        <div onclick="weekChoice(2,'b','good','C\'est le growth mindset appliqué à la guérison. Le retour de la douleur n\'est pas un échec — c\'est une occasion supplémentaire de reconsolidation. Chaque fois qu\'il rappelle le souvenir dans un contexte plus sécurisé, il le réécrit un peu.')" class="week-choice">"Ça revient — mais je vois que je peux traverser ça. C'est différent d'avant."</div>
+        <div onclick="weekChoice(2,'c','medium','C\'est compréhensible et légitime. Mais Dweck montrerait que cette interprétation réactive peut renforcer une vision fixe de soi-même comme \"quelqu\'un à qui ça arrive\".')" class="week-choice">"Cette personne m'a causé quelque chose de réel. C'est sa faute."</div>
+        <div class="week-fb" id="wfb2"></div>
+      </div>
+    </div>
+
+    <div id="week3" style="display:none">
+      <div class="sim-week">
+        <div class="week-label">Semaine 3 — La reconsolidation</div>
+        <div class="week-state" id="week3-state">Le souvenir est toujours là, mais moins lourd. Il peut y penser sans que ça le paralyse.</div>
+        <div class="week-q">Comment il utilise ce souvenir maintenant ?</div>
+        <div onclick="weekChoice(3,'a','good','C\'est exactement la mémoire exemplaire de Todorov + la reconsolidation de LeDoux. Le souvenir devient une information utile plutôt qu\'une source de douleur. Les connexions émotionnelles se stabilisent autour d\'une signification, pas d\'un affect.')" class="week-choice">Il commence à comprendre ce qui s'est passé — et à voir ce qu'il pourrait faire différemment.</div>
+        <div onclick="weekChoice(3,'b','medium','Ce n\'est pas sans valeur — une limite posée est une protection réelle. Mais la limite seule n\'engage pas la reconsolidation. Le souvenir reste douloureux à l\'intérieur, même si extérieurement ça va.')" class="week-choice">Il décide de ne plus fréquenter cette personne — protection d'abord.</div>
+        <div onclick="weekChoice(3,'c','bad','Non — le souvenir ne \"disparaît\" pas. LeDoux a montré que l\'extinction (faire comme s\'il n\'existait pas) et la reconsolidation sont deux processus différents. Forcer l\'oubli peut laisser le souvenir intact, juste moins accessible consciemment.')" class="week-choice">Il décide d'effacer le souvenir — penser à autre chose, aller de l'avant.</div>
+        <div class="week-fb" id="wfb3"></div>
+      </div>
+    </div>
+
+    <div id="week4" style="display:none">
+      <div class="sim-week">
+        <div class="week-label">Semaine 4 — L'intégration</div>
+        <div class="week-state" id="week4-state">Un mois après. La charge émotionnelle a changé — pas disparue, mais différente.</div>
+        <div class="week-q">Qu'est-ce qui a changé dans sa façon de se voir ?</div>
+        <div onclick="weekChoice(4,'a','bad','C\'est une narration de victime permanente — la douleur est devenue identitaire. Dweck appellerait ça un fixed mindset du trauma : \"ce qui m\'est arrivé définit qui je suis\".')" class="week-choice">"Je suis quelqu'un à qui on peut faire du mal facilement."</div>
+        <div onclick="weekChoice(4,'b','good','C\'est la transformation neuroplastique. Il n\'a pas oublié, il n\'est pas guéri parfaitement — mais il a intégré l\'expérience dans une vision de lui-même comme quelqu\'un capable de traverser des choses difficiles. C\'est ça, la résilience.')" class="week-choice">"J'ai traversé quelque chose de difficile. Et je suis encore là."</div>
+        <div onclick="weekChoice(4,'c','medium','C\'est la mémoire exemplaire bien comprise. Le souvenir travaille pour la prévention. La limite : si le souvenir est utilisé uniquement pour prévenir les autres, il peut rester chargé à l\'intérieur sans vraiment être intégré.')" class="week-choice">"Je comprends mieux comment ce genre de situation arrive. Je peux peut-être aider quelqu'un d'autre."</div>
+        <div class="week-fb" id="wfb4"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:1.8rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);line-height:1.5;" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — Un souvenir difficile</div>
+      <div class="xfer-scenario">Tu penses à quelque chose de difficile que tu as vécu il y a quelques mois. En y repensant maintenant, tu remarques que tu le ressens différemment qu'à l'époque.</div>
+      <div class="xfer-q">Qu'est-ce que cette différence signifie ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'L\'oubli et la reconsolidation sont deux choses distinctes. Sentir moins intensément ne veut pas dire que c\'est effacé — ça veut dire que le cerveau a intégré l\'expérience dans un contexte plus large.')">Tu as oublié une partie — c'est pour ça que ça fait moins mal.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C\'est exactement ce que LeDoux décrit. La reconsolidation mémorielle a fonctionné — le souvenir a été réécrit avec de nouvelles informations (le temps, les conversations, les réflexions). Ton cerveau a travaillé.')">Ton cerveau a traité l'expérience et l'a réencodée avec de nouvelles informations.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'C\'est possible — et si c\'est vrai pour toi, c\'est une information utile. Mais ressentir différemment n\'est pas nécessairement une protection — c\'est souvent une intégration.')">Tu t'es protégé(e) inconsciemment — ton cerveau a créé une distance.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Les souvenirs douloureux ne disparaissent pas — mais ils peuvent changer de charge émotionnelle. Si tu le ressens différemment, quelque chose a changé — même si ce n\'est pas spectaculaire.')">Rien de particulier — les émotions fluctuent naturellement.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — Talents innés ou construits ?</div>
+      <div class="xfer-scenario">Un camarade dit : "De toute façon, certains sont doués pour parler aux gens et d'autres non. C'est inné."</div>
+      <div class="xfer-q">Qu'est-ce que Dweck répondrait ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Dweck ne dit pas que tout le monde a le même point de départ — il y a bien des différences biologiques. Mais elle montre que ces différences initiales comptent moins que la trajectoire de développement.')">Il a raison — il y a des bases biologiques aux compétences sociales.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'C\'est exactement la réponse de Dweck. Les compétences sociales sont apprises — et les gens qui semblent \"naturellement\" doués ont simplement eu plus d\'occasions de pratiquer, souvent dès l\'enfance. Le fixed mindset cache un historique d\'apprentissage.')">Que les gens qui semblent \"naturellement doués\" ont appris — souvent très tôt et sans s\'en rendre compte.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'C\'est l\'approche pragmatique. Mais Dweck irait plus loin : accepter que \"certains\" ne peuvent pas développer certaines compétences, c\'est déjà du fixed mindset appliqué aux autres.')">Que les compétences sociales peuvent s'apprendre, mais certains partent avec un avantage.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Non — la recherche de Dweck est assez solide sur ce point, et elle concerne bien la réalité des apprentissages, pas juste l\'optimisme. Le fixed mindset a des conséquences mesurables sur les résultats réels.')">Que c'est optimiste, mais pas vraiment réaliste.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — La prochaine fois</div>
+      <div class="xfer-scenario">Tu as réagi à un conflit d'une façon dont tu n'es pas fier(e) — tu t'es emporté(e) ou tu t'es effacé(e) quand tu aurais voulu tenir ta position.</div>
+      <div class="xfer-q">Qu'est-ce que la neuroplasticité dit sur la prochaine fois ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'C\'est du fixed mindset : \"c\'est ma nature\" ferme la possibilité de changement. Mais les réactions émotionnelles sont précisément ce que le cerveau peut reconfigurer.')">Que tu réagiras probablement de la même façon — c'est ta nature.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'Vrai, mais incomplet. La volonté seule sans comprendre ce qui a déclenché la réaction ne change pas grand-chose. LeDoux montrerait que sans reconsolidation, le schéma se répète.')">Qu'il suffit de vouloir réagir différemment pour changer.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C\'est exactement la voie neuroplastique. Comprendre le déclencheur (qu\'est-ce qui m\'a fait m\'emporter ?) + anticiper (comment je veux réagir ?) = reconfiguration progressive. Ce n\'est pas immédiat, mais c\'est réel.')">Que si tu comprends ce qui t'a déclenché et que tu anticipes, tu peux progressivement reconfigurer ta réaction.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'La bienveillance envers soi est importante, mais elle ne suffit pas à changer un schéma de réaction. LeDoux dirait : sans reconsolidation active, le souvenir émotionnel reste intact.')">Que tu dois juste être plus indulgent(e) avec toi-même.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <!-- FIN -->
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">🧠</div>
+      <div class="fin-title">Neuroplasticité</div>
+      <div class="fin-sub">Ton cerveau n'est pas figé. Il se réécrit à chaque rappel de souvenir, à chaque fois que tu apprends, à chaque fois que tu traverses quelque chose de difficile et que tu continues. Ce n'est pas de l'optimisme — c'est de la neurobiologie.</div>
+      <div class="xp-badge">⭐ +150 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='NEURO_06',XP=150,XP=150,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2week:1,n3done:[false,false,false]};
+
+// Init brain viz
+(function(){var n=document.getElementById('brainNodes');for(var i=0;i<30;i++){var d=document.createElement('div');d.className='conn-node';d.id='cn'+i;n.appendChild(d);}})();
+
+function lightNodes(count){for(var i=0;i<30;i++){var n=document.getElementById('cn'+i);if(n)n.classList.toggle('lit',i<count);}}
+
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2week>4)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+
+function weekChoice(week,choice,quality,feedback){
+  var c=document.getElementById('week'+week);
+  c.querySelectorAll('.week-choice').forEach(function(el){el.style.pointerEvents='none';el.style.opacity='.4';});
+  event.currentTarget.style.opacity='1';
+  event.currentTarget.classList.add(quality);
+  var fb=document.getElementById('wfb'+week);
+  fb.textContent=feedback;
+  fb.classList.add('show');
+  var pts = quality==='good'?3:quality==='medium'?1:0;
+  state.n2score+=pts;
+  // Update dot
+  var dot=document.getElementById('wd'+week);
+  if(dot)dot.className='week-dot done';
+  // Update brain
+  var litCount=Math.round(state.n2score/12*30);
+  lightNodes(Math.min(30,litCount));
+  state.n2week++;
+  setTimeout(function(){
+    if(week<4){
+      var next=document.getElementById('week'+(week+1));
+      if(next)next.style.display='block';
+      var nd=document.getElementById('wd'+(week+1));
+      if(nd)nd.classList.add('active');
+    }else{
+      showSimResult();
+    }
+  },1800);
+}
+
+function showSimResult(){
+  document.getElementById('sim-result').style.display='block';
+  var s=state.n2score;
+  lightNodes(Math.min(30,Math.round(s/12*30)));
+  document.getElementById('simScore').textContent='Score neuronal : '+s+'/12';
+  document.getElementById('simLabel').textContent=s<=4?'Quelques nouvelles connexions — continue le travail':s<=8?'Bonne reconsolidation en cours — le cerveau travaille':'Reconsolidation solide — les connexions se stabilisent autour d\'une signification';
+  updateProgress();
+}
+
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_NEURO_06',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>
