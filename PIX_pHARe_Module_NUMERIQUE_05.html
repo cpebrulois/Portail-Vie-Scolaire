@@ -899,10 +899,8 @@
         }
 
         function App() {
-            const activePlayer = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || "";
-            const hasHubUnlock = !!activePlayer && !!localStorage.getItem('CERT_PHARE_' + PREREQUISITE_MODULE);
-            const [gameState, setGameState] = useState(hasHubUnlock ? "intro" : "unlock");
-            const [playerData, setPlayerData] = useState({ name: activePlayer, class: "", level: 1, score: 0, xp: 0, quizScore: 0, scenarioScore: 0, flashcardsViewed: 0, finished: false });
+            const [gameState, setGameState] = useState("unlock");
+            const [playerData, setPlayerData] = useState({ name: "", class: "", level: 1, score: 0, xp: 0, quizScore: 0, scenarioScore: 0, flashcardsViewed: 0, finished: false });
             const [unlockCode, setUnlockCode] = useState("");
             const [unlockError, setUnlockError] = useState("");
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
@@ -919,7 +917,7 @@
                 if (!decoded) { setUnlockError("Code invalide."); return; }
                 if (decoded.m !== PREREQUISITE_MODULE) { setUnlockError(`Ce code provient du module ${decoded.m}. Tu as besoin du code de ${PREREQUISITE_MODULE}.`); return; }
                 if (!decoded.f) { setUnlockError("Tu n'as pas terminé le module précédent."); return; }
-                setPlayerData(prev => ({ ...prev, name: activePlayer || decoded.n || "", class: decoded.c || "" }));
+                setPlayerData(prev => ({ ...prev, name: decoded.n || "", class: decoded.c || "" }));
                 setGameState("intro");
             }
 
@@ -976,26 +974,14 @@
                     setPlayerData(prev => ({ ...prev, finished: true, xp: prev.xp + 200 }));
                     setGameState("complete");
                     try {
-                        var _ck = 'CERT_PHARE_' + MODULE_ID;
-                        if (!localStorage.getItem(_ck)) {
-                            localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                        }
-                    } catch(_ce) {}
-                    // ── Remontée XP vers Superhub PVS ──
-                    try {
-                        var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-                        _pvs.push({
-                            id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
-                            type: 'PIXHARE_PROGRESS',
-                            player: localStorage.getItem('pvs_current_player') || playerData.name || '',
-                            module: MODULE_ID,
-                            score: playerData.score,
-                            xp: playerData.xp + 200,
-                            d: new Date().toISOString()
-                        });
-                        localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
-                        window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
-                    } catch (_e) {}
+                        var _pu=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||new URLSearchParams(window.location.search).get('player')||'';
+                        localStorage.setItem('CERT_PHARE_NUMERIQUE_05',JSON.stringify({v:1,d:new Date().toISOString(),m:'NUMERIQUE_05',f:true}));
+                        var _pb=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+                        _pb.push({id:'PIXHARE-NUMERIQUE_05-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pu,module:'NUMERIQUE_05',xp:100,d:new Date().toISOString()});
+                        if(_pb.length>500)_pb.splice(0,_pb.length-500);
+                        localStorage.setItem('pvs_bridge_events',JSON.stringify(_pb));
+                        window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+                    } catch(_e) {}
                 }
             }
 
@@ -1208,7 +1194,6 @@
 
             function renderComplete() {
                 const mastery = getMasteryLevel(playerData.score);
-                const saveCode = generateSaveCode();
                 return e("div", { className: "app-container" },
                     e("div", { className: "completion-screen" },
                         e("div", { className: "certificate-frame" },
@@ -1225,11 +1210,6 @@
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.xp), e("div", { className: "stat-label" }, "XP Total")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.quizScore), e("div", { className: "stat-label" }, "Intégration")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.scenarioScore), e("div", { className: "stat-label" }, "Transmission"))
-                        ),
-                        e("div", { className: "save-code-box" },
-                            e("div", { className: "save-code-label" }, "🏆 CODE DE CERTIFICATION PILIER NUMÉRIQUE :"),
-                            e("div", { className: "save-code" }, saveCode),
-                            e("button", { className: "copy-btn", onClick: copyCode }, "Copier le code")
                         ),
                         e("div", { className: "content-panel", style: { marginTop: "35px", textAlign: "left" } },
                             e("div", { className: "panel-header" },

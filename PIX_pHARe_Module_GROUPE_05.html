@@ -612,10 +612,8 @@
         }
 
         function App() {
-            const activePlayer = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || "";
-            const hasHubUnlock = !!activePlayer && !!localStorage.getItem('CERT_PHARE_' + PREREQUISITE_MODULE);
-            const [gameState, setGameState] = useState(hasHubUnlock ? "intro" : "unlock");
-            const [playerData, setPlayerData] = useState({ name: activePlayer, class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, finished: false });
+            const [gameState, setGameState] = useState("unlock");
+            const [playerData, setPlayerData] = useState({ name: localStorage.getItem('pvs_current_player') || "", class: "", score: 0, xp: 0, quizScore: 0, scenarioScore: 0, finished: false });
             const [unlockCode, setUnlockCode] = useState("");
             const [unlockError, setUnlockError] = useState("");
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
@@ -632,7 +630,7 @@
                 if (!decoded) { setUnlockError("Code invalide."); return; }
                 if (decoded.m !== PREREQUISITE_MODULE) { setUnlockError(`Code du module ${decoded.m}. Il te faut celui de ${PREREQUISITE_MODULE}.`); return; }
                 if (!decoded.f) { setUnlockError("Module précédent non terminé."); return; }
-                setPlayerData(prev => ({ ...prev, name: activePlayer || decoded.n || "" }));
+                setPlayerData(prev => ({ ...prev, name: localStorage.getItem('pvs_current_player') || decoded.n || "" }));
                 setGameState("intro");
             }
 
@@ -680,15 +678,10 @@
                     setShowScenarioResult(false);
                 } else {
                     setPlayerData(prev => ({ ...prev, finished: true, xp: prev.xp + 150 }));
-                    try {
-                        var _ck = 'CERT_PHARE_' + MODULE_ID;
-                        if (!localStorage.getItem(_ck)) {
-                            localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                        }
-                    } catch(_ce) {}
-
+                    
                 // ── Bridge Superhub PVS ──
                 try {
+                    localStorage.setItem('CERT_PHARE_GROUPE_05',JSON.stringify({v:1,d:new Date().toISOString(),m:'GROUPE_05',f:true}));
                     var _pvsBridge = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
                     _pvsBridge.push({
                         id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
@@ -879,11 +872,6 @@
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.xp), e("div", { className: "stat-label" }, "XP Pilier")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.quizScore), e("div", { className: "stat-label" }, "Intégration")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.scenarioScore), e("div", { className: "stat-label" }, "Transmission"))
-                        ),
-                        e("div", { className: "save-code-box" },
-                            e("div", { className: "save-code-label" }, "📋 CODE DE CERTIFICATION DU PILIER GROUPE :"),
-                            e("div", { className: "save-code" }, generateSaveCode()),
-                            e("button", { className: "copy-btn", onClick: copyCode }, "Copier le code")
                         ),
                         e("div", { className: "content-panel", style: { marginTop: "30px", textAlign: "left" } },
                             e("div", { className: "panel-header" }, e("div", { className: "panel-icon" }, "🚀"), e("div", { className: "panel-title" }, "Et maintenant ?")),

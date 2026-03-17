@@ -433,7 +433,8 @@ var PILLARS = [
       {id:'GROUPE_02', file:'PIX_pHARe_Module_GROUPE_02.html', name:'La Mécanique des Foules', xp:100},
       {id:'GROUPE_03', file:'PIX_pHARe_Module_GROUPE_03.html', name:'Bystander Effect', xp:100},
       {id:'GROUPE_04', file:'PIX_pHARe_Module_GROUPE_04.html', name:'Résistance au Groupe', xp:100},
-      {id:'GROUPE_05', file:'PIX_pHARe_Module_GROUPE_05.html', name:'Ambassadeur en Action', xp:100}
+      {id:'GROUPE_05', file:'PIX_pHARe_Module_GROUPE_05.html', name:'Ambassadeur en Action', xp:100},
+      {id:'GROUPE_06', file:'PIX_pHARe_Module_GROUPE_06.html', name:'Influence & Manipulation', xp:150, coming:true}
     ]
   },
   {
@@ -445,7 +446,8 @@ var PILLARS = [
       {id:'HISTOIRE_02', file:'PIX_pHARe_Module_HISTOIRE_02.html', name:'Les Grandes Affaires', xp:100},
       {id:'HISTOIRE_03', file:'PIX_pHARe_Module_HISTOIRE_03.html', name:"L'École et la Violence", xp:100},
       {id:'HISTOIRE_04', file:'PIX_pHARe_Module_HISTOIRE_04.html', name:"Témoins de l'Histoire", xp:100},
-      {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Résistances et Renaissances', xp:100}
+      {id:'HISTOIRE_05', file:'PIX_pHARe_Module_HISTOIRE_05.html', name:'Résistances et Renaissances', xp:100},
+      {id:'HISTOIRE_06', file:'PIX_pHARe_Module_HISTOIRE_06.html', name:'Héritages et Responsabilités', xp:150, coming:true}
     ]
   },
   {
@@ -457,7 +459,8 @@ var PILLARS = [
       {id:'JURIDIQUE_02', file:'PIX_pHARe_Module_JURIDIQUE_02.html', name:'La Mécanique des Ombres', xp:375},
       {id:'JURIDIQUE_03', file:'PIX_pHARe_Module_JURIDIQUE_03.html', name:'Le Spectre Numérique', xp:450},
       {id:'JURIDIQUE_04', file:'PIX_pHARe_Module_JURIDIQUE_04.html', name:'Le Protocole pHARe', xp:525},
-      {id:'JURIDIQUE_05', file:'PIX_pHARe_Module_JURIDIQUE_05.html', name:'Maître de la Loi', xp:625}
+      {id:'JURIDIQUE_05', file:'PIX_pHARe_Module_JURIDIQUE_05.html', name:'Maître de la Loi', xp:625},
+      {id:'JURIDIQUE_06', file:'PIX_pHARe_Module_JURIDIQUE_06.html', name:'Justice Réparatrice', xp:750, coming:true}
     ]
   },
   {
@@ -469,7 +472,8 @@ var PILLARS = [
       {id:'NEURO_02', file:'PIX_pHARe_Module_NEURO_02.html', name:'Empathie & Miroirs', xp:100},
       {id:'NEURO_03', file:'PIX_pHARe_Module_NEURO_03.html', name:'Stress & Mémoire', xp:100},
       {id:'NEURO_04', file:'PIX_pHARe_Module_NEURO_04.html', name:'Émotions & Décision', xp:100},
-      {id:'NEURO_05', file:'PIX_pHARe_Module_NEURO_05.html', name:'Résilience Neuronale', xp:100}
+      {id:'NEURO_05', file:'PIX_pHARe_Module_NEURO_05.html', name:'Résilience Neuronale', xp:100},
+      {id:'NEURO_06', file:'PIX_pHARe_Module_NEURO_06.html', name:'Neuroplasticité & Transformation', xp:150, coming:true}
     ]
   },
   {
@@ -481,7 +485,8 @@ var PILLARS = [
       {id:'NUMERIQUE_02', file:'PIX_pHARe_Module_NUMERIQUE_02.html', name:"Les Architectes de l'Ombre", xp:100},
       {id:'NUMERIQUE_03', file:'PIX_pHARe_Module_NUMERIQUE_03.html', name:'Bulles & Miroirs', xp:120},
       {id:'NUMERIQUE_04', file:'PIX_pHARe_Module_NUMERIQUE_04.html', name:'Tes Droits, Ton Armure', xp:150},
-      {id:'NUMERIQUE_05', file:'PIX_pHARe_Module_NUMERIQUE_05.html', name:'Maître du Feed', xp:200}
+      {id:'NUMERIQUE_05', file:'PIX_pHARe_Module_NUMERIQUE_05.html', name:'Maître du Feed', xp:200},
+      {id:'NUMERIQUE_06', file:'PIX_pHARe_Module_NUMERIQUE_06.html', name:'Citoyen Numérique Actif', xp:250, coming:true}
     ]
   }
 ];
@@ -517,6 +522,7 @@ function isDone(id) { return !!localStorage.getItem(ckey(id)); }
 function isUnlocked(pillar, idx) {
   return idx === 0 || isDone(pillar.modules[idx - 1].id);
 }
+function isComing(mod) { return !!mod.coming; }
 function doneCount() {
   var n = 0;
   PILLARS.forEach(function(p){ p.modules.forEach(function(m){ if(isDone(m.id)) n++; }); });
@@ -550,6 +556,43 @@ function pushBridge(moduleId) {
     localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
     window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
   } catch(e) {}
+}
+
+
+// ── Protocole Valdurne 06' ──────────────────────────────────
+var PROTOCOLE_VALDURNE = {
+  id: 'PROTOCOLE_VALDURNE_01',
+  certKey: 'CERT_PROTOCOLE_VALDURNE_01',
+  file: 'PROTOCOLE_VALDURNE_01.html',
+  name: 'Le Village de Bournac',
+  xp: 150,
+  metacogId: 'METACOG_PROTOCOLE_VALDURNE',
+  metacogCert: 'CERT_METACOG_PROTOCOLE_VALDURNE',
+  metacogFile: 'METACOG_PROTOCOLE_VALDURNE.html',
+  // Déblocage : les 5 JdR méta validés
+  prereqs: [
+    'CERT_METACOG_GROUPE_A1','CERT_METACOG_HISTOIRE_A1','CERT_METACOG_NEURO_A1',
+    'CERT_METACOG_NUMERIQUE_A1','CERT_METACOG_JURIDIQUE_A1'
+  ]
+};
+
+function pvUnlocked() {
+  return PROTOCOLE_VALDURNE.prereqs.every(function(k){ return !!localStorage.getItem(k); });
+}
+function pvDone() {
+  try {
+    var c = JSON.parse(localStorage.getItem(PROTOCOLE_VALDURNE.certKey)||'null');
+    return c && c.f === true;
+  } catch(e){ return false; }
+}
+function pvMetacogDone() {
+  return !!localStorage.getItem(PROTOCOLE_VALDURNE.metacogCert);
+}
+function pvBestFin() {
+  try {
+    var c = JSON.parse(localStorage.getItem(PROTOCOLE_VALDURNE.certKey)||'null');
+    return c ? (c.bestFin||0) : 0;
+  } catch(e){ return 0; }
 }
 
 function checkReturn() {
@@ -646,18 +689,19 @@ function render() {
       var done_m = isDone(mod.id);
       var open_m = isUnlocked(pillar, index);
 
-      var statusClass = done_m ? 'done' : (open_m ? 'open' : 'locked');
-      var statusText = done_m ? '\u2705 VALIDÉ' : (open_m ? '\u{1F7E2} DISPONIBLE' : '\u{1F512} VERROUILLÉ');
-      var statusColor = done_m ? '#00ff88' : (open_m ? '#fff' : '#555');
+      var coming_m = isComing(mod);
+      var statusClass = done_m ? 'done' : (coming_m ? 'locked coming-soon' : (open_m ? 'open' : 'locked'));
+      var statusText = done_m ? '\u2705 VALIDÉ' : (coming_m ? '\u{1F6A7} BIENTÔT' : (open_m ? '\u{1F7E2} DISPONIBLE' : '\u{1F512} VERROUILLÉ'));
+      var statusColor = done_m ? '#00ff88' : (coming_m ? '#f59e0b' : (open_m ? '#fff' : '#555'));
 
       var card = document.createElement('div');
       card.className = 'module-card ' + statusClass;
       card.innerHTML =
         '<span class="status-txt" style="color:' + statusColor + '">' + statusText + '</span>' +
-        '<h4>NIVEAU ' + levelNum + '</h4>' +
+        '<h4>NIVEAU ' + levelNum + (coming_m ? ' — Prochainement' : '') + '</h4>' +
         '<div style="font-size:.9em;margin-bottom:3px;color:#aaa">' + mod.name + '</div>' +
         '<div class="mod-xp">' + mod.xp + ' XP</div>' +
-        (open_m && !done_m ? '<a href="#" class="btn-launch" data-file="' + mod.file + '" data-id="' + mod.id + '">LANCER MISSION</a>' : '');
+        (open_m && !done_m && !coming_m ? '<a href="#" class="btn-launch" data-file="' + mod.file + '" data-id="' + mod.id + '">LANCER MISSION</a>' : '');
 
       col.appendChild(card);
     });
@@ -672,6 +716,59 @@ function render() {
       openModule(this.getAttribute('data-file'), this.getAttribute('data-id'));
     });
   });
+
+
+  // ── Section Protocole Valdurne 06' ──────────────────────
+  var pvSection = document.createElement('div');
+  pvSection.className = 'pv-section';
+  pvSection.style.cssText = 'grid-column:1/-1;margin-top:24px;border:2px solid rgba(200,168,75,.35);border-radius:14px;background:rgba(200,168,75,.05);padding:20px 24px;';
+
+  var pvUnlock = pvUnlocked();
+  var pvDoneState = pvDone();
+  var pvFin = pvBestFin();
+  var pvFinLabel = ['','Médiateur en Formation','Médiateur Confirmé','Médiateur Confirmé','Veilleur de Paix'][pvFin] || '';
+  var pvMetaDone = pvMetacogDone();
+
+  var prereqDone = PROTOCOLE_VALDURNE.prereqs.filter(function(k){ return !!localStorage.getItem(k); }).length;
+
+  pvSection.innerHTML =
+    '<div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">' +
+    '<div style="flex:1;min-width:240px">' +
+    '<div style="font-family:Cinzel,serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:#c8a84b;margin-bottom:6px">Module 06’ — Tous Piliers · Protocole Valdurne</div>' +
+    '<div style="font-size:1.3rem;font-weight:bold;color:#e2c87a;margin-bottom:4px">⚖️ ' + PROTOCOLE_VALDURNE.name + '</div>' +
+    '<div style="font-size:.88rem;color:#8a8478;margin-bottom:12px">Serious game CPS · 3 rôles (Kern / Réna / Lyam) · 4 fins possibles · Chronométré</div>' +
+    '<div style="font-size:.82rem;color:#555;">' +
+      '<span style="color:' + (pvUnlock?'#4ade80':'#f59e0b') + '">' +
+      (pvUnlock ? '✅ Débloqué' : '🔒 ' + prereqDone + '/5 modules réflexifs validés') + '</span>' +
+    '</div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;min-width:180px">' +
+    (pvUnlock && !pvDoneState ?
+      '<a href="' + PROTOCOLE_VALDURNE.file + (getPlayer() ? '?player='+encodeURIComponent(getPlayer()) : '') + '" class="btn-launch" style="text-align:center">▶ LANCER LE PROTOCOLE</a>' : '') +
+    (pvDoneState ?
+      '<div style="color:#4ade80;font-size:.85rem">✅ Terminé · ' + pvFinLabel + '</div>' +
+      '<a href="' + PROTOCOLE_VALDURNE.file + (getPlayer() ? '?player='+encodeURIComponent(getPlayer()) : '') + '" class="btn-launch" style="text-align:center;background:rgba(200,168,75,.1)">↺ Rejouer</a>' : '') +
+    (pvDoneState && !pvMetaDone ?
+      '<a href="' + PROTOCOLE_VALDURNE.metacogFile + (getPlayer() ? '?player='+encodeURIComponent(getPlayer()) : '') + '" class="btn-launch" style="text-align:center;background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4)">🧠 Module Réflexif (+100 XP)</a>' : '') +
+    (pvMetaDone ? '<div style="color:#60a5fa;font-size:.82rem">🧠 Réflexif validé</div>' : '') +
+    '</div>' +
+    '</div>' +
+    (!pvUnlock ?
+      '<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">' +
+      '<div style="font-size:.78rem;color:#555;margin-bottom:8px">Complète les 5 modules réflexifs pour débloquer :</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      PROTOCOLE_VALDURNE.prereqs.map(function(k){
+        var done2 = !!localStorage.getItem(k);
+        var label = k.replace('CERT_METACOG_','').replace('_A1','');
+        return '<span style="padding:3px 10px;border-radius:20px;font-size:.7rem;background:' +
+               (done2?'rgba(74,222,128,.1)':'rgba(255,255,255,.04)') + ';border:1px solid ' +
+               (done2?'rgba(74,222,128,.3)':'rgba(255,255,255,.1)') + ';color:' +
+               (done2?'#4ade80':'#555') + '">' +
+               (done2?'✓ ':'') + label + '</span>';
+      }).join('') +
+      '</div></div>' : '');
+
+  root.appendChild(pvSection);
 
   updateArcadeButton();
 }
@@ -924,8 +1021,6 @@ var JDR_PILLARS = [
         xp: 100,
         available: true,
         metacogFile: 'METACOG_NUMERIQUE_A1.html',
-        metacogCert: 'CERT_METACOG_NUMERIQUE_A1',
-        metacogFile: 'METACOG_NUMERIQUE_A1.html',
         metacogCert: 'CERT_METACOG_NUMERIQUE_A1'
       },
       { year: 2, label: 'Année 2 — Les Écuyers',    title: 'À venir', desc: '', file: '', certKey: 'CERT_JDR_NUMERIQUE_A2', xp: 100, available: false },
@@ -949,8 +1044,6 @@ var JDR_PILLARS = [
         certKey: 'CERT_JDR_JURIDIQUE_A1',
         xp: 100,
         available: true,
-        metacogFile: 'METACOG_JURIDIQUE_A1.html',
-        metacogCert: 'CERT_METACOG_JURIDIQUE_A1',
         metacogFile: 'METACOG_JURIDIQUE_A1.html',
         metacogCert: 'CERT_METACOG_JURIDIQUE_A1'
       },
@@ -978,6 +1071,14 @@ function jdrTotalXP() {
       if(j.metacogCert && jdrIsMetacogDone(j.metacogCert)) xp += 100;
     });
   });
+  // Protocole Valdurne 06'
+  if(typeof PROTOCOLE_VALDURNE !== 'undefined') {
+    try {
+      var pvc = JSON.parse(localStorage.getItem(PROTOCOLE_VALDURNE.certKey)||'null');
+      if(pvc && pvc.f) xp += (pvc.xp||150);
+    } catch(e){}
+    if(pvMetacogDone()) xp += 100;
+  }
   return xp;
 }
 

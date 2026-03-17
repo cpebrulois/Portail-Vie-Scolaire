@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retour réflexif — Le Village de Bournac</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090e;--panel:#10131c;
+  --gold:#c8a84b;--gold-l:#e2c87a;--gold-d:#8a6d28;
+  --text:#d0cbc4;--text-m:#8a8278;--text-d:#454038;
+  --kern:#7c3aed;--kern-l:#a78bfa;--kern-bg:rgba(124,58,237,.07);
+  --rena:#0d9488;--rena-l:#2dd4bf;--rena-bg:rgba(13,148,136,.07);
+  --lyam:#b45309;--lyam-l:#f59e0b;--lyam-bg:rgba(180,83,9,.07);
+  --green:#2d6a4f;--green-l:#52b788;
+  --border:rgba(200,168,75,.13);--border-l:rgba(200,168,75,.30);
+  --card:rgba(16,19,28,.97);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 20% 0%,rgba(124,58,237,.05) 0%,transparent 45%),
+             radial-gradient(ellipse at 80% 100%,rgba(13,148,136,.04) 0%,transparent 45%),
+             radial-gradient(ellipse at 50% 50%,rgba(180,83,9,.03) 0%,transparent 60%);}
+#app{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:36px 20px 100px;}
+
+/* Progress bar */
+#pg-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:999;background:rgba(255,255,255,.05);}
+#pg-fill{height:100%;background:linear-gradient(90deg,var(--kern),var(--rena),var(--lyam));width:0%;transition:width .5s ease;}
+
+/* Header */
+.mc-pre{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);margin-bottom:10px;text-align:center;}
+.mc-title{font-family:'Cinzel',serif;font-size:1.85rem;color:var(--gold-l);line-height:1.2;margin-bottom:8px;text-align:center;}
+.mc-subtitle{color:var(--text-m);font-size:.92rem;line-height:1.6;margin-bottom:20px;text-align:center;}
+.mc-sep{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 auto 20px;}
+.mc-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;font-size:.82rem;color:var(--gold);margin-bottom:8px;}
+.mc-note{font-size:.78rem;color:var(--text-d);line-height:1.5;text-align:center;}
+
+/* Phase headers */
+.phase-header{margin:40px 0 16px;display:flex;align-items:center;gap:10px;}
+.phase-line{flex:1;height:1px;background:rgba(255,255,255,.06);}
+.phase-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-d);}
+
+/* Mirror cards */
+.mirror-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;transition:.3s;}
+.mirror-card.hl-kern{border-color:rgba(124,58,237,.35);background:rgba(124,58,237,.04);}
+.mirror-card.hl-rena{border-color:rgba(13,148,136,.35);background:rgba(13,148,136,.04);}
+.mirror-card.hl-lyam{border-color:rgba(180,83,9,.35);background:rgba(180,83,9,.04);}
+
+.mc-row{display:flex;gap:14px;margin-bottom:14px;}
+.mc-icon{font-size:1.5rem;flex-shrink:0;margin-top:2px;}
+.mc-choice-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-d);margin-bottom:4px;}
+.mc-choice-text{font-size:.95rem;color:var(--gold-l);font-family:'Crimson Text',serif;font-style:italic;line-height:1.6;}
+.mc-div{height:1px;background:rgba(255,255,255,.06);margin:14px 0;}
+
+.research{background:rgba(13,148,136,.06);border:1px solid rgba(45,212,191,.18);border-radius:10px;padding:14px 18px;margin-bottom:12px;}
+.research-lbl{font-family:'Cinzel',serif;font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:var(--rena-l);margin-bottom:8px;}
+.research-txt{font-size:.9rem;color:#99f6e4;line-height:1.7;}
+.research-txt strong{color:#2dd4bf;}
+.research-src{font-size:.7rem;color:rgba(45,212,191,.45);margin-top:6px;font-style:italic;}
+
+.self-block{background:rgba(200,168,75,.05);border:1px solid rgba(200,168,75,.18);border-radius:10px;padding:14px 18px;margin-bottom:12px;}
+.self-lbl{font-family:'Cinzel',serif;font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold-l);margin-bottom:8px;}
+.self-txt{font-size:.9rem;color:#fde68a;line-height:1.7;}
+
+.tension{background:rgba(180,83,9,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px 16px;margin-bottom:4px;}
+.tension-lbl{font-family:'Cinzel',serif;font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:var(--lyam-l);margin-bottom:6px;}
+.tension-txt{font-size:.88rem;color:#fed7aa;line-height:1.7;}
+
+/* Questions */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+.q-num{font-family:'Cinzel',serif;font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:var(--text-d);margin-bottom:8px;}
+.q-text{font-size:1.05rem;color:var(--gold-l);font-family:'Crimson Text',serif;line-height:1.7;margin-bottom:16px;}
+.q-hint{font-size:.8rem;color:var(--text-d);font-style:italic;margin-bottom:14px;line-height:1.5;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;text-align:left;}
+.opt:hover{border-color:rgba(200,168,75,.3);background:rgba(200,168,75,.05);}
+.opt.selected{border-color:var(--gold-d);background:rgba(200,168,75,.08);}
+.opt.correct{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.07);}
+.opt.wrong{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.05);}
+.opt-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;transition:.2s;}
+.opt.selected .opt-dot{background:var(--gold-d);border-color:var(--gold);}
+.opt.correct .opt-dot{background:#52b788;border-color:#52b788;}
+.opt.wrong .opt-dot{background:#ef4444;border-color:#ef4444;}
+.opt-txt{font-size:.92rem;color:var(--text);line-height:1.5;}
+.q-fb{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.88rem;line-height:1.6;display:none;}
+.q-fb.show{display:block;}
+.q-fb.ok{background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.25);color:#86efac;}
+.q-fb.ko{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:#fca5a5;}
+.btn-val{margin-top:12px;display:none;}
+.btn-val.show{display:block;}
+.btn-v{background:rgba(200,168,75,.15);border:1px solid var(--border-l);color:var(--gold);padding:9px 20px;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:.73rem;letter-spacing:1px;text-transform:uppercase;transition:.2s;}
+.btn-v:hover{background:rgba(200,168,75,.25);}
+
+/* Open */
+.open-lbl{font-size:.82rem;color:var(--text-m);margin-bottom:8px;display:block;line-height:1.5;}
+.open-ta{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-family:'Crimson Text',serif;font-size:1rem;line-height:1.6;min-height:88px;resize:vertical;transition:.2s;}
+.open-ta:focus{outline:none;border-color:var(--gold-d);background:rgba(200,168,75,.04);}
+.open-ta::placeholder{color:var(--text-d);}
+.btn-save{padding:6px 14px;background:rgba(200,168,75,.1);border:1px solid var(--border);color:var(--gold-d);border-radius:6px;cursor:pointer;font-size:.78rem;margin-top:8px;transition:.2s;}
+.btn-save:hover{color:var(--gold);background:rgba(200,168,75,.18);}
+
+/* Transfer */
+.xfer-card{background:rgba(45,106,79,.08);border:1px solid rgba(82,183,136,.2);border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+.xfer-lbl{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--green-l);margin-bottom:12px;}
+.xfer-scen{font-size:.95rem;color:#86efac;font-family:'Crimson Text',serif;font-style:italic;line-height:1.7;margin-bottom:14px;padding-left:12px;border-left:3px solid rgba(82,183,136,.3);}
+.xfer-opts{display:flex;flex-direction:column;gap:8px;}
+.xfer-opt{display:flex;gap:10px;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s;}
+.xfer-opt:hover{border-color:rgba(82,183,136,.3);background:rgba(82,183,136,.05);}
+.xfer-opt.selected{border-color:rgba(82,183,136,.5);background:rgba(82,183,136,.08);}
+.xfer-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;margin-top:1px;}
+.xfer-opt.selected .xfer-dot{background:#52b788;border-color:#52b788;}
+.xfer-txt{font-size:.92rem;color:var(--text);line-height:1.5;}
+.xfer-fb{margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(45,106,79,.1);border:1px solid rgba(82,183,136,.2);font-size:.88rem;color:#86efac;line-height:1.6;display:none;}
+.xfer-fb.show{display:block;}
+
+/* Complete zone */
+.complete-zone{text-align:center;margin-top:44px;padding:32px;background:var(--card);border:1px solid var(--border);border-radius:16px;}
+.cz-title{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold-l);margin-bottom:8px;}
+.cz-sub{color:var(--text-m);font-size:.88rem;margin-bottom:22px;line-height:1.6;}
+.cz-xp{display:inline-flex;align-items:center;gap:8px;background:rgba(200,168,75,.1);border:1px solid var(--border-l);padding:7px 18px;border-radius:30px;font-family:'Cinzel',serif;font-size:.85rem;color:var(--gold);margin-bottom:22px;}
+.btn-complete{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0d0c0a;border:none;padding:14px 36px;font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:8px;transition:.25s;font-weight:700;box-shadow:0 4px 20px rgba(200,168,75,.22);}
+.btn-complete:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btn-complete:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-ret{background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-m);padding:10px 22px;border-radius:8px;cursor:pointer;font-size:.85rem;font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase;transition:.2s;display:block;margin:10px auto 0;}
+.btn-ret:hover{border-color:rgba(255,255,255,.22);color:var(--text);}
+
+@media(max-width:600px){#app{padding:20px 14px 80px;}.mc-title{font-size:1.5rem;}.mirror-card,.q-card,.xfer-card{padding:16px 16px;}}
+</style>
+</head>
+<body>
+<div id="pg-bar"><div id="pg-fill"></div></div>
+<div id="app">
+
+  <div style="text-align:center;margin-bottom:40px;">
+    <div class="mc-pre">Retour réflexif · Protocole Valdurne · Module 06'</div>
+    <div class="mc-title">Le Village de Bournac</div>
+    <div class="mc-subtitle">Tu viens de traverser la mission en trois rôles complémentaires.<br>
+    Ce module analyse ce que tes choix révèlent sur tes compétences psychosociales.</div>
+    <div class="mc-sep"></div>
+    <div class="mc-xp">🧠 +100 XP supplémentaires</div><br>
+    <span class="mc-note">Questions ouvertes privées. QCM avec réponse attendue — jamais contre toi.</span>
+  </div>
+
+  <!-- PHASE 1 — MIROIRS KERN -->
+  <div class="phase-header">
+    <div class="phase-line"></div>
+    <div class="phase-label">Phase 1 · Kern — Ce que tu as observé</div>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="mirror-card" id="m-kern">
+    <div class="mc-row">
+      <div class="mc-icon">🔮</div>
+      <div>
+        <div class="mc-choice-label">Tes observations — Phase Kern</div>
+        <div class="mc-choice-text" id="mt-kern">Kern a observé la disposition des corps, les silences, les mains qui tremblent.</div>
+      </div>
+    </div>
+    <div class="mc-div"></div>
+    <div class="research">
+      <div class="research-lbl">🔬 Ce que la recherche dit</div>
+      <div class="research-txt">
+        Le modèle de <strong>traitement de l'information sociale</strong> (Crick & Dodge, 1994)
+        distingue six étapes : encoder les indices, les interpréter, clarifier les intentions,
+        accéder à des réponses possibles, évaluer ces réponses, puis agir.<br><br>
+        Kern travaille aux étapes 1 et 2 — il encode et interprète <em>avant</em> d'agir.
+        Ce que Crick & Dodge ont montré : les enfants agressifs sautent l'étape d'interprétation
+        (ils supposent l'hostilité par défaut). Les médiateurs efficaces, eux,
+        collectent d'abord, interprètent ensuite, avec une <strong>suspicion de bonne foi</strong>
+        comme hypothèse de départ.<br><br>
+        La distinction entre <strong>comportement observable</strong> et <strong>intention supposée</strong>
+        est le cœur de la théorie de l'esprit appliquée à la médiation (Baron-Cohen, 1997).
+        Ewen ne "se tait" pas — il a peur de parler. Ce n'est pas la même chose.
+      </div>
+      <div class="research-src">Sources : Crick & Dodge (1994) — traitement information sociale ; Baron-Cohen (1997) — théorie de l'esprit</div>
+    </div>
+    <div class="self-block">
+      <div class="self-lbl">💡 Ce que ça dit de toi</div>
+      <div class="self-txt" id="ms-kern">Ta façon d'observer le groupe révèle si tu lis les comportements ou les intentions — et si tu donnes le bénéfice du doute par défaut.</div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 — MIROIRS RÉNA -->
+  <div class="phase-header">
+    <div class="phase-line"></div>
+    <div class="phase-label">Phase 2 · Réna — Ce que tu as planifié</div>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="mirror-card" id="m-rena">
+    <div class="mc-row">
+      <div class="mc-icon">⚡</div>
+      <div>
+        <div class="mc-choice-label">Tes décisions — Phase Réna</div>
+        <div class="mc-choice-text" id="mt-rena">Réna a alloué 20 unités de temps entre quatre décisions stratégiques.</div>
+      </div>
+    </div>
+    <div class="mc-div"></div>
+    <div class="research">
+      <div class="research-lbl">🔬 Ce que la recherche dit</div>
+      <div class="research-txt">
+        Le modèle de <strong>prise de décision en double processus</strong> de Kahneman (2011)
+        distingue le Système 1 (rapide, intuitif, automatique) du Système 2 (lent, délibératif, coûteux).
+        Réna opère en Système 2 — elle ralentit délibérément pour éviter la décision évidente.<br><br>
+        Les travaux d'Irving Janis sur le <strong>groupthink</strong> (1982) montrent que
+        les groupes sous pression tendent vers le consensus le plus rapide, pas le plus juste.
+        Réna est l'antidote : elle force la délibération avant l'action de Lyam.<br><br>
+        La <strong>pensée systémique</strong> de Bronfenbrenner (1979) est ici à l'œuvre :
+        la situation implique plusieurs niveaux simultanément — les adolescents,
+        leurs parents, l'institution Valdurne, et la confiance dans les tiers médiateurs.
+        Chaque décision de Réna touche plusieurs niveaux à la fois.
+      </div>
+      <div class="research-src">Sources : Kahneman (2011) — dual process ; Janis (1982) — groupthink ; Bronfenbrenner (1979) — modèle écologique</div>
+    </div>
+    <div class="self-block">
+      <div class="self-lbl">💡 Ce que ça dit de toi</div>
+      <div class="self-txt" id="ms-rena">Tes choix de planification révèlent si tu privilégies l'efficacité immédiate ou la durabilité — et si tu gères les ressources comme une contrainte ou comme une liberté.</div>
+    </div>
+    <div class="tension" id="t-rena">
+      <div class="tension-lbl">⚠️ Point à travailler</div>
+      <div class="tension-txt" id="tt-rena">La planification parfaite peut devenir une façon d'éviter l'action. À un moment, il faut agir avec ce qu'on a.</div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 — MIROIRS LYAM -->
+  <div class="phase-header">
+    <div class="phase-line"></div>
+    <div class="phase-label">Phase 3 · Lyam — Ce que tu as négocié</div>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="mirror-card" id="m-lyam">
+    <div class="mc-row">
+      <div class="mc-icon">⚖️</div>
+      <div>
+        <div class="mc-choice-label">Tes choix de dialogue — Phase Lyam</div>
+        <div class="mc-choice-text" id="mt-lyam">Lyam a géré trois personnes simultanément sous chrono — avec les ressources transmises par Kern et Réna.</div>
+      </div>
+    </div>
+    <div class="mc-div"></div>
+    <div class="research">
+      <div class="research-lbl">🔬 Ce que la recherche dit</div>
+      <div class="research-txt">
+        La <strong>Communication Non Violente</strong> (Rosenberg, 2003) distingue quatre étapes :
+        Observation (ce que je vois sans jugement), Sentiment (ce que je ressens),
+        Besoin (ce dont j'ai besoin), Demande (ce que je demande concrètement).
+        Lyam travaille cette chaîne à chaque échange.<br><br>
+        Le bystander Ewen illustre le <strong>modèle de Darley & Latané</strong> (1968)
+        revu par Salmivalli (1996) : il n'est pas passif par indifférence
+        mais par inhibition de l'action (il ne sait pas comment aider sans nuire).
+        La décision clé de Lyam à l'Acte 3 est de lui donner une <strong>porte de sortie
+        qui ne ressemble pas à une trahison</strong>.<br><br>
+        La <strong>régulation émotionnelle</strong> (Gross, 1998) sous pression du chrono
+        simule les conditions réelles de la médiation : le temps réduit la capacité
+        du cortex préfrontal à réguler l'amygdale — les décisions prises vite
+        révèlent le profil de régulation naturel, avant les stratégies conscientes.
+      </div>
+      <div class="research-src">Sources : Rosenberg (2003) — CNV ; Darley & Latané (1968) / Salmivalli (1996) — bystander ; Gross (1998) — régulation émotionnelle</div>
+    </div>
+    <div class="self-block">
+      <div class="self-lbl">💡 Ce que ça dit de toi</div>
+      <div class="self-txt" id="ms-lyam">La fin que tu as obtenue révèle ton profil naturel de négociation — pragmatique, relationnel, ou systémique. Aucun n'est meilleur : chacun est plus adapté à certaines situations.</div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 — QUESTIONS -->
+  <div class="phase-header">
+    <div class="phase-line"></div>
+    <div class="phase-label">Phase 4 · Questions de consolidation</div>
+    <div class="phase-line"></div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1-card">
+    <div class="q-num">Question 1 / 4 — Compréhension</div>
+    <div class="q-text">Selon le modèle de Crick & Dodge, qu'est-ce qui distingue un médiateur efficace d'une personne qui interprète trop vite les intentions des autres ?</div>
+    <div class="q-hint">💡 C'est une question sur l'étape du traitement, pas sur le résultat.</div>
+    <div class="opts">
+      <div class="opt" onclick="selOpt(this,'q1','a')"><div class="opt-dot"></div><div class="opt-txt">Le médiateur est plus intelligent — il comprend mieux ce qui se passe.</div></div>
+      <div class="opt" onclick="selOpt(this,'q1','b')"><div class="opt-dot"></div><div class="opt-txt">Le médiateur encode plus d'indices avant d'interpréter, et part d'une hypothèse de bonne foi plutôt que d'hostilité. Il ne saute pas l'étape d'interprétation.</div></div>
+      <div class="opt" onclick="selOpt(this,'q1','c')"><div class="opt-dot"></div><div class="opt-txt">Le médiateur prend plus de temps — la lenteur est la compétence principale.</div></div>
+      <div class="opt" onclick="selOpt(this,'q1','d')"><div class="opt-dot"></div><div class="opt-txt">Le médiateur ne juge pas — il reste neutre en toutes circonstances.</div></div>
+    </div>
+    <div class="btn-val show" id="bv-q1"><button class="btn-v" onclick="valQ('q1','b')">Valider</button></div>
+    <div class="q-fb" id="fb-q1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2-card">
+    <div class="q-num">Question 2 / 4 — Application</div>
+    <div class="q-text">Ewen a pris le couteau pour protéger Tomas — mais il n'a pas parlé. Selon Salmivalli, pourquoi un bystander qui veut aider n'agit-il pas toujours ?</div>
+    <div class="opts">
+      <div class="opt" onclick="selOpt(this,'q2','a')"><div class="opt-dot"></div><div class="opt-txt">Il manque de courage ou d'empathie.</div></div>
+      <div class="opt" onclick="selOpt(this,'q2','b')"><div class="opt-dot"></div><div class="opt-txt">Il ne voit pas vraiment la situation — il n'est pas conscient du problème.</div></div>
+      <div class="opt" onclick="selOpt(this,'q2','c')"><div class="opt-dot"></div><div class="opt-txt">Il est inhibé dans son action — il sait qu'il faut agir, il voudrait agir, mais les coûts perçus (être rejeté, mal comprendre la situation, aggraver les choses) bloquent le passage à l'acte.</div></div>
+      <div class="opt" onclick="selOpt(this,'q2','d')"><div class="opt-dot"></div><div class="opt-txt">Il attend que quelqu'un d'autre agisse d'abord — c'est toujours de la paresse sociale.</div></div>
+    </div>
+    <div class="btn-val show" id="bv-q2"><button class="btn-v" onclick="valQ('q2','c')">Valider</button></div>
+    <div class="q-fb" id="fb-q2"></div>
+  </div>
+
+  <!-- Q3 — Ouverte -->
+  <div class="q-card" id="q3-card">
+    <div class="q-num">Question 3 / 4 — Réflexion personnelle</div>
+    <div class="q-text">Dans la mission, tu as joué trois rôles très différents. Lequel t'a semblé le plus naturel, et lequel t'a semblé le plus difficile ? Pourquoi ?</div>
+    <div>
+      <label class="open-lbl">Ta réflexion — privée, jamais transmise.</label>
+      <textarea class="open-ta" id="ta-q3" placeholder="Écris ici…"></textarea>
+      <button class="btn-save" onclick="saveOpen('q3')">💾 Enregistrer</button>
+      <div id="sv-q3" style="font-size:.74rem;color:#52b788;margin-top:6px;display:none;">✓ Enregistrée</div>
+    </div>
+  </div>
+
+  <!-- Q4 — Transfert -->
+  <div class="xfer-card" id="q4-card">
+    <div class="xfer-lbl">Question 4 / 4 — Transfert dans la vraie vie</div>
+    <div class="q-text" style="color:#86efac;margin-bottom:12px;">
+      Situation : Dans ta classe, deux élèves ne se parlent plus depuis deux semaines.
+      Un troisième te dit qu'il sait pourquoi — mais il hésite à en parler
+      parce qu'il a peur d'être impliqué.
+    </div>
+    <div class="xfer-scen">
+      Tu es délégué·e de classe. Tu n'es pas CPE, tu n'as pas d'autorité formelle.
+      Tu as dix minutes avant le prochain cours.
+    </div>
+    <div class="xfer-opts">
+      <div class="xfer-opt" onclick="selXfer(this,'a')"><div class="xfer-dot"></div><div class="xfer-txt">Je préviens le CPE directement — c'est son rôle, pas le mien.</div></div>
+      <div class="xfer-opt" onclick="selXfer(this,'b')"><div class="xfer-dot"></div><div class="xfer-txt">Je parle au troisième élève pour comprendre sa peur, et je lui explique que son témoignage peut rester confidentiel.</div></div>
+      <div class="xfer-opt" onclick="selXfer(this,'c')"><div class="xfer-dot"></div><div class="xfer-txt">J'essaie de réconcilier les deux élèves moi-même — expliquer à chacun ce que l'autre ressent.</div></div>
+      <div class="xfer-opt" onclick="selXfer(this,'d')"><div class="xfer-dot"></div><div class="xfer-txt">Je donne au troisième élève les mots pour parler lui-même au CPE, avec moi comme soutien si besoin.</div></div>
+    </div>
+    <div class="xfer-fb" id="xfer-fb"></div>
+    <div id="xfer-val" style="margin-top:12px;display:none;">
+      <button class="btn-v" onclick="valXfer()">Voir l'analyse</button>
+    </div>
+  </div>
+
+  <!-- ZONE DE COMPLÉTION -->
+  <div class="complete-zone">
+    <div class="cz-title">Réflexion terminée</div>
+    <div class="cz-sub">Tu as exploré les trois compétences psychosociales du Protocole Valdurne — observer, planifier, négocier — et ce qu'elles révèlent sur ton profil de médiateur.</div>
+    <div class="cz-xp">🧠 +100 XP</div><br>
+    <button class="btn-complete" id="btnComplete" onclick="completeModule()" disabled>Valider le module réflexif</button>
+    <button class="btn-ret" onclick="window.location.href='index_PIXHARe.html'">← Retour au Hub pHARe</button>
+  </div>
+
+</div>
+
+<script>
+var MODULE_ID='METACOG_PROTOCOLE_VALDURNE',
+    CERT_KEY='CERT_METACOG_PROTOCOLE_VALDURNE',
+    XP=100, HUB='index_PIXHARe.html';
+
+var playerCode='';
+(function(){
+  var p=new URLSearchParams(window.location.search).get('player');
+  if(p)localStorage.setItem('pvs_current_player',p);
+  playerCode=localStorage.getItem('pvs_current_player')||'';
+})();
+
+// ── Charger legacy Protocole Valdurne ──────────────────────
+var pvLegacy=null;
+try{pvLegacy=JSON.parse(localStorage.getItem('CERT_PROTOCOLE_VALDURNE_01')||'null');}catch(e){}
+
+var FIN_LABELS={1:'Médiateur en Formation',2:'Médiateur Confirmé',3:'Médiateur Confirmé (CNV)',4:'Veilleur de Paix'};
+
+// Miroirs selon la fin obtenue
+var MIRRORS={
+  kern:{
+    0:{text:'Kern a collecté peu d\'informations — les options de Lyam étaient restreintes.',self:'Peu d\'indices collectés signifie soit des leurres sélectionnés, soit une lecture trop rapide des comportements. C\'est la compétence la plus difficile à acquérir : distinguer ce qui est visible de ce que ça signifie.'},
+    1:{text:'Kern a trouvé un premier fil — Ewen cache quelque chose.',self:'Identifier qu\'un silence est significatif (les mains qui tremblent d\'Ewen) est déjà une compétence rare. La plupart des gens ne remarquent que les comportements actifs.'},
+    2:{text:'Kern a compris qu\'Ewen a agi pour protéger Tomas.',self:'Distinguer l\'acte (prendre le couteau) de l\'intention (protéger) est exactement ce que Baron-Cohen appelle la théorie de l\'esprit appliquée. C\'est ce qui a ouvert l\'option de dialogue la plus puissante pour Lyam.'},
+    3:{text:'Kern a reconstitué le rôle de Joris — l\'enquête complète.',self:'Identifier le quatrième personnage absent et son rôle dans la chaîne causale est une lecture systémique avancée. Pas "qui a fait quoi" — "comment la situation a été rendue possible".'}
+  },
+  rena:{
+    favorable:{text:'Réna a géré le capital temps efficacement — Lyam avait 40s par décision.',self:'Planifier sans panique sous contrainte de ressources limitées est ce que Kahneman appelle le Système 2 actif. Tu as évité les décisions par défaut.'},
+    tendu:{text:'Réna a dépensé modérément — Lyam avait 25s par décision.',self:'Certains choix de Réna ont coûté plus que nécessaire. Identifier lesquels — et pourquoi ils semblaient plus urgents qu\'ils ne l\'étaient — est une métacognition de la planification.'},
+    degrade:{text:'Réna a dépensé beaucoup — Lyam n\'avait que 15s par décision.',self:'La tentation de "tout régler en amont" est une forme d\'anxiété de contrôle. Parfois, laisser de l\'incertitude à Lyam est plus efficace que de tout préparer.'}
+  },
+  lyam:{
+    1:{text:'Fin : Médiateur en Formation — le problème visible est résolu, le problème réel reste ouvert.',self:'Cette fin révèle une préférence pour la résolution tangible (le couteau retrouvé) sur la résolution structurelle (la menace de Joris). C\'est une force dans les urgences — et une limite dans les conflits chroniques.'},
+    2:{text:'Fin : Médiateur Confirmé — Joris a été nommé, la menace est exposée.',self:'Nommer la source du problème sans l\'accuser formellement est une compétence de CNV avancée. Tu as distingué "nommer" et "condamner" — ce qui change tout dans la dynamique de groupe.'},
+    3:{text:'Fin CNV — chaque adolescent a pu s\'exprimer, accord collectif construit.',self:'La fin CNV exige que les trois jauges soient positives — ce qui signifie que tu as géré les trois relations simultanément. C\'est une intelligence relationnelle à plusieurs canaux.'},
+    4:{text:'Fin Veilleur de Paix — enquête complète, CNV, procédure institutionnelle.',self:'Cette fin combine les trois compétences au niveau maximal. Elle révèle une capacité à tenir plusieurs objectifs simultanément sans en sacrifier un pour les autres.'}
+  }
+};
+
+function applyMirrors(){
+  var kern = pvLegacy ? (pvLegacy.kernScore||0) : 0;
+  var rena = pvLegacy ? (pvLegacy.renaState||'tendu') : 'tendu';
+  var fin  = pvLegacy ? (pvLegacy.bestFin||1) : 1;
+
+  var dk = MIRRORS.kern[kern]||MIRRORS.kern[0];
+  var dr = MIRRORS.rena[rena]||MIRRORS.rena.tendu;
+  var dl = MIRRORS.lyam[fin]||MIRRORS.lyam[1];
+
+  document.getElementById('mt-kern').textContent = dk.text;
+  document.getElementById('ms-kern').textContent = dk.self;
+  document.getElementById('mt-rena').textContent = dr.text;
+  document.getElementById('ms-rena').textContent = dr.self;
+  document.getElementById('mt-lyam').textContent = dl.text;
+  document.getElementById('ms-lyam').textContent = dl.self;
+
+  if(pvLegacy){
+    document.getElementById('m-kern').classList.add('hl-kern');
+    document.getElementById('m-rena').classList.add('hl-rena');
+    document.getElementById('m-lyam').classList.add('hl-lyam');
+  }
+
+  // Tension Réna selon capital
+  var cap = pvLegacy ? (pvLegacy.renaCapital||10) : 10;
+  if(cap >= 14){
+    document.getElementById('t-rena').style.display='none';
+  } else {
+    document.getElementById('tt-rena').textContent = cap < 8
+      ? 'Avec seulement '+cap+' unités restantes, Lyam était sous pression maximale. Identifier ce qui a coûté le plus — et si c\'était inévitable — est la clé de la prochaine partie.'
+      : 'Avec '+cap+' unités restantes, quelques décisions ont coûté plus que nécessaire. Laquelle aurait pu être différente ?';
+  }
+}
+applyMirrors();
+
+// ── QCM ────────────────────────────────────────────────────
+var QFB={
+  q1:{c:'b',
+    ok:'✓ Exact. Crick & Dodge ont montré que les médiateurs efficaces restent plus longtemps à l\'étape d\'encodage (collecter des indices) avant d\'interpréter. Et leur biais de départ est la bonne foi — pas l\'hostilité. Kern a fait exactement ça : observer les mains d\'Ewen avant de supposer ce qu\'elles signifiaient.',
+    ko:{a:'L\'intelligence n\'est pas le facteur clé ici — c\'est la séquence de traitement. On peut être très intelligent et très mauvais médiateur si on interprète trop vite.',c:'La lenteur n\'est pas la compétence — c\'est la qualité de l\'encodage avant l\'interprétation. Un médiateur efficace peut être rapide s\'il encode bien.',d:'La neutralité totale est un mythe de la médiation. Ce qui distingue vraiment, c\'est la suspension du jugement pendant l\'encodage — pas l\'absence de jugement.'} },
+  q2:{c:'c',
+    ok:'✓ Exact. Salmivalli a affiné le modèle de Darley & Latané : le bystander qui ne fait rien n\'est pas toujours indifférent. Il peut être inhibé — il perçoit les coûts de l\'action (être exclu, aggraver la situation, être mal compris) comme supérieurs aux coûts de l\'inaction. La décision de Lyam en Acte 3 — donner à Ewen une porte de sortie qui ne ressemble pas à une trahison — répond directement à cette inhibition.',
+    ko:{a:'Salmivalli a précisément montré que le manque de courage n\'est pas l\'explication principale. Beaucoup de bystanders qui n\'agissent pas souffrent de la situation autant que les victimes.',b:'Dans le cas d\'Ewen, il voit clairement le problème — c\'est pour ça qu\'il a pris le couteau. C\'est bien l\'inhibition de l\'action, pas l\'inattention.',d:'L\'attente sociale (quelqu\'un d\'autre va le faire) est un facteur, mais Salmivalli a montré que l\'inhibition par anticipation des coûts est plus fréquente chez les jeunes qui voudraient agir.'} }
+};
+
+var XFER_FB={
+  a:'Prévenir le CPE est efficace et rapide — et c\'est bien une responsabilité du délégué. La limite : en allant seul sans le troisième élève, tu prives le CPE de la source directe. L\'information de seconde main est moins exploitable.',
+  b:'✓ Adresser d\'abord la peur du troisième élève est une approche CNV — tu valides son hésitation (observation + sentiment) avant de demander quelque chose. La confiance bâtie là rendra son témoignage au CPE plus probable et plus solide.',
+  c:'Réconcilier directement sans passer par un tiers de confiance (le CPE) peut fonctionner dans les conflits légers. Ici le conflit dure deux semaines et implique un tiers (celui qui sait). Il y a un risque de sur-simplification.',
+  d:'✓ Donner à l\'élève les mots pour agir lui-même, avec toi comme filet, c\'est exactement le rôle du délégué selon le modèle pHARe : pas à la place de l\'adulte, pas à la place de l\'élève — mais comme relais et soutien. C\'est Réna qui rend possible ce que Lyam doit faire lui-même.'
+};
+
+var qState={q1:null,q2:null,q3:false,xfer:null};
+
+function selOpt(el,qid,val){
+  el.closest('.opts').querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  el.closest('.q-card').dataset.sel=val;
+  var bv=document.getElementById('bv-'+qid);
+  if(bv)bv.style.display='block';
+}
+
+function valQ(qid,correct){
+  var card=document.getElementById(qid+'-card');
+  var sel=card.dataset.sel;
+  if(!sel)return;
+  var data=QFB[qid];
+  var bv=document.getElementById('bv-'+qid);
+  if(bv)bv.style.display='none';
+  card.querySelectorAll('.opt').forEach(function(o){o.style.pointerEvents='none';});
+  var selEl=card.querySelector('.opt[onclick*="\''+sel+'\'"]');
+  var fb=document.getElementById('fb-'+qid);
+  if(sel===correct){
+    if(selEl)selEl.classList.add('correct');
+    fb.className='q-fb show ok';
+    fb.innerHTML=data.ok;
+  } else {
+    if(selEl)selEl.classList.add('wrong');
+    fb.className='q-fb show ko';
+    fb.innerHTML='✗ '+(data.ko[sel]||'Pas tout à fait.')+'<br><br><strong style="color:#86efac">Réponse attendue :</strong> '+data.ok;
+    var corrEl=card.querySelector('.opt[onclick*="\''+correct+'\'"]');
+    if(corrEl)corrEl.classList.add('correct');
+  }
+  qState[qid]='done';
+  checkDone();
+}
+
+function saveOpen(qid){
+  var v=document.getElementById('ta-'+qid).value.trim();
+  if(!v)return;
+  try{localStorage.setItem('pvs_metacog_'+MODULE_ID+'_'+qid,v);}catch(e){}
+  document.getElementById('sv-'+qid).style.display='block';
+  qState.q3=true;
+  checkDone();
+}
+
+function selXfer(el,val){
+  el.closest('.xfer-opts').querySelectorAll('.xfer-opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  var vb=document.getElementById('xfer-val');
+  if(vb){vb.style.display='block';vb.dataset.val=val;}
+}
+
+function valXfer(){
+  var vb=document.getElementById('xfer-val');
+  var val=vb?vb.dataset.val:'';
+  if(!val)return;
+  var fb=document.getElementById('xfer-fb');
+  fb.className='xfer-fb show';
+  fb.innerHTML=XFER_FB[val]||XFER_FB.b;
+  vb.style.display='none';
+  document.querySelectorAll('.xfer-opt').forEach(function(o){o.style.pointerEvents='none';});
+  qState.xfer=val;
+  checkDone();
+}
+
+function checkDone(){
+  var ok=qState.q1&&qState.q2&&qState.q3&&qState.xfer;
+  document.getElementById('btnComplete').disabled=!ok;
+  var n=[qState.q1,qState.q2,qState.q3,qState.xfer].filter(Boolean).length;
+  document.getElementById('pg-fill').style.width=(20+n*20)+'%';
+}
+
+function completeModule(){
+  try{
+    localStorage.setItem(CERT_KEY,JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true,xp:XP}));
+    var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    evts.push({id:'METACOG-PV-'+Date.now(),type:'METACOG_COMPLETE',player:playerCode,
+               module:MODULE_ID,metacogXp:XP,jdrModule:'PROTOCOLE_VALDURNE_01',
+               d:new Date().toISOString()});
+    if(evts.length>500)evts.splice(0,evts.length-500);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(e){}
+  document.getElementById('btnComplete').textContent='✓ Validé !';
+  document.getElementById('btnComplete').disabled=true;
+  document.getElementById('pg-fill').style.width='100%';
+  setTimeout(function(){window.location.href=HUB;},1800);
+}
+
+document.getElementById('pg-fill').style.width='15%';
+</script>
+</body>
+</html>
