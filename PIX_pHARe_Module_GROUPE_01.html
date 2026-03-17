@@ -670,32 +670,6 @@
             .panel-body { padding: 15px; }
             .flashcard-face { padding: 20px 15px; min-height: 260px; }
         }
-        /* Fix flip visibility */
-        .flashcard,
-        .flashcard-flip{
-            -webkit-transform-style:preserve-3d;
-            transform-style:preserve-3d;
-        }
-        .flashcard-face,
-        .card-face{
-            -webkit-backface-visibility:hidden;
-            backface-visibility:hidden;
-            transition:opacity .2s ease;
-        }
-        .card-back,
-        .flashcard-back{
-            opacity:0;
-        }
-        .flashcard.flipped .card-face:not(.card-back),
-        .flashcard.flipped .flashcard-front,
-        .flashcard-flip.flipped .flashcard-front{
-            opacity:0;
-        }
-        .flashcard.flipped .card-back,
-        .flashcard.flipped .flashcard-back,
-        .flashcard-flip.flipped .flashcard-back{
-            opacity:1;
-        }
     </style>
 </head>
 <body>
@@ -859,7 +833,7 @@
             }
         ];
 
-        function encodeSaveCode(data) { return ''; }
+        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
         function decodeSaveCode(code) { try { return JSON.parse(atob(code)); } catch { return null; } }
         function getMasteryLevel(score) {
             if (score >= 450) return { level: "Expert", class: "mastery-expert" };
@@ -933,13 +907,6 @@
                 } else {
                     setPlayerData(prev => ({ ...prev, finished: true, xp: prev.xp + 100 }));
                     
-                // ── Certification locale (déverrouillage hub) ──
-                try {
-                    var _ck = 'CERT_PHARE_' + MODULE_ID;
-                    if (!localStorage.getItem(_ck)) {
-                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                    }
-                } catch(_ce) {}
                 // ── Bridge Superhub PVS ──
                 try {
                     var _pvsBridge = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
@@ -952,6 +919,7 @@
                         xp: playerData.xp,
                         d: new Date().toISOString()
                     });
+                    localStorage.setItem('CERT_PHARE_GROUPE_01',JSON.stringify({v:1,d:new Date().toISOString(),m:'GROUPE_01',f:true}));
                     localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvsBridge));
                     window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
                 } catch(e) {}
@@ -960,7 +928,13 @@
                 }
             }
 
-            function generateSaveCode() { return ''; }
+            function generateSaveCode() {
+                return encodeSaveCode({
+                    v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
+                    n: playerData.name, l: 3, s: playerData.score,
+                    x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore, f: true
+                });
+            }
 
             function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code copié !")); }
 
@@ -1173,11 +1147,6 @@
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.xp), e("div", { className: "stat-label" }, "XP Gagnés")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.quizScore), e("div", { className: "stat-label" }, "Analyse")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.scenarioScore), e("div", { className: "stat-label" }, "Simulation"))
-                        ),
-                        e("div", { className: "save-code-box", style:{display:"none"} },
-                            e("div", { className: "save-code-label" }, "📋 TON CODE DE SAUVEGARDE (pour le Module 02) :"),
-                            e("div", { className: "save-code" }, saveCode),
-                            e("button", { className: "copy-btn", onClick: copyCode }, "Copier le code")
                         ),
                         e("div", { className: "content-panel", style: { marginTop: "30px", textAlign: "left" } },
                             e("div", { className: "panel-header" },

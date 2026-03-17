@@ -837,7 +837,7 @@
             }
         ];
 
-        function encodeSaveCode(data) { return ''; }
+        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
 
         function App() {
             const [gameState, setGameState] = useState("intro");
@@ -866,7 +866,22 @@
                     setGameState("flashcards");
                 }
 
-            function generateSaveCode() { return ''; }
+            function generateSaveCode() {
+                const saveData = {
+                    v: 1,
+                    d: new Date().toISOString(),
+                    m: MODULE_ID,
+                    mv: MODULE_VERSION,
+                    n: playerData.name,
+                    l: 3,
+                    s: playerData.score,
+                    x: playerData.xp,
+                    q: playerData.quizScore,
+                    sc: playerData.scenarioScore,
+                    f: true
+                };
+                return encodeSaveCode(saveData);
+            }
 
             function copyCode() {
                 const code = generateSaveCode();
@@ -947,13 +962,6 @@
                     setShowScenarioResult(false);
                 } else {
 
-                // ── Certification locale (déverrouillage hub) ──
-                try {
-                    var _ck = 'CERT_PHARE_' + MODULE_ID;
-                    if (!localStorage.getItem(_ck)) {
-                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                    }
-                } catch(_ce) {}
                     // ── Remontée XP vers Superhub PVS ──
                     try {
                         var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
@@ -966,7 +974,8 @@
                             xp: playerData.xp,
                             d: new Date().toISOString()
                         });
-                        localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
+                        localStorage.setItem('CERT_PHARE_HISTOIRE_01',JSON.stringify({v:1,d:new Date().toISOString(),m:'HISTOIRE_01',f:true}));
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
                         window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
                     } catch (_e) { /* silencieux */ }
                     // ── Fin bridge ──

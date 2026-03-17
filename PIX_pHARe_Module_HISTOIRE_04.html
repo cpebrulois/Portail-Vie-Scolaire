@@ -961,12 +961,6 @@
                     setScenarioChoice(null);
                     setShowScenarioResult(false);
                 } else {
-                    try {
-                        var _ck = 'CERT_PHARE_' + MODULE_ID;
-                        if (!localStorage.getItem(_ck)) {
-                            localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                        }
-                    } catch(_ce) {}
 
                     // ── Remontée XP vers Superhub PVS ──
                     try {
@@ -980,7 +974,8 @@
                             xp: playerData.xp,
                             d: new Date().toISOString()
                         });
-                        localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
+                        localStorage.setItem('CERT_PHARE_HISTOIRE_04',JSON.stringify({v:1,d:new Date().toISOString(),m:'HISTOIRE_04',f:true}));
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
                         window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
                     } catch (_e) { /* silencieux */ }
                     // ── Fin bridge ──

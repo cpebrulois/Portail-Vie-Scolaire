@@ -900,26 +900,15 @@
                 }));
                 setGameState("final");
                 try {
-                    var _ck = 'CERT_PHARE_' + MODULE_ID;
-                    if (!localStorage.getItem(_ck)) {
-                        localStorage.setItem(_ck, JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));
-                    }
-                } catch(_ce) {}
-                // ── Remontée XP vers Superhub PVS ──
-                try {
-                    var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-                    _pvs.push({
-                        id: 'PIXHARE-NEURO_03-' + Date.now(),
-                        type: 'PIXHARE_PROGRESS',
-                        player: localStorage.getItem('pvs_current_player') || playerData.name || '',
-                        module: 'NEURO_03',
-                        score: playerData.score,
-                        xp: playerData.xp + 100,
-                        d: new Date().toISOString()
-                    });
-                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
-                    window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
-                } catch (_e) {}
+                    var _pl=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||new URLSearchParams(window.location.search).get('player')||'';
+                    localStorage.setItem('CERT_PHARE_NEURO_03',JSON.stringify({v:1,d:new Date().toISOString(),m:'NEURO_03',f:true}));
+                    var _pvb=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+                    _pvb.push({id:'PIXHARE-NEURO_03-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pl,module:'NEURO_03',xp:100,d:new Date().toISOString()});
+                    if(_pvb.length>500)_pvb.splice(0,_pvb.length-500);
+                    localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));
+                    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+                } catch(_e) {}
+
             }
 
             function generateSaveCode() {
