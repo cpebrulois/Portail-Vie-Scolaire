@@ -1158,6 +1158,21 @@
                         } else {
                             setXp(xp + MODULE_DATA.niveau3.xp_reward);
                             setMode('report');
+                            // ── Certification automatique ──
+                            try {
+                                var _pl = localStorage.getItem('pvs_current_player')
+                                       || localStorage.getItem('pvs_phare_player')
+                                       || new URLSearchParams(window.location.search).get('player') || '';
+                                localStorage.setItem('CERT_PHARE_JURIDIQUE_01',
+                                    JSON.stringify({v:1,d:new Date().toISOString(),m:'JURIDIQUE_01',f:true}));
+                                var _pvb = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+                                _pvb.push({id:'PIXHARE-JURIDIQUE_01-'+Date.now(),
+                                    type:'PIXHARE_PROGRESS',player:_pl,module:'JURIDIQUE_01',
+                                    xp:100,d:new Date().toISOString()});
+                                if(_pvb.length>500) _pvb.splice(0,_pvb.length-500);
+                                localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));
+                                window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+                            } catch(_e) {}
                         }
                     };
 
@@ -1220,7 +1235,6 @@
                            type: 'PIXHARE_PROGRESS', player: getHubPlayer() || '',
                            module: moduleId, score: score, xp: xp,
                            d: new Date().toISOString() });
-                localStorage.setItem('CERT_PHARE_JURIDIQUE_01',JSON.stringify({v:1,d:new Date().toISOString(),m:'JURIDIQUE_01',f:true}));
                     localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
                 window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
             } catch(e) {}

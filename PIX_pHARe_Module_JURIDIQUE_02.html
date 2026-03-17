@@ -721,6 +721,7 @@
                 e('div', { className: 'save-code-section' },
                     e('h3', { style: { color: '#9b59b6', marginBottom: '15px' } }, '💾 CODE DE SAUVEGARDE'),
                     e('p', { style: { opacity: 0.8 } }, 'Ce code débloque le MODULE 3 !'),
+                    e('div', { className: 'save-code-box' }, saveCode),
                     e('button', { className: `btn ${copied ? 'btn-success' : ''}`, onClick: copyToClipboard }, copied ? '✓ COPIÉ !' : '📋 COPIER LE CODE'),
                     e('div', { className: 'save-instructions' },
                         e('h4', null, '🔓 Prochaine étape'),
@@ -835,7 +836,22 @@
                     const handleDojoAnswer = (impact) => {
                         setDojoScore(dojoScore + Math.max(0, impact));
                         if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1);
-                        else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); }
+                        else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report');
+                            // ── Certification automatique ──
+                            try {
+                                var _pl = localStorage.getItem('pvs_current_player')
+                                       || localStorage.getItem('pvs_phare_player')
+                                       || new URLSearchParams(window.location.search).get('player') || '';
+                                localStorage.setItem('CERT_PHARE_JURIDIQUE_02',
+                                    JSON.stringify({v:1,d:new Date().toISOString(),m:'JURIDIQUE_02',f:true}));
+                                var _pvb = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+                                _pvb.push({id:'PIXHARE-JURIDIQUE_02-'+Date.now(),
+                                    type:'PIXHARE_PROGRESS',player:_pl,module:'JURIDIQUE_02',
+                                    xp:100,d:new Date().toISOString()});
+                                if(_pvb.length>500) _pvb.splice(0,_pvb.length-500);
+                                localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));
+                                window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+                            } catch(_e) {} }
                     };
                     return e('div', { className: 'app-container' },
                         e(Header, { showProgress: true, xp }),
@@ -889,8 +905,7 @@
                            type: 'PIXHARE_PROGRESS', player: getHubPlayer() || '',
                            module: moduleId, score: score, xp: xp,
                            d: new Date().toISOString() });
-                localStorage.setItem('CERT_PHARE_JURIDIQUE_02',JSON.stringify({v:1,d:new Date().toISOString(),m:'JURIDIQUE_02',f:true}));
-                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
+                localStorage.setItem('pvs_bridge_events', JSON.stringify(_b));
                 window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
             } catch(e) {}
         }
