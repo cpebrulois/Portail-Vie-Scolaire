@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LA FORGE | AED_REV03 \u2014 M\u00e9thodologie : apprendre \u00e0 apprendre</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bg:#0c0f14;--acc:#10b981;--acc-d:#047857;--text:#dce4f0;--muted:#6b7a94;--border:#1e2736;--card:#151921;--gold:#e2a84b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:28px 16px 60px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(16,185,129,.06) 0%,transparent 55%)}
+#root{width:100%;max-width:820px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--border);padding:32px 36px;border-radius:10px;box-shadow:0 4px 40px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.card::before{content:'LA FORGE';position:absolute;top:-18px;right:-8px;font-family:'DM Serif Display';font-size:3.5rem;opacity:.03;transform:rotate(-12deg);color:var(--acc);pointer-events:none}
+h1,h2{font-family:'DM Serif Display',serif;color:var(--acc);text-align:center;margin-bottom:12px}
+h1{font-size:1.45rem}h2{font-size:1.15rem}
+p{line-height:1.8;margin-bottom:14px;color:var(--text);font-size:.92rem}
+.quote{font-style:italic;color:var(--muted);border-left:3px solid var(--acc);padding-left:14px;margin-bottom:18px;line-height:1.7;font-size:.88rem}
+.tag{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'JetBrains Mono',monospace;margin-bottom:10px;text-align:center}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(226,168,75,.08);border:1px solid rgba(226,168,75,.25);padding:4px 12px;border-radius:20px;font-size:.68rem;color:var(--gold);font-family:'JetBrains Mono',monospace}
+.comp-earn{display:inline-flex;align-items:center;gap:4px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);padding:3px 10px;border-radius:12px;font-size:.62rem;color:var(--acc);font-family:'JetBrains Mono',monospace;margin:2px}
+.player-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.btn{background:var(--acc);color:#fff;border:none;padding:12px 26px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:.25s;display:block;margin:18px auto 0;border-radius:6px;font-size:.82rem;font-family:'IBM Plex Sans',sans-serif}
+.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.progress{height:2px;background:rgba(255,255,255,.05);margin-bottom:22px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc-d),var(--acc));border-radius:2px;transition:width .5s}
+.step-tag{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:16px 18px;margin:10px 0;cursor:pointer;transition:.2s;border-radius:6px;font-size:.86rem;line-height:1.6;font-family:'IBM Plex Sans',sans-serif}
+.opt:hover{background:rgba(255,255,255,.05);border-color:var(--acc)}
+.opt-label{font-weight:700;color:var(--acc);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.summary-box{background:rgba(255,255,255,.02);border-left:3px solid var(--acc);padding:16px 18px;margin:16px 0;line-height:1.8}
+.summary-box p{margin-bottom:8px;font-size:.84rem;color:#a0b4cc}
+.insight-box{background:rgba(226,168,75,.04);border:1px solid rgba(226,168,75,.15);padding:14px 16px;border-radius:6px;margin:12px 0;font-size:.82rem;line-height:1.7;color:#d4c4a0}
+.insight-box strong{color:var(--gold)}
+.seal{text-align:center;font-size:2.6rem;margin:14px 0}
+.nav-back{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;border-radius:4px;font-size:.68rem;font-weight:600;transition:.2s;margin-bottom:16px;font-family:'IBM Plex Sans',sans-serif}
+.nav-back:hover{background:rgba(255,255,255,.08);color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.scenario-ctx{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);padding:14px 16px;border-radius:6px;margin-bottom:14px;font-size:.86rem;line-height:1.7}
+.scenario-ctx strong{color:var(--acc)}
+.fb-box{background:rgba(255,255,255,.03);border-left:3px solid var(--acc);padding:14px 16px;margin:14px 0;font-size:.84rem;line-height:1.7;border-radius:0 6px 6px 0}
+.fb-box.good{border-left-color:#10b981;background:rgba(16,185,129,.04)}
+.fb-box.warn{border-left-color:#f97316;background:rgba(249,115,22,.04)}
+</style></head>
+<body><div id="root"></div>
+<script>
+var e = React.createElement;
+var MODULE_ID = 'AED_REV03';
+var CERT_KEY  = 'CERT_AED_AED_REV03';
+var BACK_URL  = 'index_PIX_AED.html';
+
+var SCENARIOS = [
+  {
+    ctx: "En \\u00e9tude, Tom (5\\u00e8me) dit : \\u00abJ\\u2019ai un contr\\u00f4le d\\u2019histoire demain. J\\u2019ai relu mon cours 3 fois, c\\u2019est bon.\\u00bb",
+    q: "Pourquoi est-ce insuffisant et que proposez-vous ?",
+    options: [
+      {
+        label: "R\\u00e9cup\\u00e9ration active",
+        text: "\\u00abRelire, c\\u2019est regarder un match \\u00e0 la t\\u00e9l\\u00e9 \\u2014 tu crois conna\\u00eetre les r\\u00e8gles, mais tu ne sais pas jouer. Ferme ton cahier. Maintenant, \\u00e9cris tout ce que tu te rappelles du cours. Quand t\\u2019es bloqu\\u00e9, rouvre le cahier, v\\u00e9rifie, puis referme et recommence. \\u00c7a, c\\u2019est r\\u00e9viser.\\u00bb",
+        score: 3,
+        fb: "La r\\u00e9cup\\u00e9ration active (retrieval practice) est la m\\u00e9thode d\\u2019apprentissage la plus valid\\u00e9e par les neurosciences. Relire donne une illusion de ma\\u00eetrise (fluency illusion). Se tester force le cerveau \\u00e0 reconstruire les connexions \\u2014 c\\u2019est l\\u00e0 que l\\u2019apprentissage se fait.",
+        good: true
+      },
+      {
+        label: "Surligner",
+        text: "\\u00abSurligne les mots importants et relis-les.\\u00bb",
+        score: 0,
+        fb: "Le surlignage est class\\u00e9 parmi les strat\\u00e9gies les MOINS efficaces par Dunlosky et al. (2013). Il donne l\\u2019illusion du travail sans forcer le cerveau \\u00e0 traiter l\\u2019information.",
+        good: false
+      },
+      {
+        label: "Relire encore",
+        text: "\\u00abRelis une 4\\u00e8me fois en te concentrant mieux.\\u00bb",
+        score: 0,
+        fb: "La 4\\u00e8me relecture aura le m\\u00eame effet que les 3 premi\\u00e8res : fluency illusion sans apprentissage r\\u00e9el. Le probl\\u00e8me n\\u2019est pas la concentration \\u2014 c\\u2019est la m\\u00e9thode.",
+        good: false
+      },
+    ]
+  },
+  {
+    ctx: "Leila (4\\u00e8me) a un examen de SVT dans 10 jours. Elle veut commencer \\u00e0 r\\u00e9viser. \\u00abJe fais tout en un week-end ou j\\u2019\\u00e9tale ?\\u00bb",
+    q: "Que conseillez-vous ?",
+    options: [
+      {
+        label: "Espacement",
+        text: "\\u00ab\\u00c9tale \\u2014 toujours. Le cerveau retient mieux quand il oublie un peu puis re-m\\u00e9morise. Fais 20 minutes ce soir, rien demain, 20 minutes apr\\u00e8s-demain, etc. Chaque fois que tu refais l\\u2019effort de te rappeler apr\\u00e8s avoir oubli\\u00e9 un peu, la trace m\\u00e9morielle se renforce. C\\u2019est contre-intuitif mais prouv\\u00e9.\\u00bb",
+        score: 3,
+        fb: "L\\u2019espacement (spaced practice) est le deuxi\\u00e8me pilier des neurosciences de l\\u2019apprentissage. Le cerveau a BESOIN d\\u2019oublier partiellement pour que la re-m\\u00e9morisation renforce la trace. Masser tout en un bloc (cramming) produit un pic de performance imm\\u00e9diat qui s\\u2019effondre en 48h.",
+        good: true
+      },
+      {
+        label: "Marathon",
+        text: "\\u00abFais un gros bloc samedi, comme \\u00e7a c\\u2019est r\\u00e9gl\\u00e9.\\u00bb",
+        score: 0,
+        fb: "Le cramming (bourrage concentr\\u00e9) fonctionne \\u00e0 ultra-court terme mais s\\u2019effondre apr\\u00e8s 48h. Si l\\u2019exam est lundi, \\u00e7a peut passer. Mais l\\u2019apprentissage durable est nul. Et si l\\u2019exam est dans 10 jours, c\\u2019est du gaspillage.",
+        good: false
+      },
+      {
+        label: "Fiche de r\\u00e9sum\\u00e9",
+        text: "\\u00abFais une fiche r\\u00e9sum\\u00e9 ce week-end, et relis-la chaque soir.\\u00bb",
+        score: 1,
+        fb: "La fiche est utile si elle est active (r\\u00e9dig\\u00e9e de m\\u00e9moire, pas recopi\\u00e9e). Mais \\u00abrelire chaque soir\\u00bb retombe dans la relecture passive. Le mieux serait : fiche + auto-test espac\\u00e9 sans la fiche.",
+        good: false
+      },
+    ]
+  },
+  {
+    ctx: "Yanis (3\\u00e8me) r\\u00e9vise pour le brevet. Il a 10 chapitres \\u00e0 conna\\u00eetre. Il commence par le 1er et veut le ma\\u00eetriser parfaitement avant de passer au 2\\u00e8me.",
+    q: "Cette strat\\u00e9gie est-elle optimale ?",
+    options: [
+      {
+        label: "Entrelacement",
+        text: "\\u00abC\\u2019est naturel de vouloir finir un chapitre avant l\\u2019autre, mais le cerveau apprend mieux quand tu m\\u00e9langes. Fais 20 min sur le chapitre 1, puis 20 min sur le 3, puis reviens au 1. Le m\\u00e9lange force le cerveau \\u00e0 distinguer les sujets et renforce la m\\u00e9moire \\u00e0 long terme. \\u00c7a s\\u2019appelle l\\u2019entrelacement.\\u00bb",
+        score: 3,
+        fb: "L\\u2019entrelacement (interleaving) est le troisi\\u00e8me pilier. M\\u00e9langer les sujets semble plus difficile sur le moment (\\u00abdesirable difficulty\\u00bb de Bjork), mais produit un apprentissage plus profond et plus durable que le travail par bloc.",
+        good: true
+      },
+      {
+        label: "Bloc par bloc",
+        text: "\\u00abOui, finis bien le 1 avant de passer au 2. Sois m\\u00e9thodique.\\u00bb",
+        score: 1,
+        fb: "Le travail par bloc (blocked practice) donne une impression de ma\\u00eetrise rapide mais produit un apprentissage superficiel. La sensation de facilit\\u00e9 est trompeuse.",
+        good: false
+      },
+      {
+        label: "Tout en m\\u00eame temps",
+        text: "\\u00abLis tous les chapitres d\\u2019un coup pour avoir une vue d\\u2019ensemble.\\u00bb",
+        score: 0,
+        fb: "Lire 10 chapitres d\\u2019un coup sans activit\\u00e9 de r\\u00e9cup\\u00e9ration, c\\u2019est la relecture passive multipli\\u00e9e par 10. La surcharge cognitive garantit que rien ne reste.",
+        good: false
+      },
+    ]
+  },
+];
+
+var SYNTHESIS = [
+  {icon:"\u{1F9E0}", t:"R\\u00e9cup\\u00e9ration active :", v:"Fermer le cahier et \\u00e9crire ce qu\\u2019on se rappelle. Relire = illusion de ma\\u00eetrise. Se tester = apprentissage r\\u00e9el."},
+  {icon:"\u23F0", t:"Espacement :", v:"20 min espac\\u00e9es > 2h d\\u2019affil\\u00e9e. Le cerveau a besoin d\\u2019oublier un peu pour mieux rem\\u00e9moriser."},
+  {icon:"\u{1F500}", t:"Entrelacement :", v:"M\\u00e9langer les sujets renforce la m\\u00e9moire. La difficult\\u00e9 ressentie est le signe que \\u00e7a marche."},
+  {icon:"\u274C", t:"\\u00c0 \\u00e9viter :", v:"Relecture passive, surlignage, cramming en bloc. Les 3 strat\\u00e9gies les plus utilis\\u00e9es ET les moins efficaces."},
+];
+
+
+function getPlayer(){return localStorage.getItem('pvs_current_player')||'anonyme';}
+function awardXP(){
+  try{
+    var raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];
+    evts.push({id:'AED-'+MODULE_ID+'-'+Date.now(),type:'AED_PROGRESS',player:getPlayer(),
+      module:MODULE_ID,cpTotal:0,label:'LA FORGE : M\\u00e9thodologie : apprendre \\u00e0 apprendre',d:new Date().toISOString()});
+    if(evts.length>700)evts.splice(0,evts.length-700);
+    localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));
+    window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
+  }catch(ex){}
+}
+
+function App(){
+  var _s=React.useState,_step=_s('intro'),step=_step[0],setStep=_step[1];
+  var _si=_s(0),sIdx=_si[0],setSIdx=_si[1];
+  var _sc=_s(0),score=_sc[0],setScore=_sc[1];
+  var _fb=_s(null),feedback=_fb[0],setFeedback=_fb[1];
+
+  var finish=function(){
+    var cert={v:2,d:new Date().toISOString(),m:MODULE_ID,n:getPlayer(),f:true};
+    localStorage.setItem(CERT_KEY,JSON.stringify(cert));
+    awardXP();setStep('complete');
+  };
+  var goBack=function(){window.location.href=BACK_URL;};
+  var PlayerChip=function(){return e('div',{className:'player-chip'},'\u{1F3AE} ',getPlayer());};
+  var handleChoice=function(opt){setScore(score+opt.score);setFeedback(opt);};
+  var nextScenario=function(){setFeedback(null);if(sIdx<SCENARIOS.length-1){setSIdx(sIdx+1);}else{setStep('synthesis');}};
+
+  var renderIntro=function(){return e('div',{className:'card'},
+    e('div',{className:'top-row'},e('button',{className:'nav-back',onClick:goBack},'\u2190 La Forge'),PlayerChip()),
+    e('div',{className:'tag'},'BONUS R\u00e9visions \u2014 M\u00e9thodo \u00d71.5 \u00B7 Module 1/5'),
+    e('h1',null,"M\\u00e9thodologie : apprendre \\u00e0 apprendre"),
+    e('p',{className:'quote'},'"'+"Apprendre sans m\\u00e9thode, c\\u2019est remplir un seau perc\\u00e9."+'" \u2014 Proverbe p\\u00e9dagogique'),
+    e('p',null,"La plainte la plus fr\\u00e9quente en \\u00e9tude : \\u00abJ\\u2019ai r\\u00e9vis\\u00e9 mais j\\u2019ai quand m\\u00eame eu une mauvaise note.\\u00bb Traduction : l\\u2019\\u00e9l\\u00e8ve a relu son cours (inefficace) au lieu de le travailler activement."),
+    e('p',null,"Ce module vous donne les cl\\u00e9s des neurosciences de l\\u2019apprentissage \\u2014 simplifi\\u00e9es mais solides \\u2014 pour aider les \\u00e9l\\u00e8ves \\u00e0 apprendre vraiment : r\\u00e9cup\\u00e9ration active, espacement, auto-test, mise en carte mentale."),
+    e('div',{className:'insight-box'},e('strong',null,'\u{1F4DA} R\u00e9f\u00e9rences : '),"Stanislas Dehaene, Apprendre ! \\u2014 Dunlosky et al., Strat\\u00e9gies d\\u2019apprentissage \\u2014 Neurosciences cognitives de l\\u2019\\u00e9ducation"),
+    e('div',{style:{textAlign:'center',margin:'12px 0'}},
+      e('div',{className:'xp-badge'},'\u26A1 +60 XP'),
+      e('span',{style:{margin:'0 6px'}}),
+      e('div',{className:'comp-earn'},'+P\u00e9dagogie'),e('div',{className:'comp-earn'},'+M\u00e9thodo'),
+      null),
+    e('button',{className:'btn',onClick:function(){setStep('scenario');}},'Entrer dans le sc\u00e9nario')
+  );};
+
+  var renderScenario=function(){
+    var sc=SCENARIOS[sIdx];var pct=15+Math.round(((sIdx+(feedback?1:0))/(SCENARIOS.length))*70);
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:pct+'%'}})),
+      e('div',{className:'step-tag'},'Sc\u00e9nario '+(sIdx+1)+' / '+SCENARIOS.length),
+      e('div',{className:'scenario-ctx'},e('strong',null,'\u{1F4CD} Contexte : '),sc.ctx),
+      e('h2',null,sc.q),
+      !feedback?
+        sc.options.map(function(opt,i){return e('button',{key:i,className:'opt',onClick:function(){handleChoice(opt);}},
+          e('div',{className:'opt-label'},opt.label),opt.text);})
+        :e('div',null,
+          e('div',{className:'fb-box '+(feedback.good?'good':'warn')},
+            e('strong',null,feedback.good?'\u2705 Posture adapt\u00e9e':'\u26A0\uFE0F Point d\u2019am\u00e9lioration'),
+            e('p',{style:{marginTop:'8px',marginBottom:0}},feedback.fb)),
+          e('button',{className:'btn',onClick:nextScenario},sIdx<SCENARIOS.length-1?'Sc\u00e9nario suivant \u2192':'Synth\u00e8se \u2192'))
+    );
+  };
+
+  var renderSynthesis=function(){
+    var mx=SCENARIOS.length*3,pc=Math.round((score/mx)*100);
+    var v=pc>=80?"Comp\u00e9tence solide.":pc>=50?"Des r\u00e9flexes \u00e0 affiner.":"\u00c0 retravailler.";
+    return e('div',{className:'card'},
+      e('div',{className:'progress'},e('div',{className:'progress-fill',style:{width:'90%'}})),
+      e('div',{className:'step-tag'},'Synth\u00e8se'),e('h2',null,"Ce qu\u2019il faut retenir"),
+      e('div',{className:'insight-box'},e('strong',null,'\u{1F3AF} Score : '),score+'/'+mx+' ('+pc+'%) \u2014 '+v),
+      e('div',{className:'summary-box'},SYNTHESIS.map(function(s,i){
+        return e('p',{key:i},e('strong',null,s.icon+' '+s.t+' '),s.v);})),
+      e('button',{className:'btn',onClick:finish},'Valider ce module \u2192')
+    );
+  };
+
+  var renderComplete=function(){return e('div',{className:'card'},
+    e('div',{className:'seal'},'\u{1F9E0}'),
+    e('h1',null,"Module valid\u00e9 !"),
+    e('p',{style:{textAlign:'center'}},"Comp\u00e9tences acquises \u2014 bravo."),
+    e('div',{style:{textAlign:'center',margin:'10px 0'}},
+      e('div',{className:'xp-badge'},'\u26A1 +60 XP'),e('span',{style:{margin:'0 6px'}}),
+      e('div',{className:'comp-earn'},'+1 P\u00e9dagogie'),e('div',{className:'comp-earn'},'+1 M\u00e9thodo'),
+      null),
+    e('button',{className:'btn',onClick:goBack},'\u2190 Retour \u00e0 La Forge')
+  );};
+
+  switch(step){
+    case 'intro':return renderIntro();case 'scenario':return renderScenario();
+    case 'synthesis':return renderSynthesis();case 'complete':return renderComplete();
+    default:return renderIntro();
+  }
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>
