@@ -211,9 +211,9 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none;
         Le conseil commence. Le professeur principal demande : <em>"Des observations sur cet élève ?"</em> Deux camarades lèvent la main pour dire qu'il est "peu investi".
       </div>
       <div class="sim-q">Comment tu interviens ?</div>
-      <div onclick="simChoice(1,'a',2,'Efficace — tu poses le fait tôt. Risque : apparaître comme défenseur systématique avant qu\'on t\'entende.','ok')" class="sim-choice">Tu lèves la main immédiatement et exposes les faits.</div>
-      <div onclick="simChoice(1,'b',3,'Stratégique — tu connais les arguments adverses avant de répondre. Moscovici appelle ça la flexibilité de style.','good')" class="sim-choice">Tu attends que tout le monde ait parlé, puis tu prends la parole.</div>
-      <div onclick="simChoice(1,'c',1,'Prudent, mais le récit se construit sans toi. La minorité qui arrive trop tard subit le cadrage de la majorité.','bad')" class="sim-choice">Tu ne dis rien ce tour — tu prépares ton intervention.</div>
+<div onclick="simChoice(this,1,'a',2,'Efficace — tu poses le fait tôt. Risque : apparaître comme défenseur systématique avant qu\'on t\'entende.','ok')" class="sim-choice">Tu lèves la main immédiatement et exposes les faits.</div>
+<div onclick="simChoice(this,1,'b',3,'Stratégique — tu connais les arguments adverses avant de répondre. Moscovici appelle ça la flexibilité de style.','good')" class="sim-choice">Tu attends que tout le monde ait parlé, puis tu prends la parole.</div>
+<div onclick="simChoice(this,1,'c',1,'Prudent, mais le récit se construit sans toi. La minorité qui arrive trop tard subit le cadrage de la majorité.','bad')" class="sim-choice">Tu ne dis rien ce tour — tu prépares ton intervention.</div>
       <div class="sim-feedback" id="sf1"></div>
     </div>
 
@@ -224,9 +224,9 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none;
         Un professeur dit : <em>"Tout le monde semble d'accord. On peut noter insuffisant et passer à la suite ?"</em> Deux délégués acquiescent.
       </div>
       <div class="sim-q">La pression monte. Tu maintiens ?</div>
-      <div onclick="simChoice(2,'a',3,'C\'est exactement la formulation Moscovici : sobre, factuelle, non agressive. Tu poses le désaccord sans attaquer.','good')" class="sim-choice">"Je ne suis pas d'accord. J'ai des informations différentes."</div>
-      <div onclick="simChoice(2,'b',1,'Le \"peut-être vous avez raison\" est une concession de fond déguisée. La minorité cohérente ne cède pas sur le fond.','bad')" class="sim-choice">"Peut-être que vous avez raison, mais..." suivi de tes arguments.</div>
-      <div onclick="simChoice(2,'c',3,'Excellent. Questionner le fondement plutôt qu\'attaquer la conclusion — c\'est forcer le conflit cognitif sans confrontation.','good')" class="sim-choice">Tu poses une question : "Sur quelles informations cette note est-elle basée ?"</div>
+<div onclick="simChoice(this,2,'a',3,'C\'est exactement la formulation Moscovici : sobre, factuelle, non agressive. Tu poses le désaccord sans attaquer.','good')" class="sim-choice">"Je ne suis pas d'accord. J'ai des informations différentes."</div>
+<div onclick="simChoice(this,2,'b',1,'Le \"peut-être vous avez raison\" est une concession de fond déguisée. La minorité cohérente ne cède pas sur le fond.','bad')" class="sim-choice">"Peut-être que vous avez raison, mais..." suivi de tes arguments.</div>
+<div onclick="simChoice(this,2,'c',3,'Excellent. Questionner le fondement plutôt qu\'attaquer la conclusion — c\'est forcer le conflit cognitif sans confrontation.','good')" class="sim-choice">Tu poses une question : "Sur quelles informations cette note est-elle basée ?"</div>
       <div class="sim-feedback" id="sf2"></div>
     </div>
 
@@ -237,9 +237,9 @@ body::before { content:''; position:fixed; inset:0; pointer-events:none;
         Après ton intervention, silence gêné. Un prof dit : <em>"Tu as des éléments concrets ?"</em> Les regards se tournent vers toi.
       </div>
       <div class="sim-q">Tu as l'attention. Comment tu utilises ce moment ?</div>
-      <div onclick="simChoice(3,'a',3,'Parfait. La minorité efficace parle des faits, pas des personnes. Elle dit \"voilà ce que je sais\" — pas \"vous avez tort\".','good')" class="sim-choice">Tu exposes tes informations factuelles, sans jugement sur les autres.</div>
-      <div onclick="simChoice(3,'b',0,'Ça transforme un désaccord factuel en conflit personnel. La majorité va se défendre plutôt qu\'écouter.','bad')" class="sim-choice">Tu dis que les autres ont mal observé l'élève.</div>
-      <div onclick="simChoice(3,'c',4,'Le niveau supérieur : tu ne nies pas la réalité de la majorité, tu l\'enrichis. C\'est ça, l\'influence minoritaire au plus haut niveau.','good')" class="sim-choice">Tu partages tes informations ET tu reconnais les difficultés réelles de l'élève.</div>
+<div onclick="simChoice(this,3,'a',3,'Parfait. La minorité efficace parle des faits, pas des personnes. Elle dit \"voilà ce que je sais\" — pas \"vous avez tort\".','good')" class="sim-choice">Tu exposes tes informations factuelles, sans jugement sur les autres.</div>
+<div onclick="simChoice(this,3,'b',0,'Ça transforme un désaccord factuel en conflit personnel. La majorité va se défendre plutôt qu\'écouter.','bad')" class="sim-choice">Tu dis que les autres ont mal observé l'élève.</div>
+<div onclick="simChoice(this,3,'c',4,'Le niveau supérieur : tu ne nies pas la réalité de la majorité, tu l\'enrichis. C\'est ça, l\'influence minoritaire au plus haut niveau.','good')" class="sim-choice">Tu partages tes informations ET tu reconnais les difficultés réelles de l'élève.</div>
       <div class="sim-feedback" id="sf3"></div>
     </div>
 
@@ -384,7 +384,7 @@ function unlockLevel(n) {
 }
 
 // ── Niveau 2 ────────────────────────────────
-function simChoice(tour, choice, pts, feedback, quality) {
+function simChoice(el, tour, choice, pts, feedback, quality) {
   // Désactiver les choix du tour courant
   var container = document.getElementById('sim-t' + tour);
   container.querySelectorAll('.sim-choice').forEach(function(c) {
@@ -392,8 +392,10 @@ function simChoice(tour, choice, pts, feedback, quality) {
     c.style.opacity = '.4';
   });
   // Marquer le choix
-  event.currentTarget.style.opacity = '1';
-  event.currentTarget.classList.add('selected-' + quality);
+  if(el) {
+    el.style.opacity = '1';
+    el.classList.add('selected-' + quality);
+  }
 
   // Feedback
   var fb = document.getElementById('sf' + tour);
