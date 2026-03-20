@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -543,6 +543,54 @@ h1 span{color:#fff;}
   box-shadow:none;
   transform:none;
 }
+.agora-concern-box{
+  display:none;
+  text-align:left;
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(5,10,18,.55);
+}
+.agora-concern-box.open{display:block;}
+.agora-concern-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:.9rem;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:#8be9ff;
+  margin-bottom:8px;
+}
+.agora-concern-copy,.agora-concern-meta{
+  font-size:.9rem;
+  line-height:1.5;
+  color:#d7e2f0;
+}
+.agora-concern-meta{margin-top:12px;color:#9fb3c8;}
+.agora-concern-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+}
+.agora-concern-label{
+  display:block;
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+.agora-concern-value{
+  font-size:.92rem;
+  line-height:1.45;
+  color:#fff;
+}
+.agora-concern-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
 @media(max-width:768px){
   .agora-section{padding:18px;}
   .agora-input-row{flex-direction:column;}
@@ -605,20 +653,20 @@ h1 span{color:#fff;}
   <div class="valdurne-grid" id="valdurneGrid"></div>
 </div>
 
-<!-- SECTION AGORA -->
+<!-- SECTION KERN -->
 <section class="agora-section locked" id="agora-section">
   <div class="agora-head">
     <div>
-      <div class="agora-title">Agora — Kern à Valdurne</div>
+      <div class="agora-title">Kern — Veilleur de Valdurne</div>
       <div class="agora-subtitle">
         Simulateur narratif PIX pHARe : Kern te place dans des situations fictives de harcèlement, d'agression,
-        de rumeur ou de mise à l'écart au château de Valdurne, puis t'aide à réfléchir à ta posture de Lyam.
+        de rumeur ou de mise à l'écart au château de Valdurne, et peut aussi t'aider à clarifier prudemment une situation réelle.
       </div>
     </div>
     <div class="agora-badge" id="agora-badge">🔒 Accès verrouillé</div>
   </div>
   <p class="agora-lock-copy" id="agora-lock-copy">
-    Agora se débloque quand le joueur a validé les 6 modules des 5 piliers de PIX pHARe ainsi que le Protocole Valdurne.
+    Kern se débloque quand le joueur a validé les 6 modules des 5 piliers de PIX pHARe ainsi que le Protocole Valdurne.
   </p>
   <div class="agora-progress">
     <div class="agora-pill warn" id="agora-pill-modules">Modules : 0/30</div>
@@ -626,15 +674,17 @@ h1 span{color:#fff;}
     <div class="agora-pill warn" id="agora-pill-player">Joueur : non connecté</div>
   </div>
   <div class="agora-toolbar">
-    <button class="agora-btn" id="agora-toggle" onclick="toggleAgora()">Ouvrir Agora</button>
-    <button class="agora-btn secondary" id="agora-download" onclick="downloadAgoraHistory()">Télécharger la conversation</button>
-    <button class="agora-btn secondary" id="agora-clear" onclick="clearAgoraHistory()">Effacer la conversation</button>
+    <button class="agora-btn" id="agora-toggle" onclick="toggleKern()">Ouvrir Kern</button>
+    <button class="agora-btn secondary" id="agora-download" onclick="downloadKernHistory()">Télécharger la conversation</button>
+    <button class="agora-btn secondary" id="agora-report" onclick="prepareKernConcern()">Préparer un signalement</button>
+    <button class="agora-btn secondary" id="agora-clear" onclick="clearKernHistory()">Effacer la conversation</button>
   </div>
+  <div class="agora-concern-box" id="agora-concern-box"></div>
   <div class="agora-panel" id="agora-panel">
     <div class="agora-messages" id="agora-messages"></div>
     <div class="agora-input-row">
-      <textarea class="agora-input" id="agora-input" placeholder="Demande une aventure, une scène à choix, ou un débrief sur ta posture..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAgora();}"></textarea>
-      <button class="agora-send" id="agora-send" onclick="sendAgora()">Envoyer</button>
+      <textarea class="agora-input" id="agora-input" placeholder="Demande une aventure, une scène à choix, ou décris une situation réelle à clarifier..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendKern();}"></textarea>
+      <button class="agora-send" id="agora-send" onclick="sendKern()">Envoyer</button>
     </div>
   </div>
 </section>
@@ -1541,6 +1591,8 @@ checkJdrReturn();
 render();
 renderValdurne();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="agora_pixhare.js"></script>
 </body>
 </html>
+
