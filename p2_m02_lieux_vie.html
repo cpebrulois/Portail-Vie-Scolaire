@@ -95,6 +95,73 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 <script>
 const MID='M2_02',NF='p2_m03_apprentissage.html',NN='Les lieux d\'apprentissage',LS='ave6e_progress';
 
+const CUSTOM_LIEUX_IMAGES = {
+  cour_principale: [
+    'cour_principale.jpg',
+    'cour.jpg',
+    'cour_college.jpg'
+  ],
+  refectoire: [
+    'refectoire.jpg',
+    'cantine.jpg',
+    'restaurant_scolaire.jpg'
+  ],
+  casiers: [
+    'casiers.jpg',
+    'casiers_eleves.jpg'
+  ],
+  salle_permanence: [
+    'salle_permanence.jpg',
+    'permanence.jpg',
+    'etude.jpg',
+    'salle_etude.jpg'
+  ],
+  foyer_eleves: [
+    'foyer_eleves.jpg',
+    'foyer.jpg',
+    'salle_detente.jpg'
+  ]
+};
+
+const ASSET_DIRS = ['', 'assets_6e/', 'assets_college/', 'images/', 'img/'];
+const ASSET_EXTS = ['.jpeg', '.jpg', '.png', '.webp'];
+
+function uniqueList(items){
+  const seen = new Set();
+  return items.filter(function(item){
+    if(!item || seen.has(item)) return false;
+    seen.add(item);
+    return true;
+  });
+}
+
+function normalizeAssetCandidates(values){
+  return uniqueList((values || []).map(function(value){
+    return String(value || '').trim();
+  }).filter(Boolean));
+}
+
+function buildAssetSources(keys){
+  const refs = Array.isArray(keys) ? keys : [keys];
+  const out = [];
+  refs.forEach(function(key){
+    normalizeAssetCandidates(CUSTOM_LIEUX_IMAGES[key] || []).forEach(function(candidate){
+      out.push(candidate);
+    });
+    if(typeof key !== 'string') return;
+    if(key.indexOf('.') >= 0 || key.indexOf('/') >= 0){
+      out.push(key);
+      return;
+    }
+    ASSET_DIRS.forEach(function(dir){
+      ASSET_EXTS.forEach(function(ext){
+        out.push(dir + key + ext);
+      });
+    });
+  });
+  return uniqueList(out);
+}
+
 // ── PHOTOS RÉFÉRENCÉES ──────────────────────────────────────
 //   cour_principale.jpeg   — cour de récréation principale
 //   cour_secondaire.jpeg   — cour secondaire ou espace vert si existant
@@ -105,23 +172,23 @@ const MID='M2_02',NF='p2_m03_apprentissage.html',NN='Les lieux d\'apprentissage'
 // ────────────────────────────────────────────────────────────
 
 const LIEUX=[
-  {img:'cour_principale.jpeg',caption:'Cour principale — espace de récréation',ico:'🏃',
+  {imgs:buildAssetSources(['cour_principale']),caption:'Cour principale — espace de récréation',ico:'🏃',
    titre:'La cour principale',
    desc:'C\'est ici que tu passes les récréations et les intercours. Elle est divisée en zones informelles — avec le temps tu repéreras les habitudes de chacun. Les surveillants (AED) y sont présents en permanence.',
    tip:'Le premier jour, observe avant de t\'installer quelque part. Les espaces dans la cour s\'organisent naturellement — rien de figé, mais ça aide de repérer avant.'},
-  {img:'refectoire.jpeg',caption:'Réfectoire — service par demi-pension',ico:'🍽️',
+  {imgs:buildAssetSources(['refectoire']),caption:'Réfectoire — service par demi-pension',ico:'🍽️',
    titre:'Le réfectoire',
    desc:'Les demi-pensionnaires mangent ici chaque midi. Le service fonctionne par groupes avec des horaires précis selon ta classe. Tu présentes ta carte de demi-pensionnaire à l\'entrée — sans elle, pas de repas servi.',
    tip:'Ta carte de demi-pensionnaire est indispensable. En cas d\'oubli, signale-le immédiatement à la vie scolaire — il existe une procédure pour les oublis ponctuels.'},
-  {img:'casiers.jpeg',caption:'Casiers élèves — couloir principal',ico:'🔑',
+  {imgs:buildAssetSources(['casiers']),caption:'Casiers élèves — couloir principal',ico:'🔑',
    titre:'Ton casier',
    desc:'Chaque élève dispose d\'un casier personnel pour alléger son sac en cours de journée. Tu reçois ta combinaison ou ta clé en début d\'année. Le casier est sous ta responsabilité — ce que tu y mets te concerne.',
    tip:'N\'ouvre pas ton casier avec du matériel qui appartient à d\'autres dans le couloir. Et ne prête jamais ta combinaison — même à un ami.'},
-  {img:'salle_permanence.jpeg',caption:'Salle de permanence — travail et étude',ico:'📚',
+  {imgs:buildAssetSources(['salle_permanence']),caption:'Salle de permanence — travail et étude',ico:'📚',
    titre:'La salle de permanence',
    desc:'Quand tu as une heure de cours sans prof (heure de permanence), tu vas en salle de permanence sous la surveillance d\'un AED. On y travaille en silence — c\'est le lieu pour avancer sur les devoirs.',
    tip:'La permanence n\'est pas une récréation. Les AED en charge peuvent noter les comportements dans le carnet de liaison.'},
-  {img:'foyer_eleves.jpeg',caption:'Foyer élèves — espace de détente',ico:'🎮',
+  {imgs:buildAssetSources(['foyer_eleves']),caption:'Foyer élèves — espace de détente',ico:'🎮',
    titre:'Le foyer élèves',
    desc:'Espace géré par les délégués et le CVL (Conseil de Vie Lycéenne, ou CVC au collège), le foyer est accessible durant certaines pauses. Jeux de société, détente — dans le respect des règles affichées.',
    tip:'Le foyer est un privilège, pas un droit automatique. Son accès peut être conditionné par le comportement général.'}
@@ -194,7 +261,29 @@ function btn(l,c,fn){const b=document.createElement('button');b.className='btn '
 function prog(){const d=$('prog');d.innerHTML='';const t=mk('pt');const pi=PI[S.ph]||0;
 PHS.forEach((p,i)=>{const s=mk('ps '+(i<pi?'dn':i===pi?'ac':''));s.innerHTML='<div class="pd">'+(i<pi?'✓':i+1)+'</div><div class="pl">'+p.l+'</div>';t.appendChild(s)});d.appendChild(t)}
 function xpbar(items){const d=$('xpb');d.innerHTML='';const w=mk('xps');items.forEach(x=>{const p=mk('xpp'+(x.h?' hl':''));p.innerHTML='<span>'+x.i+'</span>'+x.v;w.appendChild(p)});d.appendChild(w)}
-function photo(src,cap){const w=mk('photo-wrap');const img=document.createElement('img');img.src=src;img.alt=cap;img.onerror=function(){this.parentNode.innerHTML='<div class="photo-placeholder"><div class="ico">📷</div><div class="txt">'+src+'</div></div>';};w.appendChild(img);const c=mk('photo-caption');c.textContent=cap;return[w,c]}
+function photo(sources,cap){
+  const candidates=Array.isArray(sources)?sources.slice():[sources];
+  const w=mk('photo-wrap');
+  const img=document.createElement('img');
+  let idx=0;
+  img.alt=cap;
+  function loadNext(){
+    if(idx>=candidates.length){
+      w.innerHTML='<div class="photo-placeholder"><div class="ico">📷</div><div class="txt">'+(candidates[0]||'image-manquante')+'</div></div>';
+      return;
+    }
+    img.src=candidates[idx];
+  }
+  img.onerror=function(){
+    idx+=1;
+    loadNext();
+  };
+  w.appendChild(img);
+  loadNext();
+  const c=mk('photo-caption');
+  c.textContent=cap;
+  return[w,c]
+}
 function render(){prog();const r=$('root');r.innerHTML='';
 if(S.ph==='intro'){xpbar([{i:'⭐',v:S.xp+' XP'}]);intro(r)}
 if(S.ph==='cards'){xpbar([{i:'🗺️',v:(S.ci+1)+'/'+LIEUX.length},{i:'⭐',v:S.xp+' XP',h:1}]);cards(r)}
@@ -202,13 +291,13 @@ if(S.ph==='quiz'){xpbar([{i:'❓',v:(S.qi+1)+'/'+QUIZ.length},{i:'⭐',v:S.xp+' 
 if(S.ph==='sc'){xpbar([{i:'🎯',v:(S.si+1)+'/'+SC.length},{i:'⭐',v:S.xp+' XP',h:1}]);scene(r)}
 if(S.ph==='fin'){xpbar([{i:'⭐',v:S.xp+' XP',h:1}]);fin(r)}}
 function intro(r){const c=mk('card');
-const[pw,pc]=photo('cour_principale.jpeg','La cour — cœur de vie du collège');
+const[pw,pc]=photo(buildAssetSources(['cour_principale']),'La cour — cœur de vie du collège');
 c.appendChild(pw);c.appendChild(pc);
 c.innerHTML+='<div style="font-family:var(--ft);font-size:1.3rem;font-weight:900;margin-bottom:8px">Les lieux où tu vivras vraiment</div>'+
 '<div style="font-size:.95rem;line-height:1.7;color:var(--ink2);margin-bottom:14px">Cours, réfectoire, casiers, permanence — ce sont les lieux que tu fréquenteras chaque jour. Connaître leur fonctionnement évite des surprises.</div>';
 const row=mk('row');row.appendChild(btn('Explorer les lieux ➜','btnp',()=>{S.ph='cards';S.xp+=10;render()}));c.appendChild(row);r.appendChild(c)}
 function cards(r){const d=LIEUX[S.ci];const c=mk('card');
-const[pw,pc]=photo(d.img,d.caption);c.appendChild(pw);c.appendChild(pc);
+const[pw,pc]=photo(d.imgs||d.img,d.caption);c.appendChild(pw);c.appendChild(pc);
 const zc=mk('zone-card');
 zc.innerHTML='<div class="zone-title">'+d.ico+' '+d.titre+'</div><div class="zone-desc">'+d.desc+'</div><div class="zone-tip">💡 '+d.tip+'</div>';
 c.appendChild(zc);r.appendChild(c);
