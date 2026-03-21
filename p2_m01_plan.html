@@ -104,6 +104,65 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 <script>
 const MID='M2_01',NF='p2_m02_lieux_vie.html',NN='Les lieux de vie quotidienne',LS='ave6e_progress';
 
+const CUSTOM_ZONE_IMAGES = {
+  plan_general: [
+    'plan_general.jpg',
+    'p2_m01_plan.jpg',
+    'pr\u00e9sentation coll\u00e8ge.png',
+    'presentation_college.png'
+  ],
+  entree_principale: [
+    'entree_principale.jpg'
+  ],
+  acces_bus: [
+    'acces_bus.jpg',
+    'portail_bus.jpg',
+    'entree_bus.jpg'
+  ],
+  acces_velo: [
+    'acces_velo.jpg'
+  ]
+};
+
+const ASSET_DIRS = ['', 'assets_6e/', 'assets_college/', 'images/', 'img/'];
+const ASSET_EXTS = ['.jpeg', '.jpg', '.png', '.webp'];
+
+function uniqueList(items){
+  const seen = new Set();
+  return items.filter(function(item){
+    if(!item || seen.has(item)) return false;
+    seen.add(item);
+    return true;
+  });
+}
+
+function normalizeAssetCandidates(values){
+  return uniqueList((values || []).map(function(value){
+    return String(value || '').trim();
+  }).filter(Boolean));
+}
+
+function buildAssetSources(keys){
+  const refs = Array.isArray(keys) ? keys : [keys];
+  const out = [];
+  refs.forEach(function(key){
+    normalizeAssetCandidates(CUSTOM_ZONE_IMAGES[key] || []).forEach(function(candidate){
+      out.push(candidate);
+    });
+    if(typeof key !== 'string') return;
+    if(key.indexOf('.') >= 0 || key.indexOf('/') >= 0){
+      out.push(key);
+      return;
+    }
+    ASSET_DIRS.forEach(function(dir){
+      ASSET_EXTS.forEach(function(ext){
+        out.push(dir + key + ext);
+      });
+    });
+  });
+  return uniqueList(out);
+}
+
 // ── PHOTOS RÉFÉRENCÉES ──────────────────────────────────────
 // Fichiers attendus dans le même dossier que ce HTML :
 //   plan_general.jpeg     — vue aérienne ou plan masse du collège
@@ -113,19 +172,19 @@ const MID='M2_01',NF='p2_m02_lieux_vie.html',NN='Les lieux de vie quotidienne',L
 // ────────────────────────────────────────────────────────────
 
 const ZONES = [
-  { img:'plan_general.jpeg', caption:'Plan général — Château Rance', ico:'🗺️',
+  { imgs:buildAssetSources(['plan_general']), caption:'Plan général — Château Rance', ico:'🗺️',
     titre:'Vue d\'ensemble', bg:'#F0FDF4', bd:'#6EE7B7', ht:'#065F46',
     desc:'Le collège Château Rance est organisé en plusieurs zones distinctes : les bâtiments d\'enseignement, les espaces de vie (cour, réfectoire), et les accès séparés selon les modes d\'arrivée.',
     tip:'La première semaine, tu te perdras. C\'est normal et tout le monde est passé par là. En 3 jours, tu connaîtras tout par cœur.'},
-  { img:'entree_principale.jpeg', caption:'Entrée principale — hall d\'accueil', ico:'🚪',
+  { imgs:buildAssetSources(['entree_principale']), caption:'Entrée principale — hall d\'accueil', ico:'🚪',
     titre:'Entrée principale', bg:'#F0FDF4', bd:'#6EE7B7', ht:'#065F46',
     desc:'C\'est par ici que passent les élèves demi-pensionnaires et externes chaque matin. La loge de surveillance est juste à l\'entrée — c\'est là qu\'on signale un retard, une sortie anticipée, ou qu\'on récupère un objet trouvé.',
     tip:'Si tu arrives en retard, tu dois obligatoirement passer par la loge avant de rejoindre ta classe.'},
-  { img:'acces_bus.jpeg', caption:'Portail bus — arrivée et départ cars', ico:'🚌',
+  { imgs:buildAssetSources(['acces_bus','entree_principale']), caption:'Portail bus — arrivée et départ cars', ico:'🚌',
     titre:'Accès cars scolaires', bg:'#F0FDF4', bd:'#6EE7B7', ht:'#065F46',
     desc:'Les élèves qui prennent le car ont leur propre zone d\'attente et un portail dédié. Les cars arrivent et repartent à des horaires précis — dès la première semaine, note bien les tiens.',
     tip:'Le car n\'attend pas. Si tu rates le départ, préviens immédiatement la vie scolaire pour qu\'ils contactent tes parents.'},
-  { img:'acces_velo.jpeg', caption:'Parking vélos / accès piétons', ico:'🚲',
+  { imgs:buildAssetSources(['acces_velo']), caption:'Parking vélos / accès piétons', ico:'🚲',
     titre:'Accès vélos et piétons', bg:'#F0FDF4', bd:'#6EE7B7', ht:'#065F46',
     desc:'Les élèves qui viennent à vélo ou à pied utilisent l\'accès piéton. Le parking vélos est couvert — tu peux attacher ton vélo avec ton propre cadenas.',
     tip:'Un vélo non attaché = un vélo qui peut disparaître. Investis dans un bon cadenas avant la rentrée.'}
@@ -198,14 +257,25 @@ function btn(l,c,fn){const b=document.createElement('button');b.className='btn '
 function prog(){const d=$('prog');d.innerHTML='';const t=mk('pt');const pi=PI[S.ph]||0;
 PHS.forEach((p,i)=>{const s=mk('ps '+(i<pi?'dn':i===pi?'ac':''));s.innerHTML='<div class="pd">'+(i<pi?'✓':i+1)+'</div><div class="pl">'+p.l+'</div>';t.appendChild(s)});d.appendChild(t)}
 function xpbar(items){const d=$('xpb');d.innerHTML='';const w=mk('xps');items.forEach(x=>{const p=mk('xpp'+(x.h?' hl':''));p.innerHTML='<span>'+x.i+'</span>'+x.v;w.appendChild(p)});d.appendChild(w)}
-function photo(src,caption){
+function photo(sources,caption){
+  const candidates=Array.isArray(sources)?sources.slice():[sources];
   const wrap=mk('photo-wrap');
   const img=document.createElement('img');
-  img.src=src; img.alt=caption;
+  let idx=0;
+  img.alt=caption;
+  function loadNext(){
+    if(idx>=candidates.length){
+      wrap.innerHTML='<div class="photo-placeholder"><div class="ico">📷</div><div class="txt">'+(candidates[0]||'image-manquante')+'</div></div>';
+      return;
+    }
+    img.src=candidates[idx];
+  }
   img.onerror=function(){
-    this.parentNode.innerHTML='<div class="photo-placeholder"><div class="ico">📷</div><div class="txt">'+src+'</div></div>';
+    idx+=1;
+    loadNext();
   };
   wrap.appendChild(img);
+  loadNext();
   const cap=mk('photo-caption');cap.textContent=caption;
   return [wrap,cap];
 }
@@ -217,7 +287,7 @@ if(S.ph==='sc'){xpbar([{i:'🎯',v:(S.si+1)+'/'+SC.length},{i:'⭐',v:S.xp+' XP'
 if(S.ph==='fin'){xpbar([{i:'⭐',v:S.xp+' XP',h:1}]);fin(r)}}
 
 function intro(r){const c=mk('card');
-const [pw,pc]=photo('plan_general.jpeg','Plan masse — Collège Château Rance');
+const [pw,pc]=photo(buildAssetSources(['plan_general']),'Plan masse — Collège Château Rance');
 c.appendChild(pw);c.appendChild(pc);
 c.innerHTML+='<div style="font-family:var(--ft);font-size:1.4rem;font-weight:900;margin-bottom:8px">Bienvenue à Château Rance</div>'+
 '<div style="font-size:.97rem;line-height:1.7;color:var(--ink2);margin-bottom:16px">Le collège est <strong>plus grand que ton école primaire</strong> — plusieurs bâtiments, plusieurs cours, plusieurs accès différents selon comment tu arrives.<br><br>Ce module te fait visiter le plan général pour que tu ne sois <strong>pas perdu(e) le jour J</strong>.</div>'+
@@ -225,7 +295,7 @@ c.innerHTML+='<div style="font-family:var(--ft);font-size:1.4rem;font-weight:900
 const row=mk('row');row.appendChild(btn('Découvrir les zones ➜','btnp',()=>{S.ph='cards';S.xp+=10;render()}));c.appendChild(row);r.appendChild(c)}
 
 function cards(r){const d=ZONES[S.ci];const c=mk('card');
-const [pw,pc]=photo(d.img,d.caption);c.appendChild(pw);c.appendChild(pc);
+const [pw,pc]=photo(d.imgs||d.img,d.caption);c.appendChild(pw);c.appendChild(pc);
 const zc=mk('zone-card');
 zc.style.background=d.bg; zc.style.borderColor=d.bd;
 zc.innerHTML='<div class="zone-title">'+d.ico+' '+d.titre+'</div>'+
