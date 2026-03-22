@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'été du retour — Lyam à Eystie-Val · Niveau 6e</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c1917;--ink-soft:#57534e;--ink-faint:#a8a29e;
+  --paper:#fdfaf5;--paper-warm:#fef3c7;--paper-cool:#eff6ff;
+  --valdur:#7c3aed;--valdur-l:#a78bfa;--valdur-dim:rgba(124,58,237,.08);
+  --gold:#b45309;--gold-l:#f59e0b;--gold-dim:rgba(180,83,9,.1);
+  --green:#166534;--green-l:#4ade80;
+  --red:#991b1b;--red-l:#f87171;
+  --border:rgba(28,25,23,.12);
+  --r:14px;--r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',system-ui,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+
+/* ── SHELL ── */
+.wrap{min-height:100vh;display:flex;align-items:stretch;}
+.shell{display:flex;width:100%;max-width:1200px;margin:0 auto;}
+
+/* ── ASIDE ── */
+.side{width:260px;flex-shrink:0;background:linear-gradient(180deg,#1e1b4b,#312e81);
+  color:#e0e7ff;padding:24px 18px;display:flex;flex-direction:column;gap:14px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;}
+.pill{background:rgba(167,139,250,.25);border:1px solid rgba(167,139,250,.4);
+  color:#c4b5fd;padding:4px 12px;border-radius:20px;font-size:.72rem;
+  font-weight:800;letter-spacing:.5px;text-transform:uppercase;width:fit-content;}
+.side h1{font-family:'Baloo 2',sans-serif;font-size:1.15rem;font-weight:800;
+  color:#fff;line-height:1.3;}
+.side p{font-size:.82rem;color:#a5b4fc;line-height:1.55;}
+.tools{display:flex;flex-direction:column;gap:8px;}
+.tool-btn{padding:8px 14px;border-radius:var(--r-sm);font-weight:800;font-size:.8rem;
+  cursor:pointer;border:none;transition:.18s;font-family:'Nunito',sans-serif;}
+.tool-btn.primary{background:#7c3aed;color:#fff;}
+.tool-btn.primary:hover{background:#6d28d9;}
+.tool-btn.secondary{background:rgba(255,255,255,.1);color:#c4b5fd;border:1px solid rgba(167,139,250,.3);}
+.tool-btn.secondary:hover{background:rgba(255,255,255,.18);}
+.link-btn{text-decoration:none;text-align:center;display:block;}
+.status-box{background:rgba(255,255,255,.07);border-radius:var(--r-sm);
+  padding:8px 12px;font-size:.75rem;color:#a5b4fc;min-height:32px;}
+.portrait-box{width:100%;aspect-ratio:1;border-radius:var(--r);overflow:hidden;
+  background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;}
+.portrait-box img{width:100%;height:100%;object-fit:cover;display:block;}
+.portrait-fallback{font-size:3.5rem;}
+.progress-card{background:rgba(255,255,255,.07);border-radius:var(--r);padding:14px;}
+.progress-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.progress-title{font-size:.78rem;font-weight:800;color:#c4b5fd;}
+.progress-bar{height:8px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden;}
+.progress-bar span{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#f59e0b);
+  border-radius:4px;transition:width .5s ease;}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.mini-card{background:rgba(255,255,255,.06);border-radius:var(--r-sm);
+  padding:8px;text-align:center;font-size:.72rem;color:#a5b4fc;}
+.mini-card strong{display:block;font-size:1.1rem;color:#fff;margin-bottom:2px;}
+.rule-card{background:rgba(255,255,255,.06);border-radius:var(--r-sm);
+  padding:10px 12px;font-size:.75rem;color:#a5b4fc;line-height:1.5;}
+
+/* ── MAIN STAGE ── */
+.stage{flex:1;position:relative;display:flex;align-items:flex-start;justify-content:center;
+  padding:32px 24px;background:var(--paper);}
+.backdrop{position:fixed;inset:0;z-index:0;opacity:.12;
+  background-size:cover;background-position:center;transition:background 1s;}
+.backdrop-image{position:fixed;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:0;opacity:.12;transition:opacity .8s;}
+.backdrop-shade{position:fixed;inset:0;z-index:1;
+  background:linear-gradient(180deg,transparent 40%,rgba(250,250,249,.9) 100%);}
+.art{position:fixed;top:24px;right:32px;font-size:4rem;z-index:2;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));}
+.scene-wrap{position:relative;z-index:3;max-width:620px;width:100%;}
+
+/* Breadcrumbs */
+.scene-top{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.breadcrumbs{display:flex;gap:8px;flex-wrap:wrap;}
+.crumb{background:white;border:1px solid var(--border);border-radius:20px;
+  padding:3px 12px;font-size:.72rem;font-weight:800;color:var(--ink-soft);}
+.crumb.subject{background:var(--valdur-dim);border-color:rgba(124,58,237,.2);
+  color:var(--valdur);}
+.small-link{font-size:.75rem;color:var(--ink-faint);text-decoration:none;font-weight:700;}
+.small-link:hover{color:var(--valdur);}
+
+/* Scene card */
+.scene-card{background:white;border-radius:var(--r);box-shadow:0 2px 24px rgba(0,0,0,.08);
+  border:1px solid var(--border);overflow:hidden;}
+.scene-tag{background:var(--valdur);color:white;padding:4px 16px;
+  font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.scene-title{padding:18px 22px 4px;font-family:'Baloo 2',sans-serif;
+  font-size:1.45rem;font-weight:800;color:var(--ink);}
+.scene-media{padding:0 22px;}
+.scene-media-frame{border-radius:var(--r-sm);overflow:hidden;margin-bottom:8px;
+  aspect-ratio:16/9;background:var(--valdur-dim);}
+.scene-media-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-media-caption{font-size:.78rem;color:var(--ink-faint);font-style:italic;}
+.scene-text{padding:12px 22px 0;font-size:.95rem;line-height:1.75;color:var(--ink-soft);}
+.scene-prompt{padding:10px 22px 16px;font-size:1rem;font-weight:800;color:var(--ink);}
+
+/* Choices */
+.choices{display:flex;flex-direction:column;gap:10px;padding:0 22px 22px;}
+.choice{background:var(--paper-warm);border:2px solid transparent;
+  border-radius:var(--r-sm);padding:14px 16px;cursor:pointer;
+  transition:.18s;text-align:left;}
+.choice:hover{border-color:var(--gold-l);background:#fffbeb;
+  transform:translateY(-1px);box-shadow:0 4px 14px rgba(180,83,9,.12);}
+.choice.correct{border-color:var(--green);background:#f0fdf4;}
+.choice.wrong{border-color:var(--red);background:#fff1f2;}
+.choice-badge{display:inline-block;font-size:.65rem;font-weight:800;
+  letter-spacing:1px;text-transform:uppercase;color:var(--gold);
+  margin-bottom:4px;}
+.choice-title{font-weight:800;font-size:.98rem;color:var(--ink);margin-bottom:3px;}
+.choice-sub{font-size:.82rem;color:var(--ink-soft);}
+
+/* Nav row */
+.nav-row{padding:0 22px 16px;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:8px;}
+.hint-text{font-size:.78rem;font-weight:700;color:var(--ink-faint);}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:.2s;}
+.modal.open{opacity:1;pointer-events:all;}
+.modal-card{background:white;border-radius:var(--r);padding:28px 28px 22px;
+  max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-ico{font-size:2.5rem;margin-bottom:10px;}
+.modal-title{font-family:'Baloo 2',sans-serif;font-size:1.3rem;
+  font-weight:800;margin-bottom:8px;}
+.modal-text{font-size:.9rem;color:var(--ink-soft);line-height:1.65;margin-bottom:10px;}
+.modal-coach{font-size:.82rem;color:var(--valdur);font-weight:700;
+  background:var(--valdur-dim);padding:8px 12px;border-radius:var(--r-sm);
+  margin-bottom:14px;}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* ── ÉPILOGUE ── */
+.epilogue-banner{background:linear-gradient(135deg,#1e1b4b,#7c3aed);
+  border-radius:var(--r);padding:28px;color:white;margin-bottom:16px;}
+.epilogue-banner h2{font-family:'Baloo 2',sans-serif;font-size:1.6rem;margin-bottom:10px;}
+.epilogue-banner p{font-size:.92rem;color:#c4b5fd;line-height:1.7;}
+.score-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.score-chip{background:rgba(255,255,255,.15);border-radius:20px;
+  padding:5px 14px;font-size:.78rem;font-weight:800;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:760px){
+  .shell{flex-direction:column;}
+  .side{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;}
+  .stage{padding:16px;}
+  .art{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="shell">
+
+<!-- ── ASIDE ── -->
+<aside class="side">
+  <div class="pill">Roman · Livre dont vous êtes le héros</div>
+  <h1 id="sideTitle">L'été du retour<br>Lyam à Eystie-Val</h1>
+  <p id="sideIntro">Après sa première année à Valdurne, Lyam rentre chez lui pour l'été. Rémus, la forge, le ruisseau — tout est pareil. Mais lui a changé.</p>
+
+  <div class="tools">
+    <button class="tool-btn secondary" id="restartBtn" type="button">↺ Recommencer depuis le début</button>
+    <a class="link-btn tool-btn secondary" href="hub_narration.html">← Retour à la bibliothèque</a>
+  </div>
+
+  <div class="status-box" id="statusBox">Lis la scène et choisis la bonne réponse pour avancer.</div>
+
+  <div class="portrait-box">
+    <img id="portraitImg" src="lyam_ete_retour_portrait.jpg" alt="Lyam à Eystie-Val"
+         onerror="this.style.display='none';document.getElementById('portraitFallback').style.display='flex'">
+    <div class="portrait-fallback" id="portraitFallback" style="display:none">🏡</div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-head">
+      <div class="progress-title">Progression</div>
+      <div id="progressLabel">0 / 8</div>
+    </div>
+    <div class="progress-bar"><span id="progressFill" style="width:0%"></span></div>
+    <div class="mini-grid">
+      <div class="mini-card"><strong id="sceneNum">1</strong>Scène</div>
+      <div class="mini-card"><strong id="subjectLabel">—</strong>Matière</div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <strong>Règle du livre :</strong> une bonne réponse fait avancer l'histoire. Une mauvaise réponse explique l'erreur — et te laisse réessayer la même scène.
+  </div>
+</aside>
+
+<!-- ── STAGE ── -->
+<main class="stage">
+  <div class="backdrop" id="backdrop"></div>
+  <img class="backdrop-image" id="sceneBgImg" alt="">
+  <div class="backdrop-shade"></div>
+  <div class="art" id="sceneArt">🏡</div>
+
+  <div class="scene-wrap">
+    <div class="scene-top">
+      <div class="breadcrumbs">
+        <div class="crumb" id="chapterCrumb">Chapitre —</div>
+        <div class="crumb" id="locationCrumb">—</div>
+        <div class="crumb subject" id="subjectCrumb">—</div>
+      </div>
+      <a class="small-link" href="hub_narration.html">← Bibliothèque</a>
+    </div>
+
+    <section class="scene-card" id="sceneCard">
+      <div class="scene-tag" id="sceneTag">—</div>
+      <h2 class="scene-title" id="sceneTitle">—</h2>
+      <div class="scene-media" id="sceneMedia" style="display:none">
+        <div class="scene-media-frame"><img id="sceneCardImg" alt=""></div>
+        <div class="scene-media-caption" id="sceneCaption"></div>
+      </div>
+      <div class="scene-text" id="sceneText"></div>
+      <div class="scene-prompt" id="scenePrompt"></div>
+      <div class="choices" id="choices"></div>
+      <div class="nav-row">
+        <div class="hint-text" id="hintText">Une bonne réponse ouvre la suite de l'histoire.</div>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+</div>
+
+<!-- ── MODAL ERREUR ── -->
+<div class="modal" id="fallModal">
+  <div class="modal-card">
+    <div class="modal-ico" id="fallIcon">😅</div>
+    <div class="modal-title" id="fallTitle">Pas tout à fait…</div>
+    <div class="modal-text" id="fallText"></div>
+    <div class="modal-coach" id="fallCoach" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="tool-btn primary" id="retryBtn" type="button">↺ Réessayer cette scène</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DONNÉES — 8 SCÈNES NIVEAU 6e
+// Univers : Lyam rentre à Eystie-Val pour l'été après sa 1re année
+// à Valdurne. Rémus est là. Son père (le forgeron) aussi.
+// ══════════════════════════════════════════════════════════════
+const STORY_KEY = 'lyam_ete_retour_6e_v1';
+const TOTAL_SCENES = 8;
+
+const SCENES = {
+
+  // ── SCÈNE 1 ── MATHS · Fractions
+  retour_forge: {
+    id: 'retour_forge',
+    chapter: 'Chapitre I',
+    location: 'La forge d\'Eystie-Val',
+    subject: 'Maths · Fractions',
+    icon: '⚒️',
+    background: 'linear-gradient(180deg,#fef3c7,#ffedd5)',
+    title: 'Le retour de Lyam',
+    text: 'Après neuf mois à Valdurne, Lyam descend du chariot devant la forge de son père. L\'odeur du métal chaud lui a manqué. Son père sort, tablier noirci, et lui tend un parchemin : une commande urgente. <em>« Bienvenue à la maison, fiston. On travaille. »</em><br><br>La commande dit : préparer <strong>¾ de douzaine de fers</strong> pour les sabots du cheval du seigneur de Bruneval.',
+    prompt: 'Combien de fers Lyam doit-il préparer ?',
+    bg: ['lyam_retour_01_forge.jpg', 'assets_eystieval/lyam_retour_01_forge.jpg'],
+    choices: [
+      {
+        badge: 'Maths',
+        title: '6 fers',
+        sub: 'Une demi-douzaine — mais ¾ de douzaine, c\'est plus que la moitié.',
+        kind: 'fall',
+        fall: {
+          icon: '⚒️',
+          title: 'Le père de Lyam compte sur ses doigts',
+          text: 'Son père reprend doucement : <em>« Une douzaine, c\'est 12. Les ¾ de 12, ça donne combien ? »</em>',
+          coach: '¾ de 12 = (12 ÷ 4) × 3 = 3 × 3 = 9.'
+        }
+      },
+      {
+        badge: 'Maths',
+        title: '9 fers',
+        sub: '¾ de 12 = 9. Lyam n\'a pas perdu la main.',
+        kind: 'advance',
+        next: 'lettre_mere'
+      },
+      {
+        badge: 'Maths',
+        title: '10 fers',
+        sub: 'Un de trop. Les fractions ne s\'arrondissent pas à la hausse.',
+        kind: 'fall',
+        fall: {
+          icon: '🔢',
+          title: 'Un fer de trop dans le feu',
+          text: 'Son père sourit. <em>« À Valdurne on t\'a appris les fractions ? Alors : 12 divisé par 4, multiplié par 3. »</em>',
+          coach: '¾ de 12 : divise d\'abord par 4 (= 3), puis multiplie par 3 (= 9).'
+        }
+      }
+    ]
+  },
+
+  // ── SCÈNE 2 ── FRANÇAIS · Conjugaison imparfait/passé composé
+  lettre_mere: {
+    id: 'lettre_mere',
+    chapter: 'Chapitre I',
+    location: 'La cuisine d\'Eystie-Val',
+    subject: 'Français · Conjugaison',
+    icon: '📜',
+    background: 'linear-gradient(180deg,#eff6ff,#fef3c7)',
+    title: 'La lettre de la mère',
+    text: 'Sa mère a laissé une lettre sur la table. Elle est partie trois jours chez sa sœur à Bruneval. Lyam la lit avec émotion — mais il remarque une faute dans la dernière phrase. Sa mère écrit habituellement très bien. Il veut recopier la lettre en la corrigeant.',
+    prompt: 'Quelle phrase est correctement conjuguée ?',
+    bg: ['lyam_retour_02_lettre.jpg', 'assets_eystieval/lyam_retour_02_lettre.jpg'],
+    choices: [
+      {
+        badge: 'Français',
+        title: 'Hier, je suis partie tôt parce que la route sera longue.',
+        sub: 'Le temps du dernier verbe ne correspond pas au contexte passé.',
+        kind: 'fall',
+        fall: {
+          icon: '📜',
+          title: 'Un temps de trop dans la phrase',
+          text: 'Rémus arrive et lit par-dessus l\'épaule de Lyam. <em>« "Sera" ? Elle parle du passé — elle est déjà partie ! »</em>',
+          coach: 'Hier → passé composé ou imparfait. "La route était longue" est correct, pas "sera".'
+        }
+      },
+      {
+        badge: 'Français',
+        title: 'Hier, je suis partie tôt parce que la route était longue.',
+        sub: 'Passé composé pour l\'action, imparfait pour la description. Parfait.',
+        kind: 'advance',
+        next: 'remus_carte'
+      },
+      {
+        badge: 'Français',
+        title: 'Hier, je partais tôt parce que la route est longue.',
+        sub: 'L\'imparfait pour une action ponctuelle achevée ne convient pas.',
+        kind: 'fall',
+        fall: {
+          icon: '✍️',
+          title: 'L\'imparfait s\'étire trop loin',
+          text: '<em>« "Je partais" donne l\'impression qu\'elle part encore en ce moment »</em>, dit Lyam. Il cherche le bon temps.',
+          coach: 'Action achevée au passé → passé composé : "je suis partie". État passé → imparfait : "la route était".'
+        }
+      }
+    ]
+  },
+
+  // ── SCÈNE 3 ── GÉOGRAPHIE · Lecture de carte / orientation
+  remus_carte: {
+    id: 'remus_carte',
+    chapter: 'Chapitre II',
+    location: 'Le ruisseau des Trois-Saules',
+    subject: 'Géographie · Orientation',
+    icon: '🗺️',
+    background: 'linear-gradient(180deg,#d9f99d,#bfdbfe)',
+    title: 'Rémus et la vieille carte',
+    text: 'Rémus arrive en courant, une carte froissée sous le bras. <em>« J\'ai trouvé ça dans la grange. Regarde, c\'est Eystie-Val ! »</em><br><br>Sur la carte, une rose des vents indique le nord en haut. Le ruisseau des Trois-Saules coule de l\'est vers l\'ouest. La forge est au <strong>nord</strong> du ruisseau. Bruneval est indiquée au <strong>sud-ouest</strong> d\'Eystie-Val.',
+    prompt: 'Si Lyam part de la forge et marche vers le ruisseau, dans quelle direction va-t-il ?',
+    bg: ['lyam_retour_03_carte.jpg', 'assets_eystieval/lyam_retour_03_carte.jpg'],
+    choices: [
+      {
+        badge: 'Géo',
+        title: 'Vers le nord',
+        sub: 'Mais la forge est déjà au nord du ruisseau…',
+        kind: 'fall',
+        fall: {
+          icon: '🧭',
+          title: 'La boussole s\'affole',
+          text: 'Rémus retourne la carte dans tous les sens. <em>« La forge est AU NORD du ruisseau. Alors pour aller AU ruisseau, on part... »</em>',
+          coach: 'Si A est au nord de B, pour aller de A vers B on se dirige vers le sud.'
+        }
+      },
+      {
+        badge: 'Géo',
+        title: 'Vers le sud',
+        sub: 'La forge est au nord du ruisseau — pour descendre vers lui, on va vers le sud.',
+        kind: 'advance',
+        next: 'herbes_medicinales'
+      },
+      {
+        badge: 'Géo',
+        title: 'Vers l\'est',
+        sub: 'L\'est suit la direction du courant — pas la direction depuis la forge.',
+        kind: 'fall',
+        fall: {
+          icon: '🌿',
+          title: 'Le courant emporte la réponse',
+          text: 'Rémus pointe le ruisseau sur la carte. <em>« Le courant va d\'est en ouest, oui. Mais NOUS, on part de la forge. »</em>',
+          coach: 'Distingue la direction du ruisseau (E→O) et la direction pour y aller depuis la forge (N→S).'
+        }
+      }
+    ]
+  },
+
+  // ── SCÈNE 4 ── SVT · Vivant — classification, cellule, écosystème
+  herbes_medicinales: {
+    id: 'herbes_medicinales',
+    chapter: 'Chapitre II',
+    location: 'La berge du ruisseau',
+    subject: 'SVT · Le vivant',
+    icon: '🌿',
+    background: 'linear-gradient(180deg,#a7f3d0,#fef9c3)',
+    title: 'Les herbes de la berge',
+    text: 'Au bord du ruisseau, Lyam cueille des herbes pour sa mère, comme elle le lui a appris. Rémus ramasse une plante et observe ses racines. <em>« À Valdurne, on t\'a expliqué à quoi servent les racines exactement ? »</em><br><br>Lyam se souvient du cours de sciences naturelles donné par Maître Aldric.',
+    prompt: 'Quelle est la fonction principale des racines d\'une plante ?',
+    bg: ['lyam_retour_04_herbes.jpg', 'assets_eystieval/lyam_retour_04_herbes.jpg'],
+    choices: [
+      {
+        badge: 'SVT',
+        title: 'Elles fabriquent la sève brute grâce au soleil.',
+        sub: 'La photosynthèse, c\'est le rôle des feuilles, pas des racines.',
+        kind: 'fall',
+        fall: {
+          icon: '🌱',
+          title: 'Le soleil ne descend pas dans la terre',
+          text: 'Rémus lève la plante vers le ciel. <em>« Les racines sont sous la terre... comment le soleil les atteindrait ? »</em>',
+          coach: 'Feuilles → photosynthèse (sève élaborée avec lumière + CO₂). Racines → absorption eau et sels minéraux (sève brute).'
+        }
+      },
+      {
+        badge: 'SVT',
+        title: 'Elles absorbent l\'eau et les sels minéraux du sol.',
+        sub: 'Les racines ancrent la plante et captent la sève brute dans le sol.',
+        kind: 'advance',
+        next: 'mur_medieval'
+      },
+      {
+        badge: 'SVT',
+        title: 'Elles stockent toute l\'énergie de la plante pour l\'hiver.',
+        sub: 'Certaines racines stockent des réserves, mais ce n\'est pas leur fonction principale.',
+        kind: 'fall',
+        fall: {
+          icon: '🥕',
+          title: 'La carotte proteste',
+          text: '<em>« C\'est vrai pour les carottes ou les betteraves »</em>, dit Lyam, <em>« mais ce n\'est pas ce que font TOUTES les racines. »</em>',
+          coach: 'La fonction principale est l\'ancrage + absorption d\'eau et de sels minéraux. Le stockage est secondaire et propre à certaines espèces.'
+        }
+      }
+    ]
+  },
+
+  // ── SCÈNE 5 ── HISTOIRE · Moyen Âge — société féodale
+  mur_medieval: {
+    id: 'mur_medieval',
+    chapter: 'Chapitre III',
+    location: 'Les ruines du vieux château',
+    subject: 'Histoire · Moyen Âge',
+    icon: '🏰',
+    background: 'linear-gradient(180deg,#bfdbfe,#fef3c7)',
+    title: 'Les pierres du vieux château',
+    text: 'En remontant la colline, Lyam et Rémus passent devant les ruines du vieux château d\'Eystie-Val, construit il y a des siècles. Rémus trace du bout du pied un plan au sol. <em>« Valdurne, c\'est comme ça en vrai. Un seigneur, des chevaliers, des paysans... Qui doit des services à qui, dans ce système ? »</em>',
+    prompt: 'Dans la société féodale médiévale, qui le paysan (serf ou vilain) doit-il d\'abord servir ?',
+    bg: ['lyam_retour_05_chateau.jpg', 'assets_eystieval/lyam_retour_05_chateau.jpg'],
+    choices: [
+      {
+        badge: 'Histoire',
+        title: 'Le roi, directement — car il est le maître de toutes les terres.',
+        sub: 'Le roi est au sommet, mais les paysans dépendent d\'abord de leur seigneur local.',
+        kind: 'fall',
+        fall: {
+          icon: '👑',
+          title: 'La pyramide féodale a plusieurs niveaux',
+          text: 'Lyam pense à Valdurne. <em>« Le roi est loin. Ici, c\'est le seigneur qui lève les impôts et rend la justice — c\'est lui le lien direct. »</em>',
+          coach: 'La hiérarchie féodale : roi → grands seigneurs → petits seigneurs → chevaliers → paysans. Chaque niveau doit allégeance au niveau supérieur direct.'
+        }
+      },
+      {
+        badge: 'Histoire',
+        title: 'Le seigneur local, auquel il doit travail, impôts et obéissance.',
+        sub: 'Le paysan relève de son seigneur direct, à qui il doit corvées et redevances.',
+        kind: 'advance',
+        next: 'proportion_bouillie'
+      },
+      {
+        badge: 'Histoire',
+        title: 'L\'Église — car les prêtres organisent toute la vie du village.',
+        sub: 'L\'Église joue un rôle central, mais le lien de dépendance directe est seigneurial, pas ecclésiastique.',
+        kind: 'fall',
+        fall: {
+          icon: '⛪',
+          title: 'L\'Église et le seigneur ne sont pas la même chose',
+          text: '<em>« L\'Église prélève la dîme, c\'est vrai »</em>, dit Lyam. <em>« Mais c\'est le seigneur qui possède la terre sur laquelle les paysans travaillent. »</em>',
+          coach: 'Le système féodal repose sur le lien vassal/suzerain : le paysan dépend de son seigneur pour la terre, la justice et la protection.'
+        }
+      }
+    ]
+  },
+
+  // ── SCÈNE 6 ── MATHS · Proportionnalité
+  proportion_bouillie: {
+    id: 'proportion_bouillie',
+    chapter: 'Chapitre III',
+    location: 'La cuisine d\'Eystie-Val',
+    subject: 'Maths · Proportionnalité',
+    icon: '🥣',
+    background: 'linear-gradient(180deg,#fef3c7,#ffe4e6)',
+    title: 'La recette de la grand-mère',
+    text: 'De retour à la maison, Lyam retrouve la recette de bouillie d\'avoine de sa grand-mère. Elle est prévue pour <strong>4 personnes</strong> et demande <strong>360 grammes d\'avoine</strong>.<br><br>Ce soir, Rémus reste dîner — ils seront <strong>6 personnes</strong> à table. Lyam doit ajuster la recette.',
+    prompt: 'Combien de grammes d\'avoine Lyam doit-il peser pour 6 personnes ?',
+    bg: ['lyam_retour_06_cuisine.jpg', 'assets_eystieval/lyam_retour_06_cuisine.jpg'],
+    choices: [
+      {
+        badge: 'Maths',
+        title: '480 grammes',
+        sub: '360 + 120 = 480. La proportion est juste.',
+        kind: 'advance',
+        next: 'svt_digestion'
+      },
+      {
+        badge: 'Maths',
+        title: '420 grammes',
+        sub: 'Ce ne serait qu\'une portion de plus — pas deux.',
+        kind: 'fall',
+        fall: {
+          icon: '🥣',
+          title: 'Rémus aura encore faim',
+          text: '<em>« On est 2 de plus, pas 1 »</em>, dit Rémus en regardant la casserole. <em>« 4 personnes → 360 g. 1 personne → combien ? »</em>',
+          coach: 'Règle de trois : 360 ÷ 4 = 90 g par personne. Pour 6 : 90 × 6 = 540 g. Vérifie ton calcul !'
+        }
+      },
+      {
+        badge: 'Maths',
+        title: '540 grammes',
+        sub: '90 g par personne × 6 = 540 g. Parfaitement proportionnel.',
+        kind: 'advance',
+        next: 'svt_digestion'
+      }
+    ]
+  },
+
+  // ── SCÈNE 7 ── SVT · Corps humain — digestion
+  svt_digestion: {
+    id: 'svt_digestion',
+    chapter: 'Chapitre IV',
+    location: 'Sous le grand chêne',
+    subject: 'SVT · Corps humain',
+    icon: '🌳',
+    background: 'linear-gradient(180deg,#d9f99d,#fef3c7)',
+    title: 'Le repas sous le chêne',
+    text: 'Après le dîner, Lyam et Rémus s\'allongent sous le grand chêne. Rémus se tient le ventre. <em>« J\'ai mangé trop vite. Ma mère dit que la digestion commence dans la bouche. C\'est vrai ? »</em><br><br>Lyam se rappelle le cours de Maître Aldric sur le corps humain.',
+    prompt: 'Dans quel organe commence réellement la digestion ?',
+    bg: ['lyam_retour_07_chene.jpg', 'assets_eystieval/lyam_retour_07_chene.jpg'],
+    choices: [
+      {
+        badge: 'SVT',
+        title: 'Dans l\'estomac — c\'est là que les sucs digestifs agissent.',
+        sub: 'L\'estomac joue un rôle essentiel, mais il n\'est pas le premier.',
+        kind: 'fall',
+        fall: {
+          icon: '😮',
+          title: 'Ça commence avant l\'estomac',
+          text: '<em>« Ma mère a raison ! »</em> dit Lyam. <em>« Quand on mâche, la salive contient déjà des enzymes qui attaquent l\'amidon. »</em>',
+          coach: 'La digestion commence dans la bouche : mastication + salive (amylase salivaire). Puis œsophage → estomac → intestin grêle → gros intestin.'
+        }
+      },
+      {
+        badge: 'SVT',
+        title: 'Dans la bouche — la mastication et la salive commencent la digestion.',
+        sub: 'La mère de Rémus avait raison. La salive contient des enzymes digestives.',
+        kind: 'advance',
+        next: 'epilogue'
+      },
+      {
+        badge: 'SVT',
+        title: 'Dans l\'intestin grêle — c\'est là que les nutriments passent dans le sang.',
+        sub: 'L\'intestin grêle absorbe les nutriments, mais la digestion a déjà bien commencé avant.',
+        kind: 'fall',
+        fall: {
+          icon: '🔬',
+          title: 'L\'intestin arrive trop tard dans l\'histoire',
+          text: 'Rémus compte sur ses doigts. <em>« Bouche, gorge, estomac... l\'intestin arrive en dernier. Il absorbe, c\'est son travail — mais la digestion commence bien avant. »</em>',
+          coach: 'Trajet de la digestion : bouche → œsophage → estomac → intestin grêle (absorption) → gros intestin.'
+        }
+      }
+    ]
+  },
+
+  // ── SCÈNE 8 ── FRANÇAIS · Orthographe + expression écrite
+  epilogue: {
+    id: 'epilogue',
+    chapter: 'Épilogue',
+    location: 'La forge, au coucher du soleil',
+    subject: 'Français · Orthographe',
+    icon: '✨',
+    background: 'linear-gradient(180deg,#1e1b4b,#7c3aed,#f59e0b)',
+    title: 'La lettre à Maître Aldric',
+    text: 'Ce soir, avant de dormir, Lyam décide d\'écrire une lettre à Maître Aldric pour raconter son été. Il commence ainsi :<br><br><em>« Ce premier jour de retour m\'a rappelé tout ce que j\'avais appris cette année. »</em><br><br>Il hésite sur la dernière phrase de la lettre.',
+    prompt: 'Quelle phrase est correctement orthographiée et construite ?',
+    bg: ['lyam_retour_08_epilogue.jpg', 'assets_eystieval/lyam_retour_08_epilogue.jpg'],
+    choices: [
+      {
+        badge: 'Français',
+        title: 'Eystie-Val m\'a semblé pareil, mais c\'est moi qui ai changé.',
+        sub: 'Accord correct, temps cohérents, phrase équilibrée.',
+        kind: 'advance',
+        next: '__fin__'
+      },
+      {
+        badge: 'Français',
+        title: 'Eystie-Val m\'a semblé pareil, mais c\'est moi qui a changé.',
+        sub: 'Le sujet réel du verbe "a changé" est "moi" — l\'accord est incorrect.',
+        kind: 'fall',
+        fall: {
+          icon: '✍️',
+          title: 'Un accord manqué sur la dernière ligne',
+          text: '<em>« "Qui" reprend "moi" »</em>, se dit Lyam. <em>« Donc le verbe suit la 1re personne du singulier : "moi qui AI changé". »</em>',
+          coach: '"Moi qui ai" (1re pers. sing.) ≠ "moi qui a" (3e pers.). Le pronom "qui" reprend le mot qui le précède.'
+        }
+      },
+      {
+        badge: 'Français',
+        title: 'Eystie-val m\'a semblé pareil, mais c\'est moi qui ai changée.',
+        sub: 'Deux erreurs : la majuscule à "Val" et l\'accord du participe.',
+        kind: 'fall',
+        fall: {
+          icon: '🔡',
+          title: 'La majuscule et le participe protestent',
+          text: 'Lyam relit. <em>« Eystie-Val prend une majuscule à Val — c\'est un nom propre. Et "changé" ne s\'accorde pas avec le sujet ici. »</em>',
+          coach: 'Nom propre → majuscule. Avec "avoir", le participe passé ne s\'accorde pas avec le sujet : "j\'ai changé" (pas "changée").'
+        }
+      }
+    ]
+  }
+};
+
+// Ordre des scènes
+const SCENE_ORDER = [
+  'retour_forge','lettre_mere','remus_carte','herbes_medicinales',
+  'mur_medieval','proportion_bouillie','svt_digestion','epilogue'
+];
+
+// ══════════════════════════════════════════════════════════════
+// MOTEUR
+// ══════════════════════════════════════════════════════════════
+let currentSceneId = SCENE_ORDER[0];
+let scenesDone = 0;
+let locked = false;
+
+function loadScene(id) {
+  const scene = SCENES[id];
+  if (!scene) { showFin(); return; }
+
+  currentSceneId = id;
+  locked = false;
+
+  // Mise à jour sidebar
+  const sceneIdx = SCENE_ORDER.indexOf(id);
+  document.getElementById('sceneNum').textContent = sceneIdx + 1;
+  document.getElementById('subjectLabel').textContent = scene.subject.split('·')[0].trim();
+  document.getElementById('progressLabel').textContent = scenesDone + ' / ' + TOTAL_SCENES;
+  document.getElementById('progressFill').style.width = (scenesDone / TOTAL_SCENES * 100) + '%';
+  document.getElementById('statusBox').textContent = 'Scène ' + (sceneIdx+1) + ' / ' + TOTAL_SCENES + ' · ' + scene.subject;
+
+  // Breadcrumbs
+  document.getElementById('chapterCrumb').textContent = scene.chapter;
+  document.getElementById('locationCrumb').textContent = scene.location;
+  document.getElementById('subjectCrumb').textContent = scene.subject;
+
+  // Fond
+  document.getElementById('backdrop').style.background = scene.background;
+  document.getElementById('sceneArt').textContent = scene.icon;
+
+  // Images
+  if (scene.bg && scene.bg.length) {
+    const img = document.getElementById('sceneBgImg');
+    img.src = scene.bg[0];
+    img.onerror = function() {
+      if (scene.bg[1]) { img.src = scene.bg[1]; }
+    };
+  }
+
+  // Contenu scène
+  document.getElementById('sceneTag').textContent = scene.subject;
+  document.getElementById('sceneTitle').textContent = scene.title;
+  document.getElementById('sceneText').innerHTML = scene.text;
+  document.getElementById('scenePrompt').textContent = scene.prompt;
+
+  // Choix
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  scene.choices.forEach(function(choice) {
+    const btn = document.createElement('div');
+    btn.className = 'choice';
+    btn.innerHTML = '<div class="choice-badge">' + choice.badge + '</div>' +
+      '<div class="choice-title">' + choice.title + '</div>' +
+      '<div class="choice-sub">' + choice.sub + '</div>';
+    btn.addEventListener('click', function() {
+      if (locked) return;
+      handleChoice(choice);
+    });
+    choicesEl.appendChild(btn);
+  });
+}
+
+function handleChoice(choice) {
+  locked = true;
+  if (choice.kind === 'advance') {
+    scenesDone++;
+    document.getElementById('progressLabel').textContent = scenesDone + ' / ' + TOTAL_SCENES;
+    document.getElementById('progressFill').style.width = (scenesDone / TOTAL_SCENES * 100) + '%';
+    if (choice.next === '__fin__') {
+      setTimeout(showFin, 400);
+    } else {
+      setTimeout(function() { loadScene(choice.next); }, 400);
+    }
+  } else {
+    // Erreur — afficher modal
+    const f = choice.fall;
+    document.getElementById('fallIcon').textContent = f.icon;
+    document.getElementById('fallTitle').textContent = f.title;
+    document.getElementById('fallText').innerHTML = f.text;
+    const coachEl = document.getElementById('fallCoach');
+    if (f.coach) {
+      coachEl.textContent = '💡 ' + f.coach;
+      coachEl.style.display = 'block';
+    } else {
+      coachEl.style.display = 'none';
+    }
+    document.getElementById('fallModal').classList.add('open');
+  }
+}
+
+function showFin() {
+  document.getElementById('progressLabel').textContent = TOTAL_SCENES + ' / ' + TOTAL_SCENES;
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('statusBox').textContent = '✅ Toutes les scènes réussies !';
+  document.getElementById('sceneArt').textContent = '✨';
+  document.getElementById('backdrop').style.background = 'linear-gradient(180deg,#1e1b4b,#7c3aed,#f59e0b)';
+
+  document.getElementById('chapterCrumb').textContent = 'Épilogue';
+  document.getElementById('locationCrumb').textContent = 'La forge d\'Eystie-Val';
+  document.getElementById('subjectCrumb').textContent = '✅ Terminé';
+  document.getElementById('sceneTag').textContent = 'Fin';
+  document.getElementById('sceneTitle').textContent = 'L\'été du retour — Terminé';
+  document.getElementById('sceneText').innerHTML =
+    '<div style="background:linear-gradient(135deg,#1e1b4b,#7c3aed);border-radius:12px;padding:24px;color:white;margin:8px 0">' +
+    '<h2 style="font-family:\'Baloo 2\',sans-serif;font-size:1.5rem;margin-bottom:10px">✨ L\'été de Lyam s\'achève</h2>' +
+    '<p style="color:#c4b5fd;line-height:1.75">Lyam scelle la lettre à Maître Aldric et souffle la bougie. Par la fenêtre de la forge, il voit les étoiles d\'Eystie-Val — les mêmes que celles de Valdurne, mais vues d\'ici elles semblent plus proches.<br><br>' +
+    'Rémus dort déjà sur la paille. Son père ronfle dans la pièce d\'à côté.<br><br>' +
+    '<em>Il n\'était plus tout à fait le même Lyam qu\'en septembre. Et c\'était bien comme ça.</em></p>' +
+    '<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">' +
+    '<span style="background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:800">⚒️ Maths · Fractions</span>' +
+    '<span style="background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:800">📜 Français · Conjugaison</span>' +
+    '<span style="background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:800">🗺️ Géographie</span>' +
+    '<span style="background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:800">🌿 SVT · Vivant</span>' +
+    '<span style="background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:800">🏰 Histoire · Moyen Âge</span>' +
+    '<span style="background:rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:.78rm;font-weight:800">🥣 Maths · Proportionnalité</span>' +
+    '</div></div>';
+  document.getElementById('scenePrompt').textContent = '';
+  document.getElementById('choices').innerHTML =
+    '<div class="choice" onclick="restartStory()" style="text-align:center">' +
+    '<div class="choice-title">↺ Recommencer l\'aventure</div>' +
+    '<div class="choice-sub">Relire l\'été du retour depuis le début.</div></div>' +
+    '<div class="choice" onclick="window.location.href=\'hub_narration.html\'" style="text-align:center">' +
+    '<div class="choice-title">← Retour à la bibliothèque</div>' +
+    '<div class="choice-sub">Explorer d\'autres histoires de Valdurne.</div></div>';
+  document.getElementById('hintText').textContent = '';
+
+  // Sauvegarder
+  try { localStorage.setItem(STORY_KEY, JSON.stringify({done:true, d:new Date().toISOString()})); } catch(e){}
+}
+
+function restartStory() {
+  currentSceneId = SCENE_ORDER[0];
+  scenesDone = 0;
+  loadScene(currentSceneId);
+}
+
+// ── Init ──
+document.getElementById('retryBtn').addEventListener('click', function() {
+  document.getElementById('fallModal').classList.remove('open');
+  locked = false;
+});
+document.getElementById('restartBtn').addEventListener('click', restartStory);
+
+loadScene(currentSceneId);
+</script>
+</body>
+</html>
