@@ -944,17 +944,8 @@
         ];
 
         // Utility functions
-        function encodeSaveCode(data) {
-            return btoa(JSON.stringify(data));
-        }
 
-        function decodeSaveCode(code) {
-            try {
-                return JSON.parse(atob(code));
-            } catch {
-                return null;
-            }
-        }
+        
 
         function getMasteryLevel(score) {
             if (score >= 450) return { level: "Expert", class: "mastery-expert" };
@@ -1108,32 +1099,6 @@
                 } catch (_e) { /* silencieux */ }
             }
 
-            // Generate save code
-            function generateSaveCode() {
-                const saveData = {
-                    v: 1,
-                    d: new Date().toISOString(),
-                    m: MODULE_ID,
-                    mv: MODULE_VERSION,
-                    n: playerData.name,
-                    c: playerData.class,
-                    l: 3,
-                    s: playerData.score,
-                    x: playerData.xp,
-                    q: playerData.quizScore,
-                    sc: playerData.scenarioScore,
-                    f: true
-                };
-                return encodeSaveCode(saveData);
-            }
-
-            // Copy to clipboard
-            function copyCode() {
-                const code = generateSaveCode();
-                navigator.clipboard.writeText(code).then(() => {
-                    alert("Code copié !");
-                });
-            }
 
             // Render functions
             function renderIntro() {

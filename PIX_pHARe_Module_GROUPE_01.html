@@ -833,8 +833,7 @@
             }
         ];
 
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
-        function decodeSaveCode(code) { try { return JSON.parse(atob(code)); } catch { return null; } }
+        
         function getMasteryLevel(score) {
             if (score >= 450) return { level: "Expert", class: "mastery-expert" };
             if (score >= 280) return { level: "Confirmé", class: "mastery-confirmed" };
@@ -928,15 +927,6 @@
                 }
             }
 
-            function generateSaveCode() {
-                return encodeSaveCode({
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
-                    n: playerData.name, l: 3, s: playerData.score,
-                    x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore, f: true
-                });
-            }
-
-            function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code copié !")); }
 
             function renderIntro() {
                 return e("div", { className: "app-container" },

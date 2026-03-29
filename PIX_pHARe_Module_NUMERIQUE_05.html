@@ -890,8 +890,7 @@
             }
         ];
 
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
-        function decodeSaveCode(code) { try { return JSON.parse(atob(code)); } catch { return null; } }
+        
         function getMasteryLevel(score) {
             if (score >= 600) return { level: "Grand Maître", class: "mastery-expert" };
             if (score >= 380) return { level: "Maître", class: "mastery-confirmed" };
@@ -899,10 +898,9 @@
         }
 
         function App() {
-            const [gameState, setGameState] = useState("unlock");
-            const [playerData, setPlayerData] = useState({ name: "", class: "", level: 1, score: 0, xp: 0, quizScore: 0, scenarioScore: 0, flashcardsViewed: 0, finished: false });
-            const [unlockCode, setUnlockCode] = useState("");
-            const [unlockError, setUnlockError] = useState("");
+            const hasPrerequisite = !PREREQUISITE_MODULE || !!localStorage.getItem('CERT_PHARE_' + PREREQUISITE_MODULE);
+            const [gameState, setGameState] = useState(hasPrerequisite ? "intro" : "locked");
+            const [playerData, setPlayerData] = useState({ name: localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || "", class: "", level: 1, score: 0, xp: 0, quizScore: 0, scenarioScore: 0, flashcardsViewed: 0, finished: false });
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
             const [flashcardFlipped, setFlashcardFlipped] = useState(false);
             const [currentQuiz, setCurrentQuiz] = useState(0);
@@ -911,14 +909,10 @@
             const [currentScenario, setCurrentScenario] = useState(0);
             const [scenarioChoice, setScenarioChoice] = useState(null);
             const [showScenarioResult, setShowScenarioResult] = useState(false);
-
-            function verifyUnlockCode() {
-                const decoded = decodeSaveCode(unlockCode);
-                if (!decoded) { setUnlockError("Code invalide."); return; }
-                if (decoded.m !== PREREQUISITE_MODULE) { setUnlockError(`Ce code provient du module ${decoded.m}. Tu as besoin du code de ${PREREQUISITE_MODULE}.`); return; }
-                if (!decoded.f) { setUnlockError("Tu n'as pas terminé le module précédent."); return; }
-                setPlayerData(prev => ({ ...prev, name: decoded.n || "", class: decoded.c || "" }));
-                setGameState("intro");
+            function returnToHub() {
+                const player = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || new URLSearchParams(window.location.search).get('player') || '';
+                const hub = 'index_PIXHARe.html';
+                window.location.href = player ? `${hub}?player=${encodeURIComponent(player)}` : hub;
             }
 
             function startGame() { setGameState("flashcards"); }
@@ -984,41 +978,29 @@
                     } catch(_e) {}
                 }
             }
-
-            function generateSaveCode() {
-                return encodeSaveCode({
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
-                    n: playerData.name, c: playerData.class, l: 3, s: playerData.score,
-                    x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore,
-                    f: true, cert: true, pilier: "NUMERIQUE", pilierComplete: true
-                });
-            }
-
-            function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code de certification copié !")); }
-
-            function renderUnlock() {
+            function renderLocked() {
                 return e("div", { className: "app-container" },
                     e("div", { className: "header" },
-                        e("div", { className: "crown-icon" }, "👑"),
                         e("h1", { className: "glitch-title" }, "PIX-pHARe"),
-                        e("div", { className: "subtitle" }, "Pilier Numérique • Épreuve Finale"),
-                        e("div", { className: "module-badge" }, "MODULE 05 - VERROUILLÉ")
+                        e("div", { className: "subtitle" }, "Progression automatique"),
+                        e("div", { className: "module-badge" }, "MODULE VERROUILLÉ")
                     ),
                     e("div", { className: "content-panel" },
                         e("div", { className: "panel-header" },
-                            e("div", { className: "panel-icon" }, "🔐"),
-                            e("div", { className: "panel-title" }, "Accès Maître")
+                            e("div", { className: "panel-icon" }, "🔒"),
+                            e("div", { className: "panel-title" }, "Accès automatique")
                         ),
                         e("div", { className: "panel-body" },
                             e("div", { className: "unlock-screen" },
-                                e("div", { className: "lock-icon" }, "⚡"),
+                                e("div", { className: "lock-icon" }, "🔒"),
                                 e("h2", { className: "unlock-title" }, MODULE_TITLE),
-                                e("p", { style: { color: "var(--text-secondary)", marginBottom: "20px" } }, "Ce module de CERTIFICATION nécessite les Modules 01 à 04."),
-                                e("input", { type: "text", className: "code-input", value: unlockCode, onChange: ev => setUnlockCode(ev.target.value), placeholder: "Code du Module 04..." }),
-                                unlockError && e("div", { className: "error-msg" }, unlockError),
-                                e("div", { style: { marginTop: "30px" } },
-                                    e("button", { className: "action-btn", onClick: verifyUnlockCode, disabled: !unlockCode.trim() }, "[ ACCÉDER À L'ÉPREUVE ]")
-                                )
+                                e("p", { style: { color: "var(--text-secondary)", marginBottom: "18px" } },
+                                    `Le déverrouillage se fait désormais automatiquement. Termine d'abord le module ${PREREQUISITE_MODULE} depuis l'index PIXHARe.`
+                                ),
+                                e("p", { style: { color: "var(--text-secondary)", marginBottom: "25px" } },
+                                    "La validation remonte ensuite automatiquement vers PIXHARe et le super-hub."
+                                ),
+                                e("button", { className: "action-btn", onClick: returnToHub }, "[ RETOUR À L'INDEX ]")
                             )
                         )
                     )
@@ -1233,13 +1215,13 @@
             }
 
             switch (gameState) {
-                case "unlock": return renderUnlock();
+                case "locked": return renderLocked();
                 case "intro": return renderIntro();
                 case "flashcards": return renderFlashcards();
                 case "quiz": return renderQuiz();
                 case "scenarios": return renderScenarios();
                 case "complete": return renderComplete();
-                default: return renderUnlock();
+                default: return hasPrerequisite ? renderIntro() : renderLocked();
             }
         }
 

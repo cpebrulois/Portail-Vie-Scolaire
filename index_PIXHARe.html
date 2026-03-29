@@ -699,7 +699,7 @@ h1 span{color:#fff;}
     <h3>&#x2699; Administration PIXHARe</h3>
     <div id="admin-login">
       <p style="font-size:.83rem;color:var(--muted);margin-bottom:10px;">
-        Entrez votre code CPE pour accéder à la validation manuelle des modules.
+        Entrez votre code CPE pour accéder aux outils d'administration et, si besoin, corriger la progression automatique.
       </p>
       <input class="ai" type="password" id="admin-pwd" placeholder="Code administrateur..." onkeydown="if(event.key==='Enter')adminLogin()"/>
       <div class="arow">
@@ -711,12 +711,12 @@ h1 span{color:#fff;}
     <div id="admin-panel" style="display:none;">
       <div class="aplayer" id="admin-player-info"></div>
       <div class="asec">
-        <h4>Sélectionner les modules à valider</h4>
+        <h4>Sélectionner les modules à marquer manuellement</h4>
         <div class="mcl" id="admin-mod-list"></div>
       </div>
       <div class="asec">
         <div class="arow">
-          <button class="ab ab-g" onclick="adminValidateSelected()">&#x2713; Valider la sélection</button>
+          <button class="ab ab-g" onclick="adminValidateSelected()">&#x2713; Marquer la sélection</button>
           <button class="ab ab-r" onclick="adminResetAll()">&#x1F5D1; Tout réinitialiser</button>
           <button class="ab ab-n" onclick="closeAdmin()">&#x2715; Fermer</button>
         </div>
@@ -826,7 +826,13 @@ function getPlayer() {
 
 // ── Certificats ────────────────────────────────────────────────
 function ckey(id) { return 'CERT_PHARE_' + id; }
+function syncBridgeKey(id) { return 'PIXHARE_INDEX_SYNC_' + id; }
 function isDone(id) { return !!localStorage.getItem(ckey(id)); }
+function hasPhareModule(moduleId) {
+  return PILLARS.some(function(p){
+    return p.modules.some(function(m){ return m.id === moduleId; });
+  });
+}
 function isUnlocked(pillar, idx) {
   return idx === 0 || isDone(pillar.modules[idx - 1].id);
 }
@@ -845,10 +851,14 @@ function totalXP() {
 // ── Validation ─────────────────────────────────────────────────
 function validateModule(moduleId, silent) {
   var was = isDone(moduleId);
-  localStorage.setItem(ckey(moduleId), JSON.stringify({
+  var cert = JSON.stringify({
     v:1, d:new Date().toISOString(), m:moduleId, f:true
-  }));
-  if (!was) pushBridge(moduleId);
+  });
+  localStorage.setItem(ckey(moduleId), cert);
+  if (!was) {
+    pushBridge(moduleId);
+    localStorage.setItem(syncBridgeKey(moduleId), cert);
+  }
   render();
   if (!silent) toast('\u2705 ' + moduleId + ' validé !');
 }
@@ -864,6 +874,15 @@ function pushBridge(moduleId) {
     localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
     window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
   } catch(e) {}
+}
+
+function syncModuleCompletion(moduleId) {
+  var cert = localStorage.getItem(ckey(moduleId));
+  if(!cert) return false;
+  if(localStorage.getItem(syncBridgeKey(moduleId)) === cert) return false;
+  pushBridge(moduleId);
+  localStorage.setItem(syncBridgeKey(moduleId), cert);
+  return true;
 }
 
 
@@ -907,18 +926,16 @@ function checkReturn() {
   var changed = false;
   PILLARS.forEach(function(p){
     p.modules.forEach(function(m){
-      if(localStorage.getItem(ckey(m.id)) && !isDone(m.id)){
-        validateModule(m.id, true); changed = true;
+      if(isDone(m.id) && syncModuleCompletion(m.id)) {
+        changed = true;
       }
     });
   });
   try {
     var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
     evts.forEach(function(ev){
-      if(ev.type === 'PIXHARE_PROGRESS' && ev.module && !isDone(ev.module)){
-        if(PILLARS.some(function(p){ return p.modules.some(function(m){ return m.id===ev.module; }); })){
-          validateModule(ev.module, true); changed = true;
-        }
+      if(ev.type === 'PIXHARE_PROGRESS' && ev.module && hasPhareModule(ev.module) && !isDone(ev.module)){
+        validateModule(ev.module, true); changed = true;
       }
     });
   } catch(e) {}
@@ -1195,7 +1212,10 @@ function adminResetAll() {
   if(!adminUnlocked) return;
   if(!confirm('Supprimer TOUTE la progression PIXHARe du joueur actuel ?')) return;
   PILLARS.forEach(function(p){
-    p.modules.forEach(function(m){ localStorage.removeItem(ckey(m.id)); });
+    p.modules.forEach(function(m){
+      localStorage.removeItem(ckey(m.id));
+      localStorage.removeItem(syncBridgeKey(m.id));
+    });
   });
   // Effacer JdR et Métacognition
   JDR_PILLARS.forEach(function(jp){

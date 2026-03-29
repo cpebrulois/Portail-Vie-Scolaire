@@ -837,7 +837,7 @@
             }
         ];
 
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+        
 
         function App() {
             const [gameState, setGameState] = useState("intro");
@@ -866,29 +866,6 @@
                     setGameState("flashcards");
                 }
 
-            function generateSaveCode() {
-                const saveData = {
-                    v: 1,
-                    d: new Date().toISOString(),
-                    m: MODULE_ID,
-                    mv: MODULE_VERSION,
-                    n: playerData.name,
-                    l: 3,
-                    s: playerData.score,
-                    x: playerData.xp,
-                    q: playerData.quizScore,
-                    sc: playerData.scenarioScore,
-                    f: true
-                };
-                return encodeSaveCode(saveData);
-            }
-
-            function copyCode() {
-                const code = generateSaveCode();
-                navigator.clipboard.writeText(code)
-                    .then(() => alert("\u2705 Code copié dans le presse-papier !"))
-                    .catch(() => prompt("Copie ce code manuellement :", code));
-            }
 
             }
 

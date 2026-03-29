@@ -335,20 +335,6 @@
             }
         };
 
-        const generateSaveCode = (progress) => {
-            const payload = { v: 1, d: new Date().toISOString(), m: MODULE_DATA.id, mv: MODULE_DATA.version, n: progress.nom || "Anonyme", c: progress.classe || "", l: progress.currentLevel, s: progress.score, x: progress.xp, q: progress.quizScore, dj: progress.dojoScore, f: progress.finished, cert: progress.finished };
-            return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        };
-
-        const decodeSaveCode = (code) => { try { return { valid: true, data: JSON.parse(decodeURIComponent(escape(atob(code.trim())))) }; } catch (e) { return { valid: false, error: "Code invalide." }; } };
-
-        const verifyPrerequisite = (code) => {
-            const result = decodeSaveCode(code);
-            if (!result.valid) return { valid: false, error: "Code invalide." };
-            if (result.data.m !== MODULE_DATA.prerequis) return { valid: false, error: `Ce code provient du module ${result.data.m}, pas du module ${MODULE_DATA.prerequis}.` };
-            if (!result.data.f) return { valid: false, error: "Ce module n'a pas été terminé." };
-            return { valid: true, data: result.data };
-        };
 
         const e = React.createElement;
         const { useState } = React;
@@ -410,10 +396,7 @@
         }
 
         function CertificationReport({ progress, onMenu }) {
-            const saveCode = generateSaveCode(progress);
-            const [copied, setCopied] = useState(false);
-            const copyToClipboard = () => { navigator.clipboard.writeText(saveCode).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); };
-            const totalScore = progress.quizScore + progress.dojoScore;
+            
             const getMasteryLevel = () => { if (totalScore >= 550) return { label: 'MAÎTRE', class: 'mastery-expert', emoji: '👑' }; if (totalScore >= 350) return { label: 'EXPERT', class: 'mastery-confirmed', emoji: '⭐' }; return { label: 'CERTIFIÉ', class: 'mastery-learning', emoji: '✓' }; };
             const mastery = getMasteryLevel();
             
@@ -439,17 +422,8 @@
                     )
                 ),
                 e('div', { className: 'save-code-section' },
-                    e('h3', { style: { color: '#ffd700', marginBottom: '15px', textAlign: 'center' } }, '🏆 CODE DE CERTIFICATION FINALE'),
-                    e('p', { style: { opacity: 0.8, textAlign: 'center' } }, 'Ce code prouve que tu as complété le parcours complet !'),
-                    e('button', { className: `btn btn-block ${copied ? 'btn-success' : ''}`, onClick: copyToClipboard }, copied ? '✓ COPIÉ !' : '📋 COPIER LE CODE DE CERTIFICATION'),
-                    e('div', { className: 'save-instructions' },
-                        e('h4', null, '📜 Ta certification'),
-                        e('ul', null,
-                            e('li', null, 'Envoie ce code au CPE pour validation officielle'),
-                            e('li', null, 'Tu peux maintenant former d\'autres ambassadeurs !'),
-                            e('li', null, 'Ton expertise : Cadre légal + Psychologie + Cyber + Protocoles + Vision systémique')
-                        )
-                    )
+                    e('h3', { style: { color: '#4ade80', marginBottom: '15px' } }, '✅ Validation automatique'),
+                    e('p', { style: { opacity: 0.85 } }, 'La progression de ce module est enregistrée automatiquement dans l\\'index PIXHARe et remontée au super-hub.')
                 ),
                 e('div', { className: 'btn-group', style: { marginTop: '30px' } },
                     e('button', { className: 'btn btn-block', onClick: onMenu }, '🏠 RETOUR À L\'ACCUEIL')
@@ -459,7 +433,7 @@
 
         function App() {
             const [mode, setMode] = useState('menu');
-            const [unlocked, setUnlocked] = useState(false);
+            const unlocked = !MODULE_DATA.prerequis || !!localStorage.getItem('CERT_PHARE_' + MODULE_DATA.prerequis);
             const [currentLevel, setCurrentLevel] = useState(1);
             const [cardIdx, setCardIdx] = useState(0);
             const [questionIdx, setQuestionIdx] = useState(0);
@@ -469,24 +443,24 @@
             const [dojoScore, setDojoScore] = useState(0);
             const [nom, setNom] = useState(getHubPlayer() || 'Agent');
             const [classe, setClasse] = useState('');
-            const [unlockCode, setUnlockCode] = useState('');
-            const [unlockError, setUnlockError] = useState('');
+
 
             const resetProgress = () => { setCurrentLevel(1); setCardIdx(0); setQuestionIdx(0); setScenarioIdx(0); setXp(0); setQuizScore(0); setDojoScore(0); };
             const progress = { nom, classe, currentLevel, xp, quizScore, dojoScore, score: quizScore + dojoScore, finished: mode === 'report' };
-
-            const handleUnlock = () => { const result = verifyPrerequisite(unlockCode); if (result.valid) { setNom(result.data.n || ''); setClasse(result.data.c || ''); setUnlocked(true); setUnlockError(''); } else { setUnlockError(result.error); } };
+            const returnToHub = () => {
+                const player = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || new URLSearchParams(window.location.search).get('player') || '';
+                const hub = 'index_PIXHARe.html';
+                window.location.href = player ? `${hub}?player=${encodeURIComponent(player)}` : hub;
+            };
 
             if (mode === 'menu') {
                 return e('div', { className: 'app-container' },
                     e(Header, { showProgress: false }),
                     e('div', { className: 'card' }, e('strong', null, '🎯 MISSION FINALE : '), MODULE_DATA.description),
                     !unlocked ? e('div', { className: 'unlock-section' },
-                        e('h3', null, '🔐 MODULE FINAL VERROUILLÉ'),
-                        e('p', null, `Prérequis : Compléter les 4 modules précédents`),
-                        e('input', { type: 'text', placeholder: 'Code du Module 4...', value: unlockCode, onChange: (ev) => { setUnlockCode(ev.target.value); setUnlockError(''); } }),
-                        unlockError && e('div', { className: 'error-msg' }, `⚠️ ${unlockError}`),
-                        e('button', { className: 'btn', onClick: handleUnlock }, '🔓 DÉBLOQUER LE MODULE FINAL')
+                        e('h3', null, '🔒 MODULE VERROUILLÉ'),
+                        e('p', null, `Le déverrouillage est automatique. Termine d'abord "${MODULE_DATA.prerequis}" depuis l'index PIXHARe.`),
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: returnToHub }, '← RETOUR À L\\'INDEX')
                     ) : e('div', { className: 'btn-group' },
                         e('div', { style: { textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '1.1em' } }, `👑 ${nom}, tu es prêt(e) pour l'épreuve finale !`),
                         e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, '⚔️ COMMENCER L\'ÉPREUVE')
@@ -513,7 +487,7 @@
             }
 
             if (mode === 'report') {
-                return e('div', { className: 'app-container' }, e(CertificationReport, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onMenu: () => { resetProgress(); setUnlocked(false); setUnlockCode(''); setMode('menu'); } }));
+                return e('div', { className: 'app-container' }, e(CertificationReport, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onMenu: () => { resetProgress(); setMode('menu'); } }));
             }
             return e('div', { className: 'app-container' }, 'Chargement...');
         }

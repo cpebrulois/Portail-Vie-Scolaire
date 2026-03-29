@@ -522,32 +522,6 @@
             }
         };
 
-        const generateSaveCode = (progress) => {
-            const payload = {
-                v: 1, d: new Date().toISOString(), m: MODULE_DATA.id, mv: MODULE_DATA.version,
-                n: progress.nom || "Anonyme", c: progress.classe || "",
-                l: progress.currentLevel, s: progress.score, x: progress.xp,
-                q: progress.quizScore, dj: progress.dojoScore, f: progress.finished
-            };
-            return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-        };
-
-        const decodeSaveCode = (code) => {
-            try {
-                const data = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
-                return { valid: true, data };
-            } catch (e) {
-                return { valid: false, error: "Code invalide ou corrompu." };
-            }
-        };
-
-        const verifyPrerequisite = (code) => {
-            const result = decodeSaveCode(code);
-            if (!result.valid) return { valid: false, error: "Code invalide." };
-            if (result.data.m !== MODULE_DATA.prerequis) return { valid: false, error: `Ce code provient du module ${result.data.m}, pas du module ${MODULE_DATA.prerequis}.` };
-            if (!result.data.f) return { valid: false, error: "Ce module n'a pas été terminé. Complétez-le d'abord !" };
-            return { valid: true, data: result.data };
-        };
 
         const e = React.createElement;
         const { useState } = React;
@@ -683,15 +657,7 @@
         }
 
         function Report({ progress, onRestart, onMenu }) {
-            const saveCode = generateSaveCode(progress);
-            const [copied, setCopied] = useState(false);
-
-            const copyToClipboard = () => {
-                navigator.clipboard.writeText(saveCode).then(() => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                });
-            };
+            
 
             const getMasteryLevel = () => {
                 const total = progress.quizScore + progress.dojoScore;
@@ -719,17 +685,8 @@
                     )
                 ),
                 e('div', { className: 'save-code-section' },
-                    e('h3', { style: { color: '#9b59b6', marginBottom: '15px' } }, '💾 CODE DE SAUVEGARDE'),
-                    e('p', { style: { opacity: 0.8 } }, 'Ce code débloque le MODULE 3 !'),
-                    e('div', { className: 'save-code-box' }, saveCode),
-                    e('button', { className: `btn ${copied ? 'btn-success' : ''}`, onClick: copyToClipboard }, copied ? '✓ COPIÉ !' : '📋 COPIER LE CODE'),
-                    e('div', { className: 'save-instructions' },
-                        e('h4', null, '🔓 Prochaine étape'),
-                        e('ul', null,
-                            e('li', null, 'Ce code débloque le Module 3 : "Le Spectre Numérique"'),
-                            e('li', null, 'Envoie-le aussi au CPE pour valider ta progression')
-                        )
-                    )
+                    e('h3', { style: { color: '#4ade80', marginBottom: '15px' } }, '✅ Validation automatique'),
+                    e('p', { style: { opacity: 0.85 } }, 'La progression de ce module est enregistrée automatiquement dans l\\'index PIXHARe et remontée au super-hub.')
                 ),
                 e('div', { className: 'btn-group' },
                     e('button', { className: 'btn btn-secondary', onClick: onMenu }, '🏠 RETOUR AU MENU'),
@@ -740,7 +697,7 @@
 
         function App() {
             const [mode, setMode] = useState('menu');
-            const [unlocked, setUnlocked] = useState(false);
+            const unlocked = !MODULE_DATA.prerequis || !!localStorage.getItem('CERT_PHARE_' + MODULE_DATA.prerequis);
             const [currentLevel, setCurrentLevel] = useState(1);
             const [cardIdx, setCardIdx] = useState(0);
             const [questionIdx, setQuestionIdx] = useState(0);
@@ -750,8 +707,7 @@
             const [dojoScore, setDojoScore] = useState(0);
             const [nom, setNom] = useState(getHubPlayer() || 'Agent');
             const [classe, setClasse] = useState('');
-            const [unlockCode, setUnlockCode] = useState('');
-            const [unlockError, setUnlockError] = useState('');
+
 
             const resetProgress = () => {
                 setCurrentLevel(1); setCardIdx(0); setQuestionIdx(0); setScenarioIdx(0);
@@ -759,17 +715,10 @@
             };
 
             const progress = { nom, classe, currentLevel, xp, quizScore, dojoScore, score: quizScore + dojoScore, finished: mode === 'report' };
-
-            const handleUnlock = () => {
-                const result = verifyPrerequisite(unlockCode);
-                if (result.valid) {
-                    setNom(result.data.n || '');
-                    setClasse(result.data.c || '');
-                    setUnlocked(true);
-                    setUnlockError('');
-                } else {
-                    setUnlockError(result.error);
-                }
+            const returnToHub = () => {
+                const player = localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || new URLSearchParams(window.location.search).get('player') || '';
+                const hub = 'index_PIXHARe.html';
+                window.location.href = player ? `${hub}?player=${encodeURIComponent(player)}` : hub;
             };
 
             if (mode === 'menu') {
@@ -779,16 +728,9 @@
                         e('strong', null, '🎯 MISSION : '), MODULE_DATA.description
                     ),
                     !unlocked ? e('div', { className: 'unlock-section' },
-                        e('h3', null, '🔐 MODULE VERROUILLÉ'),
-                        e('p', null, `Prérequis : Compléter le module "${MODULE_DATA.prerequis}"`),
-                        e('input', {
-                            type: 'text',
-                            placeholder: 'Colle ici ton code du Module 1...',
-                            value: unlockCode,
-                            onChange: (ev) => { setUnlockCode(ev.target.value); setUnlockError(''); }
-                        }),
-                        unlockError && e('div', { className: 'error-msg' }, `⚠️ ${unlockError}`),
-                        e('button', { className: 'btn', onClick: handleUnlock }, '🔓 DÉBLOQUER')
+                        e('h3', null, '🔒 MODULE VERROUILLÉ'),
+                        e('p', null, `Le déverrouillage est automatique. Termine d'abord "${MODULE_DATA.prerequis}" depuis l'index PIXHARe.`),
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: returnToHub }, '← RETOUR À L\\'INDEX')
                     ) : e('div', { className: 'btn-group' },
                         e('div', { style: { textAlign: 'center', color: '#27ae60', marginBottom: '10px' } }, `✓ Bienvenue ${nom} ! Module débloqué.`),
                         e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, '▶️ COMMENCER')
@@ -869,7 +811,7 @@
                     e(Report, {
                         progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) },
                         onRestart: () => { resetProgress(); setMode('game'); },
-                        onMenu: () => { resetProgress(); setUnlocked(false); setUnlockCode(''); setMode('menu'); }
+                        onMenu: () => { resetProgress(); setMode('menu'); }
                     })
                 );
             }

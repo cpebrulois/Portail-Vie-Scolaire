@@ -894,9 +894,7 @@
             }
         ];
 
-        function encodeSaveCode(data) {
-            return btoa(JSON.stringify(data));
-        }
+        
 
         function getMasteryLevel(score) {
             if (score >= 450) return { level: "Maître de la Régulation", class: "mastery-expert" };
@@ -1035,30 +1033,6 @@
                 } catch(_e) {}
             }
 
-            function generateSaveCode() {
-                const saveData = {
-                    v: 1,
-                    d: new Date().toISOString(),
-                    m: MODULE_ID,
-                    mv: MODULE_VERSION,
-                    n: playerData.name,
-                    c: playerData.class,
-                    l: 3,
-                    s: playerData.score,
-                    x: playerData.xp,
-                    q: playerData.quizScore,
-                    sc: playerData.scenarioScore,
-                    f: true
-                };
-                return encodeSaveCode(saveData);
-            }
-
-            function copyCode() {
-                const code = generateSaveCode();
-                navigator.clipboard.writeText(code).then(() => {
-                    alert("Code copié dans le presse-papier !");
-                });
-            }
 
             function renderIntro() {
                 return e("div", { className: "app-container" },

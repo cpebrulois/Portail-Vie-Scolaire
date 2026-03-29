@@ -781,7 +781,7 @@
             }))
         }));
 
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+        
         function getMasteryLevel(score) {
             if (score >= 450) return { level: "Expert", class: "mastery-expert" };
             if (score >= 280) return { level: "Confirmé", class: "mastery-confirmed" };
@@ -911,26 +911,6 @@
 
             }
 
-            function generateSaveCode() {
-                const saveData = {
-                    v: MODULE_DATA.version,
-                    d: new Date().toISOString(),
-                    m: MODULE_DATA.id,
-                    n: playerData.name,
-                    c: playerData.class,
-                    s: playerData.score,
-                    x: playerData.xp,
-                    f: playerData.finished
-                };
-                return encodeSaveCode(saveData);
-            }
-
-            function copySaveCode() {
-                const code = generateSaveCode();
-                navigator.clipboard.writeText(code).then(() => {
-                    alert("✅ Code copié dans le presse-papier !");
-                });
-            }
 
             // Render functions (IntroFlashcards, Quiz, Scenarios, Final)
             // [Le code des fonctions render est identique à NEURO_02, je le réutilise]
@@ -1183,17 +1163,8 @@
                                     </strong>
                                 </p>
 
-                                <div className="save-code-box" onClick={copySaveCode}>
-                                    <div style={{fontSize: "0.85rem", marginBottom: "10px", color: "var(--text-secondary)"}}>
-                                        📋 CODE DE VALIDATION (clique pour copier)
-                                    </div>
-                                    <div style={{fontSize: "0.9rem", wordBreak: "break-all"}}>
-                                        {generateSaveCode()}
-                                    </div>
-                                </div>
-
                                 <p style={{fontSize: "0.9rem", color: "var(--text-secondary)"}}>
-                                    Copie ce code et valide-le sur le hub PIXHARe pour débloquer le niveau suivant.
+                                    La validation de ce module est automatique dans PIXHARe et remontée au super-hub.
                                 </p>
                             </div>
                         </div>

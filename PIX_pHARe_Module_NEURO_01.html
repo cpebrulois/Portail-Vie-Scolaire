@@ -560,7 +560,8 @@
             }
         ];
         // --- UTILS ---
-        function encodeSaveCode(data) { return btoa(JSON.stringify(data)); }
+
+        
         function getMasteryLevel(score) {
             if (score >= 130) return { level: "Expert", class: "mastery-expert" };
             if (score >= 80) return { level: "Confirmé", class: "mastery-confirmed" };
@@ -628,14 +629,7 @@
 
                 setPlayerData(prev => ({ ...prev, xp: prev.xp + 50 }));
             }
-            function generateSaveCode() {
-                return encodeSaveCode({
-                    v: 1, d: new Date().toISOString(), m: MODULE_ID, mv: MODULE_VERSION,
-                    n: playerData.name, c: playerData.class, l: 3, s: playerData.score,
-                    x: playerData.xp, q: playerData.quizScore, sc: playerData.scenarioScore, f: true
-                });
-            }
-            function copyCode() { navigator.clipboard.writeText(generateSaveCode()).then(() => alert("Code copié !")); }
+
             // RENDERING
             function renderIntro() {
                 return e("div", { className: "app-container" },
@@ -841,7 +835,7 @@
                         ),
                         e("div", { className: `mastery-badge ${mastery.class}` }, mastery.level),
                         e("div", { style: { marginTop: 19, color: "var(--neuro-bronze)" } },
-                            "Tu peux transmettre ce code à ton enseignant ou le garder pour valider tes acquis."
+                            "La validation de ce module est enregistrée automatiquement dans PIXHARe et remontée vers le super-hub."
                         ),
                         e("button", { className: "action-btn", style: { marginTop: 24 }, onClick: () => window.location.reload() }, "↻ RECOMMENCER")
                     )

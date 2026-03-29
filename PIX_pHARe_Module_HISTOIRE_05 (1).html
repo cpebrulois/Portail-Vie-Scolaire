@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIX-pHARe | Module HISTOIRE 01 - Avant le Mot</title>
+    <title>PIX-pHARe | Module HISTOIRE 05 - Comprendre pour Prévenir [CERTIFICATION]</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
         
@@ -598,45 +598,6 @@
             color: var(--history-sepia);
         }
         
-
-        .save-code-box {
-            background: rgba(0,0,0,0.6);
-            border: 2px solid var(--history-bronze);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 28px 0 10px 0;
-            text-align: center;
-        }
-        .save-code-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-        .save-code {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.78rem;
-            color: var(--history-amber);
-            word-break: break-all;
-            line-height: 1.5;
-            margin-bottom: 14px;
-        }
-        .copy-btn {
-            padding: 10px 24px;
-            background: var(--history-bronze);
-            color: var(--history-ink);
-            border: none;
-            font-family: 'Share Tech Mono', monospace;
-            font-weight: bold;
-            font-size: 0.85rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        .copy-btn:hover { background: var(--history-amber); }
         .completion-screen {
             text-align: center;
             padding: 40px 20px;
@@ -673,6 +634,37 @@
             margin-bottom: 30px;
         }
         
+        .mastery-badge {
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 25px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(205, 127, 50, 0.5);
+        }
+        
+        .mastery-expert {
+            background: linear-gradient(135deg, var(--history-bronze), var(--history-amber));
+            color: var(--text-primary);
+            border: 3px solid var(--history-sepia);
+        }
+        
+        .mastery-confirmed {
+            background: linear-gradient(135deg, var(--history-sepia), var(--history-bronze));
+            color: var(--text-primary);
+            border: 3px solid var(--history-amber);
+        }
+        
+        .mastery-training {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.3), rgba(212, 165, 116, 0.3));
+            color: var(--text-primary);
+            border: 3px solid var(--history-bronze);
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -703,6 +695,56 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        
+        .save-code-box {
+            background: var(--panel-bg);
+            border: 2px solid var(--history-amber);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .save-code-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--history-amber);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .save-code {
+            background: var(--deep-dark);
+            border: 1px solid var(--history-bronze);
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--history-bronze);
+            word-break: break-all;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--history-amber), var(--history-bronze));
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(212, 165, 116, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -716,122 +758,127 @@
         const { useState } = React;
         const e = React.createElement;
 
-        const MODULE_ID = "HISTOIRE_01";
-        const MODULE_TITLE = "Avant le Mot";
+        const MODULE_ID = "HISTOIRE_05";
+        const MODULE_TITLE = "Comprendre pour Prévenir";
         const MODULE_VERSION = "2.0";
 
         const flashcardsData = [
             {
-                question: "Pourquoi le harcèlement était-il invisible avant 1970 ?",
+                question: "Quelle est la leçon principale du silence historique (pré-1970) ?",
                 hint: "[ Clique pour révéler ]",
-                answer: "Parce que <strong>le mot n'existait pas</strong>. Sans nom, pas de visibilité. La violence entre élèves était vue comme un 'rite de passage' nécessaire ou un simple 'durcissement' formatif. L'institution scolaire se concentrait sur la discipline verticale (maîtres → élèves), ignorant la violence horizontale (entre pairs)."
+                answer: "<strong>Ce qui n'est pas nommé n'existe pas institutionnellement</strong>. Sans mot, pas de visibilité. Sans visibilité, pas de reconnaissance. Sans reconnaissance, pas de protection. Nommer un problème est le premier acte de résistance."
             },
             {
-                question: "Qu'est-ce que le bizutage historiquement ?",
+                question: "Pourquoi les 3 critères d'Olweus restent-ils essentiels aujourd'hui ?",
                 hint: "[ Clique pour révéler ]",
-                answer: "Un <strong>rite d'initiation</strong> par l'humiliation et la souffrance, présent dès le Moyen Âge dans les universités. Exemple : statuts de Leipzig (1495) interdisant d'asperger les nouveaux d'urine. Le bizutage était vu comme un 'passage' vers l'élite, légitimant la violence codifiée."
+                answer: "Ils permettent de <strong>distinguer harcèlement (asymétrique, répété, intentionnel) et conflit (bilatéral, ponctuel)</strong>. Cette distinction oriente l'intervention : médiation pour conflit, protocole protecteur pour harcèlement. Confondre les deux dilue les ressources et banalise le vrai harcèlement."
             },
             {
-                question: "Quelle vision la littérature classique donne-t-elle du harcèlement ?",
+                question: "Quelle tension existe entre loi et prévention ?",
                 hint: "[ Clique pour révéler ]",
-                answer: "Elle montre des <strong>'souffre-douleur' victimes de tyrans</strong>, mais sans analyse systémique. Dickens (David Copperfield), Hughes (Tom Brown), Vallès (L'Enfant) : la violence scolaire est dépeinte comme intrinsèque à la société rigide, mais jamais questionnée comme problème de santé publique."
+                answer: "La loi crée un <strong>cadre réactif</strong> (punir après). La prévention crée une <strong>culture proactive</strong> (empêcher avant). Les deux sont nécessaires, mais seule la prévention transforme les normes collectives. Punir 1 harceleur ne change pas la culture qui l'a produit."
             },
             {
-                question: "Quel était le paradigme du 'durcissement' ?",
+                question: "Pourquoi pHARe mise-t-il sur les pairs (ambassadeurs) ?",
                 hint: "[ Clique pour révéler ]",
-                answer: "L'idée que <strong>subir la violence forge le caractère</strong>. Dans les écoles-casernes du XIXe-XXe siècle, les brimades étaient vues comme un test de virilité préparant aux 'rudesses de la vie'. Cette croyance légitimait l'inaction institutionnelle face aux violences entre élèves."
+                answer: "Parce qu'Heinemann (1969) a montré que le harcèlement est un <strong>phénomène de groupe</strong>. Une intervention adulte seule ne change pas la norme collective des élèves. Seuls des pairs formés, portant une norme anti-harcèlement, transforment la culture de classe."
             }
         ];
 
         const quizData = [
             {
-                question: "Pourquoi l'absence du mot 'harcèlement' avant 1970 est-elle un problème majeur ?",
+                question: "Synthèse historique : En 1950, un élève harcelé n'avait aucun recours. Pourquoi ?",
                 options: [
-                    "Parce que les enseignants ne parlaient pas bien français",
-                    "Parce que sans nom, un phénomène reste invisible et ne peut être combattu",
-                    "Parce que les élèves ne savaient pas lire",
-                    "Parce que c'était interdit par la loi de nommer les violences"
+                    "Parce que les gens étaient méchants",
+                    "Parce que le phénomène n'était ni nommé (pas de concept), ni mesuré (pas de science), ni encadré (pas de loi), ni protégé (pas de dispositif)",
+                    "Parce qu'il n'y avait pas d'école",
+                    "Parce que les victimes ne parlaient jamais"
                 ],
                 correct: 1,
-                feedback: "Exact. 'Nommer, c'est faire exister'. Sans concept linguistique pour désigner la violence répétée entre pairs, impossible de la reconnaître, de la mesurer, de la prévenir. Le langage structure notre perception du réel."
+                feedback: "Parfait. Tu synthétises tout le parcours : silence linguistique (M01) → révolution scientifique (M02) → reconnaissance juridique (M03) → dispositifs modernes (M04). Chaque étape construit sur la précédente. Aujourd'hui, un élève a pHARe, le 3018, la loi. Ce n'était pas 'normal avant', c'était invisible."
             },
             {
-                question: "Le bizutage universitaire du Moyen Âge nous enseigne quoi sur le harcèlement ?",
+                question: "Application des 3 critères : Un groupe se moque d'un élève 1 fois, puis arrête. Est-ce du harcèlement ?",
                 options: [
-                    "Que c'est une invention moderne",
-                    "Que la violence ritualisée entre pairs existe depuis des siècles, souvent tolérée voire institutionnalisée",
-                    "Que les étudiants étaient plus méchants qu'aujourd'hui",
-                    "Que c'était réservé aux universités"
+                    "Oui, parce qu'il y a eu moquerie",
+                    "Non, il manque la RÉPÉTITION. C'est une violence ponctuelle (répréhensible), mais pas du harcèlement systémique",
+                    "Oui, parce qu'il y a déséquilibre (groupe vs individu)",
+                    "Ça dépend de l'humeur de l'adulte"
                 ],
                 correct: 1,
-                feedback: "Parfait. Le bizutage montre que la violence entre pairs n'est pas nouvelle, mais qu'elle a longtemps été acceptée comme 'rite de passage'. Comprendre cette continuité historique aide à déconstruire l'idée que 'ça a toujours été comme ça, donc c'est normal'."
+                feedback: "Exact. Olweus (1970) exige les 3 critères. Intention (oui, se moquer), Déséquilibre (oui, groupe vs 1), mais RÉPÉTITION (non, 1 fois). Donc : violence à sanctionner, mais pas harcèlement. Cette distinction évite la dilution du concept et permet des réponses adaptées."
             },
             {
-                question: "Dans les romans de Dickens ou Vallès, pourquoi les personnages harcelés ne sont-ils jamais secourus par l'institution ?",
+                question: "Tension loi/prévention : Pourquoi punir tous les harceleurs ne suffit-il pas à éradiquer le harcèlement ?",
                 options: [
-                    "Parce que l'institution elle-même était basée sur la violence verticale et la discipline rigide",
-                    "Parce que les enseignants étaient tous méchants",
-                    "Parce que les élèves ne dénonçaient jamais",
-                    "Parce que les romans mentent"
+                    "Parce qu'il en naîtra toujours d'autres tant que la culture collective tolère la domination. Seule l'éducation massive change les normes",
+                    "Parce que les tribunaux sont débordés",
+                    "Parce que les harceleurs sont malades mentaux",
+                    "Parce que la loi n'existe pas vraiment"
                 ],
                 correct: 0,
-                feedback: "Exact. L'école-caserne du XIXe siècle reposait sur l'autorité par la punition corporelle (maîtres → élèves). Cette violence descendante créait un environnement où la domination physique était normalisée, rendant la violence horizontale (entre élèves) invisible ou acceptable."
+                feedback: "Parfaitement résumé. La loi punit l'individu (nécessaire pour protéger la victime). Mais le harcèlement naît d'une CULTURE (témoins passifs, hiérarchies acceptées, empathie absente). Sans transformation collective (pHARe, ambassadeurs, climat scolaire), on punira à l'infini sans prévenir."
             },
             {
-                question: "Le paradigme du 'durcissement' (subir la violence forge le caractère) est problématique parce que :",
+                question: "Ambassadeurs pHARe : Pourquoi 3 ambassadeurs dans une classe de 25 ne suffisent pas ?",
                 options: [
-                    "Il confond souffrance et apprentissage, légitimant des traumatismes inutiles",
-                    "Il rend les élèves plus forts physiquement",
-                    "Il prépare vraiment à la vie adulte",
-                    "Il a été prouvé scientifiquement efficace"
+                    "Parce qu'ils sont trop jeunes",
+                    "Parce que si les 22 autres élèves n'ont pas reçu de formation à l'empathie, la norme collective reste permissive. Les ambassadeurs se battent seuls",
+                    "Parce qu'il en faudrait 10",
+                    "Parce que les ambassadeurs sont volontaires donc faibles"
                 ],
-                correct: 0,
-                feedback: "Parfait. Le mythe du 'ce qui ne tue pas rend plus fort' appliqué aux enfants est dangereux. Les neurosciences montrent que les traumatismes précoces altèrent le développement cérébral. La résilience se construit par le soutien, pas par l'exposition à la violence."
+                correct: 1,
+                feedback: "Exactement. Heinemann (1969) : le mobbing est COLLECTIF. 3 ambassadeurs + 22 indifférents = échec. La solution : former TOUS les élèves (empathie, 3 critères, rôle des témoins). Quand la majorité porte la norme anti-harcèlement, les ambassadeurs deviennent amplificateurs, pas combattants isolés."
             }
         ];
 
         const scenarioData = [
             {
-                title: "L'Héritage du Silence",
-                context: "Tu lis un vieux règlement scolaire de 1920. Il détaille les punitions pour insolence envers les maîtres, mais aucune mention des violences entre élèves.",
-                intro: "Un camarade te dit : 'De toute façon, avant c'était pire, et personne ne s'en plaignait. Pourquoi en faire tout un plat aujourd'hui ?' Comment réagis-tu ?",
+                title: "La Mutation Culturelle",
+                context: "Ton collège applique pHARe depuis 1 an. Protocole en place, ambassadeurs formés, 3018 affiché. Pourtant, le harcèlement continue dans certaines classes.",
+                intro: "Grâce à tout ton parcours historique (M01 à M04), diagnostique : que manque-t-il pour que la théorie (pHARe) devienne pratique (transformation réelle) ?",
                 choices: [
                     {
-                        text: "Tu es d'accord : 'Oui, les jeunes d'aujourd'hui sont trop sensibles'",
-                        result: "Erreur de perspective historique. Ce n'est pas que 'c'était mieux avant' : c'est que la violence était invisible car non nommée. Les victimes souffraient en silence, sans recours. L'absence de plainte ≠ absence de souffrance.",
-                        impact: { lucidite: -30, compassion: -20 }
+                        text: "Il faut des punitions plus sévères",
+                        result: "Non. La loi existe déjà (M03). Punir plus fort ne change pas la CULTURE. Le harcèlement persiste parce que la norme collective des élèves (témoins passifs, hiérarchies acceptées) n'a pas changé. C'est un problème culturel, pas pénal.",
+                        impact: { comprehension: -25, strategie: -20 }
                     },
                     {
-                        text: "Tu dis : 'Justement, on a compris que ce silence causait des dégâts énormes. Nommer le problème, c'est le premier pas pour le résoudre.'",
-                        result: "Excellent. Tu comprends que l'évolution n'est pas dans la 'sensibilité' des victimes, mais dans la reconnaissance institutionnelle du problème. Le silence d'avant était une forme de violence systémique, pas une preuve d'absence de souffrance.",
-                        impact: { lucidite: +35, compassion: +30 }
+                        text: "Il manque une FORMATION MASSIVE de TOUS les élèves (pas juste les ambassadeurs) + implication de TOUS les profs (pas juste l'équipe pHARe) pour transformer la norme collective",
+                        result: "Parfait. Tu as compris la leçon de 50 ans d'histoire : nommer (M01), mesurer (M02), légiférer (M03), créer des outils (M04)... et MAINTENANT, diffuser à 100% pour changer la culture. pHARe est un cadre excellent, mais il faut un engagement TOTAL de l'établissement (formation continue, climat scolaire, empathie collective) pour que la théorie devienne pratique.",
+                        impact: { comprehension: +40, strategie: +40 }
                     },
                     {
-                        text: "Tu changes de sujet pour éviter le débat",
-                        result: "Tu reproduis le silence historique. Ne pas questionner les mythes du passé, c'est les perpétuer. L'histoire montre que l'inaction se nourrit de l'indifférence collective.",
-                        impact: { lucidite: -10, compassion: -5 }
+                        text: "Il faut abandonner pHARe, ça ne marche pas",
+                        result: "Erreur. pHARe est basé sur 50 ans de recherche validée. Le problème n'est pas l'outil, c'est son APPLICATION partielle. Abandonner reviendrait à jeter le bébé avec l'eau du bain. La solution : appliquer COMPLÈTEMENT.",
+                        impact: { comprehension: -30, strategie: -25 }
+                    },
+                    {
+                        text: "Il faut installer des caméras partout",
+                        result: "Approche sécuritaire qui ignore tout ce que tu as appris. Le harcèlement n'est pas qu'une question de surveillance (on ne peut pas filmer la cour de récré 24h/24), c'est une question de CULTURE. Heinemann (1969) : dynamique de groupe. Seule l'éducation change ça.",
+                        impact: { comprehension: -35, strategie: -30 }
                     }
                 ]
             },
             {
-                title: "Le Bizutage Moderne",
-                context: "Dans ton collège, des 3èmes ont une 'tradition' : faire passer des 'épreuves' aux 6èmes la première semaine. Ils appellent ça 'l'intégration'.",
-                intro: "Grâce à ce que tu sais de l'histoire du bizutage, tu reconnais un schéma ancien. Que fais-tu ?",
+                title: "L'Héritage des Pionniers",
+                context: "Tu es ambassadeur pHARe. Un adulte te dit : 'Le harcèlement a toujours existé, on ne peut rien y faire.'",
+                intro: "Fort de ta connaissance historique, que réponds-tu pour montrer que cette résignation ignore 50 ans de lutte collective ?",
                 choices: [
                     {
-                        text: "Tu participes : 'C'est une tradition, ça les aidera à s'intégrer'",
-                        result: "Tu reproduis exactement la logique médiévale du bizutage. 'Tradition' n'est pas synonyme de 'légitime'. Les universités interdisaient déjà ces pratiques en 1495 parce qu'elles reconnaissaient leur caractère humiliant et dangereux.",
-                        impact: { lucidite: -35, compassion: -30 }
+                        text: "Tu es d'accord : c'est vrai, ça a toujours existé",
+                        result: "Trahison de l'histoire. Oui, la violence a toujours existé, mais elle était INVISIBLE (pré-1970) car non nommée. Heinemann, Olweus, les lois, pHARe : tout ça prouve qu'on PEUT agir. Dire 'on ne peut rien faire', c'est nier 50 ans de combat collectif.",
+                        impact: { fierte: -40, transmission: -35 }
                     },
                     {
-                        text: "Tu en parles à un adulte référent : 'Ce qu'on appelle 'tradition' ressemble au bizutage historique, une violence ritualisée qu'on devrait arrêter'",
-                        result: "Parfait. Tu utilises ta connaissance historique pour identifier un pattern toxique. Nommer le bizutage pour ce qu'il est (violence codifiée) permet de briser le mythe de la 'tradition inoffensive'. C'est exactement ce qu'ont fait les chercheurs des années 1970.",
-                        impact: { lucidite: +40, compassion: +35 }
+                        text: "Tu expliques : 'Oui, la violence a toujours existé. Mais avant 1970, elle était invisible. Heinemann l'a nommée (mobbing), Olweus l'a mesurée (3 critères), les lois l'ont encadrée, pHARe la combat. On peut agir, et l'histoire le prouve.'",
+                        result: "Magnifique. Tu transmets l'héritage des pionniers. Tu montres que la résignation ('ça a toujours été comme ça') ignore la TRANSFORMATION historique. Chaque génération construit sur la précédente. Toi, ambassadeur 2025, tu es l'héritier d'Heinemann 1969. Porte cette fierté.",
+                        impact: { fierte: +45, transmission: +45 }
                     },
                     {
-                        text: "Tu refuses de participer mais sans intervenir pour protéger les 6èmes",
-                        result: "Intégrité personnelle préservée, mais passivité collective. L'histoire montre que le silence des témoins est ce qui a permis au bizutage de perdurer pendant des siècles. Ne pas participer c'est bien, mais insuffisant.",
-                        impact: { lucidite: +10, compassion: +5 }
+                        text: "Tu changes de sujet pour éviter le débat",
+                        result: "Passivité. Tu laisses la résignation se propager. Pourtant, tu as les connaissances historiques pour la combattre. Le silence des témoins (toi, ici) permet aux mythes ('on ne peut rien faire') de perdurer.",
+                        impact: { fierte: -15, transmission: -20 }
                     }
                 ]
             }
@@ -839,15 +886,24 @@
 
         
 
+        function getMasteryLevel(score) {
+            if (score >= 450) return { level: "Historien Expert", class: "mastery-expert" };
+            if (score >= 280) return { level: "Historien Confirmé", class: "mastery-confirmed" };
+            return { level: "En Formation", class: "mastery-training" };
+        }
+
         function App() {
             const [gameState, setGameState] = useState("intro");
             const [playerData, setPlayerData] = useState({
                 name: localStorage.getItem('pvs_current_player') || 'Anonyme',
                 class: "",
-                xp: 0,
+                level: 1,
                 score: 0,
+                xp: 0,
                 quizScore: 0,
-                scenarioScore: 0
+                scenarioScore: 0,
+                flashcardsViewed: 0,
+                finished: false
             });
 
             const [currentFlashcard, setCurrentFlashcard] = useState(0);
@@ -865,18 +921,25 @@
                 if (playerData.name.trim()) {
                     setGameState("flashcards");
                 }
-
-
             }
 
             function nextFlashcard() {
                 if (currentFlashcard < flashcardsData.length - 1) {
                     setCurrentFlashcard(prev => prev + 1);
                     setFlashcardFlipped(false);
-                    setPlayerData(prev => ({ ...prev, xp: prev.xp + 10 }));
+                    setPlayerData(prev => ({
+                        ...prev,
+                        flashcardsViewed: Math.max(prev.flashcardsViewed, currentFlashcard + 2),
+                        xp: prev.xp + 15
+                    }));
                 } else {
                     setGameState("quiz");
-                    setPlayerData(prev => ({ ...prev, xp: prev.xp + 40 }));
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 2,
+                        flashcardsViewed: flashcardsData.length,
+                        xp: prev.xp + 50
+                    }));
                 }
             }
 
@@ -898,9 +961,9 @@
                 if (isCorrect) {
                     setPlayerData(prev => ({
                         ...prev,
-                        score: prev.score + 25,
-                        quizScore: prev.quizScore + 25,
-                        xp: prev.xp + 25
+                        score: prev.score + 30,
+                        quizScore: prev.quizScore + 30,
+                        xp: prev.xp + 30
                     }));
                 }
             }
@@ -912,7 +975,11 @@
                     setShowQuizFeedback(false);
                 } else {
                     setGameState("scenarios");
-                    setPlayerData(prev => ({ ...prev, xp: prev.xp + 50 }));
+                    setPlayerData(prev => ({
+                        ...prev,
+                        level: 3,
+                        xp: prev.xp + 60
+                    }));
                 }
             }
 
@@ -928,7 +995,7 @@
                     ...prev,
                     score: prev.score + totalChange,
                     scenarioScore: prev.scenarioScore + totalChange,
-                    xp: prev.xp + 20
+                    xp: prev.xp + 25
                 }));
             }
 
@@ -938,28 +1005,41 @@
                     setScenarioChoice(null);
                     setShowScenarioResult(false);
                 } else {
-
-                    // ── Remontée XP vers Superhub PVS ──
-                    try {
-                        var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
-                        _pvs.push({
-                            id: 'PIXHARE-' + MODULE_ID + '-' + Date.now(),
-                            type: 'PIXHARE_PROGRESS',
-                            player: playerData.name,
-                            module: MODULE_ID,
-                            score: playerData.score,
-                            xp: playerData.xp,
-                            d: new Date().toISOString()
-                        });
-                        localStorage.setItem('CERT_PHARE_HISTOIRE_01',JSON.stringify({v:1,d:new Date().toISOString(),m:'HISTOIRE_01',f:true}));
-                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
-                        window.dispatchEvent(new StorageEvent('storage', { key: 'pvs_bridge_events' }));
-                    } catch (_e) { /* silencieux */ }
-                    // ── Fin bridge ──
-                    setGameState("complete");
-                    setPlayerData(prev => ({ ...prev, xp: prev.xp + 75 }));
+                    completeModule();
                 }
             }
+
+            function completeModule() {
+                setPlayerData(prev => ({
+                    ...prev,
+                    finished: true,
+                    xp: prev.xp + 100
+                }));
+                setGameState("complete");
+                // ── Validation automatique — pose le CERT et le bridge ──
+                try {
+                    var _player = localStorage.getItem('pvs_current_player')
+                                || localStorage.getItem('pvs_phare_player')
+                                || new URLSearchParams(window.location.search).get('player')
+                                || '';
+                    localStorage.setItem('CERT_PHARE_HISTOIRE_05', JSON.stringify({
+                        v:1, d:new Date().toISOString(), m:'HISTOIRE_05', f:true
+                    }));
+                    var _pvs = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+                    _pvs.push({
+                        id: 'PIXHARE-HISTOIRE_05-' + Date.now(),
+                        type: 'PIXHARE_PROGRESS',
+                        player: _player,
+                        module: 'HISTOIRE_05',
+                        xp: 100,
+                        d: new Date().toISOString()
+                    });
+                    if(_pvs.length > 500) _pvs.splice(0, _pvs.length - 500);
+                    localStorage.setItem('pvs_bridge_events', JSON.stringify(_pvs));
+                    window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
+                } catch(_e) {}
+            }
+
 
             function renderIntro() {
                 return e("div", { className: "app-container" },
@@ -967,27 +1047,26 @@
                         e("div", { className: "pillar-icon" }, "📜"),
                         e("h1", { className: "glitch-title" }, "PIX-pHARe"),
                         e("div", { className: "subtitle" }, "Pilier Histoire Sociétale"),
-                        e("div", { className: "module-badge" }, "MODULE 01")
+                        e("div", { className: "module-badge" }, "MODULE 05 - CERTIFICATION")
                     ),
                     e("div", { className: "content-panel" },
                         e("div", { className: "panel-header" },
-                            e("div", { className: "panel-icon" }, "🕰️"),
+                            e("div", { className: "panel-icon" }, "🎓"),
                             e("div", { className: "panel-title" }, MODULE_TITLE)
                         ),
                         e("div", { className: "panel-body" },
                             e("div", { className: "intro-screen" },
                                 e("p", null,
-                                    "Avant 1970, le mot ", e("strong", { style: { color: "var(--history-amber)" } }, "'harcèlement scolaire'"),
-                                    " n'existait pas. Sans nom, la violence entre élèves restait invisible."
+                                    "Tu as traversé ", e("strong", { style: { color: "var(--history-amber)" } }, "50 ans d'histoire"), 
+                                    " : du silence pré-1970 aux dispositifs modernes de 2025."
                                 ),
                                 e("p", null,
-                                    "Tu vas découvrir comment l'école-caserne, le bizutage médiéval, et la littérature classique ont façonné un ", 
-                                    e("strong", { style: { color: "var(--history-bronze)" } }, "silence institutionnel"),
-                                    " qui a protégé les agresseurs pendant des siècles."
+                                    "Ce module final teste ta capacité à ", 
+                                    e("strong", { style: { color: "var(--history-bronze)" } }, "synthétiser tout le parcours"), 
+                                    " et à ", e("strong", null, "appliquer les leçons de l'histoire"), " aux défis actuels."
                                 ),
                                 e("p", null,
-                                    "Comprendre cette 'préhistoire' du harcèlement, c'est comprendre pourquoi ", 
-                                    e("strong", null, "nommer un problème est le premier acte de résistance"), "."
+                                    "Comprendre le passé, c'est refuser de le reproduire. Prêt·e pour la certification ?"
                                 )
                             ),
                             e("div", { style: { textAlign: "center", marginTop: "20px" } },
@@ -1008,7 +1087,7 @@
                     e("div", { className: "header" },
                         e("div", { className: "pillar-icon" }, "📜"),
                         e("h1", { className: "glitch-title" }, MODULE_TITLE),
-                        e("div", { className: "subtitle" }, "Niveau 1 : Archéologie du Silence")
+                        e("div", { className: "subtitle" }, "Niveau 1 : Synthèse Historique")
                     ),
                     e("div", { className: "progress-bar" },
                         e("div", { className: "progress-node active" }, "1"),
@@ -1028,7 +1107,7 @@
                     e("div", { className: "content-panel" },
                         e("div", { className: "panel-header" },
                             e("div", { className: "panel-icon" }, "📚"),
-                            e("div", { className: "panel-title" }, "Archives Historiques")
+                            e("div", { className: "panel-title" }, "Leçons Essentielles")
                         ),
                         e("div", { className: "panel-body" },
                             e("div", { className: "flashcard-container" },
@@ -1071,7 +1150,7 @@
                     e("div", { className: "header" },
                         e("div", { className: "pillar-icon" }, "📜"),
                         e("h1", { className: "glitch-title" }, MODULE_TITLE),
-                        e("div", { className: "subtitle" }, "Niveau 2 : Analyse Critique")
+                        e("div", { className: "subtitle" }, "Niveau 2 : Application")
                     ),
                     e("div", { className: "progress-bar" },
                         e("div", { className: "progress-node completed" }, "✓"),
@@ -1095,7 +1174,7 @@
                     e("div", { className: "content-panel" },
                         e("div", { className: "panel-header" },
                             e("div", { className: "panel-icon" }, "🔍"),
-                            e("div", { className: "panel-title" }, "Compréhension Historique")
+                            e("div", { className: "panel-title" }, "Test Final")
                         ),
                         e("div", { className: "panel-body" },
                             e("div", { className: "quiz-question" }, question.question),
@@ -1123,7 +1202,7 @@
                                 className: `feedback-box ${selectedAnswer !== question.correct ? "incorrect-feedback" : ""}`
                             },
                                 e("div", { className: "feedback-title" },
-                                    selectedAnswer === question.correct ? "✓ EXACT" : "✗ PAS TOUT À FAIT"
+                                    selectedAnswer === question.correct ? "✓ EXCELLENT" : "✗ PAS TOUT À FAIT"
                                 ),
                                 e("p", null, question.feedback)
                             ),
@@ -1151,7 +1230,7 @@
                     e("div", { className: "header" },
                         e("div", { className: "pillar-icon" }, "📜"),
                         e("h1", { className: "glitch-title" }, MODULE_TITLE),
-                        e("div", { className: "subtitle" }, "Niveau 3 : Application")
+                        e("div", { className: "subtitle" }, "Niveau 3 : Cas Complexes")
                     ),
                     e("div", { className: "progress-bar" },
                         e("div", { className: "progress-node completed" }, "✓"),
@@ -1213,13 +1292,15 @@
             }
 
             function renderComplete() {
+                const mastery = getMasteryLevel(playerData.score);
                 return e("div", { className: "app-container" },
                     e("div", { className: "completion-screen" },
-                        e("div", { className: "completion-icon" }, "✅"),
-                        e("h1", { className: "completion-title" }, "MODULE COMPLÉTÉ"),
+                        e("div", { className: "completion-icon" }, "🏆"),
+                        e("h1", { className: "completion-title" }, "CERTIFICATION VALIDÉE"),
                         e("p", { className: "completion-subtitle" },
-                            `Bravo ${playerData.name} ! Tu comprends maintenant l'histoire du silence.`
+                            `Bravo ${playerData.name} ! Tu maîtrises l'histoire du combat anti-harcèlement.`
                         ),
+                        e("div", { className: `mastery-badge ${mastery.class}` }, mastery.level),
                         e("div", { className: "stats-grid" },
                             e("div", { className: "stat-card" },
                                 e("div", { className: "stat-value" }, playerData.score),
@@ -1238,24 +1319,29 @@
                                 e("div", { className: "stat-label" }, "Score Scénarios")
                             )
                         ),
+
                         e("div", { className: "content-panel", style: { marginTop: "30px", textAlign: "left" } },
                             e("div", { className: "panel-header" },
-                                e("div", { className: "panel-icon" }, "💡"),
-                                e("div", { className: "panel-title" }, "Ce Que Tu As Appris")
+                                e("div", { className: "panel-icon" }, "✨"),
+                                e("div", { className: "panel-title" }, "L'Héritage Que Tu Portes")
                             ),
                             e("div", { className: "panel-body" },
                                 e("p", null,
-                                    "Avant 1970, le harcèlement n'avait pas de nom. Cette invisibilité linguistique protégeait un système où la violence entre pairs était ", 
-                                    e("strong", null, "tolérée, ritualisée, voire encouragée"), "."
+                                    "Tu es désormais l'héritier·ère de 50 ans de combat : Heinemann (1969), Olweus (1970), les lois (1990-2010), pHARe (2019)."
                                 ),
                                 e("p", { style: { marginTop: "15px" } },
-                                    "Le bizutage, les 'rites de passage', l'école-caserne : autant de formes de violence codifiée que la société acceptait. ", 
-                                    e("strong", null, "Comprendre ce passé, c'est refuser de le reproduire"), "."
+                                    "Chaque génération construit sur la précédente. ", 
+                                    e("strong", null, "Ta génération (2025) a hérité d'outils que les victimes de 1970 n'avaient pas"), 
+                                    ". Utilise-les. Diffuse-les. Perfectionne-les."
                                 ),
                                 e("p", { style: { marginTop: "15px" } },
-                                    "Prochain module : tu découvriras comment, dans les années 1970, des chercheurs nordiques ont ", 
-                                    e("strong", { style: { color: "var(--history-amber)" } }, "nommé le problème"), 
-                                    " et lancé la première révolution scientifique contre le harcèlement."
+                                    "Comprendre l'histoire, c'est refuser de la reproduire. Tu sais maintenant ", 
+                                    e("strong", { style: { color: "var(--history-amber)" } }, "pourquoi le silence tue"), 
+                                    ", ", e("strong", { style: { color: "var(--history-bronze)" } }, "pourquoi nommer est un acte de résistance"), 
+                                    ", et ", e("strong", null, "pourquoi ton rôle d'ambassadeur est crucial"), "."
+                                ),
+                                e("p", { style: { marginTop: "15px" } },
+                                    e("strong", null, "Porte cet héritage. Transmets-le. Et continues le combat.")
                                 )
                             )
                         )
