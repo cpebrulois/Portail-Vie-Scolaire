@@ -64,6 +64,15 @@ h1 span{color:#fff;}
 .mod-xp{font-size:.75em;color:var(--muted);font-family:'Courier New',monospace;}
 .btn-launch{display:block;width:100%;padding:10px;margin-top:10px;background:transparent;border:1px solid var(--neon);color:var(--neon);text-decoration:none;text-align:center;font-size:.9em;font-weight:bold;transition:.3s;border-radius:4px;}
 .btn-launch:hover{background:var(--neon);color:#000;}
+.pillar-tools{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:4px;}
+.pillar-btn{appearance:none;font-family:inherit;cursor:pointer;}
+.pillar-btn.replay{border-color:rgba(0,255,136,.45);color:var(--neon-green);}
+.pillar-btn.replay:hover:not(:disabled){background:var(--neon-green);color:#000;}
+.pillar-btn.summary{border-color:rgba(255,215,0,.45);color:var(--neon-gold);}
+.pillar-btn.summary:hover:not(:disabled){background:var(--neon-gold);color:#000;}
+.pillar-btn.coach{border-color:rgba(59,130,246,.45);color:#93c5fd;}
+.pillar-btn.coach:hover:not(:disabled){background:#93c5fd;color:#001320;}
+.pillar-btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(1);}
 
 /* === ADMIN === */
 #admin-fab{position:fixed;bottom:18px;right:16px;background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--muted);padding:7px 13px;border-radius:8px;font-size:.78rem;cursor:pointer;z-index:800;}
@@ -666,10 +675,10 @@ h1 span{color:#fff;}
     <div class="agora-badge" id="agora-badge">🔒 Accès verrouillé</div>
   </div>
   <p class="agora-lock-copy" id="agora-lock-copy">
-    Kern se débloque quand le joueur a validé les 6 modules des 5 piliers de PIX pHARe ainsi que le Protocole Valdurne.
+    Kern se débloque quand le joueur a validé les 36 modules des 6 piliers de PIX pHARe ainsi que le Protocole Valdurne.
   </p>
   <div class="agora-progress">
-    <div class="agora-pill warn" id="agora-pill-modules">Modules : 0/30</div>
+    <div class="agora-pill warn" id="agora-pill-modules">Modules : 0/36</div>
     <div class="agora-pill warn" id="agora-pill-protocol">Protocole : à terminer</div>
     <div class="agora-pill warn" id="agora-pill-player">Joueur : non connecté</div>
   </div>
@@ -1039,19 +1048,45 @@ function render() {
         '<h4>NIVEAU ' + levelNum + (coming_m ? ' — Prochainement' : '') + '</h4>' +
         '<div style="font-size:.9em;margin-bottom:3px;color:#aaa">' + mod.name + '</div>' +
         '<div class="mod-xp">' + mod.xp + ' XP</div>' +
-        (open_m && !done_m && !coming_m ? '<a href="#" class="btn-launch" data-file="' + mod.file + '" data-id="' + mod.id + '">LANCER MISSION</a>' : '');
+        ((open_m || done_m) && !coming_m ? '<a href="#" class="btn-launch' + (done_m ? ' pillar-btn replay' : '') + '" data-file="' + mod.file + '" data-id="' + mod.id + '">' + (done_m ? '↺ REJOUER' : 'LANCER MISSION') + '</a>' : '');
 
       col.appendChild(card);
     });
+
+    var tools = document.createElement('div');
+    tools.className = 'pillar-tools';
+    tools.innerHTML =
+      '<button type="button" class="btn-launch pillar-btn replay btn-pillar-replay" data-pillar-key="' + pillar.key + '"' + (player ? '' : ' disabled') + '>↺ Rejouer le pilier</button>' +
+      '<button type="button" class="btn-launch pillar-btn summary btn-pillar-summary" data-pillar-key="' + pillar.key + '"' + (player ? '' : ' disabled') + '>Résumé du cours</button>' +
+      '<button type="button" class="btn-launch pillar-btn coach btn-pillar-coach" data-pillar-key="' + pillar.key + '"' + (player ? '' : ' disabled') + '>Aide Kern</button>';
+    col.appendChild(tools);
 
     root.appendChild(col);
   });
 
   // Attach click handlers for launch buttons
-  root.querySelectorAll('.btn-launch').forEach(function(btn){
+  root.querySelectorAll('.btn-launch[data-file]').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.preventDefault();
       openModule(this.getAttribute('data-file'), this.getAttribute('data-id'));
+    });
+  });
+  root.querySelectorAll('.btn-pillar-replay').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      if(typeof replayPixharePillar==='function')replayPixharePillar(this.getAttribute('data-pillar-key'));
+    });
+  });
+  root.querySelectorAll('.btn-pillar-summary').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      if(typeof requestKernPillarSummary==='function')requestKernPillarSummary(this.getAttribute('data-pillar-key'));
+    });
+  });
+  root.querySelectorAll('.btn-pillar-coach').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      if(typeof startKernPillarCoach==='function')startKernPillarCoach(this.getAttribute('data-pillar-key'));
     });
   });
 
@@ -1628,4 +1663,3 @@ renderValdurne();
 <script src="agora_pixhare.js"></script>
 </body>
 </html>
-

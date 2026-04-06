@@ -6,6 +6,8 @@
   var KERN_SUPPORT_TEMP=0.28;
   var KERN_REFERENCE_TEMP=0.18;
   var KERN_ANALYSIS_TEMP=0.08;
+  var KERN_PILLAR_HELP_TEMP=0.12;
+  var KERN_PILLAR_SUMMARY_TEMP=0.08;
   var KERN_MAX_TOKENS=1100;
   var KERN_SUPPORT_MAX_TOKENS=950;
   var KERN_REFERENCE_MAX_TOKENS=900;
@@ -25,6 +27,7 @@
   var CACHE={};
   var HISTORY=[];
   var SCENARIO_STATE={history:[],counts:{},active:null};
+  var PILLAR_FOCUS={key:'',mode:'coach'};
   var OPEN=false;
   var CONCERN={mode:'idle',draft:null,submission:null,message:''};
   var SUPA=null;
@@ -35,7 +38,7 @@
     'Tu es Kern, compagnon narratif, civique et pédagogique de la plateforme Vie scolaire.',
     'Tu parles comme Kern, l allié de Lyam à Valdurne, mais tu restes rigoureusement compatible avec les attentes éducatives, institutionnelles et déontologiques des contenus locaux.',
     'Tu peux aider sur PIX pHARe, l histoire de Valdurne, la liberté, l égalité, la fraternité, l orientation, la sécurité routière, la citoyenneté, les délégués et d autres thématiques réellement présentes dans les fichiers du projet.',
-    'Ta mission comporte trois modes : répondre factuellement à partir des sources locales, animer des simulations fictionnelles sûres et formatrices, ou soutenir prudemment une situation réelle sans la transformer en jeu.',
+    'Ta mission comporte quatre modes : répondre factuellement à partir des sources locales, animer des simulations fictionnelles sûres et formatrices, soutenir prudemment une situation réelle sans la transformer en jeu, ou aider sobrement à comprendre un pilier précis.',
     'Tu aides à observer, protéger, documenter, faire réfléchir, choisir une posture juste, mobiliser les bons relais et transmettre au bon adulte.',
     'Tu n inventes jamais un fait de protocole, de droit, d Éducation nationale, de santé mentale, de sécurité ou de canon local quand il manque dans les sources.',
     'Tu préfères la justesse institutionnelle, la clarté et la prudence à l effet dramatique.'
@@ -43,8 +46,9 @@
   var PROMPT_APPENDIX=[
     '=== RÈGLES DE KERN ===',
     '- Appuie-toi sur le contexte local récupéré plus bas, issu de l ensemble de la plateforme Vie scolaire publiée.',
-    '- Distingue trois modes : référence, fiction pédagogique, situation réelle.',
+    '- Distingue quatre modes : référence, coach de pilier, fiction pédagogique, situation réelle.',
     '- En mode référence : réponds sobrement, au plus près des documents, avec une réserve institutionnelle claire.',
+    '- En mode coach de pilier : reste à basse température, centré sur le pilier ciblé, avec résumés fiables, définitions nettes et mini vérifications.',
     '- En mode fiction : propose une scène courte, 2 ou 3 options maximum, puis un mini-débrief métacognitif et professionnel.',
     '- En mode fiction : ne pousse jamais vers la vengeance, la violence, l humiliation, la manipulation ou le secret face aux adultes.',
     '- En mode situation réelle : ne roleplay pas, ne scénarise pas, sécurise, qualifie l urgence et oriente.',
@@ -107,6 +111,7 @@
     var src=norm((file||'')+' '+humanize(file)), tags=[];
     function add(){tags=tags.concat([].slice.call(arguments));}
     if(/pix phare|pix ph are|phare|harcelement|groupe|neuro|numerique|juridique|cps|temoin|victime/.test(src))add('pixhare','phare','harcelement','cps');
+    if(/vea|vivre ensemble|bien etre|emotion|emotions|assertivite|cohesion|prosocial|empathie/.test(src))add('vea','vivre ensemble','bien etre','cps');
     if(/valdur|lyam|kern|rena|remus|roman|narration|agora|chronique/.test(src))add('valdurne','lyam','kern','rena','narration');
     if(/liberte|lib /.test(src))add('liberte','droits','citoyennete');
     if(/egalite|egalite|discrimination|stereotype|filles garcons/.test(src))add('egalite','discrimination','respect');
@@ -214,6 +219,7 @@
     var s=norm(text), tags=[];
     function add(){tags=tags.concat([].slice.call(arguments));}
     if(/harcelement|rumeur|exclusion|cyber|temoin|victime|detresse|angoisse|mal etre|mal etre/.test(s))add('harcelement','cps','protection');
+    if(/vea|vivre ensemble|bien etre|emotion|emotions|empathie|assertivite|cohesion|prosocial/.test(s))add('vea','vivre ensemble','cps');
     if(/liberte|laicite|expression/.test(s))add('liberte','citoyennete');
     if(/egalite|discrimination|sexisme|stereotype/.test(s))add('egalite','respect');
     if(/fraternite|solidarite|entraide|nouveau/.test(s))add('fraternite','entraide');
@@ -305,6 +311,62 @@
   function migrateHistory(){try{if(!localStorage.getItem(newKey())){var legacy=localStorage.getItem(oldKey());if(legacy)localStorage.setItem(newKey(),legacy);}}catch(e){}}
   function latest(role){for(var i=HISTORY.length-1;i>=0;i--){if(HISTORY[i]&&HISTORY[i].role===role)return HISTORY[i];}return null;}
   function state(){var player=getPlayer();var total=PILLARS.reduce(function(sum,p){return sum+p.modules.length;},0);var done=doneCount();var protocol=typeof pvDone==='function'&&pvDone();return {player:player,connected:!!player,modulesDone:done,modulesTotal:total,protocolDone:protocol,ready:!!player&&done>=total&&protocol};}
+  function pillarByKey(key){
+    var target=norm(key||'');
+    for(var i=0;i<PILLARS.length;i++){
+      if(PILLARS[i]&&(norm(PILLARS[i].key)===target||norm(PILLARS[i].title)===target))return PILLARS[i];
+    }
+    return null;
+  }
+  function activePillarFocus(){
+    if(!PILLAR_FOCUS||!PILLAR_FOCUS.key||!getPlayer())return null;
+    var pillar=pillarByKey(PILLAR_FOCUS.key);
+    if(!pillar)return null;
+    return {
+      key:pillar.key,
+      title:pillar.title,
+      desc:pillar.desc,
+      mode:PILLAR_FOCUS.mode==='summary'?'summary':'coach',
+      pillar:pillar,
+      moduleIds:pillar.modules.map(function(mod){return mod.id;}),
+      moduleNames:pillar.modules.map(function(mod){return mod.name;})
+    };
+  }
+  function setPillarFocus(key,mode){
+    var pillar=pillarByKey(key);
+    if(!pillar)return null;
+    PILLAR_FOCUS={key:pillar.key,mode:mode==='summary'?'summary':'coach'};
+    return activePillarFocus();
+  }
+  function clearPillarFocus(){PILLAR_FOCUS={key:'',mode:'coach'};}
+  function canUseKern(){var st=state();return st.ready||!!activePillarFocus();}
+  function buildPillarPromptBlock(focus){
+    if(!focus)return '';
+    var lines=[
+      '=== DOSSIER PILIER KERN ===',
+      'Pilier : '+focus.title,
+      'Description : '+focus.desc,
+      'Modules : '+focus.moduleIds.map(function(id,idx){return id+' — '+focus.moduleNames[idx];}).join(' | ')
+    ];
+    if(focus.mode==='summary'){
+      lines.push('- But : produire un résumé de révision très fidèle, net et utile de ce pilier.');
+    }else{
+      lines.push('- But : agir comme un coach de compréhension à basse température sur ce pilier uniquement.');
+    }
+    lines.push('- Priorité absolue à ce pilier. Les autres contenus ne servent qu à éclairer directement ce bloc.');
+    lines.push('- Si le joueur veut revenir au mode général, invite-le à écrire "mode normal".');
+    return lines.join('\n');
+  }
+  function isPillarFocusExitRequest(text){
+    return /\b(mode normal|retour mode normal|quitte le pilier|sort du pilier|mode general|mode generaliste)\b/.test(norm(text||''));
+  }
+  function addPillarFocusIntro(focus){
+    if(!focus)return;
+    var intro='Mode aide Kern activé sur "'+focus.title+'". Ici je reste volontairement sobre et centré sur ce pilier pour t aider à comprendre, reformuler et mémoriser les repères essentiels. Si tu veux revenir au mode général, écris "mode normal".';
+    var last=latest('assistant');
+    if(last&&last.content===intro)return;
+    pushMessage('assistant',intro);
+  }
   function blankScenarioState(){return {history:[],counts:{},active:null};}
   function saveScenarioState(){try{localStorage.setItem(scenarioKey(),JSON.stringify(SCENARIO_STATE));}catch(e){}}
   function loadScenarioState(){
@@ -374,6 +436,7 @@
     });
     if(/kern|lyam|rena|valdur/.test(q)&&/kern|lyam|rena|valdur/.test(hay))s+=70;
     if(/harcelement|rumeur|exclusion|agression|temoin|victime|cps|metacognition|mal etre|angoisse|anxiete|depression/.test(q)&&/harcelement|rumeur|exclusion|agression|temoin|victime|cps|metacognition|mal etre|angoisse|anxiete|depression/.test(hay))s+=55;
+    if(/vea|vivre ensemble|bien etre|emotion|empathie|assertivite|cohesion|prosocial/.test(q)&&/vea|vivre ensemble|bien etre|emotion|empathie|assertivite|cohesion|prosocial/.test(hay))s+=60;
     if(/phare|protocole|education nationale|cadre|juridique|droit/.test(q)&&/phare|protocole|education nationale|cadre|juridique|droit/.test(hay))s+=65;
     if(/liberte|egalite|fraternite|laicite|citoyennete|delegue|cvc|cvl|respect|discrimination/.test(q)&&/liberte|egalite|fraternite|laicite|citoyennete|delegue|cvc|cvl|respect|discrimination/.test(hay))s+=68;
     if(/orientation|parcours|metier|avenir/.test(q)&&/orientation|parcours|metier|avenir/.test(hay))s+=60;
@@ -428,18 +491,23 @@
 
   function updateControls(){
     var st=state();
+    var focus=activePillarFocus();
+    var usable=canUseKern();
     var toggle=document.getElementById('agora-toggle');
     var download=document.getElementById('agora-download');
     var clear=document.getElementById('agora-clear');
     var report=document.getElementById('agora-report');
     var input=document.getElementById('agora-input');
     var send=document.getElementById('agora-send');
-    if(toggle){toggle.disabled=!st.ready;toggle.textContent=st.ready?(OPEN?'Fermer Kern':'Ouvrir Kern'):'Kern verrouillé';}
+    if(toggle){
+      toggle.disabled=!usable;
+      toggle.textContent=focus&&!st.ready?(OPEN?'Fermer le coach':'Ouvrir le coach'):(usable?(OPEN?'Fermer Kern':'Ouvrir Kern'):'Kern verrouillé');
+    }
     if(download)download.disabled=!HISTORY.length;
     if(clear)clear.disabled=!HISTORY.length;
     if(report)report.disabled=!st.connected || !latest('user');
-    if(input)input.disabled=!st.ready;
-    if(send)send.disabled=!st.ready;
+    if(input)input.disabled=!usable;
+    if(send)send.disabled=!usable;
   }
 
   function renderConcern(){
@@ -466,6 +534,8 @@
 
   function renderSection(){
     var st=state();
+    var focus=activePillarFocus();
+    var usable=canUseKern();
     var section=document.getElementById('agora-section');
     var badge=document.getElementById('agora-badge');
     var copy=document.getElementById('agora-lock-copy');
@@ -474,19 +544,19 @@
     var pillPlayer=document.getElementById('agora-pill-player');
     var panel=document.getElementById('agora-panel');
     if(!section||!badge||!copy||!pillModules||!pillProtocol||!pillPlayer||!panel)return;
-    section.classList.toggle('ready',st.ready);
-    section.classList.toggle('locked',!st.ready);
-    badge.textContent=st.ready?'✅ Accès ouvert':'🔒 Accès verrouillé';
-    copy.textContent=!st.connected?'Connecte d abord un joueur depuis le Portail Vie Scolaire. Kern s ouvrira ensuite quand les 30 modules PIX pHARe et le Protocole Valdurne seront validés.':(st.ready?'Kern est disponible. Tu peux lui demander une scène interactive, un entraînement à choix, ou un appui prudent sur une situation réelle.':'Kern se débloque quand ce joueur a validé les 30 modules PIX pHARe ainsi que le Protocole Valdurne.');
+    section.classList.toggle('ready',usable);
+    section.classList.toggle('locked',!usable);
+    badge.textContent=focus&&!st.ready?'📘 Coach de pilier actif':(st.ready?'✅ Accès ouvert':'🔒 Accès verrouillé');
+    copy.textContent=!st.connected?'Connecte d abord un joueur depuis le Portail Vie Scolaire. Kern s ouvrira ensuite quand les '+st.modulesTotal+' modules PIX pHARe et le Protocole Valdurne seront validés.':(focus&&!st.ready?'Le mode coach de pilier est actif sur "'+focus.title+'". Ici, Kern reste très cadré, factuel et centré sur la compréhension du contenu enseigné dans ce pilier.':(st.ready?'Kern est disponible. Tu peux lui demander une scène interactive, un entraînement à choix, ou un appui prudent sur une situation réelle.':'Kern se débloque quand ce joueur a validé les '+st.modulesTotal+' modules PIX pHARe ainsi que le Protocole Valdurne. Entre-temps, les boutons sous chaque pilier ouvrent un coach Kern ciblé et plus sobre.'));
     pillModules.textContent='Modules : '+st.modulesDone+'/'+st.modulesTotal;
     pillModules.className='agora-pill '+(st.modulesDone>=st.modulesTotal?'ok':'warn');
     pillProtocol.textContent='Protocole : '+(st.protocolDone?'terminé':'à terminer');
     pillProtocol.className='agora-pill '+(st.protocolDone?'ok':'warn');
     pillPlayer.textContent='Joueur : '+(st.player||'non connecté');
     pillPlayer.className='agora-pill '+(st.connected?'ok':'warn');
-    if(st.ready&&OPEN){
+    if(usable&&OPEN){
       if(!HISTORY.length){
-        HISTORY.push({role:'assistant',content:'Je suis Kern. Je peux te proposer une scène à Valdurne pour t entraîner, ou t aider à réfléchir à une situation réelle sans la transformer en jeu. Commence par me demander une scène, un choix difficile, ou un débrief sur ta posture.',ts:new Date().toISOString()});
+        HISTORY.push({role:'assistant',content:focus?'Mode aide Kern activé sur "'+focus.title+'". Ici je reste volontairement sobre et centré sur ce pilier pour t aider à comprendre, reformuler et mémoriser les repères essentiels. Si tu veux revenir au mode général, écris "mode normal".':'Je suis Kern. Je peux te proposer une scène à Valdurne pour t entraîner, ou t aider à réfléchir à une situation réelle sans la transformer en jeu. Commence par me demander une scène, un choix difficile, ou un débrief sur ta posture.',ts:new Date().toISOString()});
         saveHistory();
       }
       panel.classList.add('open');
@@ -527,9 +597,18 @@
     return /(scenario|scene|simulation|jeu de role|roleplay|incarne|valdur|lyam|kern|rena|remus)/.test(s);
   }
 
-  function runtimeRules(mode){
+  function runtimeRules(mode,focus){
     var lines=['=== GARDE-FOUS KERN ===','- Réponds uniquement à la dernière demande utilisateur.','- Les éléments factuels sur pHARe, le harcèlement, les CPS, le protocole, l Éducation nationale, la citoyenneté, la liberté, l égalité, la fraternité, l orientation, la sécurité routière, les secours et le canon de Valdurne doivent venir du contexte local récupéré.','- Reste concis, concret et utile.'];
-    if(mode==='support'){
+    if(mode==='pillar-help'){
+      lines.push('- MODE COACH DE PILIER : reste centré sur le pilier ciblé et ne pars pas en jeu de rôle complet.');
+      if(focus)lines.push('- Pilier prioritaire : '+focus.title+'.');
+      if(focus&&focus.mode==='summary'){
+        lines.push('- Produis un résumé très fiable au format : Essentiel / Réflexes à retenir / Pièges à éviter / Vérifie-toi.');
+      }else{
+        lines.push('- Réponds comme un coach de compréhension à basse température : définitions nettes, reformulation, exemple bref, puis question de vérification si utile.');
+      }
+      lines.push('- Si le joueur veut sortir du mode ciblé, invite-le à écrire "mode normal".');
+    }else if(mode==='support'){
       lines.push('- Le joueur semble décrire une situation réelle : ne roleplay pas et ne transforme pas cela en aventure.');
       lines.push('- Commence par la sécurité et le niveau d urgence.');
       lines.push('- Distingue faits observés, hypothèses et besoins immédiats.');
@@ -642,13 +721,46 @@
 
   window.toggleKern=function(){
     var st=state();
-    if(!st.ready){toast('Kern se débloque après les 30 modules PIX pHARe et le Protocole Valdurne.');return;}
+    if(!canUseKern()){toast('Kern se débloque après les '+st.modulesTotal+' modules PIX pHARe et le Protocole Valdurne. En attendant, utilise les boutons d aide sous chaque pilier.');return;}
     OPEN=!OPEN;
     renderSection();
     if(OPEN){
       var input=document.getElementById('agora-input');
       if(input)setTimeout(function(){input.focus();},80);
     }
+  };
+  window.replayPixharePillar=function(key){
+    var pillar=pillarByKey(key);
+    if(!pillar||!pillar.modules.length){toast('Pilier introuvable.');return;}
+    openModule(pillar.modules[0].file,pillar.modules[0].id);
+  };
+  window.startKernPillarCoach=function(key){
+    if(!getPlayer()){toast('Connecte d abord un joueur depuis le Portail Vie Scolaire.');return;}
+    var focus=setPillarFocus(key,'coach');
+    if(!focus){toast('Pilier introuvable.');return;}
+    clearActiveScenario();
+    CONCERN={mode:'idle',draft:null,submission:null,message:''};
+    OPEN=true;
+    renderSection();
+    addPillarFocusIntro(focus);
+    var input=document.getElementById('agora-input');
+    if(input){
+      input.placeholder='Pose une question sur le pilier '+focus.title+'...';
+      setTimeout(function(){input.focus();},80);
+    }
+  };
+  window.requestKernPillarSummary=function(key){
+    if(!getPlayer()){toast('Connecte d abord un joueur depuis le Portail Vie Scolaire.');return;}
+    var focus=setPillarFocus(key,'summary');
+    if(!focus){toast('Pilier introuvable.');return;}
+    clearActiveScenario();
+    CONCERN={mode:'idle',draft:null,submission:null,message:''};
+    OPEN=true;
+    renderSection();
+    var input=document.getElementById('agora-input');
+    if(!input){toast('Zone de chat indisponible.');return;}
+    input.value='Genere un resume du cours pour le pilier "'+focus.title+'" : idees essentielles, repères a retenir, erreurs a eviter et 3 questions pour me tester.';
+    window.sendKern();
   };
 
   window.downloadKernHistory=function(){
@@ -725,31 +837,47 @@
   window.sendKern=async function(){
     var st=state(), input=document.getElementById('agora-input'), send=document.getElementById('agora-send');
     var text=(input&&input.value||'').trim();
-    var mode=looksReal(text)?'support':((looksFictionRequest(text)||looksScenarioContinuation(text))?'fiction':'reference');
-    var temp=mode==='support'?KERN_SUPPORT_TEMP:(mode==='reference'?KERN_REFERENCE_TEMP:KERN_TEMP);
-    var maxTokens=mode==='support'?KERN_SUPPORT_MAX_TOKENS:(mode==='reference'?KERN_REFERENCE_MAX_TOKENS:KERN_MAX_TOKENS);
-    if(!st.ready){toast('Kern est encore verrouillé pour ce joueur.');return;}
+    var focus=activePillarFocus();
+    if(focus&&isPillarFocusExitRequest(text)){
+      if(input)input.value='';
+      pushMessage('user',text);
+      clearPillarFocus();
+      pushMessage('assistant','Mode aide Kern désactivé. Je reviens au mode général.');
+      renderSection();
+      if(input)input.focus();
+      return;
+    }
+    var mode=focus?'pillar-help':(looksReal(text)?'support':((looksFictionRequest(text)||looksScenarioContinuation(text))?'fiction':'reference'));
+    var temp=mode==='pillar-help'?(focus&&focus.mode==='summary'?KERN_PILLAR_SUMMARY_TEMP:KERN_PILLAR_HELP_TEMP):(mode==='support'?KERN_SUPPORT_TEMP:(mode==='reference'?KERN_REFERENCE_TEMP:KERN_TEMP));
+    var maxTokens=mode==='pillar-help'?960:(mode==='support'?KERN_SUPPORT_MAX_TOKENS:(mode==='reference'?KERN_REFERENCE_MAX_TOKENS:KERN_MAX_TOKENS));
+    if(!canUseKern()){toast('Kern est encore verrouillé pour ce joueur.');return;}
     if(!text)return;
     input.value='';
     if(send)send.disabled=true;
     pushMessage('user',text);
-    typing(true,mode==='support'?'Kern relit les repères de protection, de posture et de protocole…':(mode==='reference'?'Kern consulte les repères institutionnels de la plateforme Vie scolaire…':'Kern ouvre une scène à Valdurne tout en relisant les repères éducatifs…'));
+    typing(true,mode==='pillar-help'?(focus&&focus.mode==='summary'?'Kern synthétise ce pilier à basse température…':'Kern reste centré sur ce pilier pour t aider à le comprendre…'):(mode==='support'?'Kern relit les repères de protection, de posture et de protocole…':(mode==='reference'?'Kern consulte les repères institutionnels de la plateforme Vie scolaire…':'Kern ouvre une scène à Valdurne tout en relisant les repères éducatifs…')));
     try{
       if(mode==='fiction')await loadScenarioLibrary();
       if(mode!=='fiction'&&SCENARIO_STATE.active&&/pause|stop scenario|stop scénario|on sort du scenario|on sort du scénario|question reelle|question réelle|explique moi|explique-moi/.test(norm(text)))clearActiveScenario();
+      if(mode==='pillar-help'&&SCENARIO_STATE.active)clearActiveScenario();
       var scenarioBundle=mode==='fiction'?pickScenario(text):null;
       var scenarioQuery=scenarioBundle&&scenarioBundle.scenario?(text+' '+scenarioBundle.scenario.title+' '+(scenarioBundle.scenario.tags||[]).join(' ')+' '+(scenarioBundle.scenario.sourceHints||[]).join(' ')):text;
+      if(focus){
+        scenarioQuery+=' '+focus.title+' '+focus.desc+' '+focus.moduleIds.join(' ')+' '+focus.moduleNames.join(' ');
+      }
       var ctx=await contextFor(scenarioQuery);
-      var sys=prompt()+'\n\n'+runtimeRules(mode)+(scenarioBundle?'\n\n'+scenarioPromptBlock(scenarioBundle):'')+'\n\n'+ctx.context;
+      var sys=prompt()+'\n\n'+runtimeRules(mode,focus)+(focus?'\n\n'+buildPillarPromptBlock(focus):'')+(scenarioBundle?'\n\n'+scenarioPromptBlock(scenarioBundle):'')+'\n\n'+ctx.context;
       var prior=HISTORY.slice(Math.max(HISTORY.length-7,0),Math.max(HISTORY.length-1,0)).map(function(msg){return {role:msg.role==='assistant'?'assistant':'user',content:msg.content};});
       var reply=await complete([{role:'system',content:sys}].concat(prior).concat([{role:'user',content:text}]),temp,maxTokens);
       typing(false);
       pushMessage('assistant',reply||'Je n ai pas réussi à formuler de réponse. Réessaie avec une consigne plus précise.');
       if(mode==='support'&&CONCERN.mode==='idle'){CONCERN={mode:'hint',draft:null,submission:null,message:'Si tu décris une situation réelle, je peux aussi préparer un signalement structuré à partir de ce que tu viens d écrire.'};}
+      if(mode==='pillar-help'&&focus&&focus.mode==='summary'){setPillarFocus(focus.key,'coach');renderSection();}
       renderConcern();
     }catch(e){
       typing(false);
       pushMessage('assistant','Je n arrive pas à joindre Mistral ou à relire les sources locales de PIX pHARe. Vérifie que les fichiers sont bien publiés dans ce dossier, puis réessaie.');
+      if(mode==='pillar-help'&&focus&&focus.mode==='summary'){setPillarFocus(focus.key,'coach');renderSection();}
     }
     if(send)send.disabled=false;
     updateControls();
