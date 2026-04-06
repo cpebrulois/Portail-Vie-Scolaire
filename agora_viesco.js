@@ -120,6 +120,7 @@
     store.messages.push({role:role,content:text(content),ts:new Date().toISOString()});
     if(store.messages.length>20)store.messages=store.messages.slice(-20);
     saveStore();
+    if(role==='assistant'&&typeof window.PVS_VITS_SPEAK==='function')window.PVS_VITS_SPEAK(text(content));
   }
   function resetConversation(){
     store.messages=[];
