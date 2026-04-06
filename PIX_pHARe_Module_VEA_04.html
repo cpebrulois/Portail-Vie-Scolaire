@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIX-pHARe | Module VEA 04 — Dire ce que je pense sans blesser</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+        :root{--vea-green:#22c55e;--vea-lime:#84cc16;--vea-accent:#16a34a;--vea-bronze:#7c6b2a;--vea-gold:#c9a84c;--panel-bg:#f7fdf9;--panel-shadow:0 6px 32px rgba(34,197,94,0.13);--text-primary:#1a3322;--text-secondary:#4a6b5a;--accent-gradient:linear-gradient(90deg,#22c55e 0%,#84cc16 60%,#c9a84c 100%);}
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Rajdhani',sans-serif;background:var(--panel-bg);color:var(--text-primary);min-height:100vh}
+        .app-container{max-width:900px;margin:0 auto;padding:20px}.header{text-align:center;padding:36px 20px 24px}
+        .pillar-icon{font-size:3rem;margin-bottom:12px}.glitch-title{font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,4vw,2.2rem);font-weight:900;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}.subtitle{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--vea-accent);margin-top:10px;text-transform:uppercase;letter-spacing:2px}
+        .module-badge{display:inline-block;margin-top:18px;padding:10px 28px;background:linear-gradient(135deg,#22c55e33,#84cc1633);border:2px solid var(--vea-bronze);color:var(--vea-bronze);font-family:'Share Tech Mono',monospace;font-size:0.93rem;clip-path:polygon(10px 0%,calc(100% - 10px) 0%,100% 50%,calc(100% - 10px) 100%,10px 100%,0% 50%)}
+        .xp-display{display:flex;justify-content:center;gap:22px;margin-bottom:26px}.xp-box{background:#eafdf3;border:2px solid var(--vea-green);padding:12px 22px;text-align:center;clip-path:polygon(8px 0%,calc(100% - 8px) 0%,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0% calc(100% - 8px),0% 8px)}.xp-label{font-family:'Share Tech Mono',monospace;font-size:0.73rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1.7px}.xp-value{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:700;color:var(--vea-accent)}
+        .content-panel{background:#fffefc;border:2px solid #22c55e40;border-radius:10px;margin-bottom:18px;position:relative;box-shadow:var(--panel-shadow)}.content-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent-gradient)}
+        .panel-header{background:linear-gradient(135deg,#eafdf3,#f6fdf4);padding:15px 22px;border-bottom:1px solid #22c55e40;display:flex;align-items:center;gap:12px;border-radius:8px 8px 0 0}.panel-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--vea-accent),#22c55e);display:flex;align-items:center;justify-content:center;font-size:1.25rem;border-radius:50%}.panel-title{font-family:'Orbitron',sans-serif;font-size:1.06rem;font-weight:700;color:var(--vea-accent);text-transform:uppercase;letter-spacing:1.5px}
+        .panel-body{padding:22px}.intro-screen{text-align:center;padding:22px 14px 30px}.name-input-group{margin:22px auto 0;max-width:330px}.name-input{width:100%;padding:12px;background:#f5fdf8;border:2px solid var(--vea-accent);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:1rem;margin-bottom:13px;border-radius:6px}.name-input:focus{outline:none;border-color:var(--vea-green)}.name-input::placeholder{color:#adc3b2}
+        .flashcard-container{perspective:1100px;margin-bottom:20px}.flashcard{position:relative;width:100%;min-height:210px;cursor:pointer;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1)}.flashcard.flipped{transform:rotateY(180deg)}.flashcard-face{position:absolute;width:100%;min-height:210px;backface-visibility:hidden;border:2px solid var(--vea-green);display:flex;flex-direction:column;justify-content:center;padding:18px;background:#eafdf3;border-radius:9px}.flashcard-front{background:linear-gradient(135deg,#eafdf3 80%,#f6fdf4 100%)}.flashcard-back{transform:rotateY(180deg);background:#f6fdf4;border-color:var(--vea-lime)}.flashcard-question{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:600;color:var(--vea-accent);text-align:center;margin-bottom:13px}.flashcard-hint{font-family:'Share Tech Mono',monospace;font-size:0.86rem;color:var(--vea-green);text-align:center}.flashcard-answer{font-size:1rem;line-height:1.7;color:var(--text-primary);font-style:italic}.flashcard-source{color:var(--vea-green);font-size:0.93em;margin-top:11px;text-align:right}
+        .flashcard-nav{display:flex;justify-content:center;gap:14px;margin-top:15px}.nav-btn{background:transparent;border:2px solid var(--vea-green);color:var(--vea-green);padding:10px 23px;font-family:'Share Tech Mono',monospace;font-size:0.93rem;cursor:pointer;border-radius:5px;transition:all 0.3s;text-transform:uppercase}.nav-btn:hover{background:#22c55e1a}.nav-btn:disabled{opacity:0.34;cursor:not-allowed}
+        .quiz-question{font-size:1.08rem;font-weight:600;margin-bottom:17px;padding:17px;background:linear-gradient(135deg,#eafdf3 90%,#f6fdf4 100%);border-left:4px solid var(--vea-accent);border-radius:5px 0 0 5px}.quiz-options{display:flex;flex-direction:column;gap:11px}.quiz-option{background:#f5fdf8;border:2px solid #c3ebd0;padding:12px 16px;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:14px;border-radius:5px}.quiz-option:hover:not(.selected):not(.correct):not(.incorrect){border-color:var(--vea-accent);background:#eafdf3;transform:translateX(5px)}.quiz-option.selected{border-color:var(--vea-green);background:#cbf2d8}.quiz-option.correct{border-color:var(--vea-green);background:#c7f2e4}.quiz-option.incorrect{border-color:var(--vea-bronze);background:#f3e7cf}.option-marker{width:33px;height:33px;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-weight:700;border-radius:50%}.option-text{flex:1;font-size:0.98rem}
+        .feedback-box{margin-top:17px;padding:17px;border-left:4px solid var(--vea-green);background:#e2f5ee;border-radius:5px}.feedback-box.incorrect-feedback{border-color:var(--vea-bronze);background:#f6e9d4}.feedback-title{font-family:'Orbitron',sans-serif;font-weight:700;color:var(--vea-green);margin-bottom:8px}.feedback-box.incorrect-feedback .feedback-title{color:var(--vea-bronze)}
+        .scenario-context{font-family:'Share Tech Mono',monospace;font-size:0.93rem;color:var(--vea-bronze);margin-bottom:13px;padding:10px 13px;background:#f3e7cf;border:1px dashed var(--vea-bronze);border-radius:4px}.scenario-intro{font-size:1.02rem;line-height:1.7;margin-bottom:17px;padding:13px;background:#eafdf3;border:1px solid #cbf2d8;border-radius:4px}.choice-btn{display:block;width:100%;background:#f6fdf4;border:2px solid #c3ebd0;padding:14px 13px;margin-bottom:10px;text-align:left;cursor:pointer;transition:all 0.25s;font-family:'Rajdhani',sans-serif;font-size:1rem;color:var(--text-primary);border-radius:6px}.choice-btn:hover{border-color:var(--vea-accent);background:#eafdf3;transform:translateX(5px)}.choice-result{margin-top:17px;padding:15px;background:#f5fdf8;border:2px solid var(--vea-green);border-radius:7px}
+        .action-btn{display:inline-block;background:var(--accent-gradient);color:white;border:none;padding:12px 33px;font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1.7px;transition:all 0.25s;border-radius:24px;margin-top:8px}.action-btn:hover{transform:scale(1.07)}.action-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+        .completion-screen{text-align:center;padding:46px 17px 38px}.completion-icon{font-size:5rem;margin-bottom:19px;animation:veaPulse 2.1s ease-in-out infinite}@keyframes veaPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}.completion-title{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:13px}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:19px;margin:25px 0}.stat-card{background:#f5fdf8;border:2px solid var(--vea-accent);padding:16px;text-align:center;border-radius:9px}.stat-value{font-family:'Orbitron',sans-serif;font-size:1.42rem;font-weight:700;color:var(--vea-accent)}.stat-label{font-family:'Share Tech Mono',monospace;font-size:0.86rem;color:var(--text-secondary);text-transform:uppercase;margin-top:5px}
+    </style>
+</head>
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const { useState } = React; const e = React.createElement;
+const MODULE_ID = "VEA_04"; const BACK_URL = "index_PIXHARe.html";
+
+const flashcardsData = [
+    { question: "C'est quoi la communication assertive ?", hint: "[ Clique pour découvrir ]", answer: "Être assertif(ve), c'est exprimer ce qu'on pense, ressent ou veut <b>clairement et respectueusement</b> — sans être agressif(ve), ni se soumettre. C'est ni attaquer, ni fuir.", source: "Psychologie comportementale" },
+    { question: "Quelle est la structure de la CNV ?", hint: "[ Clique pour découvrir ]", answer: "Observation → Émotion → Besoin → Demande. Par ex : 'Quand tu coupes la parole (obs.), je me sens frustré(e) (ém.) parce que j'ai besoin d'être entendu(e) (besoin). Peux-tu me laisser finir ? (demande)'", source: "Marshall Rosenberg, CNV" },
+    { question: "Pourquoi les accusations créent-elles des conflits ?", hint: "[ Clique pour découvrir ]", answer: "Les accusations ('tu es toujours...' 'tu ne fais jamais...') déclenchent des réactions défensives. Elles coupent le dialogue. Parler de son vécu plutôt que de l'autre réduit la résistance.", source: "Communication Non-Violente" },
+    { question: "C'est quoi la différence entre passif, agressif et assertif ?", hint: "[ Clique pour découvrir ]", answer: "Passif : on se tait, on subit. Agressif : on attaque, on blesse. Assertif : on dit ce qu'on pense <b>sans blesser</b> et <b>sans renoncer</b>. C'est le juste milieu — et ça s'apprend.", source: "Wolpe, 1958" },
+    { question: "Le 'je' est plus puissant que le 'tu' en communication. Pourquoi ?", hint: "[ Clique pour découvrir ]", answer: "Le 'tu' accuse ('tu m'as blessé(e)'). Le 'je' exprime ('je me suis senti(e) blessé(e)'). Le 'je' parle de toi — pas de l'autre. Ça permet d'être honnête sans déclencher de défense.", source: "Thérapies comportementales" },
+];
+
+const quizData = [
+    { question: "Léo dit à Maya : 'Tu es toujours en retard, c'est irrespectueux.' Quel est le problème avec cette formulation ?", options: ["Elle est trop douce", "Elle accuse ('tu') et généralise ('toujours'), ce qui risque de déclencher une défense"], correct: 1, feedback: "Exact. Une meilleure formule : 'Quand tu arrives en retard, je me sens ignoré(e). J'aurais besoin qu'on soit à l'heure — tu peux essayer ?' Même message, sans attaque." },
+    { question: "Être assertif(ve), c'est toujours obtenir ce qu'on veut ?", options: ["Oui, c'est l'objectif", "Non, c'est exprimer clairement — sans garantie de résultat"], correct: 1, feedback: "L'assertivité ne garantit pas l'accord de l'autre — mais elle garantit une communication honnête et respectueuse. Le résultat dépend des deux personnes." },
+];
+
+const scenarioData = {
+    context: "Ton ami prend souvent tes affaires sans te demander. Tu n'aimes pas ça, mais tu ne sais pas comment lui dire sans créer de conflit.",
+    intro: "Qu'est-ce que tu choisis de faire ?",
+    choices: [
+        { text: "Je lui dis calmement : 'Quand tu prends mes affaires sans me demander, je me sens pas respecté(e). J'aurais besoin que tu demandes d'abord. C'est possible ?' Et j'attends sa réponse.", result: "✅ Structure CNV parfaite. Observation + émotion + besoin + demande. Tu exprimes ton vécu sans l'accuser — et tu ouvres un dialogue.", positive: true },
+        { text: "Je me tais pour éviter le conflit. Je ruminerce lui reprochant en tête.", result: "⚠️ Le silence apparent maintient la paix à court terme, mais la frustration s'accumule. Elle finit souvent par exploser — de manière bien plus violente. Dire les choses avec douceur, c'est éviter les explosions futures.", positive: false },
+    ]
+};
+
+function getPlayer(){try{var u=new URLSearchParams(window.location.search),p=u.get('player');if(p&&p.length>2){localStorage.setItem('pvs_current_player',p);return p;}}catch(ex){}return localStorage.getItem('pvs_current_player')||'';}
+function awardXP(){try{var raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];evts.push({id:'VEA-'+MODULE_ID+'-'+Date.now(),type:'PHARE_PROGRESS',player:getPlayer(),module:MODULE_ID,label:'PIX pHARe : Dire ce que je pense sans blesser',d:new Date().toISOString()});if(evts.length>700)evts.splice(0,evts.length-700);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));var done=JSON.parse(localStorage.getItem('pvs_phare_done')||'{}');done[MODULE_ID]=true;localStorage.setItem('pvs_phare_done',JSON.stringify(done));}catch(ex){}}
+
+function App(){
+    const [gs,setGs]=useState("intro");const [pn,setPn]=useState(getPlayer());const [cf,setCf]=useState(0);const [ff,setFf]=useState(false);const [cq,setCq]=useState(0);const [sa,setSa]=useState(null);const [sqf,setSqf]=useState(false);const [qs,setQs]=useState(0);const [sc,setSc]=useState(null);const [xp,setXp]=useState(0);
+    function goBack(){window.location.href=BACK_URL+(pn?'?player='+encodeURIComponent(pn):'');}
+    function nextFC(){if(cf<flashcardsData.length-1){setCf(c=>c+1);setFf(false);setXp(x=>x+10);}else{setGs("quiz");setXp(x=>x+20);}}
+    function prevFC(){if(cf>0){setCf(c=>c-1);setFf(false);}}
+    function validateQ(){setSqf(true);if(sa===quizData[cq].correct){setQs(s=>s+1);setXp(x=>x+15);}}
+    function nextQ(){if(cq<quizData.length-1){setCq(q=>q+1);setSa(null);setSqf(false);}else{setGs("scenario");}}
+    function chooseS(i){setSc(i);if(scenarioData.choices[i].positive)setXp(x=>x+20);}
+    function finish(){awardXP();setGs("complete");}
+
+    if(gs==="intro")return e('div',{className:'app-container'},
+        e('div',{className:'header'},e('div',{className:'pillar-icon'},'💬'),e('h1',{className:'glitch-title'},'DIRE CE QUE JE PENSE SANS BLESSER'),e('div',{className:'subtitle'},'VEA 04 · Vivre Ensemble Actif'),e('div',{className:'module-badge'},'💬 MODULE 4/6 · 120 XP')),
+        e('div',{className:'xp-display'},e('div',{className:'xp-box'},e('div',{className:'xp-value'},'120'),e('div',{className:'xp-label'},'XP disponibles'))),
+        e('div',{className:'content-panel'},e('div',{className:'panel-header'},e('div',{className:'panel-icon'},'💬'),e('div',{className:'panel-title'},'Communication assertive')),
+        e('div',{className:'panel-body intro-screen'},
+            e('p',{style:{lineHeight:1.7,marginBottom:16}},"Il y a une manière de dire les choses qui crée du lien — et une manière qui crée de la distance. La Communication Non-Violente (CNV) te donne une structure simple pour dire ce que tu penses vraiment, sans blesser."),
+            e('p',{style:{lineHeight:1.7,marginBottom:16,color:'#4a6b5a'}},"Ce module explore l'assertivité, la CNV, et pourquoi le 'je' est souvent plus fort que le 'tu'."),
+            e('div',{className:'name-input-group'},e('input',{className:'name-input',type:'text',placeholder:'Ton prénom ou identifiant...',value:pn,onChange:ev=>setPn(ev.target.value)}),e('button',{className:'action-btn',onClick:()=>{if(pn.trim())setGs("flashcards");},disabled:!pn.trim()},'Commencer →')))));
+
+    if(gs==="flashcards"){const card=flashcardsData[cf];return e('div',{className:'app-container'},
+        e('div',{className:'header'},e('h1',{className:'glitch-title',style:{fontSize:'1.6rem'}},'FLASHCARDS'),e('div',{className:'subtitle'},cf+1+' / '+flashcardsData.length)),
+        e('div',{className:'content-panel'},e('div',{className:'panel-header'},e('div',{className:'panel-icon'},'🃏'),e('div',{className:'panel-title'},'CNV & Assertivité')),
+        e('div',{className:'panel-body'},
+            e('div',{className:'flashcard-container'},e('div',{className:'flashcard'+(ff?' flipped':''),onClick:()=>setFf(f=>!f)},
+                e('div',{className:'flashcard-face flashcard-front'},e('div',{className:'flashcard-question'},card.question),e('div',{className:'flashcard-hint'},card.hint)),
+                e('div',{className:'flashcard-face flashcard-back'},e('div',{className:'flashcard-answer',dangerouslySetInnerHTML:{__html:card.answer}}),e('div',{className:'flashcard-source'},'— '+card.source)))),
+            e('div',{className:'flashcard-nav'},e('button',{className:'nav-btn',onClick:prevFC,disabled:cf===0},'← Préc.'),e('button',{className:'nav-btn',onClick:nextFC},cf<flashcardsData.length-1?'Suiv. →':'Quiz →')))));}
+
+    if(gs==="quiz"){const q=quizData[cq];return e('div',{className:'app-container'},
+        e('div',{className:'header'},e('h1',{className:'glitch-title',style:{fontSize:'1.6rem'}},'QUIZ'),e('div',{className:'subtitle'},'Question '+(cq+1)+' / '+quizData.length)),
+        e('div',{className:'content-panel'},e('div',{className:'panel-header'},e('div',{className:'panel-icon'},'❓'),e('div',{className:'panel-title'},'Vérifie ta compréhension')),
+        e('div',{className:'panel-body'},e('div',{className:'quiz-question'},q.question),
+            e('div',{className:'quiz-options'},q.options.map((opt,i)=>e('div',{key:i,className:'quiz-option'+(sqf?(i===q.correct?' correct':(i===sa?' incorrect':'')):(i===sa?' selected':'')),onClick:()=>{if(!sqf)setSa(i);}},e('div',{className:'option-marker'},String.fromCharCode(65+i)),e('div',{className:'option-text'},opt)))),
+            sqf?e('div',{className:'feedback-box'+(sa===q.correct?'':' incorrect-feedback')},e('div',{className:'feedback-title'},sa===q.correct?'✅ Correct !':'❌ Pas tout à fait...'),e('p',null,q.feedback),e('button',{className:'action-btn',style:{marginTop:12},onClick:nextQ},cq<quizData.length-1?'Question suivante →':'Scénario →')):e('button',{className:'action-btn',disabled:sa===null,onClick:validateQ},'Valider'))));}
+
+    if(gs==="scenario")return e('div',{className:'app-container'},
+        e('div',{className:'header'},e('h1',{className:'glitch-title',style:{fontSize:'1.6rem'}},'SCÉNARIO'),e('div',{className:'subtitle'},'Comment réagis-tu ?')),
+        e('div',{className:'content-panel'},e('div',{className:'panel-header'},e('div',{className:'panel-icon'},'🎭'),e('div',{className:'panel-title'},'Mise en situation')),
+        e('div',{className:'panel-body'},e('div',{className:'scenario-context'},'📍 '+scenarioData.context),e('div',{className:'scenario-intro'},scenarioData.intro),
+            sc===null?scenarioData.choices.map((c,i)=>e('button',{key:i,className:'choice-btn',onClick:()=>chooseS(i)},c.text)):e('div',null,e('div',{className:'choice-result'},scenarioData.choices[sc].result),e('button',{className:'action-btn',style:{marginTop:16},onClick:finish},'Terminer le module →')))));
+
+    return e('div',{className:'app-container'},e('div',{className:'completion-screen'},
+        e('div',{className:'completion-icon'},'💬'),e('div',{className:'completion-title'},'MODULE COMPLÉTÉ !'),
+        e('p',{style:{lineHeight:1.7,marginBottom:20,color:'#4a6b5a'}},"La CNV et l'assertivité sont tes outils. Dire ce que tu penses sans blesser — c'est une compétence rare et précieuse."),
+        e('div',{className:'stats-grid'},e('div',{className:'stat-card'},e('div',{className:'stat-value'},xp),e('div',{className:'stat-label'},'XP gagnés')),e('div',{className:'stat-card'},e('div',{className:'stat-value'},qs+'/'+quizData.length),e('div',{className:'stat-label'},'Quiz')),e('div',{className:'stat-card'},e('div',{className:'stat-value'},'4/6'),e('div',{className:'stat-label'},'Modules VEA'))),
+        e('button',{className:'action-btn',onClick:goBack},'← Retour au hub')));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script></body></html>

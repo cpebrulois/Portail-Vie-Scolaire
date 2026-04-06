@@ -2,17 +2,29 @@
   var KERN_KEY='VIRuDMeF8Wz8DcdfEkW2BBvhD51jNCfg';
   var KERN_URL='https://api.mistral.ai/v1/chat/completions';
   var KERN_MODEL='mistral-small-latest';
-  var KERN_TEMP=0.95;
-  var KERN_ANALYSIS_TEMP=0.1;
-  var KERN_MAX_TOKENS=1000;
+  var KERN_TEMP=0.72;
+  var KERN_SUPPORT_TEMP=0.28;
+  var KERN_REFERENCE_TEMP=0.18;
+  var KERN_ANALYSIS_TEMP=0.08;
+  var KERN_MAX_TOKENS=1100;
+  var KERN_SUPPORT_MAX_TOKENS=950;
+  var KERN_REFERENCE_MAX_TOKENS=900;
   var SUPABASE_URL='https://utgdfopnkplswxmiuyoi.supabase.co';
   var SUPABASE_PUBLISHABLE_KEY='sb_publishable_3JvqbxY4K2RmyJPH255Bzg_TYzpdsLr';
+  var KERN_MANIFEST_FILE='kern_manifest.json';
+  var KERN_SCENARIO_FILE='kern_scenarios.json';
+  var PROMPT_FILES=['kern_system.txt','agora_system.txt'];
+  var GITHUB_AUTO_INDEX_ENABLED=true;
+  var GITHUB_MAX_AUTO_DOCS=180;
 
   var SYSTEM_PROMPT='';
   var DOCS=[];
   var INDEX_PROMISE=null;
+  var SCENARIOS=[];
+  var SCENARIO_PROMISE=null;
   var CACHE={};
   var HISTORY=[];
+  var SCENARIO_STATE={history:[],counts:{},active:null};
   var OPEN=false;
   var CONCERN={mode:'idle',draft:null,submission:null,message:''};
   var SUPA=null;
@@ -20,47 +32,49 @@
 
   var STOPWORDS=['le','la','les','de','des','du','d','un','une','et','ou','au','aux','en','dans','sur','pour','par','avec','sans','que','qui','quoi','quel','quelle','quelles','quels','comment','quand','est','sont','a','ai','as','avoir','il','elle','on','nous','vous','ils','elles','ce','cet','cette','ces','mon','ma','mes','ton','ta','tes','son','sa','ses','notre','votre','leur','leurs','je','tu','me','te','se','ne','pas','plus','moins','ca','cela','ici','la','y','ou','vers'];
   var PROMPT_FALLBACK=[
-    'Tu es Kern, un compagnon narratif et pédagogique intégré à PIX pHARe.',
-    'Tu parles comme Kern, l allié de Lyam à Valdurne, sans quitter un cadre éducatif sûr.',
-    'Tu connais l univers de Valdurne et les repères pHARe à partir des sources locales récupérées.',
-    'Ta mission : soit créer une scène fictionnelle courte pour entraîner les compétences psychosociales du joueur, soit soutenir prudemment une situation réelle sans la transformer en jeu.',
-    'Tu aides à observer, protéger, documenter, mobiliser les témoins, choisir une posture juste et transmettre au bon adulte.',
-    'Tu n inventes jamais un fait de protocole, de droit, d Éducation nationale ou de canon local quand il manque dans les sources.'
+    'Tu es Kern, compagnon narratif, civique et pédagogique de la plateforme Vie scolaire.',
+    'Tu parles comme Kern, l allié de Lyam à Valdurne, mais tu restes rigoureusement compatible avec les attentes éducatives, institutionnelles et déontologiques des contenus locaux.',
+    'Tu peux aider sur PIX pHARe, l histoire de Valdurne, la liberté, l égalité, la fraternité, l orientation, la sécurité routière, la citoyenneté, les délégués et d autres thématiques réellement présentes dans les fichiers du projet.',
+    'Ta mission comporte trois modes : répondre factuellement à partir des sources locales, animer des simulations fictionnelles sûres et formatrices, ou soutenir prudemment une situation réelle sans la transformer en jeu.',
+    'Tu aides à observer, protéger, documenter, faire réfléchir, choisir une posture juste, mobiliser les bons relais et transmettre au bon adulte.',
+    'Tu n inventes jamais un fait de protocole, de droit, d Éducation nationale, de santé mentale, de sécurité ou de canon local quand il manque dans les sources.',
+    'Tu préfères la justesse institutionnelle, la clarté et la prudence à l effet dramatique.'
   ].join('\n');
   var PROMPT_APPENDIX=[
     '=== RÈGLES DE KERN ===',
-    '- Appuie-toi sur le contexte local PIX pHARe / Valdurne récupéré plus bas.',
-    '- En mode fiction : propose une scène courte, puis 2 ou 3 options maximum.',
-    '- En mode fiction : laisse le joueur agir avant de dérouler toute la solution.',
-    '- En mode fiction : termine volontiers par un mini-débrief métacognitif.',
-    '- En mode situation réelle : ne roleplay pas, ne scénarise pas, sécurise et oriente.',
+    '- Appuie-toi sur le contexte local récupéré plus bas, issu de l ensemble de la plateforme Vie scolaire publiée.',
+    '- Distingue trois modes : référence, fiction pédagogique, situation réelle.',
+    '- En mode référence : réponds sobrement, au plus près des documents, avec une réserve institutionnelle claire.',
+    '- En mode fiction : propose une scène courte, 2 ou 3 options maximum, puis un mini-débrief métacognitif et professionnel.',
+    '- En mode fiction : ne pousse jamais vers la vengeance, la violence, l humiliation, la manipulation ou le secret face aux adultes.',
+    '- En mode situation réelle : ne roleplay pas, ne scénarise pas, sécurise, qualifie l urgence et oriente.',
     '- Pour les points factuels, n utilise que le contexte local récupéré.',
+    '- Si une information n est pas établie par les sources locales, dis-le franchement.',
     '- Si tu cites un appui factuel important, termine par une ligne : Appuis locaux : ...'
   ].join('\n');
   var REFS=[
-    {id:'PIXHARE_HUB',title:'Hub PIX pHARe',file:'index_PIXHARe.html',pillar:'PIX pHARe',tags:['pixhare','hub','harcelement','phare','valdurne']},
-    {id:'PIXHARE_CODE',title:'Code de l Éducation et climat scolaire',file:"Code de l'Éducation et Climat Scolaire.md",pillar:'Références éducatives',tags:['education nationale','cadre','droit','protection']},
-    {id:'PIXHARE_CORPUS',title:'Corpus anti-harcèlement scolaire',file:'IA Éducative _ Corpus Anti-Harcèlement Scolaire.txt',pillar:'Références éducatives',tags:['harcelement','phare','temoins','victime','cyber']},
-    {id:'PIXHARE_JEUX',title:'Jeux d animation et escape games éducatifs',file:"Jeux d'animation et escape games éducatifs.md",pillar:'Références éducatives',tags:['jeux','cooperation','education']},
+    {id:'VIESCO_HOME',title:'Plateforme Vie scolaire',file:'index.html',pillar:'Plateforme Vie scolaire',tags:['vie scolaire','plateforme','hub','parcours','institution']},
+    {id:'PIXHARE_HUB',title:'Hub PIX pHARe',file:'index_PIXHARe.html',pillar:'PIX pHARe',tags:['pixhare','hub','harcelement','phare','valdurne','cps']},
+    {id:'LIBERTE_HUB',title:'Hub Liberté',file:'index_PIX_LIBERTE.html',pillar:'Liberté',tags:['liberte','citoyennete','droits','expression','laicite']},
+    {id:'EGALITE_HUB',title:'Hub Égalité',file:'index_PIX_Egalite.html',pillar:'Égalité',tags:['egalite','filles garcons','stereotypes','discrimination']},
+    {id:'FRATERNITE_HUB',title:'Hub Fraternité',file:'index_PIX_FRATERNITE.html',pillar:'Fraternité',tags:['fraternite','solidarite','entraide','vivre ensemble']},
+    {id:'DELEGUES_HUB',title:'Hub Délégués',file:'index_PIX_DELEGUES.html',pillar:'Citoyenneté',tags:['delegues','cvc','cvl','representation','parole eleve']},
+    {id:'PSC1_HUB',title:'Hub PSC1 et sécurité',file:'index_PSC1.html',pillar:'Secours & sécurité',tags:['psc1','secours','securite routiere','protection']},
     {id:'VALDURNE_HUB',title:'Hub narration Valdurne',file:'hub_narration.html',pillar:'Univers Valdurne',tags:['valdurne','lyam','kern','rena','histoire']},
-    {id:'VALDURNE_PREQUEL',title:'Préquelle de Lyam',file:'liam_eystieval_prequel.html',pillar:'Univers Valdurne',tags:['lyam','kern','rena','prequelle']},
-    {id:'VALDURNE_RUISSEAU',title:'Lyam au ruisseau des collines',file:'liam_ruisseau_collines.html',pillar:'Univers Valdurne',tags:['lyam','valdurne','amitie']},
-    {id:'VALDURNE_REMUS',title:'Chroniques de Remus',file:'remus_chroniques.html',pillar:'Univers Valdurne',tags:['remus','valdurne']},
-    {id:'VALDURNE_VOYAGE_1',title:'Voyage vers Valdurne chapitre 1',file:'valdurne_voyage_ch1.html',pillar:'Univers Valdurne',tags:['valdurne','voyage','lyam','kern','rena']},
-    {id:'VALDURNE_VOYAGE_2',title:'Voyage vers Valdurne chapitre 2',file:'valdurne_voyage_ch2.html',pillar:'Univers Valdurne',tags:['valdurne','voyage','lyam','kern','rena']},
-    {id:'VALDURNE_CH6_MD',title:'Nuit cachée version texte',file:'roman_ch06_nuit_cache_elevenlabs.md',pillar:'Univers Valdurne',tags:['valdurne','roman','lyam','kern','rena']},
-    {id:'VALDURNE_CH7_MD',title:'Procès du couloir nord version texte',file:'roman_ch07_proces_couloir_nord_elevenlabs.md',pillar:'Univers Valdurne',tags:['valdurne','proces','kern']},
-    {id:'VALDURNE_CH8_MD',title:'Joute des savoirs version texte',file:'roman_ch08_joute_savoirs_elevenlabs.md',pillar:'Univers Valdurne',tags:['valdurne','rena','arguments']},
-    {id:'VALDURNE_CH9_MD',title:'Serments version texte',file:'roman_ch09_serments_elevenlabs.md',pillar:'Univers Valdurne',tags:['valdurne','lyam','kern','serments']}
+    {id:'VIDEOS_HUB',title:'Hub vidéos et ressources',file:'hub_videos.html',pillar:'Ressources',tags:['videos','ressources','plateforme']},
+    {id:'FONTAINEBLEAU_HUB',title:'Hub Fontainebleau',file:'hub_fontainebleau.html',pillar:'Univers narratif',tags:['fontainebleau','recits','valeurs']},
+    {id:'CHEVALIERS_JUSTICE',title:'Chevaliers de Justice',file:'Chevaliers_Justice.html',pillar:'Univers narratif',tags:['justice','citoyennete','engagement','fraternite']}
   ];
   var STORY_FILES=['roman_ch01.html','roman_ch02.html','roman_ch03.html','roman_ch04.html','roman_ch05.html','roman_ch06.html','roman_ch07.html','roman_ch08.html','roman_ch09.html','roman_ch10.html'];
 
   function prompt(){return (SYSTEM_PROMPT&&SYSTEM_PROMPT.trim()?SYSTEM_PROMPT:PROMPT_FALLBACK).trim()+'\n\n'+PROMPT_APPENDIX;}
   async function loadPrompt(){
-    try{
-      var res=await fetch('agora_system.txt',{cache:'no-store'});
-      if(res.ok){SYSTEM_PROMPT=await res.text();return;}
-    }catch(e){}
+    for(var i=0;i<PROMPT_FILES.length;i++){
+      try{
+        var res=await fetch(PROMPT_FILES[i],{cache:'no-store'});
+        if(res.ok){SYSTEM_PROMPT=await res.text();return;}
+      }catch(e){}
+    }
     SYSTEM_PROMPT=PROMPT_FALLBACK;
   }
   function norm(s){return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/œ/g,'oe').replace(/æ/g,'ae').replace(/[^a-z0-9\s\-]/g,' ').replace(/\s+/g,' ').trim();}
@@ -72,25 +86,246 @@
   function stripHtml(src){return clip((src||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(),14000);}
   function stripMd(src){return clip((src||'').replace(/!\[[^\]]*\]\([^)]+\)/g,' ').replace(/\[([^\]]+)\]\(([^)]+)\)/g,'$1').replace(/^\s{0,3}#{1,6}\s*/gm,'').replace(/^\s*>\s?/gm,'').replace(/^\s*[-*+]\s+/gm,'').replace(/^\s*\d+\.\s+/gm,'').replace(/[*_`~|]/g,' ').replace(/\s+/g,' ').trim(),14000);}
   function extractText(doc,src){return /\.md$/i.test(doc.file)?stripMd(src):/\.(txt|json|sql)$/i.test(doc.file)?clip((src||'').replace(/\s+/g,' ').trim(),14000):stripHtml(src);}
+  function uniq(arr){var out=[],seen={};(arr||[]).forEach(function(item){var key=norm(item);if(!item||seen[key])return;seen[key]=true;out.push(item);});return out;}
+  function docKey(doc){return ((doc&&doc.file)||'')+'::'+((doc&&doc.id)||'');}
+  function refreshDoc(doc){doc.search=norm([doc.id,doc.title,doc.pillar||'',doc.text||'',(doc.tags||[]).join(' ')].join(' '));return doc;}
+  function registerDoc(out,seen,doc){
+    var key=docKey(doc);
+    if(!doc||seen[key])return;
+    seen[key]=true;
+    refreshDoc(doc);
+    out.push(doc);
+  }
+  function shouldExcludeProjectPath(file){
+    var rel=(file||'').replace(/\\/g,'/');
+    return /(^|\/)(__pycache__|vendor|adciv|game|MAJ VieSco|Nouveau dossier|Projet PIX_Like pHARe|Projet PIX_Like PSC1)(\/|$)/i.test(rel)||/(^|\/)(index\.old\.html|index \(5\)\.html|agora_system\.txt|kern_system\.txt|agora_pixhare\.js|students\.csv|adults\.csv|parents\.csv|temoins_adultes_80_lignes\.csv|grilles codes élèves\.csv)$/i.test(rel);
+  }
+  function isDiscoverableTextFile(file){
+    return !!file&&!shouldExcludeProjectPath(file)&&/\.(html?|md|txt|json)$/i.test(file);
+  }
+  function inferProjectTags(file){
+    var src=norm((file||'')+' '+humanize(file)), tags=[];
+    function add(){tags=tags.concat([].slice.call(arguments));}
+    if(/pix phare|pix ph are|phare|harcelement|groupe|neuro|numerique|juridique|cps|temoin|victime/.test(src))add('pixhare','phare','harcelement','cps');
+    if(/valdur|lyam|kern|rena|remus|roman|narration|agora|chronique/.test(src))add('valdurne','lyam','kern','rena','narration');
+    if(/liberte|lib /.test(src))add('liberte','droits','citoyennete');
+    if(/egalite|egalite|discrimination|stereotype|filles garcons/.test(src))add('egalite','discrimination','respect');
+    if(/fraternite|fra /.test(src))add('fraternite','solidarite','entraide','vivre ensemble');
+    if(/delegu|cvc|cvl|parole eleve|justice/.test(src))add('delegues','citoyennete','parole');
+    if(/psc1|secours|securite routiere|route|velo|accident|premiers secours/.test(src))add('psc1','secours','securite routiere','protection');
+    if(/orientation|avenir|metier|parcours/.test(src))add('orientation','parcours');
+    if(/fontainebleau/.test(src))add('fontainebleau','recit');
+    return uniq(tags);
+  }
+  function inferProjectPillar(file,tags){
+    var src=norm((file||'')+' '+(tags||[]).join(' '));
+    if(/pixhare|phare|harcelement/.test(src))return 'PIX pHARe';
+    if(/liberte/.test(src))return 'Liberté';
+    if(/egalite/.test(src))return 'Égalité';
+    if(/fraternite/.test(src))return 'Fraternité';
+    if(/psc1|secours|securite routiere/.test(src))return 'Secours & sécurité';
+    if(/orientation|parcours/.test(src))return 'Orientation';
+    if(/delegues|citoyennete|justice|parole/.test(src))return 'Citoyenneté';
+    if(/valdurne|lyam|kern|rena|fontainebleau|narration/.test(src))return 'Univers Valdurne';
+    return 'Plateforme Vie scolaire';
+  }
+  async function fetchManifestFiles(){
+    try{
+      var res=await fetch(KERN_MANIFEST_FILE,{cache:'no-store'});
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var data=await res.json();
+      return Array.isArray(data)?data.filter(isDiscoverableTextFile):[];
+    }catch(e){
+      return [];
+    }
+  }
+  async function buildProjectDocs(existingDocs){
+    var existing={}, out=[], seen={};
+    (existingDocs||[]).forEach(function(doc){if(doc&&doc.file)existing[norm(doc.file)]=true;});
+    var manifestFiles=await fetchManifestFiles();
+    manifestFiles.slice(0,GITHUB_MAX_AUTO_DOCS).forEach(function(file){
+      if(existing[norm(file)])return;
+      var title=humanize(file), tags=inferProjectTags(file);
+      registerDoc(out,seen,{kind:'project',id:'DOC_'+file.replace(/[^A-Za-z0-9]+/g,'_'),title:title,file:file,pillar:inferProjectPillar(file,tags),tags:tags,text:title+' '+tags.join(' '),excerpt:title});
+    });
+    return out;
+  }
+  function normalizeScenario(raw){
+    raw=raw&&typeof raw==='object'?raw:{};
+    return {
+      id:String(raw.id||('scenario_'+Date.now())).replace(/[^A-Za-z0-9_-]+/g,'_'),
+      title:clip(String(raw.title||'Scénario Kern'),140),
+      category:clip(String(raw.category||'Simulation CPS'),120),
+      complexity:toInt(raw.complexity,1,1,5),
+      tags:Array.isArray(raw.tags)?uniq(raw.tags.map(String)):[],
+      summary:clip(String(raw.summary||''),320),
+      cast:Array.isArray(raw.cast)?raw.cast.map(String).slice(0,8):[],
+      opening:clip(String(raw.opening||''),700),
+      mustNotice:Array.isArray(raw.mustNotice)?raw.mustNotice.map(String).slice(0,8):[],
+      cpsTargets:Array.isArray(raw.cpsTargets)?raw.cpsTargets.map(String).slice(0,8):[],
+      goodMoves:Array.isArray(raw.goodMoves)?raw.goodMoves.map(String).slice(0,8):[],
+      badMoves:Array.isArray(raw.badMoves)?raw.badMoves.map(String).slice(0,8):[],
+      adultRelay:clip(String(raw.adultRelay||''),220),
+      options:Array.isArray(raw.options)?raw.options.map(String).slice(0,4):[],
+      debrief:Array.isArray(raw.debrief)?raw.debrief.map(String).slice(0,8):[],
+      sourceHints:Array.isArray(raw.sourceHints)?uniq(raw.sourceHints.map(String)).slice(0,10):[]
+    };
+  }
+  async function loadScenarioLibrary(){
+    if(SCENARIOS.length)return SCENARIOS;
+    if(SCENARIO_PROMISE)return SCENARIO_PROMISE;
+    SCENARIO_PROMISE=(async function(){
+      try{
+        var res=await fetch(KERN_SCENARIO_FILE,{cache:'no-store'});
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        var data=await res.json();
+        SCENARIOS=Array.isArray(data)?data.map(normalizeScenario).filter(function(sc){return !!sc.id;}):[];
+      }catch(e){
+        SCENARIOS=[];
+      }
+      return SCENARIOS;
+    })();
+    return SCENARIO_PROMISE;
+  }
+  function scenarioById(id){
+    if(!id)return null;
+    for(var i=0;i<SCENARIOS.length;i++){if(SCENARIOS[i]&&SCENARIOS[i].id===id)return SCENARIOS[i];}
+    return null;
+  }
+  function scenarioHistoryCount(){
+    return Array.isArray(SCENARIO_STATE.history)?SCENARIO_STATE.history.length:0;
+  }
+  function scenarioDepthTarget(text){
+    var s=norm(text), played=scenarioHistoryCount(), depth=1;
+    if(played>=1)depth=2;
+    if(played>=4)depth=3;
+    if(played>=9)depth=4;
+    if(played>=15)depth=5;
+    if(/debut|début|simple|facile|doucement|initiation/.test(s))depth=1;
+    if(/intermediaire|intermédiaire|nuance|un peu plus/.test(s))depth=Math.max(depth,3);
+    if(/complexe|avance|avancé|difficile|ambigu|melange|mélange|cascade/.test(s))depth=Math.max(depth,4);
+    return Math.max(1,Math.min(5,depth));
+  }
+  function recentScenarioIds(limit){
+    var history=Array.isArray(SCENARIO_STATE.history)?SCENARIO_STATE.history:[];
+    return history.slice(Math.max(history.length-(limit||3),0)).map(function(item){return item&&item.id;}).filter(Boolean);
+  }
+  function scenarioQueryTags(text){
+    var s=norm(text), tags=[];
+    function add(){tags=tags.concat([].slice.call(arguments));}
+    if(/harcelement|rumeur|exclusion|cyber|temoin|victime|detresse|angoisse|mal etre|mal etre/.test(s))add('harcelement','cps','protection');
+    if(/liberte|laicite|expression/.test(s))add('liberte','citoyennete');
+    if(/egalite|discrimination|sexisme|stereotype/.test(s))add('egalite','respect');
+    if(/fraternite|solidarite|entraide|nouveau/.test(s))add('fraternite','entraide');
+    if(/delegue|conseil|parole|cvc|cvl/.test(s))add('delegues','parole');
+    if(/orientation|avenir|metier|stage/.test(s))add('orientation','parcours');
+    if(/securite routiere|route|velo|trottinette|casque/.test(s))add('securite routiere','protection');
+    if(/psc1|secours|malaise|saigne|blessure|accident/.test(s))add('psc1','secours');
+    if(/valdur|lyam|kern|rena|remus/.test(s))add('valdurne','lyam','kern');
+    return uniq(tags.concat(toks(text)));
+  }
+  function scenarioScore(text,scenario){
+    var q=norm([text,scenario.title,scenario.category].join(' '));
+    var bag=norm([
+      scenario.title,
+      scenario.category,
+      scenario.summary,
+      scenario.opening,
+      (scenario.tags||[]).join(' '),
+      (scenario.mustNotice||[]).join(' '),
+      (scenario.cpsTargets||[]).join(' '),
+      (scenario.sourceHints||[]).join(' ')
+    ].join(' '));
+    var score=0, desired=scenarioDepthTarget(text), used=(SCENARIO_STATE.counts&&SCENARIO_STATE.counts[scenario.id])||0;
+    scenarioQueryTags(text).forEach(function(tag){if(tag&&bag.indexOf(norm(tag))!==-1)score+=14;});
+    if(q&&bag.indexOf(q)!==-1)score+=50;
+    score+=Math.max(0,28-(Math.abs((scenario.complexity||1)-desired)*9));
+    score+=Math.max(0,20-(used*5));
+    if(recentScenarioIds(3).indexOf(scenario.id)!==-1)score-=24;
+    if(/nouveau|autre|surprends|change/.test(norm(text))&&used===0)score+=20;
+    if(/complexe|avance|avancé|ambigu|melange|mélange/.test(norm(text))&&(scenario.complexity||1)>=4)score+=16;
+    if(/simple|facile|doucement|initiation/.test(norm(text))&&(scenario.complexity||1)<=2)score+=16;
+    return score;
+  }
+  function wantsFreshScenario(text){
+    var s=norm(text);
+    return looksFictionRequest(text)||/nouveau scenario|autre scenario|change de scenario|changeons de scenario|encore un scenario|lance un scenario|joue un scenario|fais moi jouer/.test(s);
+  }
+  function looksScenarioContinuation(text){
+    if(!SCENARIO_STATE.active)return false;
+    var s=norm(text);
+    if(looksReal(text))return false;
+    if(/^(je veux|je voudrais|j aimerais|j'aimerais|explique|explique moi|explique-moi|dis moi|dis-moi|peux tu|peux-tu|c est quoi|qu est ce que|quest ce que)/.test(s))return false;
+    if(looksFictionRequest(text))return true;
+    if(/^(1|2|3|option 1|option 2|option 3)$/.test(s))return true;
+    if(/^(je|j|alors|ensuite|d abord|d'abord|ok|oui|non|je choisis|je parle|je vais|j appelle|j'appelle|je demande|je dis|je note|je reste|je propose|je respire|je regarde|je m approche|je m'approche)/.test(s))return true;
+    return false;
+  }
+  function rememberScenario(scenario){
+    if(!scenario||!scenario.id)return;
+    if(!SCENARIO_STATE.counts||typeof SCENARIO_STATE.counts!=='object')SCENARIO_STATE.counts={};
+    if(!Array.isArray(SCENARIO_STATE.history))SCENARIO_STATE.history=[];
+    SCENARIO_STATE.counts[scenario.id]=(SCENARIO_STATE.counts[scenario.id]||0)+1;
+    SCENARIO_STATE.history.push({id:scenario.id,ts:new Date().toISOString(),complexity:scenario.complexity||1,title:scenario.title});
+    SCENARIO_STATE.active={id:scenario.id,ts:new Date().toISOString(),title:scenario.title,complexity:scenario.complexity||1};
+    saveScenarioState();
+  }
+  function clearActiveScenario(){SCENARIO_STATE.active=null;saveScenarioState();}
+  function pickScenario(text){
+    if(!SCENARIOS.length)return null;
+    var active=scenarioById(SCENARIO_STATE.active&&SCENARIO_STATE.active.id);
+    if(active&&!wantsFreshScenario(text)&&looksScenarioContinuation(text))return {scenario:active,isNew:false};
+    var desired=scenarioDepthTarget(text);
+    var ranked=SCENARIOS.slice().sort(function(a,b){return scenarioScore(text,b)-scenarioScore(text,a);});
+    var chosen=ranked.find(function(sc){return sc.complexity<=Math.min(5,desired+1);})||ranked[0]||null;
+    if(!chosen)return null;
+    rememberScenario(chosen);
+    return {scenario:chosen,isNew:true};
+  }
+  function scenarioPromptBlock(bundle){
+    if(!bundle||!bundle.scenario)return '';
+    var sc=bundle.scenario, lines=['=== DOSSIER DE SCÉNARIO KERN ===','Scénario : '+sc.title,'Catégorie : '+sc.category,'Complexité : '+String(sc.complexity||1)+'/5'];
+    if(sc.summary)lines.push('Résumé : '+sc.summary);
+    if(sc.cast&&sc.cast.length)lines.push('Personnages : '+sc.cast.join(', '));
+    if(sc.mustNotice&&sc.mustNotice.length)lines.push('Points à faire repérer : '+sc.mustNotice.join(' ; '));
+    if(sc.cpsTargets&&sc.cpsTargets.length)lines.push('Compétences psychosociales visées : '+sc.cpsTargets.join(' ; '));
+    if(sc.goodMoves&&sc.goodMoves.length)lines.push('Bons mouvements attendus : '+sc.goodMoves.join(' ; '));
+    if(sc.badMoves&&sc.badMoves.length)lines.push('Mauvais rails à éviter : '+sc.badMoves.join(' ; '));
+    if(sc.adultRelay)lines.push('Relais adulte ou cadre à rappeler si nécessaire : '+sc.adultRelay);
+    if(sc.sourceHints&&sc.sourceHints.length)lines.push('Appuis documentaires prioritaires : '+sc.sourceHints.join(' ; '));
+    lines.push(bundle.isNew?'- Démarre ce scénario maintenant, sans dévoiler tout le rail caché au joueur.':'- Continue ce scénario sans en changer brutalement.');
+    if(bundle.isNew&&sc.opening)lines.push('Ouverture suggérée : '+sc.opening);
+    if(bundle.isNew&&sc.options&&sc.options.length)lines.push('Premières options possibles : '+sc.options.slice(0,3).join(' | '));
+    if(sc.debrief&&sc.debrief.length)lines.push('Axes de débrief : '+sc.debrief.join(' ; '));
+    return lines.join('\n');
+  }
   function oldKey(){return 'pixhare_agora_chat_'+(getPlayer()||'anon');}
   function newKey(){return 'pixhare_kern_chat_'+(getPlayer()||'anon');}
+  function scenarioKey(){return 'pixhare_kern_scenarios_'+(getPlayer()||'anon');}
   function migrateHistory(){try{if(!localStorage.getItem(newKey())){var legacy=localStorage.getItem(oldKey());if(legacy)localStorage.setItem(newKey(),legacy);}}catch(e){}}
   function latest(role){for(var i=HISTORY.length-1;i>=0;i--){if(HISTORY[i]&&HISTORY[i].role===role)return HISTORY[i];}return null;}
   function state(){var player=getPlayer();var total=PILLARS.reduce(function(sum,p){return sum+p.modules.length;},0);var done=doneCount();var protocol=typeof pvDone==='function'&&pvDone();return {player:player,connected:!!player,modulesDone:done,modulesTotal:total,protocolDone:protocol,ready:!!player&&done>=total&&protocol};}
+  function blankScenarioState(){return {history:[],counts:{},active:null};}
+  function saveScenarioState(){try{localStorage.setItem(scenarioKey(),JSON.stringify(SCENARIO_STATE));}catch(e){}}
+  function loadScenarioState(){
+    try{
+      var parsed=JSON.parse(localStorage.getItem(scenarioKey())||'null');
+      if(!parsed||typeof parsed!=='object')parsed=blankScenarioState();
+      if(!Array.isArray(parsed.history))parsed.history=[];
+      if(!parsed.counts||typeof parsed.counts!=='object')parsed.counts={};
+      if(parsed.active&&typeof parsed.active!=='object')parsed.active=null;
+      SCENARIO_STATE=parsed;
+    }catch(e){
+      SCENARIO_STATE=blankScenarioState();
+    }
+  }
 
   function buildDocs(){
     var out=[],seen={};
-    function push(doc){
-      var key=(doc.id||'')+'::'+(doc.file||'');
-      if(seen[key])return;
-      seen[key]=true;
-      doc.search=norm([doc.id,doc.title,doc.pillar||'',doc.text||'',(doc.tags||[]).join(' ')].join(' '));
-      out.push(doc);
-    }
-    REFS.forEach(function(ref){push({kind:'ref',id:ref.id,title:ref.title,file:ref.file,pillar:ref.pillar,tags:ref.tags||[],text:(ref.title+' '+(ref.tags||[]).join(' ')).trim(),excerpt:ref.title});});
-    STORY_FILES.forEach(function(file){push({kind:'story',id:'STORY_'+file.replace(/[^A-Za-z0-9]+/g,'_'),title:'Univers Valdurne — '+humanize(file),file:file,pillar:'Univers Valdurne',tags:['valdurne','lyam','kern','rena','roman'],text:'Univers Valdurne — '+humanize(file),excerpt:humanize(file)});});
-    PILLARS.forEach(function(p){p.modules.forEach(function(m){push({kind:'module',id:'PIXHARE_'+m.id,title:m.id+' — '+m.name,file:m.file,pillar:p.title,tags:['pixhare','module',p.key,p.title].concat(m.name.split(/\s+/)),text:p.title+' — '+p.desc+' — '+m.name,excerpt:m.id+' — '+m.name});});});
-    if(typeof PROTOCOLE_VALDURNE!=='undefined'){push({kind:'protocol',id:PROTOCOLE_VALDURNE.id,title:'Protocole Valdurne — '+PROTOCOLE_VALDURNE.name,file:PROTOCOLE_VALDURNE.file,pillar:'Valdurne',tags:['protocole','valdurne','kern','lyam','rena','phare','cps'],text:'Protocole Valdurne — '+PROTOCOLE_VALDURNE.name,excerpt:PROTOCOLE_VALDURNE.name});}
+    REFS.forEach(function(ref){registerDoc(out,seen,{kind:'ref',id:ref.id,title:ref.title,file:ref.file,pillar:ref.pillar,tags:ref.tags||[],text:(ref.title+' '+(ref.tags||[]).join(' ')).trim(),excerpt:ref.title});});
+    STORY_FILES.forEach(function(file){registerDoc(out,seen,{kind:'story',id:'STORY_'+file.replace(/[^A-Za-z0-9]+/g,'_'),title:'Univers Valdurne — '+humanize(file),file:file,pillar:'Univers Valdurne',tags:['valdurne','lyam','kern','rena','roman'],text:'Univers Valdurne — '+humanize(file),excerpt:humanize(file)});});
+    PILLARS.forEach(function(p){p.modules.forEach(function(m){registerDoc(out,seen,{kind:'module',id:'PIXHARE_'+m.id,title:m.id+' — '+m.name,file:m.file,pillar:p.title,tags:['pixhare','module',p.key,p.title].concat(m.name.split(/\s+/)),text:p.title+' — '+p.desc+' — '+m.name,excerpt:m.id+' — '+m.name});});});
+    if(typeof PROTOCOLE_VALDURNE!=='undefined'){registerDoc(out,seen,{kind:'protocol',id:PROTOCOLE_VALDURNE.id,title:'Protocole Valdurne — '+PROTOCOLE_VALDURNE.name,file:PROTOCOLE_VALDURNE.file,pillar:'Valdurne',tags:['protocole','valdurne','kern','lyam','rena','phare','cps'],text:'Protocole Valdurne — '+PROTOCOLE_VALDURNE.name,excerpt:PROTOCOLE_VALDURNE.name});}
     return out;
   }
 
@@ -110,6 +345,8 @@
     if(INDEX_PROMISE)return INDEX_PROMISE;
     INDEX_PROMISE=(async function(){
       DOCS=buildDocs();
+      var projectDocs=await buildProjectDocs(DOCS);
+      if(projectDocs.length)DOCS=DOCS.concat(projectDocs);
       await Promise.all(DOCS.filter(function(doc){return !!doc.file;}).map(async function(doc){
         var src=await fetchText(doc.file);
         if(!src)return;
@@ -117,7 +354,7 @@
         if(extracted){
           doc.text=((doc.text||'')+' '+extracted).trim();
           doc.excerpt=clip(extracted,1200);
-          doc.search=norm([doc.id,doc.title,doc.pillar||'',doc.text||'',(doc.tags||[]).join(' ')].join(' '));
+          refreshDoc(doc);
         }
       }));
       return DOCS;
@@ -136,8 +373,14 @@
       if(hay.indexOf(w)!==-1)s+=7;
     });
     if(/kern|lyam|rena|valdur/.test(q)&&/kern|lyam|rena|valdur/.test(hay))s+=70;
-    if(/harcelement|rumeur|exclusion|agression|temoin|victime|cps|metacognition/.test(q)&&/harcelement|rumeur|exclusion|agression|temoin|victime|cps|metacognition/.test(hay))s+=55;
+    if(/harcelement|rumeur|exclusion|agression|temoin|victime|cps|metacognition|mal etre|angoisse|anxiete|depression/.test(q)&&/harcelement|rumeur|exclusion|agression|temoin|victime|cps|metacognition|mal etre|angoisse|anxiete|depression/.test(hay))s+=55;
     if(/phare|protocole|education nationale|cadre|juridique|droit/.test(q)&&/phare|protocole|education nationale|cadre|juridique|droit/.test(hay))s+=65;
+    if(/liberte|egalite|fraternite|laicite|citoyennete|delegue|cvc|cvl|respect|discrimination/.test(q)&&/liberte|egalite|fraternite|laicite|citoyennete|delegue|cvc|cvl|respect|discrimination/.test(hay))s+=68;
+    if(/orientation|parcours|metier|avenir/.test(q)&&/orientation|parcours|metier|avenir/.test(hay))s+=60;
+    if(/psc1|secours|securite routiere|route|velo|accident|premiers secours/.test(q)&&/psc1|secours|securite routiere|route|velo|accident|premiers secours/.test(hay))s+=64;
+    if(/fontainebleau|chevalier|justice/.test(q)&&/fontainebleau|chevalier|justice/.test(hay))s+=52;
+    if(doc.kind==='protocol'&&/protocole|valdurne|phare/.test(q))s+=24;
+    if(doc.kind==='module'&&/module|pilier|competence|compétence|cps/.test(q))s+=15;
     return s;
   }
 
@@ -159,15 +402,15 @@
 
   async function contextFor(query){
     var docs=await buildIndex();
-    var chosen=docs.map(function(doc){return {doc:doc,score:score(query,doc)};}).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,6).map(function(x){return x.doc;});
+    var chosen=docs.map(function(doc){return {doc:doc,score:score(query,doc)};}).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,7).map(function(x){return x.doc;});
     if(!chosen.length)chosen=docs.slice(0,4);
-    var st=state(), lines=['=== CONTEXTE LOCAL PIX pHARe / VALDURNE ===','Joueur : '+(st.player||'non connecté'),'Progression modules : '+st.modulesDone+'/'+st.modulesTotal,'Protocole Valdurne terminé : '+(st.protocolDone?'oui':'non'),''];
+    var st=state(), lines=['=== CONTEXTE LOCAL PLATEFORME VIE SCOLAIRE / PIX pHARe / VALDURNE ===','Joueur : '+(st.player||'non connecté'),'Progression modules PIX pHARe : '+st.modulesDone+'/'+st.modulesTotal,'Protocole Valdurne terminé : '+(st.protocolDone?'oui':'non'),''];
     chosen.forEach(function(doc,idx){lines.push('['+(idx+1)+'] '+doc.title);if(doc.pillar)lines.push('Pilier : '+doc.pillar);if(doc.file)lines.push('Fichier : '+doc.file);lines.push(snippet(doc.text||doc.excerpt||'',query,900));lines.push('');});
     return {docs:chosen,context:lines.join('\n')};
   }
 
   function saveHistory(){try{localStorage.setItem(newKey(),JSON.stringify(HISTORY));}catch(e){}}
-  function loadHistory(){migrateHistory();try{HISTORY=JSON.parse(localStorage.getItem(newKey())||'[]');if(!Array.isArray(HISTORY))HISTORY=[];}catch(e){HISTORY=[];}renderMessages();updateControls();}
+  function loadHistory(){migrateHistory();loadScenarioState();try{HISTORY=JSON.parse(localStorage.getItem(newKey())||'[]');if(!Array.isArray(HISTORY))HISTORY=[];}catch(e){HISTORY=[];}renderMessages();updateControls();}
   function pushMessage(role,text){HISTORY.push({role:role,content:text,ts:new Date().toISOString()});saveHistory();renderMessages();updateControls();}
 
   function renderMessages(){
@@ -276,11 +519,16 @@
   function looksReal(text){
     var s=norm(text), direct=['dans ma classe','dans mon college','dans mon école','dans mon ecole','dans la vraie vie','dans mon etablissement','dans notre college','dans notre classe','ca m arrive','ca nous arrive','un eleve de','une eleve de','au college','au foyer','au self','dans la cour'];
     for(var i=0;i<direct.length;i++){if(s.indexOf(direct[i])!==-1)return true;}
-    return /(harcelement|rumeur|menace|agression|humiliation|mise a l ecart|cyber|violence|racket|suicide|detresse)/.test(s) && /(college|classe|eleve|prof|aed|cpe|vie scolaire|surveillant|etablissement|internat)/.test(s);
+    return /(harcelement|rumeur|menace|agression|humiliation|mise a l ecart|cyber|violence|racket|suicide|detresse|mal etre|angoisse|anxiete|depression|scarification|automutilation|idee noire|idees noires)/.test(s) && /(college|classe|eleve|prof|aed|cpe|vie scolaire|surveillant|etablissement|internat)/.test(s);
+  }
+  function looksFictionRequest(text){
+    var s=norm(text), direct=['joue un scenario','joue moi un scenario','lance un scenario','fais moi jouer','fais moi une scene','cree une scene','crée une scène','on joue','jeu de role','jeu de rôle','roleplay','incarne','simule','dans valdurne','avec lyam','avec kern','avec rena'];
+    for(var i=0;i<direct.length;i++){if(s.indexOf(norm(direct[i]))!==-1)return true;}
+    return /(scenario|scene|simulation|jeu de role|roleplay|incarne|valdur|lyam|kern|rena|remus)/.test(s);
   }
 
   function runtimeRules(mode){
-    var lines=['=== GARDE-FOUS KERN ===','- Réponds uniquement à la dernière demande utilisateur.','- Les éléments factuels sur pHARe, le harcèlement, les CPS, le protocole, l Éducation nationale et le canon de Valdurne doivent venir du contexte local récupéré.','- Reste concis, concret et utile.'];
+    var lines=['=== GARDE-FOUS KERN ===','- Réponds uniquement à la dernière demande utilisateur.','- Les éléments factuels sur pHARe, le harcèlement, les CPS, le protocole, l Éducation nationale, la citoyenneté, la liberté, l égalité, la fraternité, l orientation, la sécurité routière, les secours et le canon de Valdurne doivent venir du contexte local récupéré.','- Reste concis, concret et utile.'];
     if(mode==='support'){
       lines.push('- Le joueur semble décrire une situation réelle : ne roleplay pas et ne transforme pas cela en aventure.');
       lines.push('- Commence par la sécurité et le niveau d urgence.');
@@ -288,11 +536,18 @@
       lines.push('- Propose des appuis adultes et une chaîne d action prudente.');
       lines.push('- Si tu détectes un risque grave, immédiat, suicidaire, sexuel ou violent, dis clairement de prévenir immédiatement un adulte ou un service d urgence adapté.');
       lines.push('- Format recommandé : Ce qui me préoccupe / Ce que tu peux faire maintenant / Ce qu il faut noter.');
-    }else{
+    }else if(mode==='fiction'){
       lines.push('- Tu es Kern dans un cadre narratif éducatif.');
+      lines.push('- Si un dossier de scénario est fourni plus bas, respecte-le comme rail pédagogique prioritaire.');
       lines.push('- Propose une scène courte, puis 2 ou 3 options maximum.');
       lines.push('- Ne donne pas toute la solution immédiatement : fais choisir, puis débriefe brièvement.');
+      lines.push('- Les scènes doivent entraîner des choix attendus institutionnellement : protection, parole, témoins, régulation, appel à l adulte, cadre.');
+      lines.push('- Pas de contenu dangereux, humiliant, sexuel explicite ou de techniques de malveillance.');
       lines.push('- Format recommandé : Scène / Tes options / Repère Kern.');
+    }else{
+      lines.push('- Le joueur cherche surtout un repère ou une réponse factuelle : reste sobre et proche des documents.');
+      lines.push('- Priorise les formulations institutionnellement sûres et les explications structurées.');
+      lines.push('- Format recommandé : Réponse noyau / Point de vigilance / Appuis locaux.');
     }
     return lines.join('\n');
   }
@@ -469,18 +724,25 @@
 
   window.sendKern=async function(){
     var st=state(), input=document.getElementById('agora-input'), send=document.getElementById('agora-send');
-    var text=(input&&input.value||'').trim(), mode=looksReal(text)?'support':'fiction';
+    var text=(input&&input.value||'').trim();
+    var mode=looksReal(text)?'support':((looksFictionRequest(text)||looksScenarioContinuation(text))?'fiction':'reference');
+    var temp=mode==='support'?KERN_SUPPORT_TEMP:(mode==='reference'?KERN_REFERENCE_TEMP:KERN_TEMP);
+    var maxTokens=mode==='support'?KERN_SUPPORT_MAX_TOKENS:(mode==='reference'?KERN_REFERENCE_MAX_TOKENS:KERN_MAX_TOKENS);
     if(!st.ready){toast('Kern est encore verrouillé pour ce joueur.');return;}
     if(!text)return;
     input.value='';
     if(send)send.disabled=true;
     pushMessage('user',text);
-    typing(true,mode==='support'?'Kern relit les repères de protection et de protocole…':'Kern consulte les archives PIX pHARe et les chroniques de Valdurne…');
+    typing(true,mode==='support'?'Kern relit les repères de protection, de posture et de protocole…':(mode==='reference'?'Kern consulte les repères institutionnels de la plateforme Vie scolaire…':'Kern ouvre une scène à Valdurne tout en relisant les repères éducatifs…'));
     try{
-      var ctx=await contextFor(text);
-      var sys=prompt()+'\n\n'+runtimeRules(mode)+'\n\n'+ctx.context;
+      if(mode==='fiction')await loadScenarioLibrary();
+      if(mode!=='fiction'&&SCENARIO_STATE.active&&/pause|stop scenario|stop scénario|on sort du scenario|on sort du scénario|question reelle|question réelle|explique moi|explique-moi/.test(norm(text)))clearActiveScenario();
+      var scenarioBundle=mode==='fiction'?pickScenario(text):null;
+      var scenarioQuery=scenarioBundle&&scenarioBundle.scenario?(text+' '+scenarioBundle.scenario.title+' '+(scenarioBundle.scenario.tags||[]).join(' ')+' '+(scenarioBundle.scenario.sourceHints||[]).join(' ')):text;
+      var ctx=await contextFor(scenarioQuery);
+      var sys=prompt()+'\n\n'+runtimeRules(mode)+(scenarioBundle?'\n\n'+scenarioPromptBlock(scenarioBundle):'')+'\n\n'+ctx.context;
       var prior=HISTORY.slice(Math.max(HISTORY.length-7,0),Math.max(HISTORY.length-1,0)).map(function(msg){return {role:msg.role==='assistant'?'assistant':'user',content:msg.content};});
-      var reply=await complete([{role:'system',content:sys}].concat(prior).concat([{role:'user',content:text}]),KERN_TEMP,KERN_MAX_TOKENS);
+      var reply=await complete([{role:'system',content:sys}].concat(prior).concat([{role:'user',content:text}]),temp,maxTokens);
       typing(false);
       pushMessage('assistant',reply||'Je n ai pas réussi à formuler de réponse. Réessaie avec une consigne plus précise.');
       if(mode==='support'&&CONCERN.mode==='idle'){CONCERN={mode:'hint',draft:null,submission:null,message:'Si tu décris une situation réelle, je peux aussi préparer un signalement structuré à partir de ce que tu viens d écrire.'};}
@@ -573,7 +835,7 @@
   };
 
   window.addEventListener('storage',function(e){
-    if(!e.key||e.key.indexOf('CERT_')===0||e.key==='pvs_current_player'||e.key==='pvs_phare_player'){loadHistory();renderSection();}
+    if(!e.key||e.key.indexOf('CERT_')===0||e.key==='pvs_current_player'||e.key==='pvs_phare_player'||e.key===scenarioKey()){loadHistory();renderSection();}
   });
 
   if(typeof PROTOCOLE_VALDURNE!=='undefined'){PROTOCOLE_VALDURNE.file='PROTOCOLE_VALDURNE_01 (1).html';}
@@ -583,6 +845,6 @@
   window.clearAgoraHistory=window.clearKernHistory;
   window.sendAgora=window.sendKern;
 
-  loadPrompt().then(function(){return buildIndex();}).catch(function(){return null;}).finally(function(){loadHistory();if(typeof render==='function')render();if(typeof renderValdurne==='function')renderValdurne();});
+  Promise.all([loadPrompt(),loadScenarioLibrary()]).then(function(){return buildIndex();}).catch(function(){return null;}).finally(function(){loadHistory();if(typeof render==='function')render();if(typeof renderValdurne==='function')renderValdurne();});
 
 })();
