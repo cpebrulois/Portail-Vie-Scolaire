@@ -53,8 +53,120 @@ const scenarioData = {
     ]
 };
 
-function getPlayer(){try{var u=new URLSearchParams(window.location.search),p=u.get('player');if(p&&p.length>2){localStorage.setItem('pvs_current_player',p);return p;}}catch(ex){}return localStorage.getItem('pvs_current_player')||'';}
-function awardXP(){try{var raw=localStorage.getItem('pvs_bridge_events'),evts=raw?JSON.parse(raw):[];evts.push({id:'VEA-'+MODULE_ID+'-'+Date.now(),type:'PHARE_PROGRESS',player:getPlayer(),module:MODULE_ID,label:'PIX pHARe : Mes émotions, mes alliées',d:new Date().toISOString()});if(evts.length>700)evts.splice(0,evts.length-700);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));var done=JSON.parse(localStorage.getItem('pvs_phare_done')||'{}');done[MODULE_ID]=true;localStorage.setItem('pvs_phare_done',JSON.stringify(done));}catch(ex){}}
+
+function getPlayer(){
+    try {
+        var u = new URLSearchParams(window.location.search), p = u.get('player');
+        if (p && p.length > 2) {
+            localStorage.setItem('pvs_current_player', p);
+            localStorage.setItem('pvs_phare_player', p);
+            return p;
+        }
+    } catch(ex) {}
+    var stored = localStorage.getItem('pvs_current_player')
+              || localStorage.getItem('pvs_phare_player')
+              || '';
+    if (stored) {
+        try {
+            localStorage.setItem('pvs_current_player', stored);
+            localStorage.setItem('pvs_phare_player', stored);
+        } catch(ex) {}
+    }
+    return stored;
+}
+
+const PHARE_XP_MAP = {"GROUPE_01":100,"GROUPE_02":100,"GROUPE_03":100,"GROUPE_04":100,"GROUPE_05":100,"GROUPE_06":150,"GROUPE_07":175,"GROUPE_08":200,"GROUPE_09":225,"GROUPE_10":300,"HISTOIRE_01":100,"HISTOIRE_02":100,"HISTOIRE_03":100,"HISTOIRE_04":100,"HISTOIRE_05":100,"HISTOIRE_06":150,"HISTOIRE_07":175,"HISTOIRE_08":200,"HISTOIRE_09":225,"HISTOIRE_10":300,"JURIDIQUE_01":300,"JURIDIQUE_02":375,"JURIDIQUE_03":450,"JURIDIQUE_04":525,"JURIDIQUE_05":625,"JURIDIQUE_06":175,"JURIDIQUE_07":350,"JURIDIQUE_08":400,"JURIDIQUE_09":450,"JURIDIQUE_10":500,"NEURO_01":50,"NEURO_02":100,"NEURO_03":100,"NEURO_04":100,"NEURO_05":100,"NEURO_06":150,"NEURO_07":175,"NEURO_08":200,"NEURO_09":225,"NEURO_10":300,"NUMERIQUE_01":75,"NUMERIQUE_02":100,"NUMERIQUE_03":120,"NUMERIQUE_04":150,"NUMERIQUE_05":200,"NUMERIQUE_06":175,"NUMERIQUE_07":200,"NUMERIQUE_08":225,"NUMERIQUE_09":250,"NUMERIQUE_10":300,"VEA_01":75,"VEA_02":100,"VEA_03":100,"VEA_04":120,"VEA_05":150,"VEA_06":175,"VEA_07":175,"VEA_08":200,"VEA_09":225,"VEA_10":300};
+const JDR_XP_MAP = {"CERT_JDR_GROUPE_A1":100,"CERT_JDR_GROUPE_A2":100,"CERT_JDR_GROUPE_A3":100,"CERT_JDR_GROUPE_A4":100,"CERT_JDR_HISTOIRE_A1":100,"CERT_JDR_HISTOIRE_A2":100,"CERT_JDR_HISTOIRE_A3":100,"CERT_JDR_HISTOIRE_A4":100,"CERT_JDR_NEURO_A1":100,"CERT_JDR_NEURO_A2":100,"CERT_JDR_NEURO_A3":100,"CERT_JDR_NEURO_A4":100,"CERT_JDR_NUMERIQUE_A1":100,"CERT_JDR_NUMERIQUE_A2":100,"CERT_JDR_NUMERIQUE_A3":100,"CERT_JDR_NUMERIQUE_A4":100,"CERT_JDR_JURIDIQUE_A1":100,"CERT_JDR_JURIDIQUE_A2":100,"CERT_JDR_JURIDIQUE_A3":100,"CERT_JDR_JURIDIQUE_A4":100};
+const METACOG_CERT_KEYS = ["CERT_METACOG_GROUPE_A1","CERT_METACOG_HISTOIRE_A1","CERT_METACOG_JURIDIQUE_A1","CERT_METACOG_NEURO_A1","CERT_METACOG_NUMERIQUE_A1","CERT_METACOG_PROTOCOLE_VALDURNE"];
+const VEA_LABEL_MAP = {"VEA_01":"PIX pHARe : Qui suis-je vraiment ?","VEA_02":"PIX pHARe : Mes émotions, mes alliées","VEA_03":"PIX pHARe : Voir avec les yeux de l'autre","VEA_04":"PIX pHARe : Dire ce que je pense sans blesser","VEA_05":"PIX pHARe : Agir pour le groupe"};
+const PROTOCOLE_VALDURNE_CERT = 'CERT_PROTOCOLE_VALDURNE_01';
+const PROTOCOLE_VALDURNE_METACOG = 'CERT_METACOG_PROTOCOLE_VALDURNE';
+const PROTOCOLE_VALDURNE_XP = 150;
+
+function getDonePhareModuleIds(){
+    var ids = [];
+    try {
+        for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            if (k && k.indexOf('CERT_PHARE_') === 0) ids.push(k.slice('CERT_PHARE_'.length));
+        }
+    } catch(ex) {}
+    return Array.from(new Set(ids));
+}
+
+function computeCpTotal(){
+    return getDonePhareModuleIds().length;
+}
+
+function computeHubXpTotal(){
+    var xp = 0;
+    getDonePhareModuleIds().forEach(function(id){
+        xp += Number(PHARE_XP_MAP[id] || 0);
+    });
+    Object.keys(JDR_XP_MAP).forEach(function(certKey){
+        if (localStorage.getItem(certKey)) xp += Number(JDR_XP_MAP[certKey] || 0);
+    });
+    METACOG_CERT_KEYS.forEach(function(certKey){
+        if (localStorage.getItem(certKey)) xp += 100;
+    });
+    try {
+        var pvc = JSON.parse(localStorage.getItem(PROTOCOLE_VALDURNE_CERT) || 'null');
+        if (pvc && pvc.f) xp += Number(pvc.xp || PROTOCOLE_VALDURNE_XP);
+    } catch(ex) {}
+    if (localStorage.getItem(PROTOCOLE_VALDURNE_METACOG)) xp += 100;
+    return xp;
+}
+
+function dispatchBridgeStorage(){
+    try { window.dispatchEvent(new StorageEvent('storage', { key:'pvs_bridge_events' })); } catch(ex) {}
+    try { window.dispatchEvent(new StorageEvent('storage', { key:'CERT_PHARE_' + MODULE_ID })); } catch(ex) {}
+}
+
+function awardXP(){
+    try {
+        var player = getPlayer();
+        if (player) {
+            localStorage.setItem('pvs_current_player', player);
+            localStorage.setItem('pvs_phare_player', player);
+        }
+
+        var certPayload = JSON.stringify({
+            v:1,
+            d:new Date().toISOString(),
+            m:MODULE_ID,
+            f:true
+        });
+        localStorage.setItem('CERT_PHARE_' + MODULE_ID, certPayload);
+
+        var done = JSON.parse(localStorage.getItem('pvs_phare_done') || '{}');
+        done[MODULE_ID] = true;
+        localStorage.setItem('pvs_phare_done', JSON.stringify(done));
+        localStorage.setItem('pvs_phare_pending', MODULE_ID);
+
+        var cpTotal = computeCpTotal();
+        var hubXpTotal = computeHubXpTotal();
+        var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
+        evts.push({
+            id:'PHARE-' + MODULE_ID + '-' + Date.now(),
+            type:'PIXHARE_PROGRESS',
+            player:player,
+            module:MODULE_ID,
+            label:VEA_LABEL_MAP[MODULE_ID] || ('PIX pHARe : ' + MODULE_ID),
+            xp:Number(PHARE_XP_MAP[MODULE_ID] || 0),
+            cpTotal:cpTotal,
+            hubXpTotal:hubXpTotal,
+            totalXp:hubXpTotal,
+            pixhareXpTotal:hubXpTotal,
+            d:new Date().toISOString()
+        });
+        if (evts.length > 700) evts.splice(0, evts.length - 700);
+        localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
+        dispatchBridgeStorage();
+    } catch(ex) {
+        console.error('VEA bridge failure for ' + MODULE_ID, ex);
+    }
+}
+
 
 function App(){
     const [gs,setGs]=useState("intro");const [pn,setPn]=useState(getPlayer());const [cf,setCf]=useState(0);const [ff,setFf]=useState(false);const [cq,setCq]=useState(0);const [sa,setSa]=useState(null);const [sqf,setSqf]=useState(false);const [qs,setQs]=useState(0);const [sc,setSc]=useState(null);const [xp,setXp]=useState(0);
