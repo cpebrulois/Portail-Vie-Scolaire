@@ -57,10 +57,137 @@
 </head>
 <body><div id="root"></div>
 <script>
-const {useState} = React;
+const {useState, useEffect} = React;
 const e = React.createElement;
 const MODULE_ID = "AG_C02";
 const CERT_KEY = "CERT_CADRE_2";
+
+
+
+const RETURN_HUB = "index PIX_DELEGUES.html";
+
+function initPlayerContext() {
+    var params = new URLSearchParams(window.location.search);
+    var urlPlayer = params.get('player') || params.get('code') || params.get('id') || '';
+    if (urlPlayer) {
+        localStorage.setItem('pvs_current_player', urlPlayer);
+        localStorage.setItem('pvs_phare_player', urlPlayer);
+        localStorage.setItem('agora_current_player', urlPlayer);
+    }
+}
+
+function getHubPlayer() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get('player')
+        || localStorage.getItem('pvs_current_player')
+        || localStorage.getItem('pvs_phare_player')
+        || localStorage.getItem('agora_current_player')
+        || '';
+}
+
+function getPlayerLabel() {
+    var p = getHubPlayer();
+    return p ? ('joueur ' + p) : 'joueur connecté';
+}
+
+function returnToHub() {
+    var player = getHubPlayer();
+    window.location.href = player ? (RETURN_HUB + '?player=' + encodeURIComponent(player)) : RETURN_HUB;
+}
+
+function readJson(key, fallback) {
+    try {
+        var raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function writeJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function emitStorageKey(key) {
+    try {
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: key,
+            newValue: localStorage.getItem(key)
+        }));
+    } catch (e) {}
+}
+
+function appendEvent(key, ev, limit) {
+    var arr = readJson(key, []);
+    arr.push(ev);
+    if (arr.length > limit) arr.splice(0, arr.length - limit);
+    writeJson(key, arr);
+}
+
+function logOpenOnce() {
+    var skey = 'AGORA_OPEN_LOGGED_' + MODULE_ID;
+    if (sessionStorage.getItem(skey) === '1') return;
+    sessionStorage.setItem(skey, '1');
+    emitModuleEvent('AGORA_OPEN', { validated: false, success: false });
+}
+
+function emitModuleEvent(type, extra) {
+    var player = getHubPlayer();
+    var ev = {
+        id: 'AGORA-' + MODULE_ID + '-' + type + '-' + Date.now(),
+        type: type,
+        player: player,
+        playerCode: player,
+        module: MODULE_ID,
+        source: 'AGORA_MODULE',
+        target: 'AGORA_HUB',
+        d: new Date().toISOString()
+    };
+    if (extra) {
+        for (var k in extra) ev[k] = extra[k];
+    }
+    appendEvent('pvs_bridge_events', ev, 500);
+    appendEvent('SUPER_HUB_BRIDGE', ev, 500);
+    localStorage.setItem('pvs_bridge_event', JSON.stringify(ev));
+    emitStorageKey('pvs_bridge_events');
+    emitStorageKey('SUPER_HUB_BRIDGE');
+    emitStorageKey('pvs_bridge_event');
+    return ev;
+}
+
+function persistAgoraCompletion(cert) {
+    var certStr = JSON.stringify(cert);
+    localStorage.setItem(CERT_KEY, certStr);
+    localStorage.setItem('CERT_AGORA_' + MODULE_ID, certStr);
+
+    var done = readJson('AGORA_DONE_MODULES', []);
+    if (done.indexOf(MODULE_ID) === -1) {
+        done.push(MODULE_ID);
+        writeJson('AGORA_DONE_MODULES', done);
+    }
+
+    var certMap = readJson('AGORA_CERT_MAP', {});
+    certMap[MODULE_ID] = cert;
+    writeJson('AGORA_CERT_MAP', certMap);
+
+    emitStorageKey(CERT_KEY);
+    emitStorageKey('CERT_AGORA_' + MODULE_ID);
+
+    emitModuleEvent('AGORA_PROGRESS', {
+        validated: true,
+        success: !!cert.f,
+        score: cert.s || 0,
+        certKey: CERT_KEY
+    });
+    emitModuleEvent('MODULE_COMPLETE', {
+        validated: true,
+        success: !!cert.f,
+        score: cert.s || 0,
+        certKey: CERT_KEY
+    });
+}
+
+initPlayerContext();
 
 const instances = [
     {
@@ -141,13 +268,17 @@ const scenarioData = {
 
 function App() {
     const [step, setStep] = useState("intro");
-    const [name, setName] = useState("");
-    const [qIdx, setQIdx] = useState(0);
+        const [qIdx, setQIdx] = useState(0);
     const [chosen, setChosen] = useState(null);
     const [validated, setValidated] = useState(false);
     const [score, setScore] = useState(0);
     const [scenChosen, setScenChosen] = useState(null);
     const [token, setToken] = useState("");
+
+    useEffect(() => {
+        initPlayerContext();
+        logOpenOnce();
+    }, []);
 
     function validate() {
         if (chosen === null) return;
@@ -159,8 +290,19 @@ function App() {
         else setStep("scenario");
     }
     function finish() {
-        const cert = { v:1, d:new Date().toISOString(), m:MODULE_ID, n:name||"Délégué", f:true, s:score };
-        localStorage.setItem(CERT_KEY, JSON.stringify(cert));
+        var player = getHubPlayer();
+        const cert = {
+            v: 2,
+            d: new Date().toISOString(),
+            m: MODULE_ID,
+            p: player,
+            player: player,
+            n: player || "joueur",
+            f: true,
+            s: score,
+            source: "AGORA_MODULE"
+        };
+        persistAgoraCompletion(cert);
         setToken(btoa(unescape(encodeURIComponent(JSON.stringify(cert)))));
         setStep("complete");
     }
@@ -170,8 +312,12 @@ function App() {
         e("div",{style:{textAlign:"center",marginBottom:"24px"}},e("span",{className:"badge"},"INSTANCES & POUVOIRS")),
         e("p",{className:"intro-txt"},"Un délégué qui ne connaît pas les instances de son établissement, c'est comme un pilote qui ne connaît pas les commandes de son avion. Tu vas siéger dans des réunions avec des adultes — tu dois savoir de quoi on parle."),
         e("p",{className:"intro-txt"},"Ce module te donne une carte complète du pouvoir scolaire."),
-        e("input",{type:"text",placeholder:"Ton prénom...",onChange:ev=>setName(ev.target.value)}),
-        e("button",{className:"btn",onClick:()=>name.trim()?setStep("lesson"):alert("Un prénom d'abord.")},name?"Commencer →":"Entrez votre prénom")
+        e("div",{className:"lesson-block",style:{marginTop:"18px"}},
+            e("h3",null,"🔐 Session détectée"),
+            e("p",null,"Le module reconnaît automatiquement l'identifiant du joueur transmis par le hub."),
+            e("p",null,e("strong",null,"Identifiant : "),getHubPlayer() || "non détecté — la progression restera locale si tu lances ce module hors hub.")
+        ),
+        e("button",{className:"btn",onClick:()=>setStep("lesson")},"Commencer →")
     );
 
     if (step==="lesson") return e("div",{className:"card"},
@@ -233,11 +379,10 @@ function App() {
     return e("div",{className:"card",style:{textAlign:"center"}},
         e("div",{style:{fontSize:"3rem",marginBottom:"16px"}},"🗺"),
         e("h1",null,"Module C02 validé !"),
-        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`Tu sais maintenant où se prennent les décisions, ${name}. Ne siège plus jamais sans préparation.`),
+        e("p",{style:{margin:"16px 0",color:"var(--text-muted)"}},`Tu sais maintenant où se prennent les décisions, ${getPlayerLabel()}. Ne siège plus jamais sans préparation.`),
         e("div",{className:"score-row"},e("div",{className:"score-item"},e("div",{className:"score-val"},score),e("div",{className:"score-lbl"},"Points Quiz"))),
-        e("div",{className:"token-box"},token),
-        e("p",{style:{fontSize:"0.8rem",color:"var(--text-muted)",marginBottom:"20px"}},"Copie ce code pour le Hub."),
-        e("button",{className:"btn",onClick:()=>window.location.href="index PIX_DELEGUES.html"},"Retour au Hub")
+        e("p",{style:{fontSize:"0.9rem",color:"var(--text-muted)",margin:"18px 0 20px"}},"Validation transmise automatiquement au hub avec l’identifiant du joueur connecté."),
+        e("button",{className:"btn",onClick:returnToHub},"Retour au Hub")
     );
 }
 ReactDOM.createRoot(document.getElementById("root")).render(e(App));
