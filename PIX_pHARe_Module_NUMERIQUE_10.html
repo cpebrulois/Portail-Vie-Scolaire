@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIX-pHARe | NUMÉRIQUE 10 · Hacker pour le Bien</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#00d4ff;--primary-dim:rgba(0,212,255,.12);--primary-glow:rgba(0,212,255,.4);
+  --bg:#000a10;--bg2:#001520;--panel:#041420;--panel2:#071e2c;
+  --text:#c8f0ff;--text-m:#4a8fa8;--text-d:#1a4a60;
+  --green:#10b981;--red:#ef4444;--gold:#f59e0b;--border:rgba(0,212,255,.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 20% 0%,rgba(0,212,255,.1) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(0,212,255,.05) 0%,transparent 50%)}
+#root{max-width:820px;margin:0 auto;padding:0 0 60px 0}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0}
+.mod-meta{flex:1}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:4px}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap}
+.prog-bar{height:3px;background:rgba(255,255,255,.06)}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#7dd3fc);transition:width .5s ease}
+.level-nav{display:flex;border-bottom:1px solid var(--border)}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.68rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.lnav-btn.done{color:var(--green)}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed}
+.screen{padding:24px 20px}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.flashcard-wrap{perspective:1000px;cursor:pointer;margin-bottom:14px}
+.flashcard-inner{position:relative;min-height:160px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.flashcard-wrap.flipped .flashcard-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;width:100%;min-height:160px;backface-visibility:hidden;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:22px;display:flex;flex-direction:column;justify-content:center}
+.fc-back{transform:rotateY(180deg);background:var(--panel2)}
+.fc-q{font-size:1rem;font-weight:600;color:#fff;text-align:center;line-height:1.5}
+.fc-hint{font-size:.78rem;color:var(--text-d);text-align:center;margin-top:10px;font-style:italic}
+.fc-ans{font-size:.92rem;color:var(--text-m);line-height:1.7}
+.fc-src{font-size:.72rem;color:var(--primary);margin-top:10px;text-align:right;font-style:italic}
+.nav-row{display:flex;gap:10px;justify-content:space-between;margin-top:6px}
+.btn{padding:10px 22px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.72rem;letter-spacing:1px;cursor:pointer;transition:.2s;border:none}
+.btn-pri{background:var(--primary);color:#000}.btn-pri:hover{background:#00b8e0}.btn-pri:disabled{opacity:.4;cursor:not-allowed}
+.btn-sec{background:transparent;border:1px solid var(--border);color:var(--text-m)}.btn-sec:hover{border-color:var(--primary);color:var(--primary)}
+.quiz-q{font-size:1rem;font-weight:600;color:#fff;line-height:1.55;margin-bottom:16px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:8px;border:1px solid var(--border);margin-bottom:9px;cursor:pointer;transition:.2s;background:var(--panel)}
+.opt:hover{border-color:var(--primary);background:var(--panel2)}.opt.selected{border-color:var(--primary);background:var(--primary-dim)}
+.opt.correct{border-color:var(--green);background:rgba(16,185,129,.12)}.opt.wrong{border-color:var(--red);background:rgba(239,68,68,.1)}
+.opt-letter{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--primary);min-width:20px;padding-top:2px}
+.opt-text{font-size:.9rem;color:var(--text);line-height:1.4}
+.feedback{padding:14px 16px;border-radius:8px;margin-top:12px;font-size:.9rem;line-height:1.5}
+.feedback.ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.feedback.ko{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.scenario-ctx{background:var(--panel);border-left:3px solid var(--primary);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.9rem;color:var(--text-m);line-height:1.6}
+.scenario-q{font-weight:600;color:#fff;margin-bottom:14px;font-size:.95rem}
+.choice-btn{display:block;width:100%;text-align:left;padding:13px 16px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:.9rem;cursor:pointer;transition:.2s;margin-bottom:9px;font-family:'Exo 2',sans-serif;line-height:1.4}
+.choice-btn:hover{border-color:var(--primary);background:var(--primary-dim)}
+.result-box{padding:16px;border-radius:8px;font-size:.9rem;line-height:1.6;margin-bottom:14px}
+.result-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.result-ko{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.impact-tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.75rem;font-family:'Orbitron',sans-serif;margin-top:8px}
+.impact-pos{background:rgba(16,185,129,.15);color:var(--green)}.impact-neg{background:rgba(239,68,68,.1);color:var(--red)}
+.xp-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.xp-pill{background:var(--panel);border:1px solid var(--border);padding:8px 18px;border-radius:8px;text-align:center}
+.xp-pill-label{font-size:.65rem;color:var(--text-d);font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.xp-pill-val{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--primary)}
+.completion{padding:32px 20px;text-align:center}
+.completion-icon{font-size:3rem;margin-bottom:12px;filter:drop-shadow(0 0 18px var(--primary-glow))}
+.completion-title{font-family:'Orbitron',sans-serif;font-size:1.6rem;color:#fff;margin-bottom:8px}
+.completion-sub{color:var(--text-m);font-size:.9rem;margin-bottom:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:20px 0}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:var(--primary)}
+.stat-lbl{font-size:.72rem;color:var(--text-d);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.mastery-badge{display:inline-block;padding:8px 22px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:700;margin:16px 0;border:2px solid}
+.mastery-expert{color:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(245,158,11,.3)}
+.mastery-confirmed{color:var(--primary);border-color:var(--primary)}
+.mastery-training{color:var(--green);border-color:var(--green)}
+.bridge-note{font-size:.8rem;color:var(--text-d);padding:10px 14px;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin:14px 0;line-height:1.5}
+.intro-hero{padding:32px 20px 24px;text-align:center}
+.intro-title{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:#fff;margin-bottom:8px}
+.intro-ref{font-size:.8rem;color:var(--primary);font-style:italic;margin-bottom:18px}
+.intro-body{font-size:.93rem;color:var(--text-m);line-height:1.7;max-width:560px;margin:0 auto 22px auto}
+.intro-connected{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,212,255,.35);border-radius:20px;color:var(--primary);font-size:.8rem;margin-bottom:22px}
+.pillar-complete{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(0,212,255,.02));border:2px solid var(--primary);border-radius:12px;padding:24px;margin:20px 0;text-align:center}
+.pillar-complete-title{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--primary);margin-bottom:8px;letter-spacing:2px}
+.pillar-modules{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.pillar-mod-badge{background:var(--primary-dim);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:.72rem;font-family:'Orbitron',sans-serif;color:var(--primary)}
+@media(max-width:560px){.mod-title{font-size:1.05rem}.stats-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const {useState}=React, e=React.createElement;
+const MODULE_ID="NUMERIQUE_10", MODULE_XP=300, MODULE_TITLE="Hacker pour le Bien";
+const MODULE_REF="ANSSI Guide hygiène 2017 · Cybermalveillance.gouv.fr 2024 · CNIL sécurité données";
+
+const FC=[
+  {q:"Qu'est-ce que l'hygiène numérique et pourquoi est-elle indispensable ?",h:"[ Cliquer pour révéler ]",
+   a:"L'<b>hygiène numérique</b> désigne l'ensemble des bonnes pratiques de sécurité informatique au quotidien. L'ANSSI (Agence Nationale de la Sécurité des Systèmes d'Information) publie un guide de référence en 42 règles. Les fondamentaux : mots de passe robustes et uniques, mises à jour régulières, sauvegardes, méfiance envers les pièces jointes et les liens inconnus.",
+   src:"ANSSI, Guide d'hygiène informatique, édition 2017 (référence nationale)"},
+  {q:"Qu'est-ce que le phishing (hameçonnage) et comment s'en protéger ?",h:"[ Cliquer pour révéler ]",
+   a:"Le <b>phishing</b> est une tentative d'escroquerie par e-mail ou SMS qui imite un expéditeur de confiance (banque, administration, plateforme) pour voler des identifiants ou de l'argent. En 2024, <b>1 Français sur 3</b> a reçu une tentative de phishing (Cybermalveillance.gouv.fr). Protections : vérifier l'adresse exacte de l'expéditeur, ne jamais cliquer sur un lien depuis un mail urgent, signaler sur signal-spam.fr.",
+   src:"Cybermalveillance.gouv.fr, Bilan 2024 · signal-spam.fr"},
+  {q:"Comment créer un mot de passe vraiment solide ?",h:"[ Cliquer pour révéler ]",
+   a:"Un bon mot de passe selon l'ANSSI : <b>au moins 12 caractères</b>, mêlant majuscules, minuscules, chiffres et symboles, <b>unique pour chaque service</b> (un seul mot de passe compromis ne doit pas tout débloquer). Technique recommandée : la <b>phrase de passe</b> (ex: «Mes3chiensAimentLePain!»). Pour gérer plusieurs mots de passe : utiliser un <b>gestionnaire de mots de passe</b> (Bitwarden, KeePass — gratuits et open-source).",
+   src:"ANSSI, Recommandations mots de passe, 2022 · CNIL, Sécurité des mots de passe"},
+  {q:"Qu'est-ce qu'un hacker éthique et comment signale-t-il une faille ?",h:"[ Cliquer pour révéler ]",
+   a:"Un <b>hacker éthique</b> (ou white hat) est quelqu'un qui cherche des failles de sécurité dans des systèmes — mais pour les signaler à leurs propriétaires, pas pour les exploiter. En France, la loi encadre cela : signaler une faille sans autorisation ni exploitation reste légalement protégé depuis la loi de 2021 (art. L. 2321-4 du code de la défense). La France dispose d'un programme officiel de signalement : <b>ANSSI / cert.ssi.gouv.fr</b>.",
+   src:"ANSSI, Divulgation coordonnée des vulnérabilités, 2021 · Loi n°2021-998"},
+  {q:"Qu'est-ce que la double authentification (2FA) et pourquoi l'activer ?",h:"[ Cliquer pour révéler ]",
+   a:"La <b>double authentification</b> (ou 2FA pour Two-Factor Authentication) ajoute une seconde vérification après le mot de passe : un code envoyé par SMS, ou généré par une application (Google Authenticator, Authy). Même si un attaquant vole ton mot de passe, il ne peut pas se connecter sans ce second facteur. L'ANSSI et la CNIL recommandent l'activation du 2FA sur tous les comptes sensibles (messagerie, banque, réseaux sociaux).",
+   src:"ANSSI, Guide authentification 2022 · CNIL, Sécurité des comptes en ligne"}
+];
+const QZ=[
+  {q:"Selon Cybermalveillance.gouv.fr (2024), quel pourcentage de Français a reçu une tentative de phishing ?",
+   opts:["1 sur 10","1 sur 5","1 sur 3","Presque tous"],cor:2,
+   fb:"Exact. 1 Français sur 3 — soit des millions de personnes — a été ciblé par une tentative de phishing en 2024. Le phishing reste la cybermenace la plus répandue, et sa sophistication augmente avec l'usage de l'IA pour personnaliser les messages."},
+  {q:"Selon l'ANSSI, quelle est la technique recommandée pour créer un mot de passe fort ?",
+   opts:["Utiliser son prénom suivi de sa date de naissance","Remplacer les lettres par des chiffres (a=4, e=3...)","Créer une phrase de passe longue et mémorisable (ex: Mes3chiensAimentLePain!)","Utiliser le même mot de passe complexe pour tous les services"],cor:2,
+   fb:"Exact. La phrase de passe est à la fois longue (donc difficile à craquer) et mémorisable. Le piège classique : utiliser le même mot de passe partout — si un service est compromis, tous les comptes le sont."},
+  {q:"La double authentification (2FA) protège contre quoi exactement ?",
+   opts:["Les virus et malwares qui infectent l'ordinateur","L'accès à un compte même quand le mot de passe est volé","Les tentatives de phishing par e-mail","La surveillance des connexions internet"],cor:1,
+   fb:"Exact. Le 2FA protège spécifiquement contre l'usage d'un mot de passe volé. Même si un attaquant a ton mot de passe, il lui faut aussi le second facteur — SMS, application, clé physique. C'est pourquoi l'ANSSI le recommande sur tous les comptes importants."}
+];
+const SC={
+  title:"La faille dans le site du collège",
+  ctx:"En naviguant sur le site de ton collège, tu remarques un bug qui permet d'accéder à des pages normalement réservées aux professeurs — notamment les notes et les listes d'élèves. Tu as accès à des données personnelles sensibles.",
+  q:"Que fais-tu ?",
+  choices:[
+    {t:"Je ferme la page immédiatement, sans explorer ni copier aucune donnée. Je signale la faille à l'administration du collège ou au responsable informatique, en expliquant précisément comment j'y ai accédé, pour qu'elle puisse être corrigée.",r:"C'est exactement le comportement d'un hacker éthique. Signaler une faille sans l'exploiter est non seulement protégé par la loi depuis 2021, c'est aussi un acte civique qui protège les données de tous les élèves et personnels de l'établissement. La CNIL rappelle que accéder à des données personnelles non autorisées est illégal — même par accident, les exploiter l'est encore plus.",ok:true,d:100},
+    {t:"C'est intéressant — je regarde mes propres notes et celles de mes amis, puis je ferme sans en parler.",r:"Accéder à des données personnelles d'autres personnes sans autorisation est une violation de la loi Informatique & Libertés (art. 226-1 et suivants du code pénal). Même sans téléchargement, la consultation non autorisée est répréhensible. Ne pas signaler la faille expose en plus tous les élèves à un risque réel. Signaler est la seule bonne réponse.",ok:false,d:0}
+  ]
+};
+
+const PILLAR_MODULES=[
+  "NR-01 · Économie de l'attention","NR-02 · Dark patterns","NR-03 · Bulles de filtre",
+  "NR-04 · Droits numériques","NR-05 · Maîtrise algorithmique","NR-06 · Citoyenneté active",
+  "NR-07 · Fake News","NR-08 · Identité numérique","NR-09 · IA en question","NR-10 · Hacker pour le bien"
+];
+
+function getMastery(s){if(s>=220)return{l:"Expert",c:"mastery-expert"};if(s>=130)return{l:"Confirmé",c:"mastery-confirmed"};return{l:"En formation",c:"mastery-training"}}
+function saveBridge(){try{var _pl=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||new URLSearchParams(window.location.search).get('player')||'';localStorage.setItem('CERT_PHARE_NUMERIQUE_10',JSON.stringify({v:1,d:new Date().toISOString(),m:'NUMERIQUE_10',f:true}));var _pvb=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');_pvb.push({id:'PIXHARE-NUMERIQUE_10-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pl,module:'NUMERIQUE_10',xp:300,d:new Date().toISOString()});_pvb.push({id:'PIXHARE-PILLAR-NUMERIQUE-'+Date.now(),type:'PIXHARE_PILLAR_COMPLETE',player:_pl,pillar:'NUMERIQUE',d:new Date().toISOString()});if(_pvb.length>500)_pvb.splice(0,_pvb.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}))}catch(_e){}}
+
+function App(){
+  const[phase,setPhase]=useState("intro"),[fi,setFi]=useState(0),[ff,setFf]=useState(false);
+  const[qi,setQi]=useState(0),[sel,setSel]=useState(null),[fb,setFb]=useState(false);
+  const[scDone,setScDone]=useState(false),[scC,setScC]=useState(null);
+  const[xp,setXp]=useState(0),[sc,setSc]=useState(0);
+
+  function H(){return e("div",{className:"mod-header"},
+    e("div",{className:"mod-icon"},"🛡️"),
+    e("div",{className:"mod-meta"},
+      e("div",{className:"mod-pilier"},"PIX-pHARe · Pilier Numérique · Module Final"),
+      e("div",{className:"mod-title"},MODULE_TITLE),
+      e("div",{className:"mod-sub"},"Cybersécurité, hygiène numérique et éthique du hacking"),
+      e("div",{className:"mod-ref"},MODULE_REF)
+    ),e("div",{className:"xp-chip"},MODULE_XP+" XP")
+  )}
+  function XR(){return e("div",{className:"xp-row"},
+    e("div",{className:"xp-pill"},e("div",{className:"xp-pill-label"},"XP"),e("div",{className:"xp-pill-val"},xp)),
+    e("div",{className:"xp-pill"},e("div",{className:"xp-pill-label"},"Score"),e("div",{className:"xp-pill-val"},sc))
+  )}
+  function PB(p){return e("div",{className:"prog-bar"},e("div",{className:"prog-fill",style:{width:p+"%"}}))}
+  function LN(s){return e("div",{className:"level-nav"},
+    e("button",{className:"lnav-btn "+(s==="fc"?"active":s==="fcd"?"done":"")},"1 · Théorie"+(s==="fcd"?" ✓":"")),
+    e("button",{className:"lnav-btn "+(s==="qz"?"active":s==="qzd"?"done":""),disabled:s==="fc"},"2 · Analyse"+(s==="qzd"?" ✓":"")),
+    e("button",{className:"lnav-btn "+(s==="sc"?"active":""),disabled:s==="fc"||s==="fcd"||s==="qz"},"3 · Dojo")
+  )}
+
+  if(phase==="intro")return e("div",null,e(H),PB(0),
+    e("div",{className:"intro-hero"},
+      e("div",{style:{fontSize:"2.8rem",marginBottom:"12px",filter:"drop-shadow(0 0 14px rgba(0,212,255,.5))"}}, "🛡️"),
+      e("div",{className:"intro-title"},MODULE_TITLE),
+      e("div",{className:"intro-ref"},MODULE_REF),
+      e("div",{className:"intro-body"},"Les hackers ne sont pas forcément des criminels — certains sont les gardiens d'internet. Comprendre comment fonctionnent les attaques, quelles protections mettre en place, et comment signaler une faille de façon éthique, c'est le dernier niveau du pilier Numérique. Bienvenue dans le monde de la cybersécurité responsable."),
+      e("div",{style:{background:"rgba(0,212,255,.06)",border:"1px solid var(--border)",borderRadius:"8px",padding:"12px 16px",marginBottom:"18px",fontSize:".82rem",color:"var(--primary)"}},
+        "🏁 Module final du Pilier Numérique — 10/10"
+      ),
+      e("div",{className:"intro-connected"},"🔗 Connecté via Portail Vie Scolaire"),e("br"),
+      e("button",{className:"btn btn-pri",onClick:()=>setPhase("flashcards")},"[ COMMENCER ]")
+    )
+  );
+
+  if(phase==="flashcards"){const c=FC[fi];return e("div",null,e(H),PB(25),LN("fc"),
+    e("div",{className:"screen"},e(XR),
+      e("div",{className:"section-title"},"Concept "+(fi+1)+"/"+FC.length),
+      e("div",{className:"flashcard-wrap"+(ff?" flipped":""),onClick:()=>setFf(f=>!f)},
+        e("div",{className:"flashcard-inner"},
+          e("div",{className:"fc-face"},e("div",{className:"fc-q"},c.q),e("div",{className:"fc-hint"},c.h)),
+          e("div",{className:"fc-face fc-back"},e("div",{className:"fc-ans",dangerouslySetInnerHTML:{__html:c.a}}),e("div",{className:"fc-src"},c.src))
+        )
+      ),
+      e("div",{className:"nav-row"},
+        e("button",{className:"btn btn-sec",onClick:()=>{if(fi>0){setFi(i=>i-1);setFf(false)}},disabled:fi===0},"◄ PRÉC"),
+        e("button",{className:"btn btn-pri",onClick:()=>{if(fi<FC.length-1){setFi(i=>i+1);setFf(false);setXp(v=>v+10)}else{setXp(v=>v+40);setPhase("quiz")}}},fi<FC.length-1?"SUIV ►":"NIVEAU 2 ►")
+      )
+    )
+  )}
+
+  if(phase==="quiz"){const q=QZ[qi];return e("div",null,e(H),PB(55),LN("qzd"),
+    e("div",{className:"screen"},e(XR),
+      e("div",{className:"section-title"},"Question "+(qi+1)+"/"+QZ.length),
+      e("div",{className:"quiz-q"},q.q),
+      e("div",null,q.opts.map((o,i)=>{
+        let cl="opt";
+        if(fb){if(i===q.cor)cl+=" correct";else if(i===sel)cl+=" wrong";}else if(i===sel)cl+=" selected";
+        return e("div",{key:i,className:cl,onClick:()=>{if(!fb)setSel(i)}},
+          e("div",{className:"opt-letter"},String.fromCharCode(65+i)),e("div",{className:"opt-text"},o)
+        )
+      })),
+      fb&&e("div",{className:"feedback "+(sel===q.cor?"ok":"ko")},q.fb),
+      e("div",{className:"nav-row"},
+        e("button",{className:"btn btn-sec",disabled:sel===null||fb,onClick:()=>{setFb(true);if(sel===q.cor){setSc(v=>v+40);setXp(v=>v+40)}}},fb?"RÉPONSE AFFICHÉE":"VALIDER"),
+        fb&&e("button",{className:"btn btn-pri",onClick:()=>{if(qi<QZ.length-1){setQi(i=>i+1);setSel(null);setFb(false)}else setPhase("scenario")}},qi<QZ.length-1?"QUESTION SUIV ►":"NIVEAU 3 ►")
+      )
+    )
+  )}
+
+  if(phase==="scenario"){const done=scDone;return e("div",null,e(H),PB(80),LN("sc"),
+    e("div",{className:"screen"},e(XR),
+      e("div",{className:"section-title"},"Scénario · "+SC.title),
+      e("div",{className:"scenario-ctx"},SC.ctx),
+      !done&&e("div",null,
+        e("div",{className:"scenario-q"},SC.q),
+        SC.choices.map((c,i)=>e("button",{key:i,className:"choice-btn",onClick:()=>{setScC(i);setScDone(true);if(c.ok){setSc(v=>v+c.d);setXp(v=>v+c.d)}}},c.t))
+      ),
+      done&&scC!==null&&e("div",null,
+        e("div",{className:"result-box "+(SC.choices[scC].ok?"result-ok":"result-ko")},
+          SC.choices[scC].r,
+          e("div",{className:"impact-tag "+(SC.choices[scC].ok?"impact-pos":"impact-neg")},SC.choices[scC].ok?"✓ Hacker éthique":"⚠ Violation de données")
+        ),
+        e("div",{className:"nav-row"},
+          e("button",{className:"btn btn-pri",onClick:()=>setPhase("complete")},"RÉSULTATS FINAUX ►")
+        )
+      )
+    )
+  )}
+
+  if(phase==="complete"){
+    const total=xp,m=getMastery(total);
+    saveBridge();
+    return e("div",null,e(H),PB(100),
+      e("div",{className:"completion"},
+        e("div",{className:"completion-icon"},"🛡️"),
+        e("div",{className:"completion-title"},"MODULE COMPLÉTÉ"),
+        e("div",{className:"completion-sub"},"NUMÉRIQUE 10 · "+MODULE_TITLE),
+        e("div",{className:"stats-grid"},
+          e("div",{className:"stat-card"},e("div",{className:"stat-val"},total),e("div",{className:"stat-lbl"},"XP Gagnés")),
+          e("div",{className:"stat-card"},e("div",{className:"stat-val"},sc),e("div",{className:"stat-lbl"},"Score")),
+          e("div",{className:"stat-card"},e("div",{className:"stat-val"},"42"),e("div",{className:"stat-lbl"},"Règles ANSSI")),
+          e("div",{className:"stat-card"},e("div",{className:"stat-val"},"1/3"),e("div",{className:"stat-lbl"},"Français ciblés"})
+        ),
+        e("div",{className:"mastery-badge "+m.c},"Niveau : "+m.l),
+        e("div",{className:"pillar-complete"},
+          e("div",{style:{fontSize:"2rem",marginBottom:"8px"}},"🖥️"),
+          e("div",{className:"pillar-complete-title"},"PILIER NUMÉRIQUE COMPLÉTÉ"),
+          e("div",{style:{fontSize:".85rem",color:"var(--text-m)",marginBottom:"14px"}},"10 modules · Citoyenneté numérique accomplie"),
+          e("div",{className:"pillar-modules"},
+            PILLAR_MODULES.map((m,i)=>e("div",{key:i,className:"pillar-mod-badge"},"✓ "+m))
+          )
+        ),
+        e("div",{className:"bridge-note"},"🔗 Certification CERT_PHARE_NUMERIQUE_10 enregistrée · Événement PIXHARE_PILLAR_COMPLETE transmis · Portail Vie Scolaire"),
+        e("div",{style:{marginTop:"12px",fontSize:".85rem",color:"var(--text-d)"}},
+          "À retenir : la sécurité numérique est une responsabilité collective. Chaque bon réflexe protège non seulement toi, mais aussi les autres."
+        )
+      )
+    )
+  }
+  return null;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIX-pHARe | NUMÉRIQUE 07 · Anatomie d'une Fake News</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#00d4ff;--primary-dim:rgba(0,212,255,.12);--primary-glow:rgba(0,212,255,.4);
+  --bg:#000a10;--bg2:#001520;--panel:#041420;--panel2:#071e2c;
+  --text:#c8f0ff;--text-m:#4a8fa8;--text-d:#1a4a60;
+  --green:#10b981;--red:#ef4444;--gold:#f59e0b;--border:rgba(0,212,255,.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 20% 0%,rgba(0,212,255,.1) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(0,212,255,.05) 0%,transparent 50%)}
+#root{max-width:820px;margin:0 auto;padding:0 0 60px 0}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0}
+.mod-meta{flex:1}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:4px}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap}
+.prog-bar{height:3px;background:rgba(255,255,255,.06)}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#7dd3fc);transition:width .5s ease}
+.level-nav{display:flex;border-bottom:1px solid var(--border)}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.68rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.lnav-btn.done{color:var(--green)}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed}
+.screen{padding:24px 20px}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.flashcard-wrap{perspective:1000px;cursor:pointer;margin-bottom:14px}
+.flashcard-inner{position:relative;min-height:160px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.flashcard-wrap.flipped .flashcard-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;width:100%;min-height:160px;backface-visibility:hidden;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:22px;display:flex;flex-direction:column;justify-content:center}
+.fc-back{transform:rotateY(180deg);background:var(--panel2)}
+.fc-q{font-size:1rem;font-weight:600;color:#fff;text-align:center;line-height:1.5}
+.fc-hint{font-size:.78rem;color:var(--text-d);text-align:center;margin-top:10px;font-style:italic}
+.fc-ans{font-size:.92rem;color:var(--text-m);line-height:1.7}
+.fc-src{font-size:.72rem;color:var(--primary);margin-top:10px;text-align:right;font-style:italic}
+.nav-row{display:flex;gap:10px;justify-content:space-between;margin-top:6px}
+.btn{padding:10px 22px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.72rem;letter-spacing:1px;cursor:pointer;transition:.2s;border:none}
+.btn-pri{background:var(--primary);color:#000}.btn-pri:hover{background:#00b8e0}.btn-pri:disabled{opacity:.4;cursor:not-allowed}
+.btn-sec{background:transparent;border:1px solid var(--border);color:var(--text-m)}.btn-sec:hover{border-color:var(--primary);color:var(--primary)}
+.quiz-q{font-size:1rem;font-weight:600;color:#fff;line-height:1.55;margin-bottom:16px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:8px;border:1px solid var(--border);margin-bottom:9px;cursor:pointer;transition:.2s;background:var(--panel)}
+.opt:hover{border-color:var(--primary);background:var(--panel2)}.opt.selected{border-color:var(--primary);background:var(--primary-dim)}
+.opt.correct{border-color:var(--green);background:rgba(16,185,129,.12)}.opt.wrong{border-color:var(--red);background:rgba(239,68,68,.1)}
+.opt-letter{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--primary);min-width:20px;padding-top:2px}
+.opt-text{font-size:.9rem;color:var(--text);line-height:1.4}
+.feedback{padding:14px 16px;border-radius:8px;margin-top:12px;font-size:.9rem;line-height:1.5}
+.feedback.ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.feedback.ko{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.scenario-ctx{background:var(--panel);border-left:3px solid var(--primary);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.9rem;color:var(--text-m);line-height:1.6}
+.scenario-q{font-weight:600;color:#fff;margin-bottom:14px;font-size:.95rem}
+.choice-btn{display:block;width:100%;text-align:left;padding:13px 16px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:.9rem;cursor:pointer;transition:.2s;margin-bottom:9px;font-family:'Exo 2',sans-serif;line-height:1.4}
+.choice-btn:hover{border-color:var(--primary);background:var(--primary-dim)}
+.result-box{padding:16px;border-radius:8px;font-size:.9rem;line-height:1.6;margin-bottom:14px}
+.result-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.result-ko{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.impact-tag{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.75rem;font-family:'Orbitron',sans-serif;margin-top:8px}
+.impact-pos{background:rgba(16,185,129,.15);color:var(--green)}.impact-neg{background:rgba(239,68,68,.1);color:var(--red)}
+.xp-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.xp-pill{background:var(--panel);border:1px solid var(--border);padding:8px 18px;border-radius:8px;text-align:center}
+.xp-pill-label{font-size:.65rem;color:var(--text-d);font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.xp-pill-val{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--primary)}
+.completion{padding:32px 20px;text-align:center}
+.completion-icon{font-size:3rem;margin-bottom:12px;filter:drop-shadow(0 0 18px var(--primary-glow))}
+.completion-title{font-family:'Orbitron',sans-serif;font-size:1.6rem;color:#fff;margin-bottom:8px}
+.completion-sub{color:var(--text-m);font-size:.9rem;margin-bottom:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:20px 0}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:var(--primary)}
+.stat-lbl{font-size:.72rem;color:var(--text-d);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.mastery-badge{display:inline-block;padding:8px 22px;border-radius:20px;font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:700;margin:16px 0;border:2px solid}
+.mastery-expert{color:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(245,158,11,.3)}
+.mastery-confirmed{color:var(--primary);border-color:var(--primary)}
+.mastery-training{color:var(--green);border-color:var(--green)}
+.bridge-note{font-size:.8rem;color:var(--text-d);padding:10px 14px;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin:14px 0;line-height:1.5}
+.intro-hero{padding:32px 20px 24px;text-align:center}
+.intro-title{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:#fff;margin-bottom:8px}
+.intro-ref{font-size:.8rem;color:var(--primary);font-style:italic;margin-bottom:18px}
+.intro-body{font-size:.93rem;color:var(--text-m);line-height:1.7;max-width:560px;margin:0 auto 22px auto}
+.intro-connected{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,212,255,.35);border-radius:20px;color:var(--primary);font-size:.8rem;margin-bottom:22px}
+@media(max-width:560px){.mod-title{font-size:1.05rem}.stats-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const {useState}=React, e=React.createElement;
+const MODULE_ID="NUMERIQUE_07", MODULE_XP=200, MODULE_TITLE="Anatomie d'une Fake News";
+const MODULE_REF="Wardle & Derakhshan, First Draft 2017 · MIT/Science 2018 · CLEMI 2024";
+
+const FC=[
+  {q:"Quelle différence entre mésinformation, désinformation et malinformation ?",h:"[ Cliquer pour révéler ]",
+   a:"Wardle (2017) distingue 3 niveaux : la <b>mésinformation</b> (fausse info partagée sans intention de nuire), la <b>désinformation</b> (fausse info créée et diffusée délibérément), et la <b>malinformation</b> (info vraie utilisée pour nuire — ex : fuite de données privées). L'intention est la clé.",src:"Wardle & Derakhshan, Information Disorder, First Draft 2017"},
+  {q:"Pourquoi les fausses informations se propagent-elles si vite ?",h:"[ Cliquer pour révéler ]",
+   a:"Une étude du MIT (2018, revue <em>Science</em>) analysant 126 000 rumeurs sur Twitter montre que les <b>fausses nouvelles se diffusent 6 fois plus vite</b> que les vraies, touchent 70 % de personnes en plus, et ce phénomène est dû aux humains — pas aux bots. La nouveauté et l'émotion déclenchent le partage.",src:"Vosoughi, Roy & Aral, Science 2018"},
+  {q:"Qu'est-ce que la lecture latérale ?",h:"[ Cliquer pour révéler ]",
+   a:"La <b>lecture latérale</b> (méthode Stanford/CLEMI) consiste, face à une source inconnue, à ouvrir de nouveaux onglets pour chercher des informations <em>sur</em> la source plutôt que de lire son contenu. Exemple : «Qui est ce site ? Est-il cité par d'autres sources fiables ?» C'est plus efficace que lire le contenu en profondeur.",src:"Wineburg & McGrew, Stanford Digital Literacy Lab · CLEMI 2024"},
+  {q:"Quels sont les signes visuels d'une image manipulée ou hors contexte ?",h:"[ Cliquer pour révéler ]",
+   a:"Pour vérifier une image : utiliser la <b>recherche inversée</b> (Google Images, TinEye) pour voir si elle a été publiée ailleurs. Vérifier la date et le lieu d'origine. Les <b>deepfakes</b> présentent souvent des anomalies aux bords du visage, dans les yeux, les mains ou l'arrière-plan.",src:"CLEMI, Comprendre les intentions derrière les deepfakes, 2024"},
+  {q:"Comment identifier une source d'information fiable ?",h:"[ Cliquer pour révéler ]",
+   a:"4 questions clés : <b>Qui</b> publie ? (auteur identifiable, organisation connue) <b>Pourquoi</b> ? (intérêt commercial, idéologique ?) <b>Quand</b> ? (date récente ou ancienne ressortie ?) <b>Où</b> ailleurs retrouve-t-on cette info ? Une info confirmée par plusieurs sources indépendantes est plus fiable. Les sites officiels (.gouv.fr, .edu) et les agences de presse (AFP, Reuters) appliquent des processus de vérification.",src:"CLEMI · AFP Factuel · ESJ Lille"}
+];
+const QZ=[
+  {q:"Selon Claire Wardle (First Draft, 2017), qu'est-ce qui distingue la désinformation de la mésinformation ?",
+   opts:["La désinformation est plus grave car plus répandue","La mésinformation est fausse, la désinformation est vraie","La désinformation est diffusée avec l'intention délibérée de tromper","La mésinformation vient des réseaux sociaux, la désinformation des médias"],cor:2,
+   fb:"Exact. L'intention est la clé de la distinction de Wardle : la mésinformation est erronée sans malveillance (ex : partager une info non vérifiée), tandis que la désinformation est créée et diffusée exprès pour manipuler ou tromper."},
+  {q:"La lecture 'latérale' pour vérifier une source consiste à faire quoi ?",
+   opts:["Lire l'article en entier avant de le partager","Chercher des informations sur la source dans d'autres onglets","Chercher l'auteur sur les réseaux sociaux","Traduire l'article dans sa langue d'origine"],cor:1,
+   fb:"Exact. La lecture latérale (méthode Stanford/CLEMI) consiste à 'sortir' du site pour chercher ce que d'autres disent de lui. C'est bien plus efficace que lire le contenu en profondeur, car les sources non fiables savent bien se présenter."},
+  {q:"Selon une étude du MIT (Science, 2018), les fausses nouvelles se propagent combien de fois plus vite que les vraies sur les réseaux ?",
+   opts:["2 fois plus vite","4 fois plus vite","6 fois plus vite","10 fois plus vite"],cor:2,
+   fb:"Exact. 6 fois plus vite, touchant 70 % de personnes en plus. Et ce n'est pas dû aux bots — ce sont les humains qui partagent en priorité les infos nouvelles, surprenantes et émotionnellement fortes, vraies ou fausses."}
+];
+const SC={
+  title:"Le vaccin interdit",
+  ctx:"Tu vois sur Instagram un post avec des milliers de likes affirmant que le gouvernement cache les effets dangereux d'un vaccin. Un ami te demande de le partager 'pour avertir les gens'.",
+  q:"Que fais-tu ?",
+  choices:[
+    {t:"Je vérifie d'abord : je cherche l'origine du post, je fais une recherche latérale sur le site source, et je consulte une agence de fact-checking (AFP Factuel, lemonde.fr/les-décodeurs).",r:"Réflexe fact-checking activé. Tu ne partages pas l'émotion — tu vérifies les faits. La lecture latérale et les agences de vérification (AFP Factuel, Les Décodeurs) sont tes outils. Si l'info est fausse ou non vérifiée, ne pas partager protège des gens qui pourraient agir dessus.",ok:true,d:100},
+    {t:"Je le partage immédiatement — si ça circule autant, il doit y avoir quelque chose de vrai.",r:"Le nombre de likes ne valide pas une information. C'est exactement le mécanisme que décrit l'étude MIT (2018) : les fausses infos se propagent plus vite justement parce qu'elles sont émotionnellement fortes et nouvelles. La viralité n'est pas une preuve.",ok:false,d:0}
+  ]
+};
+
+function getMastery(s){if(s>=150)return{l:"Expert",c:"mastery-expert"};if(s>=90)return{l:"Confirmé",c:"mastery-confirmed"};return{l:"En formation",c:"mastery-training"}}
+function saveBridge(){try{var _pl=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||new URLSearchParams(window.location.search).get('player')||'';localStorage.setItem('CERT_PHARE_NUMERIQUE_07',JSON.stringify({v:1,d:new Date().toISOString(),m:'NUMERIQUE_07',f:true}));var _pvb=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');_pvb.push({id:'PIXHARE-NUMERIQUE_07-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pl,module:'NUMERIQUE_07',xp:200,d:new Date().toISOString()});if(_pvb.length>500)_pvb.splice(0,_pvb.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}))}catch(_e){}}
+
+function App(){
+  const[phase,setPhase]=useState("intro"),[fi,setFi]=useState(0),[ff,setFf]=useState(false);
+  const[qi,setQi]=useState(0),[sel,setSel]=useState(null),[fb,setFb]=useState(false);
+  const[scDone,setScDone]=useState(false),[scC,setScC]=useState(null);
+  const[xp,setXp]=useState(0),[sc,setSc]=useState(0),[qs,setQs]=useState(0),[ss,setSs]=useState(0);
+
+  function H(){return e("div",{className:"mod-header"},
+    e("div",{className:"mod-icon"},"🔍"),
+    e("div",{className:"mod-meta"},
+      e("div",{className:"mod-pilier"},"PIX-pHARe · Pilier Numérique"),
+      e("div",{className:"mod-title"},MODULE_TITLE),
+      e("div",{className:"mod-sub"},"Mésinformation, vérification et lecture critique de l'information"),
+      e("div",{className:"mod-ref"},MODULE_REF)
+    ),e("div",{className:"xp-chip"},MODULE_XP+" XP")
+  )}
+  function XR(){return e("div",{className:"xp-row"},
+    e("div",{className:"xp-pill"},e("div",{className:"xp-pill-label"},"XP"),e("div",{className:"xp-pill-val"},xp)),
+    e("div",{className:"xp-pill"},e("div",{className:"xp-pill-label"},"Score"),e("div",{className:"xp-pill-val"},sc))
+  )}
+  function PB(p){return e("div",{className:"prog-bar"},e("div",{className:"prog-fill",style:{width:p+"%"}}))}
+  function LN(s){return e("div",{className:"level-nav"},
+    e("button",{className:"lnav-btn "+(s==="fc"?"active":s==="fcd"?"done":"")},"1 · Théorie"+(s==="fcd"?" ✓":"")),
+    e("button",{className:"lnav-btn "+(s==="qz"?"active":s==="qzd"?"done":""),disabled:s==="fc"},"2 · Analyse"+(s==="qzd"?" ✓":"")),
+    e("button",{className:"lnav-btn "+(s==="sc"?"active":""),disabled:s==="fc"||s==="fcd"||s==="qz"},"3 · Dojo")
+  )}
+
+  if(phase==="intro")return e("div",null,e(H),PB(0),
+    e("div",{className:"intro-hero"},
+      e("div",{style:{fontSize:"2.8rem",marginBottom:"12px",filter:"drop-shadow(0 0 14px rgba(0,212,255,.5))"}}, "🔍"),
+      e("div",{className:"intro-title"},MODULE_TITLE),
+      e("div",{className:"intro-ref"},MODULE_REF),
+      e("div",{className:"intro-body"},"Une fausse information n'a pas besoin d'être vraie pour faire des dégâts — elle a juste besoin d'être partagée. Comprendre comment les infox sont construites, pourquoi elles se propagent si vite, et comment les détecter, c'est le premier geste citoyen à l'ère numérique."),
+      e("div",{className:"intro-connected"},"🔗 Connecté via Portail Vie Scolaire"),e("br"),
+      e("button",{className:"btn btn-pri",onClick:()=>setPhase("flashcards")},"[ COMMENCER ]")
+    )
+  );
+
+  if(phase==="flashcards"){const c=FC[fi];return e("div",null,e(H),PB(25),LN("fc"),
+    e("div",{className:"screen"},e(XR),
+      e("div",{className:"section-title"},"Concept "+(fi+1)+"/"+FC.length),
+      e("div",{className:"flashcard-wrap"+(ff?" flipped":""),onClick:()=>setFf(f=>!f)},
+        e("div",{className:"flashcard-inner"},
+          e("div",{className:"fc-face"},e("div",{className:"fc-q"},c.q),e("div",{className:"fc-hint"},c.h)),
+          e("div",{className:"fc-face fc-back"},e("div",{className:"fc-ans",dangerouslySetInnerHTML:{__html:c.a}}),e("div",{className:"fc-src"},c.src))
+        )
+      ),
+      e("div",{className:"nav-row"},
+        e("button",{className:"btn btn-sec",onClick:()=>{if(fi>0){setFi(i=>i-1);setFf(false)}},disabled:fi===0},"◄ PRÉC"),
+        e("button",{className:"btn btn-pri",onClick:()=>{if(fi<FC.length-1){setFi(i=>i+1);setFf(false);setXp(v=>v+10)}else{setXp(v=>v+40);setPhase("quiz")}}},fi<FC.length-1?"SUIV ►":"NIVEAU 2 ►")
+      )
+    )
+  )}
+
+  if(phase==="quiz"){const q=QZ[qi];return e("div",null,e(H),PB(55),LN("qzd"),
+    e("div",{className:"screen"},e(XR),
+      e("div",{className:"section-title"},"Question "+(qi+1)+"/"+QZ.length),
+      e("div",{className:"quiz-q"},q.q),
+      e("div",null,q.opts.map((o,i)=>{
+        let cl="opt";
+        if(fb){if(i===q.cor)cl+=" correct";else if(i===sel)cl+=" wrong";}else if(i===sel)cl+=" selected";
+        return e("div",{key:i,className:cl,onClick:()=>{if(!fb)setSel(i)}},
+          e("div",{className:"opt-letter"},String.fromCharCode(65+i)),e("div",{className:"opt-text"},o)
+        );
+      })),
+      fb&&e("div",{className:"feedback "+(sel===q.cor?"ok":"ko")},(sel===q.cor?"✔ ":"✘ ")+q.fb),
+      !fb?e("button",{className:"btn btn-pri",disabled:sel===null,onClick:()=>{setFb(true);if(sel===q.cor){setSc(v=>v+30);setQs(v=>v+30);setXp(v=>v+20)}},style:{marginTop:"12px"}},"VALIDER")
+         :e("button",{className:"btn btn-pri",onClick:()=>{setFb(false);setSel(null);if(qi<QZ.length-1)setQi(i=>i+1);else{setXp(v=>v+20);setPhase("scenario")}},style:{marginTop:"12px"}},qi<QZ.length-1?"SUIVANT ►":"NIVEAU 3 ►")
+    )
+  )}
+
+  if(phase==="scenario")return e("div",null,e(H),PB(80),LN("sc"),
+    e("div",{className:"screen"},e(XR),
+      e("div",{className:"section-title"},SC.title),
+      e("div",{className:"scenario-ctx"},SC.ctx),
+      e("div",{className:"scenario-q"},SC.q),
+      !scDone?SC.choices.map((c,i)=>e("button",{key:i,className:"choice-btn",onClick:()=>{setScC(i);setScDone(true);if(c.ok){setSc(v=>v+c.d);setSs(c.d)}setXp(v=>v+25)}},c.t))
+      :e("div",null,
+        e("div",{className:"result-box "+(SC.choices[scC].ok?"result-ok":"result-ko")},SC.choices[scC].r),
+        SC.choices[scC].ok?e("span",{className:"impact-tag impact-pos"},"+"+SC.choices[scC].d+" pts"):e("span",{className:"impact-tag impact-neg"},"Info non vérifiée"),
+        e("button",{className:"btn btn-pri",style:{marginTop:"18px"},onClick:()=>{saveBridge();setXp(v=>v+40);setPhase("complete")}},"VOIR MON RÉSULTAT ►")
+      )
+    )
+  );
+
+  if(phase==="complete"){const m=getMastery(sc);return e("div",null,e(H),PB(100),
+    e("div",{className:"completion"},
+      e("div",{className:"completion-icon"},"🏅"),
+      e("div",{className:"completion-title"},"MODULE TERMINÉ !"),
+      e("div",{className:"completion-sub"},MODULE_TITLE+" — NUMÉRIQUE 07"),
+      e("div",{className:"stats-grid"},
+        e("div",{className:"stat-card"},e("div",{className:"stat-val"},xp),e("div",{className:"stat-lbl"},"XP Total")),
+        e("div",{className:"stat-card"},e("div",{className:"stat-val"},sc),e("div",{className:"stat-lbl"},"Score")),
+        e("div",{className:"stat-card"},e("div",{className:"stat-val"},qs),e("div",{className:"stat-lbl"},"Quiz")),
+        e("div",{className:"stat-card"},e("div",{className:"stat-val"},ss),e("div",{className:"stat-lbl"},"Dojo"))
+      ),
+      e("div",{className:"mastery-badge "+m.c},m.l),
+      e("div",{className:"bridge-note"},"✔ Validation enregistrée et remontée vers le super-hub PIXHARe."),
+      e("button",{className:"btn btn-sec",style:{marginTop:"10px"},onClick:()=>window.location.reload()},"↻ RECOMMENCER")
+    )
+  )}
+  return e("div",null,"...");
+}
+ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+</script>
+</body>
+</html>
