@@ -1,5 +1,5 @@
 (function(){
-  var KERN_KEY='VIRuDMeF8Wz8DcdfEkW2BBvhD51jNCfg';
+  var KERN_KEY='';
   var KERN_URL='https://api.mistral.ai/v1/chat/completions';
   var KERN_MODEL='mistral-small-latest';
   var KERN_TEMP=0.95;
