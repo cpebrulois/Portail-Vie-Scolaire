@@ -1,5 +1,5 @@
 (function(){
-  var API_KEY='VIRuDMeF8Wz8DcdfEkW2BBvhD51jNCfg';
+  var API_KEY='';
   var API_URL='https://api.mistral.ai/v1/chat/completions';
   var API_MODEL='mistral-small-latest';
   var DEFAULTS={
