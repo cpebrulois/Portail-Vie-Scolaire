@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test multi-persona — LocalLLM (v2.1 prompts validés)</title>
+<style>
+  :root {
+    --bg:#0e1218; --panel:#161b24; --line:#2c3340;
+    --text:#e3e8ef; --muted:#8a96a6; --accent:#6cc1ff;
+    --helene:#56c8bb; --kern:#f0bf57; --agora:#a78bfa; --epictete:#10b981;
+  }
+  body { margin:0; font-family:system-ui,sans-serif; background:var(--bg); color:var(--text);
+    min-height:100vh; padding:14px; }
+  h1 { margin:0 0 4px; font-size:20px; color:var(--accent); }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 14px; }
+  .activate-row { display:flex; gap:10px; align-items:center; margin-bottom:14px; padding:10px;
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+  .activate-row button { background:var(--accent); color:var(--bg); border:none;
+    padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:bold; }
+  .activate-row button:disabled { opacity:.5; cursor:not-allowed; }
+  .progress { flex:1; }
+  .progress-bar { height:6px; background:#0a0d12; border-radius:3px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--accent); width:0%; transition:width .3s; }
+  .progress-text { font-size:12px; color:var(--muted); margin-top:4px; }
+
+  .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  @media (max-width:880px){ .grid { grid-template-columns:1fr; } }
+
+  .persona { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:12px; display:flex; flex-direction:column; gap:8px; min-height:380px; }
+  .persona h2 { margin:0; font-size:15px; }
+  .persona[data-p="helene"] h2 { color:var(--helene); }
+  .persona[data-p="kern"]   h2 { color:var(--kern); }
+  .persona[data-p="agora"]  h2 { color:var(--agora); }
+  .persona[data-p="epictete"] h2 { color:var(--epictete); }
+  .persona .desc { font-size:12px; color:var(--muted); margin:0; }
+  .persona textarea { width:100%; min-height:50px; box-sizing:border-box; padding:8px;
+    background:#0a0d12; color:var(--text); border:1px solid var(--line); border-radius:6px;
+    font:inherit; font-size:13px; resize:vertical; }
+  .persona button { background:transparent; color:var(--text); border:1px solid var(--line);
+    padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; align-self:flex-start; }
+  .persona button:hover { background:#1a212c; }
+  .persona button:disabled { opacity:.4; cursor:not-allowed; }
+  .persona .out { flex:1; padding:8px; background:#0a0d12; border:1px solid var(--line);
+    border-radius:6px; font-size:13px; line-height:1.5; white-space:pre-wrap;
+    overflow-y:auto; max-height:240px; }
+  .persona .meta { font-size:11px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<h1>Test multi-persona LocalLLM v2.1</h1>
+<p class="sub">Banc d'essai : SOCLE_COMMUN + persona compact + format avec exemple + sampling Qwen-friendly (temp 0.05, top_k 20, top_p 0.75, penalty 1.20). Prompts alignés sur les retours GPT5.5+Aurélien.</p>
+
+<div class="activate-row">
+  <button id="activate-btn">Activer l'assistant local (≈ 400 MB, première fois)</button>
+  <div class="progress">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-text" id="progress-text">Module LocalLLM v2.1 chargé. Clique pour télécharger Qwen2.5-0.5B et activer.</div>
+  </div>
+</div>
+
+<div class="grid">
+
+  <div class="persona" data-p="helene">
+    <h2>🎓 Hélène — Mentor orientation BFC</h2>
+    <p class="desc">Maïeutique. Pose 1-2 questions avant de proposer. Mode "clarification" si l'élève dit que tout est flou.</p>
+    <textarea id="in-helene">Je ne sais pas quoi faire plus tard, tout me semble flou.</textarea>
+    <button data-persona="helene">Demander à Hélène</button>
+    <div class="out" id="out-helene">—</div>
+    <div class="meta" id="meta-helene"></div>
+  </div>
+
+  <div class="persona" data-p="kern">
+    <h2>🛡️ Kern — Compagnon PIX pHARe</h2>
+    <p class="desc">Anti-harcèlement. Donne les ressources d'urgence si détresse. Renvoie vers un adulte.</p>
+    <textarea id="in-kern">Mes potes m'excluent depuis lundi à la cantine.</textarea>
+    <button data-persona="kern">Demander à Kern</button>
+    <div class="out" id="out-kern">—</div>
+    <div class="meta" id="meta-kern"></div>
+  </div>
+
+  <div class="persona" data-p="agora">
+    <h2>📚 Agora — Guide du portail Vie&Co</h2>
+    <p class="desc">Aide à naviguer le hub. Renvoie aux bonnes pages. Pas d'invention.</p>
+    <textarea id="in-agora">Comment je trouve le module pHARe juridique ?</textarea>
+    <button data-persona="agora">Demander à Agora</button>
+    <div class="out" id="out-agora">—</div>
+    <div class="meta" id="meta-agora"></div>
+  </div>
+
+  <div class="persona" data-p="epictete">
+    <h2>⚡ Épictète — Formateur AED (La Forge)</h2>
+    <p class="desc">Coach AED. Direct, calme, professionnel. Renvoie aux relais (CPE, infirmière, direction).</p>
+    <textarea id="in-epictete">Que dois-je faire si je remarque qu'un élève est isolé en récréation ?</textarea>
+    <button data-persona="epictete">Demander à Épictète</button>
+    <div class="out" id="out-epictete">—</div>
+    <div class="meta" id="meta-epictete"></div>
+  </div>
+
+</div>
+
+<script src="local_llm.js"></script>
+<script>
+  // Personas avec format SOCLE+PERSONA+FORMAT (les exemples concrets viennent de GPT5.5)
+  // Ils s'appuient sur LocalLLM.buildPrompt() pour assembler proprement.
+
+  const PERSONAS = {
+
+    helene: {
+      persona:
+        "Tu es Hélène, mentor d'orientation scolaire pour collégiens en Bourgogne-Franche-Comté.\n" +
+        "Tu réponds directement à l'élève, comme si tu lui parlais.\n" +
+        "Tu écris en français simple, naturel et bienveillant.\n" +
+        "Tu ne fais jamais de diagnostic.\n" +
+        "Tu ne décides jamais à la place de l'élève.\n" +
+        "Tu n'inventes pas de problème non mentionné.\n" +
+        "Tu ne proposes pas de métier si l'élève dit seulement que tout est flou.",
+      format:
+        "Ta réponse doit être courte : 4 ou 5 phrases naturelles maximum.\n" +
+        "Commence si possible par une formule rassurante.\n" +
+        "\n" +
+        "Exemple de forme attendue :\n" +
+        "C'est normal que ce soit flou, tu n'as pas besoin de tout choisir maintenant.\n" +
+        "Qu'est-ce qui t'intéresse un peu, même si ce n'est pas encore un projet précis ?\n" +
+        "Qu'est-ce que tu aimerais éviter dans ton futur quotidien ?\n" +
+        "Pour commencer, note trois choses que tu aimes faire et trois choses qui te fatiguent.",
+      ragContext: '',
+      options: { temperature: 0.05, maxTokens: 140 },
+    },
+
+    kern: {
+      persona:
+        "Tu es Kern, compagnon de PIX pHARe (anti-harcèlement scolaire).\n" +
+        "Tu écoutes l'élève sans dramatiser et sans minimiser.\n" +
+        "Tu encourages à parler à un adulte de confiance (CPE, infirmière, parent, professeur).\n" +
+        "Si tu détectes une détresse forte (suicide, violence, abus), tu donnes les numéros d'urgence (3018 harcèlement, 3114 prévention suicide, 119 enfance en danger, 15 SAMU).\n" +
+        "Tu ne glorifies jamais la violence ni la vengeance.",
+      format:
+        "Ta réponse doit être courte : 4 ou 5 phrases maximum.\n" +
+        "Commence par reconnaître ce que vit l'élève (1 phrase).\n" +
+        "Puis pose une question utile ou suggère une action concrète.\n" +
+        "\n" +
+        "Exemple de forme attendue :\n" +
+        "Ce que tu décris est sérieux, et tu fais bien d'en parler.\n" +
+        "Depuis quand ça dure et qui l'a remarqué autour de toi ?\n" +
+        "Tu peux en parler à la CPE ou à un prof en qui tu as confiance, ils sont là pour ça.\n" +
+        "Si tu veux, on peut préparer ensemble ce que tu vas leur dire.",
+      ragContext: '',
+      options: { temperature: 0.05, maxTokens: 160 },
+    },
+
+    agora: {
+      persona:
+        "Tu es Agora, guide du portail Vie&Co d'Aurélien Brulois.\n" +
+        "Tu aides à naviguer les modules pHARe, l'orientation BFC, les ressources locales.\n" +
+        "Tu n'inventes pas de page : si tu ne trouves pas, tu le dis simplement.\n" +
+        "Tu ne promets pas de fonctionnalité absente.",
+      format:
+        "Ta réponse doit être courte : 3 ou 4 phrases.\n" +
+        "Indique le nom de la page ou du module pertinent quand c'est utile.\n" +
+        "Si tu n'as pas l'info, dis 'je ne trouve pas ça dans le hub' et propose à qui demander.",
+      ragContext: '',
+      options: { temperature: 0.05, maxTokens: 140 },
+    },
+
+    epictete: {
+      persona:
+        "Tu es Épictète, formateur intégré à La Forge du Collège Château Rance, pour les AED.\n" +
+        "Tu es direct, calme, précis, bienveillant. Pas familier, pas sensationnaliste.\n" +
+        "Tu ne diagnostiques jamais. Tu ne dis pas ce qu'il faut penser.\n" +
+        "Tu ramènes vers les bons relais : CPE, infirmière, assistante sociale, direction, protocole pHARe.\n" +
+        "Si risque grave, priorité protection et secours (15, 17, 119, 3114).",
+      format:
+        "Ta réponse doit être courte : 4 ou 5 phrases.\n" +
+        "Donne 1 ou 2 actions concrètes que l'AED peut faire avant de signaler.\n" +
+        "Termine par à qui transmettre.",
+      ragContext: '',
+      options: { temperature: 0.05, maxTokens: 160 },
+    },
+  };
+
+  // Activation
+  document.getElementById('activate-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('activate-btn');
+    const fill = document.getElementById('progress-fill');
+    const txt = document.getElementById('progress-text');
+    btn.disabled = true;
+    btn.textContent = 'Chargement...';
+    try {
+      await window.LocalLLM.activate({
+        onProgress: ({ progress, text }) => {
+          fill.style.width = (progress * 100) + '%';
+          txt.textContent = text;
+        },
+        onReady: () => {
+          btn.textContent = '✓ LocalLLM v2.1 activé';
+          fill.style.width = '100%';
+          txt.textContent = 'Prêt. Sampling Qwen-friendly. Tu peux interroger les personas.';
+          document.querySelectorAll('[data-persona]').forEach(b => b.disabled = false);
+        },
+      });
+    } catch (e) {
+      btn.textContent = 'Échec — réessayer';
+      btn.disabled = false;
+      txt.textContent = 'Erreur : ' + e.message;
+    }
+  });
+
+  // Boutons persona
+  document.querySelectorAll('[data-persona]').forEach(btn => {
+    btn.disabled = true;
+    btn.addEventListener('click', async () => {
+      const persona = btn.dataset.persona;
+      const cfg = PERSONAS[persona];
+      const inp = document.getElementById('in-' + persona);
+      const out = document.getElementById('out-' + persona);
+      const meta = document.getElementById('meta-' + persona);
+      const text = inp.value.trim();
+      if (!text) return;
+      btn.disabled = true;
+      out.textContent = '...';
+      meta.textContent = '';
+      const t0 = Date.now();
+      let streamingTxt = '';
+      try {
+        // Format SOCLE + PERSONA + FORMAT + RAG + USER via LocalLLM.buildPrompt
+        const built = window.LocalLLM.buildPrompt({
+          persona: cfg.persona,
+          mode: '',
+          format: cfg.format,
+          ragContext: cfg.ragContext,
+          userMessage: text,
+        });
+        const result = await window.LocalLLM.ask({
+          fullPrompt: built.full,
+          options: Object.assign({}, cfg.options, {
+            onChunk: (piece) => {
+              streamingTxt += piece;
+              out.textContent = streamingTxt;
+            },
+          }),
+        });
+        const dt = ((Date.now() - t0) / 1000).toFixed(1);
+        if (result.ok) {
+          out.textContent = result.text;
+          meta.textContent = '✓ ' + dt + 's · ' + result.text.length + ' chars';
+        } else {
+          out.textContent = '[erreur] ' + (result.error || 'inconnue');
+          meta.textContent = '✗ ' + dt + 's';
+        }
+      } catch (e) {
+        out.textContent = '[exception] ' + e.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
