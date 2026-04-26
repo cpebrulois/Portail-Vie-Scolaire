@@ -40,14 +40,8 @@
       "single-thread/wllama.wasm": "https://cdn.jsdelivr.net/npm/@wllama/wllama/esm/single-thread/wllama.wasm"
     };
 
-    const MODEL_PARTS = [
-  "models/qwen3_0_8b_q3_k_m.part-00.gguf",
-  "models/qwen3_0_8b_q3_k_m.part-01.gguf",
-  "models/qwen3_0_8b_q3_k_m.part-02.gguf",
-  "models/qwen3_0_8b_q3_k_m.part-03.gguf",
-  "models/qwen3_0_8b_q3_k_m.part-04.gguf",
-  "models/qwen3_0_8b_q3_k_m.part-05.gguf"
-].map(path => new URL(path, window.location.href).href);
+    const MODEL_URL =
+  "https://github.com/aurelienbrulois23-boop/Portail-Vie-Scolaire/releases/download/qwen-local/Qwen3.5-0.8B-Q3_K_M.gguf";
 
     function setStatus(text) {
       statusEl.textContent = text;
@@ -63,7 +57,7 @@
 
         setStatus("Téléchargement et chargement du modèle local...");
 
-        await wllama.loadModelFromUrl(MODEL_PARTS, {
+        await wllama.loadModelFromUrl(MODEL_URL, {
           n_ctx: 1024,
           n_threads: 1,
           useCache: true,
