@@ -2,28 +2,109 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Test Qwen local</title>
+  <title>Test Qwen local navigateur</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 850px; margin: 40px auto; line-height: 1.5; }
-    textarea { width: 100%; height: 90px; }
-    button { padding: 10px 16px; margin-top: 8px; }
-    pre { white-space: pre-wrap; background: #111; color: #eee; padding: 12px; border-radius: 8px; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 16px;
+      line-height: 1.5;
+      background: #f7f7f7;
+      color: #111;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 16px;
+      margin-top: 10px;
+      margin-right: 8px;
+      border: none;
+      border-radius: 8px;
+      background: #222;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background: #111;
+      color: #eee;
+      padding: 14px;
+      border-radius: 10px;
+      min-height: 100px;
+    }
+
+    #status {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #666;
+    }
   </style>
 </head>
+
 <body>
   <h1>Test Qwen local dans le navigateur</h1>
+  <p class="small">
+    Cette page teste le chargement d’un modèle GGUF depuis Hugging Face, puis son exécution locale via wllama.
+  </p>
 
-  <p id="status">Chargement non lancé.</p>
+  <div class="card">
+    <p id="status">Chargement non lancé.</p>
+    <button id="loadBtn">Charger le modèle</button>
+    <button id="clearCacheBtn">Vider le cache wllama</button>
+  </div>
 
-  <button id="loadBtn">Charger le modèle</button>
+  <div class="card">
+    <h2>Prompt de test</h2>
+    <textarea id="prompt">Tu es Hélène, mentor d’orientation scolaire. Réponds en français simple, en 5 phrases maximum. Ne décide pas à la place de l’élève. Pose une question utile à la fin.
 
-  <h2>Prompt</h2>
-  <textarea id="prompt">Tu es Hélène, mentor d'orientation. Réponds en français très court. Question : je ne sais pas quoi faire plus tard.</textarea>
-  <br>
-  <button id="askBtn" disabled>Demander</button>
+Question de l’élève : Je ne sais pas quoi faire plus tard, tout me semble flou.</textarea>
+    <br>
+    <button id="askBtn" disabled>Demander</button>
+  </div>
 
-  <h2>Réponse</h2>
-  <pre id="output"></pre>
+  <div class="card">
+    <h2>Réponse</h2>
+    <pre id="output"></pre>
+  </div>
 
   <script type="module">
     import { Wllama } from "https://cdn.jsdelivr.net/npm/@wllama/wllama/esm/index.js";
@@ -31,60 +112,154 @@
     const statusEl = document.getElementById("status");
     const outputEl = document.getElementById("output");
     const loadBtn = document.getElementById("loadBtn");
+    const clearCacheBtn = document.getElementById("clearCacheBtn");
     const askBtn = document.getElementById("askBtn");
     const promptEl = document.getElementById("prompt");
 
     let wllama = null;
+    let modelLoaded = false;
 
     const CONFIG_PATHS = {
       "single-thread/wllama.wasm": "https://cdn.jsdelivr.net/npm/@wllama/wllama/esm/single-thread/wllama.wasm"
     };
 
-    const MODEL_URL =
-  "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf";
+    const HF_REPO = "unsloth/Qwen3.5-0.8B-GGUF";
+    const HF_FILE = "Qwen3.5-0.8B-Q4_K_M.gguf";
 
     function setStatus(text) {
       statusEl.textContent = text;
-      console.log(text);
+      console.log("[STATUS]", text);
     }
+
+    function formatProgress(progress) {
+      if (!progress) return "";
+
+      const loaded = progress.loaded ?? progress.loadedSize ?? 0;
+      const total = progress.total ?? progress.totalSize ?? 0;
+
+      if (!total || total <= 0) {
+        return "Téléchargement en cours...";
+      }
+
+      const percent = Math.round((loaded / total) * 100);
+      const loadedMb = Math.round(loaded / 1024 / 1024);
+      const totalMb = Math.round(total / 1024 / 1024);
+
+      return `Téléchargement du modèle : ${percent}% (${loadedMb} / ${totalMb} Mo)`;
+    }
+
+    function buildPrompt(userPrompt) {
+      return `<|im_start|>system
+Tu es Hélène, mentor d’orientation scolaire.
+Tu réponds en français clair, calme et prudent.
+Tu ne poses jamais de diagnostic.
+Tu ne décides jamais à la place de l’élève.
+Tu poses une question utile si la situation est floue.
+Réponds court : 120 mots maximum.
+<|im_end|>
+<|im_start|>user
+${userPrompt}
+<|im_end|>
+<|im_start|>assistant
+`;
+    }
+
+    async function ensureWllama() {
+      if (!wllama) {
+        wllama = new Wllama(CONFIG_PATHS);
+      }
+      return wllama;
+    }
+
+    clearCacheBtn.onclick = async () => {
+      try {
+        clearCacheBtn.disabled = true;
+        setStatus("Initialisation de wllama pour vider le cache...");
+
+        await ensureWllama();
+
+        setStatus("Nettoyage du cache wllama...");
+        await wllama.cacheManager.clear();
+
+        modelLoaded = false;
+        askBtn.disabled = true;
+
+        setStatus("Cache vidé. Tu peux relancer le chargement du modèle.");
+      } catch (err) {
+        console.error(err);
+        setStatus("Erreur pendant le nettoyage du cache : " + (err.message || err));
+      } finally {
+        clearCacheBtn.disabled = false;
+      }
+    };
 
     loadBtn.onclick = async () => {
       try {
         loadBtn.disabled = true;
+        askBtn.disabled = true;
+        outputEl.textContent = "";
+
         setStatus("Initialisation de wllama...");
+        await ensureWllama();
 
-        wllama = new Wllama(CONFIG_PATHS);
+        setStatus("Nettoyage du cache avant chargement...");
+        await wllama.cacheManager.clear();
 
-        setStatus("Téléchargement et chargement du modèle local...");
+        setStatus("Téléchargement et chargement du modèle depuis Hugging Face...");
 
-        await wllama.loadModelFromUrl(MODEL_URL, {
-          n_ctx: 1024,
-          n_threads: 1,
-          useCache: true,
-          progressCallback: (progress) => {
-            console.log("progress", progress);
+        await wllama.loadModelFromHF(
+          HF_REPO,
+          HF_FILE,
+          {
+            n_ctx: 768,
+            n_threads: 1,
+            useCache: true,
+            progressCallback: (progress) => {
+              const text = formatProgress(progress);
+              if (text) setStatus(text);
+              console.log("[PROGRESS]", progress);
+            }
           }
-        });
+        );
 
-        setStatus("Modèle chargé. Tu peux poser une question.");
+        modelLoaded = true;
         askBtn.disabled = false;
+        setStatus("Modèle chargé. Tu peux poser une question.");
       } catch (err) {
         console.error(err);
-        setStatus("Erreur au chargement : " + err.message);
+        modelLoaded = false;
+        askBtn.disabled = true;
+        setStatus("Erreur au chargement : " + (err.message || err));
+      } finally {
+        loadBtn.disabled = false;
       }
     };
 
     askBtn.onclick = async () => {
       try {
+        if (!modelLoaded || !wllama) {
+          setStatus("Le modèle n’est pas encore chargé.");
+          return;
+        }
+
         askBtn.disabled = true;
         outputEl.textContent = "";
 
-        const prompt = promptEl.value.trim();
+        const userPrompt = promptEl.value.trim();
+
+        if (!userPrompt) {
+          setStatus("Le prompt est vide.");
+          askBtn.disabled = false;
+          return;
+        }
+
+        const finalPrompt = buildPrompt(userPrompt);
 
         setStatus("Génération en cours...");
 
-        const result = await wllama.createCompletion(prompt, {
+        const result = await wllama.createCompletion(finalPrompt, {
           nPredict: 160,
+          stop: ["<|im_end|>", "<|im_start|>"],
           sampling: {
             temp: 0.2,
             top_k: 40,
@@ -93,11 +268,14 @@
           }
         });
 
-        outputEl.textContent = result;
+        outputEl.textContent = typeof result === "string"
+          ? result.trim()
+          : JSON.stringify(result, null, 2);
+
         setStatus("Réponse terminée.");
       } catch (err) {
         console.error(err);
-        setStatus("Erreur génération : " + err.message);
+        setStatus("Erreur génération : " + (err.message || err));
       } finally {
         askBtn.disabled = false;
       }
