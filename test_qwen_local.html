@@ -2,60 +2,98 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Test Qwen local navigateur</title>
+  <title>Test LLM local — System/User séparés</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 900px;
-      margin: 40px auto;
+      max-width: 1100px;
+      margin: 32px auto;
       padding: 0 16px;
       line-height: 1.5;
-      background: #f7f7f7;
+      background: #f6f6f6;
       color: #111;
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.15rem;
+    }
+
+    .small {
+      color: #666;
+      font-size: 14px;
     }
 
     .card {
-      background: white;
+      background: #fff;
       border: 1px solid #ddd;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 16px;
       margin: 16px 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     textarea {
       width: 100%;
-      min-height: 120px;
       box-sizing: border-box;
-      font-family: inherit;
-      font-size: 15px;
-      padding: 10px;
-      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      padding: 12px;
+      border-radius: 10px;
       border: 1px solid #ccc;
       resize: vertical;
+      background: #fcfcfc;
+    }
+
+    #systemPrompt {
+      min-height: 360px;
+    }
+
+    #userPrompt {
+      min-height: 180px;
     }
 
     button {
       padding: 10px 16px;
-      margin-top: 10px;
+      margin-top: 8px;
       margin-right: 8px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: #222;
-      color: white;
+      color: #fff;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     button:disabled {
       background: #999;
       cursor: not-allowed;
+    }
+
+    .secondary {
+      background: #555;
+    }
+
+    .danger {
+      background: #8a1f1f;
     }
 
     pre {
@@ -65,44 +103,129 @@
       color: #eee;
       padding: 14px;
       border-radius: 10px;
-      min-height: 100px;
+      min-height: 120px;
+      font-size: 14px;
     }
 
     #status {
-      font-weight: 600;
+      font-weight: 700;
       color: #333;
     }
 
-    .small {
-      font-size: 14px;
-      color: #666;
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 90px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .pill {
+      display: inline-block;
+      background: #eee;
+      border: 1px solid #ddd;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      margin-right: 6px;
     }
   </style>
 </head>
 
 <body>
-  <h1>Test Qwen local dans le navigateur</h1>
+  <h1>Test LLM local — System prompt / Question utilisateur</h1>
   <p class="small">
-    Cette page teste le chargement d’un modèle GGUF depuis Hugging Face, puis son exécution locale via wllama.
+    Modèle testé : Qwen2.5-0.5B-Instruct Q4_K_M via wllama. Le modèle est téléchargé depuis Hugging Face, puis exécuté localement dans le navigateur.
   </p>
 
   <div class="card">
     <p id="status">Chargement non lancé.</p>
-    <button id="loadBtn">Charger le modèle</button>
-    <button id="clearCacheBtn">Vider le cache wllama</button>
+    <div class="row">
+      <button id="loadBtn">Charger le modèle</button>
+      <button id="clearCacheBtn" class="secondary">Vider le cache wllama</button>
+      <button id="resetPromptsBtn" class="secondary">Réinitialiser les prompts</button>
+    </div>
+    <p class="small">
+      Conseil : après un changement de modèle ou un essai raté, ferme l’onglet, rouvre la page, puis vide le cache.
+    </p>
   </div>
 
   <div class="card">
-    <h2>Prompt de test</h2>
-    <textarea id="prompt">Tu es Hélène, mentor d’orientation scolaire. Réponds en français simple, en 5 phrases maximum. Ne décide pas à la place de l’élève. Pose une question utile à la fin.
+    <h2>Paramètres de génération</h2>
+    <div class="row">
+      <div>
+        <label for="tempInput">Température</label>
+        <input id="tempInput" type="number" min="0" max="2" step="0.05" value="0.10">
+      </div>
+      <div>
+        <label for="topPInput">Top-p</label>
+        <input id="topPInput" type="number" min="0" max="1" step="0.05" value="0.85">
+      </div>
+      <div>
+        <label for="topKInput">Top-k</label>
+        <input id="topKInput" type="number" min="1" max="100" step="1" value="30">
+      </div>
+      <div>
+        <label for="repeatInput">Répétition</label>
+        <input id="repeatInput" type="number" min="1" max="2" step="0.05" value="1.15">
+      </div>
+      <div>
+        <label for="predictInput">Max tokens</label>
+        <input id="predictInput" type="number" min="20" max="500" step="10" value="120">
+      </div>
+    </div>
+    <p class="small">
+      Pour une bouche disciplinée : température basse, réponse courte. Le perroquet chante mieux quand on ne lui sert pas le pastis au litre.
+    </p>
+  </div>
 
-Question de l’élève : Je ne sais pas quoi faire plus tard, tout me semble flou.</textarea>
-    <br>
-    <button id="askBtn" disabled>Demander</button>
+  <div class="grid">
+    <div class="card">
+      <h2>System prompt</h2>
+      <p class="small">
+        Ici, tu règles le personnage, ses limites, son style, son format. L’élève ne voit pas cette partie.
+      </p>
+      <textarea id="systemPrompt"></textarea>
+    </div>
+
+    <div class="card">
+      <h2>Question utilisateur</h2>
+      <p class="small">
+        Ici, tu mets uniquement le message de l’élève ou de l’utilisateur.
+      </p>
+      <textarea id="userPrompt"></textarea>
+      <br>
+      <button id="askBtn" disabled>Générer la réponse</button>
+    </div>
   </div>
 
   <div class="card">
-    <h2>Réponse</h2>
+    <h2>Prompt final envoyé au modèle</h2>
+    <p class="small">
+      Utile pour voir exactement ce que reçoit le modèle. Ça évite les doubles consignes planquées sous le paillasson.
+    </p>
+    <button id="previewBtn" class="secondary">Prévisualiser le prompt final</button>
+    <pre id="finalPromptPreview"></pre>
+  </div>
+
+  <div class="card">
+    <h2>Réponse du modèle</h2>
+    <div>
+      <span class="pill" id="timingPill">Temps : —</span>
+      <span class="pill" id="modelPill">Modèle : non chargé</span>
+    </div>
     <pre id="output"></pre>
   </div>
 
@@ -113,8 +236,20 @@ Question de l’élève : Je ne sais pas quoi faire plus tard, tout me semble fl
     const outputEl = document.getElementById("output");
     const loadBtn = document.getElementById("loadBtn");
     const clearCacheBtn = document.getElementById("clearCacheBtn");
+    const resetPromptsBtn = document.getElementById("resetPromptsBtn");
     const askBtn = document.getElementById("askBtn");
-    const promptEl = document.getElementById("prompt");
+    const previewBtn = document.getElementById("previewBtn");
+    const systemPromptEl = document.getElementById("systemPrompt");
+    const userPromptEl = document.getElementById("userPrompt");
+    const finalPromptPreviewEl = document.getElementById("finalPromptPreview");
+    const timingPill = document.getElementById("timingPill");
+    const modelPill = document.getElementById("modelPill");
+
+    const tempInput = document.getElementById("tempInput");
+    const topPInput = document.getElementById("topPInput");
+    const topKInput = document.getElementById("topKInput");
+    const repeatInput = document.getElementById("repeatInput");
+    const predictInput = document.getElementById("predictInput");
 
     let wllama = null;
     let modelLoaded = false;
@@ -124,11 +259,37 @@ Question de l’élève : Je ne sais pas quoi faire plus tard, tout me semble fl
     };
 
     const HF_REPO = "lmstudio-community/Qwen2.5-0.5B-Instruct-GGUF";
-const HF_FILE = "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf";
+    const HF_FILE = "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf";
+
+    const DEFAULT_SYSTEM_PROMPT = `Tu es Hélène, mentor d’orientation scolaire pour collégiens.
+Tu réponds en français simple, naturel et bienveillant.
+Tu ne fais jamais de diagnostic.
+Tu ne décides jamais à la place de l’élève.
+Tu n’inventes pas de problème non mentionné.
+Tu ne proposes pas de métier si l’élève dit seulement que tout est flou.
+Tu réponds avec exactement 4 phrases.
+La première phrase rassure l’élève.
+La deuxième phrase demande ce qu’il aime ou ce qui l’attire.
+La troisième phrase demande ce qu’il veut éviter ou ce qui le bloque.
+La quatrième phrase propose une petite action concrète à faire maintenant.
+N’écris jamais les mots : phrase, question, action concrète, format obligatoire.
+N’utilise pas de liste.
+N’utilise pas de titres.
+Maximum 90 mots.`;
+
+    const DEFAULT_USER_PROMPT = `Je ne sais pas quoi faire plus tard, tout me semble flou.`;
 
     function setStatus(text) {
       statusEl.textContent = text;
       console.log("[STATUS]", text);
+    }
+
+    function setDefaults() {
+      systemPromptEl.value = DEFAULT_SYSTEM_PROMPT;
+      userPromptEl.value = DEFAULT_USER_PROMPT;
+      finalPromptPreviewEl.textContent = "";
+      outputEl.textContent = "";
+      timingPill.textContent = "Temps : —";
     }
 
     function formatProgress(progress) {
@@ -148,20 +309,28 @@ const HF_FILE = "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf";
       return `Téléchargement du modèle : ${percent}% (${loadedMb} / ${totalMb} Mo)`;
     }
 
-    function buildPrompt(userPrompt) {
+    function buildPrompt(systemPrompt, userPrompt) {
       return `<|im_start|>system
-Tu es Hélène, mentor d’orientation scolaire.
-Tu réponds en français clair, calme et prudent.
-Tu ne poses jamais de diagnostic.
-Tu ne décides jamais à la place de l’élève.
-Tu poses une question utile si la situation est floue.
-Réponds court : 120 mots maximum.
+${systemPrompt.trim()}
 <|im_end|>
 <|im_start|>user
-${userPrompt}
+${userPrompt.trim()}
 <|im_end|>
 <|im_start|>assistant
 `;
+    }
+
+    function getGenerationSettings() {
+      return {
+        nPredict: Number(predictInput.value || 120),
+        stop: ["<|im_end|>", "<|im_start|>"],
+        sampling: {
+          temp: Number(tempInput.value || 0.1),
+          top_k: Number(topKInput.value || 30),
+          top_p: Number(topPInput.value || 0.85),
+          penalty_repeat: Number(repeatInput.value || 1.15)
+        }
+      };
     }
 
     async function ensureWllama() {
@@ -171,19 +340,24 @@ ${userPrompt}
       return wllama;
     }
 
+    resetPromptsBtn.onclick = () => {
+      setDefaults();
+      setStatus("Prompts réinitialisés.");
+    };
+
     clearCacheBtn.onclick = async () => {
       try {
         clearCacheBtn.disabled = true;
-        setStatus("Initialisation de wllama pour vider le cache...");
+        askBtn.disabled = true;
+        modelLoaded = false;
 
+        setStatus("Initialisation de wllama pour vider le cache...");
         await ensureWllama();
 
         setStatus("Nettoyage du cache wllama...");
         await wllama.cacheManager.clear();
 
-        modelLoaded = false;
-        askBtn.disabled = true;
-
+        modelPill.textContent = "Modèle : non chargé";
         setStatus("Cache vidé. Tu peux relancer le chargement du modèle.");
       } catch (err) {
         console.error(err);
@@ -198,14 +372,14 @@ ${userPrompt}
         loadBtn.disabled = true;
         askBtn.disabled = true;
         outputEl.textContent = "";
+        timingPill.textContent = "Temps : —";
 
         setStatus("Initialisation de wllama...");
         await ensureWllama();
 
-        setStatus("Nettoyage du cache avant chargement...");
-        await wllama.cacheManager.clear();
-
         setStatus("Téléchargement et chargement du modèle depuis Hugging Face...");
+
+        const start = performance.now();
 
         await wllama.loadModelFromHF(
           HF_REPO,
@@ -222,17 +396,28 @@ ${userPrompt}
           }
         );
 
+        const seconds = Math.round((performance.now() - start) / 1000);
+
         modelLoaded = true;
         askBtn.disabled = false;
-        setStatus("Modèle chargé. Tu peux poser une question.");
+        modelPill.textContent = `Modèle : ${HF_FILE}`;
+        setStatus(`Modèle chargé en ${seconds} s. Tu peux poser une question.`);
       } catch (err) {
         console.error(err);
         modelLoaded = false;
         askBtn.disabled = true;
+        modelPill.textContent = "Modèle : erreur";
         setStatus("Erreur au chargement : " + (err.message || err));
       } finally {
         loadBtn.disabled = false;
       }
+    };
+
+    previewBtn.onclick = () => {
+      const systemPrompt = systemPromptEl.value;
+      const userPrompt = userPromptEl.value;
+      finalPromptPreviewEl.textContent = buildPrompt(systemPrompt, userPrompt);
+      setStatus("Prompt final prévisualisé.");
     };
 
     askBtn.onclick = async () => {
@@ -242,36 +427,42 @@ ${userPrompt}
           return;
         }
 
-        askBtn.disabled = true;
-        outputEl.textContent = "";
+        const systemPrompt = systemPromptEl.value.trim();
+        const userPrompt = userPromptEl.value.trim();
 
-        const userPrompt = promptEl.value.trim();
-
-        if (!userPrompt) {
-          setStatus("Le prompt est vide.");
-          askBtn.disabled = false;
+        if (!systemPrompt) {
+          setStatus("Le system prompt est vide.");
           return;
         }
 
-        const finalPrompt = buildPrompt(userPrompt);
+        if (!userPrompt) {
+          setStatus("La question utilisateur est vide.");
+          return;
+        }
+
+        askBtn.disabled = true;
+        outputEl.textContent = "";
+        timingPill.textContent = "Temps : génération en cours...";
+
+        const finalPrompt = buildPrompt(systemPrompt, userPrompt);
+        finalPromptPreviewEl.textContent = finalPrompt;
 
         setStatus("Génération en cours...");
 
-        const result = await wllama.createCompletion(finalPrompt, {
-          nPredict: 160,
-          stop: ["<|im_end|>", "<|im_start|>"],
-          sampling: {
-            temp: 0.2,
-            top_k: 40,
-            top_p: 0.9,
-            penalty_repeat: 1.1
-          }
-        });
+        const start = performance.now();
+
+        const result = await wllama.createCompletion(
+          finalPrompt,
+          getGenerationSettings()
+        );
+
+        const seconds = Math.round((performance.now() - start) / 1000);
 
         outputEl.textContent = typeof result === "string"
           ? result.trim()
           : JSON.stringify(result, null, 2);
 
+        timingPill.textContent = `Temps : ${seconds} s`;
         setStatus("Réponse terminée.");
       } catch (err) {
         console.error(err);
@@ -280,6 +471,8 @@ ${userPrompt}
         askBtn.disabled = false;
       }
     };
+
+    setDefaults();
   </script>
 </body>
 </html>
