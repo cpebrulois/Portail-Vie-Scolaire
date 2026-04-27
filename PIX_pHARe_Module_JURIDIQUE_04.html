@@ -111,7 +111,7 @@
         }
         .flashcard:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
         .flashcard.flipped { transform: rotateY(180deg); }
-        .flashcard .front, .flashcard .back { backface-visibility: hidden; position: absolute; width: calc(100% - 60px); }
+        .flashcard .front, .flashcard .back { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
         .flashcard .back { transform: rotateY(180deg); }
         .flashcard .question { font-size: 1.3em; font-weight: 600; line-height: 1.5; color: var(--dark); }
         .flashcard .answer { font-size: 1.1em; line-height: 1.6; color: var(--dark); }
@@ -438,7 +438,7 @@
             if (mode === 'game') {
                 if (currentLevel === 1) {
                     const cards = MODULE_DATA.niveau1.cartes;
-                    return e('div', { className: 'app-container' }, e(Header, { showProgress: true, xp }), e(ProgressBar, { currentLevel, xp }), e(LevelIndicator, { current: currentLevel }), e('h2', { style: { textAlign: 'center' } }, '📋 NIVEAU 1 : RÉGLEMENTATION'), e('div', { className: 'card-counter' }, `Carte ${cardIdx + 1} / ${cards.length}`), e(Flashcard, { card: cards[cardIdx], isLast: cardIdx === cards.length - 1, onNext: () => setCardIdx(cardIdx + 1), onComplete: () => { setXp(xp + MODULE_DATA.niveau1.xp_reward); setCurrentLevel(2); setCardIdx(0); } }));
+                    return e('div', { className: 'app-container' }, e(Header, { showProgress: true, xp }), e(ProgressBar, { currentLevel, xp }), e(LevelIndicator, { current: currentLevel }), e('h2', { style: { textAlign: 'center' } }, '📋 NIVEAU 1 : RÉGLEMENTATION'), e('div', { className: 'card-counter' }, `Carte ${cardIdx + 1} / ${cards.length}`), e(Flashcard, { key: cardIdx, card: cards[cardIdx], isLast: cardIdx === cards.length - 1, onNext: () => setCardIdx(cardIdx + 1), onComplete: () => { setXp(xp + MODULE_DATA.niveau1.xp_reward); setCurrentLevel(2); setCardIdx(0); } }));
                 }
                 if (currentLevel === 2) {
                     const questions = MODULE_DATA.niveau2.questions;
@@ -468,7 +468,7 @@
             }
 
             if (mode === 'report') {
-                return e('div', { className: 'app-container' }, e(Report, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onRestart: () => { resetProgress(); setMode('game'); }, onMenu: () => { resetProgress(); setMode('menu'); } }));
+                return e('div', { className: 'app-container' }, e(Report, { progress: { ...progress, xp }, onRestart: () => { resetProgress(); setMode('game'); }, onMenu: () => { resetProgress(); setMode('menu'); } }));
             }
             return e('div', { className: 'app-container' }, 'Chargement...');
         }
