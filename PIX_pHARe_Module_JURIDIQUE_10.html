@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · JURIDIQUE 10 · Plaider sa Cause</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+/* Unique to JURIDIQUE_10: procédure steps */
+.proc-step{display:flex;gap:14px;align-items:flex-start;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+.proc-num{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--primary);min-width:32px;font-weight:700;}
+.proc-body{}
+.proc-label{font-family:'Orbitron',sans-serif;font-size:.62rem;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;margin-bottom:4px;}
+.proc-text{font-size:.88rem;color:var(--text-m);line-height:1.6;}
+.proc-text strong{color:var(--text);}
+/* Recours ladder */
+.recours-ladder{display:flex;flex-direction:column;gap:0;margin-bottom:14px;}
+.rl-row{display:flex;align-items:stretch;gap:0;}
+.rl-arrow{display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--primary);padding:0 8px;}
+.rl-card{flex:1;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:3px 0;}
+.rl-type{font-family:'Orbitron',sans-serif;font-size:.58rem;letter-spacing:2px;color:var(--primary);margin-bottom:3px;text-transform:uppercase;}
+.rl-desc{font-size:.82rem;color:var(--text-m);line-height:1.5;}
+.rl-desc strong{color:var(--text);}
+.quote-block{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:14px 20px;margin-bottom:16px;font-size:.92rem;font-style:italic;color:var(--text-m);line-height:1.7;}
+.quote-block cite{display:block;margin-top:8px;font-size:.78rem;color:var(--text-d);font-style:normal;}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-intro{font-size:.88rem;color:var(--text-m);line-height:1.6;margin-bottom:14px;padding:12px 16px;background:var(--panel2);border-radius:8px;border:1px solid var(--border);}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,1,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.stat-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:14px;display:flex;gap:14px;align-items:center;}
+.stat-num{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);line-height:1;min-width:80px;text-align:center;}
+.stat-text{font-size:.88rem;color:var(--text-m);line-height:1.6;}
+.stat-text strong{color:var(--text);}
+.fin-zone{text-align:center;padding:40px 20px;}
+.cert-badge{width:90px;height:90px;background:linear-gradient(135deg,var(--primary),#fde68a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin:0 auto 20px;box-shadow:0 0 40px var(--primary-glow);}
+.cert-title{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:#fff;margin-bottom:8px;}
+.cert-sub{font-size:.88rem;color:var(--text-m);margin-bottom:24px;line-height:1.6;}
+.xp-earned{font-family:'Orbitron',sans-serif;font-size:2.2rem;color:var(--primary);margin-bottom:6px;}
+.xp-label{font-size:.75rem;color:var(--text-d);text-transform:uppercase;letter-spacing:2px;margin-bottom:28px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="mod-header">
+    <div class="mod-icon">⚖️</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Juridique · Module 10</div>
+      <div class="mod-title">Plaider sa Cause</div>
+      <div class="mod-sub">Le droit à la défense, les procédures de recours et l'art de faire valoir ses droits en milieu scolaire.</div>
+      <div class="mod-ref">DUDH art.10–11 · CIDE art.12 · CEDH art.6 · Procédure disciplinaire scolaire</div>
+    </div>
+    <div class="xp-chip">+500 XP</div>
+  </header>
+
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+  <!-- NAV -->
+  <nav class="level-nav">
+    <button class="lnav-btn active" id="nav1" onclick="goLevel(1)">I · Déconstruction</button>
+    <button class="lnav-btn" id="nav2" onclick="goLevel(2)" disabled>II · Expérimentation</button>
+    <button class="lnav-btn" id="nav3" onclick="goLevel(3)" disabled>III · Transfert</button>
+  </nav>
+
+  <!-- =================== NIVEAU 1 =================== -->
+  <section class="screen active" id="screen1">
+    <div class="section-title">Le Droit à la Défense</div>
+
+    <div class="narr-block">
+      <strong>« Nul ne peut être sanctionné sans avoir pu s'expliquer. »</strong><br><br>
+      Ce principe, inscrit dans la <em>Déclaration universelle des droits de l'Homme</em> (art.10–11, 1948) et dans la <em>Convention européenne des droits de l'Homme</em> (art.6), n'est pas réservé aux tribunaux. Il s'applique partout où une sanction est prononcée — y compris dans ton établissement scolaire.<br><br>
+      La <strong>procédure contradictoire</strong> garantit que toute personne visée par une mesure défavorable puisse connaître les faits reprochés, consulter les éléments du dossier, et présenter ses observations avant que la décision ne soit rendue.<br><br>
+      La <strong>Convention Internationale des Droits de l'Enfant</strong> (art.12) renforce ce droit pour les mineurs : l'enfant capable de discernement a le droit d'exprimer son point de vue dans toute procédure le concernant. Ce n'est pas une faveur — c'est une obligation légale.
+    </div>
+
+    <div class="section-title">Les Étapes d'une Procédure Régulière</div>
+
+    <div class="proc-step">
+      <div class="proc-num">01</div>
+      <div class="proc-body">
+        <div class="proc-label">Information</div>
+        <div class="proc-text">L'élève (et ses représentants légaux si mineur) est <strong>informé des faits reprochés</strong> par écrit, avec un délai raisonnable avant l'audition ou le conseil de discipline.</div>
+      </div>
+    </div>
+
+    <div class="proc-step">
+      <div class="proc-num">02</div>
+      <div class="proc-body">
+        <div class="proc-label">Accès au dossier</div>
+        <div class="proc-text">Toute personne convoquée en conseil de discipline a le droit de <strong>consulter le dossier complet</strong> avant la séance — pièces, témoignages, rapports. Ce droit ne peut pas être refusé.</div>
+      </div>
+    </div>
+
+    <div class="proc-step">
+      <div class="proc-num">03</div>
+      <div class="proc-body">
+        <div class="proc-label">Audition &amp; Assistance</div>
+        <div class="proc-text">L'élève peut <strong>être accompagné d'une personne de son choix</strong> (parent, délégué, adulte de confiance). Il a le droit de parler, de répondre, et de soumettre des éléments à décharge.</div>
+      </div>
+    </div>
+
+    <div class="proc-step">
+      <div class="proc-num">04</div>
+      <div class="proc-body">
+        <div class="proc-label">Décision motivée</div>
+        <div class="proc-text">La sanction doit être <strong>proportionnée aux faits</strong>, clairement motivée, et notifiée par écrit. Une sanction vague ou disproportionnée est contestable.</div>
+      </div>
+    </div>
+
+    <div class="proc-step">
+      <div class="proc-num">05</div>
+      <div class="proc-body">
+        <div class="proc-label">Voies de recours</div>
+        <div class="proc-text">Toute décision peut faire l'objet d'un <strong>recours gracieux</strong> (chef d'établissement), puis <strong>hiérarchique</strong> (DASEN), puis <strong>contentieux</strong> (tribunal administratif). Ces droits doivent être mentionnés dans la notification.</div>
+      </div>
+    </div>
+
+    <div class="section-title">Les Voies de Recours</div>
+
+    <div class="recours-ladder">
+      <div class="rl-row">
+        <div class="rl-card">
+          <div class="rl-type">Recours gracieux</div>
+          <div class="rl-desc">Auprès du <strong>chef d'établissement</strong> — demander le réexamen de la décision dans un délai de 2 mois.</div>
+        </div>
+      </div>
+      <div class="rl-row"><div class="rl-arrow">↓</div></div>
+      <div class="rl-row">
+        <div class="rl-card">
+          <div class="rl-type">Recours hiérarchique</div>
+          <div class="rl-desc">Auprès du <strong>DASEN</strong> (Directeur Académique) — autorité de tutelle de l'établissement.</div>
+        </div>
+      </div>
+      <div class="rl-row"><div class="rl-arrow">↓</div></div>
+      <div class="rl-row">
+        <div class="rl-card">
+          <div class="rl-type">Médiateur académique</div>
+          <div class="rl-desc">Intervention amiable — <strong>gratuite et confidentielle</strong> — pour résoudre un différend sans procédure contentieuse.</div>
+        </div>
+      </div>
+      <div class="rl-row"><div class="rl-arrow">↓</div></div>
+      <div class="rl-row">
+        <div class="rl-card">
+          <div class="rl-type">Tribunal administratif</div>
+          <div class="rl-desc">Recours contentieux — <strong>annulation de la décision</strong> si la procédure est viciée ou la sanction disproportionnée.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      « Toute personne a droit à ce que sa cause soit entendue équitablement, publiquement et dans un délai raisonnable, par un tribunal indépendant et impartial. »
+      <cite>— Convention Européenne des Droits de l'Homme, article 6 §1</cite>
+    </div>
+
+    <div class="reflect-q" id="reflectQ1">
+      Pourquoi une sanction prononcée sans que l'élève ait pu consulter le dossier est-elle illégale, même si les faits sont réels ?
+    </div>
+
+    <div class="opts-list" id="opts1">
+      <button class="opt-btn" onclick="chooseOpt1(this,'A')">A — Parce que l'élève peut prouver son innocence uniquement si on lui montre le dossier.</button>
+      <button class="opt-btn" onclick="chooseOpt1(this,'B')">B — Parce que la procédure contradictoire est un droit en soi, indépendant de la culpabilité : même coupable, on a le droit d'être entendu et d'accéder au dossier.</button>
+      <button class="opt-btn" onclick="chooseOpt1(this,'C')">C — Parce que le règlement intérieur l'interdit explicitement.</button>
+    </div>
+
+    <div class="feedback-box" id="fb1"></div>
+    <button class="btn-primary" id="btnL1" onclick="unlockLevel2()" disabled>Accéder au Niveau II →</button>
+  </section>
+
+  <!-- =================== NIVEAU 2 =================== -->
+  <section class="screen" id="screen2">
+    <div class="section-title">Cas Pratiques — Procédures &amp; Recours</div>
+
+    <!-- Phase 1 -->
+    <div class="sim-phase" id="phase1">
+      <div class="phase-label">Situation 01 / 03</div>
+      <div class="phase-q">Kylian, 15 ans, est convoqué pour un conseil de discipline prévu vendredi. On lui a seulement dit « c'est pour des perturbations en classe ». Il n'a reçu aucun document. Que manque-t-il ?</div>
+      <div class="phase-intro">Un conseil de discipline doit respecter un formalisme précis. La convocation ouvre une série de droits procéduraux.</div>
+      <div class="phase-choice" onclick="choosePhase(1,this,'good')">✓ Il n'a pas reçu la liste des griefs écrits, ni accès au dossier — la procédure est irrégulière et la sanction susceptible d'annulation.</div>
+      <div class="phase-choice" onclick="choosePhase(1,this,'medium')">~ Il manque juste la convocation de ses parents, le reste est suffisant pour tenir la séance.</div>
+      <div class="phase-choice" onclick="choosePhase(1,this,'bad')">✗ Rien ne manque : la convocation verbale suffit pour un conseil de discipline interne.</div>
+      <div class="phase-fb" id="pfb1"></div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="sim-phase" id="phase2" style="opacity:.45;pointer-events:none;">
+      <div class="phase-label">Situation 02 / 03</div>
+      <div class="phase-q">Inès est exclue temporairement le mardi matin par le proviseur. La décision est annoncée verbalement, sans document remis. Sa famille veut contester. Par où commencer ?</div>
+      <div class="phase-intro">Toute exclusion temporaire d'un établissement est une sanction qui ouvre des voies de recours précises.</div>
+      <div class="phase-choice" onclick="choosePhase(2,this,'good')">✓ Demander immédiatement la notification écrite et motivée — sans document, le délai de recours ne court pas et la procédure est contestable.</div>
+      <div class="phase-choice" onclick="choosePhase(2,this,'medium')">~ Envoyer un mail au proviseur pour lui demander sa décision — mais attendre sa réponse avant de faire quoi que ce soit.</div>
+      <div class="phase-choice" onclick="choosePhase(2,this,'bad')">✗ Saisir directement le tribunal administratif — c'est la seule voie efficace pour une exclusion.</div>
+      <div class="phase-fb" id="pfb2"></div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="sim-phase" id="phase3" style="opacity:.45;pointer-events:none;">
+      <div class="phase-label">Situation 03 / 03</div>
+      <div class="phase-q">La famille de Kylian a déposé un recours gracieux. Le proviseur confirme la sanction sans réexamen apparent. L'étape suivante ?</div>
+      <div class="phase-intro">Le recours gracieux n'a pas abouti. Le droit de recours ne s'arrête pas là.</div>
+      <div class="phase-choice" onclick="choosePhase(3,this,'good')">✓ Saisir le médiateur académique ou le DASEN en recours hiérarchique — deux voies complémentaires avant le tribunal administratif.</div>
+      <div class="phase-choice" onclick="choosePhase(3,this,'medium')">~ Envoyer une lettre recommandée au Rectorat — sans préciser de quelle voie il s'agit, cela reste insuffisant.</div>
+      <div class="phase-choice" onclick="choosePhase(3,this,'bad')">✗ Le recours gracieux ayant échoué, il n'y a plus rien à faire — la décision est définitive.</div>
+      <div class="phase-fb" id="pfb3"></div>
+    </div>
+
+    <button class="btn-primary" id="btnL2" onclick="unlockLevel3()" disabled>Accéder au Niveau III →</button>
+  </section>
+
+  <!-- =================== NIVEAU 3 =================== -->
+  <section class="screen" id="screen3">
+    <div class="section-title">Transfert — Certification JURIDIQUE</div>
+
+    <!-- Xfer 1 -->
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario de Certification 01 / 03</div>
+      <div class="xfer-scenario">
+        Lors d'une récré, tu entends un élève dire à un camarade : <em>« C'est toi qui m'as dénoncé, j'ai eu une retenue à cause de toi — maintenant t'es mort. »</em> Dans le couloir ensuite, tu apprends que la retenue avait été donnée sans entretien préalable, juste sur la base d'un signalement.
+      </div>
+      <div class="xfer-q">Quelle est ta priorité immédiate en tant qu'AED ?</div>
+      <div class="xfer-choice" onclick="chooseXfer(1,this,'best')">⬤ Signaler l'escalade à la CPE et vérifier avec elle que la sanction de départ respectait la procédure — deux urgences parallèles.</div>
+      <div class="xfer-choice" onclick="chooseXfer(1,this,'good')">◎ Gérer l'escalade verbale entre élèves — la question de la procédure est pour l'administration.</div>
+      <div class="xfer-choice" onclick="chooseXfer(1,this,'bad')">○ Expliquer à l'élève sanctionné qu'il aurait dû se taire au départ — la retenue était peut-être méritée.</div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+
+    <!-- Xfer 2 -->
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario de Certification 02 / 03</div>
+      <div class="xfer-scenario">
+        Lors d'une permanence, Leïla (13 ans) te dit : <em>« Les adultes ici décident tout — on n'a jamais notre mot à dire. Si je me plains, ça va juste m'en coûter plus. »</em>
+      </div>
+      <div class="xfer-q">Que lui répondre qui soit à la fois vrai et utile ?</div>
+      <div class="xfer-choice" onclick="chooseXfer(2,this,'best')">⬤ L'informer que la CIDE (art.12) lui garantit légalement le droit d'être entendue dans toute procédure la concernant, et qu'elle peut solliciter la délégation ou la CPE pour porter sa voix.</div>
+      <div class="xfer-choice" onclick="chooseXfer(2,this,'good')">◎ Lui dire qu'elle a raison d'être prudente, mais que certains adultes l'écouteront — lui proposer d'en parler à ton CPE.</div>
+      <div class="xfer-choice" onclick="chooseXfer(2,this,'bad')">○ Lui conseiller de ne rien faire pour l'instant et d'attendre que les choses se calment.</div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+
+    <!-- Xfer 3 -->
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario de Certification 03 / 03</div>
+      <div class="xfer-scenario">
+        Un collègue AED t'appelle, inquiet : son chef d'établissement lui reproche d'avoir « mal géré une situation » et évoque une procédure disciplinaire. Ton collègue ne sait pas quels faits précis lui sont reprochés et n'a reçu aucun document.
+      </div>
+      <div class="xfer-q">Que lui conseilles-tu en priorité ?</div>
+      <div class="xfer-choice" onclick="chooseXfer(3,this,'best')">⬤ Lui conseiller d'exiger par écrit la liste des faits reprochés et l'accès au dossier — sans cela, la procédure n'est pas contradictoire et est illégale — et de contacter son syndicat ou le rectorat pour être assisté.</div>
+      <div class="xfer-choice" onclick="chooseXfer(3,this,'good')">◎ Lui dire d'attendre la convocation officielle avant d'agir — il est trop tôt pour s'inquiéter.</div>
+      <div class="xfer-choice" onclick="chooseXfer(3,this,'bad')">○ Lui conseiller de s'expliquer directement avec le chef d'établissement à l'oral — inutile de formaliser si la relation est encore possible.</div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+
+    <button class="btn-primary" id="btnCert" onclick="completeMod()" disabled>Valider la Certification ⚖️</button>
+  </section>
+
+  <!-- =================== FIN =================== -->
+  <section class="screen" id="screenFin">
+    <div class="fin-zone">
+      <div class="cert-badge">⚖️</div>
+      <div class="cert-title">Certification JURIDIQUE Validée</div>
+      <div class="cert-sub">Tu maîtrises le droit à la défense, les procédures contradictoires et les voies de recours en milieu scolaire. Tu es désormais capable de guider un élève — ou un collègue — vers les bons interlocuteurs et les bonnes démarches.</div>
+      <div class="xp-earned">+500 XP</div>
+      <div class="xp-label">Points obtenus</div>
+      <button class="btn-primary" onclick="goHub()">Retour au Hub</button>
+    </div>
+  </section>
+
+</div><!-- /app -->
+
+<script>
+const MODULE_ID = 'JURIDIQUE_10';
+const XP_VALUE  = 500;
+
+/* ---------- STATE ---------- */
+let l1Done=false, l2Done=false, xferDone=[false,false,false];
+let phaseDone=[false,false,false];
+
+/* ---------- LEVEL 1 ---------- */
+function chooseOpt1(btn,val){
+  document.querySelectorAll('#opts1 .opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const fb=document.getElementById('fb1');
+  if(val==='B'){
+    fb.textContent='✓ Exact. Le droit à la défense (procédure contradictoire) est une garantie procédurale autonome. Même si l\'élève est objectivement coupable, lui refuser l\'accès au dossier vicie la procédure et expose la sanction à annulation. Le fond et la forme sont deux choses distinctes.';
+    fb.className='feedback-box show';
+    document.getElementById('btnL1').disabled=false;
+    l1Done=true; updateProg();
+  } else if(val==='A'){
+    fb.textContent='Presque. L\'accès au dossier permet effectivement de préparer sa défense — mais l\'essentiel est ailleurs : même sans contester les faits, l\'élève a le droit procédural d\'accéder au dossier avant toute décision. C\'est le principe du contradictoire.';
+    fb.className='feedback-box show';
+  } else {
+    fb.textContent='Non. Le règlement intérieur n\'est pas la source de ce droit — il découle de la DUDH, de la CEDH et du droit administratif français. Il s\'applique même si le règlement intérieur ne le mentionne pas.';
+    fb.className='feedback-box show';
+  }
+}
+function unlockLevel2(){
+  document.getElementById('screen1').classList.remove('active');
+  document.getElementById('screen2').classList.add('active');
+  document.getElementById('nav1').classList.add('done');
+  document.getElementById('nav2').classList.add('active');
+  document.getElementById('nav2').disabled=false;
+  updateProg();
+}
+
+/* ---------- LEVEL 2 ---------- */
+const phaseFeedbacks={
+  1:{
+    good:'✓ Parfait. La convocation doit être accompagnée de l\'exposé des griefs et de l\'indication du droit à consulter le dossier. Sans cela, la procédure est irrégulière et la sanction annulable, même si les faits sont avérés.',
+    medium:'Partiellement. Les parents doivent effectivement être convoqués (élève mineur), mais c\'est insuffisant : il faut aussi les griefs écrits et l\'accès au dossier. La procédure est viciée sur plusieurs points.',
+    bad:'Non. La convocation verbale ne respecte pas le formalisme requis pour un conseil de discipline, qui est une sanction grave ouvrant des droits spécifiques.'
+  },
+  2:{
+    good:'✓ Exact. Sans notification écrite et motivée, le délai de recours ne commence pas à courir — c\'est un avantage procédural. La famille doit d\'abord obtenir ce document, puis exercer les recours dans les délais légaux (2 mois).',
+    medium:'Attention. Attendre la réponse sans agir fait courir le risque que des délais s\'écoulent sans acte formel. Il faut exiger immédiatement la notification écrite — par courrier recommandé si nécessaire.',
+    bad:'Pas encore. Le tribunal administratif est la dernière voie, après le recours gracieux et hiérarchique. Sauter les étapes est rarement efficace et peut même nuire au dossier.'
+  },
+  3:{
+    good:'✓ Correct. Le médiateur académique peut intervenir rapidement et gratuitement. Le recours hiérarchique auprès du DASEN est la voie administrative standard. Ces deux options sont complémentaires et précèdent le tribunal administratif.',
+    medium:'Insuffisant. Écrire au Rectorat sans préciser qu\'il s\'agit d\'un recours hiérarchique peut rester sans effet. Il faut mentionner explicitement cette qualification et viser le DASEN nominativement.',
+    bad:'Faux. Le droit de recours en France prévoit plusieurs niveaux successifs. La décision n\'est définitive qu\'après épuisement des voies de recours ou décision d\'un tribunal administratif.'
+  }
+};
+function choosePhase(n,el,qual){
+  const phase=document.getElementById('phase'+n);
+  phase.querySelectorAll('.phase-choice').forEach(c=>c.classList.remove('good','medium','bad'));
+  el.classList.add(qual);
+  const fb=document.getElementById('pfb'+n);
+  fb.textContent=phaseFeedbacks[n][qual];
+  fb.className='phase-fb show';
+  if(qual==='good'||qual==='medium'){
+    phaseDone[n-1]=true;
+    if(n<3){
+      setTimeout(()=>{
+        const next=document.getElementById('phase'+(n+1));
+        next.style.opacity='1'; next.style.pointerEvents='auto';
+      },600);
+    }
+    checkL2Done();
+  }
+}
+function checkL2Done(){
+  if(phaseDone[0]&&phaseDone[1]&&phaseDone[2]){
+    document.getElementById('btnL2').disabled=false;
+    l2Done=true; updateProg();
+  }
+}
+function unlockLevel3(){
+  document.getElementById('screen2').classList.remove('active');
+  document.getElementById('screen3').classList.add('active');
+  document.getElementById('nav2').classList.add('done');
+  document.getElementById('nav3').classList.add('active');
+  document.getElementById('nav3').disabled=false;
+  updateProg();
+}
+
+/* ---------- LEVEL 3 ---------- */
+const xferFeedbacks={
+  1:{
+    best:'✓ Excellent. L\'escalade entre élèves est une urgence de sécurité immédiate, mais la procédure irrégulière est une urgence institutionnelle. Tu dois signaler les deux simultanément — l\'une n\'efface pas l\'autre.',
+    good:'Bien, mais incomplet. Gérer l\'escalade est urgent — mais si la sanction d\'origine était irrégulière, elle a peut-être généré cette crise. Signaler la situation procédurale à la CPE est aussi ta responsabilité.',
+    bad:'Non. Un AED ne valide pas une sanction potentiellement illégale, et encore moins en faisant peser la responsabilité sur l\'élève. Toute sanction irrégulière nuit à l\'autorité de l\'institution entière.'
+  },
+  2:{
+    best:'✓ Parfait. Tu ancres ta réponse dans un texte légal concret (CIDE art.12) plutôt que dans un espoir vague. Tu lui montres aussi un chemin institutionnel réel. C\'est du droit comme outil d\'émancipation.',
+    good:'Acceptable, mais insuffisant. Orienter vers la CPE est un bon réflexe, mais sans nommer le droit sous-jacent, tu laisses Leïla dans la même incertitude. La CIDE art.12 lui donne un levier réel à connaître.',
+    bad:'Non. Conseiller l\'inaction à un élève qui exprime une impuissance face à une procédure n\'est ni juste ni utile. Ton rôle est de montrer qu\'il existe des voies — même modestes — pour se faire entendre.'
+  },
+  3:{
+    best:'✓ Exact. L\'obligation d\'informer préalablement un agent des faits qui lui sont reprochés est un droit fondamental de la procédure disciplinaire dans la fonction publique (statut général des fonctionnaires). Sans cela, la procédure est nulle. Le syndicat et/ou le rectorat peuvent l\'assister.',
+    good:'Partiellement. Attendre une convocation officielle sans agir peut laisser des délais s\'écouler. Ton collègue doit demander dès maintenant — par écrit — quels faits lui sont reprochés. La formalisation crée une trace et oblige l\'employeur à répondre.',
+    bad:'Non. L\'échange informel a pu avoir lieu, mais il ne remplace pas la procédure formelle. Si une procédure disciplinaire est ouverte, ton collègue a besoin d\'une assistance formelle et d\'un dossier écrit.'
+  }
+};
+function chooseXfer(n,el,qual){
+  const card=el.closest('.xfer-card');
+  card.querySelectorAll('.xfer-choice').forEach(c=>c.classList.remove('best','good','bad'));
+  el.classList.add(qual);
+  const fb=document.getElementById('xfb'+n);
+  fb.textContent=xferFeedbacks[n][qual];
+  fb.className='xfer-fb show';
+  if(qual==='best'||qual==='good'){xferDone[n-1]=true; checkCert();}
+}
+function checkCert(){
+  if(xferDone[0]&&xferDone[1]&&xferDone[2]){
+    document.getElementById('btnCert').disabled=false;
+    updateProg();
+  }
+}
+
+/* ---------- COMPLETE ---------- */
+function completeMod(){
+  // Save XP
+  const xpKey='phare_xp_'+MODULE_ID;
+  const certKey='CERT_PHARE_JURIDIQUE_10';
+  if(!localStorage.getItem(xpKey)){
+    let total=parseInt(localStorage.getItem('phare_xp_total')||'0');
+    total+=XP_VALUE;
+    localStorage.setItem('phare_xp_total',total);
+    localStorage.setItem(xpKey,XP_VALUE);
+  }
+  localStorage.setItem(certKey,'true');
+  // pvs bridge
+  if(window.parent&&window.parent!==window){
+    window.parent.postMessage({type:'pvs_bridge_event',event:'MODULE_COMPLETE',data:{module:MODULE_ID,xp:XP_VALUE}},'*');
+  }
+  document.getElementById('screen3').classList.remove('active');
+  document.getElementById('screenFin').classList.add('active');
+  document.getElementById('progFill').style.width='100%';
+}
+
+/* ---------- NAV HELPERS ---------- */
+function goLevel(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen'+n).classList.add('active');
+  document.querySelectorAll('.lnav-btn').forEach((b,i)=>{
+    b.classList.remove('active');
+    if(i===n-1)b.classList.add('active');
+  });
+}
+function goHub(){
+  if(window.parent&&window.parent!==window){
+    window.parent.postMessage({type:'pvs_bridge_event',event:'GO_HUB',data:{}},'*');
+  } else { window.location.href='index_PIXHARe.html'; }
+}
+function updateProg(){
+  let p=0;
+  if(l1Done)p=30;
+  if(l2Done)p=65;
+  if(xferDone[0]&&xferDone[1]&&xferDone[2])p=90;
+  document.getElementById('progFill').style.width=p+'%';
+}
+// Init nav
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('nav2').disabled=true;
+  document.getElementById('nav3').disabled=true;
+});
+</script>
+</body>
+</html>

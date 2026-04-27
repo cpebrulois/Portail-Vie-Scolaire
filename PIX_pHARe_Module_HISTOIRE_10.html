@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · HISTOIRE 10 · Écrire la Paix</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+.quote-block{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:14px 20px;margin-bottom:16px;font-size:.92rem;font-style:italic;color:var(--text-m);line-height:1.7;}
+.quote-block cite{display:block;margin-top:8px;font-size:.78rem;color:var(--text-d);font-style:normal;}
+.timeline{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;}
+.tl-item{display:flex;gap:14px;margin-bottom:12px;align-items:flex-start;}
+.tl-item:last-child{margin-bottom:0;}
+.tl-year{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--primary);min-width:44px;padding-top:2px;}
+.tl-text{font-size:.87rem;color:var(--text-m);line-height:1.6;}
+.tl-text strong{color:var(--text);}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-intro{font-size:.88rem;color:var(--text-m);line-height:1.6;margin-bottom:14px;padding:12px 16px;background:var(--panel2);border-radius:8px;border:1px solid var(--border);}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">✍️</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Histoire · Niveau 10 · Certification</div>
+      <div class="mod-title">Écrire la Paix</div>
+      <div class="mod-sub">Les mots qui ont mis fin aux guerres — et comment en écrire de nouveaux dans ta classe.</div>
+      <div class="mod-ref">Réf. : DUDH 1948 · Conventions de Genève 1949 · Charte de l'ONU 1945 · Convention des Droits de l'Enfant 1989</div>
+    </div>
+    <div class="xp-chip">300 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Les textes</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② La rédaction</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">Des mots qui changent le monde</div>
+    <div class="narr-block">Le <strong>26 juin 1945</strong>, cinquante nations signent la Charte des Nations Unies à San Francisco. La Seconde Guerre mondiale n'est pas encore terminée — le Japon capitulera en août. Pourtant, des diplomates du monde entier rédigent déjà <em>les règles de la paix suivante</em>. Cette idée — qu'on peut écrire la paix avant même que la guerre soit finie — est l'une des plus puissantes de l'histoire moderne.</div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-year">1945</div><div class="tl-text"><strong>Charte de l'ONU</strong> — 111 articles fondateurs du droit international. Premier article : "Maintenir la paix et la sécurité internationales."</div></div>
+      <div class="tl-item"><div class="tl-year">1948</div><div class="tl-text"><strong>Déclaration Universelle des Droits de l'Homme</strong> — 30 articles rédigés en 2 ans. Eleanor Roosevelt préside la commission. Votée sans opposition (8 abstentions). Première fois qu'un texte affirme des droits universels, indépendants de la nationalité.</div></div>
+      <div class="tl-item"><div class="tl-year">1949</div><div class="tl-text"><strong>Conventions de Genève</strong> — 4 conventions codifiant le droit humanitaire : protection des blessés, prisonniers, civils. Les règles de la guerre — pour limiter la barbarie même quand la paix échoue.</div></div>
+      <div class="tl-item"><div class="tl-year">1989</div><div class="tl-text"><strong>Convention des Droits de l'Enfant</strong> — le traité le plus ratifié de l'histoire (196 États). Article 1 : tout être humain de moins de 18 ans est un enfant titulaire de droits.</div></div>
+    </div>
+    <div class="quote-block">
+      "Tous les êtres humains naissent libres et égaux en dignité et en droits."
+      <cite>— Article 1, Déclaration Universelle des Droits de l'Homme, 1948</cite>
+    </div>
+    <div class="narr-block">Ce qui frappe dans ces textes, c'est leur <strong>forme</strong> autant que leur contenu. Ils sont courts. Précis. Rédigés pour être compris par tous, pas seulement par des juristes. La DUDH fait 1 800 mots — moins qu'une dissertation de lycée. Elle a traversé 75 ans. La forme compte. Ce qu'on écrit, et <em>comment</em> on l'écrit, détermine si un accord tient dans le temps.</div>
+    <div class="narr-block">Ce principe vaut aussi à l'échelle d'une classe ou d'une cour de récréation. Une règle de vie que personne ne comprend, ou à laquelle personne n'a participé, ne sera jamais respectée. Un accord négocié, rédigé ensemble et compris par tous a infiniment plus de chances de tenir. <em>L'histoire des grands textes de paix est aussi l'histoire de comment on parle — et on écrit — ensemble.</em></div>
+    <div class="reflect-q">Qu'est-ce qui fait qu'un texte de paix — ou une règle de classe — dure dans le temps ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Exactement. Les textes qui durent combinent légitimité (ceux qu\'ils concernent y ont participé) et clarté (on comprend ce qu\'ils demandent sans interprétation). La DUDH est universelle parce qu\'elle est simple. Une règle de classe tient si les élèves ont contribué à l\'écrire.')">Il faut qu'il soit co-construit par ceux qu'il concerne, et rédigé de façon claire et compréhensible.</button>
+      <button class="opt-btn" onclick="selectN1(this,'La sanction peut imposer un respect de surface — mais sans adhésion, elle ne produit pas la paix. Les Conventions de Genève n\'ont pas de police internationale : elles tiennent parce que les États les ont signées et que la pression diplomatique en assure l\'application. La peur seule n\'est pas suffisante.')">Il faut des sanctions assez fortes pour que personne ne veuille les transgresser.</button>
+      <button class="opt-btn" onclick="selectN1(this,'La solennité peut renforcer l\'adhésion — mais elle n\'en est pas la cause. La vraie force d\'un texte tient à ce qu\'il dit, pas à la façon dont il est présenté. La DUDH a été tapée à la machine. Son poids vient de ses 30 articles, pas d\'un sceau.')">Il faut qu'il soit solennel — signé, officiel, encadré, affiché.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Le temps aide à la légitimité, mais ce n\'est pas lui qui la crée. Beaucoup de vieux textes n\'ont aucune force. Et la DUDH avait de la force dès 1948, sans avoir fait ses preuves dans la durée. C\'est la qualité de sa rédaction et de la concertation qui l\'a précédée qui lui a donné sa portée.')">Il faut qu'il soit ancien — la durée lui donne de la légitimité.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer à la rédaction →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">Rédiger un accord qui tient</div>
+    <div class="phase-intro">La délégation de ta classe doit rédiger une "Charte du respect" après une série de tensions entre groupes. Trois décisions clés doivent être prises sur la forme et le fond. Chaque choix engage la qualité — et la durabilité — de l'accord final.</div>
+
+    <div id="ph1">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 1 / 3 — Qui rédige ?</div>
+        <div class="phase-q">Le prof principal propose trois options pour rédiger la Charte. Laquelle choisit-on ?</div>
+        <div onclick="phChoice(this,1,'a','good','C\'est le modèle des grands textes fondateurs. La DUDH a été rédigée par une commission de représentants de pays très différents (Eleanor Roosevelt pour les USA, René Cassin pour la France, Peng Chun Chang pour la Chine). La diversité des rédacteurs garantit que le texte ne reflète pas un seul point de vue — et que chacun peut s\'y reconnaître.')" class="phase-choice">Un groupe de délégués tirés au sort parmi tous les élèves — filles, garçons, différents groupes — rédigent un premier texte soumis au vote de la classe.</div>
+        <div onclick="phChoice(this,1,'b','bad','Un texte imposé par l\'autorité sans participation de ceux qu\'il concerne est un règlement, pas une charte. Il peut être respecté par crainte — rarement par adhésion. La Charte de l\'ONU n\'aurait pas tenu si elle avait été rédigée par un seul pays et imposée aux autres.')" class="phase-choice">Le professeur rédige seul la Charte et la présente à la classe pour validation.</div>
+        <div onclick="phChoice(this,1,'c','medium','L\'intention est bonne — s\'appuyer sur des élèves volontaires. Mais le biais de sélection est fort : les volontaires sont souvent déjà les élèves engagés et peu touchés par les tensions. Le tirage au sort garantit la représentativité là où le volontariat produit de l\'entre-soi.')" class="phase-choice">Les élèves volontaires forment un comité de rédaction ouvert à tous ceux qui souhaitent participer.</div>
+        <div class="phase-fb" id="pfb1"></div>
+      </div>
+    </div>
+
+    <div id="ph2" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 2 / 3 — Comment formuler les règles ?</div>
+        <div class="phase-q">La commission a deux propositions pour formuler les règles. Laquelle est plus proche de ce que font les grands textes ?</div>
+        <div onclick="phChoice(this,2,'a','bad','Les listes d\'interdits définissent ce qu\'on ne fait pas — pas ce vers quoi on tend. Un règlement intérieur peut lister des interdits. Une charte dit ce qu\'on affirme vouloir être ensemble. La DUDH ne dit pas "ne tuez pas" — elle dit "tout individu a droit à la vie". La formulation positive crée une aspiration, pas seulement une contrainte.')" class="phase-choice">Option A — Liste d'interdits : "Il est interdit de se moquer, d'exclure, d'insulter, de frapper…"</div>
+        <div onclick="phChoice(this,2,'b','good','Exactement le modèle des grands textes. L\'article 1 de la DUDH n\'interdit pas la discrimination — il affirme l\'égalité en dignité. L\'article 19 n\'interdit pas la censure — il affirme la liberté d\'expression. Formuler en droits et en engagements positifs crée une identité collective — "voilà qui nous voulons être" — bien plus puissante qu\'une liste de ce qu\'il ne faut pas faire.')" class="phase-choice">Option B — Droits et engagements : "Dans cette classe, chacun a le droit d'être entendu. Nous nous engageons à…"</div>
+        <div class="phase-fb" id="pfb2"></div>
+      </div>
+    </div>
+
+    <div id="ph3" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 3 / 3 — Que faire si la Charte est violée ?</div>
+        <div class="phase-q">La Charte est rédigée et signée. Deux semaines plus tard, un élève l'enfreint clairement. Comment la classe réagit-elle ?</div>
+        <div onclick="phChoice(this,3,'a','medium','Rappeler le texte est un réflexe sain — mais s\'en tenir à ça risque de laisser l\'élève dans l\'incompréhension de l\'impact réel de son acte. Les Conventions de Genève prévoient à la fois le rappel à la règle ET des mécanismes de réparation. Le texte seul ne suffit pas : il faut aussi un espace pour comprendre et réparer.')" class="phase-choice">On rappelle la Charte à l'élève et on lui demande de la relire et de la resigner.</div>
+        <div onclick="phChoice(this,3,'b','good','C\'est la logique des mécanismes de justice transitionnelle : reconnaître le tort, comprendre l\'impact, proposer une réparation. Le droit international humanitaire prévoit la même chose : un État qui viole une convention doit reconnaître la violation et contribuer à la réparation. La règle vit par les actes qui la réaffirment — pas par sa seule existence écrite.')" class="phase-choice">On organise un temps de parole : l'élève explique ce qui s'est passé, la personne concernée dit l'impact, et on cherche ensemble une réparation concrète.</div>
+        <div onclick="phChoice(this,3,'c','bad','Supprimer la Charte à la première violation, c\'est admettre qu\'elle n\'avait pas de réelle existence normative. Les Nations Unies n\'ont pas abandonné la Charte chaque fois qu\'un État la violait. La résistance aux violations fait partie de la vie d\'un texte — elle le teste et, si elle est bien gérée, le renforce.')" class="phase-choice">On constate que la Charte ne fonctionne pas et on repart de zéro avec des règles plus strictes.</div>
+        <div class="phase-fb" id="pfb3"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — Le règlement qui ne sert à rien</div>
+      <div class="xfer-scenario">Dans ton collège, il y a un règlement intérieur de 12 pages. Presque personne ne l'a lu. Les tensions entre groupes continuent. Un professeur propose de "rappeler le règlement" lors d'une heure de vie de classe.</div>
+      <div class="xfer-q">Quelle approche serait vraiment efficace ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Lire à voix haute un texte que personne n\'a écrit et que personne ne s\'est approprié ne crée pas l\'adhésion — ça renforce au mieux le sentiment que les règles viennent d\'ailleurs. Ce n\'est pas en lisant la Charte de l\'ONU qu\'on fait respecter la paix internationale.')">Lire le règlement intérieur à voix haute et demander aux élèves de le signer.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C\'est la démarche de co-construction. Partir des tensions réelles, faire émerger les besoins de chaque groupe, formuler des engagements collectifs dans leurs propres mots — c\'est ce qui produit un texte vivant. La DUDH a duré parce qu\'elle a émergé d\'une vraie concertation internationale, pas d\'une rédaction unilatérale.')">Partir des tensions réelles de la classe pour construire ensemble, en petits groupes, des engagements qu'on formule dans ses propres mots.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Punir les infracteurs règle les symptômes sans toucher aux causes. Une liste de sanctions plus sévères ne crée pas d\'adhésion aux règles — elle crée de la peur à court terme et de la défiance à long terme.')">Établir une liste de sanctions plus sévères pour les infractions aux règles existantes.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'Illustrer avec des exemples concrets est une bonne pratique pédagogique. Mais si les règles elles-mêmes ne sont pas co-construites, l\'illustration reste extérieure à l\'expérience des élèves. Ce n\'est qu\'une étape.')">Illustrer le règlement avec des exemples concrets de la vie du collège pour le rendre plus parlant.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — La promesse impossible</div>
+      <div class="xfer-scenario">Lors d'une médiation entre deux élèves en conflit, l'un propose : "Je m'engage à ne plus jamais lui parler." L'autre accepte. Tout le monde semble satisfait. On te demande si c'est un bon accord.</div>
+      <div class="xfer-q">Quel est le problème avec cet accord, et que suggères-tu ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Le problème n\'est pas que l\'accord soit difficile — c\'est qu\'il est irréaliste dans un cadre scolaire. Deux élèves de la même classe ne peuvent pas s\'ignorer indéfiniment. Un accord qui ne peut pas être tenu sera violé, ce qui aggravera le conflit plutôt que de le résoudre.')">C'est un bon accord — il est clair et les deux ont accepté.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'Exactement. Un accord de paix durable doit être réaliste (ce qu\'on peut réellement tenir dans le contexte donné), positif (ce qu\'on s\'engage à faire, pas seulement à ne pas faire), et vérifiable. "Ne plus jamais parler" n\'est aucun des trois. Un bon accord ressemblerait à : "En cas de désaccord, je m\'adresse à un médiateur plutôt qu\'à lui directement."')">C'est un accord irréaliste dans un même établissement — il faut formuler un engagement positif et tenable : ce qu'on fera, pas ce qu'on n'ira pas faire.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Décider à leur place n\'est pas de la médiation — c\'est de l\'arbitrage. La valeur d\'un accord tient précisément à ce que les parties l\'aient construit elles-mêmes. Mais le rôle du médiateur est d\'aider à formuler un accord viable — pas de valider un accord impossible.')">Il faut imposer un accord différent si celui-ci ne convient pas — c'est au médiateur de décider.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'Écrire l\'accord le rend plus solennel et plus responsabilisant. Mais si le fond est irréaliste, la forme n\'y changera rien. L\'écrit ne transforme pas un engagement impossible en engagement tenable.')">Il faut juste l'écrire noir sur blanc pour qu'il soit officiel et plus contraignant.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — Et toi, tu signerais quoi ?</div>
+      <div class="xfer-scenario">On te demande de rédiger, en une phrase, ton propre engagement personnel pour le reste de l'année — quelque chose de réaliste, positif et vérifiable — dans l'esprit des grands textes que tu viens d'étudier.</div>
+      <div class="xfer-q">Quelle formulation reflète le mieux cet esprit ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Formulé à la négative, centré sur l\'autre (tu) plutôt que sur soi (je), et difficile à vérifier. Ce n\'est pas un engagement personnel — c\'est une règle imposée à quelqu\'un d\'autre. Les grands textes commencent par "je" ou "nous", pas par "tu ne..."')">Je m'engage à ce que personne dans ma classe ne se moque de moi ou de mes amis.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C\'est un engagement bien construit : positif ("j\'écouterai"), réaliste (une fois par semaine est atteignable), personnel (centré sur sa propre action), vérifiable (tu peux te souvenir si tu l\'as fait). C\'est exactement le modèle des articles de la DUDH : une affirmation de ce qu\'on s\'engage à être ou à faire.')">Cette année, quand quelqu'un autour de moi sera isolé, j'irai lui parler au moins une fois — pas forcément pour régler quoi que ce soit, juste pour qu'il sache qu'il n'est pas invisible.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Vague, non vérifiable et trop large pour être tenu. "Être gentil avec tout le monde" est une aspiration, pas un engagement. Les grands textes sont précis parce que la précision permet la responsabilisation — et la vérification.')">Je m'engage à être gentil avec tout le monde et à ne jamais faire de mal à personne.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'L\'intention est bonne, mais "essayer" dilue la force de l\'engagement. Les articles de la DUDH n\'essaient pas — ils affirment. Un engagement fort n\'a pas besoin de se ménager une sortie de secours.')">J'essaierai de mieux gérer mes réactions quand quelque chose m'énerve en classe.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <!-- FIN -->
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">✍️</div>
+      <div class="fin-title">Écrire la Paix</div>
+      <div class="fin-sub">La paix ne tombe pas du ciel — elle se rédige. Un texte co-construit, formulé positivement, réaliste et vérifiable a infiniment plus de chances de tenir qu'un règlement imposé. De la Déclaration Universelle de 1948 à la charte de ta classe : la logique est la même. Ce qui est écrit ensemble devient possible ensemble.</div>
+      <div class="xp-badge">⭐ +300 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='HISTOIRE_10',XP=300,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2phase:1,n3done:[false,false,false]};
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2phase>3)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function phChoice(el,ph,choice,quality,feedback){var c=document.getElementById('ph'+ph);c.querySelectorAll('.phase-choice').forEach(function(node){node.style.pointerEvents='none';node.style.opacity='.4';});if(el){el.style.opacity='1';el.classList.add(quality);}var fb=document.getElementById('pfb'+ph);fb.textContent=feedback;fb.classList.add('show');if(quality==='good')state.n2score+=3;else if(quality==='medium')state.n2score+=1;state.n2phase++;setTimeout(function(){if(ph<3)document.getElementById('ph'+(ph+1)).style.display='block';else showSimResult();},1800);}
+function showSimResult(){document.getElementById('sim-result').style.display='block';var s=state.n2score;document.getElementById('simScore').textContent=s+'/9';document.getElementById('simLabel').textContent=s<=3?'Continue à explorer les principes de la rédaction collaborative':s<=6?'Bonne compréhension — quelques nuances sur la forme des accords à approfondir':'Excellent — tu maîtrises les fondements d\'un texte de paix durable';updateProgress();}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_HISTOIRE_10',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>

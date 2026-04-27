@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · HISTOIRE 09 · L'École sous Pression</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+.quote-block{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:14px 20px;margin-bottom:16px;font-size:.92rem;font-style:italic;color:var(--text-m);line-height:1.7;}
+.quote-block cite{display:block;margin-top:8px;font-size:.78rem;color:var(--text-d);font-style:normal;}
+.stat-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start;}
+.stat-num{font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);line-height:1;white-space:nowrap;}
+.stat-label{font-size:.88rem;color:var(--text-m);line-height:1.6;}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-intro{font-size:.88rem;color:var(--text-m);line-height:1.6;margin-bottom:14px;padding:12px 16px;background:var(--panel2);border-radius:8px;border:1px solid var(--border);}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">🏛️</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Histoire · Niveau 09</div>
+      <div class="mod-title">L'École sous Pression</div>
+      <div class="mod-sub">Comment l'école a appris à nommer le harcèlement — et ce que les chiffres révèlent vraiment.</div>
+      <div class="mod-ref">Réf. : Olweus (1973–1993) · Loi n°2022-299 · DEPP Note 23.30 (2023) · Programme pHARe 2021</div>
+    </div>
+    <div class="xp-chip">225 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Histoire</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Données</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">Une histoire institutionnelle</div>
+    <div class="narr-block">En <strong>1973</strong>, le psychologue norvégien Dan <strong>Olweus</strong> publiait les premières études scientifiques sur le harcèlement entre élèves. Il le nommait : une chose ne peut être combattue que si elle a d'abord été <em>nommée</em>. Avant lui, ce que vivaient des millions d'enfants était invisible — pas parce que ça n'existait pas, mais parce qu'aucun mot institutionnel ne le désignait.</div>
+    <div class="quote-block">
+      "Un élève est victime de harcèlement quand il est exposé de façon répétée et dans la durée à des actions négatives de la part d'un ou plusieurs autres élèves."
+      <cite>— Dan Olweus, <em>Bullying at School</em>, 1993 — définition de référence internationale</cite>
+    </div>
+    <div class="narr-block">En France, la prise de conscience institutionnelle a pris du temps. Dans les années 2000, Eric <strong>Debarbieux</strong> et ses équipes documentent pour la première fois l'ampleur du phénomène dans les écoles françaises. Leurs travaux montrent que ce que l'on appelait « chamailleries » ou « rites de passage » recouvre souvent des situations structurées de domination répétée. Le mot <em>harcèlement scolaire</em> commence à s'imposer dans le débat public.</div>
+    <div class="narr-block">Le tournant légal arrive en <strong>mars 2022</strong>. La loi n°2022-299 fait du harcèlement scolaire un <em>délit pénal</em> — une première en France. Elle crée le numéro national <strong>3018</strong>, oblige les établissements à désigner un référent, et rend possible la sanction pénale des auteurs, y compris mineurs dans certains cas. L'école ne peut plus gérer en interne ce que la loi reconnaît désormais comme une infraction.</div>
+    <div class="stat-box">
+      <div class="stat-num">1/10</div>
+      <div class="stat-label">Selon la <strong>note DEPP 23.30</strong> (Direction de l'Évaluation, de la Prospective et de la Performance, 2023) : <strong>un élève sur dix</strong> se déclare victime de harcèlement scolaire en France. À l'école primaire, ce chiffre monte à <strong>1 sur 8</strong>. Ce n'est pas un phénomène marginal — c'est une réalité systémique.</div>
+    </div>
+    <div class="narr-block">Le programme <strong>pHARe</strong> naît en 2021, déployé dans l'ensemble des collèges et écoles françaises dès la rentrée 2022. Il repose sur <em>huit piliers</em> dont deux qui concernent directement les élèves : la formation d'élèves ambassadeurs et la mise en place d'espaces d'écoute. L'idée : l'institution ne peut pas tout voir — les élèves sont les premiers témoins.</div>
+    <div class="reflect-q">Pourquoi a-t-il fallu attendre 2022 pour que le harcèlement scolaire devienne un délit pénal en France ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Exactement. Le retard législatif ne reflète pas un retard moral — il reflète la difficulté à faire reconnaître comme infraction ce qui se passe à l\'intérieur de l\'espace scolaire. Les institutions tendent à régler « entre elles » ce qu\'elles considèrent comme relevant de leur compétence propre.')">Parce que l'école considérait historiquement ces situations comme relevant de sa compétence interne, à régler sans recours extérieur.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Ce n\'est pas tout à fait exact. La définition scientifique d\'Olweus existe depuis 1973, les travaux de Debarbieux en France depuis les années 2000. La loi de 2022 n\'a pas attendu la définition — elle a attendu la volonté politique de légiférer sur ce que la recherche documentait depuis longtemps.')">Parce qu'on n'avait pas encore de définition claire du harcèlement avant 2022.</button>
+      <button class="opt-btn" onclick="selectN1(this,'C\'est une partie de la réponse — les cas de cyberharcèlement ont effectivement accéléré la prise de conscience publique. Mais le harcèlement en présentiel est documenté depuis bien avant les réseaux sociaux. La loi de 2022 couvre les deux dimensions.')">Parce que le cyberharcèlement via les réseaux sociaux a rendu le problème plus visible qu'avant.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Les parents ont toujours su — les enseignants aussi, souvent. Le problème n\'était pas le manque d\'information mais l\'absence de cadre légal contraignant. Nommer quelque chose et le rendre justiciable sont deux étapes différentes.')">Parce que les parents et enseignants ne réalisaient pas l'ampleur du problème avant cette date.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer aux données →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">Lire les chiffres sans les trahir</div>
+    <div class="phase-intro">La DEPP publie chaque année des données sur le bien-être scolaire et la victimation. Ces statistiques servent de base aux politiques publiques — mais elles peuvent être mal lues, instrumentalisées, ou mal comprises. Voici trois situations concrètes pour entraîner ta lecture critique des données institutionnelles.</div>
+
+    <div id="ph1">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 1 / 3 — Lire un chiffre</div>
+        <div class="phase-q">Un camarade dit : "La DEPP dit qu'1 élève sur 10 est harcelé — ça veut dire que dans notre classe de 30, il y en a forcément 3." Est-ce une lecture correcte ?</div>
+        <div onclick="phChoice(this,1,'a','medium','L\'interprétation probabiliste est juste dans son principe : une moyenne nationale de 10 % signifie qu\'une classe de 30 compte statistiquement 3 victimes potentielles. Mais l\'ajout « c\'est peu » sous-estime l\'impact réel sur les personnes concernées — 3 élèves en souffrance, c\'est massif pour une salle de classe.')" class="phase-choice">Oui, c'est la bonne lecture — et statistiquement, c'est finalement peu pour une classe.</div>
+        <div onclick="phChoice(this,1,'b','good','Parfait. Les statistiques nationales sont des probabilités appliquées à des populations, pas des certitudes pour chaque sous-groupe. Une classe peut avoir 0 ou 6 victimes — la moyenne ne s\'applique pas mécaniquement. Mais la moyenne reste utile pour calibrer l\'ampleur du phénomène au niveau système.')" class="phase-choice">C'est une approximation utile, mais pas une certitude : chaque classe a sa propre réalité, parfois très différente de la moyenne.</div>
+        <div onclick="phChoice(this,1,'c','bad','Rejeter la statistique parce qu\'elle ne s\'applique pas mécaniquement à chaque classe, c\'est confondre l\'utilité d\'une moyenne et sa limite. La moyenne DEPP est calculée sur des dizaines de milliers d\'élèves — elle est robuste pour décrire le système, même si elle ne prédit pas chaque classe.')" class="phase-choice">Non, cette statistique ne veut rien dire — chaque classe est différente, on ne peut pas extrapoler.</div>
+        <div class="phase-fb" id="pfb1"></div>
+      </div>
+    </div>
+
+    <div id="ph2" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 2 / 3 — Comprendre la loi</div>
+        <div class="phase-q">Depuis la loi de 2022, un élève auteur de harcèlement peut-il faire l'objet d'une procédure pénale ?</div>
+        <div onclick="phChoice(this,2,'a','bad','Non. La loi de 2022 crée bien un délit pénal pour les majeurs — mais pour les mineurs, la réponse judiciaire reste encadrée par l\'ordonnance de 1945 (justice des mineurs), avec une gradation selon l\'âge et la gravité. La loi s\'applique mais avec des modalités spécifiques.')" class="phase-choice">Non — un mineur ne peut jamais faire l'objet d'une procédure pénale en France.</div>
+        <div onclick="phChoice(this,2,'b','good','Exact. La loi n°2022-299 crée un délit pénal de harcèlement scolaire. Pour les mineurs, les poursuites sont possibles mais encadrées par le droit pénal des mineurs — les sanctions varient selon l\'âge et la gravité des faits (mesures éducatives, peines aménagées). Ce n\'est pas l\'impunité, mais ce n\'est pas le même traitement qu\'un adulte.')" class="phase-choice">Oui — la loi de 2022 crée un délit pénal, applicable aussi aux mineurs selon les modalités du droit pénal des mineurs.</div>
+        <div onclick="phChoice(this,2,'c','bad','La loi de 2022 va plus loin que le règlement intérieur : elle crée un cadre légal national, pas seulement scolaire. Le chef d\'établissement ne peut pas choisir d\'appliquer ou non — il est tenu de signaler et de coopérer avec les autorités en cas d\'infraction caractérisée.')" class="phase-choice">Ça dépend du règlement intérieur de l'établissement — chaque école gère comme elle l'entend.</div>
+        <div class="phase-fb" id="pfb2"></div>
+      </div>
+    </div>
+
+    <div id="ph3" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 3 / 3 — Ce que pHARe change</div>
+        <div class="phase-q">Un adulte dit : "Le programme pHARe, c'est bien beau sur le papier, mais ça ne changera rien — le harcèlement a toujours existé." Quelle réponse est la plus pertinente ?</div>
+        <div onclick="phChoice(this,3,'a','good','C\'est la réponse la plus rigoureuse. L\'argument "ça a toujours existé" est vrai — mais il confond existence et fatalité. Les premières études post-Olweus montrent que les programmes structurés réduisent la victimation de 20 à 30 % selon les contextes. pHARe n\'est pas une solution magique, mais il repose sur des données probantes — et l\'inaction a aussi des conséquences documentées.')" class="phase-choice">L'argument "ça a toujours existé" ne justifie pas l'inaction — les études sur les programmes anti-harcèlement montrent une réduction mesurable de la victimation.</div>
+        <div onclick="phChoice(this,3,'b','bad','Changer les valeurs d\'une société est un objectif important mais diffus — ce n\'est pas ce que pHARe mesure à court terme. L\'argument de l\'adulte porte sur l\'efficacité du programme, pas sur les valeurs générales. La réponse doit être dans le registre des faits, pas des intentions.')" class="phase-choice">Il a raison — pHARe ne peut rien faire tant que la société dans son ensemble ne change pas ses valeurs.</div>
+        <div onclick="phChoice(this,3,'c','medium','Reconnaître la complexité est juste. Mais "on ne sait pas encore" minore ce qu\'on sait déjà : les résultats d\'Olweus en Norvège, les évaluations de programmes similaires en Europe. La prudence est légitime — mais elle ne doit pas effacer les données disponibles.')" class="phase-choice">Il soulève une vraie question — on ne sait pas encore si pHARe est vraiment efficace.</div>
+        <div class="phase-fb" id="pfb3"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — "Ça a toujours existé"</div>
+      <div class="xfer-scenario">En cours de SVT, le prof aborde le bien-être scolaire. Un élève dit : "Les conflits entre jeunes, ça a toujours existé — avant on appelait ça l'enfance." Personne ne répond. Tu décides d'intervenir.</div>
+      <div class="xfer-q">Quelle intervention est la plus juste ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Accuser de minimiser est une posture défensive qui ferme le dialogue. L\'élève soulève un argument qui mérite une réponse factuelle, pas une accusation.')">Tu lui dis qu'il minimise le problème et que c'est irresponsable.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C\'est la réponse la plus pertinente : tu reconnais la part vraie de son argument (les conflits existent depuis toujours), puis tu introduis la distinction cruciale entre conflit et harcèlement — répétition, déséquilibre de pouvoir, isolement de la victime. Ce n\'est pas la même chose.')">Tu distingues conflit ordinaire et harcèlement : la répétition, le déséquilibre de pouvoir et l'isolement font la différence — ce n'est pas juste "l'enfance".</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Laisser sans réponse un argument qui banalise le harcèlement, c\'est valider implicitement l\'idée qu\'il n\'y a rien à faire. Le silence n\'est pas neutre dans ce contexte.')">Tu ne dis rien — mieux vaut ne pas créer de conflit dans la classe.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'Citer la loi est factuel et utile — mais ça n\'explique pas pourquoi le harcèlement est différent d\'un simple conflit. La loi est une conséquence de cette différence, pas son explication.')">Tu rappelles que depuis 2022 c'est un délit — donc ça ne peut pas être juste "l'enfance".</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — Le camarade isolé</div>
+      <div class="xfer-scenario">Tu remarques depuis plusieurs semaines qu'un élève de ta classe mange seul tous les jours, que ses affaires ont été cachées deux fois, et que des camarades l'imitent en se moquant de lui. Personne d'autre ne semble le remarquer — ou n'en parle.</div>
+      <div class="xfer-q">Que faire avec ce que tu observes ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Attendre une preuve évidente, c\'est souvent attendre trop longtemps. Le harcèlement se construit précisément dans la répétition d\'actes qui semblent "pas si graves" pris isolément — mais qui s\'accumulent. Les signaux que tu observes correspondent aux critères d\'Olweus.')">Tu attends de voir quelque chose de plus grave avant d'agir — pour l'instant c'est peut-être juste du hasard.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'Parler directement à la victime potentielle peut être utile — mais ça peut aussi le mettre en position inconfortable ou signaler aux auteurs qu\'il a "parlé". La voie institutionnelle (adulte référent, CPE) est souvent plus protectrice pour la victime.')">Tu parles directement à l'élève pour lui demander comment il va.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'C\'est la posture de l\'ambassadeur pHARe : tu n\'agis pas seul, tu n\'accuses pas directement — mais tu rapportes ce que tu as observé (faits, répétition, contexte) à un adulte de confiance. C\'est précisément le rôle défini par le programme.')">Tu en parles à un adulte de confiance (CPE, prof principal) en décrivant ce que tu as observé, sans te poser en juge.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'L\'isolement, les affaires cachées, les moqueries répétées : ce n\'est pas une affaire privée entre élèves, c\'est exactement le type de situation que pHARe vise à intercepter avant qu\'elle s\'aggrave. Ne pas s\'impliquer est aussi un choix — avec des conséquences.')">Tu ne t'en mêles pas — les problèmes entre élèves ne te concernent pas.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — La numérotation d'urgence</div>
+      <div class="xfer-scenario">Une amie te confie qu'elle reçoit des messages hostiles d'un groupe de camarades depuis des semaines — insultes, exclusion en ligne, captures d'écran partagées. Elle dit qu'elle ne veut pas "faire d'histoires" et préfère gérer seule.</div>
+      <div class="xfer-q">Comment tu l'aides ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Décider à sa place est une forme de prise de contrôle qui peut la mettre en position inconfortable — surtout si elle n\'est pas prête à porter la situation officiellement. Elle a besoin d\'être accompagnée, pas dépossédée de son choix.')">Tu signales toi-même aux adultes sans lui en parler d'abord — c'est une urgence.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'Lui suggérer de parler à ses parents est pertinent. Mais lui laisser penser qu\'elle doit "gérer seule" sans lui présenter d\'autres ressources disponibles, c\'est passer à côté d\'une occasion de l\'aider à sortir de l\'isolement.')">Tu lui dis que ses parents sauraient quoi faire et qu'elle devrait leur en parler.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C\'est la réponse la plus complète : tu valides son expérience (ce n\'est pas "faire des histoires", c\'est du harcèlement), tu lui présentes une ressource concrète (le 3018, ligne nationale créée par la loi 2022, anonyme et gratuite), et tu la laisses décider — tout en restant présente. Tu ne te substitues pas à elle.')">Tu valides ce qu'elle vit, tu lui parles du 3018 (ligne nationale anti-harcèlement, gratuite), et tu lui proposes d'être là si elle veut en parler à un adulte.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Respecter son choix de garder le silence, c\'est la laisser seule face à une situation qui s\'aggrave généralement sans intervention. La vraie aide, c\'est lui ouvrir des portes — pas la conforter dans l\'isolement.')">Tu respectes sa décision — elle a le droit de gérer à sa façon.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <!-- FIN -->
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">🏛️</div>
+      <div class="fin-title">L'École sous Pression</div>
+      <div class="fin-sub">Le harcèlement scolaire n'a pas toujours été vu — ni nommé, ni combattu. Olweus en 1973, Debarbieux en France, la loi de 2022 et le programme pHARe : chaque étape représente une décision collective de ne plus regarder ailleurs. Les données existent. Les outils aussi. Ce qui manque parfois, c'est le courage de s'en saisir.</div>
+      <div class="xp-badge">⭐ +225 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='HISTOIRE_09',XP=225,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2phase:1,n3done:[false,false,false]};
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2phase>3)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function phChoice(el,ph,choice,quality,feedback){var c=document.getElementById('ph'+ph);c.querySelectorAll('.phase-choice').forEach(function(node){node.style.pointerEvents='none';node.style.opacity='.4';});if(el){el.style.opacity='1';el.classList.add(quality);}var fb=document.getElementById('pfb'+ph);fb.textContent=feedback;fb.classList.add('show');if(quality==='good')state.n2score+=3;else if(quality==='medium')state.n2score+=1;state.n2phase++;setTimeout(function(){if(ph<3)document.getElementById('ph'+(ph+1)).style.display='block';else showSimResult();},1800);}
+function showSimResult(){document.getElementById('sim-result').style.display='block';var s=state.n2score;document.getElementById('simScore').textContent=s+'/9';document.getElementById('simLabel').textContent=s<=3?'Continue à affiner ta lecture des données institutionnelles':s<=6?'Bonne compréhension — quelques nuances à approfondir':'Excellent — tu lis les données et les textes avec précision et recul';updateProgress();}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_HISTOIRE_09',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · JURIDIQUE 08 · Les Institutions de Protection</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+.inst-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+.inst-ico{font-size:1.6rem;flex-shrink:0;margin-top:2px;}
+.inst-body{}
+.inst-name{font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--primary);letter-spacing:1px;margin-bottom:4px;}
+.inst-desc{font-size:.86rem;color:var(--text-m);line-height:1.6;}
+.inst-desc strong{color:var(--text);}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-intro{font-size:.88rem;color:var(--text-m);line-height:1.6;margin-bottom:14px;padding:12px 16px;background:var(--panel2);border-radius:8px;border:1px solid var(--border);}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">🏛️</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Juridique · Niveau 08</div>
+      <div class="mod-title">Les Institutions de Protection</div>
+      <div class="mod-sub">Qui fait quoi quand un enfant est en danger ? Cartographier les acteurs pour ne pas être seul.</div>
+      <div class="mod-ref">Réf. : Défenseur des droits · CRIP / CRIP 119 · Juge des enfants · Médiateur académique · Code civil art. 375</div>
+    </div>
+    <div class="xp-chip">400 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Les acteurs</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Qui appeler ?</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">La chaîne de protection — qui fait quoi ?</div>
+    <div class="narr-block">Quand un enfant est en danger, la réponse n'appartient pas à une seule institution. Elle repose sur une <em>chaîne d'acteurs</em> — chacun avec un rôle précis, des outils spécifiques et un périmètre d'action défini. Connaître cette chaîne, c'est ne pas rester seul face à une situation complexe — et ne pas demander à la mauvaise personne ce qu'elle ne peut pas faire.</div>
+    <div class="inst-card">
+      <div class="inst-ico">📞</div>
+      <div class="inst-body">
+        <div class="inst-name">LE 119 — Allô Enfance en Danger</div>
+        <div class="inst-desc">Numéro national gratuit, disponible 24h/24. Reçoit les signalements de tout citoyen (adulte ou enfant). Oriente vers la <strong>CRIP</strong> (Cellule de Recueil des Informations Préoccupantes) du département concerné. Un enfant peut appeler lui-même.</div>
+      </div>
+    </div>
+    <div class="inst-card">
+      <div class="inst-ico">🏢</div>
+      <div class="inst-body">
+        <div class="inst-name">LA CRIP — Cellule de Recueil des Informations Préoccupantes</div>
+        <div class="inst-desc">Rattachée au Conseil Départemental. Reçoit et évalue les <strong>informations préoccupantes</strong> (IP) transmises par les professionnels. Décide de la suite : classement, enquête sociale, saisine du juge. L'école transmet au rectorat, qui transmet à la CRIP.</div>
+      </div>
+    </div>
+    <div class="inst-card">
+      <div class="inst-ico">⚖️</div>
+      <div class="inst-body">
+        <div class="inst-name">LE JUGE DES ENFANTS</div>
+        <div class="inst-desc">Magistrat spécialisé (tribunal judiciaire). Intervient quand la protection administrative est insuffisante. Peut prononcer des <strong>mesures de protection</strong> : AEMO (Aide Éducative en Milieu Ouvert), placement en famille d'accueil ou en foyer. Il peut aussi être saisi directement par le procureur.</div>
+      </div>
+    </div>
+    <div class="inst-card">
+      <div class="inst-ico">🛡️</div>
+      <div class="inst-body">
+        <div class="inst-name">LE DÉFENSEUR DES DROITS</div>
+        <div class="inst-desc">Autorité constitutionnelle indépendante. Défend les droits de toute personne face à une administration. <strong>Un enfant peut le saisir directement</strong> (formulaire en ligne). Possède un adjoint spécialement chargé des droits de l'enfant (ex-Défenseur des enfants). Ne peut pas prononcer de sanction — mais peut émettre des recommandations et saisir la justice.</div>
+      </div>
+    </div>
+    <div class="inst-card">
+      <div class="inst-ico">🎓</div>
+      <div class="inst-body">
+        <div class="inst-name">LE MÉDIATEUR ACADÉMIQUE</div>
+        <div class="inst-desc">Nommé par le recteur. Traite les <strong>litiges entre les familles et l'institution scolaire</strong> (décisions d'orientation, sanctions, conflits avec l'administration). Gratuit, indépendant, accessible à tous. Ne se substitue pas à la voie hiérarchique mais peut débloquer des situations bloquées.</div>
+      </div>
+    </div>
+    <div class="narr-block">Ces institutions ne fonctionnent pas en silo : elles se transmettent l'information et se saisissent mutuellement selon la gravité. Un élève qui souffre n'a pas besoin de tout savoir — mais il doit savoir qu'il existe des personnes dont c'est le métier de l'aider, et qu'il n'a pas à gérer seul.</div>
+    <div class="reflect-q">Quelle est la différence entre une "information préoccupante" et un "signalement" au sens de la protection de l'enfance ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Exactement. L\'IP est le niveau 1 : quelque chose préoccupe, on le signale à la CRIP pour évaluation. Le signalement judiciaire (article 434-3 du code pénal) est le niveau 2 : on est en présence de faits graves qui constituent vraisemblablement une infraction pénale et on saisit le procureur directement. Le premier évalue, le second déclenche une procédure judiciaire.')">L'IP est transmise à la CRIP pour évaluation — le signalement est une saisine directe du procureur quand les faits constituent vraisemblablement une infraction pénale.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Non. Les deux termes ont des conséquences différentes et des destinataires différents. Confondre les deux peut conduire à sous-réagir (traiter comme une IP ce qui devrait être signalé au procureur) ou à surréagir (déclencher une procédure judiciaire pour une situation qui nécessitait d\'abord une évaluation sociale).')">C'est la même chose — les deux termes désignent le fait d'alerter les autorités sur un enfant en danger.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Non. Une IP peut concerner des faits non pénaux — une situation de négligence, un contexte familial dégradé, une souffrance psychologique. Elle déclenche une évaluation sociale, pas forcément une procédure judiciaire. Le signalement judiciaire est réservé aux faits pénalement qualifiables.')">L'IP n'est qu'interne à l'école — le signalement est ce qu'on envoie aux autorités.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Ce n\'est pas la différence principale. Les deux démarches peuvent être faites par n\'importe quel professionnel ou citoyen. La vraie différence est dans le niveau de gravité présumée et le destinataire : CRIP pour l\'IP, procureur ou police pour le signalement judiciaire.')">L'IP est réservée aux professionnels de l'éducation, le signalement peut être fait par n'importe qui.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer aux situations →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">Qui appeler pour quoi ?</div>
+    <div class="phase-intro">Trois situations. Pour chacune, tu dois identifier l'institution la mieux placée pour intervenir en premier — et pourquoi.</div>
+
+    <div id="ph1">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 1 / 3 — La décision d'orientation contestée</div>
+        <div class="phase-q">Les parents d'un élève de 3ème contestent la décision d'orientation vers un lycée professionnel prise par le conseil de classe. Le chef d'établissement a maintenu la décision après appel interne. Quelle institution est la mieux placée ?</div>
+        <div onclick="phChoice(this,1,'a','bad','Le juge des enfants intervient sur les questions de protection de l\'enfance — danger, maltraitance, conditions de vie. Une décision d\'orientation scolaire, même contestée, n\'est pas une question de protection de l\'enfance. Ce n\'est pas son champ.')" class="phase-choice">Le juge des enfants — il protège les droits de l'enfant face aux décisions qui lui nuisent.</div>
+        <div onclick="phChoice(this,1,'b','good','Exactement. Le médiateur académique est précisément fait pour les litiges entre familles et institution scolaire : décisions d\'orientation, sanctions, conflits avec l\'administration. Gratuit, indépendant, il peut débloquer des situations où la voie hiérarchique a échoué. C\'est son cœur de métier.')" class="phase-choice">Le médiateur académique — il traite les litiges entre familles et institution scolaire.</div>
+        <div onclick="phChoice(this,1,'c','bad','Le 119 est dédié aux situations d\'enfants en danger — maltraitance, négligence grave. Une décision d\'orientation contestée, aussi frustrante soit-elle, n\'est pas une situation de danger pour l\'enfant au sens de la protection de l\'enfance.')" class="phase-choice">Le 119 — l'enfant voit ses droits bafoués par une décision qui ne respecte pas son intérêt supérieur.</div>
+        <div class="phase-fb" id="pfb1"></div>
+      </div>
+    </div>
+
+    <div id="ph2" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 2 / 3 — L'élève qui dort en cours</div>
+        <div class="phase-q">Un élève de 4ème arrive épuisé chaque matin, parfois sans avoir mangé. Ses résultats s'effondrent. Il dit que "ça va" mais des traces sur ses bras ont été remarquées. Quelle est la première étape ?</div>
+        <div onclick="phChoice(this,2,'a','medium','Appeler directement le 119 est possible — tout citoyen peut le faire. Mais dans le cadre scolaire, la voie habituelle passe d\'abord par le CPE et l\'assistante sociale scolaire, qui peuvent évaluer la situation et rédiger une IP structurée. Le 119 oriente vers la CRIP — l\'AS scolaire connaît déjà les procédures et peut agir plus directement.')" class="phase-choice">Appeler directement le 119 pour signaler la situation immédiatement.</div>
+        <div onclick="phChoice(this,2,'b','good','C\'est la procédure correcte dans le contexte scolaire. Le CPE centralise l\'information, l\'AS scolaire évalue et peut rédiger une IP vers la CRIP si la situation le justifie. Les traces sur les bras ajoutent une dimension qui doit être prise en compte rapidement — mais une évaluation concertée entre professionnels est plus fiable qu\'une action isolée.')" class="phase-choice">Transmettre au CPE et à l'assistante sociale scolaire pour une évaluation concertée, avec rédaction éventuelle d'une IP.</div>
+        <div onclick="phChoice(this,2,'c','bad','Interroger directement les parents sans évaluation préalable peut alerter des auteurs potentiels et mettre l\'enfant en danger. Si les traces sont liées à des violences familiales, contacter la famille sans protocole expose l\'enfant. La procédure d\'IP existe précisément pour protéger l\'enfant pendant l\'évaluation.')" class="phase-choice">Contacter directement les parents pour comprendre la situation à la maison.</div>
+        <div class="phase-fb" id="pfb2"></div>
+      </div>
+    </div>
+
+    <div id="ph3" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 3 / 3 — L'élève saisit lui-même</div>
+        <div class="phase-q">Un élève de 5ème te dit qu'il veut "porter plainte" parce qu'il est harcelé depuis des mois et que l'école n'a rien fait. Quelle institution peut-il saisir directement, sans passer par ses parents ?</div>
+        <div onclick="phChoice(this,3,'a','good','Exact. Le Défenseur des droits peut être saisi directement par un mineur, sans intermédiaire parental, via un formulaire en ligne. Son adjoint chargé des droits de l\'enfant peut examiner la situation et émettre des recommandations à l\'institution scolaire. C\'est l\'institution pensée précisément pour ce cas : un enfant dont les droits ne sont pas respectés par une administration.')" class="phase-choice">Le Défenseur des droits — il peut être saisi directement par un mineur, sans passer par ses parents.</div>
+        <div onclick="phChoice(this,3,'b','bad','Le juge des enfants est saisi par le procureur ou par l\'administration — pas directement par un enfant pour un conflit scolaire. Son rôle est la protection de l\'enfance en danger, pas l\'arbitrage de conflits institutionnels. C\'est une instance judiciaire, pas une instance de recours scolaire.')" class="phase-choice">Le juge des enfants — il peut être saisi par l'élève pour défendre ses droits.</div>
+        <div onclick="phChoice(this,3,'c','medium','Le médiateur académique est accessible aux familles — mais pas directement aux élèves mineurs sans représentant légal dans la plupart des cas. Et surtout, son rôle est la médiation (trouver un accord), pas la sanction de l\'institution. Le Défenseur des droits est mieux positionné pour cette situation.')" class="phase-choice">Le médiateur académique — il peut intervenir pour défendre les intérêts de l'élève face à l'institution.</div>
+        <div class="phase-fb" id="pfb3"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — "On ne peut rien faire"</div>
+      <div class="xfer-scenario">Tu confies à un adulte que tu vis une situation difficile à la maison. Il répond : "Je te comprends, mais je ne peux rien faire — ce sont des affaires de famille." Tu sais que ce n'est pas entièrement vrai.</div>
+      <div class="xfer-q">Qu'est-ce que tu peux lui répondre ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Abandonner après une première réponse négative, c\'est ne pas utiliser les ressources disponibles. Les institutions de protection existent précisément parce que la réponse "ce sont des affaires de famille" a trop longtemps servi à ne pas agir.')">Tu acceptes sa réponse — il sait mieux que toi ce qui est possible.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C\'est la réponse la plus rigoureuse. Tout professionnel en contact avec des mineurs (enseignant, CPE, AED) a une obligation légale de signalement en cas d\'information préoccupante (article 434-3 du code pénal). "Ce sont des affaires de famille" n\'est pas une excuse juridique — c\'est même potentiellement une non-assistance. Et tu peux agir toi-même via le 119 ou le Défenseur des droits.')">Tu lui rappelles que tout professionnel en contact avec des mineurs a une obligation légale de signalement — et que toi-même tu peux appeler le 119 directement.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Menacer ne résout rien — et l\'adulte a peut-être dit ça par méconnaissance de ses obligations, pas par mauvaise volonté. La bonne réponse est de lui donner l\'information sur ses obligations légales, pas de le menacer.')">Tu le menaces de le dénoncer à ses supérieurs pour qu'il agisse.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'Le 119 est effectivement une option — et tu peux appeler toi-même. Mais savoir que l\'adulte a aussi une obligation de signaler est une information importante qui peut l\'aider à comprendre qu\'il doit agir, pas juste t\'orienter.')">Tu appelles le 119 toi-même puisque l'adulte refuse d'agir.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — La sanction injuste</div>
+      <div class="xfer-scenario">Tu as reçu une exclusion de cours suivie d'une heure de retenue pour une raison que tu considères injuste. Tu as expliqué ta version au professeur et au CPE, mais la sanction est maintenue. Tu veux contester officiellement.</div>
+      <div class="xfer-q">Quelle est la voie la plus adaptée ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Le juge des enfants traite les situations de danger — une sanction scolaire, même injuste, ne relève pas de sa compétence. Saisir le juge des enfants pour une retenue serait une démarche disproportionnée et probablement irrecevable.')">Saisir le juge des enfants pour défendre tes droits face à l'institution.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'Exactement. Le médiateur académique est l\'outil conçu pour les litiges entre familles/élèves et institution scolaire. Il est gratuit, indépendant, et peut examiner si la procédure a bien été respectée. C\'est l\'étape logique après épuisement des voies internes (prof, CPE, chef d\'établissement).')">Saisir le médiateur académique après avoir épuisé les voies internes (CPE, chef d'établissement).</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Le Défenseur des droits intervient sur les atteintes aux droits par les institutions. Une sanction disciplinaire, même contestée, n\'est généralement pas de son ressort — sauf si elle révèle une discrimination ou un manquement grave. Le médiateur académique est plus approprié pour un litige de sanction ordinaire.')">Saisir le Défenseur des droits — une sanction injuste viole tes droits fondamentaux.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Appeler le 119 pour une sanction scolaire serait totalement disproportionné. Le 119 est réservé aux situations de danger pour l\'enfant — maltraitance, négligence grave. Une retenue injuste ne relève pas de la protection de l\'enfance.')">Appeler le 119 pour signaler que tes droits sont bafoués à l'école.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — Aider un camarade</div>
+      <div class="xfer-scenario">Ton camarade te confie qu'il est maltraité à la maison. Il a peur que ses parents soient mis en prison si tu en parles. Il te demande de garder le secret. Que fais-tu ?</div>
+      <div class="xfer-q">Comment concilier sa confiance et son besoin de protection ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Garder le secret quand un enfant est en danger, c\'est l\'exposer à la poursuite de la maltraitance. La promesse de silence n\'est pas protectrice — elle est complice. Et la maltraitance n\'envoie pas automatiquement les parents en prison : la CRIP évalue d\'abord, et les premières réponses sont souvent des mesures de soutien à la famille.')">Tu gardes le secret — tu lui as promis et il faut respecter sa confiance.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Signaler sans lui en parler trahit la relation de confiance et peut aggraver sa situation s\'il n\'est pas préparé aux étapes suivantes. Un signalement sans accompagnement de l\'enfant peut lui sembler une trahison et le pousser à se fermer davantage.')">Tu signales immédiatement sans lui dire, pour agir le plus vite possible.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C\'est l\'approche la plus juste. Tu lui expliques que garder ce secret ne le protège pas — que des professionnels existent pour l\'aider sans forcément mettre ses parents en prison. Tu lui proposes de l\'accompagner pour en parler à un adulte de confiance. Et si la situation est grave, tu lui expliques que tu ne peux pas garder ce secret — mais que tu seras là avec lui.')">Tu lui expliques ce qui peut vraiment se passer (ce n'est pas automatiquement la prison), et tu lui proposes de l'accompagner pour en parler à un adulte de confiance ou appeler le 119 ensemble.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'Lui donner le numéro est utile — mais le laisser seul face à ce choix, c\'est ne pas l\'accompagner. Un enfant qui vient de confier une maltraitance a besoin d\'être avec quelqu\'un — pas seulement d\'une information.')">Tu lui donnes le numéro du 119 et tu lui dis que c'est à lui de décider s'il appelle.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <!-- FIN -->
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">🏛️</div>
+      <div class="fin-title">Les Institutions de Protection</div>
+      <div class="fin-sub">119, CRIP, juge des enfants, Défenseur des droits, médiateur académique : chaque institution a un rôle précis. Savoir qui fait quoi, c'est ne pas rester seul face à une situation difficile — et orienter efficacement plutôt qu'improviser. La chaîne de protection n'est pas un labyrinthe : c'est un filet.</div>
+      <div class="xp-badge">⭐ +400 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='JURIDIQUE_08',XP=400,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2phase:1,n3done:[false,false,false]};
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2phase>3)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function phChoice(el,ph,choice,quality,feedback){var c=document.getElementById('ph'+ph);c.querySelectorAll('.phase-choice').forEach(function(node){node.style.pointerEvents='none';node.style.opacity='.4';});if(el){el.style.opacity='1';el.classList.add(quality);}var fb=document.getElementById('pfb'+ph);fb.textContent=feedback;fb.classList.add('show');if(quality==='good')state.n2score+=3;else if(quality==='medium')state.n2score+=1;state.n2phase++;setTimeout(function(){if(ph<3)document.getElementById('ph'+(ph+1)).style.display='block';else showSimResult();},1800);}
+function showSimResult(){document.getElementById('sim-result').style.display='block';var s=state.n2score;document.getElementById('simScore').textContent=s+'/9';document.getElementById('simLabel').textContent=s<=3?'Continue à cartographier les acteurs de la protection de l\'enfance':s<=6?'Bonne orientation — quelques nuances sur les champs d\'action à affiner':'Excellent — tu sais qui fait quoi et dans quel ordre';updateProgress();}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_JURIDIQUE_08',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>

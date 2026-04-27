@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · JURIDIQUE 09 · Vie Privée & Données</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+.droit-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;}
+.droit-label{font-family:'Orbitron',sans-serif;font-size:.65rem;color:var(--primary);letter-spacing:2px;margin-bottom:6px;}
+.droit-text{font-size:.87rem;color:var(--text-m);line-height:1.7;}
+.droit-text strong{color:var(--text);}
+.quote-block{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:14px 20px;margin-bottom:16px;font-size:.92rem;font-style:italic;color:var(--text-m);line-height:1.7;}
+.quote-block cite{display:block;margin-top:8px;font-size:.78rem;color:var(--text-d);font-style:normal;}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-intro{font-size:.88rem;color:var(--text-m);line-height:1.6;margin-bottom:14px;padding:12px 16px;background:var(--panel2);border-radius:8px;border:1px solid var(--border);}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,1,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">🔒</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Juridique · Niveau 09</div>
+      <div class="mod-title">Vie Privée & Données</div>
+      <div class="mod-sub">Tes données t'appartiennent. Mais qu'est-ce que ça veut dire concrètement ?</div>
+      <div class="mod-ref">Réf. : RGPD 2018 · CNIL · Loi Informatique et Libertés 1978 (modifiée 2018) · Art. 9 CIDE · Loi n°2022-299 (cyberharcèlement)</div>
+    </div>
+    <div class="xp-chip">450 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Tes droits</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Cas concrets</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">Tes données, tes droits</div>
+    <div class="narr-block">En <strong>2018</strong>, l'Union européenne adopte le <em>Règlement Général sur la Protection des Données</em> (RGPD). Il ne crée pas des droits ex nihilo : il renforce et uniformise des droits qui existaient en France depuis la <strong>loi Informatique et Libertés de 1978</strong> — l'une des premières lois au monde sur la protection des données personnelles. Le RGPD s'applique à toute organisation qui traite des données de personnes vivant en Europe — y compris les réseaux sociaux américains, les applications chinoises et… les établissements scolaires.</div>
+    <div class="narr-block">Une <em>donnée personnelle</em>, c'est toute information qui permet d'identifier une personne, directement ou indirectement : ton nom, ta photo, ton adresse IP, tes résultats scolaires, ta localisation GPS, tes habitudes de navigation. <strong>Dès 15 ans</strong>, tu peux exercer tes droits seul(e) sur tes données en ligne, sans accord parental.</div>
+    <div class="droit-card">
+      <div class="droit-label">Droit d'accès</div>
+      <div class="droit-text">Tu peux demander à n'importe quelle organisation quelles données elle détient sur toi, et obtenir une copie. <strong>Délai de réponse : 1 mois maximum.</strong></div>
+    </div>
+    <div class="droit-card">
+      <div class="droit-label">Droit à l'effacement ("droit à l'oubli")</div>
+      <div class="droit-text">Tu peux demander la suppression de tes données dans certains cas : consentement retiré, données plus nécessaires, traitement illicite. <strong>Les réseaux sociaux doivent effacer les contenus sur demande</strong> — y compris les photos publiées par d'autres sans ton accord.</div>
+    </div>
+    <div class="droit-card">
+      <div class="droit-label">Droit à la portabilité</div>
+      <div class="droit-text">Tu peux récupérer tes données dans un format lisible et les transférer ailleurs. Utile pour changer de réseau social sans tout perdre.</div>
+    </div>
+    <div class="droit-card">
+      <div class="droit-label">Droit d'opposition</div>
+      <div class="droit-text">Tu peux t'opposer à certains usages de tes données — notamment le <strong>profilage publicitaire</strong>. Les plateformes doivent te permettre de refuser que tes données soient utilisées pour te cibler.</div>
+    </div>
+    <div class="narr-block">La <strong>CNIL</strong> (Commission Nationale de l'Informatique et des Libertés) est l'autorité française de contrôle. Elle peut sanctionner les organisations qui ne respectent pas le RGPD — jusqu'à 4 % du chiffre d'affaires mondial. Elle dispose aussi d'une procédure de <em>plainte simplifiée</em> accessible à tous les citoyens, y compris les mineurs.</div>
+    <div class="quote-block">
+      "Les données personnelles sont le pétrole du XXIe siècle. Mais contrairement au pétrole, elles ne disparaissent pas quand on les utilise — elles se dupliquent, se croisent et construisent une image de toi que tu ne maîtrises plus."
+      <cite>— Marie-Laure Denis, présidente de la CNIL, 2021</cite>
+    </div>
+    <div class="reflect-q">Pourquoi une photo publiée par quelqu'un d'autre sans ton accord peut-elle être retirée grâce au RGPD ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Exactement. Le droit à l\'image est un droit de la personnalité — et une photo de toi constitue une donnée personnelle au sens du RGPD. Même si c\'est quelqu\'un d\'autre qui a publié la photo, tu es la personne identifiable sur ce contenu. Tu peux donc exercer ton droit à l\'effacement directement auprès de la plateforme, sans accord de la personne qui a publié.')">Parce que ta photo est une donnée personnelle — même publiée par quelqu'un d'autre, tu es la personne identifiable et tu peux exercer ton droit à l'effacement.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Le RGPD ne s\'applique pas uniquement à tes propres publications. Il protège ta donnée — ta photo — quel que soit celui qui l\'a mise en ligne. La plateforme est responsable du traitement de cette donnée et doit répondre à une demande d\'effacement valide.')">Parce que le RGPD s'applique uniquement aux photos que tu as toi-même publiées — pas à celles publiées par d'autres.</button>
+      <button class="opt-btn" onclick="selectN1(this,'La police peut intervenir si la publication constitue une infraction (atteinte à la vie privée, cyberharcèlement). Mais le RGPD offre une voie plus directe et plus rapide : une demande d\'effacement à la plateforme, sans passer par la justice pénale. Les deux voies peuvent coexister.')">Parce que publier une photo sans accord est un délit — il faut porter plainte à la police, pas utiliser le RGPD.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Le droit à l\'effacement existe indépendamment de l\'intention — et il s\'applique aussi aux contenus légaux qui te concernent. La photo n\'a pas besoin d\'être "illégale" pour que tu puisses en demander la suppression en vertu du RGPD.')">Parce que seules les photos illégales peuvent être retirées — si la photo est normale, le RGPD ne s'applique pas.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer aux cas concrets →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">Cas concrets — que faire ?</div>
+    <div class="phase-intro">Trois situations numériques réelles. Pour chacune, identifie quelle action est juridiquement la plus correcte et la plus efficace.</div>
+
+    <div id="ph1">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 1 / 3 — La capture d'écran partagée</div>
+        <div class="phase-q">Un camarade a partagé dans un groupe de classe une capture d'écran de tes messages privés avec quelqu'un d'autre. Tu n'as pas donné ton accord. Quelle est la meilleure démarche ?</div>
+        <div onclick="phChoice(this,1,'a','good','Exactement. La capture d\'écran de messages privés constitue une atteinte à la vie privée (article 226-1 du code pénal) et potentiellement du cyberharcèlement si c\'est répété (loi 2022-299). Demander la suppression directement ET signaler à la plateforme active le mécanisme de modération. Si le contexte est scolaire, informer l\'établissement permet une réponse disciplinaire complémentaire. Les trois leviers peuvent être utilisés simultanément.')" class="phase-choice">Demander la suppression immédiate, signaler à la plateforme, et si c'est dans un cadre scolaire, en informer l'établissement.</div>
+        <div onclick="phChoice(this,1,'b','bad','Attendre aggrave la situation : la capture peut se diffuser davantage. Et "se calmer" ne supprime pas le contenu déjà partagé. L\'action rapide — demande de suppression + signalement — est plus efficace que l\'attente.')" class="phase-choice">Attendre que ça se calme — surréagir risque d'amplifier la situation.</div>
+        <div onclick="phChoice(this,1,'c','medium','Porter plainte est une option valide si la situation constitue une infraction (atteinte à la vie privée, cyberharcèlement). Mais une plainte prend du temps — la demande de suppression à la plateforme est plus rapide pour faire disparaître le contenu. Les deux démarches peuvent aller ensemble.')" class="phase-choice">Porter plainte immédiatement au commissariat pour atteinte à la vie privée.</div>
+        <div class="phase-fb" id="pfb1"></div>
+      </div>
+    </div>
+
+    <div id="ph2" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 2 / 3 — L'application qui demande tout</div>
+        <div class="phase-q">Une appli de jeu demande l'accès à tes contacts, ta localisation, ta caméra et ton micro pour fonctionner. Le jeu n'a pourtant pas besoin de tout ça. Que faire ?</div>
+        <div onclick="phChoice(this,2,'a','bad','Accepter toutes les permissions sans les lire, c\'est céder des droits sur tes données sans comprendre ce qu\'on en fait. Le principe de minimisation du RGPD impose qu\'une application ne collecte que les données strictement nécessaires à son fonctionnement. Des permissions excessives sont un signal d\'alerte.')" class="phase-choice">Accepter toutes les permissions — sinon l'appli ne fonctionnera pas.</div>
+        <div onclick="phChoice(this,2,'b','good','C\'est la bonne réponse. Le RGPD impose le principe de minimisation : une app ne peut collecter que les données nécessaires à son service. Des permissions non justifiées (accès aux contacts pour un jeu ?) violent ce principe. Tu peux refuser les permissions non essentielles, utiliser l\'app de façon limitée, et si le problème est systématique, signaler l\'app à la CNIL.')" class="phase-choice">Refuser les permissions non nécessaires et, si l'app insiste, la signaler à la CNIL pour non-respect du principe de minimisation.</div>
+        <div onclick="phChoice(this,2,'c','medium','Supprimer l\'app règle le problème immédiat. Mais signaler à la CNIL est aussi utile — si l\'app viole le RGPD, elle peut se voir infliger une sanction qui protège aussi les autres utilisateurs.')" class="phase-choice">Supprimer l'app — mieux vaut ne pas prendre de risques.</div>
+        <div class="phase-fb" id="pfb2"></div>
+      </div>
+    </div>
+
+    <div id="ph3" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 3 / 3 — Le profil sans consentement</div>
+        <div class="phase-q">Tu découvres qu'un réseau social a créé un "profil fantôme" de toi — c'est-à-dire qu'il t'a identifié(e) à partir des données de tes amis sans que tu aies jamais créé de compte. Il peut te suggérer comme contact à d'autres. Quelle action est la plus efficace ?</div>
+        <div onclick="phChoice(this,3,'a','medium','Créer un compte pour demander l\'effacement est une option — mais paradoxale : tu fournis tes données à la plateforme pour en demander la suppression. La CNIL a validé la possibilité d\'envoyer une demande d\'effacement sans créer de compte, en passant par le formulaire de contact ou par la procédure de droits des personnes non inscrites.')" class="phase-choice">Créer un compte sur la plateforme pour exercer ton droit à l'effacement.</div>
+        <div onclick="phChoice(this,3,'b','good','Exactement. La création d\'un profil fantôme sans consentement constitue un traitement illicite de données personnelles (absence de base légale valide). Tu peux exercer ton droit à l\'effacement sans créer de compte — par email ou formulaire de contact. Si la plateforme ne répond pas sous un mois, tu peux saisir la CNIL directement. Elle a d\'ailleurs déjà sanctionné des plateformes pour cette pratique.')" class="phase-choice">Envoyer une demande d'effacement directement à la plateforme (sans créer de compte), et si elle ne répond pas, saisir la CNIL.</div>
+        <div onclick="phChoice(this,3,'c','bad','Une plainte pénale est possible si la pratique constitue une infraction — mais c\'est une procédure longue. La voie CNIL est beaucoup plus rapide et directement calibrée pour ce type de violation du RGPD. Ce n\'est pas un délit pénal ordinaire — c\'est une violation de la réglementation sur les données, que la CNIL traite quotidiennement.')" class="phase-choice">Aller directement au commissariat pour porter plainte — c'est une violation de ta vie privée.</div>
+        <div class="phase-fb" id="pfb3"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — "Si t'as rien à cacher…"</div>
+      <div class="xfer-scenario">Un camarade te dit : "Le RGPD c'est pour les paranos — si t'as rien à cacher, t'as rien à craindre." Tu veux lui répondre avec un argument solide.</div>
+      <div class="xfer-q">Quel est l'argument le plus pertinent ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Cet argument est circulaire : il suppose que ceux qui se défendent ont quelque chose à cacher. La vie privée n\'est pas une question de secret honteux — c\'est un droit fondamental qui permet de contrôler son image et son récit.')">Si t'as rien à cacher, montre-moi tes messages privés et ton historique de recherche — et on verra si t'es à l'aise.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C\'est l\'argument philosophique le plus solide. La vie privée n\'est pas un bouclier pour les coupables — c\'est un espace de liberté pour tout le monde. Les régimes autoritaires ont toujours commencé par supprimer la vie privée. Et les données collectées aujourd\'hui peuvent être utilisées contre toi demain dans un contexte que tu ne contrôles pas.')">Tout le monde a quelque chose à cacher — pas par culpabilité, mais parce que la vie privée est un espace de liberté. Sans vie privée, il n'y a pas de liberté réelle.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Citer le RGPD comme argument d\'autorité ne répond pas à l\'objection philosophique. Il vaut mieux expliquer pourquoi la vie privée est un droit — et le RGPD en est la traduction légale, pas l\'explication.')">Le RGPD est la loi — si tu n'as rien à craindre, tu n'as pas besoin de le violer non plus.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'Parler de ciblage publicitaire illustre un usage concret. Mais ce n\'est pas l\'argument le plus fort : certains trouvent la pub ciblée pratique. L\'enjeu plus profond est la liberté et l\'autonomie — pas juste la pub.')">Les données servent à faire de la pub ciblée — c'est pour ça que la vie privée compte.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — La photo de classe</div>
+      <div class="xfer-scenario">Le professeur principal veut photographier la classe pour le trombinoscope de l'établissement et l'afficher dans le couloir. Un élève refuse d'être pris en photo. Le professeur dit : "C'est pour l'école, c'est obligatoire."</div>
+      <div class="xfer-q">Qui a raison ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Ce n\'est pas vrai. Une photo de classe pour affichage public nécessite le consentement des personnes photographiées (ou de leurs parents si elles sont mineures de moins de 15 ans). L\'établissement scolaire est soumis au RGPD comme toute organisation. "C\'est pour l\'école" n\'est pas une base légale suffisante.')">Le professeur — l'école peut photographier ses élèves sans consentement pour un usage interne.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'Exact. Le droit à l\'image est un droit de la personnalité, et la photo d\'un élève pour affichage public dans les couloirs nécessite son consentement (ou celui de ses parents s\'il a moins de 15 ans). L\'établissement scolaire doit respecter le RGPD — "usage interne" n\'est pas suffisant quand la photo est affichée dans un espace visible par tous.')" class="xfer-choice">L'élève — son consentement est nécessaire pour photographier et afficher son image, même dans un cadre scolaire.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'La décision appartient aux parents pour les mineurs de moins de 15 ans — mais l\'élève lui-même a aussi un droit à l\'image qui mérite d\'être respecté. Et sa réticence à être photographié devrait être discutée, pas ignorée.')">Ça dépend des parents — si les parents ont signé une autorisation générale, l'école peut photographier.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'L\'élève peut effectivement refuser pour des raisons personnelles — mais la vraie raison pour laquelle le professeur ne peut pas imposer est juridique : le consentement est requis par le RGPD et le droit à l\'image, pas seulement par la bienveillance.')">L'élève peut refuser pour des raisons personnelles, mais le professeur a le droit de l'y obliger.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — Le groupe sans opt-out</div>
+      <div class="xfer-scenario">Tu fais partie d'un groupe de classe sur une application de messagerie. Des camarades publient régulièrement des photos de toi sans te demander. Tu veux que ça s'arrête, mais tu ne veux pas quitter le groupe.</div>
+      <div class="xfer-q">Quelle est la démarche la plus efficace ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Demander poliment est une première étape normale — mais si ça se répète, c\'est insuffisant. Et attendre que la situation évolue seule revient à accepter une atteinte continue à ton droit à l\'image.')">Demander poliment et attendre que ça change tout seul.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C\'est la démarche la plus complète : tu affirmes clairement ton refus (c\'est ton droit à l\'image), tu documentes (pour une éventuelle plainte ultérieure), tu signales à la plateforme les contenus qui te représentent sans consentement (droit à l\'effacement), et si ça persiste, l\'établissement peut intervenir au titre du règlement et du harcèlement numérique.')">Signifier clairement ton refus, documenter les publications non consenties, les signaler à la plateforme pour effacement, et si ça persiste, en informer l'établissement.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Quitter le groupe règle le symptôme mais prive de l\'accès aux informations de classe — et surtout, ça ne résout pas le problème de fond : tes camarades continueront à publier des photos de toi dans d\'autres contextes. Le droit à l\'image s\'exerce, il ne se résout pas en se retirant.')">Quitter le groupe — c'est le seul moyen d'avoir la paix.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'Saisir la CNIL est une option si la plateforme ne répond pas à une demande d\'effacement — mais c\'est une procédure pour les manquements des plateformes, pas pour régler un conflit entre camarades. La CNIL n\'arbitre pas les conflits interpersonnels.')">Saisir la CNIL directement — c'est leur rôle de protéger ta vie privée.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <!-- FIN -->
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">🔒</div>
+      <div class="fin-title">Vie Privée & Données</div>
+      <div class="fin-sub">Droit d'accès, effacement, opposition, portabilité — le RGPD te donne des outils concrets. La CNIL les fait respecter. Mais le droit ne fonctionne que si tu le connais et si tu l'exerces. Tes données te racontent — à toi de décider qui peut lire cette histoire.</div>
+      <div class="xp-badge">⭐ +450 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='JURIDIQUE_09',XP=450,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2phase:1,n3done:[false,false,false]};
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2phase>3)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function phChoice(el,ph,choice,quality,feedback){var c=document.getElementById('ph'+ph);c.querySelectorAll('.phase-choice').forEach(function(node){node.style.pointerEvents='none';node.style.opacity='.4';});if(el){el.style.opacity='1';el.classList.add(quality);}var fb=document.getElementById('pfb'+ph);fb.textContent=feedback;fb.classList.add('show');if(quality==='good')state.n2score+=3;else if(quality==='medium')state.n2score+=1;state.n2phase++;setTimeout(function(){if(ph<3)document.getElementById('ph'+(ph+1)).style.display='block';else showSimResult();},1800);}
+function showSimResult(){document.getElementById('sim-result').style.display='block';var s=state.n2score;document.getElementById('simScore').textContent=s+'/9';document.getElementById('simLabel').textContent=s<=3?'Continue à explorer le RGPD et ses mécanismes de protection':s<=6?'Bonne maîtrise — quelques réflexes à affiner sur les procédures concrètes':'Excellent — tu navigues le droit des données avec précision';updateProgress();}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_JURIDIQUE_09',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>
