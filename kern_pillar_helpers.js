@@ -1,15 +1,9 @@
 /* ============================================================
- * KERN PILLAR HELPERS - "Aide Kern" et "Resume du cours"
+ * KERN PILLAR HELPERS v1.2 - "Aide Kern" et "Resume du cours"
  * ============================================================
- * Definit les deux fonctions globales appelees par index_PIXHARe.html :
- *   - window.requestKernPillarSummary(pillarKey)
- *   - window.startKernPillarCoach(pillarKey)
- *
- * Ces fonctions appellent window.LocalLLM (charge depuis local_llm.js).
- * Aucune cle API. Tout reste dans le navigateur.
- *
- * Pre-requis : <script src="local_llm.js"></script> AVANT ce fichier.
- *              window.PILLARS doit exister (defini dans index_PIXHARe.html).
+ * v1.1 : fix decodage Uint8Array, persistance localStorage, setKernInputBusy.
+ * v1.2 : sampling anti-boucle (temp 0.45, pen 1.35, topK 40),
+ *        prompts compacts pour modele 0.5B (5 modules max, system prompt court).
  * ============================================================ */
 (function(){
   'use strict';
@@ -19,8 +13,6 @@
   var origSendKern = null;           // sauvegarde de la fonction sendKern d'origine
 
   // ── Persistance localStorage des messages Kern Pilier ──────────
-  // Les messages appendKernMsg() ne vivent que dans le DOM et disparaissent
-  // au rechargement. Ce bloc les sauvegarde et les restaure.
   var KP_MSGS_KEY = 'KP_PILLAR_MSGS_V1';
   var KP_MAX_MSGS = 80;
 
@@ -43,12 +35,10 @@
     if (!msgs.length) return;
     var container = getMessagesEl();
     if (!container) return;
-    // Ne restaurer que si le conteneur est vide (eviter doublon si agora_pixhare a deja rendu)
     if (container.children.length > 0) return;
     msgs.forEach(function(m) {
       var d = document.createElement('div');
       d.className = 'agora-msg ' + (m.role === 'user' ? 'user' : 'ai');
-      // Echappement minimal pour eviter XSS sur les textes restaures
       var safe = String(m.text)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/\n/g, '<br>');
@@ -90,16 +80,13 @@
   }
 
   // Active ou desactive l'input + le bouton Envoyer.
-  // agora_pixhare.js les desactive pendant ses propres operations ; on doit
-  // les redonner en main apres chaque appel LocalLLM cote kern_pillar_helpers.
+  // agora_pixhare.js les desactive pendant ses propres operations.
   function setKernInputBusy(busy) {
     var inp = getInputEl();
     var btn = document.getElementById('agora-send');
     if (inp) inp.disabled = !!busy;
     if (btn) btn.disabled = !!busy;
-    if (!busy && inp) {
-      inp.focus();
-    }
+    if (!busy && inp) inp.focus();
   }
 
   // Activation LocalLLM avec UI dans le panneau Kern
@@ -123,7 +110,6 @@
         },
         onReady: function(){
           if (loading) loading.innerHTML = '<span class="msg-name">Kern</span><b>✓ Assistant local pret.</b>';
-          // agora_pixhare.js a peut-etre bloque l'input pendant le chargement : on le libere.
           setKernInputBusy(false);
         }
       });
@@ -135,9 +121,10 @@
     }
   }
 
+  // 5 modules max : limiter la taille du contexte pour le modele 0.5B.
   function buildModulesList(pillar){
-    return pillar.modules.slice(0, 12).map(function(m){
-      return '- ' + (m.id || '') + ' : ' + (m.name || '');
+    return pillar.modules.slice(0, 5).map(function(m){
+      return '- ' + (m.name || '');
     }).join('\n');
   }
 
@@ -165,28 +152,27 @@
       '<span class="kern-stream"><i>Generation du resume...</i></span>');
     var streamSpan = msgEl ? msgEl.querySelector('.kern-stream') : null;
 
-    // Bloquer l'input pendant la generation du resume
     setKernInputBusy(true);
 
     var modulesList = buildModulesList(pillar);
+    // Prompt compact : modele 0.5B, contexte 1024 tokens max.
     var systemPrompt =
-      (window.LocalLLM.SOCLE_COMMUN || '') +
-      "\n\nTu es Kern, formateur PIX pHARe. Tu prepares un resume pedagogique pour un eleve qui vient de terminer un pilier." +
-      "\nTon resume est court : 4 a 6 phrases naturelles. Pas de titres, pas de listes numerotees." +
-      "\nTu rappelles l'idee centrale du pilier et 2 ou 3 notions cles que l'eleve doit retenir.";
+      "Tu es Kern, assistant de formation anti-harcelement.\n" +
+      "Reponds en francais, 3 phrases maximum, clair et simple.\n" +
+      "Pas de titres. Pas de listes. Pas de repetitions.";
 
     var userPrompt =
       "Pilier : " + (pillar.title || pillar.key) +
-      (pillar.desc ? "\nDescription : " + pillar.desc : "") +
-      "\nModules (" + pillar.modules.length + " au total) :\n" + modulesList +
-      "\n\nFais un resume pedagogique des notions cles de ce pilier, en 4-6 phrases simples, comme si tu parlais a l'eleve qui vient de finir.";
+      (pillar.desc ? " — " + pillar.desc : "") +
+      "\nPremiers modules : " + modulesList +
+      "\n\nFais un resume tres court de ce pilier en 3 phrases simples pour un eleve.";
 
     var streaming = '';
     var result = await window.LocalLLM.ask({
       systemPrompt: systemPrompt,
       userPrompt: userPrompt,
       options: {
-        temperature: 0.05, maxTokens: 240, topK: 20, topP: 0.75, repeatPenalty: 1.20,
+        temperature: 0.45, maxTokens: 160, topK: 40, topP: 0.85, repeatPenalty: 1.35,
         onChunk: function(piece){
           streaming += piece;
           if (streamSpan) streamSpan.textContent = streaming;
@@ -197,12 +183,10 @@
     if (result && result.ok && result.text){
       pillarSummaryCache[pillarKey] = result.text;
       if (streamSpan) streamSpan.textContent = result.text;
-      // Persister dans localStorage : sauvegarder le resume final (pas le streaming)
       kpSaveMsg('kern', '📜 Résumé — ' + (pillar.title || pillar.key) + '\n\n' + result.text);
     } else {
       if (streamSpan) streamSpan.textContent = '[erreur : ' + ((result && result.error) || 'inconnue') + ']';
     }
-    // Liberer l'input apres la generation du resume
     setKernInputBusy(false);
   };
 
@@ -223,15 +207,12 @@
       '<b>🛡️ Mode Coach - Pilier ' + (pillar.title || pillar.key) + '</b><br>' +
       'Pose-moi tes questions sur les notions de ce pilier. Je m\'appuie sur les ' + pillar.modules.length + ' modules.<br>' +
       'Pour quitter ce mode et revenir a la conversation normale, ecris : <code>mode normal</code>');
-    // Persister l'annonce du mode coach
     kpSaveMsg('kern', '🛡️ Mode Coach - Pilier ' + (pillar.title || pillar.key) +
       '\nPose-moi tes questions sur les notions de ce pilier. ' +
       "Pour quitter, ecris : mode normal");
 
     var input = getInputEl();
     if (input) input.placeholder = 'Pose ta question sur le Pilier ' + (pillar.title || pillar.key) + '...';
-    // Force la liberation de l'input : agora_pixhare.js l'a peut-etre bloque
-    // pendant le chargement du modele et ne sait pas que c'est termine.
     setKernInputBusy(false);
 
     // Sauvegarde et remplacement de sendKern
@@ -245,7 +226,6 @@
       if (!text) return;
       inp.value = '';
       appendKernMsg('user', text.replace(/\n/g, '<br>'));
-      // Persister le message utilisateur immediatement
       kpSaveMsg('user', text);
 
       // Sortie du mode coach ?
@@ -259,20 +239,19 @@
         return;
       }
 
-      // Bloquer l'input pendant la generation pour eviter les doubles envois
       setKernInputBusy(true);
 
       var modulesList = buildModulesList(pillar);
+      // Prompt tres compact pour le modele 0.5B.
       var systemPrompt =
-        (window.LocalLLM.SOCLE_COMMUN || '') +
-        "\n\nTu es Kern, coach pHARe en mode 'Pilier " + (pillar.title || pillar.key) + "'." +
-        "\nTu aides un eleve a comprendre les notions de ce pilier specifique." +
-        "\nReponse courte : 4 a 6 phrases. Pas d'invention. Si l'info manque, dis-le et propose de demander a un adulte.";
+        "Tu es Kern, coach anti-harcelement pour college.\n" +
+        "Reponds en francais, 2 a 3 phrases courtes, simples, directes.\n" +
+        "Pas de titres. Pas de repetition. Si tu ne sais pas, dis-le.";
 
       var userPrompt =
-        "Pilier de formation : " + (pillar.title || pillar.key) +
-        "\nModules du pilier :\n" + modulesList +
-        "\n\nQuestion de l'eleve : " + text;
+        "Pilier : " + (pillar.title || pillar.key) +
+        "\nModules : " + modulesList +
+        "\n\nQuestion : " + text;
 
       var msgEl = appendKernMsg('kern', '<span class="kern-stream"><i>Reflexion...</i></span>');
       var streamSpan = msgEl ? msgEl.querySelector('.kern-stream') : null;
@@ -282,7 +261,7 @@
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
         options: {
-          temperature: 0.05, maxTokens: 240, topK: 20, topP: 0.75, repeatPenalty: 1.20,
+          temperature: 0.45, maxTokens: 140, topK: 40, topP: 0.85, repeatPenalty: 1.35,
           onChunk: function(piece){
             streaming += piece;
             if (streamSpan) streamSpan.textContent = streaming;
@@ -292,25 +271,17 @@
 
       if (result && result.ok && result.text){
         if (streamSpan) streamSpan.textContent = result.text;
-        // Persister la reponse finale du coach (pas le streaming intermediaire)
         kpSaveMsg('kern', result.text);
       } else {
         if (streamSpan) streamSpan.textContent = '[erreur : ' + ((result && result.error) || 'inconnue') + ']';
       }
-      // Toujours liberer l'input apres la generation, qu'elle ait reussi ou non
       setKernInputBusy(false);
     };
   };
 
   // ── Restauration historique + hook clearKernHistory ─────────────
-  // On attend que tous les scripts (agora_pixhare.js inclus) soient charges
-  // avant de restaurer, pour ne pas ecraser ce qu'agora_pixhare aurait rendu.
   window.addEventListener('load', function () {
-    // Restaurer les messages Kern Pilier depuis localStorage
     kpRestoreHistory();
-
-    // Si clearKernHistory existe (defini dans agora_pixhare.js), on l'enveloppe
-    // pour effacer aussi notre stock localStorage quand l'utilisateur efface la conv.
     if (typeof window.clearKernHistory === 'function') {
       var _origClear = window.clearKernHistory;
       window.clearKernHistory = function () {
@@ -320,5 +291,5 @@
     }
   });
 
-  console.log('[kern_pillar_helpers] charge. window.requestKernPillarSummary et window.startKernPillarCoach disponibles.');
+  console.log('[kern_pillar_helpers] v1.2 charge.');
 })();

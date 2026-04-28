@@ -1,14 +1,16 @@
-/* LOCAL LLM v2.2 - moteur partage Kern / Helene / Agora / Epictete
+/* LOCAL LLM v2.3 - moteur partage Kern / Helene / Agora / Epictete
    Pile : wllama (jsDelivr) + Qwen2.5-0.5B-Instruct-Q4 (HuggingFace).
    Fix v2.2 : single-thread strict (multi-thread casse sur Github Pages
    sans headers COOP/COEP), version wllama epinglee.
-   Sampling Qwen-friendly : temp 0.05, top_k 20, top_p 0.75, penalty 1.20. */
+   Fix v2.3 : sampling anti-boucle. temp 0.05=>0.45, top_k 20=>40,
+   penalty 1.20=>1.35. Temp quasi-zero = greedy pur = boucles clclcl
+   impossibles a briser. N_CTX 768=>1024 pour plus de coherence. */
 (function () {
   'use strict';
 
   var MODEL_REPO = 'lmstudio-community/Qwen2.5-0.5B-Instruct-GGUF';
   var MODEL_FILE = 'Qwen2.5-0.5B-Instruct-Q4_K_M.gguf';
-  var N_CTX = 768;
+  var N_CTX = 1024;
   var N_THREADS = 1;
 
   // Version wllama epinglee (etait flottante avant, ce qui peut casser).
@@ -26,7 +28,7 @@
     'single-thread/wllama.wasm': WLLAMA_BASE + '/esm/single-thread/wllama.wasm'
   };
 
-  var DEFAULTS = { temperature: 0.05, maxTokens: 120, topK: 20, topP: 0.75, repeatPenalty: 1.20 };
+  var DEFAULTS = { temperature: 0.45, maxTokens: 120, topK: 40, topP: 0.85, repeatPenalty: 1.35 };
   var STOP_PROMPTS = ['<|im_end|>', '<|im_start|>'];
 
   var SOCLE_COMMUN = [
@@ -230,5 +232,5 @@
       paramSize: '0.5B', quantization: 'Q4_K_M', sizeMB: 400,
       wllamaVersion: WLLAMA_VERSION, threading: 'single-thread' }
   };
-  console.log('[LocalLLM] v2.2 charge (single-thread strict, wllama@' + WLLAMA_VERSION + ').');
+  console.log('[LocalLLM] v2.3 charge (single-thread strict, wllama@' + WLLAMA_VERSION + ').');
 })();
