@@ -1,7 +1,8 @@
-/* LOCAL LLM v2.1 - moteur partage Kern / Helene / Agora / Epictete
+/* LOCAL LLM v2.2 - moteur partage Kern / Helene / Agora / Epictete
    Pile : wllama (jsDelivr) + Qwen2.5-0.5B-Instruct-Q4 (HuggingFace).
-   Inference 100% navigateur, RGPD souverain.
-   Sampling Qwen-friendly (teste GPT5.5+Aurelien) : temp 0.05, top_k 20, top_p 0.75, penalty 1.20. */
+   Fix v2.2 : single-thread strict (multi-thread casse sur Github Pages
+   sans headers COOP/COEP), version wllama epinglee.
+   Sampling Qwen-friendly : temp 0.05, top_k 20, top_p 0.75, penalty 1.20. */
 (function () {
   'use strict';
 
@@ -10,10 +11,19 @@
   var N_CTX = 768;
   var N_THREADS = 1;
 
-  var WLLAMA_ESM = 'https://cdn.jsdelivr.net/npm/@wllama/wllama/esm/index.js';
+  // Version wllama epinglee (etait flottante avant, ce qui peut casser).
+  // Si une nouvelle version stable sort, mettre a jour ici.
+  var WLLAMA_VERSION = '2.4.0';
+  var WLLAMA_BASE = 'https://cdn.jsdelivr.net/npm/@wllama/wllama@' + WLLAMA_VERSION;
+  var WLLAMA_ESM = WLLAMA_BASE + '/esm/index.js';
+
+  // SINGLE-THREAD UNIQUEMENT.
+  // Le multi-thread necessite SharedArrayBuffer + headers COOP/COEP que
+  // Github Pages n'envoie pas. Si on inclut le path multi-thread, wllama
+  // tente parfois de l'utiliser et plante avec
+  // "function import requires a callable".
   var WLLAMA_WASM_PATHS = {
-    'single-thread/wllama.wasm': 'https://cdn.jsdelivr.net/npm/@wllama/wllama/esm/single-thread/wllama.wasm',
-    'multi-thread/wllama.wasm':  'https://cdn.jsdelivr.net/npm/@wllama/wllama/esm/multi-thread/wllama.wasm'
+    'single-thread/wllama.wasm': WLLAMA_BASE + '/esm/single-thread/wllama.wasm'
   };
 
   var DEFAULTS = { temperature: 0.05, maxTokens: 120, topK: 20, topP: 0.75, repeatPenalty: 1.20 };
@@ -50,14 +60,12 @@
     var format     = (parts.format     || '').trim();
     var ragContext = (parts.ragContext || '').trim();
     var userMsg    = (parts.userMessage|| '').trim();
-
     var sysBlocks = [];
     if (socle)   sysBlocks.push(socle);
     if (persona) sysBlocks.push(persona);
     if (mode)    sysBlocks.push(mode);
     if (format)  sysBlocks.push(format);
     var systemPrompt = sysBlocks.join('\n\n');
-
     var userBlocks = [];
     if (ragContext) {
       userBlocks.push("Contexte local utile :\n" + ragContext +
@@ -65,7 +73,6 @@
     }
     userBlocks.push(userMsg);
     var userPrompt = userBlocks.join('\n\n');
-
     return { systemPrompt: systemPrompt, userPrompt: userPrompt, full: buildChatML(systemPrompt, userPrompt) };
   }
 
@@ -101,11 +108,19 @@
         if (opts.onProgress) opts.onProgress({ stage: 'wllama_import', progress: 0, text: 'Import wllama...' });
         var wllamaMod = await import(WLLAMA_ESM);
         var Wllama = wllamaMod.Wllama;
-        if (!Wllama) throw new Error("Module wllama invalide (Wllama introuvable)");
-        wllama = new Wllama(WLLAMA_WASM_PATHS);
+        if (!Wllama) throw new Error("Module wllama invalide (Wllama introuvable). Verifie la version : " + WLLAMA_VERSION);
+
+        // Forcer single-thread : evite "function import requires a callable" sur Github Pages
+        wllama = new Wllama(WLLAMA_WASM_PATHS, { allowOffline: false });
+
         if (opts.onProgress) opts.onProgress({ stage: 'model_download', progress: 0.05, text: "Telechargement Qwen2.5-0.5B (~400 MB)..." });
+
         await wllama.loadModelFromHF(MODEL_REPO, MODEL_FILE, {
-          n_ctx: N_CTX, n_threads: N_THREADS, useCache: true,
+          n_ctx: N_CTX,
+          n_threads: N_THREADS,
+          useCache: true,
+          // Force single-thread explicitement (option supportee par wllama recent)
+          n_threads_batch: 1,
           progressCallback: function (p) {
             if (opts.onProgress && p.total > 0) {
               var progress = 0.05 + 0.9 * (p.loaded / p.total);
@@ -117,6 +132,7 @@
             }
           }
         });
+
         activated = true; loadedAt = Date.now();
         if (opts.onProgress) opts.onProgress({ stage: 'ready', progress: 1, text: 'Pret.' });
         if (opts.onReady) opts.onReady({ alreadyReady: false });
@@ -184,7 +200,8 @@
     lastError: function () { return lastError; },
     SOCLE_COMMUN: SOCLE_COMMUN, DEFAULTS: DEFAULTS, STOP_PROMPTS: STOP_PROMPTS,
     MODEL_INFO: { repo: MODEL_REPO, file: MODEL_FILE, contextSize: N_CTX,
-      paramSize: '0.5B', quantization: 'Q4_K_M', sizeMB: 400 }
+      paramSize: '0.5B', quantization: 'Q4_K_M', sizeMB: 400,
+      wllamaVersion: WLLAMA_VERSION, threading: 'single-thread' }
   };
-  console.log('[LocalLLM] v2.1 charge (non active). Appelle window.LocalLLM.activate() pour demarrer.');
+  console.log('[LocalLLM] v2.2 charge (single-thread strict, wllama@' + WLLAMA_VERSION + ').');
 })();
