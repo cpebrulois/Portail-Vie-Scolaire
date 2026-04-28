@@ -89,6 +89,19 @@
     if (section) try { section.scrollIntoView({behavior:'smooth', block:'start'}); } catch(e){}
   }
 
+  // Active ou desactive l'input + le bouton Envoyer.
+  // agora_pixhare.js les desactive pendant ses propres operations ; on doit
+  // les redonner en main apres chaque appel LocalLLM cote kern_pillar_helpers.
+  function setKernInputBusy(busy) {
+    var inp = getInputEl();
+    var btn = document.getElementById('agora-send');
+    if (inp) inp.disabled = !!busy;
+    if (btn) btn.disabled = !!busy;
+    if (!busy && inp) {
+      inp.focus();
+    }
+  }
+
   // Activation LocalLLM avec UI dans le panneau Kern
   async function ensureLLMReady(){
     if (!window.LocalLLM){
@@ -110,6 +123,8 @@
         },
         onReady: function(){
           if (loading) loading.innerHTML = '<span class="msg-name">Kern</span><b>✓ Assistant local pret.</b>';
+          // agora_pixhare.js a peut-etre bloque l'input pendant le chargement : on le libere.
+          setKernInputBusy(false);
         }
       });
       return true;
@@ -150,6 +165,9 @@
       '<span class="kern-stream"><i>Generation du resume...</i></span>');
     var streamSpan = msgEl ? msgEl.querySelector('.kern-stream') : null;
 
+    // Bloquer l'input pendant la generation du resume
+    setKernInputBusy(true);
+
     var modulesList = buildModulesList(pillar);
     var systemPrompt =
       (window.LocalLLM.SOCLE_COMMUN || '') +
@@ -184,6 +202,8 @@
     } else {
       if (streamSpan) streamSpan.textContent = '[erreur : ' + ((result && result.error) || 'inconnue') + ']';
     }
+    // Liberer l'input apres la generation du resume
+    setKernInputBusy(false);
   };
 
   // ============================================================
@@ -210,6 +230,9 @@
 
     var input = getInputEl();
     if (input) input.placeholder = 'Pose ta question sur le Pilier ' + (pillar.title || pillar.key) + '...';
+    // Force la liberation de l'input : agora_pixhare.js l'a peut-etre bloque
+    // pendant le chargement du modele et ne sait pas que c'est termine.
+    setKernInputBusy(false);
 
     // Sauvegarde et remplacement de sendKern
     if (origSendKern === null && typeof window.sendKern === 'function'){
@@ -232,8 +255,12 @@
           'Mode normal reactive. Tu peux poser n\'importe quelle question, je reponds en mode standard.');
         if (origSendKern){ window.sendKern = origSendKern; }
         if (inp) inp.placeholder = 'Demande une aventure, une scene a choix, ou decris une situation reelle a clarifier...';
+        setKernInputBusy(false);
         return;
       }
+
+      // Bloquer l'input pendant la generation pour eviter les doubles envois
+      setKernInputBusy(true);
 
       var modulesList = buildModulesList(pillar);
       var systemPrompt =
@@ -270,6 +297,8 @@
       } else {
         if (streamSpan) streamSpan.textContent = '[erreur : ' + ((result && result.error) || 'inconnue') + ']';
       }
+      // Toujours liberer l'input apres la generation, qu'elle ait reussi ou non
+      setKernInputBusy(false);
     };
   };
 
