@@ -1,29 +1,26 @@
-/* LOCAL LLM v2.3 - moteur partage Kern / Helene / Agora / Epictete
-   Pile : wllama (jsDelivr) + Qwen2.5-0.5B-Instruct-Q4 (HuggingFace).
+/* LOCAL LLM v2.4 - moteur partage Kern / Helene / Agora / Epictete
+   Pile : wllama (jsDelivr) + Qwen3.5-0.8B-Q4_K_M (HuggingFace/bartowski).
    Fix v2.2 : single-thread strict (multi-thread casse sur Github Pages
    sans headers COOP/COEP), version wllama epinglee.
    Fix v2.3 : sampling anti-boucle. temp 0.05=>0.45, top_k 20=>40,
    penalty 1.20=>1.35. Temp quasi-zero = greedy pur = boucles clclcl
-   impossibles a briser. N_CTX 768=>1024 pour plus de coherence. */
+   impossibles a briser. N_CTX 768=>1024 pour plus de coherence.
+   Fix v2.4 : upgrade Qwen3.5-0.8B. N_CTX 1024=>2048. Thinking mode
+   desactive via prefill <think> vide (requis par Qwen3.5). */
 (function () {
   'use strict';
 
-  var MODEL_REPO = 'lmstudio-community/Qwen2.5-0.5B-Instruct-GGUF';
-  var MODEL_FILE = 'Qwen2.5-0.5B-Instruct-Q4_K_M.gguf';
-  var N_CTX = 1024;
+  var MODEL_REPO = 'bartowski/Qwen_Qwen3.5-0.8B-GGUF';
+  var MODEL_FILE = 'Qwen_Qwen3.5-0.8B-Q4_K_M.gguf';
+  var N_CTX = 2048;
   var N_THREADS = 1;
 
-  // Version wllama epinglee (etait flottante avant, ce qui peut casser).
-  // Si une nouvelle version stable sort, mettre a jour ici.
   var WLLAMA_VERSION = '2.4.0';
   var WLLAMA_BASE = 'https://cdn.jsdelivr.net/npm/@wllama/wllama@' + WLLAMA_VERSION;
   var WLLAMA_ESM = WLLAMA_BASE + '/esm/index.js';
 
-  // SINGLE-THREAD UNIQUEMENT.
-  // Le multi-thread necessite SharedArrayBuffer + headers COOP/COEP que
-  // Github Pages n'envoie pas. Si on inclut le path multi-thread, wllama
-  // tente parfois de l'utiliser et plante avec
-  // "function import requires a callable".
+  // SINGLE-THREAD UNIQUEMENT : le multi-thread necessite SharedArrayBuffer + headers
+  // COOP/COEP que Github Pages n'envoie pas.
   var WLLAMA_WASM_PATHS = {
     'single-thread/wllama.wasm': WLLAMA_BASE + '/esm/single-thread/wllama.wasm'
   };
@@ -48,10 +45,16 @@
 
   var wllama = null, activated = false, activating = null, loadedAt = null, lastError = null;
 
+  // Qwen3.5 : desactiver thinking mode via bloc <think> vide en prefill.
+  // Sans ce prefill, le modele genere <think>...</think> avant chaque reponse.
+  // Le template officiel Qwen3.5 injecte ce prefill quand enable_thinking=false.
+  // En mode wllama (prompt manuel), on le fait nous-memes.
+  var NO_THINK_PREFIX = '<think>\n\n</think>\n\n';
+
   function buildChatML(systemPrompt, userPrompt) {
     return ('<|im_start|>system\n' + (systemPrompt || '').trim() + '\n<|im_end|>\n' +
             '<|im_start|>user\n'   + (userPrompt   || '').trim() + '\n<|im_end|>\n' +
-            '<|im_start|>assistant\n');
+            '<|im_start|>assistant\n' + NO_THINK_PREFIX);
   }
 
   function buildPrompt(parts) {
@@ -86,13 +89,15 @@
       if (!m || !m.role || m.content == null) continue;
       prompt += '<|im_start|>' + m.role + '\n' + String(m.content).trim() + '\n<|im_end|>\n';
     }
-    prompt += '<|im_start|>assistant\n';
+    prompt += '<|im_start|>assistant\n' + NO_THINK_PREFIX;
     return prompt;
   }
 
   function cleanOutput(raw) {
     if (!raw) return '';
     var out = raw;
+    // Supprimer eventuels blocs <think>...</think> residuels (Qwen3.5 thinking mode)
+    out = out.replace(/<think>[\s\S]*?<\/think>\s*/g, '');
     var stops = STOP_PROMPTS.concat(['<|endoftext|>']);
     for (var i = 0; i < stops.length; i++) {
       var idx = out.indexOf(stops[i]);
@@ -112,16 +117,14 @@
         var Wllama = wllamaMod.Wllama;
         if (!Wllama) throw new Error("Module wllama invalide (Wllama introuvable). Verifie la version : " + WLLAMA_VERSION);
 
-        // Forcer single-thread : evite "function import requires a callable" sur Github Pages
         wllama = new Wllama(WLLAMA_WASM_PATHS, { allowOffline: false });
 
-        if (opts.onProgress) opts.onProgress({ stage: 'model_download', progress: 0.05, text: "Telechargement Qwen2.5-0.5B (~400 MB)..." });
+        if (opts.onProgress) opts.onProgress({ stage: 'model_download', progress: 0.05, text: "Telechargement Qwen3.5-0.8B (~500 MB)..." });
 
         await wllama.loadModelFromHF(MODEL_REPO, MODEL_FILE, {
           n_ctx: N_CTX,
           n_threads: N_THREADS,
           useCache: true,
-          // Force single-thread explicitement (option supportee par wllama recent)
           n_threads_batch: 1,
           progressCallback: function (p) {
             if (opts.onProgress && p.total > 0) {
@@ -150,7 +153,6 @@
   }
 
   // Decodeur robuste : wllama peut livrer piece comme Uint8Array, Array, ou string.
-  // Sans ce decodeur, le navigateur affiche les octets comma-separated (86,111,105...).
   function makeChunkDecoder() {
     var decoder = new TextDecoder('utf-8');
     return {
@@ -202,7 +204,6 @@
           if (cleanPiece) { fullText += cleanPiece; if (opts.onChunk) opts.onChunk(cleanPiece); }
         }
       });
-      // Vider le buffer interne du decodeur (caractereres multi-octets en attente)
       var tail = chunkDecoder.flush();
       if (tail) { fullText += tail; if (opts.onChunk) opts.onChunk(tail); }
       return { text: cleanOutput(fullText), ok: true };
@@ -229,8 +230,8 @@
     lastError: function () { return lastError; },
     SOCLE_COMMUN: SOCLE_COMMUN, DEFAULTS: DEFAULTS, STOP_PROMPTS: STOP_PROMPTS,
     MODEL_INFO: { repo: MODEL_REPO, file: MODEL_FILE, contextSize: N_CTX,
-      paramSize: '0.5B', quantization: 'Q4_K_M', sizeMB: 400,
+      paramSize: '0.8B', quantization: 'Q4_K_M', sizeMB: 500,
       wllamaVersion: WLLAMA_VERSION, threading: 'single-thread' }
   };
-  console.log('[LocalLLM] v2.3 charge (single-thread strict, wllama@' + WLLAMA_VERSION + ').');
+  console.log('[LocalLLM] v2.4 charge (Qwen3.5-0.8B, no-think, single-thread, wllama@' + WLLAMA_VERSION + ').');
 })();
