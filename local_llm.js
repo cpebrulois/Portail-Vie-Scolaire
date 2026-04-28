@@ -147,6 +147,28 @@
     return activating;
   }
 
+  // Decodeur robuste : wllama peut livrer piece comme Uint8Array, Array, ou string.
+  // Sans ce decodeur, le navigateur affiche les octets comma-separated (86,111,105...).
+  function makeChunkDecoder() {
+    var decoder = new TextDecoder('utf-8');
+    return {
+      decode: function (piece) {
+        if (piece == null) return '';
+        if (typeof piece === 'string') return piece;
+        if (piece instanceof Uint8Array) return decoder.decode(piece, { stream: true });
+        if (Array.isArray(piece)) return decoder.decode(new Uint8Array(piece), { stream: true });
+        if (piece && piece.buffer instanceof ArrayBuffer) {
+          return decoder.decode(
+            new Uint8Array(piece.buffer, piece.byteOffset || 0, piece.byteLength),
+            { stream: true }
+          );
+        }
+        return String(piece);
+      },
+      flush: function () { return decoder.decode(); }
+    };
+  }
+
   async function ask(args) {
     args = args || {};
     if (!activated) throw new Error("LocalLLM non active. Appelle window.LocalLLM.activate() d'abord.");
@@ -167,15 +189,20 @@
       repeatPenalty: opts.repeatPenalty != null ? opts.repeatPenalty : DEFAULTS.repeatPenalty
     };
     var fullText = '';
+    var chunkDecoder = makeChunkDecoder();
     try {
       await wllama.createCompletion(promptText, {
         nPredict: params.maxTokens,
         sampling: { temp: params.temperature, top_k: params.topK, top_p: params.topP, penalty_repeat: params.repeatPenalty },
         stopPrompts: STOP_PROMPTS,
         onNewToken: function (token, piece) {
-          if (piece) { fullText += piece; if (opts.onChunk) opts.onChunk(piece); }
+          var cleanPiece = chunkDecoder.decode(piece);
+          if (cleanPiece) { fullText += cleanPiece; if (opts.onChunk) opts.onChunk(cleanPiece); }
         }
       });
+      // Vider le buffer interne du decodeur (caractereres multi-octets en attente)
+      var tail = chunkDecoder.flush();
+      if (tail) { fullText += tail; if (opts.onChunk) opts.onChunk(tail); }
       return { text: cleanOutput(fullText), ok: true };
     } catch (err) {
       console.error('[LocalLLM] Erreur generation :', err);

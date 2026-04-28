@@ -18,6 +18,47 @@
   var pillarSummaryCache = {};       // cache resumes par pillarKey
   var origSendKern = null;           // sauvegarde de la fonction sendKern d'origine
 
+  // ── Persistance localStorage des messages Kern Pilier ──────────
+  // Les messages appendKernMsg() ne vivent que dans le DOM et disparaissent
+  // au rechargement. Ce bloc les sauvegarde et les restaure.
+  var KP_MSGS_KEY = 'KP_PILLAR_MSGS_V1';
+  var KP_MAX_MSGS = 80;
+
+  function kpSaveMsg(role, text) {
+    try {
+      var arr = JSON.parse(localStorage.getItem(KP_MSGS_KEY) || '[]');
+      arr.push({ role: role, text: String(text || ''), t: Date.now() });
+      if (arr.length > KP_MAX_MSGS) arr.splice(0, arr.length - KP_MAX_MSGS);
+      localStorage.setItem(KP_MSGS_KEY, JSON.stringify(arr));
+    } catch(e) {}
+  }
+
+  function kpClearMsgs() {
+    try { localStorage.removeItem(KP_MSGS_KEY); } catch(e) {}
+  }
+
+  function kpRestoreHistory() {
+    var msgs;
+    try { msgs = JSON.parse(localStorage.getItem(KP_MSGS_KEY) || '[]'); } catch(e) { msgs = []; }
+    if (!msgs.length) return;
+    var container = getMessagesEl();
+    if (!container) return;
+    // Ne restaurer que si le conteneur est vide (eviter doublon si agora_pixhare a deja rendu)
+    if (container.children.length > 0) return;
+    msgs.forEach(function(m) {
+      var d = document.createElement('div');
+      d.className = 'agora-msg ' + (m.role === 'user' ? 'user' : 'ai');
+      // Echappement minimal pour eviter XSS sur les textes restaures
+      var safe = String(m.text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>');
+      d.innerHTML = '<span class="msg-name">' + (m.role === 'user' ? 'Toi' : 'Kern') + '</span>' + safe;
+      container.appendChild(d);
+    });
+    container.scrollTop = container.scrollHeight;
+    openKernPanel();
+  }
+
   function getPillarByKey(key){
     if (typeof window.PILLARS === 'undefined' || !Array.isArray(window.PILLARS)) return null;
     for (var i=0;i<window.PILLARS.length;i++){
@@ -138,6 +179,8 @@
     if (result && result.ok && result.text){
       pillarSummaryCache[pillarKey] = result.text;
       if (streamSpan) streamSpan.textContent = result.text;
+      // Persister dans localStorage : sauvegarder le resume final (pas le streaming)
+      kpSaveMsg('kern', '📜 Résumé — ' + (pillar.title || pillar.key) + '\n\n' + result.text);
     } else {
       if (streamSpan) streamSpan.textContent = '[erreur : ' + ((result && result.error) || 'inconnue') + ']';
     }
@@ -160,6 +203,10 @@
       '<b>🛡️ Mode Coach - Pilier ' + (pillar.title || pillar.key) + '</b><br>' +
       'Pose-moi tes questions sur les notions de ce pilier. Je m\'appuie sur les ' + pillar.modules.length + ' modules.<br>' +
       'Pour quitter ce mode et revenir a la conversation normale, ecris : <code>mode normal</code>');
+    // Persister l'annonce du mode coach
+    kpSaveMsg('kern', '🛡️ Mode Coach - Pilier ' + (pillar.title || pillar.key) +
+      '\nPose-moi tes questions sur les notions de ce pilier. ' +
+      "Pour quitter, ecris : mode normal");
 
     var input = getInputEl();
     if (input) input.placeholder = 'Pose ta question sur le Pilier ' + (pillar.title || pillar.key) + '...';
@@ -175,6 +222,8 @@
       if (!text) return;
       inp.value = '';
       appendKernMsg('user', text.replace(/\n/g, '<br>'));
+      // Persister le message utilisateur immediatement
+      kpSaveMsg('user', text);
 
       // Sortie du mode coach ?
       if (/^mode\s+normal$/i.test(text)){
@@ -216,11 +265,31 @@
 
       if (result && result.ok && result.text){
         if (streamSpan) streamSpan.textContent = result.text;
+        // Persister la reponse finale du coach (pas le streaming intermediaire)
+        kpSaveMsg('kern', result.text);
       } else {
         if (streamSpan) streamSpan.textContent = '[erreur : ' + ((result && result.error) || 'inconnue') + ']';
       }
     };
   };
+
+  // ── Restauration historique + hook clearKernHistory ─────────────
+  // On attend que tous les scripts (agora_pixhare.js inclus) soient charges
+  // avant de restaurer, pour ne pas ecraser ce qu'agora_pixhare aurait rendu.
+  window.addEventListener('load', function () {
+    // Restaurer les messages Kern Pilier depuis localStorage
+    kpRestoreHistory();
+
+    // Si clearKernHistory existe (defini dans agora_pixhare.js), on l'enveloppe
+    // pour effacer aussi notre stock localStorage quand l'utilisateur efface la conv.
+    if (typeof window.clearKernHistory === 'function') {
+      var _origClear = window.clearKernHistory;
+      window.clearKernHistory = function () {
+        kpClearMsgs();
+        return _origClear.apply(this, arguments);
+      };
+    }
+  });
 
   console.log('[kern_pillar_helpers] charge. window.requestKernPillarSummary et window.startKernPillarCoach disponibles.');
 })();
