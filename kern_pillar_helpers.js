@@ -155,7 +155,7 @@
     setKernInputBusy(true);
 
     var modulesList = buildModulesList(pillar);
-    var ragContext = findRagContext(pillarKey, '');
+    var ragContext = findRagContext(pillarKey, '', { maxEntries: 4 });
     var systemPrompt =
       "Tu es Kern, assistant de formation anti-harcelement.\n" +
       "Reponds en francais en 2 ou 3 phrases completes.\n" +
@@ -248,8 +248,9 @@
       var ragContext = findRagContext(pillarKey, text);
       var systemPrompt =
         "Tu es Kern, coach anti-harcelement pour college.\n" +
-        "Reponds en francais, 2 ou 3 phrases completes, sans numeros, sans tirets.\n" +
-        "Utilise les savoirs fournis. Pas de titres. Pas de repetition.";
+        "Reponds en 2 ou 3 phrases completes, sans numeros, sans tirets.\n" +
+        "Cite les faits, chiffres et noms precis des savoirs fournis.\n" +
+        "Tu peux croiser les informations entre elles si c est pertinent.";
 
       var userPrompt =
         (ragContext ? "Savoirs cles :\n" + ragContext + "\n\n" : "") +
@@ -403,6 +404,29 @@
       { keys: ['justice restaurative','zehr','reparation','relation','punition','baton de parole','mediation'],
         text: 'M10 Justice restaurative (Zehr 2002) : reparer les relations, pas punir. Baton de parole : seule la personne qui le tient parle. Les mediateurs formes developpent empathie et resolution de conflits durables.' }
     ]
+
+  ,
+  'NUM': [
+    { keys: ['attention','economie','dopamine','notification','like','scroll','infini','addiction','machine a sous','boucle'],
+      text: 'M01 Economie de l attention : chaque seconde sur une app = revenus pub. Notifications/likes = micro-doses de dopamine. Scroll infini : sans pagination, le cerveau ne reçoit jamais le signal "c est fini" → on scrolle 90 metres de contenu/jour. Renforcement intermittent : recompense imprevue = plus addictif qu une recompense previsible (meme circuit que machines a sous).' },
+    { keys: ['dark pattern','design trompeur','roach motel','misdirection','culpabilisation','essai gratuit','abonnement','accepter'],
+      text: 'M02 Dark Patterns : pieges de design. Culpabilisation : bouton "Non merci, je prefere payer plus". Roach Motel : 1 clic pour entrer, 15 etapes pour sortir (Amazon Prime). Misdirection : gros bouton vert "ACCEPTER TOUT" vs petit lien gris "Parametrer". Essai gratuit : 48% des utilisateurs oublient d annuler avant prelevement.' },
+    { keys: ['filtre bulle','chambre echo','algorithme','biais confirmation','pariser','polarisation','eli pariser'],
+      text: 'M03 Filtre bulle (Eli Pariser, 2011) : chaque utilisateur voit un internet different selon son historique/clics/localisation. Chambre d echo : tes opinions sont repetees et amplifiees par des semblables. Le biais de confirmation humain est amplifie par l algorithme. Resultat : deux groupes qui ne partagent plus la meme realite.' },
+    { keys: ['rgpd','droits','acces','effacement','portabilite','opposition','cnil','donnees','1 mois'],
+      text: 'M04 Droits RGPD : Acces = demander quelles donnees (reponse obligatoire sous 1 mois). Effacement = supprimer si plus necessaires ou consentement retire. Portabilite = recuperer ses donnees (JSON/CSV) pour les transferer. Opposition = refuser la pub ciblee. CNIL = autorite française, sanctions jusqu a 20M EUR ou 4% du CA mondial.' },
+    { keys: ['produit','annonceur','attention vendue','automatisme','cognitif','democratie','bulle','realite parallele','hygiene numerique'],
+      text: 'M05 Tu n es pas le client des plateformes gratuites — tu es le produit. Les dark patterns ciblent les 95% de decisions prises en mode automatique. Les bulles creeent des realites paralleles : sans terrain factuel commun, le debat democratique devient impossible. Hygiene numerique : audit mensuel des apps, purge des notifications, diversification des sources.' },
+    { keys: ['desinformation','mesinformation','wardle','fake news','lecture laterale','stanford','clemi','6 fois','rumeur'],
+      text: 'M07 Wardle : mesinformation = erronee sans malveillance. Desinformation = creee et diffusee pour manipuler. Les fausses infos se propagent 6 fois plus vite, atteignant 70% de personnes en plus. Lecture laterale (Stanford/CLEMI) : sortir du site pour chercher ce que d autres en disent — plus efficace qu analyser le contenu en profondeur.' },
+    { keys: ['empreinte numerique','trace','metadonnees','gps','droit oubli','mineur','cnil','googler','identite'],
+      text: 'M08 Empreinte numerique : chaque visite, recherche, connexion laisse une trace (souvent invisible). Metadonnees d une photo = modele, date, coordonnees GPS. Droit a l effacement (droit a l oubli) : une fois majeur, on peut demander la suppression des contenus publies pendant la minorite. Googler regulierement son nom = reflex recommande par la CNIL.' },
+    { keys: ['ia','intelligence artificielle','hallucination','biais algorithmique','eduscol','prompt','verifier'],
+      text: 'M09 IA generative : les hallucinations sont inherentes — l IA optimise la coherence du texte, pas la verite. Peut inventer des citations, chiffres, evenements de façon convaincante. Biais algorithmique : des donnees inegales = inegalites reelles (ex : 35% d erreur sur visages de femmes noires). Posture Eduscol : interroger (prompt precis) → verifier (sources externes) → declarer (mentionner l usage).' },
+    { keys: ['phishing','hameçonnage','mot de passe','phrase de passe','2fa','double facteur','anssi','cybersecurite'],
+      text: 'M10 Cybersecurite : 1 Français sur 3 cible par phishing en 2024. Phrase de passe : longue et memorisable (ex : "MonChatMangeDes2Souris"). Piege classique : meme mot de passe partout. Double facteur (2FA) : meme si mot de passe vole, l attaquant a besoin du second facteur. ANSSI recommande le 2FA sur tous les comptes importants.' }
+  ]
+
   }; /* fin KERN_RAG_KB */
 
   function normStr(s) {
@@ -412,32 +436,59 @@
       .replace(/[ûü]/g, 'u').replace(/ç/g, 'c');
   }
 
-  function findRagContext(pillarKey, question) {
-    var entries = KERN_RAG_KB[pillarKey];
-    if (!entries || !entries.length) return '';
-    var q = normStr(question);
+  // RAG v1.6 : cross-pilier + phrase matching bonus + 3 entrees max.
+  // Pour le resume (question vide), cherche dans le pilier actif uniquement.
+  // Pour le coach (question presente), cherche dans TOUS les piliers.
+  function findRagContext(pillarKey, question, opts) {
+    opts = opts || {};
+    var maxEntries = opts.maxEntries || 3;
+    var q = normStr(question || '');
     var scored = [];
-    entries.forEach(function(e) {
-      var score = 0;
-      e.keys.forEach(function(kw) { if (q.indexOf(normStr(kw)) >= 0) score += 2; });
-      normStr(e.text).split(/\s+/).forEach(function(w) {
-        if (w.length > 5 && q.indexOf(w) >= 0) score += 1;
+    var searchPillars = (q.length > 2)
+      ? Object.keys(KERN_RAG_KB)   // coach : cross-pilier
+      : (pillarKey ? [pillarKey] : Object.keys(KERN_RAG_KB)); // resume : mono-pilier
+
+    searchPillars.forEach(function(pk) {
+      var isPrimary = (pk === pillarKey);
+      (KERN_RAG_KB[pk] || []).forEach(function(e) {
+        var score = 0;
+        e.keys.forEach(function(kw) {
+          var normKw = normStr(kw);
+          if (q.indexOf(normKw) >= 0) {
+            // Bonus pour les expressions multi-mots (plus precises)
+            score += (kw.indexOf(' ') >= 0) ? 4 : 2;
+          }
+        });
+        normStr(e.text).split(/\s+/).forEach(function(w) {
+          if (w.length > 5 && q.indexOf(w) >= 0) score += 1;
+        });
+        // Leger bonus pour le pilier actif (pertinence contexte)
+        if (isPrimary && score > 0) score += 1;
+        if (score > 0) scored.push({ score: score, text: e.text, pillar: pk });
       });
-      if (score > 0) scored.push({ score: score, text: e.text });
     });
+
     scored.sort(function(a, b) { return b.score - a.score; });
+
     if (!scored.length) {
-      var fallbacks = {
-        'GRP': 'Le Pilier Groupe couvre : Triangle Auteur/Cible/Temoins, effet spectateur (Darley-Latane), 5 etapes du temoin, 8 pieges cognitifs, KiVa, Milgram/Zimbardo, pairs-aidants, normes (Tajfel-Turner).',
-        'HIS': 'Le Pilier Histoire couvre : origine du mot (Heinemann 1969, Olweus 1973), loi 2022, programme pHARe, memoire et reparation (Todorov, CVR), Figures du Juste (Arendt, Staub), Fanon, ecriture de la paix.',
-        'JUR': 'Le Pilier Juridique couvre : art.222-33-2-3, Bandura, cyberharcelement, protocole pHARe et art.40, vision systemique, justice restaurative (Zehr), CIDE, chaine de protection 3018, RGPD.',
-        'NEU': 'Le Pilier Neurosciences couvre : empathie cognitive/affective, cerveau adolescent, nommer les emotions, douleur sociale (dACC), regulation emotionnelle, LeDoux, sommeil et amygdale, dopamine, neuroplasticite (Holzel).',
-        'VEA': 'Le Pilier Vie Emotionnelle couvre : forces et valeurs personnelles, emotions comme signaux, empathie vs pitie (Brene Brown), assertivite et CNV Rosenberg (OFNR), prosocialite, estime de soi, Jigsaw, justice restaurative.'
-      };
-      return fallbacks[pillarKey] || '';
+      // Fallback : 3 premieres entrees du pilier actif (contexte general)
+      var fallbackEntries = (KERN_RAG_KB[pillarKey] || []).slice(0, 3);
+      if (fallbackEntries.length) return fallbackEntries.map(function(e){ return e.text; }).join('\n');
+      return '';
     }
-    return scored.slice(0, 2).map(function(s) { return s.text; }).join('\n');
+
+    // Max 2 entrees par pilier pour eviter la redundance
+    var pillarCount = {};
+    var result = [];
+    scored.forEach(function(s) {
+      var pc = pillarCount[s.pillar] || 0;
+      if (pc < 2 && result.length < maxEntries) {
+        pillarCount[s.pillar] = pc + 1;
+        result.push(s.text);
+      }
+    });
+    return result.join('\n');
   }
 
-  console.log('[kern_pillar_helpers] v1.5 charge (RAG 48 entrees, 5 piliers, no-think, Qwen3.5-0.8B)');
+  console.log('[kern_pillar_helpers] v1.6 charge (RAG 57 entrees, 6 piliers, cross-pilier, Qwen3.5-0.8B)');
 })();
