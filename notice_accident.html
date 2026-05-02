@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAIROS · Protocole · Accident grave sur site</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#f97316;--bg:#090500;--panel:#150900;--panel2:#1d0d00;--text:#f5e8d8;--text-m:#a07040;--text-d:#50280a;--border:rgba(249,115,22,.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.notice-header{background:var(--panel);border-bottom:3px solid var(--orange);padding:18px 24px;display:flex;align-items:flex-start;gap:16px;}
+.notice-sev{display:flex;align-items:center;gap:6px;background:var(--orange);color:#fff;font-family:'Orbitron',sans-serif;font-size:.58rem;letter-spacing:2px;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:3px;}
+.notice-title-wrap{flex:1;}
+.notice-label{font-size:.58rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;color:var(--text-d);text-transform:uppercase;margin-bottom:4px;}
+.notice-title{font-family:'Orbitron',sans-serif;font-size:1.15rem;font-weight:900;color:#fff;line-height:1.3;}
+.notice-sub{font-size:.82rem;color:var(--text-m);margin-top:5px;line-height:1.5;}
+#app{padding:18px 24px 60px;max-width:820px;}
+.phase{margin-bottom:16px;border-radius:10px;overflow:hidden;}
+.phase-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;}
+.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.phase-time{font-family:'Orbitron',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;}
+.phase-body{padding:4px 16px 14px;}
+.step{display:flex;gap:12px;margin-bottom:8px;align-items:flex-start;}
+.step-num{font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:.9rem;line-height:1.65;color:var(--text);}
+.step-text strong{color:#fde68a;}
+.step-text em{font-style:normal;color:#93c5fd;}
+.phase.rouge .phase-hdr{background:rgba(239,68,68,.15);}
+.phase.rouge .phase-dot{background:#ef4444;}
+.phase.rouge .phase-time{color:#ef4444;}
+.phase.rouge .step-num{background:rgba(239,68,68,.2);color:#ef4444;}
+.phase.orange .phase-hdr{background:rgba(249,115,22,.1);}
+.phase.orange .phase-dot{background:var(--orange);}
+.phase.orange .phase-time{color:var(--orange);}
+.phase.orange .step-num{background:rgba(249,115,22,.15);color:var(--orange);}
+.phase.vert .phase-hdr{background:rgba(16,185,129,.08);}
+.phase.vert .phase-dot{background:#10b981;}
+.phase.vert .phase-time{color:#10b981;}
+.phase.vert .step-num{background:rgba(16,185,129,.15);color:#10b981;}
+.contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.contact-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.contact-num{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:var(--orange);margin-bottom:3px;}
+.contact-name{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.contact-when{font-size:.72rem;color:var(--text-m);line-height:1.4;}
+.interdits{background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+.interdits-title{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:2px;color:var(--orange);margin-bottom:8px;text-transform:uppercase;}
+.interdit-item{display:flex;gap:9px;margin-bottom:6px;font-size:.87rem;color:var(--text-m);line-height:1.5;}
+.interdit-item::before{content:'✗';color:var(--orange);font-weight:700;flex-shrink:0;}
+.passation{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px 16px;}
+.passation-title{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:2px;color:#10b981;margin-bottom:8px;text-transform:uppercase;}
+.passation-text{font-size:.87rem;color:#6ee7b7;line-height:1.65;}
+.section-hdr{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;margin:18px 0 8px;display:flex;align-items:center;gap:10px;}
+.section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+</style>
+</head>
+<body>
+
+<div class="notice-header">
+  <div class="notice-sev">🟠 HAUTE</div>
+  <div class="notice-title-wrap">
+    <div class="notice-label">KAIROS · Protocole d'Urgence</div>
+    <div class="notice-title">⚡ Accident grave sur site</div>
+    <div class="notice-sub">Accident corporel grave survenu dans l'enceinte de l'établissement ou lors d'une activité sous responsabilité scolaire.</div>
+  </div>
+</div>
+
+<div id="app">
+
+<div class="phase rouge">
+  <div class="phase-hdr">
+    <div class="phase-dot"></div>
+    <div class="phase-time">IMMÉDIATEMENT — Premiers secours</div>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Appeler le 15.</strong> Décrire la situation : <em>« Accident [type], élève de [âge] ans, [état de conscience], [localisation précise] ».</em> Ne pas raccrocher avant la fin des instructions.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Initier les gestes de premiers secours</strong> si formé — position latérale de sécurité, compression d'une hémorragie, RCP si arrêt cardio-respiratoire. Ne pas déplacer si traumatisme crânien ou rachidien possible.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Envoyer quelqu'un accueillir les secours</strong> à l'entrée pour les guider. Dégager l'accès au lieu de l'accident.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Éloigner les autres élèves</strong> sans créer de panique. Un adulte reste avec le blessé, un autre gère le groupe.</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Contacter l'infirmière scolaire</strong> immédiatement si présente — elle prend la coordination médicale jusqu'à l'arrivée des secours.</div></div>
+  </div>
+</div>
+
+<div class="phase orange">
+  <div class="phase-hdr">
+    <div class="phase-dot"></div>
+    <div class="phase-time">DANS L'HEURE — Gestion administrative et humaine</div>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Informer le chef d'établissement</strong> immédiatement. Il est responsable de la sécurité de l'établissement et doit être informé en temps réel.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Contacter la famille</strong> dès que possible — appel direct, sobre, sans dramatisation excessive ni minimisation. Indiquer l'hôpital de destination si connu.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Remplir le registre d'accident.</strong> Tout accident survenu sous responsabilité scolaire doit être consigné — date, heure, lieu, circonstances, témoins, mesures prises.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Signaler à l'IA-DASEN</strong> en cas d'accident grave. Obligation réglementaire dans les 24h pour tout accident avec hospitalisation.</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Recueillir les témoignages</strong> des adultes présents par écrit, pendant que les souvenirs sont frais — utile pour la procédure et pour l'analyse préventive.</div></div>
+  </div>
+</div>
+
+<div class="phase vert">
+  <div class="phase-hdr">
+    <div class="phase-dot"></div>
+    <div class="phase-time">DANS LES JOURS SUIVANTS</div>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-num">1</div><div class="step-text">Informer la classe <strong>de façon factuelle</strong> sur l'état de l'élève — sans détails médicaux, mais sans laisser le vide s'installer et alimenter les rumeurs.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Analyse des circonstances</strong> avec l'équipe : l'accident était-il évitable ? Quelles mesures de prévention ? Préparer un rapport interne.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Prévenir les <strong>témoins directs</strong> qui peuvent présenter des réactions de stress post-traumatique — orienter vers le PsyEN ou l'infirmière si besoin.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Anticiper le <strong>retour de l'élève</strong> — contact avec la famille, aménagements nécessaires, accueil par les adultes référents.</div></div>
+  </div>
+</div>
+
+<div class="section-hdr">Qui appeler</div>
+<div class="contacts-grid">
+  <div class="contact-card">
+    <div class="contact-num">15</div>
+    <div class="contact-name">SAMU — Urgence médicale</div>
+    <div class="contact-when">En premier. Décrire précisément l'état du blessé.</div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-num">18</div>
+    <div class="contact-name">Pompiers</div>
+    <div class="contact-when">Si incendie, piégeage ou secours nécessitant extraction.</div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-num">IA-DASEN</div>
+    <div class="contact-name">Inspecteur d'académie</div>
+    <div class="contact-when">Dans les 24h pour tout accident avec hospitalisation.</div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-num">Infirmière</div>
+    <div class="contact-name">Infirmière scolaire</div>
+    <div class="contact-when">Coordination médicale sur site jusqu'à l'arrivée des secours.</div>
+  </div>
+</div>
+
+<div class="interdits">
+  <div class="interdits-title">À ne pas faire</div>
+  <div class="interdit-item">Déplacer un élève blessé à la tête, au cou ou au dos sans instruction du 15 — risque d'aggravation d'une lésion rachidienne.</div>
+  <div class="interdit-item">Donner des médicaments sans prescription médicale — même de l'aspirine ou du paracétamol.</div>
+  <div class="interdit-item">Minimiser la blessure pour éviter l'appel au 15 — mieux vaut un appel inutile qu'une sous-réaction grave.</div>
+  <div class="interdit-item">Laisser la classe ou le groupe sans surveillance pendant l'intervention sur le blessé.</div>
+  <div class="interdit-item">Omettre de remplir le registre d'accident — obligation légale, surtout si l'élève était sous surveillance directe.</div>
+  <div class="interdit-item">Contacter les médias ou faire des déclarations publiques sans accord du chef d'établissement.</div>
+</div>
+
+<div class="passation">
+  <div class="passation-title">Passation — quand et à qui</div>
+  <div class="passation-text">
+    L'adulte sur place passe la main à l'infirmière scolaire dès son arrivée. Le chef d'établissement prend en charge la communication avec la famille et l'IA-DASEN. Le CPE assure le suivi du groupe classe. L'AS scolaire peut coordonner le lien avec la famille si besoin de soutien social. Le PsyEN est disponible pour les témoins si des signes de stress post-traumatique apparaissent.
+  </div>
+</div>
+
+</div>
+</body>
+</html>

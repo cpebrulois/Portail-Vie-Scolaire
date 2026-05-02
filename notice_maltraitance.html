@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAIROS · Protocole · Suspicion de maltraitance</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#f97316;--bg:#090500;--panel:#150900;--panel2:#1d0d00;--text:#f5e8d8;--text-m:#a07040;--text-d:#50280a;--border:rgba(249,115,22,.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.notice-header{background:var(--panel);border-bottom:3px solid var(--orange);padding:18px 24px;display:flex;align-items:flex-start;gap:16px;}
+.notice-sev{display:flex;align-items:center;gap:6px;background:var(--orange);color:#fff;font-family:'Orbitron',sans-serif;font-size:.58rem;letter-spacing:2px;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:3px;}
+.notice-title-wrap{flex:1;}
+.notice-label{font-size:.58rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;color:var(--text-d);text-transform:uppercase;margin-bottom:4px;}
+.notice-title{font-family:'Orbitron',sans-serif;font-size:1.15rem;font-weight:900;color:#fff;line-height:1.3;}
+.notice-sub{font-size:.82rem;color:var(--text-m);margin-top:5px;line-height:1.5;}
+#app{padding:18px 24px 60px;max-width:820px;}
+.phase{margin-bottom:16px;border-radius:10px;overflow:hidden;}
+.phase-hdr{display:flex;align-items:center;gap:10px;padding:10px 16px;}
+.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.phase-time{font-family:'Orbitron',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;}
+.phase-body{padding:4px 16px 14px;}
+.step{display:flex;gap:12px;margin-bottom:8px;align-items:flex-start;}
+.step-num{font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:.9rem;line-height:1.65;color:var(--text);}
+.step-text strong{color:#fde68a;}
+.step-text em{font-style:normal;color:#93c5fd;}
+.phase.rouge .phase-hdr{background:rgba(239,68,68,.15);}
+.phase.rouge .phase-dot{background:#ef4444;}
+.phase.rouge .phase-time{color:#ef4444;}
+.phase.rouge .step-num{background:rgba(239,68,68,.2);color:#ef4444;}
+.phase.orange .phase-hdr{background:rgba(249,115,22,.1);}
+.phase.orange .phase-dot{background:var(--orange);}
+.phase.orange .phase-time{color:var(--orange);}
+.phase.orange .step-num{background:rgba(249,115,22,.15);color:var(--orange);}
+.phase.vert .phase-hdr{background:rgba(16,185,129,.08);}
+.phase.vert .phase-dot{background:#10b981;}
+.phase.vert .phase-time{color:#10b981;}
+.phase.vert .step-num{background:rgba(16,185,129,.15);color:#10b981;}
+.contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.contact-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.contact-num{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:var(--orange);margin-bottom:3px;}
+.contact-name{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+.contact-when{font-size:.72rem;color:var(--text-m);line-height:1.4;}
+.interdits{background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+.interdits-title{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:2px;color:var(--orange);margin-bottom:8px;text-transform:uppercase;}
+.interdit-item{display:flex;gap:9px;margin-bottom:6px;font-size:.87rem;color:var(--text-m);line-height:1.5;}
+.interdit-item::before{content:'✗';color:var(--orange);font-weight:700;flex-shrink:0;}
+.passation{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px 16px;}
+.passation-title{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:2px;color:#10b981;margin-bottom:8px;text-transform:uppercase;}
+.passation-text{font-size:.87rem;color:#6ee7b7;line-height:1.65;}
+.section-hdr{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:2px;color:var(--text-d);text-transform:uppercase;margin:18px 0 8px;display:flex;align-items:center;gap:10px;}
+.section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+</style>
+</head>
+<body>
+
+<div class="notice-header">
+  <div class="notice-sev">🟠 HAUTE</div>
+  <div class="notice-title-wrap">
+    <div class="notice-label">KAIROS · Protocole d'Urgence</div>
+    <div class="notice-title">🛡️ Suspicion de maltraitance</div>
+    <div class="notice-sub">Signes évocateurs de violence physique, psychologique, sexuelle ou de négligence grave envers un élève mineur.</div>
+  </div>
+</div>
+
+<div id="app">
+
+<div class="phase rouge">
+  <div class="phase-hdr">
+    <div class="phase-dot"></div>
+    <div class="phase-time">SIGNAUX — Reconnaître et recueillir</div>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Signes physiques :</strong> bleus ou blessures inexpliquées ou répétées, hygiène très défaillante, vêtements inadaptés en toutes saisons, faim persistante.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Signes comportementaux :</strong> repli soudain ou agressivité inhabituelle, peur réactive (sursauts, crispation), évitement des adultes ou au contraire attachement excessif.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Si l'élève se confie :</strong> écouter sans interrompre, ne pas formuler de questions suggestives. Dire simplement : <em>« Je t'entends. Tu as bien fait de me dire ça. »</em></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Ne pas promettre le secret.</strong> Expliquer calmement : <em>« Je dois en parler à quelqu'un qui peut t'aider, mais uniquement pour te protéger. »</em></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Consigner par écrit</strong> les observations (dates, faits, propos tenus par l'élève) immédiatement après l'échange, sans interprétation.</div></div>
+  </div>
+</div>
+
+<div class="phase orange">
+  <div class="phase-hdr">
+    <div class="phase-dot"></div>
+    <div class="phase-time">ACTION — Dans les 24 à 48h</div>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Transmettre les observations au chef d'établissement</strong> ou au CPE — pas à un collègue ou un parent. La transmission institutionnelle est obligatoire.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Rédiger une information préoccupante (IP)</strong> destinée au Conseil Départemental. Le chef d'établissement peut vous accompagner dans cette démarche.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Si danger immédiat :</strong> signalement direct au procureur de la République (pas IP — mais signalement pénal). Le chef d'établissement rédige ou co-signe.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Ne pas contacter la famille</strong> avant d'avoir évalué le risque — si le présumé auteur est dans la famille, le prévenir peut mettre l'enfant en danger immédiat.</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Informer l'AS scolaire.</strong> Elle peut enclencher le suivi éducatif et coordonner avec les services sociaux du Conseil Départemental.</div></div>
+  </div>
+</div>
+
+<div class="phase vert">
+  <div class="phase-hdr">
+    <div class="phase-dot"></div>
+    <div class="phase-time">SUIVI — Après le signalement</div>
+  </div>
+  <div class="phase-body">
+    <div class="step"><div class="step-num">1</div><div class="step-text">Maintenir <strong>une relation de confiance</strong> avec l'élève dans l'établissement — la stabilité scolaire est un facteur protecteur majeur.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Ne pas interroger l'élève</strong> à nouveau sur les faits — c'est le rôle des professionnels mandatés (CRIP, enquêteurs). Éviter de polluer le recueil de parole.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Assurer <strong>la continuité de la scolarisation</strong> — même si la situation familiale est instable ou si un placement est en cours.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">L'adulte ayant recueilli la confidence peut bénéficier d'un <strong>espace de parole pour lui-même</strong> — le PsyEN ou le médecin scolaire peuvent assurer ce soutien.</div></div>
+  </div>
+</div>
+
+<div class="section-hdr">Qui appeler</div>
+<div class="contacts-grid">
+  <div class="contact-card">
+    <div class="contact-num">119</div>
+    <div class="contact-name">Allô Enfance en Danger</div>
+    <div class="contact-when">Conseil sur la procédure, 24h/24. Aussi pour les professionnels qui doutent.</div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-num">CRIP</div>
+    <div class="contact-name">Cellule de recueil — Conseil Dép.</div>
+    <div class="contact-when">Destinataire de l'information préoccupante (IP).</div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-num">AS scolaire</div>
+    <div class="contact-name">Assistante sociale scolaire</div>
+    <div class="contact-when">Coordination du suivi éducatif et du lien avec les services sociaux.</div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-num">Parquet</div>
+    <div class="contact-name">Procureur de la République</div>
+    <div class="contact-when">Si danger immédiat — signalement pénal direct, sans passer par l'IP.</div>
+  </div>
+</div>
+
+<div class="interdits">
+  <div class="interdits-title">À ne pas faire</div>
+  <div class="interdit-item">Promettre à l'élève de garder le secret sur ce qu'il/elle révèle.</div>
+  <div class="interdit-item">Mener une « enquête » personnelle ou interroger l'élève de façon répétée sur les faits.</div>
+  <div class="interdit-item">Prévenir la famille avant évaluation du risque — si le présumé auteur est intrafamilial, cela peut mettre l'enfant en danger.</div>
+  <div class="interdit-item">Attendre d'être « sûr » avant de signaler — la loi impose de signaler toute suspicion raisonnable, pas une certitude.</div>
+  <div class="interdit-item">Parler du cas à des collègues ou parents autres qu'aux personnes impliquées dans le traitement.</div>
+  <div class="interdit-item">Prendre en photo des blessures sans accord médical ou judiciaire — cela relève d'une procédure précise.</div>
+</div>
+
+<div class="passation">
+  <div class="passation-title">Passation — quand et à qui</div>
+  <div class="passation-text">
+    L'adulte ayant reçu la confidence transmet au chef d'établissement et à l'AS scolaire. Le chef d'établissement rédige l'information préoccupante (IP) ou le signalement pénal. L'AS scolaire coordonne avec la CRIP et assure le lien avec les services sociaux. Le PsyEN assure le soutien psychologique de l'élève. L'IA-DASEN est informée si la situation est complexe ou médiatique.
+  </div>
+</div>
+
+</div>
+</body>
+</html>
