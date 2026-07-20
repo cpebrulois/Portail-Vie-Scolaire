@@ -1,28 +1,9 @@
 # ========================================================================
-# .gitignore - aethonyx_phenix_synth_v2
+# .gitignore - Portail Vie Scolaire
 # ========================================================================
-# La V2 livrée = uniquement les fichiers utiles à la production LocalLLM.
-# Tout le reste est exclu : POCs précédents, modèles téléchargés en sandbox,
-# splits GGUF locaux, tentatives ONNX abandonnées, docs obsolètes.
+# Remplace un .gitignore importé par erreur d'aethonyx_phenix_synth_v2,
+# qui ignorait notamment index.html, src/ et DEPLOYMENT.md.
 # ========================================================================
-
-# === Tout le dossier model/ à la racine (modèles téléchargés en local, plus utilisés) ===
-# La V2 charge Qwen2.5-0.5B depuis HuggingFace au runtime, rien à pousser.
-model/
-
-# === Ancien POC Kern Phenix V2 standalone (remplacé par LocalLLM partagé) ===
-src/
-index.html
-DEPLOYMENT.md
-
-# === Anciens fichiers V1.5 ONNX (obsolètes, jamais utiles en prod) ===
-Helene/model/helene_mouth.onnx
-Helene/model/helene_mouth_fp32.onnx
-Helene/model/helene_mouth_fp32-inferred.onnx
-Helene/model/helene_tokenizer.json
-Helene/model/conversion_report.json
-Helene/src/helene_mouth.js
-Helene/scripts/convert_synth500_to_onnx.py
 
 # === Système ===
 *.pyc
@@ -30,3 +11,18 @@ __pycache__/
 *.tmp
 *.swp
 .DS_Store
+Thumbs.db
+
+# === Modèles locaux ===
+# local_llm.js charge son modèle depuis HuggingFace au runtime.
+# Aucun poids ne doit être versionné ici (448 Mo purgés de l'historique).
+models/
+model/
+*.gguf
+*.onnx
+
+# === Résidus de téléchargement ===
+*.7z
+*.img
+*.ccd
+*.sub
