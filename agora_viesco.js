@@ -1,6 +1,7 @@
 (function(){
-  var API_KEY='';
-  var API_URL='https://api.mistral.ai/v1/chat/completions';
+  // La clé n'est plus dans le navigateur : l'appel passe par le proxy Cloudflare
+  // (functions/api/agora.js), qui injecte MISTRAL_API_KEY côté serveur.
+  var API_URL='/api/agora';
   var API_MODEL='mistral-small-latest';
   var DEFAULTS={
     personaId:'agora-viesco',
@@ -449,8 +450,7 @@
     var res=await fetch(API_URL,{
       method:'POST',
       headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+API_KEY
+        'Content-Type':'application/json'
       },
       body:JSON.stringify({
         model:API_MODEL,
