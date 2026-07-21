@@ -308,8 +308,8 @@
     })();
     return promptPromise;
   }
-  async var siteIndex={};
-  function loadFileList(){
+  var siteIndex={};
+  async function loadFileList(){
     if(fileListPromise)return fileListPromise;
     fileListPromise=(async function(){
       var files=[];
