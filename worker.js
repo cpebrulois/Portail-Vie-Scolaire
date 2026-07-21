@@ -59,7 +59,10 @@ async function handleAgora(request, env) {
   if (request.method !== "POST") return json({ error: "Méthode non autorisée." }, 405, cors);
 
   if (!allowed) return json({ error: "Origine non autorisée." }, 403, cors);
-  if (!env.MISTRAL_API_KEY) return json({ error: "Clé serveur absente (MISTRAL_API_KEY non configurée)." }, 500, cors);
+  if (!env.MISTRAL_API_KEY) {
+    console.error("[agora] MISTRAL_API_KEY absente au runtime — le secret a-t-il été effacé au redéploiement ? (utiliser un Secret chiffré, pas une variable en clair)");
+    return json({ error: "Clé serveur absente (MISTRAL_API_KEY non configurée)." }, 500, cors);
+  }
 
   // Limite de débit par IP — active seulement si le binding KV « RL » existe.
   if (env.RL) {
@@ -97,6 +100,9 @@ async function handleAgora(request, env) {
   }
 
   const text = await upstream.text();
+  if (!upstream.ok) {
+    console.error("[agora] Mistral a répondu", upstream.status, ":", text.slice(0, 400));
+  }
   return new Response(text, {
     status: upstream.status,
     headers: { "Content-Type": "application/json", ...cors },
