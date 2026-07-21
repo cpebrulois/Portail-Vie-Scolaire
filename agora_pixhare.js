@@ -1,6 +1,6 @@
 (function(){
   var KERN_KEY='';
-  var KERN_URL='https://api.mistral.ai/v1/chat/completions';
+  var KERN_URL='/api/chat';  // proxy Cloudflare : cle injectee cote serveur
   var KERN_MODEL='mistral-small-latest';
   var KERN_TEMP=0.95;
   var KERN_ANALYSIS_TEMP=0.1;
@@ -298,7 +298,7 @@
   }
 
   async function complete(messages,temp,maxTokens){
-    var res=await fetch(KERN_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+KERN_KEY},body:JSON.stringify({model:KERN_MODEL,messages:messages,temperature:typeof temp==='number'?temp:KERN_TEMP,max_tokens:maxTokens||KERN_MAX_TOKENS})});
+    var res=await fetch(KERN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:KERN_MODEL,messages:messages,temperature:typeof temp==='number'?temp:KERN_TEMP,max_tokens:maxTokens||KERN_MAX_TOKENS})});
     var data=await res.json().catch(function(){return {};});
     if(res.ok&&data.choices&&data.choices[0]&&data.choices[0].message)return data.choices[0].message.content||'';
     if(data&&data.error&&data.error.message)throw new Error(data.error.message);

@@ -17,7 +17,7 @@
 
 const MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions";
 const ALLOWED_MODELS = new Set(["mistral-small-latest", "mistral-large-latest"]);
-const MAX_TOKENS_CAP = 1000;
+const MAX_TOKENS_CAP = 1500;
 const MAX_MESSAGES = 20;
 const RATE = { windowSec: 60, max: 15 };
 
@@ -106,7 +106,7 @@ async function handleAgora(request, env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (url.pathname === "/api/agora") {
+    if (url.pathname === "/api/agora" || url.pathname === "/api/chat") {
       return handleAgora(request, env);
     }
     // Filet de sécurité : si le routage envoie autre chose ici, on sert l'asset.

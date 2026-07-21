@@ -12,7 +12,7 @@
     promptFiles:['agora_portail_system.txt'],
     manifestFile:'viesco_manifest.json',
     temperature:0.18,
-    maxTokens:900,
+    maxTokens:1200,
     historyLimit:8,
     suggestions:[],
     welcome:'',
@@ -410,13 +410,13 @@
       score+=overlapScore(doc.search||'',queryTokens,5);
       return {doc:doc,score:score};
     }).sort(function(a,b){return b.score-a.score;});
-    var docs=scored.filter(function(item){return item.score>0 && item.doc && item.doc.text;}).slice(0,4).map(function(item){
+    var docs=scored.filter(function(item){return item.score>0 && item.doc && item.doc.text;}).slice(0,6).map(function(item,idx){
       return {
         title:item.doc.title,
         file:item.doc.file,
         pillar:item.doc.pillar,
         tags:item.doc.tags||[],
-        snippets:bestBlocks(item.doc,queryTokens,2)
+        snippets:(idx===0 && item.doc.text ? [toLines(item.doc.text,7000)] : bestBlocks(item.doc,queryTokens,2))
       };
     });
     return docs;
