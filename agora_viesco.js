@@ -308,7 +308,8 @@
     })();
     return promptPromise;
   }
-  async function loadFileList(){
+  async var siteIndex={};
+  function loadFileList(){
     if(fileListPromise)return fileListPromise;
     fileListPromise=(async function(){
       var files=[];
@@ -319,6 +320,7 @@
           if(Array.isArray(data))files=files.concat(data.map(function(item){return text(item);})); 
         }
       }catch(e){}
+      try{ var ixRes=await fetch(pathHref('viesco_index.json'),{cache:'no-store'}); if(ixRes.ok){ siteIndex=(await ixRes.json())||{}; files=files.concat(Object.keys(siteIndex)); } }catch(e){}
       files=files.concat(await discoverGithubFiles());
       files=uniq(files.filter(function(file){return file&&!shouldExclude(file);}));
       if(files.indexOf(currentFileName())===-1)files.unshift(currentFileName());
@@ -336,10 +338,10 @@
     return {
       id:file,
       file:file,
-      title:humanize(file),
+      title:(siteIndex[file]&&siteIndex[file].t)||humanize(file),
       pillar:inferPillar(file,tags),
       tags:tags,
-      search:norm([file,humanize(file),inferPillar(file,tags),tags.join(' ')].join(' ')),
+      search:norm([file,(siteIndex[file]&&siteIndex[file].t)||humanize(file),(siteIndex[file]&&siteIndex[file].s)||'',inferPillar(file,tags),tags.join(' ')].join(' ')),
       text:'',
       blocks:[]
     };
