@@ -187,17 +187,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <div class="section-label">Livre Second</div>
     <div class="book-header">
       <span class="book-badge">Livre II</span>
-      <span class="book-num">Les Écuyers</span>
+      <span class="book-num">Le Serment du Griffon</span>
       <span class="book-class">Deuxième année · 5e</span>
       <span class="book-xp-req" id="req-livre2">5 000 XP</span>
     </div>
-    <div class="book-locked" id="locked-livre2">
-      <span class="book-locked-icon">📖</span>
-      <div class="book-locked-title">Les Écuyers</div>
-      <div class="book-locked-sub">La deuxième année de Lyam à Valdurne. Les loyautés se compliquent, une trahison change tout, et une question s'impose sans réponse facile : à qui doit-on quelque chose, vraiment ?</div>
-      <div class="book-locked-bar-wrap"><div class="book-locked-bar" id="bar-livre2" style="width:0%"></div></div>
-      <div class="book-locked-xp" id="xp-livre2">— / 5 000 XP</div>
-    </div>
+    <div class="chapters-list" id="listChapitres2"></div>
   </div>
 
   <!-- ─────────────────────────────────────────
@@ -304,12 +298,35 @@ var CHAPITRES=[
    meta:'Épilogue ouvert · Ce que l\'on choisit de devenir',xpRequired:4500},
 ];
 
+// ── CHAPITRES LIVRE II · Le Serment du Griffon ───────────────────────────────
+// ch1 à 5 000 XP puis +500/chap → dernier (ch10) à 9 500 XP
+var CHAPITRES2=[
+  {id:'ch2_01',file:'roman2_ch01.html',num:'Chap. I',icon:'🚪',title:'Les Secondes Portes',
+   meta:"Revenir n'est pas arriver · Le poids d'être attendu",xpRequired:5000},
+  {id:'ch2_02',file:'roman2_ch02.html',num:'Chap. II',icon:'👁️',title:'Ceux qui Regardent',
+   meta:'La patience a un prix · Regarder sans agir',xpRequired:5500},
+  {id:'ch2_03',file:'roman2_ch03.html',num:'Chap. III',icon:'🕯️',title:'Le Signe dans la Cire',
+   meta:'Le sceau reparaît — pour un autre · Perrin',xpRequired:6000},
+  {id:'ch2_04',file:'roman2_ch04.html',num:'Chap. IV',icon:'🦅',title:'La Griffe et la Serre',
+   meta:"Un gardien ne frappe pas le premier · Le Griffon",xpRequired:6500},
+  {id:'ch2_05',file:'roman2_ch05.html',num:'Chap. V',icon:'⏳',title:'Ce que Coûte la Patience',
+   meta:'La vérité arrive trop tard · La tentation de la hâte',xpRequired:7000},
+  {id:'ch2_06',file:'roman2_ch06.html',num:'Chap. VI',icon:'⚖️',title:'La Tentation Juste',
+   meta:'Avoir raison sur presque tout · Les Forges Vives',xpRequired:7500},
+  {id:'ch2_07',file:'roman2_ch07.html',num:'Chap. VII',icon:'🗡️',title:"Le Prix d'Agir Seul",
+   meta:'Gagner et se perdre du même geste',xpRequired:8000},
+  {id:'ch2_08',file:'roman2_ch08.html',num:'Chap. VIII',icon:'🧭',title:'La Troisième Voie',
+   meta:"Ni l'œil ni la main · Le droit de dire non",xpRequired:8500},
+  {id:'ch2_09',file:'roman2_ch09.html',num:'Chap. IX',icon:'🪶',title:'Le Serment du Griffon',
+   meta:'La première vraie épreuve de la garde nouvelle',xpRequired:9000},
+  {id:'ch2_10',file:'roman2_ch10.html',num:'Chap. X',icon:'🌅',title:'Ce que la Garde Protège',
+   meta:"Une année finit, une autre s'annonce · Une fissure s'ouvre",xpRequired:9500},
+];
+
 // ── LIVRES FUTURS ─────────────────────────────────────────────────────────────
-// Livre II : ch1 à 5 000 XP puis +500/chap → dernier (ch10) à 9 500 XP
 // Livre III : ch1 à 10 000 XP puis +500/chap → dernier à 14 500 XP
 // Livre IV : ch1 à 15 000 XP puis +500/chap → dernier à 19 500 XP
 var FUTURS=[
-  {xpReq:5000,barId:'bar-livre2',xpId:'xp-livre2',lockId:'locked-livre2',reqId:'req-livre2'},
   {xpReq:10000,barId:'bar-livre3',xpId:'xp-livre3',lockId:'locked-livre3',reqId:'req-livre3'},
   {xpReq:15000,barId:'bar-livre4',xpId:'xp-livre4',lockId:'locked-livre4',reqId:'req-livre4'},
 ];
@@ -425,6 +442,38 @@ function renderChapitres(xp){
   });
 }
 
+function renderChapitres2(xp){
+  var done=getDone();
+  var list=document.getElementById('listChapitres2');
+  if(!list)return;
+  list.innerHTML='';
+  CHAPITRES2.forEach(function(ch){
+    var u=xp>=ch.xpRequired;
+    var isDone=!!done[ch.id];
+    var div=document.createElement('div');
+    div.className='chapter'+(u?' unlocked':' locked')+(isDone?' done':'');
+    var right=u
+      ?'<span class="cta-read">'+(isDone?'Relire ↗':'Lire ↗')+'</span>'
+      :'<span class="lock-icon">🔒</span>';
+    var xpLbl=fxp(ch.xpRequired)+' XP';
+    div.innerHTML=
+      '<div class="chnum">'+ch.num+'<br><span style="font-size:1.5em;line-height:1">'+ch.icon+'</span></div>'+
+      '<div style="padding:12px 0"><div class="chtitle">'+ch.title+'</div><div class="chmeta">'+ch.meta+'</div></div>'+
+      '<div style="text-align:right;padding:0 4px"><div class="chxp">'+xpLbl+'</div>'+right+'</div>'+
+      (isDone?'<span class="done-tick">✓</span>':'');
+    if(u&&ch.file){
+      div.onclick=(function(f){return function(){window.location.href=f;};})(ch.file);
+    }
+    list.appendChild(div);
+  });
+  // badge d'en-tete du Livre II
+  var reqEl=document.getElementById('req-livre2');
+  if(reqEl){
+    if(xp>=5000){reqEl.textContent='Disponible';reqEl.style.background='rgba(201,168,76,.15)';reqEl.style.color='var(--or2)';}
+    else{reqEl.textContent='5 000 XP';}
+  }
+}
+
 function renderFuturs(xp){
   FUTURS.forEach(function(l){
     var pct=Math.min(100,Math.round((xp/l.xpReq)*100));
@@ -517,6 +566,7 @@ function renderLDV(p){
   if(nomEl)nomEl.textContent=cur;
   if(xpEl)xpEl.textContent=fxp(xp);
   renderChapitres(xp);
+  renderChapitres2(xp);
   renderFuturs(xp);
   renderProgress(xp);
   renderLDV(p);
