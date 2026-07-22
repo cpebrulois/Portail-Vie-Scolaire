@@ -109,6 +109,30 @@ async function handleAgora(request, env) {
   });
 }
 
+// --- Réveil Supabase (empêche la mise en pause du projet gratuit) ------------
+// Déclenché par le Cron (voir wrangler.jsonc). Fait une requête authentifiée à
+// l'API REST du projet : cela touche la base et compte comme activité.
+// Config (variables du Worker) :
+//  - SUPABASE_URL  (optionnel, défaut = projet du Portail)
+//  - SUPABASE_ANON (clé publiable/anon — publique par nature ; requise pour un
+//                   ping fiable)
+async function keepAliveSupabase(env) {
+  const url = (env.SUPABASE_URL || "https://zmeicqjkylxdaldiovxg.supabase.co").replace(/\/+$/, "");
+  const key = env.SUPABASE_ANON;
+  if (!key) {
+    console.warn("[keepalive] SUPABASE_ANON absente — ping ignoré (ajouter la clé publiable en variable du Worker).");
+    return;
+  }
+  try {
+    const r = await fetch(url + "/rest/v1/", {
+      headers: { apikey: key, Authorization: "Bearer " + key },
+    });
+    console.log("[keepalive] Supabase", url, "->", r.status);
+  } catch (e) {
+    console.error("[keepalive] échec du ping Supabase :", e && e.message);
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -118,5 +142,10 @@ export default {
     // Filet de sécurité : si le routage envoie autre chose ici, on sert l'asset.
     if (env.ASSETS) return env.ASSETS.fetch(request);
     return new Response("Not found", { status: 404 });
+  },
+
+  // Tâche planifiée (Cron) : réveille Supabase pour éviter la pause.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(keepAliveSupabase(env));
   },
 };
