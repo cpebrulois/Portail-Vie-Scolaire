@@ -376,7 +376,9 @@
     var score=0;
     var bag=meta.search||'';
     score+=overlapScore(bag,queryTokens,8);
-    if(meta.file===currentFileName())score+=20;
+    score+=overlapScore(norm(meta.title||''),queryTokens,14);
+    if(/^(index|hub_)/i.test(meta.file||''))score-=8;
+    if(meta.file===currentFileName())score+=8;
     if((CFG.focusFiles||[]).indexOf(meta.file)!==-1)score+=22;
     (CFG.focusTags||[]).forEach(function(tag){
       if((meta.tags||[]).indexOf(tag)!==-1)score+=12;
@@ -412,13 +414,16 @@
       score+=overlapScore(doc.search||'',queryTokens,5);
       return {doc:doc,score:score};
     }).sort(function(a,b){return b.score-a.score;});
-    var docs=scored.filter(function(item){return item.score>0 && item.doc && item.doc.text;}).slice(0,6).map(function(item,idx){
+    var picked=scored.filter(function(item){return item.score>0 && item.doc && item.doc.text;}).slice(0,6);
+    var fullIdx=0;
+    for(var fi=0; fi<picked.length; fi++){ var pf=picked[fi].doc; if(pf && pf.file && !/^(index|hub_)/i.test(pf.file) && pf.id!=='__current__'){ fullIdx=fi; break; } }
+    var docs=picked.map(function(item,idx){
       return {
         title:item.doc.title,
         file:item.doc.file,
         pillar:item.doc.pillar,
         tags:item.doc.tags||[],
-        snippets:(idx===0 && item.doc.text ? [toLines(item.doc.text,7000)] : bestBlocks(item.doc,queryTokens,2))
+        snippets:(idx===fullIdx && item.doc.text ? [toLines(item.doc.text,7000)] : bestBlocks(item.doc,queryTokens,2))
       };
     });
     return docs;
