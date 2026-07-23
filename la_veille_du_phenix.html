@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Veille du Phénix — Livre-jeu · L'Ordre des Veilleurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--rouge:#8b2a2a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.12em;line-height:1.9;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(201,168,76,.4),transparent),radial-gradient(1px 1px at 70% 15%,rgba(201,168,76,.3),transparent),radial-gradient(1px 1px at 45% 80%,rgba(201,168,76,.2),transparent),radial-gradient(1px 1px at 85% 60%,rgba(201,168,76,.35),transparent)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+/* LOCK XP */
+.lock-screen{position:fixed;inset:0;background:rgba(8,6,4,.96);z-index:999;display:none;align-items:center;justify-content:center;text-align:center;padding:20px}
+.lock-box{max-width:490px;padding:44px 40px;background:var(--p1);border:1px solid rgba(201,168,76,.25);border-radius:12px}
+.lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.lock-title{font-family:'Cinzel',serif;font-size:1.05em;color:var(--or2);margin-bottom:12px;letter-spacing:2px}
+.lock-txt{font-style:italic;color:var(--enc2);font-size:.88em;line-height:1.75;margin-bottom:18px}
+.lock-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin:18px 0 10px}
+.lock-fill{height:100%;background:linear-gradient(90deg,var(--rouge),var(--or));border-radius:4px;transition:width .6s ease}
+.lock-xp{font-family:'Cinzel',serif;font-size:.72em;color:var(--or);letter-spacing:2px;margin-bottom:18px}
+.lock-code-wrap{display:flex;gap:8px;margin-top:6px;justify-content:center}
+.lock-input{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc);padding:8px 12px;font-family:'Cinzel',serif;font-size:.82em;letter-spacing:2px;width:150px;text-align:center;outline:none}
+.lock-input:focus{border-color:var(--or)}
+.lock-btn{padding:8px 18px;background:rgba(201,168,76,.12);border:1px solid var(--or);border-radius:4px;color:var(--or2);font-family:'Cinzel',serif;font-size:.76em;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.lock-btn:hover{background:rgba(201,168,76,.25)}
+.lock-error{color:#c08070;font-size:.8em;margin-top:8px;font-style:italic;height:18px}
+/* MAIN */
+.manuscript{max-width:720px;margin:0 auto;padding:34px 24px 80px;position:relative;z-index:1}
+.chapter-header{text-align:center;margin-bottom:30px;padding-bottom:26px;border-bottom:1px solid rgba(201,168,76,.28)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:14px;opacity:.85}
+.badge-event{display:inline-block;background:linear-gradient(135deg,rgba(139,42,42,.55),rgba(42,42,139,.35));border:1px solid var(--or);border-radius:4px;padding:4px 14px;font-family:'Cinzel',serif;font-size:.62em;letter-spacing:2px;color:var(--or2);margin-bottom:20px}
+h1.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.7em,5vw,2.4em);color:var(--or2);line-height:1.25;margin-bottom:10px;text-shadow:0 0 40px rgba(201,168,76,.25)}
+.chapter-subtitle{font-style:italic;color:var(--enc2);font-size:.9em;opacity:.75}
+/* INVENTAIRE */
+.inv-bar{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px 8px;margin:0 -8px 22px;background:rgba(13,11,8,.92);backdrop-filter:blur(4px);border-bottom:1px solid rgba(201,168,76,.14)}
+.inv-item{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:1px;padding:5px 11px;border-radius:16px;border:1px solid rgba(201,168,76,.14);color:var(--enc2);opacity:.4;transition:all .35s}
+.inv-item.has{opacity:1;color:var(--or2);border-color:var(--or);background:rgba(201,168,76,.1);box-shadow:0 0 12px rgba(201,168,76,.2)}
+.progress-track{height:2px;background:rgba(255,255,255,.06);margin-bottom:34px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--rouge),var(--or));transition:width .6s ease}
+.scene{display:none}.scene.active{display:block;animation:fadeUp .55s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+p{margin-bottom:1.4em;text-align:justify;text-indent:1.5em}
+p.ni{text-indent:0}
+.drop-cap::first-letter{font-family:'Cinzel',serif;font-size:4.5em;font-weight:600;color:var(--or);float:left;line-height:.75;margin:8px 8px 0 0;text-shadow:0 0 20px rgba(201,168,76,.45)}
+em{font-style:italic;color:var(--enc2)}
+.dialogue{margin:1.6em 0;padding:0 0 0 24px;border-left:2px solid rgba(201,168,76,.25);text-indent:0;font-style:italic;color:var(--enc2)}
+.scene-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:4px;padding:16px 20px;margin:1.6em 0;font-style:italic;color:var(--enc2);text-indent:0}
+.scene-block::before{content:'⬡ ';color:var(--or);font-style:normal;opacity:.55}
+.separator{text-align:center;margin:2.2em 0;color:var(--or);font-size:1em;opacity:.45;letter-spacing:8px}
+.scene-num{font-family:'Cinzel',serif;font-size:.64em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase;margin-bottom:5px}
+.scene-title{font-family:'Cinzel',serif;font-size:1.05em;color:var(--or2);margin-bottom:22px}
+.choice-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:3px;color:var(--or);opacity:.72;text-transform:uppercase;margin:2.2em 0 .9em;display:block}
+.choice-btn{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:5px;color:var(--enc);padding:16px 22px;margin:9px 0;cursor:pointer;transition:all .2s;font-family:'Crimson Text',Georgia,serif;font-size:1em;line-height:1.6}
+.choice-btn:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.5);transform:translateX(5px)}
+.arrow{color:var(--or);margin-right:10px;font-style:normal}
+.fb{padding:14px 20px;margin:16px 0;border-radius:5px;font-style:italic;font-size:.9em;line-height:1.7;text-indent:0}
+.fb-bad{background:rgba(139,42,42,.07);border-left:3px solid #7a2a2a;color:#c09080}
+.fb-good{background:rgba(40,90,40,.07);border-left:3px solid #4a8a4a;color:#90c080}
+.fb-neutre{background:rgba(201,168,76,.05);border-left:3px solid rgba(201,168,76,.3);color:var(--enc2)}
+.reward-block{margin:34px 0 20px;padding:24px;background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(42,42,139,.06));border:1px solid var(--or);border-radius:10px;text-align:center;animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.15)}50%{box-shadow:0 0 26px rgba(201,168,76,.42)}}
+.reward-icon{font-size:2.4em;display:block;margin-bottom:10px}
+.reward-name{font-family:'Cinzel Decorative',serif;font-size:1.05em;color:var(--or2);margin-bottom:6px;letter-spacing:1px}
+.reward-desc{font-size:.85em;color:var(--enc2);opacity:.78;font-style:italic;line-height:1.65;text-indent:0}
+/* FINS */
+.ending{margin:22px 0 8px;padding:30px 26px;border-radius:12px;text-align:center}
+.ending-good{background:linear-gradient(135deg,rgba(40,90,40,.1),rgba(201,168,76,.07));border:1px solid var(--or)}
+.ending-bad{background:rgba(139,42,42,.08);border:1px solid rgba(139,42,42,.5)}
+.ending-secret{background:linear-gradient(135deg,rgba(139,42,42,.14),rgba(201,168,76,.12));border:1px solid var(--or2);box-shadow:0 0 30px rgba(201,168,76,.25)}
+.ending-kicker{font-family:'Cinzel',serif;font-size:.64em;letter-spacing:3px;text-transform:uppercase;color:var(--enc2);opacity:.7;margin-bottom:8px}
+.ending-name{font-family:'Cinzel Decorative',serif;font-size:1.5em;color:var(--or2);line-height:1.2;margin-bottom:6px}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);padding:5px 14px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:14px}
+.author-note{margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,.18);font-size:.83em;color:var(--enc2);opacity:.66;font-style:italic;text-indent:0;line-height:1.75}
+.nav-top{display:flex;gap:10px;margin-bottom:26px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.22);border-radius:4px;color:var(--enc2);font-size:.73em;text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.nav-footer{text-align:center;margin-top:34px;padding-top:20px;border-top:1px solid rgba(201,168,76,.15);display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.xp-flash{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:900;background:linear-gradient(135deg,#3a2e0e,#5a4a1a);border:1px solid var(--or);color:var(--or2);padding:10px 22px;border-radius:24px;font-family:'Cinzel',serif;font-size:.78em;letter-spacing:1px;display:none;box-shadow:0 6px 30px rgba(0,0,0,.5)}
+@media(max-width:600px){.manuscript{padding:22px 16px 60px}h1.chapter-title{font-size:1.7em}body{font-size:1.05em}.inv-item{font-size:.56em;padding:4px 8px}}
+</style>
+</head>
+<body>
+
+<!-- MUR XP / RANG -->
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-box">
+    <span class="lock-icon">🌅</span>
+    <div class="lock-title">La Veille du Phénix · Verrouillé</div>
+    <p class="lock-txt">Ce livre-jeu clôt le <strong>cycle des Veilleurs de Valdurne</strong>. Il s'ouvre au rang <strong>Veilleur</strong> — le dernier grade — à <strong>19 500 XP</strong>. Continue à participer, à témoigner, à compléter des modules dans toutes les rubriques.</p>
+    <div class="lock-bar"><div class="lock-fill" id="lockFill" style="width:0%"></div></div>
+    <p class="lock-xp"><span id="curXp">0</span> / 19 500 XP</p>
+    <p class="lock-txt" style="font-size:.8em;opacity:.6;margin-bottom:6px">Code d'accès (prof / administration) :</p>
+    <div class="lock-code-wrap">
+      <input class="lock-input" id="codeInput" type="text" placeholder="CODE" maxlength="14" autocomplete="off">
+      <button class="lock-btn" onclick="tryCode()">Entrer</button>
+    </div>
+    <div class="lock-error" id="lockError"></div>
+    <div style="margin-top:16px"><a href="hub_narration.html" class="bk">← Bibliothèque</a></div>
+  </div>
+</div>
+
+<div class="xp-flash" id="xpFlash">⚡ Veille tenue — XP crédités</div>
+
+<div class="manuscript" id="mainContent" style="display:none">
+
+  <div class="nav-top">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <a class="bk" href="roman4_ch10.html">Chapitre X</a>
+    <span class="bk" style="opacity:.4;pointer-events:none;cursor:default">Livre-jeu · Tome IV</span>
+  </div>
+
+  <div class="chapter-header">
+    <div class="chapter-label">L'Ordre des Veilleurs &nbsp;·&nbsp; Partie II</div>
+    <div class="badge-event">✦ Un livre dont tu es le héros — la fin du cycle ✦</div>
+    <h1 class="chapter-title">La Veille du Phénix</h1>
+    <p class="chapter-subtitle">Tu es Lyam, seul à la brèche, la nuit du solstice.<br>Ce que tu décides cette nuit-là clôt le cycle.</p>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="inv-bar" id="invBar"></div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:2%"></div></div>
+
+  <!-- S0 · RÈGLES -->
+  <div class="scene active" id="s0">
+    <div class="scene-num">Avant de commencer</div>
+    <div class="scene-title">La Règle du Jeu</div>
+    <p class="ni">Ceci est <em>un livre dont tu es le héros</em>. À chaque étape, tu choisis — et tes choix décident de la fin que tu atteindras.</p>
+    <p class="ni">Au fil de la nuit, tu pourras raviver <strong>trois braises</strong>. Elles apparaîtront en haut de l'écran :</p>
+    <div class="scene-block">🕯️ <strong>la Braise du Doute</strong> — garder la question vivante plutôt que la certitude.<br>📜 <strong>la Braise du Nom</strong> — se souvenir qu'un nom, c'est une personne.<br>🤝 <strong>la Braise de la Main</strong> — récupérer le solitaire plutôt que le sacrifier.</div>
+    <p class="ni"><strong>Quatre fins</strong> t'attendent — dont une que l'on ne trouve qu'en tenant la veille jusqu'à l'aube, les trois braises ravivées.</p>
+    <span class="choice-label">Es-tu prêt ?</span>
+    <button class="choice-btn" onclick="go('s1',6)"><span class="arrow">▶</span>Commencer l'histoire.</button>
+  </div>
+
+  <!-- S1 -->
+  <div class="scene" id="s1">
+    <div class="scene-num">§ 1</div><div class="scene-title">L'Offre à la Brèche</div>
+    <p class="drop-cap ni">La nuit du solstice est tombée sur Valdurne, et tu veilles seul devant la Trame déchirée. C'est là que le Veilleur des Cendres te trouve. Il ne vient pas en ennemi. Il pose sur la pierre, près de toi, une aiguille et un fil — et un seul mot, écrit sur un papier plié.</p>
+    <div class="dialogue">— Un fil. Un nom. Et demain, il n'y a plus de conseil, plus d'épreuve, plus de division. Tu recouds la Trame de tes mains, on retranche cette seule personne — que personne ne regrettera, je te le promets — et Valdurne dort en paix pour cent ans. Tu as jusqu'à l'aube pour dire oui.</div>
+    <p><em>Tu as jusqu'à l'aube.</em></p>
+    <span class="choice-label">Que fais-tu ?</span>
+    <button class="choice-btn" onclick="go('s2',15)"><span class="arrow">▶</span>Examiner vraiment ce qu'on te demande, avant de décider.</button>
+    <button class="choice-btn" onclick="go('s3',20)"><span class="arrow">▶</span>Refuser tout de suite, à voix haute, et le chasser.</button>
+    <button class="choice-btn" onclick="go('s4',20)"><span class="arrow">▶</span>Demander qui est ce nom qu'on te propose de sacrifier.</button>
+  </div>
+
+  <!-- S2 -->
+  <div class="scene" id="s2">
+    <div class="scene-num">§ 2</div><div class="scene-title">Où porter la Lanterne</div>
+    <p class="drop-cap ni">Tu ne veux pas décider dans le noir, ni par principe ni par fatigue. Tu veux voir avant de choisir. Mais voir, la nuit du solstice, ça commence par choisir où l'on porte sa lanterne.</p>
+    <span class="choice-label">Où regardes-tu ?</span>
+    <button class="choice-btn" onclick="go('s5',30)"><span class="arrow">▶</span>Aller lire le Mémorial des noms, tout autour de la Trame.</button>
+    <button class="choice-btn" onclick="go('s6',25)"><span class="arrow">▶</span>Aller trouver celle qu'on veut sacrifier.</button>
+    <button class="choice-btn" onclick="go('s13',100)"><span class="arrow">▶</span>Ce n'est pas à toi seul de décider ; attendre le conseil de demain.</button>
+  </div>
+
+  <!-- S3 -->
+  <div class="scene" id="s3">
+    <div class="scene-num">§ 3</div><div class="scene-title">La Conscience Nette, les Mains Vides</div>
+    <p class="drop-cap ni">Tu te lèves et tu chasses le Veilleur des Cendres, à voix haute, avec toute la colère que tu as. Il s'en va sans insister — il est patient, il l'a toujours été.</p>
+    <p>Mais en le regardant partir, tu comprends une chose désagréable : tu as refusé par principe, sans avoir seulement regardé ce qu'il proposait, ni qui il voulait sacrifier.</p>
+    <div class="fb fb-bad">Tu as la conscience nette et les mains vides. Et pendant que tu te sentais juste, personne n'est allé chercher celle qu'on va retrancher demain. Refuser, ce n'est pas tenir la veille — c'est seulement s'en laver.</div>
+    <button class="choice-btn" onclick="go('s12',100)"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S4 -->
+  <div class="scene" id="s4">
+    <div class="scene-num">§ 4</div><div class="scene-title">Le Nom sur le Papier</div>
+    <p class="drop-cap ni">Tu déplies le papier. Un nom : Lise. Une première année, du bout du royaume, arrivée seule cet automne. Tu la connais à peine — comme tout le monde.</p>
+    <div class="dialogue">— Tu vois, dit le Veilleur des Cendres. Personne ne la défendra. C'est le sacrifice le moins coûteux qui soit.</div>
+    <p>Mais en lisant ce nom, quelque chose se retourne en toi. Ce n'est pas un coût. C'est une petite qui mange seule, que tu as croisée sans la voir. <em>Un nom, ce n'est jamais un prix : c'est quelqu'un.</em></p>
+    <div class="reward-block">
+      <span class="reward-icon">📜</span>
+      <div class="reward-name">La Braise du Nom</div>
+      <p class="reward-desc">Se souvenir qu'un nom, c'est une personne. On n'efface pas un coût — on efface quelqu'un.</p>
+    </div>
+    <button class="choice-btn" onclick="go('s7',40)"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S5 -->
+  <div class="scene" id="s5">
+    <div class="scene-num">§ 5</div><div class="scene-title">Ce que la Couture a déjà Coûté</div>
+    <p class="drop-cap ni">Tu portes ta lanterne le long des centaines de bandes grises suspendues autour de la Trame — le Mémorial des Retranchés, tous les noms que Valdurne a effacés en cent ans. Et tu comprends, en les lisant, ce que le Veilleur des Cendres ne dit pas.</p>
+    <p>Chacun de ces noms fut, un jour, <em>« le sacrifice le moins coûteux »</em>. Chacun fut <em>« celui que personne ne regretterait »</em>. On les a retranchés un par un, toujours pour la paix, toujours pour une bonne raison. La couture qu'on te propose cette nuit a déjà été faite cent fois. Elle ne tient jamais.</p>
+    <span class="choice-label">Que fais-tu de ce que tu vois ?</span>
+    <button class="choice-btn" onclick="go('s8',45)"><span class="arrow">▶</span>Suivre cette vérité jusqu'au bout.</button>
+    <button class="choice-btn" onclick="go('s12',100)"><span class="arrow">▶</span>Tu en sais assez : prendre le fil et sceller, comme les autres avant toi.</button>
+  </div>
+
+  <!-- S6 -->
+  <div class="scene" id="s6">
+    <div class="scene-num">§ 6</div><div class="scene-title">Celle qui ne Dort pas</div>
+    <p class="drop-cap ni">Tu trouves Lise dans un couloir froid, éveillée, seule, adossée au mur. Elle ne dort pas — les solitaires dorment mal. Elle ne te demande rien ; elle a déjà cette immobilité de ceux qui ont cessé d'attendre qu'on vienne.</p>
+    <p>En repartant, ta lanterne éclaire un instant la Trame déchirée, et derrière la déchirure, sur le mur, un vieux dessin affleure : un phénix, ailes déployées, dans son cercle de flammes. Tu ne l'avais jamais vu si nettement.</p>
+    <div class="fb fb-neutre">Souviens-t'en. Ce signe pourrait bien décider de l'aube.</div>
+    <span class="choice-label">Où vas-tu maintenant ?</span>
+    <button class="choice-btn" onclick="go('s5',30)"><span class="arrow">▶</span>Aller lire le Mémorial des noms.</button>
+    <button class="choice-btn" onclick="go('s3',20)"><span class="arrow">▶</span>Aller chasser le Veilleur des Cendres tout de suite.</button>
+  </div>
+
+  <!-- S7 -->
+  <div class="scene" id="s7">
+    <div class="scene-num">§ 7</div><div class="scene-title">Un Nom n'est pas un Prix</div>
+    <p class="drop-cap ni">Le nom n'est plus un prix, pour toi : c'est une personne. C'est déjà beaucoup. Mais savoir qui l'on refuse de sacrifier ne suffit pas — il te faut comprendre pourquoi la couture qu'on te propose est un piège, et pour cela, il faut avoir regardé la longue liste de ceux qu'on a scellés avant.</p>
+    <div class="fb fb-neutre" id="fb7"></div>
+    <button class="choice-btn" onclick="cont7()"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S8 -->
+  <div class="scene" id="s8">
+    <div class="scene-num">§ 8</div><div class="scene-title">La Certitude qui se Défait</div>
+    <p class="drop-cap ni">Tu suis la vérité jusqu'au bout, cette nuit-là, en relisant les noms un par un. Et la certitude qu'on t'offre se défait entre tes doigts : recoudre la Trame par-dessus le mot <em>sans</em>, sacrifier une solitaire pour la paix, ce n'est pas guérir Valdurne — c'est répéter, une fois de plus, le geste qui a rempli ce Mémorial.</p>
+    <p>La paix scellée sur un nom effacé n'est pas la paix. C'est un silence de plus.</p>
+    <div class="reward-block">
+      <span class="reward-icon">🕯️</span>
+      <div class="reward-name">La Braise du Doute</div>
+      <p class="reward-desc">Garder la question vivante plutôt que la certitude. La certitude qu'on t'offre a déjà rempli un mémorial.</p>
+    </div>
+    <div class="fb fb-neutre" id="fb8"></div>
+    <button class="choice-btn" onclick="cont8()"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S9 -->
+  <div class="scene" id="s9">
+    <div class="scene-num">§ 9</div><div class="scene-title">L'Aiguille sur la Pierre</div>
+    <p class="drop-cap ni">L'aube approche. L'aiguille et le fil sont toujours là, sur la pierre, à portée de main. Il te suffirait de les prendre. Un fil, un nom, et la longue nuit finit.</p>
+    <p>Reste à choisir ce que tu fais de tes mains.</p>
+    <span class="choice-label">Que décides-tu ?</span>
+    <button class="choice-btn" onclick="go('s12',100)"><span class="arrow">▶</span>Prendre le fil, recoudre la Trame, et livrer le nom. La paix, cette nuit.</button>
+    <button class="choice-btn" onclick="go('s10',75)"><span class="arrow">▶</span>Refuser le fil, garder la brèche ouverte, et aller récupérer Lise avant qu'on ne la prenne.</button>
+  </div>
+
+  <!-- S10 -->
+  <div class="scene" id="s10">
+    <div class="scene-num">§ 10</div><div class="scene-title">S'asseoir à Côté</div>
+    <p class="drop-cap ni">Tu ne prends pas l'aiguille. Tu la laisses sur la pierre, où elle brille en vain. Puis tu vas trouver Lise, dans son couloir froid, et tu fais la chose la plus simple et la plus difficile : tu t'assieds à côté d'elle, et tu lui dis qu'à partir de cette nuit, elle n'est plus seule — qu'il y a, à Valdurne, une garde qui va chercher ceux que personne ne va chercher, et qu'elle en est, si elle veut.</p>
+    <p>Tu n'as pas recousu la Trame. Tu n'as pas livré de nom. Au lieu de retrancher une solitaire pour sceller la paix, tu as récupéré la solitaire et laissé la plaie ouverte. C'est plus lent. C'est plus dur. <em>C'est la veille.</em></p>
+    <div class="reward-block">
+      <span class="reward-icon">🤝</span>
+      <div class="reward-name">La Braise de la Main</div>
+      <p class="reward-desc">Récupérer le solitaire plutôt que le sacrifier. On ne vide pas les Forges Vives en les combattant : on leur reprend ceux qu'elles allaient prendre.</p>
+    </div>
+    <div class="fb fb-neutre" id="fb10"></div>
+    <button class="choice-btn" onclick="cont10()"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S11 -->
+  <div class="scene" id="s11">
+    <div class="scene-num">§ 11</div><div class="scene-title">La Main sur le Phénix</div>
+    <p class="drop-cap ni">Avant l'aube, tu retournes seul à la brèche, et tu écartes le pan déchiré de la Trame. Le vieux phénix des Fondateurs est là, dans son cercle de flammes — le signe que les Forges Vives ont volé et retourné, le feu qui purge à la place du feu qui renaît. Tu poses la main dessus.</p>
+    <p>Et à cet instant précis, la nuit la plus longue de l'année cède. Le premier soleil du solstice se lève sur la vallée, bas et rouge, et sa lumière entre par les hautes fenêtres, traverse le préau, et passe par la déchirure — par la place même du mot <em>sans</em>. Elle vient embraser le vieux phénix. Non le feu qui détruit : le feu qui éclaire. Il n'est visible que parce que tu as refusé de refermer la plaie. Une couture l'aurait tenu dans le noir pour cent ans de plus.</p>
+    <button class="choice-btn" onclick="go('s15',100)"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S12 · FIN -->
+  <div class="scene" id="s12">
+    <div class="scene-num">§ 12 · Fin</div><div class="scene-title">Ce qu'on Scelle</div>
+    <p class="drop-cap ni">Tu prends l'aiguille. Tu recouds la Trame, point par point, par-dessus le trou, par-dessus le mot <em>sans</em>. Au matin, la phrase est de nouveau entière, et un nom a disparu des listes de Valdurne — proprement, sans bruit. L'école dort en paix. On te remercie.</p>
+    <p>Et pourtant, chaque fois que tu passes devant la Trame recousue, tu sens que quelque chose manque derrière le fil neuf : une lumière qu'on ne verra plus, parce qu'on a scellé la brèche par laquelle elle entrait.</p>
+    <div class="ending ending-bad">
+      <div class="ending-kicker">Fin atteinte</div>
+      <div class="ending-name">La Couture Scellée</div>
+    </div>
+    <div class="nav-footer">
+      <button class="bk" onclick="restart()">↻ Reprendre l'histoire</button>
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+
+  <!-- S13 · FIN -->
+  <div class="scene" id="s13">
+    <div class="scene-num">§ 13 · Fin</div><div class="scene-title">La Nuit qu'on Laisse Passer</div>
+    <p class="drop-cap ni">Tu décides que ce n'est pas à toi seul de trancher ; tu attendras le conseil de demain. Tu rentres dormir. Mais le Veilleur des Cendres, lui, n'attend pas les conseils : c'est même son seul talent, agir dans la nuit que les autres passent à hésiter.</p>
+    <p>Au matin, Lise a disparu — partie, dit-on, de son plein gré. Personne ne l'a retenue. Personne n'est allé la chercher. Et la vérité, arrivée après la nuit perdue, ne sert plus qu'à donner mauvaise conscience.</p>
+    <div class="ending ending-bad">
+      <div class="ending-kicker">Fin atteinte</div>
+      <div class="ending-name">La Nuit Perdue</div>
+    </div>
+    <div class="nav-footer">
+      <button class="bk" onclick="restart()">↻ Reprendre l'histoire</button>
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+
+  <!-- S14 · FIN -->
+  <div class="scene" id="s14">
+    <div class="scene-num">§ 14 · Fin</div><div class="scene-title">La Plaie qu'on Garde comme une Porte</div>
+    <p class="drop-cap ni">L'aube se leva sur une Valdurne toujours divisée, toujours incertaine — et toujours vivante. Tu n'avais pas recousu la Trame. Tu n'avais livré aucun nom. Tu avais tenu la veille jusqu'au bout : douter de la certitude qu'on t'offrait, te souvenir qu'un nom est une personne, récupérer la solitaire au lieu de la sacrifier.</p>
+    <p>Lise n'était plus seule. La plaie restait ouverte, et par elle, un peu d'air froid continuait d'entrer — comme une porte.</p>
+    <div class="ending ending-good">
+      <div class="ending-kicker">Fin atteinte — l'une des plus belles</div>
+      <div class="ending-name">La Veille Tenue</div>
+      <p class="reward-desc" style="margin-top:8px">Il en existe une autre encore, cachée, que l'on ne trouve qu'avec les trois braises — et l'œil qui a su regarder derrière la Trame avant l'aube.</p>
+      <div class="xp-badge">⚡ +50 XP — Veille tenue</div>
+    </div>
+    <p class="author-note">Tenir la veille, ce n'est pas gagner une fois : c'est refuser, chaque nuit, de refermer la porte — quitte à passer pour faible aux yeux de ceux qui veulent dormir.</p>
+    <div class="nav-footer">
+      <button class="bk" onclick="restart()">↻ Chercher la fin cachée</button>
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+
+  <!-- S15 · FIN CACHÉE -->
+  <div class="scene" id="s15">
+    <div class="scene-num">§ 15 · Fin cachée</div><div class="scene-title">Le Phénix Repris</div>
+    <p class="drop-cap ni">Tu regardes le phénix s'allumer dans la lumière du solstice, et tu comprends enfin ce que tout le cycle t'aura appris.</p>
+    <p>Le feu qui brûle pour détruire et le feu qui brûle pour renaître ont la même couleur — et pourtant ce ne sont pas les mêmes. Les Forges Vives ont pris le phénix des Fondateurs et l'ont retourné en torche. Toi, cette nuit, en refusant de sceller la paix sur un nom effacé, en gardant la porte ouverte, en allant chercher la dernière solitaire, <em>tu le leur as repris.</em> Non par un discours. Par une nuit tenue.</p>
+    <p>La brèche ne se refermera pas. On ne la recoudra jamais. Chaque première année, désormais, on l'emmènera devant le trou du serment, on lui demandera quel mot manque, et quand elle trouvera — <em>sans</em> — on lui dira de le retenir : c'est le mot le plus fragile de Valdurne, et le plus lourd. Et chaque matin de solstice, par la déchirure qu'on a refusé de fermer, le vieux phénix se rallumera — non pour détruire, mais pour renaître — aussi longtemps que quelqu'un, quelque part, refusera de refermer la plaie par laquelle entre la lumière.</p>
+    <div class="ending ending-secret">
+      <div class="ending-kicker">✦ Fin cachée — les trois braises ravivées ✦</div>
+      <div class="ending-name">Le Phénix Repris</div>
+      <p class="reward-desc" style="margin-top:8px">C'est la fin du cycle des <strong>Veilleurs de Valdurne</strong>.</p>
+      <div class="xp-badge">⚡ +50 XP Veille &nbsp;·&nbsp; +15 XP Fin cachée</div>
+    </div>
+    <p class="author-note">Tu as trouvé la fin que la plupart ne verront pas, et qui referme le cycle : celle où le phénix cesse d'être une torche pour redevenir ce qu'il était — une promesse de renaissance, gardée ouverte par ceux qui refusent de retrancher.</p>
+    <div class="nav-footer">
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+      <button class="bk" onclick="restart()">↻ Rejouer</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};var CIT={representant_ca:{xp:500}};
+var DONE_ID='ldv_veille';var XP_REQ=19500;var cur='';
+var CODES=['VALDURNE','PHENIX2026','SOLSTICE','PROF1234'];
+// état de jeu
+var inv={doute:false,nom:false,main:false};var signe=false;
+
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((l[k]||[]).indexOf(c)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
+function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
+
+function creditXP(amount,tag){
+  if(!cur)return;var S=getS();if(!S.players||!S.players[cur])return;
+  var p=S.players[cur];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  var T='NARRATION_READ_'+tag;
+  if(S.logs.find(function(l){return l.t===T&&l.p===cur}))return; // une seule fois
+  S.logs.unshift({d:now,p:cur,t:T,target:'NARRATION',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10));
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  pending.push({id:'NARR-'+cur+'-'+tag+'-'+Date.now(),type:'NARRATION_READ',player:cur,module:'LDVELH_'+tag,xp:amount,d:now});
+  if(pending.length>700)pending=pending.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(pending));
+}
+function showFlash(msg){var f=document.getElementById('xpFlash');if(!f)return;if(msg)f.textContent=msg;f.style.display='block';setTimeout(function(){f.style.display='none'},4200);}
+
+function invItem(ic,name,has){return '<span class="inv-item'+(has?' has':'')+'">'+ic+' '+name+'</span>';}
+function renderInv(){
+  var bar=document.getElementById('invBar');if(!bar)return;
+  bar.innerHTML=invItem('🕯️','la Braise du Doute',inv.doute)+invItem('📜','la Braise du Nom',inv.nom)+invItem('🤝','la Braise de la Main',inv.main);
+}
+
+function go(id,pct){
+  // braises & drapeaux à l'entrée de certaines sections
+  if(id==='s4'){inv.nom=true;}
+  if(id==='s6'){signe=true;}
+  if(id==='s8'){inv.doute=true;}
+  if(id==='s10'){inv.main=true;}
+  // feedbacks conditionnels
+  if(id==='s7'){var e=document.getElementById('fb7');if(e)e.textContent=inv.doute?"Tu as déjà douté de la certitude qu'on t'offrait (🕯️ la Braise du Doute). Tu peux décider en sachant ce qu'une couture coûte.":"Mais tu n'as pas encore compris ce que coûte une couture. Va d'abord lire le Mémorial des noms.";}
+  if(id==='s8'){var e2=document.getElementById('fb8');if(e2)e2.textContent=inv.nom?"Tu sais qui l'on te demande de sacrifier (📜 la Braise du Nom). Le prix a un visage, désormais.":"Mais tu ne sais pas encore qui l'on veut sacrifier. Va regarder le nom qu'on te propose d'effacer.";}
+  if(id==='s10'){var e3=document.getElementById('fb10');if(e3)e3.textContent=signe?"Le vieux phénix aperçu derrière la Trame te revient. Quelque chose te dit d'y retourner avant l'aube.":"La veille est tenue. Tu attends l'aube, apaisé.";}
+  // bascule de scène
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});
+  var n=document.getElementById(id);if(n){n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  var f=document.getElementById('progressFill');if(f)f.style.width=(pct||50)+'%';
+  renderInv();
+  // fins : crédit XP (uniquement les fins où l'on tient la veille)
+  if(id==='s14'||id==='s15'){
+    markDone(DONE_ID);
+    creditXP(50,'VEILLE');
+    if(id==='s15')creditXP(15,'VEILLE_SECRET');
+    showFlash(id==='s15'?'⚡ Fin cachée — +65 XP · Fin du cycle':'⚡ Veille tenue — +50 XP');
+  }
+}
+// continuations conditionnelles (selon les braises)
+function cont7(){go(inv.doute?'s9':'s2',inv.doute?60:15);}
+function cont8(){go(inv.nom?'s9':'s4',inv.nom?60:20);}
+function cont10(){go(signe?'s11':'s14',signe?92:100);}
+function restart(){inv={doute:false,nom:false,main:false};signe=false;go('s1',6);}
+
+function tryCode(){
+  var v=(document.getElementById('codeInput').value||'').toUpperCase().trim();
+  if(CODES.indexOf(v)>=0){
+    localStorage.setItem('pvs_unlock_veille','1');
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    renderInv();
+  }else{document.getElementById('lockError').textContent='Code incorrect — demande à ton professeur.';}
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('codeInput');
+  if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter')tryCode();});
+});
+
+(function(){
+  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
+  var p=cur?getP(cur):null;
+  var xp=(p&&typeof p.xpLife==='number')?p.xpLife:xg(p);
+  var bypass=(localStorage.getItem('pvs_unlock_veille')==='1')||(getDone()['ch4_10']);
+  var rank=(p&&p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:(function(){var R=['pixhare','psc1','liberte','autres','fraternite'],Q=[0,2,4,6];function c(k){return k==='pixhare'?Object.keys((p&&p.pixhareDone)||{}).length:Math.max(0,Math.floor(Number((p&&p.cp&&p.cp[k])||0)))}var i=0;for(var j=1;j<Q.length;j++){if(R.every(function(k){return c(k)>=Q[j]}))i=j;else break}return i;})();
+  if(rank<3 && !bypass){
+    var lsr=document.getElementById('lockScreen');if(lsr)lsr.style.display='flex';
+    var _lt=document.querySelector('.lock-title');if(_lt)_lt.textContent='La Veille du Phénix · Rang Veilleur requis';
+    var _tx=document.querySelector('.lock-txt');if(_tx)_tx.innerHTML='Ce livre-jeu clôt le cycle. Atteins d’abord le rang <strong>Veilleur</strong>, le dernier grade — boucle des modules dans toutes les rubriques.';
+    var _lb=document.querySelector('.lock-bar');if(_lb)_lb.style.display='none';
+    return;
+  }
+  if(xp<XP_REQ && !bypass){
+    var ls=document.getElementById('lockScreen');ls.style.display='flex';
+    var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
+    if(fill)fill.style.width=Math.min(100,Math.round((xp/XP_REQ)*100))+'%';
+    if(xpEl)xpEl.textContent=xp;
+    return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  renderInv();
+})();
+</script>
+</body>
+</html>
