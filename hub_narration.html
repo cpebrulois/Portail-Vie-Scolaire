@@ -22,6 +22,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .hero-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.6em,4vw,2.4em);color:var(--or2);line-height:1.15;text-shadow:0 0 30px rgba(201,168,76,.15);margin-bottom:10px}
 .hero-sub{color:var(--enc2);font-style:italic;max-width:520px;margin:0 auto 18px;font-size:.95em;line-height:1.7}
 .xp-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:999px;padding:6px 18px;font-family:'Cinzel',serif;font-size:.7em;color:var(--or2);letter-spacing:1px}
+.rank-pill{display:inline-flex;align-items:center;gap:8px;margin:12px auto 0;background:linear-gradient(135deg,rgba(201,168,76,.16),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.4);border-radius:999px;padding:8px 22px;font-family:'Cinzel',serif;font-size:.78em;color:var(--or2);letter-spacing:1px}
+.rank-pill .rk-grade{opacity:.55;font-size:.85em}
+.rank-prog{margin:12px auto 0;max-width:360px}
+.rank-prog-bar{height:5px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden;margin-bottom:6px}
+.rank-prog-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));border-radius:999px;transition:width .6s ease}
+.rank-prog-txt{font-family:'Cinzel',serif;font-size:.62em;color:var(--enc2);opacity:.65;letter-spacing:1px}
 
 .lib{max-width:820px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1}
 
@@ -137,6 +143,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <h1 class="hero-title">La Bibliothèque de Valdurne</h1>
   <p class="hero-sub">Chaque livre se mérite. Chaque chapitre se gagne. L'histoire de Lyam grandit avec toi — une année de Valdurne pour chaque année de collège.</p>
   <div class="xp-pill">⚔️ <span id="nomJ">—</span> &nbsp;·&nbsp; ✨ <span id="xpJ">0</span> XP</div>
+  <div class="rank-pill" id="rankPill" style="display:none"></div>
+  <div class="rank-prog" id="rankProg" style="display:none">
+    <div class="rank-prog-bar"><div class="rank-prog-fill" id="rankProgFill" style="width:0%"></div></div>
+    <div class="rank-prog-txt" id="rankProgTxt"></div>
+  </div>
 </section>
 
 <div class="lib">
@@ -555,6 +566,24 @@ function renderLDV(p){
   });
 }
 
+// ── RANG (miroir du moteur ; repli local si p.rankData absent) ────────────────
+var RANK_RUBRIQUES=['pixhare','psc1','liberte','autres','fraternite'];
+var RANKS_H=[{label:'Page',grade:'6ᵉ'},{label:'Écuyer',grade:'5ᵉ'},{label:'Chevalier',grade:'4ᵉ'},{label:'Veilleur',grade:'3ᵉ'}];
+var RANK_REQ=[0,2,4,6];
+function rubCount(p,k){return k==='pixhare'?Object.keys((p&&p.pixhareDone)||{}).length:Math.max(0,Math.floor(Number((p&&p.cp&&p.cp[k])||0)))}
+function localRank(p){var i=0;for(var j=1;j<RANKS_H.length;j++){var ok=RANK_RUBRIQUES.every(function(k){return rubCount(p,k)>=RANK_REQ[j]});if(ok)i=j;else break}var nx=RANKS_H[i+1]||null;var d={i:i,label:RANKS_H[i].label,grade:RANKS_H[i].grade,next:nx?nx.label:null,pct:100};if(nx){var need=RANK_REQ[i+1];var sum=RANK_RUBRIQUES.reduce(function(a,k){return a+Math.min(rubCount(p,k),need)},0);d.pct=need>0?Math.round(100*sum/(need*RANK_RUBRIQUES.length)):100}return d}
+function renderRank(p){
+  var rd=(p&&p.rankData)?p.rankData:localRank(p);
+  var rp=document.getElementById('rankPill');
+  if(rp){rp.innerHTML='🛡️ Rang · <strong>'+rd.label+'</strong> <span class="rk-grade">('+rd.grade+')</span>';rp.style.display='inline-flex';}
+  var pr=document.getElementById('rankProg');
+  if(pr&&rd.next){
+    pr.style.display='block';
+    document.getElementById('rankProgFill').style.width=(rd.pct||0)+'%';
+    document.getElementById('rankProgTxt').textContent='Vers '+rd.next+' · '+(rd.pct||0)+'% (largeur sur les 5 rubriques)';
+  }
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (function(){
   var raw=localStorage.getItem(AKEY)||'';
@@ -567,6 +596,7 @@ function renderLDV(p){
   var xpEl=document.getElementById('xpJ');
   if(nomEl)nomEl.textContent=cur;
   if(xpEl)xpEl.textContent=fxp(xp);
+  renderRank(p);
   renderChapitres(xp);
   renderChapitres2(xp);
   renderFuturs(xp);
