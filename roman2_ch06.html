@@ -180,6 +180,8 @@ function showFlash(){var f=document.getElementById('xpFlash');if(!f)return;f.sty
   var p=getP(cur);
   if(!p){window.location.href='hub_narration.html';return}
   var xp=(p&&typeof p.xpLife==='number')?p.xpLife:xg(p);
+  var TOME_RANK=1,rank=(p&&p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:(function(){var R=['pixhare','psc1','liberte','autres','fraternite'],Q=[0,2,4,6];function c(k){return k==='pixhare'?Object.keys((p&&p.pixhareDone)||{}).length:Math.max(0,Math.floor(Number((p&&p.cp&&p.cp[k])||0)))}var i=0;for(var j=1;j<Q.length;j++){if(R.every(function(k){return c(k)>=Q[j]}))i=j;else break}return i;})();
+  if(rank<TOME_RANK){var _L=document.getElementById('xpLock');if(_L){_L.style.display='flex';var _lt=_L.querySelector('.xp-lock-title');if(_lt)_lt.textContent='Rang \u00c9cuyer requis';var _tx=_L.querySelector('.xp-lock-txt');if(_tx)_tx.innerHTML='Le Tome II s\u2019ouvre au rang <strong>\u00c9cuyer</strong> \u2014 compl\u00e8te des modules dans toutes les rubriques pour l\u2019obtenir.';var _b=_L.querySelector('.xp-lock-bar');if(_b)_b.style.display='none';var _c=document.getElementById('curXp');if(_c&&_c.parentNode)_c.parentNode.style.display='none';}return;}
   if(xp<XP_REQ){
     document.getElementById('xpLock').style.display='flex';
     var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');

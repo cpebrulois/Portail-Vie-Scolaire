@@ -428,6 +428,14 @@ document.addEventListener('DOMContentLoaded',function(){
   var p=cur?getP(cur):null;
   var xp=(p&&typeof p.xpLife==='number')?p.xpLife:xg(p);
   var bypass=(localStorage.getItem('pvs_unlock_braises')==='1')||(getDone()['ch2_10']);
+  var rank=(p&&p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:(function(){var R=['pixhare','psc1','liberte','autres','fraternite'],Q=[0,2,4,6];function c(k){return k==='pixhare'?Object.keys((p&&p.pixhareDone)||{}).length:Math.max(0,Math.floor(Number((p&&p.cp&&p.cp[k])||0)))}var i=0;for(var j=1;j<Q.length;j++){if(R.every(function(k){return c(k)>=Q[j]}))i=j;else break}return i;})();
+  if(rank<1 && !bypass){
+    var lsr=document.getElementById('lockScreen');if(lsr)lsr.style.display='flex';
+    var _lt=document.querySelector('.lock-title');if(_lt)_lt.textContent='Les Braises de l’Été · Rang Écuyer requis';
+    var _tx=document.querySelector('.lock-txt');if(_tx)_tx.innerHTML='Ce livre-jeu clôt le Tome II. Atteins d’abord le rang <strong>Écuyer</strong> — complète des modules dans toutes les rubriques.';
+    var _lb=document.querySelector('.lock-bar');if(_lb)_lb.style.display='none';
+    return;
+  }
   if(xp<XP_REQ && !bypass){
     var ls=document.getElementById('lockScreen');ls.style.display='flex';
     var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
