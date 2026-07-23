@@ -216,13 +216,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       <span class="book-class">Troisième année · 4e</span>
       <span class="book-xp-req" id="req-livre3">10 000 XP</span>
     </div>
-    <div class="book-locked" id="locked-livre3">
-      <span class="book-locked-icon">⚔️</span>
-      <div class="book-locked-title">L'Épreuve des Piliers</div>
-      <div class="book-locked-sub">Lyam a maintenant du pouvoir sur d'autres. La troisième année pose une seule question : que fait-on de ce qu'on a obtenu ? Et Réna approche de la fin de son propre cycle.</div>
-      <div class="book-locked-bar-wrap"><div class="book-locked-bar" id="bar-livre3" style="width:0%"></div></div>
-      <div class="book-locked-xp" id="xp-livre3">— / 5 500 XP</div>
-    </div>
+    <div class="chapters-list" id="listChapitres3"></div>
   </div>
 
   <!-- ─────────────────────────────────────────
@@ -336,11 +330,34 @@ var CHAPITRES2=[
    meta:"Partie II · Un livre dont tu es le héros — l'été de Lyam, seul, loin de la garde",xpRequired:9500},
 ];
 
+// ── CHAPITRES LIVRE III · L'Épreuve des Piliers (rang Chevalier) ──────────────
+var CHAPITRES3=[
+  {id:'ch3_01',file:'roman3_ch01.html',num:'Chap. I',icon:'🗝️',title:'Le Poids des Clefs',
+   meta:"Une charge, trois clefs · Le Centenaire annoncé",xpRequired:10000},
+  {id:'ch3_02',file:'roman3_ch02.html',num:'Chap. II',icon:'🏛️',title:'La Régente aux Mains Propres',
+   meta:"Corvel arrive · La Prompte Justice, séduisante",xpRequired:10500},
+  {id:'ch3_03',file:'roman3_ch03.html',num:'Chap. III',icon:'🪽',title:'Le Cheval à Une Aile',
+   meta:"Réna appelée vers le Pégase · Le choix s'annonce",xpRequired:11000},
+  {id:'ch3_04',file:'roman3_ch04.html',num:'Chap. IV',icon:'🕳️',title:'Ce que les Piliers Cachent',
+   meta:"La voie lente échoue vraiment · Nol",xpRequired:11500},
+  {id:'ch3_05',file:'roman3_ch05.html',num:'Chap. V',icon:'⚡',title:'La Justice Prompte',
+   meta:"Ça marche — et ça nourrit les Forges Vives",xpRequired:12000},
+  {id:'ch3_06',file:'roman3_ch06.html',num:'Chap. VI',icon:'🎗️',title:"Daran de l'Autre Côté",
+   meta:"Le ruban gris · La fracture, intime",xpRequired:12500},
+  {id:'ch3_07',file:'roman3_ch07.html',num:'Chap. VII',icon:'🛡️',title:'Tenir sans Grandir',
+   meta:"Neuf au lieu de cinquante · La retenue",xpRequired:13000},
+  {id:'ch3_08',file:'roman3_ch08.html',num:'Chap. VIII',icon:'🧵',title:'La Nuit de la Trame',
+   meta:"Mira accusée · Croire à la voie lente au pire moment",xpRequired:13500},
+  {id:'ch3_09',file:'roman3_ch09.html',num:'Chap. IX',icon:'🦅',title:"L'Épreuve des Piliers",
+   meta:"On refuse de trancher · L'Hippogriffe",xpRequired:14000},
+  {id:'ch3_10',file:'roman3_ch10.html',num:'Chap. X',icon:'🔥',title:'La Déchirure',
+   meta:"La Trame se déchire · Le phénix volé · Le passage",xpRequired:14500},
+];
+
 // ── LIVRES FUTURS ─────────────────────────────────────────────────────────────
 // Livre III : ch1 à 10 000 XP puis +500/chap → dernier à 14 500 XP
 // Livre IV : ch1 à 15 000 XP puis +500/chap → dernier à 19 500 XP
 var FUTURS=[
-  {rankReq:2,rankLabel:'Chevalier',barId:'bar-livre3',xpId:'xp-livre3',lockId:'locked-livre3',reqId:'req-livre3'},
   {rankReq:3,rankLabel:'Veilleur',barId:'bar-livre4',xpId:'xp-livre4',lockId:'locked-livre4',reqId:'req-livre4'},
 ];
 
@@ -487,6 +504,37 @@ function renderChapitres2(xp){
   }
 }
 
+function renderChapitres3(xp){
+  var done=getDone();
+  var list=document.getElementById('listChapitres3');
+  if(!list)return;
+  list.innerHTML='';
+  CHAPITRES3.forEach(function(ch){
+    var u=(CURRANK>=2)&&(xp>=ch.xpRequired);
+    var isDone=!!done[ch.id];
+    var div=document.createElement('div');
+    div.className='chapter'+(u?' unlocked':' locked')+(isDone?' done':'');
+    var right=u
+      ?'<span class="cta-read">'+(isDone?'Relire ↗':'Lire ↗')+'</span>'
+      :'<span class="lock-icon">🔒</span>';
+    var xpLbl=fxp(ch.xpRequired)+' XP';
+    div.innerHTML=
+      '<div class="chnum">'+ch.num+'<br><span style="font-size:1.5em;line-height:1">'+ch.icon+'</span></div>'+
+      '<div style="padding:12px 0"><div class="chtitle">'+ch.title+'</div><div class="chmeta">'+ch.meta+'</div></div>'+
+      '<div style="text-align:right;padding:0 4px"><div class="chxp">'+xpLbl+'</div>'+right+'</div>'+
+      (isDone?'<span class="done-tick">✓</span>':'');
+    if(u&&ch.file){
+      div.onclick=(function(f){return function(){window.location.href=f;};})(ch.file);
+    }
+    list.appendChild(div);
+  });
+  var reqEl=document.getElementById('req-livre3');
+  if(reqEl){
+    if(CURRANK>=2){reqEl.textContent='Disponible';reqEl.style.background='rgba(201,168,76,.15)';reqEl.style.color='var(--or2)';}
+    else{reqEl.textContent='Rang Chevalier';}
+  }
+}
+
 function renderFuturs(){
   FUTURS.forEach(function(l){
     var open=CURRANK>=l.rankReq;
@@ -601,6 +649,7 @@ function renderRank(p){
   renderRank(p);
   renderChapitres(xp);
   renderChapitres2(xp);
+  renderChapitres3(xp);
   renderFuturs();
   renderProgress(xp);
   renderLDV(p);
