@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Braises de l'Été — Livre-jeu · Le Serment du Griffon</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--rouge:#8b2a2a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.12em;line-height:1.9;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(201,168,76,.4),transparent),radial-gradient(1px 1px at 70% 15%,rgba(201,168,76,.3),transparent),radial-gradient(1px 1px at 45% 80%,rgba(201,168,76,.2),transparent),radial-gradient(1px 1px at 85% 60%,rgba(201,168,76,.35),transparent)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--p0)}::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px}
+/* LOCK XP */
+.lock-screen{position:fixed;inset:0;background:rgba(8,6,4,.96);z-index:999;display:none;align-items:center;justify-content:center;text-align:center;padding:20px}
+.lock-box{max-width:490px;padding:44px 40px;background:var(--p1);border:1px solid rgba(201,168,76,.25);border-radius:12px}
+.lock-icon{font-size:3em;margin-bottom:16px;display:block}
+.lock-title{font-family:'Cinzel',serif;font-size:1.05em;color:var(--or2);margin-bottom:12px;letter-spacing:2px}
+.lock-txt{font-style:italic;color:var(--enc2);font-size:.88em;line-height:1.75;margin-bottom:18px}
+.lock-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin:18px 0 10px}
+.lock-fill{height:100%;background:linear-gradient(90deg,var(--rouge),var(--or));border-radius:4px;transition:width .6s ease}
+.lock-xp{font-family:'Cinzel',serif;font-size:.72em;color:var(--or);letter-spacing:2px;margin-bottom:18px}
+.lock-code-wrap{display:flex;gap:8px;margin-top:6px;justify-content:center}
+.lock-input{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc);padding:8px 12px;font-family:'Cinzel',serif;font-size:.82em;letter-spacing:2px;width:150px;text-align:center;outline:none}
+.lock-input:focus{border-color:var(--or)}
+.lock-btn{padding:8px 18px;background:rgba(201,168,76,.12);border:1px solid var(--or);border-radius:4px;color:var(--or2);font-family:'Cinzel',serif;font-size:.76em;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.lock-btn:hover{background:rgba(201,168,76,.25)}
+.lock-error{color:#c08070;font-size:.8em;margin-top:8px;font-style:italic;height:18px}
+/* MAIN */
+.manuscript{max-width:720px;margin:0 auto;padding:34px 24px 80px;position:relative;z-index:1}
+.chapter-header{text-align:center;margin-bottom:30px;padding-bottom:26px;border-bottom:1px solid rgba(201,168,76,.28)}
+.chapter-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:14px;opacity:.85}
+.badge-event{display:inline-block;background:linear-gradient(135deg,rgba(139,42,42,.55),rgba(42,42,139,.35));border:1px solid var(--or);border-radius:4px;padding:4px 14px;font-family:'Cinzel',serif;font-size:.62em;letter-spacing:2px;color:var(--or2);margin-bottom:20px}
+h1.chapter-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.7em,5vw,2.4em);color:var(--or2);line-height:1.25;margin-bottom:10px;text-shadow:0 0 40px rgba(201,168,76,.25)}
+.chapter-subtitle{font-style:italic;color:var(--enc2);font-size:.9em;opacity:.75}
+/* INVENTAIRE */
+.inv-bar{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px 8px;margin:0 -8px 22px;background:rgba(13,11,8,.92);backdrop-filter:blur(4px);border-bottom:1px solid rgba(201,168,76,.14)}
+.inv-item{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:1px;padding:5px 11px;border-radius:16px;border:1px solid rgba(201,168,76,.14);color:var(--enc2);opacity:.4;transition:all .35s}
+.inv-item.has{opacity:1;color:var(--or2);border-color:var(--or);background:rgba(201,168,76,.1);box-shadow:0 0 12px rgba(201,168,76,.2)}
+.progress-track{height:2px;background:rgba(255,255,255,.06);margin-bottom:34px;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--rouge),var(--or));transition:width .6s ease}
+.scene{display:none}.scene.active{display:block;animation:fadeUp .55s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+p{margin-bottom:1.4em;text-align:justify;text-indent:1.5em}
+p.ni{text-indent:0}
+.drop-cap::first-letter{font-family:'Cinzel',serif;font-size:4.5em;font-weight:600;color:var(--or);float:left;line-height:.75;margin:8px 8px 0 0;text-shadow:0 0 20px rgba(201,168,76,.45)}
+em{font-style:italic;color:var(--enc2)}
+.dialogue{margin:1.6em 0;padding:0 0 0 24px;border-left:2px solid rgba(201,168,76,.25);text-indent:0;font-style:italic;color:var(--enc2)}
+.scene-block{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:4px;padding:16px 20px;margin:1.6em 0;font-style:italic;color:var(--enc2);text-indent:0}
+.scene-block::before{content:'⬡ ';color:var(--or);font-style:normal;opacity:.55}
+.separator{text-align:center;margin:2.2em 0;color:var(--or);font-size:1em;opacity:.45;letter-spacing:8px}
+.scene-num{font-family:'Cinzel',serif;font-size:.64em;letter-spacing:3px;color:var(--or);opacity:.65;text-transform:uppercase;margin-bottom:5px}
+.scene-title{font-family:'Cinzel',serif;font-size:1.05em;color:var(--or2);margin-bottom:22px}
+.choice-label{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:3px;color:var(--or);opacity:.72;text-transform:uppercase;margin:2.2em 0 .9em;display:block}
+.choice-btn{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:5px;color:var(--enc);padding:16px 22px;margin:9px 0;cursor:pointer;transition:all .2s;font-family:'Crimson Text',Georgia,serif;font-size:1em;line-height:1.6}
+.choice-btn:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.5);transform:translateX(5px)}
+.arrow{color:var(--or);margin-right:10px;font-style:normal}
+.fb{padding:14px 20px;margin:16px 0;border-radius:5px;font-style:italic;font-size:.9em;line-height:1.7;text-indent:0}
+.fb-bad{background:rgba(139,42,42,.07);border-left:3px solid #7a2a2a;color:#c09080}
+.fb-good{background:rgba(40,90,40,.07);border-left:3px solid #4a8a4a;color:#90c080}
+.fb-neutre{background:rgba(201,168,76,.05);border-left:3px solid rgba(201,168,76,.3);color:var(--enc2)}
+.reward-block{margin:34px 0 20px;padding:24px;background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(42,42,139,.06));border:1px solid var(--or);border-radius:10px;text-align:center;animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.15)}50%{box-shadow:0 0 26px rgba(201,168,76,.42)}}
+.reward-icon{font-size:2.4em;display:block;margin-bottom:10px}
+.reward-name{font-family:'Cinzel Decorative',serif;font-size:1.05em;color:var(--or2);margin-bottom:6px;letter-spacing:1px}
+.reward-desc{font-size:.85em;color:var(--enc2);opacity:.78;font-style:italic;line-height:1.65;text-indent:0}
+/* FINS */
+.ending{margin:22px 0 8px;padding:30px 26px;border-radius:12px;text-align:center}
+.ending-good{background:linear-gradient(135deg,rgba(40,90,40,.1),rgba(201,168,76,.07));border:1px solid var(--or)}
+.ending-bad{background:rgba(139,42,42,.08);border:1px solid rgba(139,42,42,.5)}
+.ending-secret{background:linear-gradient(135deg,rgba(139,42,42,.14),rgba(201,168,76,.12));border:1px solid var(--or2);box-shadow:0 0 30px rgba(201,168,76,.25)}
+.ending-kicker{font-family:'Cinzel',serif;font-size:.64em;letter-spacing:3px;text-transform:uppercase;color:var(--enc2);opacity:.7;margin-bottom:8px}
+.ending-name{font-family:'Cinzel Decorative',serif;font-size:1.5em;color:var(--or2);line-height:1.2;margin-bottom:6px}
+.xp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);padding:5px 14px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:14px}
+.author-note{margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,.18);font-size:.83em;color:var(--enc2);opacity:.66;font-style:italic;text-indent:0;line-height:1.75}
+.nav-top{display:flex;gap:10px;margin-bottom:26px;flex-wrap:wrap}
+.bk{padding:7px 14px;background:transparent;border:1px solid rgba(201,168,76,.22);border-radius:4px;color:var(--enc2);font-size:.73em;text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block}
+.bk:hover{border-color:var(--or);color:var(--or)}
+.nav-footer{text-align:center;margin-top:34px;padding-top:20px;border-top:1px solid rgba(201,168,76,.15);display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.xp-flash{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:900;background:linear-gradient(135deg,#3a2e0e,#5a4a1a);border:1px solid var(--or);color:var(--or2);padding:10px 22px;border-radius:24px;font-family:'Cinzel',serif;font-size:.78em;letter-spacing:1px;display:none;box-shadow:0 6px 30px rgba(0,0,0,.5)}
+@media(max-width:600px){.manuscript{padding:22px 16px 60px}h1.chapter-title{font-size:1.7em}body{font-size:1.05em}.inv-item{font-size:.56em;padding:4px 8px}}
+</style>
+</head>
+<body>
+
+<!-- MUR XP -->
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-box">
+    <span class="lock-icon">🔥</span>
+    <div class="lock-title">Les Braises de l'Été · Verrouillé</div>
+    <p class="lock-txt">Ce livre-jeu clôt le <strong>Tome II — Le Serment du Griffon</strong>. Il se débloque à <strong>9 500 XP</strong>, une fois le dernier chapitre atteint. Continue à participer, à témoigner, à compléter des modules — et l'été de Lyam t'attendra ici.</p>
+    <div class="lock-bar"><div class="lock-fill" id="lockFill" style="width:0%"></div></div>
+    <p class="lock-xp"><span id="curXp">0</span> / 9 500 XP</p>
+    <p class="lock-txt" style="font-size:.8em;opacity:.6;margin-bottom:6px">Code d'accès (prof / administration) :</p>
+    <div class="lock-code-wrap">
+      <input class="lock-input" id="codeInput" type="text" placeholder="CODE" maxlength="14" autocomplete="off">
+      <button class="lock-btn" onclick="tryCode()">Entrer</button>
+    </div>
+    <div class="lock-error" id="lockError"></div>
+    <div style="margin-top:16px"><a href="hub_narration.html" class="bk">← Bibliothèque</a></div>
+  </div>
+</div>
+
+<div class="xp-flash" id="xpFlash">⚡ Serment tenu — XP crédités</div>
+
+<div class="manuscript" id="mainContent" style="display:none">
+
+  <div class="nav-top">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <a class="bk" href="roman2_ch10.html">Chapitre X</a>
+    <span class="bk" style="opacity:.4;pointer-events:none;cursor:default">Livre-jeu · Tome II</span>
+  </div>
+
+  <div class="chapter-header">
+    <div class="chapter-label">Le Serment du Griffon &nbsp;·&nbsp; Partie II</div>
+    <div class="badge-event">✦ Un livre dont tu es le héros ✦</div>
+    <h1 class="chapter-title">Les Braises de l'Été</h1>
+    <p class="chapter-subtitle">Tu es Lyam, rentré au village pour l'été — loin de Valdurne,<br>loin de ta garde. Ce que tu as juré, il va falloir le tenir seul.</p>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="inv-bar" id="invBar"></div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:2%"></div></div>
+
+  <!-- S0 · RÈGLES -->
+  <div class="scene active" id="s0">
+    <div class="scene-num">Avant de commencer</div>
+    <div class="scene-title">La Règle du Jeu</div>
+    <p class="ni">Ceci est <em>un livre dont tu es le héros</em>. À chaque étape, tu choisis — et tes choix décident de la fin que tu atteindras.</p>
+    <p class="ni">Au fil de l'histoire, tu pourras recueillir <strong>trois objets</strong>. Ils apparaîtront en haut de l'écran :</p>
+    <div class="scene-block">🔎 <strong>l'Œil de l'Aigle</strong> — voir juste avant d'agir.<br>🤝 <strong>la Main du Compagnon</strong> — quelqu'un qui a le droit de te dire non.<br>🌿 <strong>la Feuille de la Réparation</strong> — protéger sans prendre, réparer ce qu'on a cassé.</div>
+    <p class="ni"><strong>Quatre fins</strong> t'attendent — dont une que l'on ne trouve qu'en tenant le Serment jusqu'au bout, les trois objets en main.</p>
+    <span class="choice-label">Es-tu prêt ?</span>
+    <button class="choice-btn" onclick="go('s1',6)"><span class="arrow">▶</span>Commencer l'histoire.</button>
+  </div>
+
+  <!-- S1 -->
+  <div class="scene" id="s1">
+    <div class="scene-num">§ 1</div><div class="scene-title">Un Matin de Juillet</div>
+    <p class="drop-cap ni">Tu es de retour au village depuis dix jours. La forge de ton père bat de nouveau son rythme d'aube, et tu avais presque oublié à quel point ce bruit-là te manquait. C'est un matin de juillet quand la voisine, la mère Albenne, entre sans frapper, essoufflée d'avoir couru.</p>
+    <div class="dialogue">— Il y a eu des vols au marché, dit-elle. Trois en une semaine. Et tout le monde dit que c'est le nouveau — Sénac, le petit apprenti que le sellier a pris ce printemps. Celui qui vient d'ailleurs. Les anciens se réunissent ce soir, à la tombée du jour, pour décider quoi faire de lui.</div>
+    <p>Tu connais cette histoire. Tu la connais dans ses moindres détails. Un nouveau, un « qui vient d'ailleurs », des malheurs qu'on lui met sur le dos parce qu'il est le plus facile à désigner. Le froid, mais au village, sans règlement, sans Conseil, sans ta garde. Et une échéance : ce soir.</p>
+    <p><em>Tu as jusqu'à la tombée du jour.</em></p>
+    <span class="choice-label">Que fais-tu ?</span>
+    <button class="choice-btn" onclick="go('s2',15)"><span class="arrow">▶</span>Aller voir par toi-même ce qui s'est passé, avant de juger.</button>
+    <button class="choice-btn" onclick="go('s3',20)"><span class="arrow">▶</span>Courir défendre Sénac tout de suite, sur la place.</button>
+    <button class="choice-btn" onclick="go('s4',20)"><span class="arrow">▶</span>Demander d'abord conseil à ton père.</button>
+  </div>
+
+  <!-- S2 -->
+  <div class="scene" id="s2">
+    <div class="scene-num">§ 2</div><div class="scene-title">Voir avant d'agir</div>
+    <p class="drop-cap ni">Tu ne veux pas faire, cet été, ce que tu as fait cet hiver à un garçon nommé Tavin. Tu veux voir avant d'agir. Mais voir, ça commence par choisir où l'on regarde.</p>
+    <span class="choice-label">Où regardes-tu ?</span>
+    <button class="choice-btn" onclick="go('s5',30)"><span class="arrow">▶</span>Aller au marché, là où les vols ont eu lieu.</button>
+    <button class="choice-btn" onclick="go('s6',25)"><span class="arrow">▶</span>Aller parler à Sénac lui-même.</button>
+    <button class="choice-btn" onclick="go('s13',100)"><span class="arrow">▶</span>Après tout, ce n'est peut-être pas ton affaire ; retourner à la forge.</button>
+  </div>
+
+  <!-- S3 -->
+  <div class="scene" id="s3">
+    <div class="scene-num">§ 3</div><div class="scene-title">Défendre sans savoir</div>
+    <p class="drop-cap ni">Tu cours sur la place et, devant les premiers badauds, tu prends la défense de Sénac à voix haute : il est innocent, tout le monde l'accuse sans preuve, c'est une honte.</p>
+    <p>Mais tu n'as aucune preuve, toi non plus. Et défendre si fort quelqu'un qu'on ne connaît pas, quand on ne sait rien, ne le lave pas : cela te range seulement dans un camp. « Tiens, dit quelqu'un, le fils du forgeron le connaît, alors ? Peut-être qu'ils sont de mèche. »</p>
+    <div class="fb fb-bad">En une matinée, tu n'as pas sauvé Sénac. Tu t'es simplement mis à côté de lui sous le même soupçon, et tu as donné à la rumeur un deuxième nom à ronger. Défendre, ce n'est pas crier — c'est savoir.</div>
+    <button class="choice-btn" onclick="go('s12',100)"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S4 -->
+  <div class="scene" id="s4">
+    <div class="scene-num">§ 4</div><div class="scene-title">L'Enclume et le Conseil</div>
+    <p class="drop-cap ni">Tu trouves ton père à l'enclume. Il t'écoute jusqu'au bout, sans lâcher son marteau, ce qui est sa façon d'écouter sérieusement. Puis il dit :</p>
+    <div class="dialogue">— Tu te souviens du garçon de ton école, cet hiver. Celui que tu as accusé trop vite, et qu'il a fallu réparer.</div>
+    <p>Il n'avait pas oublié — tu le lui avais écrit, honteux, au printemps.</p>
+    <div class="dialogue">— Ne recommence pas seul. Va voir, oui. Mais promets-moi une chose : avant de désigner qui que ce soit ce soir, tu reviens m'en parler. Pas pour que je décide. Pour que je te dise si tu vas trop vite.</div>
+    <p>Tu promets. Et sans que ce soit dit ainsi, tu comprends qu'il vient de t'offrir la chose exacte qui t'avait manqué cet hiver.</p>
+    <div class="reward-block">
+      <span class="reward-icon">🤝</span>
+      <div class="reward-name">La Main du Compagnon</div>
+      <p class="reward-desc">Quelqu'un qui a le droit de te dire non. Un gardien qui agit seul ne sait jamais s'il protège ou s'il déchire.</p>
+    </div>
+    <button class="choice-btn" onclick="go('s7',40)"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S5 -->
+  <div class="scene" id="s5">
+    <div class="scene-num">§ 5</div><div class="scene-title">Ce que la Peur avait Caché</div>
+    <p class="drop-cap ni">Le marché est presque désert à cette heure. Tu ne demandes rien à personne — tu écoutes, tu regardes, comme tu as appris. Et une chose t'apparaît, que la peur avait empêché les autres de voir : les trois vols ont eu lieu au même endroit, l'étal des grains, aux mêmes heures creuses de la mi-journée.</p>
+    <p>Or Sénac, à la mi-journée, est toujours à l'atelier du sellier, à l'autre bout du village. <em>La rumeur a désigné le plus étranger, pas le plus probable.</em></p>
+    <span class="choice-label">Que fais-tu de ce que tu vois ?</span>
+    <button class="choice-btn" onclick="go('s8',45)"><span class="arrow">▶</span>Suivre ce détail, discrètement, jusqu'au bout.</button>
+    <button class="choice-btn" onclick="go('s12',100)"><span class="arrow">▶</span>Tu en sais assez : aller accuser le marchand des grains sur la place.</button>
+  </div>
+
+  <!-- S6 -->
+  <div class="scene" id="s6">
+    <div class="scene-num">§ 6</div><div class="scene-title">Le Signe dans la Poussière</div>
+    <p class="drop-cap ni">Tu trouves Sénac dans l'arrière-cour du sellier, seul, le menton pas même levé. Il ne se défend pas — il a déjà cette immobilité que tu connais trop bien, celle de quelqu'un qui a renoncé à ce que sa parole change quoi que ce soit.</p>
+    <div class="dialogue">— À quoi bon, murmure-t-il. On a décidé que c'était moi avant même de me demander.</div>
+    <p>En repartant, tu remarques une chose, griffonnée dans la poussière près de l'endroit où il dort : un oiseau, des ailes déployées, dans un cercle de flammes. Tu connais ce signe. Tu le connais très bien. Quelqu'un des Forges Vives est passé par ce village.</p>
+    <div class="fb fb-neutre">Souviens-t'en. Ce signe pourrait bien te mener plus loin que cette seule soirée.</div>
+    <span class="choice-label">Où vas-tu maintenant ?</span>
+    <button class="choice-btn" onclick="go('s5',30)"><span class="arrow">▶</span>Aller enquêter au marché.</button>
+    <button class="choice-btn" onclick="go('s3',20)"><span class="arrow">▶</span>Aller le défendre tout de suite, sur la place.</button>
+  </div>
+
+  <!-- S7 -->
+  <div class="scene" id="s7">
+    <div class="scene-num">§ 7</div><div class="scene-title">Un Garde-fou dans le Dos</div>
+    <p class="drop-cap ni">Avec ton père comme garde-fou, tu te sens plus solide. Tu sais que ce soir, quoi que tu dises, quelqu'un pourra te retenir si tu t'emballes. Il te reste à savoir ce que tu diras — et pour ça, il faut avoir vu.</p>
+    <div class="fb fb-neutre" id="fb7"></div>
+    <button class="choice-btn" onclick="cont7()"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S8 -->
+  <div class="scene" id="s8">
+    <div class="scene-num">§ 8</div><div class="scene-title">La Vérité qui n'Arrange Personne</div>
+    <p class="drop-cap ni">Tu suis le détail sans te presser, de l'étal des grains aux ruelles voisines, et tu recomposes l'affaire pièce à pièce. Ce n'est pas Sénac. C'est un garçon du village, Bertin, le fils du meunier — qui prenait quelques poignées de grain aux heures creuses, non par vice, mais parce que la meule de son père tourne à vide cet été et qu'il a honte de le dire.</p>
+    <p>Il a laissé accuser Sénac parce que c'était plus facile que d'avouer, et parce qu'être du village le protégeait, tandis que le nouveau, lui, ne serait défendu par personne.</p>
+    <p>Tu tiens la vérité. <em>Toute la vérité — pas celle qui t'arrange.</em></p>
+    <div class="reward-block">
+      <span class="reward-icon">🔎</span>
+      <div class="reward-name">L'Œil de l'Aigle</div>
+      <p class="reward-desc">Voir juste avant d'agir. La vérité entière, même quand une vérité plus commode était à portée de main.</p>
+    </div>
+    <div class="fb fb-neutre" id="fb8"></div>
+    <button class="choice-btn" onclick="cont8()"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S9 -->
+  <div class="scene" id="s9">
+    <div class="scene-num">§ 9</div><div class="scene-title">Sous le Grand Tilleul</div>
+    <p class="drop-cap ni">Le jour tombe. Les anciens se réunissent sous le grand tilleul de la place. Sénac est là, seul au milieu, et tu vois qu'ils ont déjà presque décidé — non par cruauté, par facilité, parce qu'il est plus simple de chasser un étranger que de fouiller chez soi.</p>
+    <p>Tu as la vérité. Tu as, à côté de toi, quelqu'un qui peut te retenir. Tu peux parler. Reste à savoir <em>comment</em>.</p>
+    <span class="choice-label">Comment prends-tu la parole ?</span>
+    <button class="choice-btn" onclick="go('s12',100)"><span class="arrow">▶</span>Confondre Bertin devant tous, le clouer comme on allait clouer Sénac.</button>
+    <button class="choice-btn" onclick="go('s10',75)"><span class="arrow">▶</span>Dire la vérité en protégeant les deux : laver Sénac, et donner à Bertin une chance de réparer plutôt que de le détruire.</button>
+  </div>
+
+  <!-- S10 -->
+  <div class="scene" id="s10">
+    <div class="scene-num">§ 10</div><div class="scene-title">La Porte qu'on Laisse Ouverte</div>
+    <p class="drop-cap ni">Tu parles. Tu dis la vérité entière, à temps, devant tous — mais sans faire de Bertin le nouveau bouc émissaire. Tu expliques la meule qui tourne à vide, la honte, la peur qui pousse à laisser accuser plus faible que soi. Tu ne l'excuses pas ; tu le rends responsable d'une façon qu'il peut porter : réparer le grain, dire à son père la vérité, présenter des excuses à Sénac devant tous.</p>
+    <p>Sénac relève le menton. Bertin, qui s'attendait à être anéanti, découvre qu'on lui laisse une porte pour redevenir quelqu'un — et cette porte-là est plus dure à passer que l'exil, car réparer oblige à exister.</p>
+    <div class="reward-block">
+      <span class="reward-icon">🌿</span>
+      <div class="reward-name">La Feuille de la Réparation</div>
+      <p class="reward-desc">Protéger sans prendre, réparer ce qu'on a cassé. La troisième voie : ni écraser, ni fermer les yeux.</p>
+    </div>
+    <div class="fb fb-neutre" id="fb10"></div>
+    <button class="choice-btn" onclick="cont10()"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S11 -->
+  <div class="scene" id="s11">
+    <div class="scene-num">§ 11</div><div class="scene-title">La Grange du Rétameur</div>
+    <p class="drop-cap ni">La nuit tombée, tu suis la piste du signe. Elle te mène à la grange d'un homme de passage — un rétameur ambulant, disent les gens, arrivé au village la semaine des premiers vols. Il t'attendait presque.</p>
+    <div class="dialogue">— J'allais vous rendre service, dit-il doucement. Ce Sénac allait vous coûter une saison de méfiance. Une condamnation nette, rapide, et le village retrouvait sa paix. C'est ce que nous faisons : nous épargnons aux gens la lenteur.</div>
+    <p>Il te regarde, et il voit l'éclat de cire que tu portes encore.</p>
+    <div class="dialogue">— Vous êtes des nôtres, ou presque.</div>
+    <p>Mais tu viens de faire, ce soir, exactement le contraire de ce qu'il propose — et Sénac est libre, et Bertin n'est pas détruit, et personne n'a eu à mentir. Tu n'as rien à lui répondre en paroles. <em>Ta soirée entière est la réponse.</em></p>
+    <button class="choice-btn" onclick="go('s15',100)"><span class="arrow">▶</span>Continuer…</button>
+  </div>
+
+  <!-- S12 · FIN -->
+  <div class="scene" id="s12">
+    <div class="scene-num">§ 12 · Fin</div><div class="scene-title">Ce qu'on fait Seul</div>
+    <p class="drop-cap ni">Tu as gagné — au sens où la chose s'est faite, vite, et dans le sens que tu voulais. Mais tu l'as fait seul, sur une certitude que personne n'a pu retenir, et tu as désigné quelqu'un comme on allait désigner Sénac.</p>
+    <p>Peut-être avais-tu raison. Peut-être pas tout à fait. Tu ne le sauras jamais, parce que tu n'as laissé à personne le droit de te dire non — et qu'un gardien qui referme seul sa serre ne sait jamais s'il protège ou s'il déchire.</p>
+    <div class="ending ending-bad">
+      <div class="ending-kicker">Fin atteinte</div>
+      <div class="ending-name">La Serre Refermée</div>
+    </div>
+    <div class="nav-footer">
+      <button class="bk" onclick="restart()">↻ Reprendre l'histoire</button>
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+
+  <!-- S13 · FIN -->
+  <div class="scene" id="s13">
+    <div class="scene-num">§ 13 · Fin</div><div class="scene-title">La Politesse qui Blesse</div>
+    <p class="drop-cap ni">Tu rentres à la forge. Ce n'est pas ton affaire, après tout. Le soir, on chasse Sénac du village — proprement, sans violence, avec cette politesse tranquille qui fait le plus de mal.</p>
+    <p>Trois jours plus tard, on découvre que les vols continuent : ce n'était pas lui. Mais Sénac est parti, et la vérité, arrivée après la porte fermée, ne sert plus qu'à donner mauvaise conscience à ceux qui voudront bien la ressentir.</p>
+    <div class="ending ending-bad">
+      <div class="ending-kicker">Fin atteinte</div>
+      <div class="ending-name">La Porte Fermée</div>
+    </div>
+    <div class="nav-footer">
+      <button class="bk" onclick="restart()">↻ Reprendre l'histoire</button>
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+
+  <!-- S14 · FIN -->
+  <div class="scene" id="s14">
+    <div class="scene-num">§ 14 · Fin</div><div class="scene-title">Sous les Étoiles de Juillet</div>
+    <p class="drop-cap ni">Tu rentres tard, sous les étoiles de juillet. Tu as tenu le Serment — loin de Valdurne, loin de ta garde, tout seul, et pourtant pas seul, puisque tu as su te donner un garde-fou. Tu as vu juste, agi à temps, protégé sans déchirer. Sénac dormira ce soir sous un toit, et Bertin apprendra à réparer, et le village n'aura chassé personne.</p>
+    <p>Tu comprends, en marchant, que le Serment n'était pas une affaire de Valdurne. C'était une façon d'être un gardien partout, avec ou sans château, avec ou sans garde autour de soi. <em>Il te suivra où que tu ailles.</em></p>
+    <div class="ending ending-good">
+      <div class="ending-kicker">Fin atteinte — l'une des plus belles</div>
+      <div class="ending-name">Le Serment Tenu Loin de Chez Soi</div>
+      <p class="reward-desc" style="margin-top:8px">Il en existe une autre encore, cachée, que l'on ne trouve qu'en ayant les trois objets — et en ayant vu ce que Sénac gardait dans sa poussière.</p>
+      <div class="xp-badge">⚡ +50 XP — Serment tenu</div>
+    </div>
+    <p class="author-note">Tenir le Serment quand personne ne regarde, sans château ni règlement pour t'y obliger : voilà ce qui sépare celui qui obéit à des règles de celui qui est devenu, lui-même, un gardien.</p>
+    <div class="nav-footer">
+      <button class="bk" onclick="restart()">↻ Chercher la fin cachée</button>
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+    </div>
+  </div>
+
+  <!-- S15 · FIN CACHÉE -->
+  <div class="scene" id="s15">
+    <div class="scene-num">§ 15 · Fin cachée</div><div class="scene-title">Ce que tu Comprends à l'Aube</div>
+    <p class="drop-cap ni">Tu rentres à l'aube, et tu ne dors pas. Non d'inquiétude — de compréhension.</p>
+    <p>Tu as croisé, ce soir, ce que tu affronteras des années durant : les Forges Vives ne sont pas un lieu, ni une bande de château. Elles sont partout où quelqu'un, fatigué de la lenteur, offre d'épargner aux autres le prix de faire les choses bien. L'homme de la grange n'était pas un monstre. Il croyait rendre service. C'est ce qui le rend si difficile à combattre — et c'est pour ça que la seule réponse qui vaille n'est pas un discours, mais une soirée comme celle que tu viens de vivre : <em>la preuve, faite avec ses mains, qu'il existe une troisième voie.</em></p>
+    <p>Avant de partir, l'homme t'a dit une phrase que tu n'oublieras pas.</p>
+    <div class="dialogue">— L'été prochain, à Valdurne, on parlera d'un cheval qui n'a qu'une aile, et d'une écuyère qui devra choisir. Quand ce jour viendra, souviens-toi que nous t'aurons prévenu.</div>
+    <p>Tu ne comprends pas encore. Mais tu sens, tout au fond, la trame frémir — comme un tissu ancien qui, aux anniversaires ronds, craque aux coutures.</p>
+    <div class="ending ending-secret">
+      <div class="ending-kicker">✦ Fin cachée — les trois objets réunis ✦</div>
+      <div class="ending-name">La Braise qui Parle</div>
+      <p class="reward-desc" style="margin-top:8px">Elle ouvre le <strong>Livre III — L'Épreuve des Piliers</strong>.</p>
+      <div class="xp-badge">⚡ +50 XP Serment &nbsp;·&nbsp; +15 XP Fin cachée</div>
+    </div>
+    <p class="author-note">Tu as trouvé la fin que la plupart ne verront pas : celle qui demande d'avoir tout fait bien, <em>et</em> d'être allé regarder ce que les autres n'osent pas suivre. C'est là que commence le Tome III.</p>
+    <div class="nav-footer">
+      <a href="hub_narration.html" class="bk">← Bibliothèque</a>
+      <button class="bk" onclick="restart()">↻ Rejouer</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var KEY='pvs_hof_v2';var AKEY='pvs_current_player';var DKEY='pvs_narration_done';
+var W={pixhare:60,psc1:60,sanctuaire:60,loge:60,autres:60};var CIT={representant_ca:{xp:500}};
+var DONE_ID='ldv_braises';var XP_REQ=9500;var cur='';
+var CODES=['VALDURNE','BRAISES2026','SERMENT','PROF1234'];
+// état de jeu
+var inv={oeil:false,main:false,feuille:false};var sawPhoenix=false;
+
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+function getDone(){try{return JSON.parse(localStorage.getItem(DKEY)||'{}')}catch(e){return{}}}
+function markDone(id){var d=getDone();d[id]=1;localStorage.setItem(DKEY,JSON.stringify(d))}
+function missionXp(c){try{var S=getS();var l=S.citizen_lists||{};var n=0;Object.keys(CIT).forEach(function(k){if((l[k]||[]).indexOf(c)>=0)n+=CIT[k].xp});return n}catch(e){return 0}}
+function socialRaw(p){return Number(p&&p.socialG||0)+Number(p&&p.wBonusG||0)}
+function socialValid(p){return Number(p&&p.witnessGiven||0)>0?socialRaw(p):0}
+function citizenXp(p){try{return missionXp(p&&p.code)+socialValid(p)}catch(e){return 0}}
+function academyXp(p){try{var cp=(p&&p.cp)||{};return Object.keys(W).reduce(function(a,k){return a+Number(cp[k]||0)*W[k]},0)}catch(e){return 0}}
+function videoXp(p){return Number(p&&p.videoG||0)}
+function acadDoneCount(p){try{return Object.keys(p.acadDone||{}).length}catch(e){return 0}}
+function acadCoeff(p){try{var n=Math.min(acadDoneCount(p),50);return Math.round((1+n*0.02)*100)/100}catch(e){return 1}}
+function xg(p){if(!p)return 0;try{var base=citizenXp(p)+academyXp(p)+videoXp(p)+Number(p.malusG||0);return Math.round(base*acadCoeff(p))}catch(e){return 0}}
+
+function creditXP(amount,tag){
+  if(!cur)return;var S=getS();if(!S.players||!S.players[cur])return;
+  var p=S.players[cur];var now=new Date().toISOString();
+  if(!Array.isArray(S.logs))S.logs=[];
+  var T='NARRATION_READ_'+tag;
+  if(S.logs.find(function(l){return l.t===T&&l.p===cur}))return; // une seule fois
+  S.logs.unshift({d:now,p:cur,t:T,target:'NARRATION',xp:amount});
+  if(S.logs.length>700)S.logs.length=700;
+  p.wBonusG=(Number(p.wBonusG||0)+(amount/10));p.wBonusW=(Number(p.wBonusW||0)+(amount/10));
+  p.up=now;saveS(S);
+  var pending=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  pending.push({id:'NARR-'+cur+'-'+tag+'-'+Date.now(),type:'NARRATION_READ',player:cur,module:'LDVELH_'+tag,xp:amount,d:now});
+  if(pending.length>700)pending=pending.slice(-700);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(pending));
+}
+function showFlash(msg){var f=document.getElementById('xpFlash');if(!f)return;if(msg)f.textContent=msg;f.style.display='block';setTimeout(function(){f.style.display='none'},4200);}
+
+function invItem(ic,name,has){return '<span class="inv-item'+(has?' has':'')+'">'+ic+' '+name+'</span>';}
+function renderInv(){
+  var bar=document.getElementById('invBar');if(!bar)return;
+  bar.innerHTML=invItem('🔎',"l'Œil de l'Aigle",inv.oeil)+invItem('🤝','la Main du Compagnon',inv.main)+invItem('🌿','la Feuille de la Réparation',inv.feuille);
+}
+
+function go(id,pct){
+  // objets & drapeaux à l'entrée de certaines sections
+  if(id==='s4'){inv.main=true;}
+  if(id==='s6'){sawPhoenix=true;}
+  if(id==='s8'){inv.oeil=true;}
+  if(id==='s10'){inv.feuille=true;}
+  // feedbacks conditionnels
+  if(id==='s7'){var e=document.getElementById('fb7');if(e)e.textContent=inv.oeil?"Tu as déjà vu par toi-même (🔎 l'Œil de l'Aigle). Tu peux rejoindre l'assemblée en sachant ce que tu avances.":"Mais tu n'as encore rien vérifié par toi-même. Il te faut d'abord aller voir.";}
+  if(id==='s8'){var e2=document.getElementById('fb8');if(e2)e2.textContent=inv.main?"Tu tiens la vérité, et tu as un garde-fou (🤝). Tu peux parler ce soir.":"Tu tiens la vérité — mais seul, sur une certitude que personne ne pourra retenir. Le danger d'agir seul te saisit : il te faut quelqu'un qui puisse te dire non.";}
+  if(id==='s10'){var e3=document.getElementById('fb10');if(e3)e3.textContent=sawPhoenix?"Le signe du phénix aperçu près de Sénac te revient. Quelque chose te dit de le suivre.":"La soirée est tenue. Tu rentres, apaisé.";}
+  // bascule de scène
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active')});
+  var n=document.getElementById(id);if(n){n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  var f=document.getElementById('progressFill');if(f)f.style.width=(pct||50)+'%';
+  renderInv();
+  // fins : crédit XP (uniquement les fins où l'on tient le Serment)
+  if(id==='s14'||id==='s15'){
+    markDone(DONE_ID);
+    creditXP(50,'BRAISES');
+    if(id==='s15')creditXP(15,'BRAISES_SECRET');
+    showFlash(id==='s15'?'⚡ Fin cachée — +65 XP':'⚡ Serment tenu — +50 XP');
+  }
+}
+// continuations conditionnelles (selon l'inventaire)
+function cont7(){go(inv.oeil?'s9':'s2',inv.oeil?60:15);}
+function cont8(){go(inv.main?'s9':'s4',inv.main?60:20);}
+function cont10(){go(sawPhoenix?'s11':'s14',sawPhoenix?92:100);}
+function restart(){inv={oeil:false,main:false,feuille:false};sawPhoenix=false;go('s1',6);}
+
+function tryCode(){
+  var v=(document.getElementById('codeInput').value||'').toUpperCase().trim();
+  if(CODES.indexOf(v)>=0){
+    localStorage.setItem('pvs_unlock_braises','1');
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    renderInv();
+  }else{document.getElementById('lockError').textContent='Code incorrect — demande à ton professeur.';}
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('codeInput');
+  if(inp)inp.addEventListener('keydown',function(e){if(e.key==='Enter')tryCode();});
+});
+
+(function(){
+  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
+  var p=cur?getP(cur):null;
+  var xp=xg(p);
+  var bypass=(localStorage.getItem('pvs_unlock_braises')==='1')||(getDone()['ch2_10']);
+  if(xp<XP_REQ && !bypass){
+    var ls=document.getElementById('lockScreen');ls.style.display='flex';
+    var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
+    if(fill)fill.style.width=Math.min(100,Math.round((xp/XP_REQ)*100))+'%';
+    if(xpEl)xpEl.textContent=xp;
+    return;
+  }
+  document.getElementById('mainContent').style.display='block';
+  renderInv();
+})();
+</script>
+</body>
+</html>
