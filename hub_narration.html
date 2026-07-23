@@ -230,13 +230,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       <span class="book-class">Quatrième année · 3e</span>
       <span class="book-xp-req" id="req-livre4">15 000 XP</span>
     </div>
-    <div class="book-locked" id="locked-livre4">
-      <span class="book-locked-icon">🌟</span>
-      <div class="book-locked-title">L'Ordre des Veilleurs</div>
-      <div class="book-locked-sub">Fin du cycle. Ce que Lyam laisse derrière lui. Et cette nuit-là, au bal, dans le jardin nord sous le ciel de décembre — ce qui n'avait pas encore de nom.</div>
-      <div class="book-locked-bar-wrap"><div class="book-locked-bar" id="bar-livre4" style="width:0%"></div></div>
-      <div class="book-locked-xp" id="xp-livre4">— / 6 000 XP</div>
-    </div>
+    <div class="chapters-list" id="listChapitres4"></div>
   </div>
 
   <!-- HISTOIRES COMPLÉMENTAIRES -->
@@ -354,12 +348,34 @@ var CHAPITRES3=[
    meta:"La Trame se déchire · Le phénix volé · Le passage",xpRequired:14500},
 ];
 
+// ── CHAPITRES LIVRE IV · L'Ordre des Veilleurs (rang Veilleur) ────────────────
+var CHAPITRES4=[
+  {id:'ch4_01',file:'roman4_ch01.html',num:'Chap. I',icon:'🕳️',title:'La Brèche Ouverte',
+   meta:"La plaie devenue meuble · Une ombre devant la Trame",xpRequired:15000},
+  {id:'ch4_02',file:'roman4_ch02.html',num:'Chap. II',icon:'🌑',title:'Le Veilleur des Cendres',
+   meta:"Le miroir noir de Lyam · Deux façons de veiller",xpRequired:15500},
+  {id:'ch4_03',file:'roman4_ch03.html',num:'Chap. III',icon:'🏅',title:"Ce qu'on Fait de la Victoire",
+   meta:"L'ennemi offre d'éteindre, les amis de grandir",xpRequired:16000},
+  {id:'ch4_04',file:'roman4_ch04.html',num:'Chap. IV',icon:'🧵',title:'La Fausse Couture',
+   meta:"Recoudre par-dessus le mot manquant · Le Mémorial",xpRequired:16500},
+  {id:'ch4_05',file:'roman4_ch05.html',num:'Chap. V',icon:'🪽',title:'Réna aux Deux Ordres',
+   meta:"Le ciel qui plaide pour le sol",xpRequired:17000},
+  {id:'ch4_06',file:'roman4_ch06.html',num:'Chap. VI',icon:'🤝',title:'Daran, la Main Rendue',
+   meta:"Reprendre ceux qu'on allait prendre",xpRequired:17500},
+  {id:'ch4_07',file:'roman4_ch07.html',num:'Chap. VII',icon:'🔥',title:'Le Feu qui Purge',
+   meta:"Le masque tombe · Neuf noms sur une liste",xpRequired:18000},
+  {id:'ch4_08',file:'roman4_ch08.html',num:'Chap. VIII',icon:'🕯️',title:'La Veille la Plus Longue',
+   meta:"La passation · Ce que veiller veut dire",xpRequired:18500},
+  {id:'ch4_09',file:'roman4_ch09.html',num:'Chap. IX',icon:'🌅',title:'Le Phénix',
+   meta:"Le solstice · Le phénix repris · La main prise",xpRequired:19000},
+  {id:'ch4_10',file:'roman4_ch10.html',num:'Chap. X',icon:'🗝️',title:"L'Ordre des Veilleurs",
+   meta:"La porte ouverte · La clef qui descend · Fin du cycle",xpRequired:19500},
+];
+
 // ── LIVRES FUTURS ─────────────────────────────────────────────────────────────
 // Livre III : ch1 à 10 000 XP puis +500/chap → dernier à 14 500 XP
 // Livre IV : ch1 à 15 000 XP puis +500/chap → dernier à 19 500 XP
-var FUTURS=[
-  {rankReq:3,rankLabel:'Veilleur',barId:'bar-livre4',xpId:'xp-livre4',lockId:'locked-livre4',reqId:'req-livre4'},
-];
+var FUTURS=[]; // les 4 tomes sont désormais vivants
 
 // ── LDVELH ────────────────────────────────────────────────────────────────────
 var LDVELH=[
@@ -535,6 +551,37 @@ function renderChapitres3(xp){
   }
 }
 
+function renderChapitres4(xp){
+  var done=getDone();
+  var list=document.getElementById('listChapitres4');
+  if(!list)return;
+  list.innerHTML='';
+  CHAPITRES4.forEach(function(ch){
+    var u=(CURRANK>=3)&&(xp>=ch.xpRequired);
+    var isDone=!!done[ch.id];
+    var div=document.createElement('div');
+    div.className='chapter'+(u?' unlocked':' locked')+(isDone?' done':'');
+    var right=u
+      ?'<span class="cta-read">'+(isDone?'Relire ↗':'Lire ↗')+'</span>'
+      :'<span class="lock-icon">🔒</span>';
+    var xpLbl=fxp(ch.xpRequired)+' XP';
+    div.innerHTML=
+      '<div class="chnum">'+ch.num+'<br><span style="font-size:1.5em;line-height:1">'+ch.icon+'</span></div>'+
+      '<div style="padding:12px 0"><div class="chtitle">'+ch.title+'</div><div class="chmeta">'+ch.meta+'</div></div>'+
+      '<div style="text-align:right;padding:0 4px"><div class="chxp">'+xpLbl+'</div>'+right+'</div>'+
+      (isDone?'<span class="done-tick">✓</span>':'');
+    if(u&&ch.file){
+      div.onclick=(function(f){return function(){window.location.href=f;};})(ch.file);
+    }
+    list.appendChild(div);
+  });
+  var reqEl=document.getElementById('req-livre4');
+  if(reqEl){
+    if(CURRANK>=3){reqEl.textContent='Disponible';reqEl.style.background='rgba(201,168,76,.15)';reqEl.style.color='var(--or2)';}
+    else{reqEl.textContent='Rang Veilleur';}
+  }
+}
+
 function renderFuturs(){
   FUTURS.forEach(function(l){
     var open=CURRANK>=l.rankReq;
@@ -650,6 +697,7 @@ function renderRank(p){
   renderChapitres(xp);
   renderChapitres2(xp);
   renderChapitres3(xp);
+  renderChapitres4(xp);
   renderFuturs();
   renderProgress(xp);
   renderLDV(p);
