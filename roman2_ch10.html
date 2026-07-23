@@ -180,7 +180,7 @@ function showFlash(){var f=document.getElementById('xpFlash');if(!f)return;f.sty
   cur=raw.trim().toUpperCase();
   var p=getP(cur);
   if(!p){window.location.href='hub_narration.html';return}
-  var xp=xg(p);
+  var xp=(p&&typeof p.xpLife==='number')?p.xpLife:xg(p);
   if(xp<XP_REQ){
     document.getElementById('xpLock').style.display='flex';
     var fill=document.getElementById('lockFill');var xpEl=document.getElementById('curXp');
