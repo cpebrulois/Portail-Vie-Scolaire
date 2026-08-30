@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comptes de démonstration — usage enseignant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--rouge:#8b2a2a;--vert:#5da35d}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.05em;line-height:1.75;min-height:100vh}
+.wrap{max-width:680px;margin:0 auto;padding:30px 20px 60px}
+h1{font-family:'Cinzel',serif;font-size:1.35em;color:var(--or2);margin-bottom:6px;letter-spacing:1px}
+.sub{color:var(--enc2);font-style:italic;opacity:.75;font-size:.9em;margin-bottom:24px}
+.card{background:rgba(255,255,255,.025);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:20px 22px;margin-bottom:16px}
+.lbl{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.85;margin-bottom:10px}
+.btn{display:inline-block;padding:10px 18px;background:rgba(201,168,76,.12);border:1px solid var(--or);border-radius:5px;color:var(--or2);font-family:'Cinzel',serif;font-size:.76em;letter-spacing:1px;cursor:pointer;margin:4px 4px 4px 0}
+.btn:hover{background:rgba(201,168,76,.25)}
+.btn.danger{border-color:rgba(139,42,42,.7);color:#e0a48a;background:rgba(139,42,42,.12)}
+input,select{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc);padding:9px 12px;font-family:'Cinzel',serif;font-size:.85em;letter-spacing:1px;outline:none;width:100%;margin-bottom:10px}
+.warn{background:rgba(139,42,42,.1);border:1px solid rgba(139,42,42,.45);border-radius:8px;padding:14px 18px;font-size:.88em;color:#e0a48a;margin-bottom:18px}
+.ok{background:rgba(93,163,93,.1);border:1px solid rgba(93,163,93,.45);border-radius:8px;padding:14px 18px;font-size:.9em;color:#a8d8a8;margin:12px 0}
+.rows{font-size:.88em}
+.rows div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(201,168,76,.1)}
+.rows span:last-child{color:var(--or2);font-family:'Cinzel',serif;font-size:.9em}
+a.bk{color:var(--enc2);font-size:.8em;text-decoration:none;border:1px solid rgba(201,168,76,.22);padding:6px 14px;border-radius:4px;font-family:'Cinzel',serif}
+a.bk:hover{color:var(--or);border-color:var(--or)}
+code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:3px;font-size:.9em;color:var(--or2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Comptes de démonstration</h1>
+  <p class="sub">Outil enseignant — crée un joueur fictif pour visiter la plateforme à un rang donné.</p>
+
+  <!-- VERROU -->
+  <div id="lock">
+    <div class="card">
+      <div class="lbl">Accès réservé</div>
+      <input id="code" type="password" placeholder="CODE ENSEIGNANT" autocomplete="off">
+      <button class="btn" onclick="tryCode()">Entrer</button>
+      <div id="lockErr" style="color:#c08070;font-size:.82em;font-style:italic;height:20px;margin-top:6px"></div>
+      <div style="margin-top:14px"><a class="bk" href="index.html">← Portail</a></div>
+    </div>
+  </div>
+
+  <!-- OUTIL -->
+  <div id="tool" style="display:none">
+    <div class="warn">
+      <strong>À lire avant.</strong> Ces comptes vivent dans <em>ce navigateur uniquement</em>
+      (stockage local). Ils apparaîtront dans ton Hall des Héros local — un bouton les supprime.<br><br>
+      <strong>Crée-les hors session administrateur</strong> : la synchronisation vers Supabase ne
+      part que si tu es connecté en admin. Sinon un joueur fictif remonterait dans ta vraie base.
+    </div>
+
+    <div class="card">
+      <div class="lbl">1 · Créer un compte</div>
+      <select id="rang">
+        <option value="1">Écuyer (5e) — ouvre le Tome II et les campagnes</option>
+        <option value="2">Chevalier (4e) — ouvre le Tome III</option>
+        <option value="3">Veilleur (3e) — ouvre le Tome IV</option>
+      </select>
+      <button class="btn" onclick="creer()">Créer le compte</button>
+      <div id="res"></div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">2 · Se connecter avec</div>
+      <p style="font-size:.88em;color:var(--enc2);margin-bottom:10px">Rend ce compte actif, puis ouvre la
+      page de ton choix.</p>
+      <div id="connecte"></div>
+      <div style="margin-top:12px">
+        <a class="bk" href="campagne.html">⚔️ Campagnes</a>
+        <a class="bk" href="hub_narration.html">🏰 Bibliothèque</a>
+        <a class="bk" href="index.html">Portail</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">3 · Nettoyer</div>
+      <p style="font-size:.88em;color:var(--enc2);margin-bottom:10px">Supprime tous les comptes de
+      démonstration et te déconnecte.</p>
+      <button class="btn danger" onclick="purger()">Supprimer les comptes de démonstration</button>
+      <div id="purge"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var KEY='pvs_hof_v2', AKEY='pvs_current_player';
+var CODES=['VALDURNE','PROF1234','DEMO2026'];
+var PILIERS=['GROUPE','HISTOIRE','JURIDIQUE','NEURO','NUMERIQUE','VEA'];
+var BAREME={1:50,2:100,3:100,4:100,5:100,6:150,7:175,8:200,9:225,10:300};
+var RANGS={
+  1:{nom:'Écuyer',   code:'TEST-ECUYER',   cp:{psc1:3,autres:3,liberte:4,fraternite:3}, piliers:3, cible:5600},
+  2:{nom:'Chevalier',code:'TEST-CHEVALIER',cp:{psc1:5,autres:5,liberte:5,fraternite:4}, piliers:6, cible:10600},
+  3:{nom:'Veilleur', code:'TEST-VEILLEUR', cp:{psc1:7,autres:7,liberte:7,fraternite:6}, piliers:6, cible:20000}
+};
+
+function tryCode(){
+  var v=(document.getElementById('code').value||'').toUpperCase().trim();
+  if(CODES.indexOf(v)>=0){
+    document.getElementById('lock').style.display='none';
+    document.getElementById('tool').style.display='block';
+    majConnecte();
+  } else { document.getElementById('lockErr').textContent='Code incorrect.'; }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var i=document.getElementById('code');
+  if(i)i.addEventListener('keydown',function(e){if(e.key==='Enter')tryCode()});
+});
+
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function saveS(S){localStorage.setItem(KEY,JSON.stringify(S))}
+
+function creer(){
+  var r=RANGS[document.getElementById('rang').value];
+  var now=new Date().toISOString();
+
+  // modules pHARe datés (le barème monte avec le numéro : 01=50 … 10=300)
+  var done={}, xpPix=0, n=0;
+  for(var i=0;i<r.piliers;i++){
+    for(var m=1;m<=10;m++){
+      var id=PILIERS[i]+'_'+(m<10?'0':'')+m;
+      done[id]=now; xpPix+=BAREME[m]; n++;
+    }
+  }
+  var cp={pixhare:n,psc1:r.cp.psc1,sanctuaire:0,loge:0,autres:r.cp.autres,liberte:r.cp.liberte,fraternite:r.cp.fraternite};
+  var academy=xpPix+(cp.psc1+cp.sanctuaire+cp.loge+cp.autres+cp.liberte+cp.fraternite)*60;
+  var social=200;                                   // validé car witnessGiven > 0
+  var video=Math.max(0, r.cible-(academy+social));  // complément pour atteindre la cible
+
+  var p={code:r.code,witness:'',cp:cp,pixhareXp:xpPix,pixhareDone:done,obj:{},
+    socialG:social,socialW:0,wBonusG:0,wBonusW:0,videoG:video,videoW:0,malusG:0,malusW:0,
+    witnessGiven:1,recognizedReceived:0,acadDone:{},acadIds:[],up:now,_v2:1};
+
+  // xpLife et rankData : mêmes formules que le moteur, pour que ce soit actif tout de suite
+  p.xpLife=Math.round(social+academy+video);
+  var REQ=[0,2,4,6], RUB=['pixhare','psc1','liberte','autres','fraternite'];
+  function c(k){return k==='pixhare'?Object.keys(done).length:Number(cp[k]||0)}
+  var idx=0; for(var j=1;j<REQ.length;j++){ if(RUB.every(function(k){return c(k)>=REQ[j]})) idx=j; else break; }
+  var noms=['Page','Écuyer','Chevalier','Veilleur'], gr=['6ᵉ','5ᵉ','4ᵉ','3ᵉ'];
+  p.rankData={i:idx,key:noms[idx].toLowerCase(),label:noms[idx],grade:gr[idx],
+              next:noms[idx+1]||null,pct:100,per:{}};
+
+  var S=getS(); if(!S.players)S.players={}; S.players[r.code]=p; saveS(S);
+
+  document.getElementById('res').innerHTML='<div class="ok"><strong>'+r.code+'</strong> créé.'+
+    '<div class="rows" style="margin-top:10px">'+
+    '<div><span>Rang obtenu</span><span>'+p.rankData.label+'</span></div>'+
+    '<div><span>XP de parcours</span><span>'+p.xpLife.toLocaleString('fr')+' XP</span></div>'+
+    '<div><span>Modules pHARe</span><span>'+n+'</span></div>'+
+    '<div><span>PSC1 / Liberté / Égalité / Fraternité</span><span>'+cp.psc1+' / '+cp.liberte+' / '+cp.autres+' / '+cp.fraternite+'</span></div>'+
+    '</div></div>';
+  majConnecte();
+}
+
+function majConnecte(){
+  var S=getS(), box=document.getElementById('connecte'), html='';
+  Object.keys(RANGS).forEach(function(k){
+    var c=RANGS[k].code;
+    if(S.players&&S.players[c]){
+      var actif=(localStorage.getItem(AKEY)||'')===c;
+      html+='<button class="btn" onclick="activer(\''+c+'\')">'+(actif?'✔ ':'')+c+'</button>';
+    }
+  });
+  box.innerHTML=html||'<em style="font-size:.85em;color:var(--enc2)">Aucun compte de démonstration pour l’instant.</em>';
+}
+
+function activer(code){
+  localStorage.setItem(AKEY,code);
+  majConnecte();
+  document.getElementById('res').innerHTML='<div class="ok">Tu es maintenant connecté comme <strong>'+code+'</strong>. Ouvre une page ci-dessous.</div>';
+}
+
+function purger(){
+  var S=getS(); var n=0;
+  Object.keys(RANGS).forEach(function(k){
+    var c=RANGS[k].code;
+    if(S.players&&S.players[c]){delete S.players[c];n++}
+  });
+  saveS(S);
+  var a=localStorage.getItem(AKEY)||'';
+  if(a.indexOf('TEST-')===0)localStorage.removeItem(AKEY);
+  ['pvs_campagne_table','pvs_campagne_role','pvs_charte_ok'].forEach(function(k){localStorage.removeItem(k)});
+  document.getElementById('purge').innerHTML='<div class="ok">'+n+' compte(s) supprimé(s), session nettoyée.</div>';
+  majConnecte();
+}
+</script>
+</body>
+</html>
