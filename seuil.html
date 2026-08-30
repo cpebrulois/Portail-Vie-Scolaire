@@ -87,7 +87,11 @@ var S=[
  {t:'k',x:"Ah. Te voilà."},
  {t:'k',x:"Je commençais à croire que tu avais pris le chemin des Trois Saules — c'est plus joli, mais ça rallonge d'une heure, et personne ne le dit jamais aux nouveaux."},
  {t:'k',x:"Entre. Il fait un froid de gargouille."},
- {t:'input',q:"Comment veux-tu qu'on t'appelle, ici ?",max:20},
+ {t:'n',x:"Il sort de sa poche un petit carré de parchemin, y jette un œil, puis te regarde."},
+ {t:'k',x:"On m'a transmis ton nom de page. Tu seras {nom}, ici."},
+ {t:'k',x:"Ne fais pas cette tête. Personne ne donne son vrai nom à Valdurne — ni toi, ni moi, ni le Maître. On en reçoit un autre à la porte, et c'est celui-là qu'on écrit dans les registres."},
+ {t:'k',x:"Ce n'est pas un jeu. C'est une protection. Ce que tu feras ici te suivra sous ce nom-là, et pas sous celui que tes parents ont choisi. Personne, jamais, ne pourra remonter jusqu'à toi à partir d'un registre."},
+ {t:'k',x:"Alors garde ton vrai prénom pour toi. Ici comme ailleurs, d'ailleurs — mais ça, on en reparlera un autre soir."},
  {t:'k',x:"{nom}. Très bien. Je le retiendrai — c'est mon travail, maintenant, de retenir les noms."}
 ]},
 
@@ -120,7 +124,7 @@ var S=[
    {x:"sans",ok:true,r:"C'est ça. Sans."},
    {x:"jamais",ok:false,r:"Presque tentant. Mais lis-le à voix haute : ça ne tient pas debout. Cherche le petit mot, celui qui n'a l'air de rien."}
  ]},
- {t:'k',x:"Sans. Trois lettres. Le mot le plus fragile de Valdurne, et le plus lourd."},
+ {t:'k',x:"Sans. Quatre lettres. Le mot le plus fragile de Valdurne, et le plus lourd."},
  {t:'k',x:"Ça veut dire qu'ici, on peut te reprocher quelque chose, te punir même — mais pas te retrancher sans t'avoir écouté. Pas te faire disparaître d'une histoire sans t'avoir demandé la tienne."},
  {t:'k',x:"Retiens-le. Je te le redemanderai avant que tu partes."}
 ]},
@@ -191,9 +195,9 @@ var S=[
  {t:'n',x:"Il s'appuie au parapet, et regarde la vallée un moment sans rien dire."},
  {t:'k',x:"Dernière chose. Je t'avais prévenu que je te la reposerais."},
  {t:'qcm',q:"Quel mot manquait, sur la Trame ?",o:[
-   {x:"toujours",ok:false,r:"Non — celui qui n'a l'air de rien. Trois lettres."},
+   {x:"toujours",ok:false,r:"Non — celui qui n'a l'air de rien. Quatre lettres."},
    {x:"sans",ok:true,r:"Sans. Tu l'as retenu."},
-   {x:"jamais",ok:false,r:"Non — celui qui n'a l'air de rien. Trois lettres."}
+   {x:"jamais",ok:false,r:"Non — celui qui n'a l'air de rien. Quatre lettres."}
  ]},
  {t:'k',x:"Sans. Voilà. Si tu ne devais garder qu'une chose de ce soir, ce serait celle-là."},
  {t:'k',x:"Nul n'est retranché sans avoir été entendu. Ni ici, ni ailleurs, ni par toi."},
@@ -205,7 +209,16 @@ var S=[
 
 /* ══════════ OUTILS ══════════ */
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function sub(s){return String(s).replace(/\{nom\}/g,esc(etat.nom||'toi'))}
+function nomDePage(code){
+  var c=String(code||'').trim();
+  if(!c)return 'Page';
+  var seg=c.split(/[-_ ]+/).filter(Boolean);
+  // « Cigogne-Bricoleur-101 » -> « Cigogne » ; on écarte les segments numériques
+  var mot=seg.find(function(x){return !/^\d+$/.test(x)});
+  if(!mot)return c;
+  return mot.charAt(0).toUpperCase()+mot.slice(1).toLowerCase();
+}
+function sub(s){return String(s).replace(/\{nom\}/g,esc(etat.nom||'Page'))}
 function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
 function getP(c){var S2=getS();return(S2.players&&S2.players[c])?S2.players[c]:null}
 function save(){try{localStorage.setItem(SKEY,JSON.stringify(etat))}catch(e){}}
@@ -357,6 +370,7 @@ function suivant(){
     return;
   }
   load();
+  etat.nom=nomDePage(cur); save();
   document.getElementById('top').style.display='flex';
   document.getElementById('scene').style.display='block';
   var i=Math.min(etat.etape||0,S.length-1);
