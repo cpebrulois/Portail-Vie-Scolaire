@@ -401,15 +401,26 @@ async function handleCampagne(request, env) {
       // Premier tour : Kern ouvre la campagne, sans coup préalable.
       let dernier = null;
       if (courant) {
-        if (courant.choix_id) return json({ error: "Ce tour est déjà joué." }, 409, cors);
-        const opt = (courant.options || []).find(o => o.id === String(b.choix_id || "").toUpperCase());
-        if (!opt) return json({ error: "Choix invalide." }, 400, cors);
-        const rep = nettoieReplique(b.replique, env);
-        dernier = { role: moi.role, choix_texte: opt.texte, replique: rep.texte };
-        await sb(env, "PATCH", `pvs_campagne_tours?id=eq.${courant.id}`, {
-          choix_id: opt.id, choix_texte: opt.texte, replique: rep.texte, auteur: codeJoueur,
-          signalement: courant.signalement || rep.suspecte,
-        });
+        if (courant.choix_id) {
+          // Reprise : le coup est enregistré mais Kern n'a pas répondu (coupure réseau,
+          // erreur Mistral…). On relance la génération à partir de ce coup au lieu de
+          // laisser la partie bloquée — sans réécrire le choix déjà en base.
+          const auteur = joueurs.find(j => j.code_joueur === courant.auteur);
+          dernier = {
+            role: (auteur && auteur.role) || courant.adresse || moi.role,
+            choix_texte: courant.choix_texte,
+            replique: courant.replique,
+          };
+        } else {
+          const opt = (courant.options || []).find(o => o.id === String(b.choix_id || "").toUpperCase());
+          if (!opt) return json({ error: "Choix invalide." }, 400, cors);
+          const rep = nettoieReplique(b.replique, env);
+          dernier = { role: moi.role, choix_texte: opt.texte, replique: rep.texte };
+          await sb(env, "PATCH", `pvs_campagne_tours?id=eq.${courant.id}`, {
+            choix_id: opt.id, choix_texte: opt.texte, replique: rep.texte, auteur: codeJoueur,
+            signalement: courant.signalement || rep.suspecte,
+          });
+        }
       }
 
       const brut = await demandeKern(env, promptKern(dossier, joueurs, tours, partie, dernier));

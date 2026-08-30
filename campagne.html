@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Campagnes de Valdurne — Kern, Maître du Jeu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0d0b08;--p1:#1a1510;--rouge:#8b2a2a;--vert:#5da35d}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.08em;line-height:1.8;min-height:100vh;padding-bottom:48px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.05) 0%,transparent 55%)}
+.wrap{max-width:760px;margin:0 auto;padding:26px 20px 40px;position:relative;z-index:1}
+.nav{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.bk{padding:6px 14px;background:transparent;border:1px solid rgba(201,168,76,.22);border-radius:4px;color:var(--enc2);font-size:.74em;text-decoration:none;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block;transition:all .2s}
+.bk:hover{border-color:var(--or);color:var(--or)}
+h1{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,4vw,2.1em);color:var(--or2);line-height:1.2;margin-bottom:8px;text-align:center}
+.sub{text-align:center;color:var(--enc2);font-style:italic;opacity:.75;font-size:.92em;margin-bottom:26px}
+.card{background:rgba(255,255,255,.025);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:20px 22px;margin-bottom:16px}
+.lbl{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.8;margin-bottom:10px}
+.btn{display:inline-block;padding:10px 20px;background:rgba(201,168,76,.12);border:1px solid var(--or);border-radius:5px;color:var(--or2);font-family:'Cinzel',serif;font-size:.78em;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.btn:hover{background:rgba(201,168,76,.25)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+input,select{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.3);border-radius:4px;color:var(--enc);padding:9px 12px;font-family:'Cinzel',serif;font-size:.85em;letter-spacing:1px;outline:none;width:100%;margin-bottom:10px}
+input:focus,select:focus{border-color:var(--or)}
+.charte h2{font-family:'Cinzel',serif;font-size:1.05em;color:var(--or2);margin-bottom:14px;letter-spacing:1px}
+.charte p{margin-bottom:12px;font-size:.95em}
+.charte strong{color:var(--or2)}
+.bandeau{position:fixed;left:0;right:0;bottom:0;z-index:800;background:rgba(13,11,8,.96);border-top:1px solid rgba(201,168,76,.22);padding:9px 16px;font-family:'Cinzel',serif;font-size:.62em;letter-spacing:1px;color:var(--enc2);display:flex;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(6px)}
+.bandeau .i{border:1px solid rgba(201,168,76,.4);color:var(--or);border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9em}
+.piece{background:linear-gradient(135deg,rgba(201,168,76,.09),rgba(42,42,139,.05));border:1px solid var(--or);border-radius:10px;padding:16px 20px;margin-bottom:18px}
+.piece .who{font-family:'Cinzel Decorative',serif;color:var(--or2);font-size:1em;margin-bottom:6px}
+.piece .txt{font-style:italic;color:var(--enc2);font-size:.92em}
+.equipe{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.pj{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:1px;padding:4px 10px;border-radius:14px;border:1px solid rgba(201,168,76,.2);color:var(--enc2);opacity:.65}
+.pj.actif{opacity:1;color:var(--or2);border-color:var(--or);background:rgba(201,168,76,.1)}
+.scene-num{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:4px}
+.scene-titre{font-family:'Cinzel',serif;font-size:1.08em;color:var(--or2);margin-bottom:16px}
+.scene-txt{margin-bottom:16px;text-align:justify}
+.scene-txt p{margin-bottom:1em}
+.relance{font-style:italic;color:var(--or2);border-left:2px solid var(--or);padding-left:16px;margin:18px 0}
+.aparte{background:rgba(139,42,42,.1);border:1px solid rgba(139,42,42,.5);border-radius:6px;padding:14px 18px;margin:16px 0;font-style:italic;color:#e0a48a;font-size:.92em}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:5px;color:var(--enc);padding:14px 18px;margin:8px 0;cursor:pointer;font-family:'Crimson Text',Georgia,serif;font-size:.98em;line-height:1.5;transition:all .2s}
+.opt:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.5);transform:translateX(4px)}
+.opt.sel{border-color:var(--or);background:rgba(201,168,76,.12)}
+.opt .k{color:var(--or);font-family:'Cinzel',serif;margin-right:10px}
+.rep-wrap{margin-top:18px}
+.rep-note{font-size:.72em;color:var(--enc2);opacity:.8;font-style:italic;margin-bottom:6px}
+textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--enc);padding:10px 12px;font-family:'Crimson Text',Georgia,serif;font-size:.95em;resize:vertical;min-height:60px;outline:none}
+textarea:focus{border-color:var(--or)}
+.compteur{text-align:right;font-family:'Cinzel',serif;font-size:.62em;color:var(--enc2);opacity:.6;margin-top:4px}
+.compteur.plein{color:var(--rouge);opacity:1}
+.attente{text-align:center;font-style:italic;color:var(--enc2);opacity:.7;padding:20px}
+.err{background:rgba(139,42,42,.12);border:1px solid rgba(139,42,42,.5);border-radius:5px;padding:12px 16px;color:#e0a48a;font-size:.88em;margin:12px 0}
+.hist{margin-top:26px;padding-top:18px;border-top:1px solid rgba(201,168,76,.15)}
+.hist-t{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);opacity:.7;text-transform:uppercase;margin-bottom:12px}
+.hist-i{font-size:.85em;color:var(--enc2);opacity:.72;margin-bottom:10px;padding-left:14px;border-left:1px solid rgba(201,168,76,.2)}
+.code-table{font-family:'Cinzel Decorative',serif;font-size:1.6em;color:var(--or2);letter-spacing:6px;text-align:center;padding:12px;background:rgba(201,168,76,.07);border:1px dashed rgba(201,168,76,.4);border-radius:8px;margin:12px 0}
+@media(max-width:600px){.wrap{padding:18px 14px 30px}body{font-size:1em}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="nav">
+    <a class="bk" href="hub_narration.html">← Bibliothèque</a>
+    <a class="bk" href="index.html">Portail</a>
+    <span class="bk" style="opacity:.4;pointer-events:none">Campagnes · Kern MJ</span>
+  </div>
+
+  <div id="ecLock" style="display:none">
+    <h1>Les Campagnes de Valdurne</h1>
+    <p class="sub">Kern t'attend — mais pas encore.</p>
+    <div class="card"><div id="lockMsg"></div>
+      <div style="margin-top:16px"><a class="bk" href="hub_narration.html">← Retour</a></div>
+    </div>
+  </div>
+
+  <div id="ecCharte" style="display:none">
+    <h1>Avant de rejoindre la table</h1>
+    <div class="card charte">
+      <h2>⚔️ Ce qu'il faut savoir</h2>
+      <p><strong>Ceci est un espace de travail.</strong> Les campagnes de Valdurne sont une activité
+      pédagogique du collège : on y exerce pour de vrai l'écoute, l'esprit critique et le courage
+      de témoigner.</p>
+      <p><strong>Ce que tu écris est lu.</strong> Tes choix et tes phrases sont enregistrés et
+      consultables par ton CPE. Ce n'est pas une surveillance : c'est la même chose qu'un cahier
+      qu'on ramasse.</p>
+      <p><strong>Ce qui est attendu de toi :</strong> tu joues un personnage, tu restes dans
+      l'histoire, et tu ne parles jamais d'une personne réelle du collège.</p>
+      <p><strong>Si un message sort du cadre</strong> — insulte, propos qui vise quelqu'un,
+      hors-jeu volontaire — il n'entre pas dans l'histoire, et il est transmis à ton CPE.
+      La partie, elle, continue : <strong>ici, on n'exclut personne.</strong></p>
+      <div style="margin-top:18px"><button class="btn" onclick="accepterCharte()">J'ai compris, je rejoins la table</button></div>
+    </div>
+  </div>
+
+  <div id="ecLobby" style="display:none">
+    <h1>Les Campagnes de Valdurne</h1>
+    <p class="sub">Kern, Maître du Jeu · une aventure à plusieurs, en différé</p>
+    <div id="lobbyErr"></div>
+
+    <div class="card">
+      <div class="lbl">Ouvrir une table</div>
+      <p style="font-size:.9em;color:var(--enc2);margin-bottom:12px">Tu crées la partie et tu reçois un
+      code à partager avec ton équipe (3 à 4 joueurs, chacun un rôle différent).</p>
+      <select id="selCampagne"><option value="ECU01">Le Moulin de Bré — rang Écuyer</option></select>
+      <select id="selRoleC">
+        <option value="oeil">L'Œil — tu as vu quelque chose</option>
+        <option value="voix">La Voix — l'accusé te parlera</option>
+        <option value="memoire">La Mémoire — tu connais le passé du village</option>
+        <option value="main">La Main — tu as accès au moulin</option>
+      </select>
+      <button class="btn" onclick="creer()">Ouvrir la table</button>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Rejoindre une table</div>
+      <input id="inpCode" placeholder="CODE DE TABLE" maxlength="8" autocomplete="off">
+      <select id="selRoleR">
+        <option value="oeil">L'Œil</option>
+        <option value="voix">La Voix</option>
+        <option value="memoire">La Mémoire</option>
+        <option value="main">La Main</option>
+      </select>
+      <button class="btn" onclick="rejoindre()">Rejoindre</button>
+    </div>
+  </div>
+
+  <div id="ecJeu" style="display:none">
+    <h1 id="jeuTitre">…</h1>
+    <p class="sub" id="jeuSub"></p>
+    <div class="code-table" id="jeuCode"></div>
+    <div class="equipe" id="jeuEquipe"></div>
+    <div class="piece" id="jeuPiece" style="display:none">
+      <div class="who" id="pieceWho"></div>
+      <div class="txt" id="pieceTxt"></div>
+    </div>
+    <div id="jeuErr"></div>
+    <div class="card">
+      <div class="scene-num" id="scNum"></div>
+      <div class="scene-titre" id="scTitre"></div>
+      <div class="scene-txt" id="scTxt"></div>
+      <div id="scAparte"></div>
+      <div class="relance" id="scRelance"></div>
+      <div id="scOptions"></div>
+      <div class="rep-wrap" id="repWrap" style="display:none">
+        <div class="rep-note">Tu peux ajouter <strong>une phrase</strong> — ce que tu dis, ce que tu fais.
+        C'est facultatif. <em>Elle sera lue par ton CPE.</em></div>
+        <textarea id="inpRep" maxlength="180" placeholder="(facultatif)"></textarea>
+        <div class="compteur" id="cptRep">0 / 180</div>
+        <button class="btn" id="btnJouer" onclick="jouer()" disabled>Jouer ce tour</button>
+      </div>
+      <div class="attente" id="scAttente" style="display:none"></div>
+    </div>
+    <div class="hist" id="jeuHist"></div>
+  </div>
+
+  <div id="ecFin" style="display:none">
+    <h1>La campagne est close</h1>
+    <p class="sub" id="finComp"></p>
+    <div class="card">
+      <div class="lbl">Épilogue</div>
+      <div class="scene-txt" id="finEpi"></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Ce qui entre dans le canon de Valdurne</div>
+      <div style="font-style:italic;color:var(--or2)" id="finTrace"></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Ce que vous avez exercé</div>
+      <div id="finManiere"></div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn" onclick="chroniquePDF()">⬇ Télécharger la Chronique (PDF)</button>
+      <a class="bk" href="hub_narration.html" style="margin-left:8px">← Bibliothèque</a>
+    </div>
+  </div>
+</div>
+
+<div class="bandeau">
+  <span>👁️ Espace pédagogique · tes écrits sont visibles par ton CPE</span>
+  <span class="i" onclick="revoirCharte()" title="Revoir les règles">i</span>
+</div>
+
+<script>
+var AKEY='pvs_current_player', KEY='pvs_hof_v2', CKEY='pvs_campagne_table', RKEY='pvs_campagne_role', HKEY='pvs_charte_ok';
+var API='/api/campagne';
+var cur='', maTable='', monRole='', etatCourant=null, choixSel=null;
+
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function getP(c){var S=getS();return(S.players&&S.players[c])?S.players[c]:null}
+var RUB=['pixhare','psc1','liberte','autres','fraternite'], REQ=[0,2,4,6];
+function rubCount(p,k){return k==='pixhare'?Object.keys((p&&p.pixhareDone)||{}).length:Math.max(0,Math.floor(Number((p&&p.cp&&p.cp[k])||0)))}
+function rangDe(p){if(p&&p.rankData&&typeof p.rankData.i==='number')return p.rankData.i;var i=0;for(var j=1;j<REQ.length;j++){if(RUB.every(function(k){return rubCount(p,k)>=REQ[j]}))i=j;else break}return i}
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function paras(t){return String(t||'').split(/\n+/).filter(function(x){return x.trim()}).map(function(p){return '<p>'+esc(p)+'</p>'}).join('')}
+function show(id){['ecLock','ecCharte','ecLobby','ecJeu','ecFin'].forEach(function(x){var e=document.getElementById(x);if(e)e.style.display=(x===id?'block':'none')})}
+function erreur(cible,msg){var e=document.getElementById(cible);if(e)e.innerHTML=msg?'<div class="err">'+esc(msg)+'</div>':''}
+
+async function api(action,payload){
+  var body=Object.assign({action:action,code_joueur:cur},payload||{});
+  var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  var j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok||!j||j.error) throw new Error((j&&j.error)||('Erreur '+r.status));
+  return j;
+}
+
+function accepterCharte(){localStorage.setItem(HKEY,'1');router()}
+function revoirCharte(){show('ecCharte')}
+
+async function creer(){
+  erreur('lobbyErr','');
+  try{
+    var role=document.getElementById('selRoleC').value;
+    var j=await api('creer',{campagne:document.getElementById('selCampagne').value,role:role});
+    maTable=j.code; monRole=role;
+    localStorage.setItem(CKEY,maTable);localStorage.setItem(RKEY,monRole);
+    await ouvrirJeu();
+  }catch(e){erreur('lobbyErr',e.message)}
+}
+async function rejoindre(){
+  erreur('lobbyErr','');
+  var c=(document.getElementById('inpCode').value||'').trim().toUpperCase();
+  if(!c){erreur('lobbyErr','Entre le code de la table.');return}
+  try{
+    var role=document.getElementById('selRoleR').value;
+    await api('rejoindre',{code:c,role:role});
+    maTable=c;monRole=role;
+    localStorage.setItem(CKEY,maTable);localStorage.setItem(RKEY,monRole);
+    await ouvrirJeu();
+  }catch(e){erreur('lobbyErr',e.message)}
+}
+
+async function ouvrirJeu(){
+  var j=await api('etat',{code:maTable});
+  etatCourant=j;
+  if(j.partie.etat!=='ouverte'){await afficherFin();return}
+  show('ecJeu');
+  document.getElementById('jeuTitre').textContent=j.campagne?j.campagne.titre:'Campagne';
+  document.getElementById('jeuSub').textContent=j.campagne?j.campagne.pitch:'';
+  document.getElementById('jeuCode').textContent=j.partie.code;
+  var eq=document.getElementById('jeuEquipe');eq.innerHTML='';
+  (j.joueurs||[]).forEach(function(p){
+    var s=document.createElement('span');
+    s.className='pj'+(p.code_joueur===cur?' actif':'');
+    s.textContent=((j.roles&&j.roles[p.role])||p.role)+' · '+p.code_joueur;
+    eq.appendChild(s);
+  });
+  if(j.ma_piece){
+    document.getElementById('jeuPiece').style.display='block';
+    document.getElementById('pieceWho').textContent='Ta pièce — '+j.ma_piece.nom;
+    document.getElementById('pieceTxt').textContent=j.ma_piece.piece;
+  }
+  rendreHistorique(j.tours||[]);
+  var tours=j.tours||[];
+  var dernier=tours.length?tours[tours.length-1]:null;
+  if(!dernier || dernier.choix_id){ await lancerTour(); return; }
+  afficherTour(dernier);
+}
+
+async function lancerTour(){
+  document.getElementById('scNum').textContent='';
+  document.getElementById('scTitre').textContent='Kern écrit la suite…';
+  document.getElementById('scTxt').innerHTML='<p class="attente">…</p>';
+  document.getElementById('scOptions').innerHTML='';
+  document.getElementById('repWrap').style.display='none';
+  document.getElementById('scAttente').style.display='none';
+  try{
+    var j=await api('jouer',{code:maTable});
+    if(j.cloture){await afficherFin();return}
+    await rafraichir();
+    afficherTour(j.tour);
+  }catch(e){erreur('jeuErr',e.message);document.getElementById('scTitre').textContent='';}
+}
+
+function afficherTour(t){
+  erreur('jeuErr','');
+  document.getElementById('scNum').textContent='Tour '+t.tour+' · acte '+t.acte;
+  document.getElementById('scTitre').textContent=t.titre||'';
+  document.getElementById('scTxt').innerHTML=paras(t.scene);
+  var rap=t.rappel||null;
+  document.getElementById('scAparte').innerHTML=(rap&&rap.niveau>=2&&rap.texte)?'<div class="aparte">⚠ '+esc(rap.texte)+'</div>':'';
+  document.getElementById('scRelance').textContent=t.relance||'';
+  var monTour=(t.adresse==='tous'||t.adresse===monRole);
+  var box=document.getElementById('scOptions');box.innerHTML='';choixSel=null;
+  (t.options||[]).forEach(function(o){
+    var b=document.createElement('button');
+    b.className='opt';b.innerHTML='<span class="k">'+esc(o.id)+'</span>'+esc(o.texte);
+    if(monTour){
+      b.onclick=function(){
+        choixSel=o.id;
+        Array.prototype.forEach.call(box.children,function(c){c.classList.remove('sel')});
+        b.classList.add('sel');
+        document.getElementById('btnJouer').disabled=false;
+      };
+    }else{b.style.opacity='.55';b.style.cursor='default'}
+    box.appendChild(b);
+  });
+  var att=document.getElementById('scAttente');
+  if(monTour){
+    document.getElementById('repWrap').style.display='block';
+    var bj=document.getElementById('btnJouer');bj.disabled=true;bj.textContent='Jouer ce tour';
+    document.getElementById('inpRep').value='';
+    document.getElementById('cptRep').textContent='0 / 180';
+    document.getElementById('cptRep').className='compteur';
+    att.style.display='none';
+  }else{
+    document.getElementById('repWrap').style.display='none';
+    att.style.display='block';
+    att.textContent='C’est au tour de « '+((etatCourant&&etatCourant.roles&&etatCourant.roles[t.adresse])||t.adresse)+' ». Reviens quand il aura joué.';
+  }
+}
+
+async function jouer(){
+  if(!choixSel)return;
+  var btn=document.getElementById('btnJouer');btn.disabled=true;btn.textContent='Kern réfléchit…';
+  try{
+    var j=await api('jouer',{code:maTable,choix_id:choixSel,replique:document.getElementById('inpRep').value});
+    if(j.cloture){await afficherFin();return}
+    await rafraichir();
+    afficherTour(j.tour);
+  }catch(e){
+    btn.textContent='Jouer ce tour';btn.disabled=false;
+    erreur('jeuErr',e.message);
+  }
+}
+
+async function rafraichir(){
+  try{var j=await api('etat',{code:maTable});etatCourant=j;rendreHistorique(j.tours||[])}catch(e){}
+}
+
+function rendreHistorique(tours){
+  var h=document.getElementById('jeuHist');
+  var joues=(tours||[]).filter(function(t){return t.choix_id});
+  if(!joues.length){h.innerHTML='';return}
+  h.innerHTML='<div class="hist-t">Ce que vous avez déjà décidé</div>'+
+    joues.map(function(t){
+      return '<div class="hist-i"><strong>Tour '+t.tour+'</strong> — '+esc(t.choix_texte||'')+
+        (t.replique?'<br><em>« '+esc(t.replique)+' »</em>':'')+'</div>';
+    }).join('');
+}
+
+async function afficherFin(){
+  var j=await api('chronique',{code:maTable});
+  etatCourant=j;
+  var c=j.chronique||{};
+  show('ecFin');
+  document.getElementById('finComp').textContent=c.competence||'';
+  document.getElementById('finEpi').innerHTML=paras(c.epilogue);
+  document.getElementById('finTrace').textContent=c.trace||'';
+  var m=c.maniere||{};
+  var libelles={croise:'Vous avez croisé les pièces de tous',
+    ecoute_accuse:'Vous avez écouté l’accusé avant de conclure',
+    reparation:'Vous avez proposé une réparation',
+    protege_temoin:'Vous avez protégé le témoin',
+    bouc_emissaire:'Vous avez désigné un coupable de substitution'};
+  var html='';
+  Object.keys(libelles).forEach(function(k){
+    if(m[k]===undefined)return;
+    var bon=(k==='bouc_emissaire')?!m[k]:!!m[k];
+    html+='<div style="margin-bottom:6px;color:'+(bon?'var(--vert)':'var(--rouge)')+'">'+(bon?'✔':'✎')+' '+esc(libelles[k])+'</div>';
+  });
+  document.getElementById('finManiere').innerHTML=html||'<em>—</em>';
+}
+
+function chroniquePDF(){
+  var j=etatCourant||{};var c=j.chronique||{};var camp=j.campagne||{};
+  var joueurs=(j.joueurs||[]).map(function(p){return esc(((j.roles&&j.roles[p.role])||p.role)+' — '+p.code_joueur)}).join('<br>');
+  var recit=(j.tours||[]).map(function(t){
+    var bloc='<div class="tour"><div class="tnum">Tour '+t.tour+' · acte '+t.acte+'</div>'+
+      (t.titre?'<div class="ttit">'+esc(t.titre)+'</div>':'')+paras(t.scene);
+    if(t.choix_texte){
+      bloc+='<div class="choix"><strong>Votre décision :</strong> '+esc(t.choix_texte)+
+        (t.replique?'<br><em>« '+esc(t.replique)+' »</em>':'')+'</div>';
+    }
+    return bloc+'</div>';
+  }).join('');
+  var w=window.open('','_blank');
+  if(!w){alert('Autorise les fenêtres pour télécharger la Chronique.');return}
+  var css='@page{size:A4;margin:18mm 16mm;}'+
+    'body{font-family:Georgia,serif;font-size:10.5pt;line-height:1.6;color:#1a1818;}'+
+    '.cover{text-align:center;padding:40pt 0 28pt;border-bottom:1.5pt solid #c9a84c;margin-bottom:22pt;}'+
+    '.cover .k{font-size:8pt;letter-spacing:3pt;color:#9c7c28;text-transform:uppercase;}'+
+    '.cover h1{font-size:22pt;color:#1e2d5a;margin:10pt 0 4pt;}'+
+    '.cover .s{font-style:italic;color:#666;}'+
+    '.cover .eq{margin-top:16pt;font-size:9.5pt;color:#333;line-height:1.7;}'+
+    'h2{font-size:12pt;color:#9c7c28;border-bottom:.5pt solid #e0d6c1;padding-bottom:3pt;margin:20pt 0 10pt;}'+
+    '.tour{margin-bottom:16pt;}'+
+    '.tnum{font-size:8pt;letter-spacing:2pt;color:#9c7c28;text-transform:uppercase;}'+
+    '.ttit{font-size:11pt;color:#1e2d5a;margin-bottom:5pt;font-weight:bold;}'+
+    'p{margin:0 0 7pt;text-align:justify;}'+
+    '.choix{background:#faf7ef;border-left:2pt solid #c9a84c;padding:7pt 10pt;margin-top:6pt;font-size:9.5pt;}'+
+    '.trace{font-style:italic;color:#1e2d5a;border-top:.5pt solid #e0d6c1;border-bottom:.5pt solid #e0d6c1;padding:10pt 0;margin:14pt 0;text-align:center;}'+
+    '.foot{margin-top:24pt;padding-top:8pt;border-top:.5pt solid #e0d6c1;font-size:8pt;color:#999;text-align:center;}'+
+    '.pbtn{position:fixed;top:14px;right:14px;background:#9c7c28;color:#fff;border:none;padding:9px 18px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;}'+
+    '@media print{.pbtn{display:none;}body{print-color-adjust:exact;-webkit-print-color-adjust:exact;}}';
+  var html='<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Chronique — '+
+    esc(camp.titre||'Campagne')+'</title><style>'+css+'</style></head><body>'+
+    '<button class="pbtn" onclick="window.print()">⬇ Télécharger PDF</button>'+
+    '<div class="cover"><div class="k">Les Campagnes de Valdurne · Chronique</div>'+
+    '<h1>'+esc(camp.titre||'Campagne')+'</h1>'+
+    '<div class="s">'+esc(camp.rangLabel?('rang '+camp.rangLabel):'')+'</div>'+
+    '<div class="eq">'+joueurs+'</div></div>'+
+    '<h2>Le récit</h2>'+recit+
+    (c.epilogue?'<h2>Épilogue</h2>'+paras(c.epilogue):'')+
+    (c.trace?'<div class="trace">'+esc(c.trace)+'</div>':'')+
+    (c.competence?'<h2>Ce que vous avez exercé</h2><p>'+esc(c.competence)+'</p>':'')+
+    '<div class="foot">Portail Vie Scolaire — Les Veilleurs de Valdurne</div>'+
+    '</body></html>';
+  w.document.write(html);
+  w.document.close();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  var t=document.getElementById('inpRep');
+  if(t)t.addEventListener('input',function(){
+    var n=t.value.length,c=document.getElementById('cptRep');
+    c.textContent=n+' / 180';c.className='compteur'+(n>=180?' plein':'');
+  });
+  var ic=document.getElementById('inpCode');
+  if(ic)ic.addEventListener('input',function(){ic.value=ic.value.toUpperCase()});
+});
+
+async function router(){
+  if(localStorage.getItem(HKEY)!=='1'){show('ecCharte');return}
+  maTable=localStorage.getItem(CKEY)||'';monRole=localStorage.getItem(RKEY)||'';
+  if(maTable){
+    try{await ouvrirJeu();return}
+    catch(e){localStorage.removeItem(CKEY);localStorage.removeItem(RKEY);maTable='';monRole='';}
+  }
+  show('ecLobby');
+}
+
+(function(){
+  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
+  var p=cur?getP(cur):null;
+  if(!cur||!p){
+    show('ecLock');
+    document.getElementById('lockMsg').innerHTML='<p>Connecte-toi d’abord au Portail avec ton code joueur pour rejoindre une campagne.</p>';
+    return;
+  }
+  if(rangDe(p)<1){
+    show('ecLock');
+    document.getElementById('lockMsg').innerHTML='<p>Les campagnes s’ouvrent au rang <strong>Écuyer</strong>.<br>Complète des modules dans <em>toutes</em> les rubriques pour l’atteindre — la garde a besoin de gens qui ont touché à tout.</p>';
+    return;
+  }
+  router();
+})();
+</script>
+</body>
+</html>
