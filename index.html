@@ -127,6 +127,53 @@
 
 <div id="hubScreen">
 <div class="wrap">
+
+<!-- ══ BANDEROLE DU SEUIL DE VALDURNE ══════════════════════════════ -->
+<a id="seuilBand" href="seuil.html" style="display:none;align-items:center;gap:14px;flex-wrap:wrap;
+   text-decoration:none;margin:0 0 16px;padding:11px 18px;border-radius:10px;
+   background:linear-gradient(120deg,rgba(26,35,64,.85),rgba(26,21,16,.9));
+   border:1px solid rgba(201,168,76,.45);box-shadow:0 4px 18px rgba(0,0,0,.35);transition:all .25s">
+  <span style="font-size:1.3em;filter:drop-shadow(0 0 6px rgba(201,168,76,.5))">⚜️</span>
+  <span style="flex:1;min-width:200px">
+    <span style="display:block;font-family:Cinzel,serif;font-size:.68em;letter-spacing:3px;
+      color:#c9a84c;text-transform:uppercase">Le Seuil de Valdurne</span>
+    <span id="seuilEtat" style="display:block;color:#e8dfc8;font-size:.92em;opacity:.9"></span>
+  </span>
+  <span id="seuilCta" style="font-family:Cinzel,serif;font-size:.72em;letter-spacing:2px;
+    color:#e8c97a;border:1px solid rgba(201,168,76,.55);border-radius:6px;padding:7px 16px;
+    white-space:nowrap;background:rgba(201,168,76,.12)">Commencer</span>
+</a>
+<script>
+(function(){
+  var TITRES=['La Route','Celui qui attendait','La Trame',"Avant de veiller sur d'autres",
+              'Le Registre','Trois places à une table',"Ce qui t'attend",'Le Seuil franchi'];
+  function go(){
+    var b=document.getElementById('seuilBand'); if(!b) return;
+    var joueur=(localStorage.getItem('pvs_current_player')||'').trim();
+    if(!joueur){b.style.display='none';return}
+    var e=null; try{e=JSON.parse(localStorage.getItem('pvs_seuil')||'null')}catch(ex){}
+    var etat=document.getElementById('seuilEtat'), cta=document.getElementById('seuilCta');
+    if(!e){
+      etat.textContent="Kern t'attend à la porte. Personne ne t'a encore montré la maison.";
+      cta.textContent='Commencer';
+    } else if(e.fini){
+      etat.textContent='Seuil franchi ⚜️ — tu peux revenir écouter Kern quand tu veux.';
+      cta.textContent='Revoir';
+    } else {
+      var i=Math.min(Number(e.etape)||0,TITRES.length-1);
+      etat.textContent='Tu en étais à : '+TITRES[i]+' — Kern attend la suite.';
+      cta.textContent='Reprendre';
+    }
+    b.style.display='flex';
+    b.onmouseenter=function(){b.style.borderColor='rgba(201,168,76,.9)';b.style.transform='translateY(-2px)'};
+    b.onmouseleave=function(){b.style.borderColor='rgba(201,168,76,.45)';b.style.transform='none'};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+  window.addEventListener('storage',go);
+})();
+</script>
+<!-- ══════════════════════════════════════════════════════════════ -->
+
 <header>
 <div class="tag">GAME DESIGN SOCIAL</div>
 <h1>Portail Vie Scolaire</h1>

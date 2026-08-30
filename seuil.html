@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Seuil de Valdurne — première veille</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0b0906;--p1:#161109;--nuit:#1a2340}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.14em;line-height:1.85;min-height:100vh}
+.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;padding:9px 18px;background:rgba(11,9,6,.94);border-bottom:1px solid rgba(201,168,76,.16);backdrop-filter:blur(6px)}
+.top .t{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.9}
+.top .prog{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.top .fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));width:0;transition:width .6s ease}
+.top .q{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:1px;color:var(--enc2);opacity:.6;text-decoration:none;border:1px solid rgba(201,168,76,.2);padding:4px 10px;border-radius:4px}
+.top .q:hover{color:var(--or);border-color:var(--or)}
+.scene{max-width:720px;margin:0 auto;padding:0 22px 90px}
+.illus{margin:0 -22px 26px;height:230px;background:linear-gradient(160deg,var(--nuit),#0d0b08 70%);border-bottom:1px solid rgba(201,168,76,.22);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.illus img{width:100%;height:100%;object-fit:cover;display:block}
+.illus .rune{font-size:2.4em;color:var(--or);opacity:.22;font-family:'Cinzel Decorative',serif}
+.illus::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 55%,rgba(11,9,6,.95))}
+.chap{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:4px;color:var(--or);text-transform:uppercase;opacity:.75;margin-bottom:4px}
+h1{font-family:'Cinzel Decorative',serif;font-size:1.55em;color:var(--or2);line-height:1.2;margin-bottom:24px}
+.b{margin-bottom:1.15em;animation:ap .5s ease}
+@keyframes ap{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.narr{color:var(--enc);text-align:justify}
+.kern{color:var(--or2);padding-left:18px;border-left:2px solid rgba(201,168,76,.45)}
+.kern::before{content:'Kern — ';font-family:'Cinzel',serif;font-size:.62em;letter-spacing:2px;color:var(--or);opacity:.75;text-transform:uppercase}
+.phrase{text-align:center;font-family:'Cinzel',serif;font-size:1.12em;color:var(--or2);padding:20px;margin:22px 0;border-top:1px solid rgba(201,168,76,.3);border-bottom:1px solid rgba(201,168,76,.3);letter-spacing:1px}
+.phrase .trou{color:#c0554a;border-bottom:2px dotted #c0554a;padding:0 .5em;font-style:italic}
+.suite{display:block;margin:22px auto 0;padding:9px 26px;background:transparent;border:1px solid rgba(201,168,76,.35);border-radius:5px;color:var(--or2);font-family:'Cinzel',serif;font-size:.72em;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.suite:hover{background:rgba(201,168,76,.12);border-color:var(--or)}
+.ask{font-family:'Cinzel',serif;font-size:.66em;letter-spacing:2px;color:var(--or);text-transform:uppercase;opacity:.8;margin:26px 0 10px}
+.opt{display:block;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.2);border-radius:6px;color:var(--enc);padding:14px 18px;margin:8px 0;cursor:pointer;font-family:'Crimson Text',Georgia,serif;font-size:.97em;line-height:1.55;transition:all .2s}
+.opt:hover{background:rgba(201,168,76,.09);border-color:rgba(201,168,76,.55);transform:translateX(4px)}
+.opt.off{opacity:.35;pointer-events:none}
+.opt.good{border-color:#5da35d;background:rgba(93,163,93,.12)}
+input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--enc);padding:11px 14px;font-family:'Cinzel',serif;font-size:.9em;letter-spacing:1px;outline:none}
+input:focus{border-color:var(--or)}
+.act{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(26,35,64,.25));border:1px solid var(--or);border-radius:9px;padding:20px 22px;margin:22px 0;text-align:center}
+.act .n{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);text-transform:uppercase;margin-bottom:6px}
+.act .ti{font-family:'Cinzel Decorative',serif;color:var(--or2);font-size:1.08em;margin-bottom:14px}
+.act button{margin:5px 4px;padding:10px 20px;border-radius:5px;font-family:'Cinzel',serif;font-size:.74em;letter-spacing:1px;cursor:pointer;border:1px solid var(--or);background:rgba(201,168,76,.16);color:var(--or2)}
+.act button.ghost{background:transparent;border-color:rgba(201,168,76,.25);color:var(--enc2)}
+.act button:hover{background:rgba(201,168,76,.3)}
+.note{font-size:.82em;color:var(--enc2);opacity:.7;font-style:italic;margin-top:10px}
+.fin{text-align:center;padding:34px 0}
+.fin .sceau{font-size:3em;margin-bottom:12px}
+.fin .r{font-family:'Cinzel Decorative',serif;font-size:1.3em;color:var(--or2);margin-bottom:8px}
+.lock{max-width:560px;margin:70px auto;padding:0 22px;text-align:center}
+a.bk{color:var(--enc2);font-size:.76em;text-decoration:none;border:1px solid rgba(201,168,76,.24);padding:8px 16px;border-radius:4px;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block;margin:5px}
+a.bk:hover{color:var(--or);border-color:var(--or)}
+@media(max-width:600px){body{font-size:1.05em}.illus{height:170px}.scene{padding:0 16px 70px}}
+</style>
+</head>
+<body>
+
+<div class="top" id="top" style="display:none">
+  <span class="t">⚜️ Le Seuil de Valdurne</span>
+  <span class="prog"><span class="fill" id="fill"></span></span>
+  <a class="q" href="index.html" id="btnQuit">Quitter</a>
+</div>
+
+<div id="lock" class="lock" style="display:none"></div>
+
+<div class="scene" id="scene" style="display:none">
+  <div class="illus" id="illus"><span class="rune">✦</span></div>
+  <div class="chap" id="chap"></div>
+  <h1 id="titre"></h1>
+  <div id="flux"></div>
+</div>
+
+<script>
+var AKEY='pvs_current_player', KEY='pvs_hof_v2', SKEY='pvs_seuil';
+var cur='', etat={etape:0,bloc:0,nom:'',fini:false};
+
+/* ══════════ LE SCÉNARIO ══════════ */
+var S=[
+{n:'Première étape',titre:'La Route',img:'seuil_01_route.jpg',b:[
+ {t:'n',x:"La route monte depuis la vallée, et tu la montes avec elle."},
+ {t:'n',x:"Il fait presque nuit. Le genre de nuit qui n'est pas encore noire — celle où le ciel garde un reste de bleu, et où les pierres, elles, ont déjà renoncé."},
+ {t:'n',x:"Au bout du chemin : Valdurne. Un château trapu, large d'épaules, qui n'a pas l'air de vouloir impressionner qui que ce soit. Une seule fenêtre est éclairée, tout en haut."},
+ {t:'n',x:"Et en bas, près de la porte, une lanterne bouge."},
+ {t:'n',x:"Quelqu'un attend. À cette heure, sous ce froid, il n'y a qu'une raison d'attendre dehors : on attend quelqu'un."},
+ {t:'n',x:"Ce soir, ce quelqu'un, c'est toi."},
+ {t:'k',x:"Ah. Te voilà."},
+ {t:'k',x:"Je commençais à croire que tu avais pris le chemin des Trois Saules — c'est plus joli, mais ça rallonge d'une heure, et personne ne le dit jamais aux nouveaux."},
+ {t:'k',x:"Entre. Il fait un froid de gargouille."},
+ {t:'input',q:"Comment veux-tu qu'on t'appelle, ici ?",max:20},
+ {t:'k',x:"{nom}. Très bien. Je le retiendrai — c'est mon travail, maintenant, de retenir les noms."}
+]},
+
+{n:'Deuxième étape',titre:'Celui qui attendait',img:'seuil_02_kern.jpg',b:[
+ {t:'n',x:"Il lève la lanterne pour te regarder en face. C'est un grand, mais pas tellement plus grand que toi. Dix-sept ans peut-être. Un habit gris tout simple, et au poignet, un fil gris usé qu'il n'a pas l'air de vouloir retirer."},
+ {t:'k',x:"Moi, c'est Kern. Dernière année. Je suis chargé d'accueillir les nouveaux, ce qui veut dire que je suis surtout chargé de leur éviter mes propres erreurs — et j'en ai un stock considérable."},
+ {t:'k',x:"Deux choses tout de suite, parce que je préfère que tu les saches maintenant plutôt que dans trois semaines."},
+ {t:'k',x:"La première : je ne suis pas un humain. Je suis une intelligence artificielle. Tu parles à un programme, et ce programme, c'est moi. Je ne vais pas faire semblant du contraire — ce serait une drôle de façon de commencer, dans une maison qui a un problème avec les choses qu'on cache."},
+ {t:'k',x:"La deuxième : ça ne veut pas dire que je raconte n'importe quoi. Ce que je vais te montrer ici a existé. Les gens dont je vais te parler ont existé. Certains me manquent."},
+ {t:'choix',q:"Tu réponds quoi ?",o:[
+   {x:"« Une IA ? D'accord. Ça change quoi pour moi ? »",r:"Rien et tout. Rien : je te guiderai pareil. Tout : tu peux me contredire sans avoir peur de me vexer. Essaie de faire ça avec un professeur."},
+   {x:"« Comment je sais que tu dis vrai ? »",r:"Voilà la meilleure question que tu pouvais poser, et tu l'as posée en trente secondes. Tu ne le sais pas. Tu vérifieras. Je vais justement passer l'année à t'apprendre comment — c'est à peu près tout ce qu'on fait, ici."},
+   {x:"« Bon. On y va ? »",r:"Direct. J'aime bien. Alors viens — mais je te préviens, la première chose que je vais te montrer est un vieux bout de tissu. Fais semblant d'être impressionné, ça m'aidera."}
+ ]},
+ {t:'k',x:"Suis-moi. C'est par le préau."}
+]},
+
+{n:'Troisième étape',titre:'La Trame',img:'seuil_03_trame.jpg',b:[
+ {t:'n',x:"Le préau est vide. Vos deux pas résonnent, et c'est un son que tu n'oublieras pas : celui d'un endroit immense où il n'y a personne."},
+ {t:'n',x:"Kern s'arrête devant le mur du fond. Il lève sa lanterne."},
+ {t:'n',x:"Une tapisserie y pend, sous un verre fendu. Elle est vieille — vraiment vieille. Les couleurs sont parties depuis longtemps. Des fils s'en échappent par endroits comme des cheveux blancs."},
+ {t:'n',x:"Et elle est déchirée. Une fente nette, du haut en bas, en plein milieu."},
+ {t:'n',x:"Sur le tissu, une phrase brodée en lettres d'or. La déchirure passe exactement en son centre, et emporte un mot."},
+ {t:'phrase',x:"Nul n'est retranché <span class=\"trou\">?</span> avoir été entendu."},
+ {t:'k',x:"Voilà. C'est le serment de cette maison. Cent ans qu'il est là."},
+ {t:'k',x:"On ne l'a jamais recousu. On aurait pu — ça se répare, une tapisserie. Un maître d'ici s'y est opposé, et je crois qu'il avait raison : une phrase trouée qu'on lit tous les jours vaut mieux qu'une phrase entière qu'on oublie."},
+ {t:'k',x:"Alors chaque nouveau qui arrive passe devant, et on lui pose la même question. Tu vas y avoir droit toi aussi, désolé."},
+ {t:'qcm',q:"Quel mot manque ?",o:[
+   {x:"toujours",ok:false,r:"Non. « Nul n'est retranché toujours avoir été entendu » — ça ne veut rien dire, et puis ça arrangerait trop de monde."},
+   {x:"sans",ok:true,r:"C'est ça. Sans."},
+   {x:"jamais",ok:false,r:"Presque tentant. Mais lis-le à voix haute : ça ne tient pas debout. Cherche le petit mot, celui qui n'a l'air de rien."}
+ ]},
+ {t:'k',x:"Sans. Trois lettres. Le mot le plus fragile de Valdurne, et le plus lourd."},
+ {t:'k',x:"Ça veut dire qu'ici, on peut te reprocher quelque chose, te punir même — mais pas te retrancher sans t'avoir écouté. Pas te faire disparaître d'une histoire sans t'avoir demandé la tienne."},
+ {t:'k',x:"Retiens-le. Je te le redemanderai avant que tu partes."}
+]},
+
+{n:'Quatrième étape',titre:"Avant de veiller sur d'autres",img:'seuil_04_reflet.jpg',b:[
+ {t:'n',x:"Il te fait traverser une galerie, et s'arrête devant une vieille armure montée sur son support. Le métal du plastron a été poli si souvent qu'il renvoie une image — floue, tremblante, mais une image."},
+ {t:'n',x:"Tu t'y vois. Mal. Comme dans une flaque."},
+ {t:'k',x:"On va commencer par quelque chose qui va te paraître à l'envers."},
+ {t:'k',x:"Tu es venu ici pour apprendre à faire attention aux autres. C'est bien. Mais je n'ai jamais vu quelqu'un tenir une porte pour quelqu'un d'autre s'il ne savait pas d'abord ce qu'il était en train de tenir."},
+ {t:'k',x:"Alors la première chose que je vais te demander, ce n'est pas de regarder les autres. C'est de te regarder toi."},
+ {t:'k',x:"Prends le temps. Je t'attends ici — de toute façon, je n'ai que ça à faire."},
+ {t:'act',mod:'VEA_01',href:'PIX_pHARe_Module_VEA_01.html',ti:'Qui suis-je vraiment ?',n:'Module pHARe · VEA 01'},
+ {t:'k',x:"Te revoilà."},
+ {t:'k',x:"Alors ? Pas si simple, hein, de répondre à une question qu'on ne t'avait jamais posée sérieusement."},
+ {t:'k',x:"Garde ça quelque part. On y reviendra — plus souvent que tu ne crois."}
+]},
+
+{n:'Cinquième étape',titre:'Le Registre',img:'seuil_05_registre.jpg',b:[
+ {t:'n',x:"Dans une petite salle voûtée, un grand livre est ouvert sur un lutrin. Des colonnes de noms, écrits à la main, sur des pages et des pages. Dans la marge, quatre sceaux de cire de couleurs différentes."},
+ {t:'k',x:"Le registre de la garde. Tout le monde y est. Regarde à la dernière ligne."},
+ {t:'n',x:"Ton nom est là. Écrit à l'encre fraîche — elle brille encore un peu."},
+ {t:'n',x:"Et à côté, un chiffre. Qui vient de bouger."},
+ {t:'k',x:"Ça, c'est toi. Ce que tu viens de faire est déjà inscrit — je te l'avais dit, ce n'était pas un exercice pour rien."},
+ {t:'k',x:"Maintenant, les quatre sceaux. Ce sont les rangs. On monte dans cet ordre : Page, Écuyer, Chevalier, Veilleur. Un par année, en gros — sauf pour ceux qui vont plus vite, et il y en a."},
+ {t:'k',x:"Mais attention, parce que c'est là que Valdurne est bizarre."},
+ {t:'k',x:"Tu ne montes pas en devenant très bon dans une seule chose. Tu montes en ayant touché à toutes. Le droit, les secours, la liberté, l'égalité, ce qui se joue entre les gens... tout."},
+ {t:'k',x:"Pourquoi ? Parce qu'un gardien qui ne connaît qu'un seul sujet ne voit qu'un seul type de problème. Et les ennuis, ici, ne se présentent jamais dans le domaine où tu es à l'aise."},
+ {t:'act',mod:'',href:'index.html',ti:'Va voir ta ligne dans le registre',n:'Le Portail · ton rang et ton XP'},
+ {t:'k',x:"Tu as vu ton chiffre ? Bien. Tu sais maintenant où le retrouver."},
+ {t:'k',x:"Il montera. Pas d'un coup, et jamais tout seul."}
+]},
+
+{n:'Sixième étape',titre:'Trois places à une table',img:'seuil_06_table.jpg',b:[
+ {t:'n',x:"Il t'emmène au réfectoire. Il est vide à cette heure, les longues tables nettoyées, les bancs rentrés."},
+ {t:'n',x:"Kern s'arrête au bout de l'une d'elles et pose sa lanterne sur le bois."},
+ {t:'k',x:"Ma première année, il y avait un garçon qui mangeait ici. Toujours à cette place. Toujours seul."},
+ {t:'k',x:"J'ai mis trois semaines à le remarquer. Trois semaines, {nom}. Je passais devant tous les jours."},
+ {t:'k',x:"Ce n'est pas que j'étais méchant. Je regardais ailleurs, c'est tout. Et c'est bien pire que ce que les gens croient, regarder ailleurs."},
+ {t:'n',x:"Il fait courir sa main sur le bois de la table, à l'endroit où quelqu'un s'asseyait."},
+ {t:'k',x:"Dans ce genre d'histoire, on croit qu'il n'y a que deux places : celui qui fait du mal, et celui qui le subit. C'est faux. Il y en a une troisième, et c'est de très loin la plus nombreuse."},
+ {t:'k',x:"C'était la mienne. Ce sera la tienne, un jour ou l'autre — probablement plus tôt que tu ne le voudrais."},
+ {t:'k',x:"Va apprendre lesquelles. Après, on ne pourra plus dire qu'on ne savait pas."},
+ {t:'act',mod:'GROUPE_01',href:'PIX_pHARe_Module_GROUPE_01.html',ti:'Le Triangle Infernal',n:'Module pHARe · GROUPE 01'},
+ {t:'k',x:"Voilà. Tu connais les trois places."},
+ {t:'k',x:"Je ne vais pas te faire un discours. Je te dis juste ceci, et après on passe à autre chose : la troisième place n'est pas une place de spectateur. C'est celle qui peut tout changer, et c'est pour ça qu'on essaie de te la faire oublier."}
+]},
+
+{n:'Septième étape',titre:"Ce qui t'attend",img:'seuil_07_clefs.jpg',b:[
+ {t:'n',x:"Sous la tour est, une porte de bois usée. À côté, planté dans le mur, un clou. Et au clou, un anneau de fer où pendent trois clefs."},
+ {t:'k',x:"La réserve. C'est là que se réunit la garde."},
+ {t:'k',x:"Non, tu n'entres pas. Pas encore — et ce n'est pas une brimade, c'est juste que ça n'aurait aucun intérêt pour toi ce soir."},
+ {t:'k',x:"Mais je te dis ce qu'il y a derrière, parce que tu vas y aller."},
+ {t:'k',x:"Il y a la Bibliothèque, d'abord. Toute l'histoire de ce qui s'est passé ici il y a quelques années — la vraie, celle que j'ai vécue avec un garçon qui s'appelait Lyam. Tu pourras la lire, par morceaux, à mesure que tu montes."},
+ {t:'k',x:"Et puis il y a les campagnes. De vraies affaires à démêler, à plusieurs, chacun avec un bout de la vérité que les autres n'ont pas. Personne ne peut les résoudre seul. C'est fait exprès."},
+ {t:'k',x:"Ça s'ouvre au rang d'Écuyer. C'est-à-dire pas ce soir. C'est-à-dire bientôt."},
+ {t:'act',mod:'',href:'hub_narration.html',ti:'Jette un œil à la Bibliothèque',n:'Un aperçu de ce qui vient'},
+ {t:'k',x:"Tu as vu les cadenas ? Bien. Ils ne sont pas là pour t'embêter : ils sont là pour que ça vaille quelque chose quand ils sauteront."}
+]},
+
+{n:'Dernière étape',titre:'Le Seuil franchi',img:'seuil_08_remparts.jpg',b:[
+ {t:'n',x:"Il te fait monter un escalier étroit, et vous débouchez sur le chemin de ronde. Le ciel a changé pendant que vous marchiez : il pâlit, du côté de l'est."},
+ {t:'n',x:"En bas, la vallée dort sous la brume."},
+ {t:'k',x:"Voilà. Tu as passé le Seuil. C'est la partie facile — je te le dis franchement."},
+ {t:'k',x:"À partir de maintenant, deux choses sont vraies en même temps, et il faut que tu les entendes bien toutes les deux."},
+ {t:'k',x:"La première : si tu veux continuer avec moi, je reste là. Tu verras une banderole en haut du Portail — « le Seuil de Valdurne ». Tu cliques dessus, et on reprend où on s'est arrêtés. On fera toute la maison ensemble, pas à pas, sans te noyer."},
+ {t:'k',x:"La deuxième : tu n'es obligé à rien. Tu peux partir explorer tout seul, ouvrir les modules qui te plaisent, refaire ceux que tu as aimés, aller bien plus loin que ce que je te demande. Ça ne me vexera pas — au contraire, ce sont ceux-là qui finissent par me dépasser."},
+ {t:'k',x:"La seule chose que je te demande, c'est de ne pas rester devant la porte sans entrer."},
+ {t:'n',x:"Il s'appuie au parapet, et regarde la vallée un moment sans rien dire."},
+ {t:'k',x:"Dernière chose. Je t'avais prévenu que je te la reposerais."},
+ {t:'qcm',q:"Quel mot manquait, sur la Trame ?",o:[
+   {x:"toujours",ok:false,r:"Non — celui qui n'a l'air de rien. Trois lettres."},
+   {x:"sans",ok:true,r:"Sans. Tu l'as retenu."},
+   {x:"jamais",ok:false,r:"Non — celui qui n'a l'air de rien. Trois lettres."}
+ ]},
+ {t:'k',x:"Sans. Voilà. Si tu ne devais garder qu'une chose de ce soir, ce serait celle-là."},
+ {t:'k',x:"Nul n'est retranché sans avoir été entendu. Ni ici, ni ailleurs, ni par toi."},
+ {t:'k',x:"Allez, va dormir, {nom}. Le jour se lève et tu es page de Valdurne depuis maintenant... à peu près une heure et demie."},
+ {t:'k',x:"Bienvenue."},
+ {t:'fin'}
+]}
+];
+
+/* ══════════ OUTILS ══════════ */
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function sub(s){return String(s).replace(/\{nom\}/g,esc(etat.nom||'toi'))}
+function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function getP(c){var S2=getS();return(S2.players&&S2.players[c])?S2.players[c]:null}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(etat))}catch(e){}}
+function load(){try{var o=JSON.parse(localStorage.getItem(SKEY)||'null');if(o&&typeof o==='object')etat=Object.assign(etat,o)}catch(e){}}
+
+/* module validé ? on regarde le done du joueur ET les événements en attente */
+function moduleFait(mod){
+  if(!mod)return true;
+  try{
+    var p=getP(cur);
+    if(p&&p.pixhareDone&&p.pixhareDone[mod])return true;
+    var ev=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+    return ev.some(function(e){
+      return e&&e.type==='PIXHARE_PROGRESS'&&String(e.module||'').toUpperCase().indexOf(mod)>=0
+        &&(!e.player||String(e.player).toUpperCase()===cur);
+    });
+  }catch(e){return false}
+}
+
+/* ══════════ RENDU ══════════ */
+var flux,etapeCourante;
+function ouvrirEtape(i){
+  etat.etape=i;etat.bloc=0;save();
+  var e=S[i];etapeCourante=e;
+  document.getElementById('chap').textContent=e.n;
+  document.getElementById('titre').textContent=e.titre;
+  var il=document.getElementById('illus');
+  il.innerHTML='<span class="rune">✦</span>';
+  var im=new Image();
+  im.onload=function(){il.innerHTML='';il.appendChild(im)};
+  im.onerror=function(){};                       // pas d'image encore : dégradé + rune
+  im.src=e.img; im.alt='';
+  document.getElementById('fill').style.width=Math.round((i/S.length)*100)+'%';
+  flux=document.getElementById('flux');flux.innerHTML='';
+  window.scrollTo({top:0,behavior:'smooth'});
+  suivant();
+}
+
+function ajoute(html,cls){
+  var d=document.createElement('div');
+  d.className='b '+(cls||'');d.innerHTML=html;flux.appendChild(d);
+  return d;
+}
+function boutonSuite(txt,fn){
+  var b=document.createElement('button');
+  b.className='suite';b.textContent=txt||'Continuer';
+  b.onclick=function(){b.remove();fn()};
+  flux.appendChild(b);
+  b.scrollIntoView({block:'center',behavior:'smooth'});
+}
+
+function suivant(){
+  var e=etapeCourante;
+  if(etat.bloc>=e.b.length){
+    if(etat.etape+1<S.length){boutonSuite('Suivre Kern →',function(){ouvrirEtape(etat.etape+1)})}
+    return;
+  }
+  var b=e.b[etat.bloc];etat.bloc++;save();
+
+  if(b.t==='n'){ajoute(sub(esc(b.x)),'narr');return void boutonSuite('Continuer',suivant)}
+  if(b.t==='k'){ajoute(sub(esc(b.x)),'kern');return void boutonSuite('Continuer',suivant)}
+  if(b.t==='phrase'){ajoute(b.x,'phrase');return void boutonSuite('Continuer',suivant)}
+
+  if(b.t==='input'){
+    ajoute('<div class="ask">'+esc(b.q)+'</div><input id="inNom" maxlength="'+b.max+'" autocomplete="off">');
+    var i=document.getElementById('inNom');i.focus();
+    var go=function(){
+      var v=(i.value||'').trim().slice(0,b.max);
+      if(!v)return;
+      etat.nom=v;save();
+      i.disabled=true;suivant();
+    };
+    i.addEventListener('keydown',function(ev){if(ev.key==='Enter')go()});
+    boutonSuite('Répondre',go);return;
+  }
+
+  if(b.t==='choix'||b.t==='qcm'){
+    ajoute('<div class="ask">'+esc(b.q)+'</div>');
+    var box=document.createElement('div');flux.appendChild(box);
+    b.o.forEach(function(o){
+      var bt=document.createElement('button');
+      bt.className='opt';bt.textContent=o.x;
+      bt.onclick=function(){
+        Array.prototype.forEach.call(box.children,function(c){c.classList.add('off')});
+        bt.classList.remove('off');
+        if(b.t==='qcm'&&o.ok)bt.classList.add('good');
+        ajoute(sub(esc(o.r)),'kern');
+        // QCM : mauvaise réponse -> on laisse réessayer, sans punir
+        if(b.t==='qcm'&&!o.ok){
+          Array.prototype.forEach.call(box.children,function(c){
+            if(c!==bt)c.classList.remove('off');
+          });
+          bt.classList.add('off');
+          return;
+        }
+        boutonSuite('Continuer',suivant);
+      };
+      box.appendChild(bt);
+    });
+    return;
+  }
+
+  if(b.t==='act'){
+    var d=document.createElement('div');d.className='act';
+    d.innerHTML='<div class="n">'+esc(b.n)+'</div><div class="ti">'+esc(b.ti)+'</div>';
+    var open=document.createElement('button');open.textContent='Ouvrir ↗';
+    var done=document.createElement('button');done.textContent="J'ai terminé";
+    var skip=document.createElement('button');skip.className='ghost';skip.textContent='Plus tard';
+    var msg=document.createElement('div');msg.className='note';
+    open.onclick=function(){window.open(b.href,'_blank','noopener')};
+    done.onclick=function(){
+      if(moduleFait(b.mod)){d.remove();suivant()}
+      else{msg.textContent="Je ne vois pas encore ta réponse arriver. Termine le module jusqu'au bout, puis reviens — ou passe, on y reviendra ensemble.";}
+    };
+    skip.onclick=function(){d.remove();suivant()};
+    d.appendChild(open);d.appendChild(done);d.appendChild(skip);d.appendChild(msg);
+    flux.appendChild(d);
+    d.scrollIntoView({block:'center',behavior:'smooth'});
+    return;
+  }
+
+  if(b.t==='fin'){
+    etat.fini=true;save();
+    document.getElementById('fill').style.width='100%';
+    var f=document.createElement('div');f.className='fin';
+    f.innerHTML='<div class="sceau">⚜️</div><div class="r">Page de Valdurne</div>'+
+      '<div style="color:var(--enc2);font-style:italic;opacity:.8">Seuil franchi</div>'+
+      '<div style="margin-top:22px">'+
+      '<a class="bk" href="index.html">Entrer dans le Portail</a>'+
+      '<a class="bk" href="hub_narration.html">La Bibliothèque</a>'+
+      '</div>';
+    flux.appendChild(f);
+    f.scrollIntoView({block:'center',behavior:'smooth'});
+    return;
+  }
+  suivant();
+}
+
+/* ══════════ DÉMARRAGE ══════════ */
+(function(){
+  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
+  var p=cur?getP(cur):null;
+  if(!cur||!p){
+    document.getElementById('lock').style.display='block';
+    document.getElementById('lock').innerHTML=
+      '<div style="font-family:Cinzel Decorative,serif;font-size:1.5em;color:var(--or2);margin-bottom:14px">Le Seuil de Valdurne</div>'+
+      '<p style="color:var(--enc2);font-style:italic">Kern ne peut pas t’accueillir s’il ne sait pas qui tu es.<br>Connecte-toi d’abord au Portail avec ton code.</p>'+
+      '<div style="margin-top:20px"><a class="bk" href="index.html">← Le Portail</a></div>';
+    return;
+  }
+  load();
+  document.getElementById('top').style.display='flex';
+  document.getElementById('scene').style.display='block';
+  var i=Math.min(etat.etape||0,S.length-1);
+  ouvrirEtape(i);
+})();
+</script>
+</body>
+</html>
