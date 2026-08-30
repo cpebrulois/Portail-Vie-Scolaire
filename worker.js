@@ -461,6 +461,111 @@ async function handleCampagne(request, env) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// IDENTITÉS — deux codes par élève
+//
+//   code public  : distribué par le CPE, sert à te DÉSIGNER (témoignage).
+//   code secret  : composé par l'élève à la première connexion, sert à se
+//                  CONNECTER. « Cigogne-Vaillante-4712 ».
+//
+// Le suffixe est un nombre ALÉATOIRE à 4 chiffres (jamais le rang
+// d'inscription, qui serait devinable et permettrait l'usurpation).
+//
+// Le code secret est stocké en clair : c'est un identifiant de jeu, pas un
+// mot de passe, et le CPE doit pouvoir le retrouver pour un élève qui l'oublie.
+// La table est donc en RLS sans accès « anon » : seul ce Worker y accède.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const IDENT_RATE = { windowSec: 300, max: 20 };   // anti-devinette
+
+function normCode(x) {
+  return String(x || "").trim().toUpperCase().replace(/\s+/g, "");
+}
+
+/** Limite les essais par IP (anti-force brute sur le code secret). */
+async function identQuota(request, env) {
+  if (!env.RL) return true;
+  const ip = request.headers.get("CF-Connecting-IP") || "0.0.0.0";
+  const bucket = Math.floor(Date.now() / 1000 / IDENT_RATE.windowSec);
+  const key = `id:${ip}:${bucket}`;
+  try {
+    const n = parseInt((await env.RL.get(key)) || "0", 10) + 1;
+    await env.RL.put(key, String(n), { expirationTtl: IDENT_RATE.windowSec + 5 });
+    return n <= IDENT_RATE.max;
+  } catch { return true; }
+}
+
+async function handleIdentite(request, env) {
+  const origin = request.headers.get("Origin") || "";
+  const allowed = originAllowed(request, env);
+  const cors = corsHeaders(origin, allowed);
+
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (request.method !== "POST") return json({ error: "Méthode non autorisée." }, 405, cors);
+  if (!allowed) return json({ error: "Origine non autorisée." }, 403, cors);
+  if (!sbCfg(env)) return json({ error: "Base non configurée (SUPABASE_SERVICE)." }, 500, cors);
+
+  let b;
+  try { b = await request.json(); } catch { return json({ error: "Corps JSON invalide." }, 400, cors); }
+  const action = String(b.action || "");
+  const pub = normCode(b.public);
+  const sec = normCode(b.secret);
+
+  if (!(await identQuota(request, env))) {
+    return json({ error: "Trop d'essais. Réessaie dans quelques minutes." }, 429, cors);
+  }
+
+  try {
+    // ---------------------------------------------------------- VÉRIFIER
+    // Ce code public existe-t-il, et un compte a-t-il déjà été créé dessus ?
+    if (action === "verifier") {
+      if (!pub) return json({ error: "Entre ton code public." }, 400, cors);
+      const [row] = await sb(env, "GET",
+        `pvs_identites?code_public=eq.${encodeURIComponent(pub)}&select=code_public,code_secret`);
+      if (!row) return json({ error: "Ce code public n'existe pas. Vérifie auprès de ton CPE." }, 404, cors);
+      return json({ ok: true, deja_cree: !!row.code_secret }, 200, cors);
+    }
+
+    // ------------------------------------------------------------- CRÉER
+    if (action === "creer") {
+      if (!pub || !sec) return json({ error: "Code public ou nom de page manquant." }, 400, cors);
+      if (!/^[A-ZÀ-Ÿ-]{3,}-[A-ZÀ-Ÿ-]{3,}-\d{4}$/.test(sec)) {
+        return json({ error: "Nom de page invalide." }, 400, cors);
+      }
+      const [row] = await sb(env, "GET",
+        `pvs_identites?code_public=eq.${encodeURIComponent(pub)}&select=code_public,code_secret`);
+      if (!row) return json({ error: "Ce code public n'existe pas." }, 404, cors);
+      if (row.code_secret) {
+        return json({ error: "Un nom de page a déjà été choisi pour ce code. Demande à ton CPE." }, 409, cors);
+      }
+      // unicité du code secret
+      const pris = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public`);
+      if (pris && pris.length) {
+        return json({ error: "Ce nom est déjà pris — retire un chiffre au sort." }, 409, cors);
+      }
+      await sb(env, "PATCH",
+        `pvs_identites?code_public=eq.${encodeURIComponent(pub)}`,
+        { code_secret: sec, cree_at: new Date().toISOString() });
+      return json({ ok: true, secret: sec, public: pub }, 200, cors);
+    }
+
+    // --------------------------------------------------------- CONNECTER
+    if (action === "connecter") {
+      if (!sec) return json({ error: "Entre ton nom de page." }, 400, cors);
+      const [row] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,code_secret`);
+      if (!row) return json({ error: "Nom de page inconnu." }, 404, cors);
+      return json({ ok: true, public: row.code_public, secret: row.code_secret }, 200, cors);
+    }
+
+    return json({ error: "Action inconnue." }, 400, cors);
+  } catch (e) {
+    console.error("[identite]", (e && e.message) || e);
+    return json({ error: "Erreur serveur." }, 500, cors);
+  }
+}
+
 // --- Réveil Supabase (empêche la mise en pause du projet gratuit) ------------
 // Déclenché par le Cron (voir wrangler.jsonc). Fait une requête authentifiée à
 // l'API REST du projet : cela touche la base et compte comme activité.
@@ -493,6 +598,9 @@ export default {
     }
     if (url.pathname === "/api/campagne") {
       return handleCampagne(request, env);
+    }
+    if (url.pathname === "/api/identite") {
+      return handleIdentite(request, env);
     }
     // Filet de sécurité : si le routage envoie autre chose ici, on sert l'asset.
     if (env.ASSETS) return env.ASSETS.fetch(request);

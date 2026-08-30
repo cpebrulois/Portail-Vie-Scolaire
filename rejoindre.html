@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Première connexion — Portail Vie Scolaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0b0906;--p1:#181209;--nuit:#1a2340;--rouge:#8b2a2a;--vert:#5da35d}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:1.08em;line-height:1.8;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% -10%,rgba(26,35,64,.55),transparent 60%)}
+.wrap{max-width:620px;margin:0 auto;padding:44px 22px 70px;position:relative;z-index:1}
+.eyebrow{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:4px;color:var(--or);text-transform:uppercase;opacity:.85;text-align:center;margin-bottom:10px}
+h1{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,4.5vw,2em);color:var(--or2);text-align:center;line-height:1.2;margin-bottom:12px}
+.sub{text-align:center;color:var(--enc2);font-style:italic;opacity:.8;font-size:.93em;margin-bottom:30px}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:12px;padding:24px}
+.lbl{font-family:'Cinzel',serif;font-size:.63em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.85;margin-bottom:10px}
+input,select{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.3);border-radius:6px;color:var(--enc);padding:12px 14px;font-family:'Cinzel',serif;font-size:.92em;letter-spacing:1px;outline:none;margin-bottom:12px}
+input:focus,select:focus{border-color:var(--or)}
+select option{background:#181209;color:var(--enc)}
+.btn{display:block;width:100%;padding:13px;background:rgba(201,168,76,.15);border:1px solid var(--or);border-radius:6px;color:var(--or2);font-family:'Cinzel',serif;font-size:.8em;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.btn:hover{background:rgba(201,168,76,.3)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.ghost{background:transparent;border-color:rgba(201,168,76,.25);color:var(--enc2);margin-top:10px}
+.msg{border-radius:6px;padding:12px 15px;font-size:.88em;margin:12px 0;line-height:1.6}
+.msg.err{background:rgba(139,42,42,.13);border:1px solid rgba(139,42,42,.5);color:#e0a48a}
+.msg.ok{background:rgba(93,163,93,.12);border:1px solid rgba(93,163,93,.45);color:#a8d8a8}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.apercu{text-align:center;margin:22px 0;padding:24px 16px;background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(26,35,64,.3));border:1px solid var(--or);border-radius:10px}
+.apercu .k{font-family:'Cinzel',serif;font-size:.58em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.8;margin-bottom:8px}
+.apercu .nom{font-family:'Cinzel Decorative',serif;font-size:1.5em;color:var(--or2);word-break:break-word;line-height:1.25}
+.apercu .num{color:var(--enc2);opacity:.75;font-size:.72em;font-family:'Cinzel',serif;letter-spacing:2px;margin-top:6px}
+.garde{background:rgba(139,42,42,.09);border:1px solid rgba(139,42,42,.4);border-radius:8px;padding:16px 18px;margin:18px 0;font-size:.88em;color:#e8c8b8;line-height:1.7}
+.garde strong{color:var(--or2)}
+.final{text-align:center;padding:8px 0}
+.final .code{font-family:'Cinzel Decorative',serif;font-size:1.45em;color:var(--or2);background:rgba(201,168,76,.1);border:2px dashed var(--or);border-radius:10px;padding:20px 14px;margin:16px 0;word-break:break-word;line-height:1.3}
+.hint{font-size:.82em;color:var(--enc2);opacity:.72;font-style:italic;margin-top:10px}
+a.bk{color:var(--enc2);font-size:.78em;text-decoration:none;font-family:'Cinzel',serif;letter-spacing:1px}
+a.bk:hover{color:var(--or)}
+.steps{display:flex;gap:6px;justify-content:center;margin-bottom:26px}
+.steps i{width:26px;height:3px;border-radius:2px;background:rgba(201,168,76,.2)}
+.steps i.on{background:var(--or)}
+@media(max-width:520px){.duo{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Portail Vie Scolaire · Valdurne</div>
+  <h1>Première connexion</h1>
+  <p class="sub">Tu vas choisir le nom sous lequel tu seras connu ici.</p>
+  <div class="steps"><i id="s1" class="on"></i><i id="s2"></i><i id="s3"></i></div>
+
+  <!-- ÉTAPE 1 : code public -->
+  <div class="card" id="ec1">
+    <div class="lbl">Ton code d'inscription</div>
+    <p style="font-size:.9em;color:var(--enc2);margin-bottom:14px">C'est le code que ton CPE t'a remis.
+    Il ne sert qu'une fois, pour t'ouvrir un compte.</p>
+    <input id="inPub" placeholder="CODE D'INSCRIPTION" autocomplete="off">
+    <button class="btn" id="btnPub" onclick="verifier()">Continuer</button>
+    <div id="m1"></div>
+    <p class="hint">Tu as déjà un nom de page ? <a class="bk" href="index.html">Connecte-toi ici →</a></p>
+  </div>
+
+  <!-- ÉTAPE 2 : composition -->
+  <div class="card" id="ec2" style="display:none">
+    <div class="lbl">Compose ton nom de page</div>
+    <p style="font-size:.9em;color:var(--enc2);margin-bottom:16px">À Valdurne, personne n'utilise son vrai
+    nom. Choisis une créature et une qualité — ce nom sera le tien pour les quatre années.</p>
+    <div class="duo">
+      <select id="selAnimal"></select>
+      <select id="selQualite"></select>
+    </div>
+    <div class="apercu">
+      <div class="k">Ton nom de page</div>
+      <div class="nom" id="apercu">—</div>
+      <div class="num" id="apercuNum"></div>
+    </div>
+    <button class="btn ghost" onclick="retirer()">🎲 Retirer un autre nombre</button>
+    <div class="garde">
+      <strong>Retiens bien ce nom.</strong> C'est lui qui te connectera, ici et depuis chez toi.
+      Ne le donne à personne — pas même à ton meilleur ami : quelqu'un qui l'a peut agir à ta place.
+      Et ne l'utilise nulle part ailleurs sur internet.<br><br>
+      Si tu l'oublies, ton CPE pourra le retrouver.
+    </div>
+    <button class="btn" id="btnCreer" onclick="creer()">C'est mon nom — je le garde</button>
+    <div id="m2"></div>
+  </div>
+
+  <!-- ÉTAPE 3 : confirmation -->
+  <div class="card final" id="ec3" style="display:none">
+    <div class="lbl" style="text-align:center">Bienvenue à Valdurne</div>
+    <div class="code" id="codeFinal">—</div>
+    <button class="btn ghost" onclick="copier()" id="btnCopie">📋 Copier mon nom</button>
+    <p class="hint">Note-le quelque part avant de continuer.<br>
+    Kern t'attend de l'autre côté de la porte.</p>
+    <button class="btn" style="margin-top:16px" onclick="entrer()">Entrer au château →</button>
+    <div id="m3"></div>
+  </div>
+</div>
+
+<script type="module">
+import { ANIMAUX, QUALITES, accorde, suffixe } from './identite_listes.js';
+
+var API='/api/identite';
+var pub='', nombre=suffixe(), secret='';
+
+function $(id){return document.getElementById(id)}
+function msg(cible,texte,type){
+  var e=$(cible);
+  e.innerHTML = texte ? '<div class="msg '+(type||'err')+'">'+texte.replace(/[<>]/g,'')+'</div>' : '';
+}
+function etape(n){
+  ['ec1','ec2','ec3'].forEach(function(x,i){$(x).style.display=(i===n-1?'block':'none')});
+  ['s1','s2','s3'].forEach(function(x,i){$(x).className=(i<n?'on':'')});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function api(action,payload){
+  var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(Object.assign({action:action},payload||{}))});
+  var j=null; try{j=await r.json()}catch(e){}
+  if(!r.ok||!j||j.error) throw new Error((j&&j.error)||('Erreur '+r.status));
+  return j;
+}
+
+/* ---- listes ---- */
+ANIMAUX.forEach(function(a,i){
+  var o=document.createElement('option'); o.value=i; o.textContent=a[0]; $('selAnimal').appendChild(o);
+});
+QUALITES.forEach(function(q,i){
+  var o=document.createElement('option'); o.value=i; o.textContent=q[0]; $('selQualite').appendChild(o);
+});
+function nomActuel(){
+  var a=ANIMAUX[+$('selAnimal').value], q=QUALITES[+$('selQualite').value];
+  return a[0]+'-'+accorde(q,a[1])+'-'+nombre;
+}
+function majApercu(){
+  var a=ANIMAUX[+$('selAnimal').value], q=QUALITES[+$('selQualite').value];
+  $('apercu').textContent=a[0]+'-'+accorde(q,a[1]);
+  $('apercuNum').textContent='n° '+nombre;
+}
+$('selAnimal').addEventListener('change',majApercu);
+$('selQualite').addEventListener('change',majApercu);
+window.retirer=function(){ nombre=suffixe(); majApercu(); };
+
+/* ---- étape 1 ---- */
+window.verifier=async function(){
+  msg('m1','');
+  var v=($('inPub').value||'').trim();
+  if(!v){msg('m1',"Entre le code que ton CPE t'a donné.");return}
+  var b=$('btnPub'); b.disabled=true; b.textContent='Vérification…';
+  try{
+    var j=await api('verifier',{public:v});
+    if(j.deja_cree){
+      msg('m1',"Un nom de page a déjà été choisi avec ce code. Si ce n'était pas toi, préviens ton CPE.");
+      b.disabled=false; b.textContent='Continuer'; return;
+    }
+    pub=v; majApercu(); etape(2);
+  }catch(e){ msg('m1',e.message); }
+  b.disabled=false; b.textContent='Continuer';
+};
+
+/* ---- étape 2 ---- */
+window.creer=async function(){
+  msg('m2','');
+  var b=$('btnCreer'); b.disabled=true; b.textContent='Enregistrement…';
+  try{
+    var j=await api('creer',{public:pub,secret:nomActuel()});
+    secret=j.secret;
+    $('codeFinal').textContent=secret;
+    etape(3);
+  }catch(e){
+    msg('m2',e.message);
+    if(/déjà pris/i.test(e.message)){ nombre=suffixe(); majApercu(); }
+  }
+  b.disabled=false; b.textContent="C'est mon nom — je le garde";
+};
+
+/* ---- étape 3 ---- */
+window.copier=function(){
+  try{
+    navigator.clipboard.writeText(secret);
+    $('btnCopie').textContent='✔ Copié';
+    setTimeout(function(){$('btnCopie').textContent='📋 Copier mon nom'},2000);
+  }catch(e){ msg('m3',"Copie impossible — recopie-le à la main, c'est plus sûr de toute façon.",'ok'); }
+};
+window.entrer=function(){
+  try{
+    // L'identité interne est le CODE PUBLIC : c'est lui qui circule (témoignages,
+    // Hall des Héros). Le code secret ne sert qu'à ouvrir la porte, il n'est
+    // stocké nulle part sur l'appareil.
+    localStorage.setItem('pvs_current_player',pub);
+    localStorage.setItem('pvs_nom_page',secret.split('-')[0]);
+    sessionStorage.setItem('pvs_session_auth_v1','1');
+  }catch(e){}
+  window.location.href='seuil.html';
+};
+
+$('inPub').addEventListener('keydown',function(e){if(e.key==='Enter')window.verifier()});
+</script>
+</body>
+</html>

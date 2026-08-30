@@ -116,6 +116,7 @@
     <div class="row"><label for="authCode">Identifiant joueur</label><input id="authCode" placeholder="Code joueur"></div>
     <div class="row"><label for="authAdmin">Acces admin (CPE)</label><input id="authAdmin" type="password" placeholder="Identifiant admin"></div>
     <div class="hint">Code visiteur demonstration: Visiteur-Viescolaire-ChateauRance</div>
+    <div class="hint" style="margin-top:8px">Premiere connexion ? <a href="rejoindre.html" style="color:#e8c97a">Compose ton nom de page &rarr;</a></div>
     <div class="rw" style="margin-top:8px">
       <button onclick="loginPlayer()">Entrer dans le Hub</button>
       <button class="btn2" onclick="loginAdmin()">Entrer en mode admin</button>
@@ -1562,11 +1563,26 @@ function refresh(){resetWeek();save(false);renderAdminMode();renderHall();render
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
 function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
-async function loginPlayer(){cm('loginMsg');const c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
+/* Nom de page composé à la première connexion : la vérification est faite par
+   le Worker (le référentiel local ne contient que les codes d'inscription). */
+async function identiteServeur(code){
+  try{
+    const r=await fetch('/api/identite',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'connecter',secret:code})});
+    if(!r.ok)return null;
+    const j=await r.json();
+    if(!(j&&j.ok&&j.public))return null;
+    // On retient le joli nom pour l'affichage, et on renvoie le code public :
+    // c'est lui qui sert d'identite interne (temoignages, classement).
+    try{localStorage.setItem('pvs_nom_page',String(code).split('-')[0])}catch(e){}
+    return nCode(j.public);
+  }catch(e){return null}
+}
+async function loginPlayer(){cm('loginMsg');let c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save(false);refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle()}
 else{
-  if(hasRefCodes()&&!isKnownPlayerCode(c)){await sbPullGlobal(false);if(hasRefCodes()&&!isKnownPlayerCode(c)){sm('authMsg','Code joueur absent du referentiel officiel.',false);return}}
+  if(hasRefCodes()&&!isKnownPlayerCode(c)){await sbPullGlobal(false);if(hasRefCodes()&&!isKnownPlayerCode(c)){const idPub=await identiteServeur(c);if(!idPub){sm('authMsg','Nom de page inconnu. Verifie ta saisie, ou fais ta premiere connexion.',false);return}c=idPub;}}
   gp(c);cur=c;isVisitor=false;localStorage.setItem(ACTIVE_PLAYER_KEY,c);sessionStorage.setItem(SESSION_AUTH_KEY,'1');closeAuthGate();await sbPullAllPlayers(false);await sbPullGlobal(false);await sbPullCurrent(false);logEv(c,'LOGIN','SUPERHUB',0);save(false);refresh();sm('loginMsg',`Connexion active: ${c}`,true)
 }
 syncPull(false);
