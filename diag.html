@@ -65,13 +65,14 @@ async function lancer(){
   });
 
   var v=document.getElementById('verdict'), h='', cls='bad';
-  if(iden.json && iden.json.role_de_la_cle && iden.json.role_de_la_cle!=='service_role'){
+  if(iden.json && iden.json.role_de_la_cle && !/^service_role/.test(iden.json.role_de_la_cle)){
     h='<strong>Mauvaise clé Supabase.</strong> La clé déposée dans SUPABASE_SERVICE porte le rôle '+
       '<em>'+iden.json.role_de_la_cle+'</em>. Seule la clé <em>service_role</em> contourne RLS : '+
       'avec toute autre clé, les requêtes réussissent mais ne renvoient jamais aucune ligne — '+
       'exactement ce que tu observes.<br><br>'+
-      'Dans Supabase → Project Settings → API, copie la clé <strong>service_role</strong> '+
-      '(celle marquée « secret »), puis remplace la valeur de SUPABASE_SERVICE dans Cloudflare.';
+      'Dans Supabase → Settings → API Keys, prends la clé de la section '+
+      '<strong>Secret keys</strong> (elle commence par <code>sb_secret_</code>), pas celle de '+
+      '<em>Publishable key</em>. Puis remplace la valeur de SUPABASE_SERVICE dans Cloudflare.';
   } else if(iden.status===404 && !iden.json){
     h='<strong>Le Worker déployé est une version ancienne.</strong><br>'+
       'La route /api/identite n\'existe pas encore côté serveur. '+

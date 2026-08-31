@@ -565,16 +565,33 @@ async function handleIdentite(request, env) {
     if (action === "diag") {
       const c = sbCfg(env);
       let host = "?";
+      let out_total = "?";
       try { host = new URL(c.url).host; } catch { /* ignore */ }
-      // Rôle porté par la clé : « service_role » contourne RLS, « anon » non.
-      // On ne lit que ce champ du jeton — la clé elle-même n'est jamais exposée.
+      // Nature de la clé. Supabase a deux générations :
+      //   nouvelle : sb_secret_… (privilégiée) / sb_publishable_… (publique)
+      //   ancienne : jeton JWT dont le champ « role » vaut service_role ou anon
+      // Seule la clé privilégiée contourne RLS. On n'expose jamais la clé.
       let role = "?";
+      const k = String(c.key || "");
+      if (k.startsWith("sb_secret_")) role = "service_role";
+      else if (k.startsWith("sb_publishable_")) role = "publishable (PUBLIQUE)";
+      else if (k.startsWith("eyJ")) {
+        try {
+          const p64 = k.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+          role = (JSON.parse(atob(p64)).role || "?") + " (ancienne génération)";
+        } catch { role = "jeton illisible"; }
+      } else role = "format inconnu (" + k.slice(0, 6) + "…)";
+
+      // Compte réel des lignes, indépendant du filtre : distingue « table vide »
+      // de « lignes masquées par RLS ».
       try {
-        const p64 = c.key.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-        role = JSON.parse(atob(p64)).role || "?";
-      } catch { role = "clé illisible (ce n'est peut-être pas un jeton Supabase)"; }
+        const r = await fetch(c.url + "/rest/v1/pvs_identites?select=code_public",
+          { headers: { apikey: c.key, Authorization: "Bearer " + c.key,
+                       Prefer: "count=exact", Range: "0-0" } });
+        out_total = (r.headers.get("content-range") || "").split("/")[1] || "?";
+      } catch { out_total = "?"; }
       const out = { ok: true, projet_supabase: host, role_de_la_cle: role,
-                    table: null, total: null, exemples: null, recherche: null };
+                    table: null, total: out_total, exemples: null, recherche: null };
       try {
         const rows = await sb(env, "GET",
           "pvs_identites?select=code_public&order=code_public.asc&limit=3");
