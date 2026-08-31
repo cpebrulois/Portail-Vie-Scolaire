@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic d'installation — Portail Vie Scolaire</title>
+<style>
+body{background:#0d0b08;color:#e8dfc8;font-family:ui-monospace,Menlo,Consolas,monospace;
+     font-size:14px;line-height:1.7;margin:0;padding:28px 18px 60px}
+.w{max-width:760px;margin:0 auto}
+h1{font-family:Georgia,serif;color:#e8c97a;font-size:1.35em;margin:0 0 6px}
+.s{color:#c8bfa8;opacity:.75;font-family:Georgia,serif;font-style:italic;margin-bottom:24px}
+button{background:rgba(201,168,76,.15);border:1px solid #c9a84c;color:#e8c97a;padding:11px 22px;
+       border-radius:6px;font-size:14px;cursor:pointer;font-family:inherit}
+button:hover{background:rgba(201,168,76,.3)}
+.row{border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:13px 16px;margin:10px 0;
+     background:rgba(255,255,255,.02)}
+.row .t{color:#e8c97a;font-weight:bold}
+.ok{color:#7fce7f}.ko{color:#e28b70}.warn{color:#e8c97a}
+pre{white-space:pre-wrap;word-break:break-word;margin:8px 0 0;color:#c8bfa8;font-size:13px}
+.verdict{margin-top:22px;padding:16px 18px;border-radius:8px;font-family:Georgia,serif;font-size:15px;line-height:1.75}
+.verdict.bad{background:rgba(139,42,42,.14);border:1px solid rgba(139,42,42,.55);color:#f0b8a0}
+.verdict.good{background:rgba(93,163,93,.12);border:1px solid rgba(93,163,93,.5);color:#a8d8a8}
+a{color:#e8c97a}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>Diagnostic d'installation</h1>
+  <p class="s">Vérifie ce que le serveur voit réellement. Aucun code secret n'est affiché.</p>
+  <button onclick="lancer()" id="btn">Lancer le diagnostic</button>
+  <div id="out"></div>
+  <div id="verdict"></div>
+  <p style="margin-top:26px"><a href="index.html">← Portail</a></p>
+</div>
+<script>
+function el(h){var d=document.createElement('div');d.className='row';d.innerHTML=h;
+  document.getElementById('out').appendChild(d);return d}
+
+async function route(nom,chemin,corps){
+  try{
+    var r=await fetch(chemin,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(corps||{})});
+    var t=await r.text(); var j=null; try{j=JSON.parse(t)}catch(e){}
+    return {nom:nom,status:r.status,json:j,texte:t.slice(0,300)};
+  }catch(e){ return {nom:nom,status:0,erreur:String(e.message||e)} }
+}
+
+async function lancer(){
+  var b=document.getElementById('btn'); b.disabled=true; b.textContent='Analyse…';
+  document.getElementById('out').innerHTML=''; document.getElementById('verdict').innerHTML='';
+
+  var agora = await route('/api/chat','/api/chat',{messages:[{role:'user',content:'ping'}],max_tokens:1});
+  var camp  = await route('/api/campagne','/api/campagne',{action:'etat',code:'ZZZZZZ'});
+  var iden  = await route('/api/identite','/api/identite',{action:'diag',public:'Rance-0001'});
+
+  [agora,camp,iden].forEach(function(x){
+    var etat = x.status===404 ? '<span class="ko">404 — route inconnue du Worker</span>'
+             : x.status===0   ? '<span class="ko">injoignable : '+x.erreur+'</span>'
+             : '<span class="ok">HTTP '+x.status+'</span> — le Worker connaît cette route';
+    var det = x.json ? JSON.stringify(x.json,null,2) : (x.texte||'');
+    el('<div class="t">'+x.nom+'</div>'+etat+'<pre>'+det.replace(/[<>]/g,'')+'</pre>');
+  });
+
+  var v=document.getElementById('verdict'), h='', cls='bad';
+  if(iden.status===404){
+    h='<strong>Le Worker déployé est une version ancienne.</strong><br>'+
+      'La route /api/identite n\'existe pas encore côté serveur. '+
+      (camp.status===404
+        ? 'La route /api/campagne manque aussi : le déploiement est bloqué depuis un moment.'
+        : 'La route /api/campagne répond, elle : le déploiement s\'est arrêté entre les deux.')+
+      '<br><br>À faire : sur Cloudflare, ouvrir le Worker → onglet <em>Deployments</em>, '+
+      'et regarder la date du dernier déploiement réussi (et les erreurs éventuelles).';
+  } else if(iden.json && iden.json.projet_supabase){
+    var d=iden.json;
+    var bonProjet = /zmeicqjkylxdaldiovxg/.test(d.projet_supabase);
+    var exemples = (d.exemples||[]).join(', ') || '(aucun)';
+    var trouve = d.recherche && d.recherche.trouve;
+    if(trouve){ cls='good';
+      h='<strong>Tout est bon.</strong> Le code Rance-0001 est trouvé. '+
+        'Tu peux retourner sur <a href="rejoindre.html">rejoindre.html</a>.';
+    } else if(!bonProjet){
+      h='<strong>Mauvais projet Supabase.</strong> Le Worker interroge <em>'+d.projet_supabase+
+        '</em> au lieu de zmeicqjkylxdaldiovxg. Une variable SUPABASE_URL doit traîner dans '+
+        'les réglages du Worker : supprime-la (le défaut est correct).';
+    } else if(!(d.exemples||[]).length){
+      h='<strong>La table est vide.</strong> Le fichier codes_rance.sql n\'a pas été exécuté '+
+        'dans ce projet-ci.';
+    } else if(/[a-z]/.test(exemples)){
+      h='<strong>Casse non convertie.</strong> Les codes sont encore en casse mixte ('+exemples+'). '+
+        'Exécute dans Supabase :<br><code>update pvs_identites set code_public = upper(code_public);</code>';
+    } else {
+      h='<strong>Cas inhabituel.</strong> La table contient '+exemples+' mais la recherche échoue. '+
+        'Envoie-moi le détail ci-dessus.';
+    }
+  } else {
+    h='<strong>Réponse inattendue.</strong> Envoie-moi le détail affiché ci-dessus.';
+  }
+  v.className='verdict '+cls; v.innerHTML=h;
+  b.disabled=false; b.textContent='Relancer le diagnostic';
+}
+</script>
+</body>
+</html>
