@@ -1574,7 +1574,7 @@ async function identiteServeur(code){
     if(!(j&&j.ok&&j.public))return null;
     // On retient le joli nom pour l'affichage, et on renvoie le code public :
     // c'est lui qui sert d'identite interne (temoignages, classement).
-    try{localStorage.setItem('pvs_nom_page',String(code).split('-')[0])}catch(e){}
+    try{const mot=String(code).split('-')[0]||'';localStorage.setItem('pvs_nom_page',mot.charAt(0).toUpperCase()+mot.slice(1).toLowerCase())}catch(e){}
     return nCode(j.public);
   }catch(e){return null}
 }

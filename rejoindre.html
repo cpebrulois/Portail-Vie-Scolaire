@@ -169,8 +169,9 @@ window.creer=async function(){
   msg('m2','');
   var b=$('btnCreer'); b.disabled=true; b.textContent='Enregistrement…';
   try{
-    var j=await api('creer',{public:pub,secret:nomActuel()});
-    secret=j.secret;
+    var joli=nomActuel();                 // « Cigogne-Vaillante-4712 »
+    await api('creer',{public:pub,secret:joli});
+    secret=joli;                          // on affiche la belle casse, pas les majuscules serveur
     $('codeFinal').textContent=secret;
     etape(3);
   }catch(e){
