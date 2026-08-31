@@ -55,15 +55,24 @@ async function lancer(){
   var iden  = await route('/api/identite','/api/identite',{action:'diag',public:'Rance-0001'});
 
   [agora,camp,iden].forEach(function(x){
-    var etat = x.status===404 ? '<span class="ko">404 — route inconnue du Worker</span>'
-             : x.status===0   ? '<span class="ko">injoignable : '+x.erreur+'</span>'
-             : '<span class="ok">HTTP '+x.status+'</span> — le Worker connaît cette route';
+    // Un 404 accompagné d'un JSON « error » vient de NOTRE code : la route existe.
+    var routeConnue = (x.status!==0) && !(x.status===404 && !x.json);
+    var etat = x.status===0 ? '<span class="ko">injoignable : '+x.erreur+'</span>'
+             : routeConnue ? '<span class="ok">HTTP '+x.status+'</span> — route active'
+             : '<span class="ko">404 — route absente du Worker déployé</span>';
     var det = x.json ? JSON.stringify(x.json,null,2) : (x.texte||'');
     el('<div class="t">'+x.nom+'</div>'+etat+'<pre>'+det.replace(/[<>]/g,'')+'</pre>');
   });
 
   var v=document.getElementById('verdict'), h='', cls='bad';
-  if(iden.status===404){
+  if(iden.json && iden.json.role_de_la_cle && iden.json.role_de_la_cle!=='service_role'){
+    h='<strong>Mauvaise clé Supabase.</strong> La clé déposée dans SUPABASE_SERVICE porte le rôle '+
+      '<em>'+iden.json.role_de_la_cle+'</em>. Seule la clé <em>service_role</em> contourne RLS : '+
+      'avec toute autre clé, les requêtes réussissent mais ne renvoient jamais aucune ligne — '+
+      'exactement ce que tu observes.<br><br>'+
+      'Dans Supabase → Project Settings → API, copie la clé <strong>service_role</strong> '+
+      '(celle marquée « secret »), puis remplace la valeur de SUPABASE_SERVICE dans Cloudflare.';
+  } else if(iden.status===404 && !iden.json){
     h='<strong>Le Worker déployé est une version ancienne.</strong><br>'+
       'La route /api/identite n\'existe pas encore côté serveur. '+
       (camp.status===404

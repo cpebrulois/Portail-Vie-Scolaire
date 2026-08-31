@@ -566,8 +566,15 @@ async function handleIdentite(request, env) {
       const c = sbCfg(env);
       let host = "?";
       try { host = new URL(c.url).host; } catch { /* ignore */ }
-      const out = { ok: true, projet_supabase: host, table: null, total: null,
-                    exemples: null, recherche: null };
+      // Rôle porté par la clé : « service_role » contourne RLS, « anon » non.
+      // On ne lit que ce champ du jeton — la clé elle-même n'est jamais exposée.
+      let role = "?";
+      try {
+        const p64 = c.key.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+        role = JSON.parse(atob(p64)).role || "?";
+      } catch { role = "clé illisible (ce n'est peut-être pas un jeton Supabase)"; }
+      const out = { ok: true, projet_supabase: host, role_de_la_cle: role,
+                    table: null, total: null, exemples: null, recherche: null };
       try {
         const rows = await sb(env, "GET",
           "pvs_identites?select=code_public&order=code_public.asc&limit=3");
