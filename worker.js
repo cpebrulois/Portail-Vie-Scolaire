@@ -559,6 +559,35 @@ async function handleIdentite(request, env) {
       return json({ ok: true, public: row.code_public, secret: row.code_secret }, 200, cors);
     }
 
+    // ------------------------------------------------------------- DIAG
+    // Diagnostic d'installation : dit ce que le Worker voit réellement.
+    // Ne renvoie aucun code secret. À retirer une fois la mise en route faite.
+    if (action === "diag") {
+      const c = sbCfg(env);
+      let host = "?";
+      try { host = new URL(c.url).host; } catch { /* ignore */ }
+      const out = { ok: true, projet_supabase: host, table: null, total: null,
+                    exemples: null, recherche: null };
+      try {
+        const rows = await sb(env, "GET",
+          "pvs_identites?select=code_public&order=code_public.asc&limit=3");
+        out.table = "pvs_identites trouvée";
+        out.exemples = (rows || []).map(r => r.code_public);
+      } catch (e) {
+        out.table = "ERREUR : " + String((e && e.message) || e).slice(0, 160);
+      }
+      if (pub) {
+        try {
+          const f = await sb(env, "GET",
+            `pvs_identites?code_public=eq.${encodeURIComponent(pub)}&select=code_public`);
+          out.recherche = { cherche: pub, trouve: !!(f && f.length) };
+        } catch (e) {
+          out.recherche = { cherche: pub, erreur: String((e && e.message) || e).slice(0, 160) };
+        }
+      }
+      return json(out, 200, cors);
+    }
+
     return json({ error: "Action inconnue." }, 400, cors);
   } catch (e) {
     console.error("[identite]", (e && e.message) || e);
