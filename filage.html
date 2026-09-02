@@ -224,17 +224,18 @@ function majSelect(){
   }).join('');
 }
 function prochain(){
-  var f=faits();
-  for(var c=2;c<=TOTAL;c++) if(!f[c]) return c;
+  var f=faits(), debut=(NIVEAU===0)?2:1;   // au niveau Page, le 1 est le Seuil
+  for(var c=debut;c<=TOTAL;c++) if(!f[c]) return c;
   return TOTAL;
 }
 window.allerA=function(i){ ouvrir(Number(i)); };
 
 /* ---- une fois le fil du bon niveau chargé ---- */
 function demarrer(p){
-  // Le chapitre 1 est le Seuil : sans lui, on n'entre pas dans le fil.
+  // Au niveau Page, le chapitre 1 EST le Seuil : sans lui, on n'entre pas dans
+  // le fil. Aux niveaux superieurs, le chapitre 1 fait partie du fil lui-meme.
   var f=faits();
-  if(!f[1]){
+  if(NIVEAU===0 && !f[1]){
     $('lock').style.display='block';
     $('lock').innerHTML='<div style="font-family:Cinzel Decorative,serif;font-size:1.4em;color:#e8c97a;margin-bottom:12px">Commence par le Seuil</div>'+
       '<p style="color:#c8bfa8;font-style:italic">Le premier chapitre du fil, c’est ta rencontre avec Kern.<br>'+
