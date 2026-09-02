@@ -182,6 +182,35 @@
     if(!joueur){b.style.display='none';return}
     var e=null; try{e=JSON.parse(localStorage.getItem('pvs_seuil')||'null')}catch(ex){}
     var etat=document.getElementById('seuilEtat'), cta=document.getElementById('seuilCta');
+    // Chapitres du fil deja valides pour le niveau courant.
+    var TITRES_FIL=['','Le Seuil de Valdurne','Celui qui ne dit rien','Ce que dit la loi',
+      'Le cercle qui se ferme','La colere des autres','Signaler n’est pas trahir',
+      'La premiere ronde seul','Page de Valdurne'];
+    var fd={}, joueurP=null;
+    try{
+      var SS=JSON.parse(localStorage.getItem('pvs_hof_v2')||'{}');
+      joueurP=(SS.players&&SS.players[joueur.toUpperCase()])||null;
+      fd=(joueurP&&joueurP.filageDone)||{};
+    }catch(ex){}
+    var rg=(joueurP&&joueurP.rankData&&typeof joueurP.rankData.i==='number')?joueurP.rankData.i:0;
+    var prochain=0;
+    for(var c=1;c<=8;c++){ if(!fd[rg+'_'+c]){ prochain=c; break } }
+    if(fd[rg+'_1']){
+      // Le Seuil est passe : la banderole conduit desormais au fil.
+      b.href='filage.html';
+      if(prochain===0){
+        etat.textContent='Fil de l’annee termine ⚜ — tout ton travail est visible.';
+        cta.textContent='Relire';
+      } else {
+        etat.textContent='Chapitre '+prochain+' : '+TITRES_FIL[prochain]+' — Kern attend la suite.';
+        cta.textContent='Reprendre';
+      }
+      b.style.display='flex';
+      b.onmouseenter=function(){b.style.borderColor='rgba(201,168,76,.9)';b.style.transform='translateY(-2px)'};
+      b.onmouseleave=function(){b.style.borderColor='rgba(201,168,76,.45)';b.style.transform='none'};
+      return;
+    }
+    b.href='seuil.html';
     if(!e){
       etat.textContent="Kern t'attend à la porte. Personne ne t'a encore montré la maison.";
       cta.textContent='Commencer';

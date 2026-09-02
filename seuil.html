@@ -342,13 +342,27 @@ function suivant(){
 
   if(b.t==='fin'){
     etat.fini=true;save();
+    // Le Seuil est le chapitre 1 du Fil de Valdurne : on l'y inscrit, sans
+    // credit XP (les 600 XP des chapitres commencent au deuxieme).
+    try{
+      var S2=getS();
+      if(S2.players&&S2.players[cur]){
+        var pj=S2.players[cur];
+        if(!pj.filageDone||typeof pj.filageDone!=='object')pj.filageDone={};
+        if(!pj.filageDone['0_1']){
+          pj.filageDone['0_1']=new Date().toISOString();
+          pj.up=pj.filageDone['0_1'];
+          localStorage.setItem(KEY,JSON.stringify(S2));
+        }
+      }
+    }catch(e){}
     document.getElementById('fill').style.width='100%';
     var f=document.createElement('div');f.className='fin';
     f.innerHTML='<div class="sceau">⚜️</div><div class="r">Page de Valdurne</div>'+
       '<div style="color:var(--enc2);font-style:italic;opacity:.8">Seuil franchi</div>'+
       '<div style="margin-top:22px">'+
+      '<a class="bk" href="filage.html">Chapitre 2 : Celui qui ne dit rien →</a>'+
       '<a class="bk" href="index.html">Entrer dans le Portail</a>'+
-      '<a class="bk" href="hub_narration.html">La Bibliothèque</a>'+
       '</div>';
     flux.appendChild(f);
     f.scrollIntoView({block:'center',behavior:'smooth'});
