@@ -670,7 +670,8 @@ async function handleIdentite(request, env) {
       return json({ ok: true }, 200, cors);
     }
 
-    if (action === "admin_liste" || action === "admin_role" || action === "admin_suivi") {
+    if (action === "admin_liste" || action === "admin_role" || action === "admin_suivi"
+        || action === "admin_export") {
       // Ces actions n'acceptent QUE le jeton de session : le mot de passe ne
       // circule qu'une fois, à l'ouverture.
       const moi = await sessionValide(env, b.token);
@@ -689,6 +690,26 @@ async function handleIdentite(request, env) {
         const liens = await sb(env, "GET",
           "pvs_suivi?select=prof_public,eleve_public&order=prof_public.asc");
         return json({ ok: true, comptes, suivis: liens || [] }, 200, cors);
+      }
+
+      // Export du « symbôlon » : la table de correspondance complète.
+      // C'est la SEULE action qui renvoie les noms de page. Elle n'existe que
+      // pour permettre au CPE de rendre un identifiant perdu à un élève.
+      if (action === "admin_export") {
+        const rows = await sb(env, "GET",
+          "pvs_identites?select=code_public,code_secret,role,rang_inscription,cree_at" +
+          "&order=rang_inscription.asc");
+        return json({
+          ok: true,
+          genere_le: new Date().toISOString(),
+          lignes: (rows || []).map(r => ({
+            public: r.code_public,
+            nom_de_page: r.code_secret || "",
+            role: r.role || "eleve",
+            rang: r.rang_inscription,
+            ouvert_le: r.cree_at || "",
+          })),
+        }, 200, cors);
       }
 
       // Changer le rôle d'un compte

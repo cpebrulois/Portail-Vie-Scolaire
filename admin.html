@@ -106,6 +106,23 @@ a.bk:hover{color:var(--or)}
     <div class="stats" id="stats"></div>
     <div id="mCons"></div>
 
+    <div class="card" style="border-color:rgba(139,42,42,.45)">
+      <div class="lbl" style="color:#e0a48a">Le symbôlon &middot; table de correspondance</div>
+      <p style="font-size:.87em;color:var(--enc2);margin-bottom:12px">
+        Le fichier réunit les deux moitiés&nbsp;: le <strong>code public</strong> que tu as remis
+        et le <strong>nom de page</strong> que l’élève a composé. C’est le seul document qui
+        permette de rendre un identifiant perdu — et le seul qui, croisé avec ta liste papier,
+        permette de savoir qui est qui.
+      </p>
+      <p style="font-size:.83em;color:#e0a48a;margin-bottom:12px">
+        ⚠ Garde-le sur ton poste, jamais sur un drive partagé ni dans le dépôt. Il ne contient
+        aucun nom d’élève, mais il ouvre chaque compte&nbsp;: quiconque l’obtient peut se connecter
+        à la place de n’importe qui.
+      </p>
+      <button class="btn" onclick="exporterSymbolon()">⬇ Générer le symbôlon (CSV / Excel)</button>
+      <div id="mExp"></div>
+    </div>
+
     <div class="card">
       <div class="bar">
         <input class="grow" id="fRech" placeholder="Rechercher un code…" oninput="rendre()">
@@ -309,6 +326,37 @@ async function basculer(prof,eleve,coche,el){
     el.querySelector('input').checked=!coche;
     msg('mCons',e.message);
   }
+}
+
+async function exporterSymbolon(){
+  msg('mExp','');
+  var LF=String.fromCharCode(10), CRLF=String.fromCharCode(13,10), BOM=String.fromCharCode(65279);
+  var GUI=String.fromCharCode(34);
+  try{
+    var j=await api('admin_export',{token:token});
+    var L=j.lignes||[];
+    // BOM UTF-8 + separateur point-virgule : Excel francophone ouvre proprement.
+    function q(v){
+      var t=String(v==null?'':v);
+      var doit=(t.indexOf(';')>=0)||(t.indexOf(GUI)>=0)||(t.indexOf(LF)>=0);
+      return doit ? GUI+t.split(GUI).join(GUI+GUI)+GUI : t;
+    }
+    var lignes=['code_public;nom_de_page;role;compte_ouvert_le;eleve_nom;classe'];
+    L.forEach(function(r){
+      lignes.push([q(r.public),q(r.nom_de_page),q(r.role),
+                   q(r.ouvert_le?String(r.ouvert_le).slice(0,10):''),'',''].join(';'));
+    });
+    var csv=BOM+lignes.join(CRLF);
+    var d=new Date(), p2=function(n){return (n<10?'0':'')+n};
+    var nom='symbolon_'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'.csv';
+    var url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    var a=document.createElement('a'); a.href=url; a.download=nom;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url)},1500);
+    var ouverts=L.filter(function(r){return r.nom_de_page}).length;
+    msg('mExp',nom+' telecharge : '+L.length+' lignes, dont '+ouverts+' comptes ouverts. '+
+        'Les colonnes eleve_nom et classe sont vides, a remplir hors ligne.','ok');
+  }catch(e){ msg('mExp',e.message) }
 }
 
 async function promouvoir(code,role){
