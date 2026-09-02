@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · HISTOIRE 07 · Les Figures du Juste</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.compare-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.compare-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:8px;letter-spacing:.5px;}
+.compare-label{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;margin-bottom:8px;}
+.label-danger{background:rgba(239,68,68,.15);color:#f87171;}
+.label-ok{background:rgba(16,185,129,.15);color:#6ee7b7;}
+.compare-text{font-size:.85rem;color:var(--text-m);line-height:1.55;}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+/* Simulation commission */
+.commission-header{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:.88rem;line-height:1.7;}
+.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.role-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:.2s;}
+.role-card:hover,.role-card.selected{border-color:var(--primary);background:var(--primary-dim);}
+.role-name{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:4px;}
+.role-desc{font-size:.82rem;color:var(--text-m);line-height:1.4;}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;margin-top:4px;}
+.badge-victim{background:rgba(239,68,68,.15);color:#f87171;}
+.badge-author{background:rgba(124,58,237,.15);color:#c084fc;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){.two-col,.roles-grid{grid-template-columns:1fr;}#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">🌳</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Histoire · Niveau 07</div>
+      <div class="mod-title">Les Figures du Juste</div>
+      <div class="mod-sub">Ceux qui ont agi quand personne n’agissait — et ce qu’ils avaient en commun</div>
+      <div class="mod-ref">Réf. : Yad Vashem (1953) · Oliner &amp; Oliner, <em>The Altruistic Personality</em> (1988) · Chambon-sur-Lignon · Latané &amp; Darley (1970)</div>
+    </div>
+    <div class="xp-chip">175 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Déconstruction</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Expérimentation</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">Une allée d’arbres</div>
+    <div class="narr-block">À Jérusalem, sur une colline, une allée est plantée d’arbres. Chaque arbre porte un nom. Ce sont ceux de personnes ordinaires qui, entre 1939 et 1945, ont protégé des inconnus au péril de leur vie. Le titre de <strong>Juste parmi les Nations</strong> leur est décerné depuis 1953, selon trois critères stricts.</div>
+    <div class="narr-block">Premier critère : un <strong>risque réel et personnel</strong>. Deuxième : <strong>aucune contrepartie</strong> reçue ni attendue. Troisième : le fait doit être établi par le <strong>témoignage des personnes sauvées</strong>. Regarde bien le troisième. Ce n’est pas le sauveteur qui raconte — ce sont ceux qu’il a sauvés.</div>
+    <div class="narr-block">Un collège n’est pas une guerre, et personne ici ne risque sa vie. <em>On ne compare pas les situations</em> : ce serait faux, et indécent. Mais deux chercheurs américains, <strong>Samuel et Pearl Oliner</strong>, ont interrogé dans les années 1980 près de sept cents de ces sauveteurs pour répondre à une question qui, elle, te concerne directement : <em>qu’est-ce qui distingue quelqu’un qui agit de quelqu’un qui ne fait rien ?</em></div>
+    <div class="narr-block">La réponse est décevante, et c’est ce qui la rend précieuse. Les sauveteurs n’étaient pas plus courageux au départ, ni plus croyants, ni plus instruits, ni plus riches que ceux qui n’ont rien fait. Deux différences seulement ressortaient. La première : leur cercle du « nous » était plus large — ils n’avaient jamais pris l’habitude de ranger les gens en deux catégories. Les Oliner ont appelé cela l’<strong>extensivité</strong>. La seconde : enfants, on leur avait expliqué les règles au lieu de les punir. Ils avaient l’habitude qu’on leur dise <em>pourquoi</em>.</div>
+    <div class="narr-block">Et un troisième fait, presque toujours identique : aucun n’a décidé un matin de devenir un héros. Presque tous ont commencé par un geste minuscule, souvent parce que quelqu’un le leur a demandé <strong>directement, une fois</strong>. Le reste a suivi, pas à pas. À <strong>Chambon-sur-Lignon</strong>, un village entier a fonctionné ainsi pendant quatre ans, sans mot d’ordre et sans organisation.</div>
+    <div class="two-col">
+      <div class="compare-card">
+        <div class="compare-title">Le héros qu’on imagine</div>
+        <div><span class="compare-label label-danger">⚠️ Piège</span></div>
+        <div class="compare-text">Il décide, il est courageux par nature, il agit seul et d’un seul coup. Personne ne se reconnaît en lui — donc personne n’agit.</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-title">Le Juste réel</div>
+        <div><span class="compare-label label-ok">✅ Ressource</span></div>
+        <div class="compare-text">Son cercle du « nous » est un peu plus large. On lui a demandé quelque chose de petit. Il a dit oui une fois. Le reste a suivi.</div>
+      </div>
+    </div>
+    <div class="reflect-q">À ton avis, qu’est-ce qui empêche le plus souvent quelqu’un d’agir ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'Elle existe, et il ne faut pas la mépriser. Mais les Oliner ont trouvé que les sauveteurs avaient peur aussi — souvent davantage, parce qu’ils savaient précisément ce qu’ils risquaient. La peur n’est pas le facteur qui départageait.')">La peur de ce qui pourrait lui arriver.</button>
+      <button class="opt-btn" onclick="selectN1(this,'C’est très souvent le vrai blocage, et le plus injuste : on attend d’être devenu quelqu’un de courageux avant d’agir, alors que c’est l’inverse — on le devient en agissant. Aucun Juste ne se pensait à la hauteur avant.')">L’idée qu’il n’est pas quelqu’un d’assez bien pour ça.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Latané et Darley ont mesuré exactement cela en 1970 : plus il y a de témoins, moins chacun intervient. C’est le facteur le plus puissant — et le plus facile à casser, puisqu’il suffit d’une seule personne qui bouge pour que les autres suivent.')">Le fait que personne d’autre ne bouge.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Tu viens de nommer l’extensivité par l’autre bout. Le « ça ne me regarde pas » n’est pas de l’indifférence : c’est une frontière tracée entre soi et l’autre. Les Justes avaient cette frontière plus loin, voilà tout.')">Le fait de ne pas se sentir concerné.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer à l’expérimentation →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">Le premier oui</div>
+    <div class="commission-header">Ivan est arrivé en janvier. Depuis trois semaines, il déjeune seul, et le groupe qui fait l’ambiance de la classe a commencé à trouver ça drôle. Rien de violent : des regards, une place qu’on retire au dernier moment, un surnom.</div>
+    <div class="commission-header">Tu n’es pas son ami. Tu n’es pas non plus dans le groupe. Tu es exactement là où la décision se joue — et <strong>elle ne se prend pas en une fois, mais en trois</strong>.</div>
+
+    <div id="ph1">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 1 / 3 — Le geste minuscule</div>
+        <div class="phase-q">Au réfectoire, Ivan s’arrête à côté de ta table. Il ne demande rien. Il attend une seconde de trop.</div>
+        <div onclick="phChoice(this,1,'a','good','C’est exactement le premier oui des Oliner. Tu n’as rien déclaré, tu n’as accusé personne, tu n’as pas fait de lui un cas. Tu as tiré une chaise. Le coût est presque nul et le signal est immense — pour lui, et pour les autres tables.')" class="phase-choice">Tu tires la chaise à côté de toi et tu continues ta conversation.</div>
+        <div onclick="phChoice(this,1,'b','medium','Ce n’est pas rien, et c’est mieux que le silence. Mais un sourire se nie : dans deux minutes, ni lui ni les autres ne sauront s’il a eu lieu. Un geste visible engage — un sourire, non.')" class="phase-choice">Tu lui souris pour qu’il comprenne qu’il peut rester.</div>
+        <div onclick="phChoice(this,1,'c','bad','C’est la seconde de trop qui décide. Personne ne t’en voudra, personne ne le saura — et c’est précisément le problème : ces situations ne se règlent jamais par ceux qui attendent d’en savoir plus.')" class="phase-choice">Tu attends de voir s’il se passe quelque chose.</div>
+        <div class="phase-fb" id="pfb1"></div>
+      </div>
+    </div>
+
+    <div id="ph2" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 2 / 3 — Le coût monte</div>
+        <div class="phase-q">Le lendemain, quelqu’un du groupe te lance devant tout le monde : <em>« Tu t’es trouvé un nouveau pote ? »</em> Le ton est amical. C’est un test.</div>
+        <div onclick="phChoice(this,2,'a','good','La meilleure réponse est la plus courte. Tu ne te justifies pas — te justifier, ce serait admettre qu’il y a quelque chose à justifier. Un « ouais » sans commentaire ferme le sujet sans créer de conflit.')" class="phase-choice">« Ouais. » Et tu passes à autre chose.</div>
+        <div onclick="phChoice(this,2,'b','medium','Tu tiens, et c’est déjà beaucoup. Mais l’explication laisse entendre que sans cette raison, ce serait bizarre. Tu as concédé un demi-pas.')" class="phase-choice">« Il est nouveau, c’est tout. »</div>
+        <div onclick="phChoice(this,2,'c','bad','Tu viens de le lâcher pour presque rien, et le groupe l’a enregistré. C’est le moment exact où la plupart des chaînes s’arrêtent : pas devant la violence — devant une phrase amicale.')" class="phase-choice">« Non, il s’est juste assis là. »</div>
+        <div class="phase-fb" id="pfb2"></div>
+      </div>
+    </div>
+
+    <div id="ph3" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 3 / 3 — Ce que tu dis à l’adulte</div>
+        <div class="phase-q">Le professeur principal te prend à part : <em>« Il se passe quelque chose avec Ivan ? »</em> Tu n’as pas de preuve, et tu n’as pas envie d’être celui qui dénonce.</div>
+        <div onclick="phChoice(this,3,'a','good','C’est la posture juste, et c’est le troisième critère de Yad Vashem retourné : ce n’est pas à toi de juger, c’est à toi de rendre visible. Des faits, sans procès — l’adulte fait le reste, c’est son métier.')" class="phase-choice">Tu décris ce que tu as vu, sans nommer d’intention ni de coupable.</div>
+        <div onclick="phChoice(this,3,'b','medium','C’est déjà utile : tu as levé le drapeau. La limite, c’est qu’un adulte sans aucun fait ne peut souvent rien faire d’autre que « surveiller » — c’est-à-dire attendre que ça s’aggrave.')" class="phase-choice">Tu dis que tu préfères ne donner aucun nom, mais que ça ne va pas.</div>
+        <div onclick="phChoice(this,3,'c','bad','L’intention est bonne, et c’est un piège classique. Tu viens de te charger seul de quelque chose qui te dépasse, et tu as privé Ivan de la seule protection qui tienne dans la durée. Un Juste isolé protège rarement quelqu’un longtemps.')" class="phase-choice">Tu dis que non, et tu comptes t’en occuper toi-même.</div>
+        <div class="phase-fb" id="pfb3"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — « Je ne suis pas quelqu’un de courageux »</div>
+      <div class="xfer-scenario">Tu vois une situation qui ne va pas. Ta première pensée est : <em>« quelqu’un de plus solide que moi devrait s’en occuper »</em>.</div>
+      <div class="xfer-q">Que dit la recherche sur les sauveteurs à propos de cette pensée ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C’est la conclusion la plus solide des Oliner. Le courage n’est pas ce qu’on ressent avant d’agir : c’est le nom qu’on donne après coup à ceux qui ont agi malgré ce qu’ils ressentaient.')">Elle est normale — presque tous l’ont eue, et ils ont agi quand même.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'C’est exactement l’effet mesuré par Latané et Darley — sauf que tout le monde pense la même chose au même moment, et qu’au bout du compte le « quelqu’un d’autre » n’existe pas.')">Elle est un signal qu’il faut effectivement laisser faire quelqu’un d’autre.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'Encourageant, mais ce n’est pas ce qu’ont trouvé les chercheurs — et te le dire ne t’aidera pas beaucoup à 13 h dans un couloir. Ce qui aide, c’est de savoir que la sensation ne disparaît pas, et qu’elle n’a jamais empêché personne de tirer une chaise.')">Elle est fausse : tu es plus solide que tu ne le crois.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Il y a du vrai : cette pensée est le signe que tu as vu. Mais elle devient un problème dès qu’elle sert de conclusion plutôt que de point de départ.')">Elle prouve que tu prends la situation au sérieux.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — Le cercle du « nous »</div>
+      <div class="xfer-scenario">Un élève de ta classe est mis à l’écart. Tu ne l’apprécies pas particulièrement : il est pénible, il coupe la parole, il ne fait aucun effort.</div>
+      <div class="xfer-q">Est-ce que l’extensivité demande de l’apprécier ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'C’est exactement la distinction. L’extensivité n’est pas de la sympathie : c’est une frontière. Les Justes n’ont pas sauvé des gens qu’ils aimaient — ils ont sauvé des inconnus, et parfois des gens qu’ils n’auraient pas choisis.')">Non. Elle demande seulement de le compter parmi les gens dont on s’occupe.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'C’est ce qu’on croit, et c’est ce qui rend les groupes si dangereux : ils ne protègent que leurs membres. Une protection qui dépend de la sympathie s’arrête toujours à quelqu’un.')">Oui — on ne défend bien que ceux qu’on apprécie.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'Honnête, et vrai. La bonne nouvelle, c’est que « plus difficile » n’est pas « impossible » — et qu’un geste fait sans affection compte exactement autant pour celui qui le reçoit.')">Non, mais c’est quand même plus facile.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Attention à cette phrase : elle est le mécanisme entier. On cherche une raison de sortir quelqu’un du cercle, et il y en a toujours une. Personne n’est agréable en permanence — toi non plus, et pourtant tu comptes.')">La question ne se pose pas : s’il est pénible, il l’a un peu cherché.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — Sans contrepartie</div>
+      <div class="xfer-scenario">Tu as aidé quelqu’un discrètement. Personne ne l’a su, il ne t’a pas remercié, et il ne s’assoit toujours pas à côté de toi.</div>
+      <div class="xfer-q">Qu’est-ce que cela dit de ton geste ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C’est le deuxième critère de Yad Vashem, mot pour mot : aucune contrepartie reçue ni attendue. Ce n’est pas une exigence de pureté, c’est une protection — un geste qui attend un retour finit toujours par se transformer en reproche.')">Rien du tout. Sa valeur ne dépendait pas de ce qui vient après.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Tu ne peux pas le savoir, et c’est justement le point : presque aucun Juste n’a su ce qu’étaient devenues les personnes qu’il avait aidées. Ils ont agi sans jamais avoir la fin de l’histoire.')">Ça montre que ça n’a servi à rien.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'Bienveillant, et probablement juste. Attention seulement à ne pas transformer cela en attente différée : « il me remerciera plus tard » est encore une contrepartie.')">Ça montre qu’il n’était pas prêt, et ce n’est pas grave.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'C’est humain, et ça mérite d’être dit plutôt que ruminé. Mais remarque ce qui vient de se passer : tu as commencé à lui présenter une facture. C’est exactement là que l’aide se retourne en ressentiment.')">Ça montre qu’il aurait au moins pu dire merci.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">🌳</div>
+      <div class="fin-title">Les Figures du Juste</div>
+      <div class="fin-sub">Presque tous ont dit la même chose quand on est venu les décorer : qu’ils n’avaient rien fait d’extraordinaire. Ils avaient raison — et c’est la meilleure nouvelle possible, parce que ce qu’ils ont fait est à ta portée.</div>
+      <div class="xp-badge">⭐ +175 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='HISTOIRE_07',XP=175,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2phase:1,n3done:[false,false,false]};
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2phase>3)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function phChoice(el,ph,choice,quality,feedback){var c=document.getElementById('ph'+ph);c.querySelectorAll('.phase-choice').forEach(function(node){node.style.pointerEvents='none';node.style.opacity='.4';});if(el){el.style.opacity='1';el.classList.add(quality);}var fb=document.getElementById('pfb'+ph);fb.textContent=feedback;fb.classList.add('show');if(quality==='good')state.n2score+=3;else if(quality==='medium')state.n2score+=1;state.n2phase++;setTimeout(function(){if(ph<3)document.getElementById('ph'+(ph+1)).style.display='block';else showSimResult();},1800);}
+function showSimResult(){document.getElementById('sim-result').style.display='block';var s=state.n2score;document.getElementById('simScore').textContent=s+'/9';document.getElementById('simLabel').textContent=s<=3?'La chaîne s’est arrêtée à toi — reprends la simulation':s<=6?'Tu as tenu une partie du chemin, et le reste s’apprend':'Tu as dit oui une fois, et tu as tenu jusqu’au bout';updateProgress();}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_HISTOIRE_07',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>

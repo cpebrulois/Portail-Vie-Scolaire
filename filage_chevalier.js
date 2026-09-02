@@ -146,6 +146,9 @@ export const CHAPITRES = [
      {x:"Non, tout le monde en a.",
       r:"Vrai, mais attention : « tout le monde en a » sert aussi d'excuse commode pour ne rien changer. C'est un constat, pas une absolution."}
    ]},
+   {t:'k',x:"Et il existe un mot plus large que « préjugé » pour ce qui se passe ensuite. Quand on ne connaît d'une personne qu'un seul récit, ce récit finit par la remplacer. Une réputation, dans un collège, c'est exactement ça."},
+   {t:'act',mod:'HISTOIRE_08',href:'PIX_pHARe_Module_HISTOIRE_08.html',ti:"La Décolonisation du Regard",n:'Module pHARe · HISTOIRE 08'},
+   {t:'k',x:"Retiens la phrase d'Adichie, elle te servira toute ta vie : le problème d'un cliché n'est pas qu'il soit faux, c'est qu'il soit incomplet. Un mensonge, on le réfute. Un fragment vrai promu en totalité, il faut le compléter — et c'est infiniment plus long."},
    {t:'act',mod:'',href:'PIX_EGALITE_PHILO_02.html',ti:"La Construction des Clichés",n:'Rubrique Égalité · Philo 02'},
    {t:'k',x:"Un cliché, ce n'est pas une bêtise : c'est un raccourci qui a marché assez souvent pour rester. Le problème, c'est qu'un raccourci appliqué à une personne se trompe presque toujours."},
    {t:'fin',mot:"Tu n'es pas responsable de ce qu'on t'a mis dans la tête. Tu l'es de ce que tu en fais une fois que tu l'as vu."}
@@ -168,6 +171,9 @@ export const CHAPITRES = [
      {x:"Sur les gens en qui j'ai confiance.",
       r:"Bonne réponse aussi, et plus honnête que la mienne. À condition d'en avoir choisi qui te contredisent — sinon ce n'est plus un appui, c'est un miroir."}
    ]},
+   {t:'k',x:"Tu vas me dire que c'est une belle phrase. Alors va voir des gens qui l'ont tenue pour de bon — et surtout ce qu'on a trouvé le jour où on est allé leur demander pourquoi ils avaient agi."},
+   {t:'act',mod:'HISTOIRE_07',href:'PIX_pHARe_Module_HISTOIRE_07.html',ti:"Les Figures du Juste",n:'Module pHARe · HISTOIRE 07'},
+   {t:'k',x:"Aucun ne se croyait courageux. Aucun n'avait décidé de l'être. Ils avaient seulement un cercle du « nous » un peu plus large que la moyenne — et un jour, quelqu'un leur a demandé quelque chose de petit."},
    {t:'k',x:"Il te reste une chose à voir. La plus abstraite, et celle dont tu auras le plus besoin l'an prochain : sur quoi repose l'idée même que deux personnes se valent."},
    {t:'act',mod:'',href:'PIX_EGALITE_PHILO_03.html',ti:"L'Éthique de l'Égalité",n:'Rubrique Égalité · Philo 03'},
    {t:'n',x:"Il pose la main sur la pierre du pilier, froide même en juin."},

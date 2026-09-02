@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pHARe · HISTOIRE 08 · La Décolonisation du Regard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#f59e0b; --primary-dim:rgba(245,158,11,.12); --primary-glow:rgba(245,158,11,.35);
+  --bg:#0f0a00; --bg2:#161000; --panel:#1e1800; --panel2:#241e04;
+  --text:#f0e8d0; --text-m:#a8923a; --text-d:#60500a;
+  --gold:#f59e0b; --green:#10b981; --red:#ef4444; --border:rgba(245,158,11,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 0%,rgba(245,158,11,.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 100%,rgba(245,158,11,.05) 0%,transparent 50%);}
+.mod-header{padding:28px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px;}
+.mod-icon{font-size:2.8rem;filter:drop-shadow(0 0 12px var(--primary-glow));flex-shrink:0;}
+.mod-meta{flex:1;}
+.mod-pilier{font-family:'Orbitron',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:4px;}
+.mod-title{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px;}
+.mod-sub{font-size:.88rem;color:var(--text-m);line-height:1.5;}
+.mod-ref{font-size:.72rem;color:var(--text-d);font-style:italic;margin-top:4px;}
+.xp-chip{background:var(--primary-dim);border:1px solid var(--border);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--primary);font-family:'Orbitron',sans-serif;white-space:nowrap;}
+.prog-bar{height:3px;background:rgba(255,255,255,.06);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--primary),#fde68a);transition:width .5s ease;}
+.level-nav{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.lnav-btn{flex:1;padding:10px 8px;text-align:center;font-size:.7rem;font-family:'Orbitron',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--text-d);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none;border-top:none;border-left:none;border-right:none;}
+.lnav-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.lnav-btn.done{color:var(--green);}
+.lnav-btn:disabled{opacity:.35;cursor:not-allowed;}
+#app{max-width:800px;margin:0 auto;padding-bottom:80px;}
+.screen{display:none;padding:24px 20px;}
+.screen.active{display:block;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.section-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.narr-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;font-size:.95rem;line-height:1.8;color:var(--text);}
+.narr-block strong{color:#fbbf24;}
+.narr-block em{color:var(--primary);font-style:italic;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.compare-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.compare-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:8px;letter-spacing:.5px;}
+.compare-label{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;margin-bottom:8px;}
+.label-danger{background:rgba(239,68,68,.15);color:#f87171;}
+.label-ok{background:rgba(16,185,129,.15);color:#6ee7b7;}
+.compare-text{font-size:.85rem;color:var(--text-m);line-height:1.55;}
+.reflect-q{font-size:1rem;color:#fbbf24;font-style:italic;margin-bottom:14px;padding:14px 18px;background:var(--primary-dim);border:1px solid var(--border);border-radius:8px;}
+.opts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.opt-btn{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 18px;text-align:left;cursor:pointer;font-size:.92rem;color:var(--text);font-family:'Exo 2',sans-serif;transition:.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--primary);background:var(--primary-dim);}
+.feedback-box{background:rgba(245,158,11,.1);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.88rem;color:#fde68a;line-height:1.6;margin-bottom:16px;display:none;}
+.feedback-box.show{display:block;}
+/* Simulation commission */
+.commission-header{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:.88rem;line-height:1.7;}
+.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.role-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:.2s;}
+.role-card:hover,.role-card.selected{border-color:var(--primary);background:var(--primary-dim);}
+.role-name{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:4px;}
+.role-desc{font-size:.82rem;color:var(--text-m);line-height:1.4;}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;margin-top:4px;}
+.badge-victim{background:rgba(239,68,68,.15);color:#f87171;}
+.badge-author{background:rgba(124,58,237,.15);color:#c084fc;}
+.sim-phase{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.phase-label{font-size:.65rem;font-family:'Orbitron',sans-serif;color:var(--text-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.phase-q{font-size:.9rem;color:#fbbf24;margin-bottom:12px;}
+.phase-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.phase-choice:hover{border-color:var(--primary);}
+.phase-choice.good{border-color:var(--green);background:rgba(16,185,129,.08);}
+.phase-choice.medium{border-color:var(--gold);background:rgba(245,158,11,.08);}
+.phase-choice.bad{border-color:var(--red);background:rgba(239,68,68,.08);}
+.phase-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.phase-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.xfer-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.xfer-title{font-size:.75rem;font-family:'Orbitron',sans-serif;color:var(--primary);margin-bottom:10px;letter-spacing:.5px;}
+.xfer-scenario{font-size:.95rem;line-height:1.7;margin-bottom:12px;}
+.xfer-q{font-size:.85rem;color:#fbbf24;font-style:italic;margin-bottom:12px;}
+.xfer-choice{background:var(--panel2);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:11px 14px;cursor:pointer;margin-bottom:8px;font-size:.88rem;color:var(--text);transition:.2s;}
+.xfer-choice:hover{border-color:var(--primary);}
+.xfer-choice.best{border-color:var(--green);background:rgba(16,185,129,.08);}
+.xfer-choice.good{border-color:var(--gold);background:rgba(245,158,11,.06);}
+.xfer-choice.bad{border-color:var(--red);background:rgba(239,68,68,.06);}
+.xfer-fb{padding:10px 14px;border-radius:7px;font-size:.85rem;line-height:1.6;margin-bottom:10px;display:none;}
+.xfer-fb.show{display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text-m);}
+.btn-primary{background:var(--primary);color:#000;border:none;padding:12px 28px;font-family:'Orbitron',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;font-weight:700;}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-m);padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:.2s;margin-top:8px;}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+.fin-zone{text-align:center;padding:32px 20px;}
+.fin-icon{font-size:3.5rem;margin-bottom:16px;filter:drop-shadow(0 0 20px var(--primary-glow));}
+.fin-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:#fff;margin-bottom:8px;}
+.fin-sub{font-size:.92rem;color:var(--text-m);line-height:1.6;margin-bottom:20px;max-width:460px;margin-left:auto;margin-right:auto;}
+.xp-badge{display:inline-flex;align-items:center;gap:8px;background:var(--primary-dim);border:1px solid var(--border);padding:8px 20px;border-radius:30px;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--primary);margin-bottom:20px;}
+@media(max-width:600px){.two-col,.roles-grid{grid-template-columns:1fr;}#app{padding:0 0 80px;}.screen{padding:18px 14px;}.mod-title{font-size:1.1rem;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="mod-header">
+    <div class="mod-icon">👁️</div>
+    <div class="mod-meta">
+      <div class="mod-pilier">Pilier Histoire · Niveau 08</div>
+      <div class="mod-title">La Décolonisation du Regard</div>
+      <div class="mod-sub">Une réputation est une histoire unique — et une histoire unique se défait</div>
+      <div class="mod-ref">Réf. : Said, <em>L’Orientalisme</em> (1978) · Fanon, <em>Peau noire, masques blancs</em> (1952) · Adichie, <em>The Danger of a Single Story</em> (2009)</div>
+    </div>
+    <div class="xp-chip">200 XP</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:5%"></div></div>
+  <div class="level-nav">
+    <button class="lnav-btn active" id="lnav1" onclick="goLevel(1)">① Déconstruction</button>
+    <button class="lnav-btn" id="lnav2" onclick="goLevel(2)" disabled>② Expérimentation</button>
+    <button class="lnav-btn" id="lnav3" onclick="goLevel(3)" disabled>③ Transfert</button>
+  </div>
+
+  <!-- NIVEAU 1 -->
+  <div class="screen active" id="screen-n1">
+    <div class="section-title">Qui tient le crayon</div>
+    <div class="narr-block">Pendant des siècles, des sociétés entières ont été décrites par ceux qui les dominaient. Elles apparaissaient dans les livres, les tableaux, les cartes — mais toujours vues du dehors. Le chercheur <strong>Edward Said</strong> a donné un nom à ce déséquilibre en 1978 : celui qui est décrit ne se décrit jamais lui-même. Il n’a pas le crayon.</div>
+    <div class="narr-block">Le psychiatre <strong>Frantz Fanon</strong>, lui, a décrit ce que cela fait <em>à la personne regardée</em>. Il raconte une scène très brève, devenue célèbre : dans un train, un enfant le désigne du doigt et le réduit à sa couleur de peau. En une seconde, Fanon cesse d’être un médecin, un lecteur, un homme qui voyage. Il devient une seule chose. <span style="color:var(--text-d)">(La phrase exacte de l’enfant contient une insulte raciste : nous ne la reproduisons pas ici. Savoir qu’un mot existe n’oblige jamais à l’écrire.)</span></div>
+    <div class="narr-block">L’écrivaine <strong>Chimamanda Ngozi Adichie</strong> a formulé en 2009 l’idée la plus utile pour toi. Elle l’appelle <strong>l’histoire unique</strong> : quand on n’entend qu’un seul récit sur quelqu’un, ce récit devient la personne. Et son point décisif est celui-ci — le problème d’un stéréotype n’est pas qu’il serait faux. C’est qu’il est <em>incomplet</em>. Il prend un fragment vrai et le fait passer pour le tout.</div>
+    <div class="narr-block">Voilà pourquoi ce module est dans un parcours sur le harcèlement. Une <strong>réputation</strong>, dans un collège, est exactement une histoire unique. Une fois qu’un élève est « le bizarre », « la sale gosse », « celui qui pue », chaque fait nouveau est lu à travers cette phrase. S’il se tait, c’est qu’il est bizarre. S’il parle, c’est qu’il est bizarre. Il a perdu quelque chose de très précis : <strong>le droit d’être compliqué</strong>.</div>
+    <div class="narr-block">Décoloniser un regard, ce n’est donc pas se forcer à penser du bien de quelqu’un. C’est lui rendre le crayon — accepter qu’il existe d’autres récits que le tien sur lui, y compris le sien.</div>
+    <div class="two-col">
+      <div class="compare-card">
+        <div class="compare-title">L’histoire unique</div>
+        <div><span class="compare-label label-danger">⚠️ Piège</span></div>
+        <div class="compare-text">Un fragment vrai qui tient lieu de personne entière. Tout ce qui la contredit est ignoré ; tout ce qui la confirme est retenu. Elle se vérifie donc toujours.</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-title">Le récit rendu</div>
+        <div><span class="compare-label label-ok">✅ Ressource</span></div>
+        <div class="compare-text">Plusieurs récits coexistent, dont celui de l’intéressé. On ne lui demande pas d’être parfait — on lui rend le droit d’être contradictoire, comme tout le monde.</div>
+      </div>
+    </div>
+    <div class="reflect-q">Pourquoi Adichie dit-elle que le problème d’un stéréotype n’est pas d’être faux ?</div>
+    <div class="opts-list" id="n1-opts">
+      <button class="opt-btn" onclick="selectN1(this,'C’est exactement son argument, et c’est ce qui le rend redoutable. Un mensonge, on le réfute. Un fragment vrai promu en totalité, on ne peut pas le réfuter — il faut le compléter, ce qui est beaucoup plus difficile et beaucoup plus long.')">Parce qu’il part souvent d’un détail vrai, et qu’un détail vrai ne se réfute pas.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Tu touches un point réel : la répétition fabrique de l’évidence. Adichie insiste toutefois sur autre chose — ce n’est pas le nombre de fois qu’on l’entend qui pose problème, c’est le nombre de récits concurrents qu’on n’entend pas.')">Parce qu’à force d’être répété, on finit par le croire.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Vrai, et c’est important : celui qu’on décrit finit souvent par se voir avec les yeux des autres. C’est précisément ce que décrit Fanon. Mais Adichie parle d’abord de ce que le stéréotype fait au regard de celui qui le porte.')">Parce que la personne visée finit par y croire elle aussi.</button>
+      <button class="opt-btn" onclick="selectN1(this,'Il arrive en effet qu’un stéréotype soit statistiquement défendable — et cela ne le rend pas moins destructeur, parce qu’aucune personne réelle n’est une moyenne. C’est une bonne façon d’arriver à la conclusion d’Adichie.')">Parce que certains stéréotypes sont statistiquement exacts.</button>
+    </div>
+    <div class="feedback-box" id="n1-fb"></div>
+    <button class="btn-primary" id="btn-n1-next" onclick="unlockLevel(2)" disabled>Passer à l’expérimentation →</button>
+  </div>
+
+  <!-- NIVEAU 2 -->
+  <div class="screen" id="screen-n2">
+    <div class="section-title">La chaîne du portrait</div>
+    <div class="commission-header">Une histoire unique ne naît pas toute seule : elle se transmet. Quelqu’un la fabrique, quelqu’un la reçoit, quelqu’un la fait passer. <strong>Tu vas occuper les trois places, dans l’ordre.</strong></div>
+    <div class="commission-header">Maëlys est arrivée il y a un mois. Tu ne lui as encore jamais parlé.</div>
+
+    <div id="ph1">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 1 / 3 — Tu reçois</div>
+        <div class="phase-q">Dans le couloir, une camarade te résume Maëlys en dix secondes : <em>« Elle, méfie-toi, elle raconte tout aux profs. »</em></div>
+        <div onclick="phChoice(this,1,'a','good','La bonne question, et la plus désarmante. Demander la source ne t’oppose à personne : tu ne dis pas que c’est faux, tu demandes d’où ça vient. Dans la moitié des cas, la réponse est « on m’a dit » — et la chaîne s’arrête là.')" class="phase-choice">« Ah bon ? Tu l’as vue faire, ou on te l’a dit ? »</div>
+        <div onclick="phChoice(this,1,'b','medium','Rester neutre te protège, et c’est déjà mieux que d’acquiescer. Mais l’information est entrée, et elle travaillera toute seule : la prochaine fois que Maëlys parlera à un adulte, tu t’en souviendras.')" class="phase-choice">Tu ne réponds rien et tu changes de sujet.</div>
+        <div onclick="phChoice(this,1,'c','bad','Tu viens de recevoir le portrait sans l’examiner. Ce n’est pas de la méchanceté — c’est le mécanisme ordinaire, et il suffit d’une fois. Maëlys a désormais une étiquette dans ta tête, et tu ne l’as même pas rencontrée.')" class="phase-choice">« Ok, merci du tuyau. » Tu notes mentalement de te méfier.</div>
+        <div class="phase-fb" id="pfb1"></div>
+      </div>
+    </div>
+
+    <div id="ph2" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 2 / 3 — Tu observes le contraire</div>
+        <div class="phase-q">Deux semaines plus tard, tu vois Maëlys couvrir quelqu’un qui avait triché : elle se tait alors qu’elle pourrait parler. Cela contredit exactement ce qu’on t’avait dit.</div>
+        <div onclick="phChoice(this,2,'a','good','C’est la seule sortie possible d’une histoire unique, et elle est mentale avant d’être sociale. Tant que tu gardes l’étiquette « sauf cette fois-ci », elle survit à tout. La lâcher, c’est accepter de ne plus savoir à l’avance qui elle est.')" class="phase-choice">Tu en conclus que l’étiquette était fausse, et tu la laisses tomber.</div>
+        <div onclick="phChoice(this,2,'b','medium','Prudent, et pas absurde : une observation ne fait pas une personne. Mais remarque l’asymétrie — il avait suffi d’une phrase de couloir pour installer l’étiquette, et il te faudrait maintenant plusieurs preuves pour l’enlever.')" class="phase-choice">Tu suspends ton jugement : une fois ne suffit pas à conclure.</div>
+        <div onclick="phChoice(this,2,'c','bad','Voilà le tour de force du stéréotype : il digère ce qui le contredit. « Elle avait ses raisons », « ça l’arrangeait » — et l’étiquette ressort intacte. Tant que tu procèdes ainsi, aucune observation ne pourra jamais la démentir.')" class="phase-choice">Tu te dis qu’elle avait sûrement une raison personnelle de se taire.</div>
+        <div class="phase-fb" id="pfb2"></div>
+      </div>
+    </div>
+
+    <div id="ph3" style="display:none">
+      <div class="sim-phase">
+        <div class="phase-label">Phase 3 / 3 — Tu transmets</div>
+        <div class="phase-q">Un nouveau arrive et te demande, l’air de rien : <em>« Elle, c’est qui ? »</em> Tu tiens le crayon.</div>
+        <div onclick="phChoice(this,3,'a','good','C’est la décolonisation du regard en une phrase. Tu ne défends pas Maëlys, tu ne l’accuses pas : tu refuses de faire son portrait à sa place. C’est le geste le plus simple et le plus rare de tout ce module.')" class="phase-choice">« Maëlys. Je la connais pas trop — demande-lui. »</div>
+        <div onclick="phChoice(this,3,'b','medium','Bonne intention, et vrai résultat mitigé. En disant qu’elle est sympa, tu la décris quand même — tu remplaces une étiquette par une autre. Elle devra désormais être sympa, et elle n’aura toujours pas le crayon.')" class="phase-choice">« Elle est sympa, t’inquiète. »</div>
+        <div onclick="phChoice(this,3,'c','bad','Tu viens de transmettre le portrait, en y ajoutant même une caution : « on m’a dit ». La chaîne repart pour un tour, et le nouveau la fera passer à son tour. C’est ainsi qu’une réputation survit à des années entières, longtemps après ceux qui l’ont fabriquée.')" class="phase-choice">« On m’a dit de me méfier, mais j’en sais rien en vrai. »</div>
+        <div class="phase-fb" id="pfb3"></div>
+      </div>
+    </div>
+
+    <div id="sim-result" style="display:none">
+      <div style="text-align:center;padding:20px;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:2rem;color:var(--primary);margin-bottom:8px;" id="simScore">—</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="simLabel"></div>
+      </div>
+      <button class="btn-primary" onclick="unlockLevel(3)">Passer au transfert →</button>
+    </div>
+  </div>
+
+  <!-- NIVEAU 3 -->
+  <div class="screen" id="screen-n3">
+    <div class="section-title">Dans ta vie</div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 1 — L’image qui reste</div>
+      <div class="xfer-scenario">Une photo d’un élève, prise à un très mauvais moment, circule en boucle avec une légende drôle. Elle n’est pas truquée : c’est bien lui, et il faisait bien cela.</div>
+      <div class="xfer-q">Pourquoi est-ce grave, alors que la photo est vraie ?</div>
+      <div id="xf1-opts">
+        <div class="xfer-choice" onclick="xferChoice(1,this,3,'C’est exactement l’argument d’Adichie appliqué à une image. Un instant vrai devient toute la personne, et sa force vient précisément de son authenticité : impossible de démentir une photo. Il faudrait mille autres images pour rétablir l’équilibre, et il n’y en aura qu’une.')">Parce qu’un instant vrai est en train de remplacer une personne entière.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,2,'Vrai, et juridiquement décisif : diffuser l’image de quelqu’un sans son accord est une atteinte à son droit à l’image, quelle que soit la véracité de la scène. Le module Vie privée &amp; données y revient en détail.')">Parce qu’il n’a jamais donné son accord pour être diffusé.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Le nombre aggrave, mais ne crée pas le problème : la même photo envoyée à trois personnes produit déjà l’effet. Ce n’est pas une question de quantité, c’est une question de substitution.')">Parce que trop de gens l’ont vue.</div>
+        <div class="xfer-choice" onclick="xferChoice(1,this,1,'Attention : « il n’avait qu’à pas » déplace la responsabilité sur celui qui subit. Tout le monde a des instants ratés — la différence entre lui et toi, c’est qu’un des tiens n’a pas été photographié.')">Ce n’est pas si grave : il n’avait qu’à pas se mettre dans cette situation.</div>
+      </div>
+      <div class="xfer-fb" id="xfb1"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 2 — « Je le connais depuis la 6<sup>e</sup> »</div>
+      <div class="xfer-scenario">Un garçon a été insupportable pendant deux ans. Depuis la rentrée, il a manifestement changé : il travaille, il ne provoque plus personne. Personne ne le lui accorde.</div>
+      <div class="xfer-q">Que se passe-t-il ?</div>
+      <div id="xf2-opts">
+        <div class="xfer-choice" onclick="xferChoice(2,this,3,'C’est la version la plus juste, et la plus injuste des situations : on lui a retiré le droit de changer. Le groupe a besoin qu’il reste le même, parce que sa place dans le récit collectif en dépend. Sortir de cette place demande souvent de changer d’établissement — ce qui est un aveu d’échec pour tout le monde.')">Son histoire unique a été écrite il y a deux ans, et personne ne la met à jour.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,2,'Légitime : la confiance se reconstruit lentement, surtout chez ceux qui ont réellement subi son comportement. La question devient alors : combien de temps, et qui décide que c’est assez ? Sans réponse, « lentement » veut dire « jamais ».')">Les gens se méfient encore, et c’est normal après deux ans.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'C’est possible, et tu ne peux pas le savoir d’avance. Mais remarque que ce raisonnement est infalsifiable : s’il redevient pénible tu auras eu raison, et s’il reste correct tu diras qu’il fait semblant. Aucun comportement ne peut te faire changer d’avis.')">Il fait probablement semblant, ça ne durera pas.</div>
+        <div class="xfer-choice" onclick="xferChoice(2,this,1,'Ce n’est pas faux — il devra en effet fournir plus d’efforts que les autres. Mais formulé ainsi, cela revient à lui faire payer indéfiniment, et c’est très exactement ce qui pousse quelqu’un à retourner à son ancien rôle : au moins, il y avait une place.')">C’est à lui de faire ses preuves, pas aux autres de changer d’avis.</div>
+      </div>
+      <div class="xfer-fb" id="xfb2"></div>
+    </div>
+    <div class="xfer-card">
+      <div class="xfer-title">Scénario 3 — L’histoire unique que tu as sur toi</div>
+      <div class="xfer-scenario">Tu as une phrase toute prête sur toi-même : « je suis nul en maths », « je suis timide », « je suis celui qui craque toujours ». Tu la dis avant qu’on te le fasse remarquer.</div>
+      <div class="xfer-q">Que fait cette phrase ?</div>
+      <div id="xf3-opts">
+        <div class="xfer-choice" onclick="xferChoice(3,this,3,'C’est le point de Fanon, ramené à ta taille : à force d’être décrit d’une seule façon, on finit par se décrire soi-même ainsi — et prendre les devants donne l’illusion de tenir le crayon alors qu’on ne fait que recopier.')">Elle te protège sur le moment, et elle t’enferme sur la durée.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,2,'Vrai : nommer une difficulté est souvent le début du travail, et vaut mieux que la nier. La nuance est dans le verbe — « j’ai du mal en maths » décrit une situation, « je suis nul en maths » décrit une nature. La seconde ne bouge jamais.')">Elle est lucide : mieux vaut connaître ses limites.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'C’est effectivement ce qu’elle fait, et c’est un usage réel. Mais le prix est élevé : pour désamorcer une moquerie qui n’est peut-être pas venue, tu as signé toi-même le portrait qu’on aurait dû te prouver.')">Elle coupe l’herbe sous le pied de ceux qui pourraient se moquer.</div>
+        <div class="xfer-choice" onclick="xferChoice(3,this,1,'Elle n’est pas rien du tout : elle oriente ce que tu tentes et ce que tu abandonnes avant d’essayer. Une phrase qu’on répète sur soi finit par organiser une vie entière autour d’elle.')">Rien de spécial, c’est juste une façon de parler.</div>
+      </div>
+      <div class="xfer-fb" id="xfb3"></div>
+    </div>
+    <button class="btn-primary" id="btn-n3-finish" onclick="finishModule()" disabled>Terminer le module →</button>
+  </div>
+
+  <div class="screen" id="screen-fin">
+    <div class="fin-zone">
+      <div class="fin-icon">👁️</div>
+      <div class="fin-title">La Décolonisation du Regard</div>
+      <div class="fin-sub">Décoloniser un regard, ce n’est pas se forcer à penser du bien de quelqu’un. C’est lui rendre le droit d’être compliqué — contradictoire, changeant, difficile à résumer. Exactement comme toi.</div>
+      <div class="xp-badge">⭐ +200 XP</div><br><br>
+      <button class="btn-primary" onclick="returnHub()">← Retour au Hub pHARe</button><br>
+      <button class="btn-secondary" onclick="restartModule()">↺ Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_ID='HISTOIRE_08',XP=200,HUB='index_PIXHARe.html';
+var player='';
+(function(){var p=new URLSearchParams(window.location.search).get('player');if(p){localStorage.setItem('pvs_current_player',p);localStorage.setItem('pvs_phare_player',p);}player=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';})();
+var state={n1done:false,n2score:0,n2phase:1,n3done:[false,false,false]};
+function goLevel(n){['n1','n2','n3','fin'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});var t=document.getElementById('screen-n'+n);if(t)t.classList.add('active');['1','2','3'].forEach(function(i){var b=document.getElementById('lnav'+i);if(b)b.classList.toggle('active',i===String(n));});updateProgress();window.scrollTo(0,0);}
+function updateProgress(){var pct=5;if(state.n1done)pct=35;if(state.n2phase>3)pct=70;if(state.n3done.every(Boolean))pct=100;document.getElementById('progFill').style.width=pct+'%';}
+function selectN1(btn,fb){document.querySelectorAll('#n1-opts .opt-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var f=document.getElementById('n1-fb');f.textContent=fb;f.classList.add('show');state.n1done=true;document.getElementById('btn-n1-next').disabled=false;updateProgress();}
+function unlockLevel(n){var b=document.getElementById('lnav'+n);if(b){b.disabled=false;b.classList.add('done');}goLevel(n);}
+function phChoice(el,ph,choice,quality,feedback){var c=document.getElementById('ph'+ph);c.querySelectorAll('.phase-choice').forEach(function(node){node.style.pointerEvents='none';node.style.opacity='.4';});if(el){el.style.opacity='1';el.classList.add(quality);}var fb=document.getElementById('pfb'+ph);fb.textContent=feedback;fb.classList.add('show');if(quality==='good')state.n2score+=3;else if(quality==='medium')state.n2score+=1;state.n2phase++;setTimeout(function(){if(ph<3)document.getElementById('ph'+(ph+1)).style.display='block';else showSimResult();},1800);}
+function showSimResult(){document.getElementById('sim-result').style.display='block';var s=state.n2score;document.getElementById('simScore').textContent=s+'/9';document.getElementById('simLabel').textContent=s<=3?'Le portrait est reparti pour un tour — reprends la chaîne':s<=6?'Tu as ralenti la chaîne sans tout à fait la couper':'Tu as rendu le crayon à celle qu’on décrivait';updateProgress();}
+function xferChoice(num,el,pts,feedback){var opts=document.getElementById('xf'+num+'-opts');opts.querySelectorAll('.xfer-choice').forEach(function(c){c.style.pointerEvents='none';c.style.opacity='.4';});el.style.opacity='1';el.classList.add(pts>=3?'best':pts>=2?'good':'bad');var fb=document.getElementById('xfb'+num);fb.textContent=feedback;fb.classList.add('show');state.n3done[num-1]=true;if(state.n3done.every(Boolean)){document.getElementById('btn-n3-finish').disabled=false;document.getElementById('lnav3').classList.add('done');}updateProgress();}
+function finishModule(){try{localStorage.setItem('CERT_PHARE_HISTOIRE_08',JSON.stringify({v:1,d:new Date().toISOString(),m:MODULE_ID,f:true}));var evts=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');evts.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',player:player,module:MODULE_ID,xp:XP,d:new Date().toISOString()});if(evts.length>500)evts.splice(0,evts.length-500);localStorage.setItem('pvs_bridge_events',JSON.stringify(evts));window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));}catch(e){}['n1','n2','n3'].forEach(function(id){var el=document.getElementById('screen-'+id);if(el)el.classList.remove('active');});document.getElementById('screen-fin').classList.add('active');document.getElementById('progFill').style.width='100%';window.scrollTo(0,0);}
+function returnHub(){window.location.href=HUB+(player?'?player='+encodeURIComponent(player):'');}
+function restartModule(){window.location.reload();}
+</script>
+</body>
+</html>
