@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Console CPE — Portail Vie Scolaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0b0906;--p1:#151009;
+      --rouge:#8b2a2a;--vert:#5da35d;--bleu:#4a6fa5}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:15px;line-height:1.6;min-height:100vh}
+.wrap{max-width:1060px;margin:0 auto;padding:26px 18px 70px}
+h1{font-family:'Cinzel',serif;font-size:1.25em;color:var(--or2);letter-spacing:2px;margin-bottom:4px}
+.sub{color:var(--enc2);font-style:italic;opacity:.75;font-size:.88em;margin-bottom:24px}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:10px;padding:20px;margin-bottom:16px}
+.lbl{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.85;margin-bottom:10px}
+input,select{background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--enc);padding:9px 12px;font-family:'Cinzel',serif;font-size:.85em;letter-spacing:1px;outline:none;width:100%;margin-bottom:10px}
+input:focus,select:focus{border-color:var(--or)}
+select option{background:#151009}
+.btn{padding:9px 18px;background:rgba(201,168,76,.14);border:1px solid var(--or);border-radius:5px;color:var(--or2);font-family:'Cinzel',serif;font-size:.74em;letter-spacing:1.5px;cursor:pointer;transition:all .2s}
+.btn:hover{background:rgba(201,168,76,.28)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.sm{padding:5px 11px;font-size:.66em}
+.btn.ghost{background:transparent;border-color:rgba(201,168,76,.25);color:var(--enc2)}
+.btn.danger{border-color:rgba(139,42,42,.7);color:#e0a48a;background:rgba(139,42,42,.12)}
+.msg{border-radius:5px;padding:11px 14px;font-size:.85em;margin:10px 0}
+.msg.err{background:rgba(139,42,42,.13);border:1px solid rgba(139,42,42,.5);color:#e0a48a}
+.msg.ok{background:rgba(93,163,93,.12);border:1px solid rgba(93,163,93,.45);color:#a8d8a8}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.bar input,.bar select{width:auto;margin:0;flex:0 0 auto}
+.bar .grow{flex:1 1 180px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:9px 15px;font-size:.82em}
+.stat b{color:var(--or2);font-family:'Cinzel',serif;font-size:1.15em;display:block}
+table{width:100%;border-collapse:collapse;font-size:.86em}
+th{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:1.5px;text-transform:uppercase;color:var(--or);opacity:.85;text-align:left;padding:8px 10px;border-bottom:1px solid rgba(201,168,76,.25)}
+td{padding:7px 10px;border-bottom:1px solid rgba(201,168,76,.08)}
+tr.cl{cursor:pointer}
+tr.cl:hover td{background:rgba(201,168,76,.06)}
+.code{font-family:'Cinzel',serif;letter-spacing:.5px;color:var(--enc)}
+.pill{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:1px;padding:2px 9px;border-radius:11px;text-transform:uppercase}
+.pill.admin{background:rgba(201,168,76,.2);color:var(--or2);border:1px solid var(--or)}
+.pill.prof{background:rgba(74,111,165,.2);color:#9dbde8;border:1px solid rgba(74,111,165,.6)}
+.pill.eleve{background:rgba(255,255,255,.05);color:var(--enc2);border:1px solid rgba(255,255,255,.14)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+.dot.on{background:var(--vert)}.dot.off{background:rgba(255,255,255,.18)}
+.volet{background:rgba(74,111,165,.06);border:1px solid rgba(74,111,165,.35);border-radius:8px;padding:16px 18px;margin:6px 0 14px}
+.volet h3{font-family:'Cinzel',serif;font-size:.9em;color:#9dbde8;margin-bottom:4px}
+.volet .n{font-size:.8em;color:var(--enc2);opacity:.8;margin-bottom:12px}
+.eleves{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:5px;max-height:330px;overflow-y:auto;padding-right:6px}
+.el{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:5px;border:1px solid rgba(255,255,255,.07);font-size:.84em;cursor:pointer;transition:all .15s}
+.el:hover{background:rgba(255,255,255,.05)}
+.el.on{background:rgba(93,163,93,.12);border-color:rgba(93,163,93,.5)}
+.el input{width:auto;margin:0}
+.mini{font-size:.76em;color:var(--enc2);opacity:.7}
+a.bk{color:var(--enc2);font-size:.78em;text-decoration:none;font-family:'Cinzel',serif;letter-spacing:1px}
+a.bk:hover{color:var(--or)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+@media(max-width:640px){.eleves{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- OUVERTURE -->
+  <div id="ecAuth">
+    <h1>Console CPE</h1>
+    <p class="sub">Accès réservé — l'identité et le mot de passe sont vérifiés par le serveur.</p>
+    <div class="card" style="max-width:440px">
+      <div class="lbl">Ton nom de page</div>
+      <input id="inSec" type="password" placeholder="Aigle-Vaillant-0000" autocomplete="off">
+      <div id="blocPass" style="display:none">
+        <div class="lbl" id="lblPass">Mot de passe administrateur</div>
+        <input id="inPass" type="password" placeholder="MOT DE PASSE" autocomplete="off">
+        <div id="blocNouveau" style="display:none">
+          <div class="lbl">Confirme</div>
+          <input id="inPass2" type="password" placeholder="RÉPÉTER" autocomplete="off">
+          <p class="mini" style="margin-bottom:10px">Dix caractères minimum. Il ne sera jamais
+          stocké en clair : le serveur n'en garde qu'une empreinte irréversible. Note-le, personne
+          ne pourra te le rendre.</p>
+        </div>
+      </div>
+      <button class="btn" id="btnAuth" onclick="etape()">Continuer</button>
+      <div id="mAuth"></div>
+      <div style="margin-top:14px"><a class="bk" href="index.html">← Portail</a></div>
+    </div>
+  </div>
+
+  <!-- CONSOLE -->
+  <div id="ecConsole" style="display:none">
+    <div class="top">
+      <div>
+        <h1>Console CPE</h1>
+        <p class="sub" style="margin:0" id="sessInfo"></p>
+      </div>
+      <div>
+        <button class="btn ghost sm" onclick="charger()">↻ Rafraîchir</button>
+        <button class="btn ghost sm" onclick="fermer()">Fermer la session</button>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div id="mCons"></div>
+
+    <div class="card">
+      <div class="bar">
+        <input class="grow" id="fRech" placeholder="Rechercher un code…" oninput="rendre()">
+        <select id="fRole" onchange="rendre()" style="min-width:150px">
+          <option value="">Tous les rôles</option>
+          <option value="admin">Administrateur</option>
+          <option value="prof">Professeurs</option>
+          <option value="eleve">Élèves</option>
+        </select>
+        <select id="fActif" onchange="rendre()" style="min-width:160px">
+          <option value="">Actifs et inactifs</option>
+          <option value="1">Comptes ouverts</option>
+          <option value="0">Jamais ouverts</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Code public</th><th>Rôle</th><th>État</th><th>Suivi</th><th></th></tr></thead>
+          <tbody id="corps"></tbody>
+        </table>
+      </div>
+      <p class="mini" id="compte" style="margin-top:10px"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+var API='/api/identite', TKEY='pvs_admin_token';
+var token='', secTmp='', comptes=[], suivis=[], ouvert='';
+
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function msg(c,t,k){$(c).innerHTML=t?'<div class="msg '+(k||'err')+'">'+esc(t)+'</div>':''}
+
+async function api(action,payload){
+  var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(Object.assign({action:action},payload||{}))});
+  var j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok||!j||j.error){var e2=new Error((j&&j.error)||('Erreur '+r.status));e2.data=j;throw e2}
+  return j;
+}
+
+/* ---------- ouverture ---------- */
+var phase=0;   // 0 = nom de page, 1 = mot de passe, 2 = création
+async function etape(){
+  msg('mAuth','');
+  var b=$('btnAuth');b.disabled=true;
+  try{
+    if(phase===0){
+      secTmp=($('inSec').value||'').trim();
+      if(!secTmp){msg('mAuth','Entre ton nom de page.');b.disabled=false;return}
+      var st=await api('admin_pass_statut',{secret:secTmp});
+      $('blocPass').style.display='block';
+      $('inSec').disabled=true;
+      if(st.defini){ phase=1; $('lblPass').textContent='Mot de passe administrateur';
+                     b.textContent='Ouvrir la console'; }
+      else { phase=2; $('lblPass').textContent='Choisis ton mot de passe';
+             $('blocNouveau').style.display='block'; b.textContent='Créer et ouvrir'; }
+      $('inPass').focus();
+    }
+    else if(phase===2){
+      var p1=$('inPass').value||'', p2=$('inPass2').value||'';
+      if(p1.length<10){msg('mAuth','Dix caractères minimum.');b.disabled=false;return}
+      if(p1!==p2){msg('mAuth','Les deux saisies diffèrent.');b.disabled=false;return}
+      await api('admin_pass_definir',{secret:secTmp,pass:p1});
+      var s1=await api('admin_ouvrir',{secret:secTmp,pass:p1});
+      entrer(s1);
+    }
+    else {
+      var s2=await api('admin_ouvrir',{secret:secTmp,pass:$('inPass').value||''});
+      entrer(s2);
+    }
+  }catch(e){ msg('mAuth',e.message) }
+  b.disabled=false;
+}
+
+function entrer(s){
+  token=s.token; secTmp='';
+  try{sessionStorage.setItem(TKEY,token)}catch(e){}
+  $('ecAuth').style.display='none'; $('ecConsole').style.display='block';
+  var fin=new Date(s.expire_at);
+  $('sessInfo').textContent='Session ouverte jusqu’à '+fin.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+
+    ' — '+(s.public||'');
+  charger();
+}
+
+async function fermer(){
+  try{await api('admin_fermer',{token:token})}catch(e){}
+  try{sessionStorage.removeItem(TKEY)}catch(e){}
+  location.reload();
+}
+
+/* ---------- données ---------- */
+async function charger(){
+  msg('mCons','');
+  try{
+    var j=await api('admin_liste',{token:token});
+    comptes=j.comptes||[]; suivis=j.suivis||[];
+    var n={admin:0,prof:0,eleve:0}, ouverts=0;
+    comptes.forEach(function(c){ n[c.role]=(n[c.role]||0)+1; if(c.actif)ouverts++ });
+    $('stats').innerHTML=
+      '<div class="stat"><b>'+comptes.length+'</b>comptes</div>'+
+      '<div class="stat"><b>'+ouverts+'</b>ouverts par un élève</div>'+
+      '<div class="stat"><b>'+(n.prof||0)+'</b>professeurs</div>'+
+      '<div class="stat"><b>'+(n.eleve||0)+'</b>élèves</div>'+
+      '<div class="stat"><b>'+suivis.length+'</b>suivis attribués</div>';
+    rendre();
+  }catch(e){
+    msg('mCons',e.message);
+    if(/[Ss]ession/.test(e.message)){ setTimeout(function(){location.reload()},1800) }
+  }
+}
+
+function suivisDe(prof){ return suivis.filter(function(s){return s.prof_public===prof}) }
+
+function rendre(){
+  var q=($('fRech').value||'').trim().toUpperCase();
+  var fr=$('fRole').value, fa=$('fActif').value;
+  var list=comptes.filter(function(c){
+    if(q && c.public.indexOf(q)<0) return false;
+    if(fr && c.role!==fr) return false;
+    if(fa==='1' && !c.actif) return false;
+    if(fa==='0' && c.actif) return false;
+    return true;
+  });
+  var t=$('corps'); t.innerHTML='';
+  list.slice(0,300).forEach(function(c){
+    var tr=document.createElement('tr');
+    if(c.role==='prof') tr.className='cl';
+    var nb=c.role==='prof'?suivisDe(c.public).length:0;
+    // Le rôle sert de classe CSS : on le borne aux valeurs connues plutôt que
+    // de faire confiance à ce que renvoie la base.
+    var r=['admin','prof','eleve'].indexOf(c.role)>=0?c.role:'eleve';
+    tr.innerHTML=
+      '<td class="code">'+esc(c.public)+'</td>'+
+      '<td><span class="pill '+r+'">'+({admin:'Admin',prof:'Professeur',eleve:'Élève'}[r])+'</span></td>'+
+      '<td><span class="dot '+(c.actif?'on':'off')+'"></span>'+(c.actif?'ouvert':'—')+'</td>'+
+      '<td>'+(c.role==='prof'?(nb+' élève'+(nb>1?'s':'')):'')+'</td>'+
+      '<td style="text-align:right">'+
+        (c.role==='prof'?'<button class="btn sm ghost">Attribuer ▾</button>':
+         c.role==='eleve'?'<button class="btn sm ghost" data-p="'+esc(c.public)+'">→ professeur</button>':'')+
+      '</td>';
+    if(c.role==='prof') tr.onclick=function(ev){ev.stopPropagation();volet(c.public)};
+    if(c.role==='eleve'){
+      var b=tr.querySelector('button');
+      if(b) b.onclick=function(ev){ev.stopPropagation();promouvoir(c.public,'prof')};
+    }
+    t.appendChild(tr);
+  });
+  $('compte').textContent=list.length+' compte(s)'+(list.length>300?' — 300 affichés, affine la recherche':'');
+}
+
+/* ---------- volet d'attribution ---------- */
+function volet(prof){
+  if(ouvert===prof){ ouvert=''; rendre(); return }
+  ouvert=prof; rendre();
+  var rows=$('corps').querySelectorAll('tr');
+  for(var i=0;i<rows.length;i++){
+    if(rows[i].firstChild.textContent===prof){
+      var tr=document.createElement('tr');
+      var td=document.createElement('td'); td.colSpan=5;
+      var dejà=suivisDe(prof).map(function(s){return s.eleve_public});
+      var eleves=comptes.filter(function(c){return c.role==='eleve'});
+      td.innerHTML='<div class="volet"><h3>Élèves confiés à '+esc(prof)+'</h3>'+
+        '<div class="n">Coche pour attribuer. Les autres professeurs ne sont pas listés. '+
+        'Aucun nom réel n’apparaît ici : la correspondance reste sur ton document papier.</div>'+
+        '<div class="eleves" id="lstEl"></div></div>';
+      tr.appendChild(td);
+      rows[i].parentNode.insertBefore(tr,rows[i].nextSibling);
+      var box=td.querySelector('#lstEl');
+      eleves.forEach(function(e){
+        var on=dejà.indexOf(e.public)>=0;
+        var d=document.createElement('label');
+        d.className='el'+(on?' on':'');
+        d.innerHTML='<input type="checkbox"'+(on?' checked':'')+'><span class="code">'+esc(e.public)+'</span>'+
+                    (e.actif?'':'<span class="mini"> (jamais ouvert)</span>');
+        d.querySelector('input').onchange=function(){ basculer(prof,e.public,this.checked,d) };
+        box.appendChild(d);
+      });
+      break;
+    }
+  }
+}
+
+async function basculer(prof,eleve,coche,el){
+  el.classList.toggle('on',coche);
+  try{
+    await api('admin_suivi',{token:token,prof:prof,eleve:eleve,retirer:!coche});
+    if(coche) suivis.push({prof_public:prof,eleve_public:eleve});
+    else suivis=suivis.filter(function(s){return !(s.prof_public===prof&&s.eleve_public===eleve)});
+  }catch(e){
+    el.classList.toggle('on',!coche);
+    el.querySelector('input').checked=!coche;
+    msg('mCons',e.message);
+  }
+}
+
+async function promouvoir(code,role){
+  if(!confirm('Donner le rôle « professeur » à '+code+' ?')) return;
+  try{ await api('admin_role',{token:token,cible:code,role:role}); await charger();
+       msg('mCons',code+' est désormais professeur.','ok'); }
+  catch(e){ msg('mCons',e.message) }
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  ['inSec','inPass','inPass2'].forEach(function(id){
+    var e=$(id); if(e)e.addEventListener('keydown',function(ev){if(ev.key==='Enter')etape()});
+  });
+  var t=''; try{t=sessionStorage.getItem(TKEY)||''}catch(e){}
+  if(t){ token=t;
+    api('admin_liste',{token:t}).then(function(){
+      $('ecAuth').style.display='none'; $('ecConsole').style.display='block';
+      $('sessInfo').textContent='Session en cours'; charger();
+    }).catch(function(){ try{sessionStorage.removeItem(TKEY)}catch(e){} });
+  }
+});
+</script>
+</body>
+</html>
