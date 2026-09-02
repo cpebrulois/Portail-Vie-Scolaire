@@ -129,6 +129,34 @@
 <div id="hubScreen">
 <div class="wrap">
 
+<!-- ══ ACCÈS CONSOLE CPE (visible du seul administrateur) ═══════════ -->
+<a id="adminBand" href="admin.html" style="display:none;align-items:center;gap:12px;flex-wrap:wrap;
+   text-decoration:none;margin:0 0 12px;padding:9px 16px;border-radius:8px;
+   background:linear-gradient(120deg,rgba(74,111,165,.22),rgba(21,16,9,.9));
+   border:1px solid rgba(74,111,165,.55)">
+  <span style="font-size:1.1em">🛡️</span>
+  <span style="flex:1;min-width:170px">
+    <span style="display:block;font-family:Cinzel,serif;font-size:.64em;letter-spacing:2.5px;
+      color:#9dbde8;text-transform:uppercase">Console CPE</span>
+    <span style="display:block;color:#e8dfc8;font-size:.86em;opacity:.85">Comptes, rôles et suivis des professeurs</span>
+  </span>
+  <span style="font-family:Cinzel,serif;font-size:.68em;letter-spacing:2px;color:#9dbde8;
+    border:1px solid rgba(74,111,165,.6);border-radius:5px;padding:6px 13px;white-space:nowrap">Ouvrir</span>
+</a>
+<script>
+(function(){
+  function go(){
+    var b=document.getElementById('adminBand'); if(!b) return;
+    var r=''; try{r=localStorage.getItem('pvs_role')||''}catch(e){}
+    var j=''; try{j=(localStorage.getItem('pvs_current_player')||'').trim()}catch(e){}
+    b.style.display=(j && r==='admin')?'flex':'none';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+  window.addEventListener('storage',go);
+  setTimeout(go,1200);   // après la connexion, qui écrit le rôle
+})();
+</script>
+
 <!-- ══ BANDEROLE DU SEUIL DE VALDURNE ══════════════════════════════ -->
 <a id="seuilBand" href="seuil.html" style="display:none;align-items:center;gap:14px;flex-wrap:wrap;
    text-decoration:none;margin:0 0 16px;padding:11px 18px;border-radius:10px;
@@ -1572,6 +1600,7 @@ async function identiteServeur(code){
     if(!r.ok)return null;
     const j=await r.json();
     if(!(j&&j.ok&&j.public))return null;
+    try{localStorage.setItem('pvs_role',String(j.role||'eleve'))}catch(e){}
     // On retient le joli nom pour l'affichage, et on renvoie le code public :
     // c'est lui qui sert d'identite interne (temoignages, classement).
     try{const mot=String(code).split('-')[0]||'';localStorage.setItem('pvs_nom_page',mot.charAt(0).toUpperCase()+mot.slice(1).toLowerCase())}catch(e){}

@@ -275,7 +275,7 @@ function volet(prof){
     if(rows[i].firstChild.textContent===prof){
       var tr=document.createElement('tr');
       var td=document.createElement('td'); td.colSpan=5;
-      var dejà=suivisDe(prof).map(function(s){return s.eleve_public});
+      var deja=suivisDe(prof).map(function(s){return s.eleve_public});
       var eleves=comptes.filter(function(c){return c.role==='eleve'});
       td.innerHTML='<div class="volet"><h3>Élèves confiés à '+esc(prof)+'</h3>'+
         '<div class="n">Coche pour attribuer. Les autres professeurs ne sont pas listés. '+
@@ -285,7 +285,7 @@ function volet(prof){
       rows[i].parentNode.insertBefore(tr,rows[i].nextSibling);
       var box=td.querySelector('#lstEl');
       eleves.forEach(function(e){
-        var on=dejà.indexOf(e.public)>=0;
+        var on=deja.indexOf(e.public)>=0;
         var d=document.createElement('label');
         d.className='el'+(on?' on':'');
         d.innerHTML='<input type="checkbox"'+(on?' checked':'')+'><span class="code">'+esc(e.public)+'</span>'+
