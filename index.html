@@ -332,12 +332,17 @@
 <section class="card" style="margin-top:10px">
 <div class="rw" style="justify-content:space-between;align-items:center">
 <h2>Hall des Heros - Top 10</h2>
-<div class="tabs"><button class="tab on" id="tg" onclick="switchHall('global')">Global</button><button class="tab" id="tw" onclick="switchHall('week')">Hebdo</button></div>
+<div class="tabs"><button class="tab on" id="tg" onclick="switchHall('global')">Global</button><button class="tab" id="tw" onclick="switchHall('week')">Hebdo</button><select id="selAnnee" onchange="switchHall(this.value?('an:'+this.value):'global')" style="margin-left:6px;padding:4px 8px;font-size:.8em"><option value="">Palmarès…</option></select></div>
 </div>
 <table>
 <thead><tr><th>#</th><th>Code</th><th>Statut</th><th>CP</th><th id="scoreHead">XP Global</th></tr></thead>
 <tbody id="hall"></tbody>
 </table>
+<div id="noteAnnee" style="display:none;margin-top:8px;padding:9px 13px;border-radius:6px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);font-size:.82em;color:#c8bfa8">
+  Palmares archive, en lecture seule. Pour les annees anterieures a la mise en place du
+  nouveau bareme, seule la progression pHARe a pu etre reconstituee : le classement est
+  alors partiel et signale par un asterisque.
+</div>
 <div class="hint" id="hallMeta"></div>
 </section>
 
@@ -1544,6 +1549,38 @@ function filageChapitres(p,i){
   return n;
 }
 
+/* PALMARÈS PAR ANNÉE
+   L'année en cours se calcule en direct. Les années passées se lisent dans
+   p.palmares, figé à la clôture. Pour les années antérieures à ce dispositif,
+   on ne dispose que de l'archive pHARe (datée module par module) : le
+   classement est alors partiel, et l'interface le dit. */
+function figerPalmares(p,an){
+  if(!p||!an)return null;
+  if(!p.palmares||typeof p.palmares!=='object')p.palmares={};
+  const sn=scoreNiveau(p);
+  p.palmares[an]={score:sn.score,grade:sn.grade,brut:sn.brut,chapitres:sn.chapitres,
+                  fige:new Date().toISOString()};
+  return p.palmares[an];
+}
+function palmaresAnnee(p,an){
+  const fige=(p&&p.palmares&&p.palmares[an])?p.palmares[an]:null;
+  if(fige)return {score:Number(fige.score)||0,grade:fige.grade||'Page',complet:true};
+  // Repli : archive pHARe de cette année-là, ramenée au potentiel du niveau.
+  const arc=(p&&p.pixhareArchive&&p.pixhareArchive[an])?p.pixhareArchive[an]:null;
+  const xp=arc?Number(arc.xp||0):0;
+  const i=(p&&p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:0;
+  const pot=potentielNiveau(i)||1;
+  return {score:Math.round(xp/pot*100),grade:(RANKS[i]||RANKS[0]).label,complet:false};
+}
+function anneesConnues(){
+  const set={};
+  try{Object.values(S.players).forEach(function(p){
+    (pvsYearsOf(p)||[]).forEach(function(y){set[y]=1});
+  })}catch(e){}
+  set[pvsActiveYear()]=1;
+  return Object.keys(set).sort().reverse();
+}
+
 /** Score affiché au Hall des Héros, et ce qui reste en attente. */
 function scoreNiveau(p){
   const i=(p&&p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:0;
@@ -1571,7 +1608,7 @@ function scoreNiveau(p){
 function xwFinal(p){return Math.round(xw(p)*acadCoeff(p))}
 function xw(p){return socialValidW(p)+Number(p.videoW||0)+Number(p.malusW||0)}
 function roleLabel(code){if(isAdultPlayerCode(code))return 'Adulte equipe';if(isParentPlayerCode(code))return 'Parent';const ks=Object.keys(CIT).filter(k=>hasMission(code,k));if(!ks.length)return 'Citoyen';ks.sort((a,b)=>CIT[b].xp-CIT[a].xp);const m=CIT[ks[0]].label;return ks.length>1?`${m} +${ks.length-1}`:m}
-function rank(m){const rows=Object.values(S.players).filter(p=>!isVisitorCode(p.code)).map(p=>{const sn=scoreNiveau(p);return {c:p.code,rl:(m==='global'?sn.grade:roleLabel(p.code)),cp:cpTotal(p),s:m==='global'?sn.score:xwFinal(p),sn:sn}});rows.sort((a,b)=>b.s-a.s||a.c.localeCompare(b.c));return rows}
+function rank(m){const an=(String(m).indexOf('an:')===0)?String(m).slice(3):null;const rows=Object.values(S.players).filter(p=>!isVisitorCode(p.code)).map(p=>{if(an){const pa=palmaresAnnee(p,an);return {c:p.code,rl:pa.grade,cp:cpTotal(p),s:pa.score,partiel:!pa.complet}}const sn=scoreNiveau(p);return {c:p.code,rl:(m==='global'?sn.grade:roleLabel(p.code)),cp:cpTotal(p),s:m==='global'?sn.score:xwFinal(p),sn:sn}});rows.sort((a,b)=>b.s-a.s||a.c.localeCompare(b.c));return rows}
 function sm(id,txt,ok){const e=document.getElementById(id);if(!e)return;e.className=`msg ${ok?'ok':'bad'}`;e.textContent=txt}
 function cm(id){const e=document.getElementById(id);if(!e)return;e.className='msg';e.textContent=''}
 function clampN(v,min,max){return Math.max(min,Math.min(max,v))}
@@ -1663,7 +1700,15 @@ function closeNewsModal(){const modal=document.getElementById('newsModal');if(mo
 function openNewsHubPage(){const actor=newsActorKey();if(!actor)return;markNewsSeen(actor);renderNewsLauncher();openTracked('news','NEWS_HUB',newsHubUrl())}
 function resetNewsUi(){const modal=document.getElementById('newsModal'),frame=document.getElementById('newsFrame');if(modal)modal.classList.remove('on');if(frame)frame.src='about:blank';renderNewsLauncher()}
 function maybeAutoOpenNews(){const actor=newsActorKey(),modal=document.getElementById('newsModal'),rewardModal=document.getElementById('rewardGameModal'),rewardOverlay=document.getElementById('rewardOverlay');renderNewsLauncher();if(!actor||isNewsSeen(actor))return;if(rewardBusy||(rewardModal&&rewardModal.classList.contains('on'))||(rewardOverlay&&rewardOverlay.classList.contains('active'))){setTimeout(maybeAutoOpenNews,400);return}if(modal&&modal.classList.contains('on'))return;openNewsModal(true)}
-function renderHall(){const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;const hallSource=sbClient?(sbOnline?'cloud':'local'):(syncOnline?'relais local':'local');document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount} | Source: ${hallSource}`}
+function majSelecteurAnnees(){
+  const sel=document.getElementById('selAnnee'); if(!sel)return;
+  const cour=pvsActiveYear(), ans=anneesConnues().filter(function(a){return a!==cour});
+  const av=sel.value;
+  sel.innerHTML='<option value="">Palmares...</option>'+
+    ans.map(function(a){return '<option value="'+a+'">'+a+'</option>'}).join('');
+  sel.value=av; sel.style.display=ans.length?'inline-block':'none';
+}
+function renderHall(){majSelecteurAnnees();const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;const hallSource=sbClient?(sbOnline?'cloud':'local'):(syncOnline?'relais local':'local');document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount} | Source: ${hallSource}`}
 
 function renderAcademie(){renderAcadGrid()}
 
@@ -1705,7 +1750,7 @@ function renderPop(){const b=document.getElementById('popBody');const map={};S.l
 function updateCodesInfo(){const n=Object.keys(REG.j).length,np=Object.keys(PRW).length,na=(S.adults||[]).length,src=S.registry_source?` | eleves: ${S.registry_source}`:'',srcA=S.adults_source?` | adultes: ${S.adults_source}`:'',srcP=S.parents_source?` | parents: ${S.parents_source}`:'';document.getElementById('codesInfo').textContent=(n||na||np)?`Referentiel charge: ${n} eleves + ${np} parents joueurs + ${na} adultes temoins/joueurs${src}${srcA}${srcP}`:'Referentiel codes: non charge.';updateSyncInfo()}
 function refresh(){resetWeek();save(false);renderAdminMode();renderHall();renderProfile();renderLogs();renderPop();renderMissionAdmin();renderNegReports();renderAcademie();updateCodesInfo();updateVisitorUi();renderTutorial();renderRewardsDock();queuePendingRewards();renderNewsLauncher()}
 function fill(){const as=document.getElementById('aType');as.innerHTML='';Object.entries(ACT).forEach(([k,v])=>as.innerHTML+=`<option value=\"${k}\">${v.l} (+${v.x})</option>`);const ms=document.getElementById('malType');ms.innerHTML='';Object.entries(MAL).forEach(([k,v])=>ms.innerHTML+=`<option value=\"${k}\">${v.l}</option>`)}
-function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');renderHall()}
+function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on',m==='global');document.getElementById('tw').classList.toggle('on',m==='week');const sel=document.getElementById('selAnnee');if(sel&&String(m).indexOf('an:')!==0)sel.value='';const nt=document.getElementById('noteAnnee');if(nt)nt.style.display=(String(m).indexOf('an:')===0)?'block':'none';renderHall()}
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
 /* Nom de page composé à la première connexion : la vérification est faite par
    le Worker (le référentiel local ne contient que les codes d'inscription). */
@@ -1723,7 +1768,11 @@ async function identiteServeur(code){
     return nCode(j.public);
   }catch(e){return null}
 }
-async function loginPlayer(){cm('loginMsg');let c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
+async function loginPlayer(){cm('loginMsg');/* Le role et le nom de page appartiennent a la session precedente : on les efface
+   AVANT toute chose. Sans ca, un eleve se connectant apres l'administrateur
+   heriterait de l'affichage admin (le serveur le refuserait, mais l'ecran mentirait). */
+try{localStorage.removeItem('pvs_role');localStorage.removeItem('pvs_nom_page')}catch(e){}
+let c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save(false);refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle()}
 else{
@@ -1737,7 +1786,7 @@ else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
 }
 async function loginAdmin(){cm('loginMsg');const a=document.getElementById('authAdmin');const pass=String((a||{}).value||'');if(pass!==ADMIN_PASS){sm('authMsg','Identifiant admin invalide.',false);return}cur='';isVisitor=false;adminOn=true;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.setItem(SESSION_AUTH_KEY,'1');sessionStorage.setItem(ADMIN_SESSION_KEY,'1');if(a)a.value='';closeAuthGate();await sbPullGlobal(false);await sbPullAllPlayers(false);save(false);refresh();sm('loginMsg','Mode admin actif.',true);syncPull(false)}
-function logoutPlayer(){cur='';isVisitor=false;adminOn=false;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);cm('loginMsg');closeVisitorArticle();closeTutorial();renderProfile();updateVisitorUi();openAuthGate('Session verrouillee. Identifie-toi pour continuer.')}
+function logoutPlayer(){cur='';isVisitor=false;adminOn=false;localStorage.removeItem(ACTIVE_PLAYER_KEY);try{localStorage.removeItem('pvs_role');localStorage.removeItem('pvs_nom_page');sessionStorage.removeItem('pvs_admin_token')}catch(e){}sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);cm('loginMsg');closeVisitorArticle();closeTutorial();renderProfile();updateVisitorUi();openAuthGate('Session verrouillee. Identifie-toi pour continuer.')}
 function guardPlayerBackup(){if(!cur||!S.players[cur]||isVisitor){sm('pbMsg','Connexion joueur requise (mode visiteur exclu).',false);return false}cm('pbMsg');return true}
 function getPlayerRef(code){const c=nCode(code||'');if(!c)return null;return ((S.registry||[]).find(r=>nCode(r.code_joueur||'')===c)||(S.parents||[]).find(r=>nCode(r.code_joueur||'')===c)||(S.adults||[]).find(r=>nCode(r.code_joueur||r.code_temoin||'')===c)||null)}
 function downloadPlayerBackup(){if(!guardPlayerBackup())return;const p=S.players[cur]||gp(cur);if(!p){sm('pbMsg','Profil joueur introuvable.',false);return}const r=getPlayerRef(cur)||{nom:'',prenom:'',code_joueur:cur,code_temoin:p.witness||'',code_public:defaultPublicCode(cur)};const head=['Nom','Prenom','Code_Joueur','Code_Temoin','Code_Public','CP_PIXHARE','PIXHARE_XP','CP_PSC1','CP_SANCTUAIRE','CP_LOGE','CP_AUTRES','CP_LIBERTE','CP_FRATERNITE','SocialG','SocialW','WBonusG','WBonusW','VideoG','VideoW','MalusG','MalusW','WitnessGiven','RecognizedReceived','Obj_JSON','Saved_At'];const row=[esc(r.nom||''),esc(r.prenom||''),esc(cur),esc(r.code_temoin||p.witness||''),esc(r.code_public||defaultPublicCode(cur)),Math.floor(numOr(p.cp.pixhare,0)),Math.floor(numOr(p.pixhareXp,0)),Math.floor(numOr(p.cp.psc1,0)),Math.floor(numOr(p.cp.sanctuaire,0)),Math.floor(numOr(p.cp.loge,0)),Math.floor(numOr(p.cp.autres,0)),Math.floor(numOr(p.cp.liberte,0)),Math.floor(numOr(p.cp.fraternite,0)),numOr(p.socialG,0),numOr(p.socialW,0),numOr(p.wBonusG,0),numOr(p.wBonusW,0),numOr(p.videoG,0),numOr(p.videoW,0),numOr(p.malusG,0),numOr(p.malusW,0),Math.max(0,Math.floor(numOr(p.witnessGiven,0))),Math.max(0,Math.floor(numOr(p.recognizedReceived,0))),esc(JSON.stringify(p.obj||{})),esc(new Date().toISOString())];const csv='\uFEFF'+head.join(',')+'\n'+row.join(',');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date();a.download=`backup_${cur}_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href);logEv(cur,'BACKUP_EXPORT','LOCAL',0);save();refresh();sm('pbMsg','Sauvegarde joueur telechargee.',true)}
