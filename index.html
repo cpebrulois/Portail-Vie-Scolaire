@@ -297,6 +297,7 @@
 <div class="profile" id="profile">
 <div>Profil actif: <b id="pCode"></b></div>
 <div class="hint">Statut: <span id="pRole"></span></div>
+<div id="boxNiveau" style="display:none;margin:10px 0;padding:12px 15px;border-radius:9px;background:linear-gradient(120deg,rgba(201,168,76,.10),rgba(26,35,64,.22));border:1px solid rgba(201,168,76,.4)"></div>
 <div class="stats">
 <div class="stat"><div class="k">XP Global</div><div class="v" id="pXg">0</div></div>
 <div class="stat"><div class="k">XP Hebdo</div><div class="v" id="pXw">0</div></div>
@@ -999,6 +1000,33 @@ document.addEventListener('DOMContentLoaded',()=>{renderAcadGrid();});
     <audio id="bgAudio" preload="none" loop></audio>
   </div>
 </div>
+<div id="baremeModal" style="display:none;position:fixed;inset:0;z-index:1600;background:#000000cc;padding:16px;overflow:auto">
+  <div class="card" style="max-width:660px;margin:auto;border-color:rgba(201,168,76,.5)">
+    <div style="font-size:.7em;letter-spacing:3px;color:#c9a84c;text-transform:uppercase">Ce qui change cette annee</div>
+    <h2 style="color:#e8c97a">Tes points ne sont pas perdus</h2>
+    <p class="hint">Tu retrouves ton compte, tes modules et tout ce que tu as gagne les annees passees.
+    <strong style="color:#e8c97a">Rien n'a ete efface.</strong></p>
+    <p class="hint">Mais le classement change, pour une raison simple&nbsp;: un 6e et un 3e n'ont pas
+    la meme quantite de travail a fournir. Comparer leurs points bruts n'avait aucun sens.</p>
+    <h3 style="margin-top:10px;color:#e8c97a">Le Hall des Heros compare desormais des pourcentages</h3>
+    <p class="hint">Ton score, c'est la part de <em>ton niveau</em> que tu as accomplie. Un 6e qui boucle
+    80&nbsp;% de ce qu'on lui propose passe devant un 3e qui en fait 60&nbsp;%. Et personne ne debarque
+    en ecrasant le tableau.</p>
+    <h3 style="margin-top:10px;color:#e8c97a">Tes anciens points se revelent au fil de la quete</h3>
+    <p class="hint">Chaque chapitre du fil conducteur que tu termines rapporte <strong>600 XP</strong>
+    et <strong>revele une part de ce que tu as deja gagne</strong>. Huit chapitres par niveau.
+    Une fois les huit termines, tout apparait — et ton score peut depasser 100.</p>
+    <p class="hint" style="color:#c9a84c">C'est le sens du jeu&nbsp;: les modules t'apprennent,
+    le fil te fait <em>vivre</em> ce que tu as appris. Une competence qu'on n'exerce jamais
+    n'est qu'une lecon.</p>
+    <p class="hint" id="baremeChiffres" style="border-top:1px solid rgba(201,168,76,.25);padding-top:10px"></p>
+    <div class="rw" style="margin-top:10px">
+      <button onclick="closeBareme()">J'ai compris</button>
+      <button class="btn2" onclick="closeBareme();location.href='seuil.html'">Reprendre la quete</button>
+    </div>
+  </div>
+</div>
+
 <div id="rulesModal" style="display:none;position:fixed;inset:0;z-index:1500;background:#000000bb;padding:16px;overflow:auto">
   <div class="card" style="max-width:860px;margin:auto">
     <h2>Regles du Jeu - Portail Vie Scolaire</h2>
@@ -1648,7 +1676,28 @@ function openAcadModule(id,file){
   window.open(url,'_blank','noopener');
 }
 
-function renderProfile(){const c=document.getElementById('profile'),h=document.getElementById('loginHint');if(!cur||!S.players[cur]){c.classList.remove('on');h.textContent=adminOn?'Session admin active.':'Session verrouillee. Authentification requise.';return}const p=S.players[cur];c.classList.add('on');h.textContent=`Joueur connecte: ${cur}`;document.getElementById('pCode').textContent=p.code;document.getElementById('pRole').textContent=roleLabel(p.code);document.getElementById('pXg').textContent=xg(p);document.getElementById('pXw').textContent=xw(p);document.getElementById('pCit').textContent=citizenXp(p);document.getElementById('pAca').textContent=academyXp(p);document.getElementById('pVid').textContent=videoXp(p);document.getElementById('pPend').textContent=socialPendingG(p);const ac=acadCoeff(p);
+function renderProfile(){const c=document.getElementById('profile'),h=document.getElementById('loginHint');if(!cur||!S.players[cur]){c.classList.remove('on');h.textContent=adminOn?'Session admin active.':'Session verrouillee. Authentification requise.';return}const p=S.players[cur];c.classList.add('on');h.textContent=`Joueur connecte: ${cur}`;document.getElementById('pCode').textContent=p.code;(function(){
+  const bx=document.getElementById('boxNiveau'); if(!bx)return;
+  const sn=scoreNiveau(p);
+  const pct=Math.min(100,Math.round(sn.chapitres/FILAGE_CHAP*100));
+  let h='<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">'+
+        '<span style="font-size:.72em;letter-spacing:2px;color:#c9a84c;text-transform:uppercase">'+
+        'Hall des Heros &middot; '+sn.grade+'</span>'+
+        '<span style="font-size:1.5em;font-weight:800;color:#e8c97a">'+sn.score+'</span></div>'+
+        '<div style="height:5px;border-radius:3px;background:rgba(255,255,255,.08);margin:8px 0 6px;overflow:hidden">'+
+        '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#8b2a2a,#c9a84c)"></div></div>'+
+        '<div style="font-size:.78em;color:#c8bfa8">Fil conducteur : <b style="color:#e8c97a">'+
+        sn.chapitres+' / '+FILAGE_CHAP+'</b> chapitres</div>';
+  if(sn.attente>0){
+    const suivant=sn.chapitres+1;
+    h+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(201,168,76,.22);font-size:.82em;color:#e8c97a">'+
+       '<b>'+sn.attente.toLocaleString('fr')+' XP en attente</b>'+
+       '<span style="color:#c8bfa8"> &mdash; termine le chapitre '+suivant+' pour en reveler une part.</span></div>';
+  } else if(sn.chapitres>=FILAGE_CHAP){
+    h+='<div style="margin-top:8px;font-size:.82em;color:#5da35d">Fil termine : tout ton travail est visible.</div>';
+  }
+  bx.innerHTML=h; bx.style.display='block';
+})();document.getElementById('pRole').textContent=roleLabel(p.code);document.getElementById('pXg').textContent=xg(p);document.getElementById('pXw').textContent=xw(p);document.getElementById('pCit').textContent=citizenXp(p);document.getElementById('pAca').textContent=academyXp(p);document.getElementById('pVid').textContent=videoXp(p);document.getElementById('pPend').textContent=socialPendingG(p);const ac=acadCoeff(p);
 document.getElementById('pAcadCoeff').textContent='×'+ac.toFixed(2)+' ('+acadDoneCount(p)+' modules'+acadCoeffLabelExtra(p)+')';
 document.getElementById('pCp').textContent=cpTotal(p);const nbAcad=acadDoneCount(p);const acadEl=document.getElementById('pAcadCoeff');if(acadEl)acadEl.textContent=nbAcad>0?`×${acadCoeff(p).toFixed(2)} (${nbAcad} module${nbAcad>1?'s':''}${acadCoeffLabelExtra(p)})`:'×1,00 (aucun module)';const xgFEl=document.getElementById('pXgFinal');if(xgFEl)xgFEl.textContent=xgFinal(p);}
 function renderLogs(){const b=document.getElementById('logBody');b.innerHTML='';const rows=S.logs.slice(0,140);if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucune action.</td></tr>';return}rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${new Date(r.d).toLocaleString('fr-FR')}</td><td>${r.p||'-'}</td><td>${r.t||'-'}</td><td>${r.target||'-'}</td><td>${r.xp||0}</td>`;b.appendChild(tr)})}
@@ -1682,7 +1731,8 @@ else{
   gp(c);cur=c;isVisitor=false;localStorage.setItem(ACTIVE_PLAYER_KEY,c);sessionStorage.setItem(SESSION_AUTH_KEY,'1');closeAuthGate();await sbPullAllPlayers(false);await sbPullGlobal(false);await sbPullCurrent(false);logEv(c,'LOGIN','SUPERHUB',0);save(false);refresh();sm('loginMsg',`Connexion active: ${c}`,true)
 }
 syncPull(false);
-if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
+if(peutEtreAncien()){openBareme()}
+else if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
 else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
 }
@@ -1745,6 +1795,31 @@ async function loadDefaultAdults(showMsg){
 function importAdultFile(){if(!guardAdmin())return;const el=document.getElementById('adultFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier adultes TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseAdultsText(rd.result||'');if(!rows.length){sm('aMsg','Aucun temoin adulte detecte.',false);return}setAdults(rows,f.name);sm('aMsg',`Temoins adultes importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture adultes impossible.',false);rd.readAsText(f)}
 async function loadDefaultParents(showMsg){try{const res=await fetch(PARENT_DEFAULT_FILE,{cache:'no-store'});if(!res.ok)throw new Error('http');const txt=await res.text();const rows=parseCodesText(txt);if(!rows.length)throw new Error('empty');setParents(rows,PARENT_DEFAULT_FILE);if(showMsg)sm('aMsg',`Parents joueurs charges: ${rows.length} lignes.`,true)}catch(e){if(showMsg)sm('aMsg','Chargement parents impossible.',false)}}
 function importParentFile(){if(!guardAdmin())return;const el=document.getElementById('parentFile');if(!el||!el.files||!el.files[0]){sm('aMsg','Choisir un fichier parents TSV/CSV.',false);return}const f=el.files[0],rd=new FileReader();rd.onload=()=>{const rows=parseCodesText(rd.result||'');if(!rows.length){sm('aMsg','Aucun compte parent detecte.',false);return}setParents(rows,f.name);sm('aMsg',`Parents importes: ${rows.length} lignes.`,true)};rd.onerror=()=>sm('aMsg','Lecture parents impossible.',false);rd.readAsText(f)}
+const BAREME_SEEN_KEY='pvs_bareme_2026_seen_v1';
+function openBareme(){
+  const m=document.getElementById('baremeModal'); if(!m)return;
+  const p=cur&&S.players[cur]?S.players[cur]:null;
+  const z=document.getElementById('baremeChiffres');
+  if(p&&z){
+    const sn=scoreNiveau(p);
+    z.innerHTML='Pour toi, aujourd’hui : grade <strong style="color:#e8c97a">'+sn.grade+'</strong>'+
+      ' &middot; score <strong style="color:#e8c97a">'+sn.score+'</strong>'+
+      (sn.attente>0?' &middot; <strong style="color:#e8c97a">'+sn.attente.toLocaleString('fr')+
+        ' XP en attente</strong>, que la quete revelera.':' &middot; tout est deja revele.');
+  }
+  m.style.display='block';
+}
+function closeBareme(){
+  const m=document.getElementById('baremeModal'); if(m)m.style.display='none';
+  try{localStorage.setItem(BAREME_SEEN_KEY,'1')}catch(e){}
+}
+/* Anciens joueurs : ceux qui arrivent avec des XP mais sans avoir entame le fil. */
+function peutEtreAncien(){
+  if(localStorage.getItem(BAREME_SEEN_KEY)==='1') return false;
+  const p=cur&&S.players[cur]?S.players[cur]:null; if(!p) return false;
+  const sn=scoreNiveau(p);
+  return sn.brut>800 && sn.chapitres===0;
+}
 function openRules(){const m=document.getElementById('rulesModal');if(m)m.style.display='block'}
 function closeRules(){const m=document.getElementById('rulesModal');if(m)m.style.display='none'}
 function exportData(){if(!guardAdmin())return;document.getElementById('jsonBox').value=JSON.stringify(S,null,2);sm('aMsg','Export JSON genere.',true)}
