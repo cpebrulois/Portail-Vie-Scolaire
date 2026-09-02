@@ -43,6 +43,9 @@ h1{font-family:'Cinzel Decorative',serif;font-size:1.5em;color:var(--or2);line-h
 .fin{text-align:center;padding:30px 0}
 .fin .sceau{font-size:2.8em;margin-bottom:10px}
 .fin .r{font-family:'Cinzel Decorative',serif;font-size:1.25em;color:var(--or2);margin-bottom:8px}
+.fin .kmot{max-width:520px;margin:18px auto 0;padding-top:16px;border-top:1px solid rgba(201,168,76,.2);color:var(--or2);font-style:italic;line-height:1.7;text-align:left}
+.fin .kmot.attente{color:var(--enc2);opacity:.5;font-size:.9em;text-align:center;animation:respire 1.8s ease-in-out infinite}
+@keyframes respire{0%,100%{opacity:.28}50%{opacity:.6}}
 .fin .xp{display:inline-flex;gap:6px;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);padding:5px 14px;border-radius:20px;font-family:'Cinzel',serif;font-size:.7em;color:#ffd700;margin-top:12px}
 .lock{max-width:560px;margin:70px auto;padding:0 22px;text-align:center}
 a.bk{color:var(--enc2);font-size:.76em;text-decoration:none;border:1px solid rgba(201,168,76,.24);padding:8px 16px;border-radius:4px;font-family:'Cinzel',serif;letter-spacing:1px;display:inline-block;margin:5px}
@@ -80,6 +83,7 @@ var AKEY='pvs_current_player', KEY='pvs_hof_v2';
 var FILAGE_XP=600, TOTAL=8;
 var cur='', ch=null, idx=0, nom='Page';
 var NIVEAU=0, CHAPITRES=[];
+var choix=[];               // ce que l'élève a répondu dans le chapitre en cours
 
 function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
 function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -131,7 +135,7 @@ function moduleFait(mod){
 /* ---- rendu ---- */
 var pos=0, flux;
 function ouvrir(i){
-  idx=i; ch=CHAPITRES[i]; pos=0;
+  idx=i; ch=CHAPITRES[i]; pos=0; choix=[];
   $('chap').textContent='Chapitre '+ch.n+' sur '+TOTAL;
   $('titre').textContent=ch.titre;
   var il=$('illus'); il.innerHTML='<span class="rune">✦</span>';
@@ -164,8 +168,12 @@ function suivant(){
       var bt=document.createElement('button');
       bt.className='opt'; bt.textContent=o.x;
       bt.onclick=function(){
+        if(box.dataset.rep)return;        // une seule reponse par question
+        box.dataset.rep='1';
+        box.style.pointerEvents='none';   // l'option retenue reste lisible, plus cliquable
         Array.prototype.forEach.call(box.children,function(c){c.classList.add('off')});
         bt.classList.remove('off');
+        choix.push({q:b.q,x:o.x});
         ajoute(sub(esc(o.r)),'kern');
         bouton('Continuer',suivant);
       };
@@ -198,6 +206,7 @@ function suivant(){
     f2.innerHTML='<div class="sceau">'+(b.sceau?'⚜️':'✦')+'</div>'+
       '<div class="r">Chapitre '+ch.n+' — accompli</div>'+
       '<div style="color:var(--enc2);font-style:italic;opacity:.85;max-width:520px;margin:0 auto">'+esc(b.mot)+'</div>'+
+      '<div class="kmot" id="kmot"></div>'+
       (neuf?'<div class="xp">⚡ +'+FILAGE_XP+' XP — et une part de tes points revélée</div>':
             '<div class="note">Chapitre déjà validé : aucun point supplémentaire.</div>')+
       '<div style="margin-top:20px">'+
@@ -209,9 +218,56 @@ function suivant(){
     if(bs)bs.onclick=function(e){e.preventDefault();ouvrir(idx+1)};
     f2.scrollIntoView({block:'center',behavior:'smooth'});
     majSelect();
+    motDeKern(b);            // ornement : le chapitre est deja valide au-dessus
     return;
   }
   suivant();
+}
+
+/* ---------------------------------------------------------------------------
+ * Le mot de Kern : la seule chose vivante du filage.
+ *
+ * Tout le reste est ecrit d'avance. Ici, Kern rebondit sur les reponses que
+ * l'eleve vient de donner. Le chapitre est deja valide et les XP deja credites
+ * quand cette fonction demarre : si le reseau tombe, si l'API refuse, si la
+ * reponse est illisible, la case disparait sans bruit et la phrase de cloture
+ * ecrite d'avance reste seule. Rien ne depend de Mistral.
+ *
+ * La reponse est mise en cache sur la signature des choix : relire un chapitre
+ * sans rien changer ne rappelle pas l'API.
+ * ------------------------------------------------------------------------- */
+function signature(){
+  return NIVEAU+'_'+ch.n+'_'+choix.map(function(c){return String(c.x).slice(0,24)}).join('|');
+}
+function motDeKern(b){
+  var box=$('kmot'); if(!box||!choix.length)return;
+  var cle='pvs_kern_fil', sig=signature(), cache={};
+  try{cache=JSON.parse(localStorage.getItem(cle)||'{}')}catch(e){}
+  if(cache[sig]){ box.className='kmot'; box.textContent=cache[sig]; return; }
+
+  box.className='kmot attente';
+  box.textContent='Kern cherche ses mots…';
+
+  var stop=new AbortController(), fini=false;
+  var minuteur=setTimeout(function(){stop.abort()},9000);
+  function renonce(){ if(fini)return; fini=true; clearTimeout(minuteur); box.remove(); }
+
+  fetch('/api/filage',{
+    method:'POST', signal:stop.signal,
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({niveau:NIVEAU,titre:ch.titre,cible:ch.cible||'',mot:b.mot||'',choix:choix})
+  })
+  .then(function(r){ return r.ok?r.json():null })
+  .then(function(j){
+    if(fini)return;
+    if(!j||!j.mot){ return renonce() }
+    fini=true; clearTimeout(minuteur);
+    box.className='kmot'; box.textContent=j.mot;
+    try{ cache[sig]=j.mot;
+         var k=Object.keys(cache); if(k.length>40) delete cache[k[0]];
+         localStorage.setItem(cle,JSON.stringify(cache)); }catch(e){}
+  })
+  .catch(renonce);
 }
 
 function majSelect(){
