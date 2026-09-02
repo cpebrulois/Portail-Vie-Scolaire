@@ -1473,10 +1473,77 @@ function rankInfo(p){const i=rankIndex(p),nxt=RANKS[i+1]||null,d={i,key:RANKS[i]
 // ── Fonctions Académiques ──────────────────────────
 function acadDoneCount(p){return acadDoneKeys(p).length}
 function xgFinal(p){return Math.round(xg(p)*acadCoeff(p))}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCORE DU HALL DES HÉROS — normalisé par niveau, borné par le filage
+
+   Un 6e et un 3e n'ont pas le même contenu à parcourir : comparer leurs XP
+   bruts n'a pas de sens. On compare donc des POURCENTAGES du potentiel de
+   leur propre niveau. Un 6e qui boucle 80 % de ce qu'on lui propose passe
+   devant un 3e qui en fait 60 % — et c'est mérité.
+
+   Le filage (la quête guidée) joue deux rôles : il rapporte des XP, et il
+   RÉVÈLE progressivement ce qu'on a gagné. Un ancien qui revient ne perd
+   donc rien, mais ne domine pas le tableau sans avoir rejoué le fil.
+   Le plancher de 25 % évite que le dispositif devienne punitif.
+   ═══════════════════════════════════════════════════════════════════════ */
+const FILAGE_CHAP = 8;          // chapitres par niveau
+const FILAGE_XP = 600;          // XP d'un chapitre validé
+const VISIB_PLANCHER = 0.25;    // part visible sans aucun chapitre
+// Paliers pHARe par rang : Page 01-03, Écuyer 04-06, Chevalier 07-08, Veilleur 09-10
+const PALIERS = [[1,3],[4,6],[7,8],[9,10]];
+// Modules hors pHARe (PSC1, Liberté, Égalité, Fraternité) répartis sur les
+// quatre niveaux : ~27 modules à 60 XP, soit environ 420 XP par niveau.
+const AUTRES_PAR_NIVEAU = 420;
+
+function potentielNiveau(i){
+  const b=PALIERS[i]||PALIERS[0];
+  let ph=0;
+  try{
+    Object.keys(PIXHARE_MODULE_XP).forEach(function(k){
+      const n=parseInt(String(k).split('_').pop(),10);
+      if(n>=b[0]&&n<=b[1]) ph+=Number(PIXHARE_MODULE_XP[k]||0);
+    });
+  }catch(e){}
+  return ph + AUTRES_PAR_NIVEAU + FILAGE_CHAP*FILAGE_XP;
+}
+
+/** Chapitres du filage validés pour un niveau donné. */
+function filageChapitres(p,i){
+  const d=(p&&p.filageDone)||{};
+  let n=0;
+  for(let c=1;c<=FILAGE_CHAP;c++) if(d[i+'_'+c]) n++;
+  return n;
+}
+
+/** Score affiché au Hall des Héros, et ce qui reste en attente. */
+function scoreNiveau(p){
+  const i=(p&&p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:0;
+  const pot=potentielNiveau(i);
+  const chap=filageChapitres(p,i);
+  // xg(p) est déjà le score de l'année, coefficient inclus : c'est lui qui
+  // permet de dépasser 100 quand on cumule les multiplicateurs.
+  const brut=Math.max(0,xg(p))+chap*FILAGE_XP;
+  // Le filage RÉVÈLE progressivement ce qui est acquis. Une fois les huit
+  // chapitres validés, la borne tombe : tout devient visible, et le score
+  // peut dépasser 100 — c'est ainsi qu'un 6e très investi passe devant un
+  // 3e qui en fait moins. Sans cette levée, tout le monde plafonnerait à 100
+  // et les XP gagnés au-delà resteraient bloqués à jamais.
+  const complet=chap>=FILAGE_CHAP;
+  const borne=complet?Infinity
+    :(VISIB_PLANCHER+(1-VISIB_PLANCHER)*(chap/FILAGE_CHAP))*pot;
+  const visible=Math.min(brut,borne);
+  return {
+    rang:i, grade:(RANKS[i]||RANKS[0]).label, potentiel:pot, chapitres:chap,
+    brut:Math.round(brut), visible:Math.round(visible),
+    score:pot>0?Math.round(visible/pot*100):0,
+    attente:Math.max(0,Math.round(brut-visible))
+  };
+}
 function xwFinal(p){return Math.round(xw(p)*acadCoeff(p))}
 function xw(p){return socialValidW(p)+Number(p.videoW||0)+Number(p.malusW||0)}
 function roleLabel(code){if(isAdultPlayerCode(code))return 'Adulte equipe';if(isParentPlayerCode(code))return 'Parent';const ks=Object.keys(CIT).filter(k=>hasMission(code,k));if(!ks.length)return 'Citoyen';ks.sort((a,b)=>CIT[b].xp-CIT[a].xp);const m=CIT[ks[0]].label;return ks.length>1?`${m} +${ks.length-1}`:m}
-function rank(m){const rows=Object.values(S.players).filter(p=>!isVisitorCode(p.code)).map(p=>({c:p.code,rl:roleLabel(p.code),cp:cpTotal(p),s:m==='global'?xgFinal(p):xwFinal(p)}));rows.sort((a,b)=>b.s-a.s||a.c.localeCompare(b.c));return rows}
+function rank(m){const rows=Object.values(S.players).filter(p=>!isVisitorCode(p.code)).map(p=>{const sn=scoreNiveau(p);return {c:p.code,rl:(m==='global'?sn.grade:roleLabel(p.code)),cp:cpTotal(p),s:m==='global'?sn.score:xwFinal(p),sn:sn}});rows.sort((a,b)=>b.s-a.s||a.c.localeCompare(b.c));return rows}
 function sm(id,txt,ok){const e=document.getElementById(id);if(!e)return;e.className=`msg ${ok?'ok':'bad'}`;e.textContent=txt}
 function cm(id){const e=document.getElementById(id);if(!e)return;e.className='msg';e.textContent=''}
 function clampN(v,min,max){return Math.max(min,Math.min(max,v))}
