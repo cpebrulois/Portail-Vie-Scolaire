@@ -554,9 +554,88 @@ async function handleIdentite(request, env) {
     if (action === "connecter") {
       if (!sec) return json({ error: "Entre ton nom de page." }, 400, cors);
       const [row] = await sb(env, "GET",
-        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,code_secret`);
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,code_secret,role`);
       if (!row) return json({ error: "Nom de page inconnu." }, 404, cors);
-      return json({ ok: true, public: row.code_public, secret: row.code_secret }, 200, cors);
+      return json({ ok: true, public: row.code_public, secret: row.code_secret,
+                    role: row.role || "eleve" }, 200, cors);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ACTIONS RÉSERVÉES — le rôle est vérifié EN BASE à chaque appel.
+    // Le client n'est jamais cru sur parole : il présente son nom de page,
+    // le serveur seul décide de ce qu'il a le droit de faire.
+    // ─────────────────────────────────────────────────────────────────────
+    if (action === "admin_liste" || action === "admin_role" || action === "admin_suivi") {
+      if (!sec) return json({ error: "Identification requise." }, 401, cors);
+      const [moi] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || moi.role !== "admin") {
+        return json({ error: "Réservé à l'administrateur." }, 403, cors);
+      }
+
+      // Liste des comptes (jamais le code secret d'autrui)
+      if (action === "admin_liste") {
+        const rows = await sb(env, "GET",
+          "pvs_identites?select=code_public,role,rang_inscription,cree_at&order=rang_inscription.asc");
+        const comptes = (rows || []).map(r => ({
+          public: r.code_public, role: r.role || "eleve",
+          rang: r.rang_inscription, actif: !!r.cree_at, cree_at: r.cree_at,
+        }));
+        const liens = await sb(env, "GET",
+          "pvs_suivi?select=prof_public,eleve_public&order=prof_public.asc");
+        return json({ ok: true, comptes, suivis: liens || [] }, 200, cors);
+      }
+
+      // Changer le rôle d'un compte
+      if (action === "admin_role") {
+        const cible = normCode(b.cible);
+        const role = String(b.role || "");
+        if (!["admin", "prof", "eleve"].includes(role)) {
+          return json({ error: "Rôle invalide." }, 400, cors);
+        }
+        if (cible === moi.code_public && role !== "admin") {
+          return json({ error: "Tu ne peux pas retirer ton propre rôle d'administrateur." }, 400, cors);
+        }
+        await sb(env, "PATCH",
+          `pvs_identites?code_public=eq.${encodeURIComponent(cible)}`, { role });
+        return json({ ok: true, cible, role }, 200, cors);
+      }
+
+      // Attribuer / retirer le suivi d'un élève à un professeur principal
+      if (action === "admin_suivi") {
+        const prof = normCode(b.prof), eleve = normCode(b.eleve);
+        if (!prof || !eleve) return json({ error: "Professeur ou élève manquant." }, 400, cors);
+        if (b.retirer) {
+          await sb(env, "DELETE",
+            `pvs_suivi?prof_public=eq.${encodeURIComponent(prof)}&eleve_public=eq.${encodeURIComponent(eleve)}`,
+            null, "return=minimal");
+          return json({ ok: true, retire: true }, 200, cors);
+        }
+        const [p] = await sb(env, "GET",
+          `pvs_identites?code_public=eq.${encodeURIComponent(prof)}&select=role`);
+        if (!p || p.role !== "prof") return json({ error: "Ce compte n'est pas professeur." }, 400, cors);
+        const [e] = await sb(env, "GET",
+          `pvs_identites?code_public=eq.${encodeURIComponent(eleve)}&select=role`);
+        if (!e || e.role !== "eleve") return json({ error: "Ce compte n'est pas élève." }, 400, cors);
+        try {
+          await sb(env, "POST", "pvs_suivi",
+            { prof_public: prof, eleve_public: eleve, attribue_par: moi.code_public });
+        } catch { /* déjà attribué : sans effet */ }
+        return json({ ok: true, prof, eleve }, 200, cors);
+      }
+    }
+
+    // Un professeur consulte la liste des élèves qui lui sont confiés
+    if (action === "prof_mes_eleves") {
+      if (!sec) return json({ error: "Identification requise." }, 401, cors);
+      const [moi] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || (moi.role !== "prof" && moi.role !== "admin")) {
+        return json({ error: "Réservé aux professeurs." }, 403, cors);
+      }
+      const liens = await sb(env, "GET",
+        `pvs_suivi?prof_public=eq.${encodeURIComponent(moi.code_public)}&select=eleve_public`);
+      return json({ ok: true, eleves: (liens || []).map(l => l.eleve_public) }, 200, cors);
     }
 
     // ------------------------------------------------------------- DIAG
