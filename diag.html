@@ -53,8 +53,11 @@ async function lancer(){
   var agora = await route('/api/chat','/api/chat',{messages:[{role:'user',content:'ping'}],max_tokens:1});
   var camp  = await route('/api/campagne','/api/campagne',{action:'etat',code:'ZZZZZZ'});
   var iden  = await route('/api/identite','/api/identite',{action:'diag',public:'Rance-0001'});
+  // Sonde sans secret : si l'action existe, le serveur répond « Nom de page requis » (401).
+  // Si elle est inconnue, il répond « Action inconnue » (400) => Worker pas à jour.
+  var adm   = await route('/api/identite (actions console)','/api/identite',{action:'admin_pass_statut'});
 
-  [agora,camp,iden].forEach(function(x){
+  [agora,camp,iden,adm].forEach(function(x){
     // Un 404 accompagné d'un JSON « error » vient de NOTRE code : la route existe.
     var routeConnue = (x.status!==0) && !(x.status===404 && !x.json);
     var etat = x.status===0 ? '<span class="ko">injoignable : '+x.erreur+'</span>'
@@ -65,6 +68,15 @@ async function lancer(){
   });
 
   var v=document.getElementById('verdict'), h='', cls='bad';
+  var admOk = adm.json && /Nom de page requis/i.test(adm.json.error||'');
+  var admAbsent = adm.json && /Action inconnue/i.test(adm.json.error||'');
+  if(admAbsent){
+    v.className='verdict bad';
+    v.innerHTML='<strong>Le Worker déployé n'a pas encore les actions de la console.</strong> '+
+      'Attends le redéploiement Cloudflare (une à deux minutes), puis relance ce diagnostic. '+
+      'La console admin.html ne peut pas fonctionner avant.';
+    b.disabled=false; b.textContent='Relancer le diagnostic'; return;
+  }
   if(iden.json && iden.json.role_de_la_cle && !/^service_role/.test(iden.json.role_de_la_cle)){
     h='<strong>Mauvaise clé Supabase.</strong> La clé déposée dans SUPABASE_SERVICE porte le rôle '+
       '<em>'+iden.json.role_de_la_cle+'</em>. Seule la clé <em>service_role</em> contourne RLS : '+

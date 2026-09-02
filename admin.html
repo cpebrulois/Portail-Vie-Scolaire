@@ -69,7 +69,10 @@ a.bk:hover{color:var(--or)}
     <p class="sub">Accès réservé — l'identité et le mot de passe sont vérifiés par le serveur.</p>
     <div class="card" style="max-width:440px">
       <div class="lbl">Ton nom de page</div>
-      <input id="inSec" type="password" placeholder="Aigle-Vaillant-0000" autocomplete="off">
+      <p class="mini" style="margin-bottom:8px">Celui que tu as composé à ta première connexion
+      — <em>Aigle-Vaillant-4707</em>, par exemple. <strong>Pas</strong> ton code public
+      <em>RANCE-0001</em>, qui ne sert qu'à ouvrir un compte.</p>
+      <input id="inSec" type="password" placeholder="Animal-Qualité-0000" autocomplete="off">
       <div id="blocPass" style="display:none">
         <div class="lbl" id="lblPass">Mot de passe administrateur</div>
         <input id="inPass" type="password" placeholder="MOT DE PASSE" autocomplete="off">
@@ -154,7 +157,15 @@ async function etape(){
     if(phase===0){
       secTmp=($('inSec').value||'').trim();
       if(!secTmp){msg('mAuth','Entre ton nom de page.');b.disabled=false;return}
-      var st=await api('admin_pass_statut',{secret:secTmp});
+      var st;
+      try{ st=await api('admin_pass_statut',{secret:secTmp}); }
+      catch(err){
+        if(/Action inconnue/i.test(err.message))
+          throw new Error("Le serveur n'a pas encore la console (déploiement en cours). Réessaie dans une minute.");
+        if(/administrateur/i.test(err.message))
+          throw new Error("Ce nom de page n'est pas celui de l'administrateur. Attention : on demande ton NOM DE PAGE (Aigle-…), pas ton code public (RANCE-…).");
+        throw err;
+      }
       $('blocPass').style.display='block';
       $('inSec').disabled=true;
       if(st.defini){ phase=1; $('lblPass').textContent='Mot de passe administrateur';
