@@ -495,6 +495,42 @@ async function identQuota(request, env) {
   } catch { return true; }
 }
 
+/** Empreinte PBKDF2-SHA256 : le mot de passe n'est jamais stocké en clair. */
+async function derive(pass, saltB64, iterations) {
+  const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt, iterations, hash: "SHA-256" }, key, 256);
+  return btoa(String.fromCharCode(...new Uint8Array(bits)));
+}
+
+/** Comparaison à temps constant : ne renseigne pas l'attaquant par sa durée. */
+function memeSecret(a, b) {
+  const x = String(a || ""), y = String(b || "");
+  if (x.length !== y.length) return false;
+  let d = 0;
+  for (let i = 0; i < x.length; i++) d |= x.charCodeAt(i) ^ y.charCodeAt(i);
+  return d === 0;
+}
+
+function alea(n) {
+  const b = new Uint8Array(n);
+  crypto.getRandomValues(b);
+  return btoa(String.fromCharCode(...b)).replace(/[+/=]/g, "");
+}
+
+/** Vérifie un jeton de session et renvoie le compte, ou null. */
+async function sessionValide(env, token) {
+  const t = String(token || "");
+  if (!t) return null;
+  const [row] = await sb(env, "GET",
+    `pvs_sessions?token=eq.${encodeURIComponent(t)}&select=code_public,role,expire_at`);
+  if (!row) return null;
+  if (new Date(row.expire_at).getTime() < Date.now()) return null;
+  return row;
+}
+
 async function handleIdentite(request, env) {
   const origin = request.headers.get("Origin") || "";
   const allowed = originAllowed(request, env);
@@ -565,12 +601,81 @@ async function handleIdentite(request, env) {
     // Le client n'est jamais cru sur parole : il présente son nom de page,
     // le serveur seul décide de ce qu'il a le droit de faire.
     // ─────────────────────────────────────────────────────────────────────
-    if (action === "admin_liste" || action === "admin_role" || action === "admin_suivi") {
-      if (!sec) return json({ error: "Identification requise." }, 401, cors);
+    // Le mot de passe administrateur est-il déjà défini ?
+    if (action === "admin_pass_statut") {
+      if (!sec) return json({ error: "Nom de page requis." }, 401, cors);
       const [moi] = await sb(env, "GET",
         `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || moi.role !== "admin") return json({ error: "Réservé à l'administrateur." }, 403, cors);
+      const [a] = await sb(env, "GET",
+        `pvs_admin_auth?code_public=eq.${encodeURIComponent(moi.code_public)}&select=code_public`);
+      return json({ ok: true, defini: !!a }, 200, cors);
+    }
+
+    // Définir (première fois) ou changer le mot de passe administrateur
+    if (action === "admin_pass_definir") {
+      if (!sec) return json({ error: "Nom de page requis." }, 401, cors);
+      const [moi] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || moi.role !== "admin") return json({ error: "Réservé à l'administrateur." }, 403, cors);
+      const nouveau = String(b.pass || "");
+      if (nouveau.length < 10) {
+        return json({ error: "Dix caractères minimum — c'est la clef de tous les droits." }, 400, cors);
+      }
+      const [a] = await sb(env, "GET",
+        `pvs_admin_auth?code_public=eq.${encodeURIComponent(moi.code_public)}&select=*`);
+      if (a) { // déjà défini : exiger l'ancien
+        const test = await derive(String(b.ancien || ""), a.pass_salt, a.iterations);
+        if (!memeSecret(test, a.pass_hash)) {
+          return json({ error: "Ancien mot de passe incorrect." }, 403, cors);
+        }
+      }
+      const salt = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+      const hash = await derive(nouveau, salt, 100000);
+      const ligne = { code_public: moi.code_public, pass_hash: hash, pass_salt: salt,
+                      iterations: 100000, updated_at: new Date().toISOString() };
+      if (a) await sb(env, "PATCH",
+        `pvs_admin_auth?code_public=eq.${encodeURIComponent(moi.code_public)}`, ligne);
+      else await sb(env, "POST", "pvs_admin_auth", ligne);
+      return json({ ok: true, defini: true }, 200, cors);
+    }
+
+    // Ouvrir une session : nom de page + mot de passe -> jeton (4 h)
+    if (action === "admin_ouvrir") {
+      if (!sec) return json({ error: "Nom de page requis." }, 401, cors);
+      const [moi] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || moi.role !== "admin") return json({ error: "Réservé à l'administrateur." }, 403, cors);
+      const [a] = await sb(env, "GET",
+        `pvs_admin_auth?code_public=eq.${encodeURIComponent(moi.code_public)}&select=*`);
+      if (!a) return json({ error: "Aucun mot de passe défini.", a_definir: true }, 409, cors);
+      const test = await derive(String(b.pass || ""), a.pass_salt, a.iterations);
+      if (!memeSecret(test, a.pass_hash)) {
+        return json({ error: "Mot de passe incorrect." }, 403, cors);
+      }
+      try { await sb(env, "DELETE",
+        `pvs_sessions?expire_at=lt.${new Date().toISOString()}`, null, "return=minimal"); } catch {}
+      const token = alea(32);
+      const expire = new Date(Date.now() + 4 * 3600 * 1000).toISOString();
+      await sb(env, "POST", "pvs_sessions",
+        { token, code_public: moi.code_public, role: moi.role, expire_at: expire });
+      return json({ ok: true, token, expire_at: expire, public: moi.code_public }, 200, cors);
+    }
+
+    if (action === "admin_fermer") {
+      if (b.token) {
+        try { await sb(env, "DELETE",
+          `pvs_sessions?token=eq.${encodeURIComponent(String(b.token))}`, null, "return=minimal"); } catch {}
+      }
+      return json({ ok: true }, 200, cors);
+    }
+
+    if (action === "admin_liste" || action === "admin_role" || action === "admin_suivi") {
+      // Ces actions n'acceptent QUE le jeton de session : le mot de passe ne
+      // circule qu'une fois, à l'ouverture.
+      const moi = await sessionValide(env, b.token);
       if (!moi || moi.role !== "admin") {
-        return json({ error: "Réservé à l'administrateur." }, 403, cors);
+        return json({ error: "Session expirée ou absente. Rouvre la console." }, 401, cors);
       }
 
       // Liste des comptes (jamais le code secret d'autrui)
