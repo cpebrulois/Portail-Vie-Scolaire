@@ -349,9 +349,13 @@ function suivant(){
       if(S2.players&&S2.players[cur]){
         var pj=S2.players[cur];
         if(!pj.filageDone||typeof pj.filageDone!=='object')pj.filageDone={};
-        if(!pj.filageDone['0_1']){
-          pj.filageDone['0_1']=new Date().toISOString();
-          pj.up=pj.filageDone['0_1'];
+        // Au rang du joueur, pas au rang 0 : un ancien de 3e qui refait le
+        // Seuil doit le voir compter pour SON niveau.
+        var rg=(pj.rankData&&typeof pj.rankData.i==='number')?pj.rankData.i:0;
+        var cle1=rg+'_1';
+        if(!pj.filageDone[cle1]){
+          pj.filageDone[cle1]=new Date().toISOString();
+          pj.up=pj.filageDone[cle1];
           localStorage.setItem(KEY,JSON.stringify(S2));
         }
       }

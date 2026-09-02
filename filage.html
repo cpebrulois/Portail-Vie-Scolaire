@@ -69,11 +69,17 @@ a.bk:hover{color:var(--or);border-color:var(--or)}
 </div>
 
 <script type="module">
-import { NIVEAU, CHAPITRES } from './filage_page.js';
+/* Le fil chargé dépend du RANG du joueur. Un écuyer ne doit jamais recevoir
+   les chapitres de page : ses validations seraient inscrites sous le mauvais
+   niveau et ne compteraient pas dans son score. */
+const FILS = ['./filage_page.js','./filage_ecuyer.js',
+              './filage_chevalier.js','./filage_veilleur.js'];
+const GRADES = ['Page','Écuyer','Chevalier','Veilleur'];
 
 var AKEY='pvs_current_player', KEY='pvs_hof_v2';
 var FILAGE_XP=600, TOTAL=8;
 var cur='', ch=null, idx=0, nom='Page';
+var NIVEAU=0, CHAPITRES=[];
 
 function getS(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
 function saveS(S){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -224,18 +230,8 @@ function prochain(){
 }
 window.allerA=function(i){ ouvrir(Number(i)); };
 
-/* ---- démarrage ---- */
-(function(){
-  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
-  var p=cur?getP(cur):null;
-  nom=(localStorage.getItem('pvs_nom_page')||'').trim()||'Page';
-  if(!cur||!p){
-    $('lock').style.display='block';
-    $('lock').innerHTML='<div style="font-family:Cinzel Decorative,serif;font-size:1.4em;color:#e8c97a;margin-bottom:12px">Le Fil de Valdurne</div>'+
-      '<p style="color:#c8bfa8;font-style:italic">Connecte-toi au Portail avec ton nom de page pour reprendre la quête.</p>'+
-      '<div style="margin-top:18px"><a class="bk" href="index.html">← Le Portail</a></div>';
-    return;
-  }
+/* ---- une fois le fil du bon niveau chargé ---- */
+function demarrer(p){
   // Le chapitre 1 est le Seuil : sans lui, on n'entre pas dans le fil.
   var f=faits();
   if(!f[1]){
@@ -251,6 +247,37 @@ window.allerA=function(i){ ouvrir(Number(i)); };
   var n=prochain();
   var i=0; for(var k=0;k<CHAPITRES.length;k++) if(CHAPITRES[k].n===n){i=k;break}
   ouvrir(i);
+}
+
+/* Démarrage : on lit le rang, puis on charge le fil correspondant. */
+(async function(){
+  cur=(localStorage.getItem(AKEY)||'').trim().toUpperCase();
+  var p=cur?getP(cur):null;
+  nom=(localStorage.getItem('pvs_nom_page')||'').trim()||'Page';
+  if(!cur||!p){
+    $('lock').style.display='block';
+    $('lock').innerHTML='<div style="font-family:Cinzel Decorative,serif;font-size:1.4em;color:#e8c97a;margin-bottom:12px">Le Fil de Valdurne</div>'+
+      '<p style="color:#c8bfa8;font-style:italic">Connecte-toi au Portail avec ton nom de page pour reprendre la quête.</p>'+
+      '<div style="margin-top:18px"><a class="bk" href="index.html">← Le Portail</a></div>';
+    return;
+  }
+  NIVEAU=(p.rankData&&typeof p.rankData.i==='number')?p.rankData.i:0;
+  var mod=null;
+  try{ mod=await import(FILS[NIVEAU]||FILS[0]); }catch(e){ mod=null; }
+  if(!mod||!Array.isArray(mod.CHAPITRES)||!mod.CHAPITRES.length){
+    // Le fil de ce niveau n'est pas encore écrit : on le dit franchement.
+    $('lock').style.display='block';
+    $('lock').innerHTML='<div style="font-family:Cinzel Decorative,serif;font-size:1.4em;color:#e8c97a;margin-bottom:12px">Le fil du rang '+
+      (GRADES[NIVEAU]||'')+' s’écrit encore</div>'+
+      '<p style="color:#c8bfa8;font-style:italic">Kern prépare tes chapitres. En attendant, rien ne t’empêche '+
+      'd’avancer&nbsp;: les modules restent tous ouverts, et chacun compte.</p>'+
+      '<div style="margin-top:18px"><a class="bk" href="index.html">Explorer le Portail</a>'+
+      '<a class="bk" href="hub_narration.html">La Bibliothèque</a></div>';
+    return;
+  }
+  NIVEAU=(typeof mod.NIVEAU==='number')?mod.NIVEAU:NIVEAU;
+  CHAPITRES=mod.CHAPITRES;
+  demarrer(p);
 })();
 </script>
 </body>
