@@ -27,6 +27,15 @@ select option{background:#151009}
 .msg.err{background:rgba(139,42,42,.13);border:1px solid rgba(139,42,42,.5);color:#e0a48a}
 .msg.ok{background:rgba(93,163,93,.12);border:1px solid rgba(93,163,93,.45);color:#a8d8a8}
 .avert{background:rgba(74,111,165,.1);border:1px solid rgba(74,111,165,.4);border-radius:8px;padding:13px 16px;font-size:.87em;color:#bcd2ee;margin-bottom:16px;line-height:1.65}
+.fil{max-height:400px;overflow-y:auto;margin-bottom:14px;padding-right:4px}
+.bulle{margin-bottom:12px;padding:12px 15px;border-radius:9px;font-size:.93em;line-height:1.65}
+.bulle.ag{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.22)}
+.bulle.pr{background:rgba(74,111,165,.09);border:1px solid rgba(74,111,165,.28);margin-left:34px}
+.bulle .qui{font-family:'Cinzel',serif;font-size:.56em;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;opacity:.8}
+.bulle.ag .qui{color:var(--or)}
+.bulle.pr .qui{color:#9dbde8}
+.bulle .dit{white-space:pre-wrap}
+.bulle .pied-b{font-size:.76em;font-style:italic;color:var(--enc2);opacity:.65;margin-top:9px;border-top:1px solid rgba(201,168,76,.15);padding-top:7px}
 .apercu{margin:2px 0 14px;padding:13px 16px;border-left:2px solid rgba(201,168,76,.4);background:rgba(201,168,76,.06);border-radius:0 6px 6px 0}
 .apercu:empty{display:none}
 .ap-lbl{font-family:'Cinzel',serif;font-size:.56em;letter-spacing:2px;color:var(--or);text-transform:uppercase;opacity:.8;margin-bottom:7px}
@@ -87,21 +96,13 @@ select option{background:#151009}
       <div id="profErr"></div>
     </div>
     <div class="card">
-      <div class="lbl">Demander conseil à Agora</div>
-      <p style="font-size:.88em;color:var(--enc2);margin-bottom:12px">
-        Agora connaît les pages du portail et l'avancement des élèves qui te sont attribués —
-        <strong>ceux-là seulement</strong>. Elle décrit un avancement, elle ne juge personne.
-        Par exemple : « quels modules conseiller à mes 5es ? », « où en est ma classe sur le
-        pilier Juridique ? », « que proposer à quelqu'un qui bloque sur les rumeurs ? »</p>
-      <textarea id="inpQuestion" maxlength="600" style="min-height:74px"
-        placeholder="Ta question…"></textarea>
-      <button class="btn" id="btnConseil" onclick="conseil()">Demander</button>
+      <div class="lbl">Agora</div>
+      <div class="fil" id="filAgora"></div>
       <div id="conseilErr"></div>
-      <div class="apercu" id="reponse" style="display:none">
-        <div class="ap-lbl">Agora</div>
-        <div class="ap-txt" id="repTexte" style="white-space:pre-wrap"></div>
-        <div class="ap-pied" id="repSources"></div>
-      </div>
+      <textarea id="inpQuestion" maxlength="600" style="min-height:64px"
+        placeholder="Votre question…"></textarea>
+      <button class="btn" id="btnConseil" onclick="conseil()">Envoyer</button>
+      <button class="btn ghost" onclick="reprendre()">Reprendre à zéro</button>
     </div>
     <div class="card">
       <div class="lbl">Message à la classe</div>
@@ -254,6 +255,7 @@ async function chargerMotifs(){
 }
 
 async function chargerProf(){
+  reprendre();                 // Agora se presente avant toute chose
   await chargerMotifs();
   try{
     var j=await api('prof_mes_eleves',{secret:sec});
@@ -272,23 +274,56 @@ async function chargerProf(){
   chargerEnvois();
 }
 
-/* --- Conseil ------------------------------------------------------------- */
+/* --- La conversation avec Agora ------------------------------------------
+ * L'accueil est écrit ici, en dur : il ne coûte aucun appel, il est toujours
+ * le même, et il dit d'entrée ce que la console sait faire. Le fil est ensuite
+ * renvoyé au serveur à chaque tour pour qu'Agora se souvienne de la question
+ * précédente — borné à six échanges côté serveur. */
+var FIL=[];
+
+var ACCUEIL =
+  "Bonjour, je suis Agora, l’assistante du portail. Que puis-je pour vous ?\n\n" +
+  "Posez-moi vos questions sur les modules proposés — pour un niveau, un thème, " +
+  "une difficulté précise — ou sur l’avancement des élèves qui vous sont attribués. " +
+  "Je m’appuie sur les pages réelles du portail, et je vous dis quand je ne trouve pas.\n\n" +
+  "Plus bas, vous disposez de deux façons d’écrire à vos élèves : de courts signaux " +
+  "à envoyer à l’un d’eux, et un message à toute la classe que je rédige pour vous, " +
+  "en 200 mots au plus, que vous relisez avant l’envoi.";
+
+function bulle(qui,texte,pied){
+  var d=document.createElement('div');
+  d.className='bulle '+(qui==='agora'?'ag':'pr');
+  d.innerHTML='<div class="qui">'+(qui==='agora'?'Agora':'Vous')+'</div>'+
+    '<div class="dit">'+esc(texte)+'</div>'+(pied?'<div class="pied-b">'+esc(pied)+'</div>':'');
+  var f=$('filAgora'); f.appendChild(d); f.scrollTop=f.scrollHeight;
+  return d;
+}
+
+function reprendre(){
+  FIL=[]; $('filAgora').innerHTML=''; dire('conseilErr','');
+  bulle('agora',ACCUEIL);
+}
+
 async function conseil(){
   dire('conseilErr','');
   var q=($('inpQuestion').value||'').trim();
-  if(q.length<5){dire('conseilErr','Pose ta question.');return}
+  if(q.length<5){dire('conseilErr','Posez votre question.');return}
+  bulle('vous',q);
+  $('inpQuestion').value='';
   $('btnConseil').disabled=true; $('btnConseil').textContent='Agora cherche…';
-  $('reponse').style.display='none';
+  var attente=bulle('agora','…');
   try{
-    var j=await api('prof_conseil',{secret:sec,question:q});
-    $('repTexte').textContent=j.reponse;
+    var j=await api('prof_conseil',{secret:sec,question:q,historique:FIL});
     var s=(j.sources||[]);
-    $('repSources').textContent =
+    attente.remove();
+    bulle('agora', j.reponse,
       (s.length?('D’après : '+s.join(' · ')):'Aucune page du portail ne ressortait pour cette question.')+
-      ' — '+j.eleves_pris_en_compte+' élève'+(j.eleves_pris_en_compte>1?'s':'')+' pris en compte.';
-    $('reponse').style.display='block';
-  }catch(e){ dire('conseilErr',e.message) }
-  $('btnConseil').disabled=false; $('btnConseil').textContent='Demander';
+      ' — '+j.eleves_pris_en_compte+' élève'+(j.eleves_pris_en_compte>1?'s':'')+' pris en compte.');
+    FIL.push({role:'user',content:q});
+    FIL.push({role:'assistant',content:j.reponse});
+    if(FIL.length>8)FIL=FIL.slice(-8);
+  }catch(e){ attente.remove(); dire('conseilErr',e.message) }
+  $('btnConseil').disabled=false; $('btnConseil').textContent='Envoyer';
 }
 
 /* --- Message à la classe -------------------------------------------------
