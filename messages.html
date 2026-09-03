@@ -87,6 +87,23 @@ select option{background:#151009}
       <div id="profErr"></div>
     </div>
     <div class="card">
+      <div class="lbl">Demander conseil à Agora</div>
+      <p style="font-size:.88em;color:var(--enc2);margin-bottom:12px">
+        Agora connaît les pages du portail et l'avancement des élèves qui te sont attribués —
+        <strong>ceux-là seulement</strong>. Elle décrit un avancement, elle ne juge personne.
+        Par exemple : « quels modules conseiller à mes 5es ? », « où en est ma classe sur le
+        pilier Juridique ? », « que proposer à quelqu'un qui bloque sur les rumeurs ? »</p>
+      <textarea id="inpQuestion" maxlength="600" style="min-height:74px"
+        placeholder="Ta question…"></textarea>
+      <button class="btn" id="btnConseil" onclick="conseil()">Demander</button>
+      <div id="conseilErr"></div>
+      <div class="apercu" id="reponse" style="display:none">
+        <div class="ap-lbl">Agora</div>
+        <div class="ap-txt" id="repTexte" style="white-space:pre-wrap"></div>
+        <div class="ap-pied" id="repSources"></div>
+      </div>
+    </div>
+    <div class="card">
       <div class="lbl">Message à la classe</div>
       <p style="font-size:.88em;color:var(--enc2);margin-bottom:12px">
         Dis à <strong style="color:var(--or2)">Agora</strong> ce que tu veux faire passer à tous
@@ -253,6 +270,25 @@ async function chargerProf(){
     $('btnEnvoi').disabled=false;
   }
   chargerEnvois();
+}
+
+/* --- Conseil ------------------------------------------------------------- */
+async function conseil(){
+  dire('conseilErr','');
+  var q=($('inpQuestion').value||'').trim();
+  if(q.length<5){dire('conseilErr','Pose ta question.');return}
+  $('btnConseil').disabled=true; $('btnConseil').textContent='Agora cherche…';
+  $('reponse').style.display='none';
+  try{
+    var j=await api('prof_conseil',{secret:sec,question:q});
+    $('repTexte').textContent=j.reponse;
+    var s=(j.sources||[]);
+    $('repSources').textContent =
+      (s.length?('D’après : '+s.join(' · ')):'Aucune page du portail ne ressortait pour cette question.')+
+      ' — '+j.eleves_pris_en_compte+' élève'+(j.eleves_pris_en_compte>1?'s':'')+' pris en compte.';
+    $('reponse').style.display='block';
+  }catch(e){ dire('conseilErr',e.message) }
+  $('btnConseil').disabled=false; $('btnConseil').textContent='Demander';
 }
 
 /* --- Message à la classe -------------------------------------------------
