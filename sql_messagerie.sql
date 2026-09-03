@@ -60,6 +60,40 @@ create index if not exists pvs_messages_cpe_idx
 create index if not exists pvs_messages_purge_idx
   on pvs_messages (purge_apres);
 
+-- --- 2 bis. Messages à la classe, rédigés par Agora -----------------------
+-- Le professeur ne rédige pas davantage ici : il dit à Agora ce qu'il veut
+-- faire passer, Agora écrit un texte de 200 mots au plus, le professeur le
+-- valide. Le brouillon est créé et conservé PAR LE SERVEUR : la validation ne
+-- fait que publier un brouillon existant. Sans cela, une requête fabriquée à
+-- la main enverrait n'importe quel texte et le passage par Agora ne
+-- garantirait plus rien.
+--
+-- La consigne du professeur est enregistrée au même titre que le texte final.
+-- C'est la symétrie qui manquait : les élèves savent que le CPE lit ce qu'ils
+-- écrivent, les professeurs sont logés à la même enseigne. C'est là qu'est le
+-- vrai garde-fou — pas dans la prudence supposée du modèle.
+create table if not exists pvs_lots (
+  id               bigserial   primary key,
+  prof_public      text        not null,
+  consigne         text        not null,   -- ce que le professeur a demandé
+  texte            text        not null,   -- ce qu'Agora a rédigé
+  etat             text        not null default 'brouillon', -- ou 'envoye'
+  nb_destinataires integer     not null default 0,
+  cree_at          timestamptz not null default now(),
+  envoye_at        timestamptz,
+  cpe_vu_at        timestamptz,
+  purge_apres      timestamptz not null
+);
+
+create index if not exists pvs_lots_prof_idx on pvs_lots (prof_public, cree_at desc);
+create index if not exists pvs_lots_purge_idx on pvs_lots (purge_apres);
+
+-- Rattachement d'un message individuel au lot qui l'a produit.
+alter table pvs_messages
+  add column if not exists lot_id bigint;
+
+alter table pvs_lots enable row level security;
+
 -- --- 3. Verrouillage -------------------------------------------------------
 -- Comme les autres tables du portail : RLS activé et AUCUNE politique. Seul
 -- le Worker, qui détient la clé de service, peut lire et écrire. Une clé

@@ -87,6 +87,27 @@ select option{background:#151009}
       <div id="profErr"></div>
     </div>
     <div class="card">
+      <div class="lbl">Message à la classe</div>
+      <p style="font-size:.88em;color:var(--enc2);margin-bottom:12px">
+        Dis à <strong style="color:var(--or2)">Agora</strong> ce que tu veux faire passer à tous
+        tes élèves. Elle rédige, tu relis, tu valides. Elle refusera d'écrire ce qui vise
+        quelqu'un ou annonce une mesure — et <strong>ta consigne est enregistrée</strong> avec le
+        message, comme celle de tout le monde sur cette plateforme.</p>
+      <textarea id="inpConsigne" maxlength="700"
+        placeholder="Par exemple : rappeler que la sortie au musée est jeudi, prévoir un pique-nique, et qu'on part à 8h précises."></textarea>
+      <button class="btn" id="btnRediger" onclick="rediger()">Demander à Agora</button>
+      <div id="classeErr"></div>
+      <div id="brouillon" style="display:none">
+        <div class="apercu">
+          <div class="ap-lbl">Ce qu’Agora propose — <span id="brMots"></span></div>
+          <div class="ap-txt" id="brTexte"></div>
+        </div>
+        <button class="btn" id="btnValider" onclick="validerClasse()">Valider et envoyer</button>
+        <button class="btn ghost" onclick="rediger()">Reformuler</button>
+        <button class="btn ghost" onclick="abandonner()">Abandonner</button>
+      </div>
+    </div>
+    <div class="card">
       <div class="lbl">Ce que tu as envoyé</div>
       <div id="listeEnvois"><div class="vide">Chargement…</div></div>
     </div>
@@ -234,13 +255,63 @@ async function chargerProf(){
   chargerEnvois();
 }
 
+/* --- Message à la classe -------------------------------------------------
+ * Le brouillon vit sur le serveur. Cette page n'en connaît que l'identifiant :
+ * elle ne peut donc pas envoyer un texte qu'Agora n'aurait pas écrit. */
+var lotCourant=null;
+
+async function rediger(){
+  dire('classeErr','');
+  var c=($('inpConsigne').value||'').trim();
+  if(c.length<10){dire('classeErr','Dis à Agora ce que tu veux faire passer, en une phrase au moins.');return}
+  $('btnRediger').disabled=true;
+  $('btnRediger').textContent='Agora rédige…';
+  $('brouillon').style.display='none';
+  try{
+    var j=await api('classe_rediger',{secret:sec,consigne:c});
+    if(j.refus){ lotCourant=null; dire('classeErr','Agora refuse : '+j.refus); }
+    else{
+      lotCourant=j.lot_id;
+      $('brTexte').textContent=j.texte;
+      $('brMots').textContent=j.mots+' mots';
+      $('brouillon').style.display='block';
+    }
+  }catch(e){ dire('classeErr',e.message) }
+  $('btnRediger').disabled=false;
+  $('btnRediger').textContent='Demander à Agora';
+}
+
+function abandonner(){
+  lotCourant=null; $('brouillon').style.display='none'; dire('classeErr','');
+}
+
+async function validerClasse(){
+  if(!lotCourant){dire('classeErr','Aucun brouillon à envoyer.');return}
+  $('btnValider').disabled=true;
+  try{
+    var j=await api('classe_envoyer',{secret:sec,lot_id:lotCourant});
+    lotCourant=null;
+    $('brouillon').style.display='none';
+    $('inpConsigne').value='';
+    dire('classeErr','Envoyé à '+j.destinataires+' élève'+(j.destinataires>1?'s':'')+'.','ok');
+    chargerEnvois();
+  }catch(e){ dire('classeErr',e.message) }
+  $('btnValider').disabled=false;
+}
+
 async function chargerEnvois(){
   var box=$('listeEnvois');
   try{
     var j=await api('prof_mes_envois',{secret:sec});
-    var l=j.envois||[];
-    if(!l.length){ box.innerHTML='<div class="vide">Tu n’as encore rien envoyé.</div>'; return }
-    box.innerHTML=l.map(function(m){
+    var l=j.envois||[], lots=j.lots||[];
+    if(!l.length&&!lots.length){ box.innerHTML='<div class="vide">Tu n’as encore rien envoyé.</div>'; return }
+    box.innerHTML=lots.map(function(t){
+      return '<div class="envoi" style="border-left-color:rgba(93,163,93,.5)">'+
+        '<div class="en-tete"><span class="pill lu">à la classe</span>'+
+        '<span class="code">'+esc(t.nb_destinataires)+' élèves</span>'+
+        '<span class="quand">'+quand(t.envoye_at)+'</span></div>'+
+        '<div class="txt">'+esc(t.texte)+'</div></div>';
+    }).join('')+l.map(function(m){
       return '<div class="envoi"><div class="en-tete">'+
         '<span class="code">'+esc(m.eleve_public)+'</span>'+
         '<span class="pill '+(m.lu_at?'lu':'attente')+'">'+(m.lu_at?'lu':'pas encore lu')+'</span>'+
@@ -269,12 +340,26 @@ async function chargerCpe(){
   var box=$('listeCpe'); dire('cpeErr','');
   try{
     var j=await api('admin_messages',{token:token});
-    var l=j.messages||[];
-    if(!l.length){ box.innerHTML='<div class="vide">Aucun message pour le moment.</div>'; return }
+    var l=j.messages||[], lots=(j.lots||[]);
+    if(!l.length&&!lots.length){ box.innerHTML='<div class="vide">Aucun message pour le moment.</div>'; return }
     var neufs=l.filter(function(m){return !m.cpe_vu_at}).length;
     $('btnVu').disabled=!neufs;
     box.innerHTML=(neufs?'<p style="font-size:.85em;color:var(--or2);margin-bottom:12px">'+
         neufs+' message'+(neufs>1?'s':'')+' que tu n’as pas encore vu'+(neufs>1?'s':'')+'.</p>':'')+
+      lots.map(function(t){
+        return '<div class="envoi" style="border-left-color:rgba(93,163,93,.5)">'+
+          '<div class="en-tete">'+
+            '<span class="pill lu">à la classe</span>'+
+            '<span class="code">'+esc(t.prof_public)+'</span>'+
+            '<span class="quand">'+(t.etat==='envoye'
+              ? (esc(t.nb_destinataires)+' élèves · '+quand(t.envoye_at))
+              : 'brouillon non envoyé · '+quand(t.cree_at))+'</span>'+
+          '</div>'+
+          '<div class="ap-lbl" style="margin-top:4px">Ce que le professeur a demandé</div>'+
+          '<div class="txt" style="font-style:italic;opacity:.85">'+esc(t.consigne)+'</div>'+
+          '<div class="ap-lbl" style="margin-top:9px">Ce qu’Agora a écrit</div>'+
+          '<div class="txt">'+esc(t.texte)+'</div></div>';
+      }).join('')+
       l.map(function(m){
         return '<div class="envoi" style="border-left-color:'+(m.cpe_vu_at?'rgba(201,168,76,.3)':'var(--or)')+'">'+
           '<div class="en-tete">'+
@@ -302,14 +387,24 @@ function exporter(){
   function cell(v){ return GUIL+String(v==null?'':v).split(GUIL).join(GUIL+GUIL)+GUIL }
   dire('cpeErr','');
   api('admin_messages_export',{token:token}).then(function(j){
-    var l=j.messages||[];
-    if(!l.length){ dire('cpeErr','Rien à exporter pour le moment.'); return }
-    var entete=['id','expediteur','code_expediteur','code_eleve','motif','texte',
-                'envoye_le','lu_le','vu_par_cpe_le','purge_prevue_le'];
+    var l=j.messages||[], lots=j.lots||[];
+    if(!l.length&&!lots.length){ dire('cpeErr','Rien à exporter pour le moment.'); return }
+    // Un seul tableau, deux natures de ligne. La colonne « consigne » ne vaut
+    // que pour les messages de classe : c'est ce que le professeur a demandé
+    // à Agora, et c'est la pièce qui compte en cas de litige.
+    var entete=['type','id','expediteur','code_expediteur','destinataire','motif',
+                'consigne','texte','envoye_le','lu_le','vu_par_cpe_le','purge_prevue_le'];
     var lignes=[entete.map(cell).join(';')];
+    lots.forEach(function(t){
+      lignes.push(['classe', t.id, t.prof_public===null?'':'professeur', t.prof_public,
+                   (t.etat==='envoye'?(t.nb_destinataires+' eleves'):'BROUILLON NON ENVOYE'),
+                   'CLASSE', t.consigne, t.texte, t.envoye_at||t.cree_at, '',
+                   t.cpe_vu_at||'', t.purge_apres||''].map(cell).join(';'));
+    });
     l.forEach(function(m){
-      lignes.push([m.id, m.expediteur, m.prof_public, m.eleve_public, m.motif, m.texte,
-                   m.cree_at, m.lu_at||'', m.cpe_vu_at||'', m.purge_apres||''].map(cell).join(';'));
+      lignes.push(['individuel', m.id, m.expediteur, m.prof_public, m.eleve_public, m.motif,
+                   '', m.texte, m.cree_at, m.lu_at||'', m.cpe_vu_at||'',
+                   m.purge_apres||''].map(cell).join(';'));
     });
     var csv=String.fromCharCode(0xFEFF)+lignes.join(SAUT);
     var a=document.createElement('a');
