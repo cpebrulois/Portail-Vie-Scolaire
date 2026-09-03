@@ -634,6 +634,34 @@ async function pageTexte(env, requestUrl, fichier, max) {
 /** Recherche documentaire : on classe les pages de l'index sur les mots de la
  *  question, puis on ne lit que les meilleures. Même index que l'Agora du
  *  navigateur : une seule source, donc pas de divergence possible. */
+/* Recherche documentaire, en deux temps et sur deux signaux.
+ *
+ * L'index seul ne suffit pas : il ne retient qu'une vingtaine de termes par
+ * page, et un mot comme « rumeur », present dans le corps de vingt-quatre
+ * pages, n'y figure nulle part. Le texte seul ne suffit pas davantage : il
+ * fait remonter des chapitres de roman devant le module dont c'est le titre.
+ * On additionne donc les deux — l'index preselectionne et garde le poids du
+ * titre, la relecture du texte rattrape ce que l'index ignore.
+ *
+ * Chaque terme est pondere par sa rarete : un mot present dans deux cents
+ * pages ne distingue rien, un mot present dans trois est precieux.
+ *
+ * C'est une heuristique, pas une science, et elle se reglera sur de vraies
+ * questions. En dessous du seuil on ne renvoie RIEN plutot qu'un a-peu-pres :
+ * Agora a pour consigne de dire qu'elle ne trouve pas.
+ */
+const MOTS_OUTILS = new Set(("quels quelle quel comment pour avec dans mes eleve eleves " +
+  "module modules conseiller proposer voudrais travailler aborder faire").split(" "));
+
+function sansAccent(s) {
+  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/** Tolere les pluriels : « rumeurs » doit pouvoir trouver « rumeur ». */
+function racine(m) {
+  return (m.length > 5 && (m.endsWith("s") || m.endsWith("x"))) ? m.slice(0, -1) : m;
+}
+
 async function documentsPertinents(env, requestUrl, question, combien) {
   if (!env.ASSETS) return [];
   let index = {};
@@ -642,31 +670,64 @@ async function documentsPertinents(env, requestUrl, question, combien) {
     if (r.ok) index = await r.json();
   } catch { return []; }
 
-  const mots = String(question).toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .split(/[^a-z0-9]+/).filter(m => m.length > 3);
+  const fichiers = Object.keys(index);
+  if (!fichiers.length) return [];
+
+  const mots = [...new Set(sansAccent(question).split(/[^a-z0-9]+/)
+    .filter(m => m.length > 3).map(racine))].filter(m => !MOTS_OUTILS.has(m));
   if (!mots.length) return [];
 
-  const notes = Object.keys(index).map(f => {
+  // Frequence documentaire, calculee sur l'index lui-meme.
+  const df = Object.create(null);
+  fichiers.forEach(f => {
     const meta = index[f] || {};
-    const foin = (f + " " + (meta.t || "") + " " + (meta.s || "")).toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    let note = 0;
+    new Set(sansAccent((meta.t || "") + " " + (meta.s || "")).split(/[^a-z0-9]+/)
+      .filter(w => w.length > 3).map(racine))
+      .forEach(w => { df[w] = (df[w] || 0) + 1; });
+  });
+  const N = fichiers.length;
+  const idf = m => Math.log(N / (1 + (df[m] || 0)));
+
+  // Premier temps : l'index, ou le titre pese le double du reste.
+  const base = Object.create(null);
+  fichiers.forEach(f => {
+    const meta = index[f] || {};
+    const titre = sansAccent(meta.t || "");
+    const foin = sansAccent(f + " " + (meta.t || "") + " " + (meta.s || ""));
+    let n = 0;
     mots.forEach(m => {
-      if (foin.includes(m)) note += 6;
-      if ((meta.t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(m)) note += 8;
+      const w = idf(m);
+      if (w <= 0) return;
+      if (foin.includes(m)) n += 4 * w;
+      if (titre.includes(m)) n += 8 * w;
     });
-    return { f, titre: meta.t || f, note };
-  }).filter(x => x.note > 0).sort((a, b) => b.note - a.note).slice(0, combien || 4);
+    if (n > 0) base[f] = n;
+  });
 
-  const out = [];
-  for (const d of notes) {
-    const t = await pageTexte(env, requestUrl, d.f, 4000);
-    if (t) out.push({ fichier: d.f, titre: d.titre, texte: t });
+  const courte = Object.keys(base).sort((a, b) => base[b] - base[a]).slice(0, 10);
+  if (!courte.length) return [];
+
+  // Second temps : on relit les pages retenues et on ajoute ce qu'elles disent.
+  const notes = [];
+  for (const f of courte) {
+    const t = await pageTexte(env, requestUrl, f, 60000);
+    if (!t) continue;
+    const plat = sansAccent(t);
+    let n = base[f];
+    mots.forEach(m => {
+      const w = idf(m);
+      if (w <= 0) return;
+      let occ = 0, i = plat.indexOf(m);
+      while (i !== -1 && occ < 10) { occ++; i = plat.indexOf(m, i + m.length); }
+      if (occ) n += occ * w * 0.8;
+    });
+    notes.push({ f, note: n, texte: t.slice(0, 4000), titre: (index[f] || {}).t || f });
   }
-  return out;
-}
 
+  return notes.filter(x => x.note >= 12).sort((a, b) => b.note - a.note)
+    .slice(0, combien || 4)
+    .map(x => ({ fichier: x.f, titre: x.titre, texte: x.texte }));
+}
 /** Avancement des élèves suivis par ce professeur, et d'eux seuls.
  *  On ne sort de « full_state » que ce qui décrit l'avancement. */
 async function avancementClasse(env, profPublic) {
