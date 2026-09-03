@@ -1510,7 +1510,40 @@ async function handleIdentite(request, env) {
         out_total = (r.headers.get("content-range") || "").split("/")[1] || "?";
       } catch { out_total = "?"; }
       const out = { ok: true, projet_supabase: host, role_de_la_cle: role,
-                    table: null, total: out_total, exemples: null, recherche: null };
+                    table: null, total: out_total, exemples: null, recherche: null,
+                    installation: null };
+
+      // État réel de l'installation, table par table. Sans ce relevé, une
+      // migration partiellement injectée se manifeste par une erreur au
+      // moment où un professeur s'en sert, et on cherche longtemps.
+      // On teste aussi la colonne « portee », dont l'absence ne se voit pas
+      // en interrogeant la table elle-même.
+      const attendu = [
+        { cle: "pvs_identites", req: "pvs_identites?select=code_public&limit=1", role: "comptes" },
+        { cle: "pvs_suivi", req: "pvs_suivi?select=prof_public&limit=1", role: "attribution des élèves" },
+        { cle: "pvs_sessions", req: "pvs_sessions?select=token&limit=1", role: "sessions" },
+        { cle: "pvs_sessions.portee", req: "pvs_sessions?select=portee&limit=1", role: "portée des sessions" },
+        { cle: "pvs_messages", req: "pvs_messages?select=id&limit=1", role: "signaux aux élèves" },
+        { cle: "pvs_messages.lot_id", req: "pvs_messages?select=lot_id&limit=1", role: "rattachement à un lot" },
+        { cle: "pvs_lots", req: "pvs_lots?select=id&limit=1", role: "messages à la classe" },
+        { cle: "pvs_sync", req: "pvs_sync?select=player_id&limit=1", role: "avancement des élèves" },
+      ];
+      const releve = {};
+      for (const t of attendu) {
+        try { await sb(env, "GET", t.req); releve[t.cle] = "présent · " + t.role; }
+        catch (e) {
+          const m = String((e && e.message) || e);
+          releve[t.cle] = (/does not exist|42P01|42703|PGRST20[0-9]/i.test(m) ? "ABSENT" : "ERREUR")
+            + " · " + t.role;
+        }
+      }
+      const manque = Object.keys(releve).filter(k => releve[k].startsWith("ABSENT"));
+      out.installation = {
+        tables: releve,
+        verdict: manque.length
+          ? "Il manque : " + manque.join(", ") + ". Injecte sql_messagerie.sql dans Supabase."
+          : "Tout est en place.",
+      };
       try {
         const rows = await sb(env, "GET",
           "pvs_identites?select=code_public&order=code_public.asc&limit=3");

@@ -57,6 +57,24 @@ async function lancer(){
   // Si elle est inconnue, il répond « Action inconnue » (400) => Worker pas à jour.
   var adm   = await route('/api/identite (actions console)','/api/identite',{action:'admin_pass_statut'});
 
+  // Relevé de l'installation en base, table par table. Une migration injectée
+  // à moitié ne se voit pas autrement : tout marche jusqu'au jour où un
+  // professeur clique sur la fonction qui manque.
+  if(iden.json && iden.json.installation){
+    var ins=iden.json.installation, lignes='';
+    Object.keys(ins.tables).forEach(function(k){
+      var v=ins.tables[k];
+      var pastille = /^présent/.test(v) ? '<span class="ok">présent</span>'
+                   : /^ABSENT/.test(v) ? '<span class="ko">ABSENT</span>'
+                   : '<span class="ko">erreur</span>';
+      lignes+='<div style="display:flex;gap:10px;padding:3px 0"><code style="min-width:190px">'+
+              k+'</code>'+pastille+'<span style="opacity:.7">'+
+              v.replace(/^[^·]*· /,'')+'</span></div>';
+    });
+    el('<div class="t">Installation en base</div>'+lignes+
+       '<pre>'+ins.verdict.replace(/[<>]/g,'')+'</pre>');
+  }
+
   [agora,camp,iden,adm].forEach(function(x){
     // Un 404 accompagné d'un JSON « error » vient de NOTRE code : la route existe.
     var routeConnue = (x.status!==0) && !(x.status===404 && !x.json);
@@ -98,8 +116,18 @@ async function lancer(){
     var bonProjet = /zmeicqjkylxdaldiovxg/.test(d.projet_supabase);
     var exemples = (d.exemples||[]).join(', ') || '(aucun)';
     var trouve = d.recherche && d.recherche.trouve;
-    if(trouve){ cls='good';
-      h='<strong>Tout est bon.</strong> Le code Rance-0001 est trouvé. '+
+    var ins2=d.installation, incomplet = ins2 && /^Il manque/.test(ins2.verdict||'');
+    if(trouve && incomplet){ cls='bad';
+      h='<strong>Les comptes sont bons, mais la base est incomplète.</strong><br>'+
+        ins2.verdict+'<br><br>'+
+        'Le portail fonctionne : seules les fonctions qui s\'appuient sur les tables '+
+        'manquantes échoueront, au moment où quelqu\'un s\'en servira. '+
+        'Ouvre le SQL Editor de Supabase et colle <code>sql_messagerie.sql</code> '+
+        'en entier — il est écrit pour être rejoué sans dommage même si une partie '+
+        'est déjà en place.';
+    } else if(trouve){ cls='good';
+      h='<strong>Tout est bon.</strong> Le code Rance-0001 est trouvé'+
+        (ins2 ? ', et toutes les tables sont en place' : '')+'. '+
         'Tu peux retourner sur <a href="rejoindre.html">rejoindre.html</a>.';
     } else if(!bonProjet){
       h='<strong>Mauvais projet Supabase.</strong> Le Worker interroge <em>'+d.projet_supabase+
