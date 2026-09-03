@@ -27,7 +27,11 @@ select option{background:#151009}
 .msg.err{background:rgba(139,42,42,.13);border:1px solid rgba(139,42,42,.5);color:#e0a48a}
 .msg.ok{background:rgba(93,163,93,.12);border:1px solid rgba(93,163,93,.45);color:#a8d8a8}
 .avert{background:rgba(74,111,165,.1);border:1px solid rgba(74,111,165,.4);border-radius:8px;padding:13px 16px;font-size:.87em;color:#bcd2ee;margin-bottom:16px;line-height:1.65}
-.compte{text-align:right;font-size:.76em;color:var(--enc2);opacity:.65;margin:-4px 0 10px}
+.apercu{margin:2px 0 14px;padding:13px 16px;border-left:2px solid rgba(201,168,76,.4);background:rgba(201,168,76,.06);border-radius:0 6px 6px 0}
+.apercu:empty{display:none}
+.ap-lbl{font-family:'Cinzel',serif;font-size:.56em;letter-spacing:2px;color:var(--or);text-transform:uppercase;opacity:.8;margin-bottom:7px}
+.ap-txt{font-size:1.02em;line-height:1.65;color:var(--enc)}
+.ap-pied{font-size:.78em;font-style:italic;color:var(--enc2);opacity:.7;margin-top:9px;border-top:1px solid rgba(201,168,76,.15);padding-top:8px}
 .envoi{border-left:2px solid rgba(201,168,76,.3);padding:11px 14px;margin-bottom:10px;background:rgba(255,255,255,.02);border-radius:0 6px 6px 0}
 .envoi .en-tete{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
 .code{font-family:'Cinzel',serif;letter-spacing:.5px;color:var(--or2);font-size:.85em}
@@ -46,7 +50,7 @@ select option{background:#151009}
 <body>
 <div class="wrap">
   <h1>Messages aux élèves</h1>
-  <p class="sub">Un mot court, du professeur principal à un élève qu'il suit</p>
+  <p class="sub">Un signal court, du professeur principal à un élève qu'il suit</p>
 
   <!-- ═══ IDENTIFICATION ═══ -->
   <div id="ecId">
@@ -69,16 +73,16 @@ select option{background:#151009}
   <!-- ═══ PROFESSEUR ═══ -->
   <div id="ecProf" style="display:none">
     <div class="avert">
-      Ce que tu écris ici est <strong>lu par le CPE</strong>, comme tout ce qui s'écrit sur le
-      portail. L'élève ne peut pas te répondre depuis la plateforme : le message lui dira de
-      passer par ECLAT. Écris court, et n'y mets rien qui relève d'un entretien.
+      Ici, on ne rédige pas : on choisit un signal. C'est volontaire — un portail élève n'est
+      pas un lieu d'échange écrit, et personne n'a à modérer ce qui s'y dit.
+      <strong>Pour tout ce qui demande des mots, passe par ECLAT.</strong>
+      Les messages envoyés sont visibles par le CPE et conservés.
     </div>
     <div class="card">
-      <div class="lbl">Écrire à un élève</div>
+      <div class="lbl">Envoyer un signal</div>
       <select id="selEleve"></select>
-      <textarea id="inpTexte" maxlength="600" placeholder="Ton message…"
-                oninput="majCompte()"></textarea>
-      <div class="compte" id="compte">0 / 600</div>
+      <select id="selMotif"><option value="">Chargement des motifs…</option></select>
+      <div class="apercu" id="apercu"></div>
       <button class="btn" id="btnEnvoi" onclick="envoyer()">Envoyer</button>
       <div id="profErr"></div>
     </div>
@@ -103,7 +107,11 @@ select option{background:#151009}
       <div style="margin-bottom:12px">
         <button class="btn" onclick="chargerCpe()">Rafraîchir</button>
         <button class="btn ghost" id="btnVu" onclick="marquerVus()">Marquer tout comme vu</button>
+        <button class="btn ghost" onclick="exporter()">Exporter le journal (CSV)</button>
       </div>
+      <p style="font-size:.82em;color:var(--enc2);opacity:.75;margin-bottom:12px">
+        Les messages ne peuvent être ni modifiés ni supprimés. Ils s'effacent d'eux-mêmes
+        le 31 août de l'année scolaire suivante : l'export conserve la trace au-delà.</p>
       <div id="cpeErr"></div>
       <div id="listeCpe"><div class="vide">Chargement…</div></div>
     </div>
@@ -177,13 +185,38 @@ function quitter(ev){
   dire('idErr',''); ecran('ecId');
 }
 
-/* --- Côté professeur ----------------------------------------------------- */
-function majCompte(){
-  var n=($('inpTexte').value||'').length;
-  $('compte').textContent=n+' / 600';
+/* --- Côté professeur -----------------------------------------------------
+ * Le professeur ne rédige rien. Il choisit un motif, et le serveur écrit la
+ * formule : le navigateur n'envoie qu'un code. Rien d'autre ne peut entrer. */
+var MOTIFS=[];
+
+function apercu(){
+  var m=MOTIFS.filter(function(x){return x.code===$('selMotif').value})[0];
+  $('apercu').innerHTML=m?('<div class="ap-lbl">Ce que l’élève lira</div>'+
+    '<div class="ap-txt">'+esc(m.texte)+'</div>'+
+    '<div class="ap-pied">Puis : « Tu ne peux pas répondre depuis le portail. '+
+    'Si besoin, réponds à ton professeur via ECLAT. »</div>'):'';
+}
+
+async function chargerMotifs(){
+  var s=$('selMotif');
+  try{
+    var j=await api('motifs',{}); MOTIFS=j.motifs||[];
+  }catch(e){ MOTIFS=[] }
+  if(!MOTIFS.length){ s.innerHTML='<option value="">Motifs indisponibles</option>'; return }
+  var fam=null, html='';
+  MOTIFS.forEach(function(m){
+    if(m.famille!==fam){ if(fam!==null)html+='</optgroup>';
+      html+='<optgroup label="'+esc(m.famille)+'">'; fam=m.famille }
+    html+='<option value="'+esc(m.code)+'">'+esc(m.texte)+'</option>';
+  });
+  s.innerHTML=html+'</optgroup>';
+  s.onchange=apercu;
+  apercu();
 }
 
 async function chargerProf(){
+  await chargerMotifs();
   try{
     var j=await api('prof_mes_eleves',{secret:sec});
     mesEleves=j.eleves||[];
@@ -219,14 +252,13 @@ async function chargerEnvois(){
 
 async function envoyer(){
   dire('profErr','');
-  var eleve=$('selEleve').value, texte=($('inpTexte').value||'').trim();
+  var eleve=$('selEleve').value, motif=$('selMotif').value;
   if(!eleve){dire('profErr','Choisis un élève.');return}
-  if(texte.length<3){dire('profErr','Le message est vide.');return}
+  if(!motif){dire('profErr','Choisis un motif.');return}
   $('btnEnvoi').disabled=true;
   try{
-    await api('prof_envoyer',{secret:sec,eleve:eleve,texte:texte});
-    $('inpTexte').value=''; majCompte();
-    dire('profErr','Message envoyé. Il le verra à sa prochaine connexion.','ok');
+    await api('prof_envoyer',{secret:sec,eleve:eleve,motif:motif});
+    dire('profErr','Envoyé. Il le verra à sa prochaine connexion.','ok');
     chargerEnvois();
   }catch(e){ dire('profErr',e.message) }
   $('btnEnvoi').disabled=false;
@@ -260,6 +292,33 @@ async function chargerCpe(){
 async function marquerVus(){
   try{ await api('admin_messages_vu',{token:token}); chargerCpe(); }
   catch(e){ dire('cpeErr',e.message) }
+}
+
+/* Export du journal. Écrit sans une seule contre-oblique : dans ce projet,
+   elles ont déjà été mangées une fois par un outil intermédiaire et avaient
+   transformé une expression régulière en piège. */
+function exporter(){
+  var GUIL=String.fromCharCode(34), SAUT=String.fromCharCode(13)+String.fromCharCode(10);
+  function cell(v){ return GUIL+String(v==null?'':v).split(GUIL).join(GUIL+GUIL)+GUIL }
+  dire('cpeErr','');
+  api('admin_messages_export',{token:token}).then(function(j){
+    var l=j.messages||[];
+    if(!l.length){ dire('cpeErr','Rien à exporter pour le moment.'); return }
+    var entete=['id','expediteur','code_expediteur','code_eleve','motif','texte',
+                'envoye_le','lu_le','vu_par_cpe_le','purge_prevue_le'];
+    var lignes=[entete.map(cell).join(';')];
+    l.forEach(function(m){
+      lignes.push([m.id, m.expediteur, m.prof_public, m.eleve_public, m.motif, m.texte,
+                   m.cree_at, m.lu_at||'', m.cpe_vu_at||'', m.purge_apres||''].map(cell).join(';'));
+    });
+    var csv=String.fromCharCode(0xFEFF)+lignes.join(SAUT);
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    var d=new Date(), p=function(n){return ('0'+n).slice(-2)};
+    a.download='journal_messages_'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+    dire('cpeErr','Journal exporté : '+l.length+' message'+(l.length>1?'s':'')+'.','ok');
+  }).catch(function(e){ dire('cpeErr',e.message) });
 }
 
 /* Démarrage : si le Portail connaît déjà le rôle, on prépare le champ. */

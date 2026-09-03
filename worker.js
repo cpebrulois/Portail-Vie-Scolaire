@@ -540,6 +540,44 @@ function alea(n) {
 }
 
 /** Vérifie un jeton de session et renvoie le compte, ou null. */
+/* ═════════════════════ MOTIFS DE MESSAGE ═════════════════════════════════
+ * Liste fermée. Un professeur ne rédige pas : il choisit. Le serveur seul
+ * écrit la formule, et l'enregistre telle qu'elle a été lue — si un libellé
+ * change un jour, les anciens messages gardent le leur, ce qui est la
+ * condition pour qu'ils vaillent quelque chose en cas de litige.
+ * Ajouter un motif : mettre un code neuf, ne jamais réécrire un code servi.
+ * ═══════════════════════════════════════════════════════════════════════ */
+const MOTIFS = [
+  { code: "ENC_BRAVO", famille: "Encouragement",
+    texte: "Bravo. J'ai regardé ton parcours, et c'est du bon travail." },
+  { code: "ENC_PROGRES", famille: "Encouragement",
+    texte: "Tes progrès se voient. Continue comme ça." },
+  { code: "ENC_ENTRAIDE", famille: "Encouragement",
+    texte: "On m'a rapporté que tu avais aidé quelqu'un. C'est noté, et ça compte." },
+  { code: "REL_PARCOURS", famille: "Relance",
+    texte: "Pense à avancer sur ton parcours : il te reste des modules à découvrir." },
+  { code: "REL_FIL", famille: "Relance",
+    texte: "Ton Fil de Valdurne t'attend. Le chapitre suivant est ouvert." },
+  { code: "REL_REPRISE", famille: "Relance",
+    texte: "Je ne t'ai pas vu sur le portail depuis un moment. Reprends quand tu peux." },
+  { code: "REL_TERMINER", famille: "Relance",
+    texte: "Tu as commencé quelque chose sans le terminer. Reviens le finir, il ne te manque pas grand-chose." },
+  { code: "RDV_VOIR", famille: "Se parler",
+    texte: "Viens me voir quand tu peux, à la fin d'un cours ou à la récréation." },
+  { code: "RDV_ECLAT", famille: "Se parler",
+    texte: "J'ai quelque chose de plus long à te dire : écris-moi sur ECLAT." },
+  { code: "RDV_VIESCO", famille: "Se parler",
+    texte: "Passe à la Vie scolaire quand tu peux. Rien de grave." },
+];
+
+/** Fin de l'année scolaire SUIVANTE : le 31 août d'après l'année scolaire en
+ *  cours. Une année scolaire commence en septembre. Un message de mars 2027
+ *  appartient à l'année 2026-2027 et se purge donc le 31 août 2028. */
+function finAnneeSuivante(d) {
+  const debut = d.getUTCMonth() >= 8 ? d.getUTCFullYear() : d.getUTCFullYear() - 1;
+  return new Date(Date.UTC(debut + 2, 7, 31, 23, 59, 59)).toISOString();
+}
+
 /** Valide un jeton de session.
  *  « portee » distingue deux niveaux, et l'écart est le mot de passe :
  *   - legere  : délivrée à la simple connexion (nom de page). Lire SES propres
@@ -669,7 +707,9 @@ async function handleIdentite(request, env) {
         if (role === "eleve") {
           messages = (await sb(env, "GET",
             `pvs_messages?eleve_public=eq.${encodeURIComponent(row.code_public)}&lu_at=is.null` +
-            `&select=id,prof_public,texte,cree_at&order=cree_at.asc&limit=10`)) || [];
+            // Pas de code d'expéditeur vers l'élève : il n'en ferait rien, et
+            // c'est une donnée de moins qui circule. Seul le type suffit.
+            `&select=id,texte,expediteur,cree_at&order=cree_at.asc&limit=10`)) || [];
         }
         if (role === "admin") {
           const q = (await sb(env, "GET",
@@ -684,9 +724,15 @@ async function handleIdentite(request, env) {
 
     /* ═══════════════════ MESSAGERIE PROFESSEUR → ÉLÈVE ═══════════════════
      * Un professeur écrit à un élève qui lui a été attribué nominativement.
-     * L'élève ne répond pas ici : il répond via ECLAT. Le CPE voit tout, et
-     * les deux parties le savent — c'est ce qui rend la chose acceptable.
+     * Il ne rédige RIEN : il choisit un motif dans une liste fermée. Le canal
+     * est donc structurellement incapable de porter ce qui demanderait une
+     * modération — c'est le même remède que le tour au clic du JDR, appliqué
+     * aux adultes. Ce qui demande des mots passe par ECLAT.
+     * L'élève ne répond pas ici. Le CPE voit tout, et chacun le sait.
      * ═══════════════════════════════════════════════════════════════════ */
+    if (action === "motifs") {
+      return json({ ok: true, motifs: MOTIFS.map(m => ({ code: m.code, famille: m.famille, texte: m.texte })) }, 200, cors);
+    }
 
     // Le professeur envoie. Le lien de suivi est revérifié EN BASE : le
     // client n'est jamais cru sur parole sur la liste de ses élèves.
@@ -698,9 +744,12 @@ async function handleIdentite(request, env) {
         return json({ error: "Réservé aux professeurs." }, 403, cors);
       }
       const eleve = normCode(b.eleve);
-      const texte = String(b.texte || "").replace(/\s+/g, " ").trim().slice(0, 600);
       if (!eleve) return json({ error: "Élève manquant." }, 400, cors);
-      if (texte.length < 3) return json({ error: "Message vide." }, 400, cors);
+
+      // Le texte n'est JAMAIS celui du navigateur : on ne retient que le code
+      // du motif, et le serveur écrit la formule. Rien d'autre ne peut entrer.
+      const motif = MOTIFS.find(m => m.code === String(b.motif || ""));
+      if (!motif) return json({ error: "Motif inconnu." }, 400, cors);
 
       const [e] = await sb(env, "GET",
         `pvs_identites?code_public=eq.${encodeURIComponent(eleve)}&select=role`);
@@ -718,13 +767,24 @@ async function handleIdentite(request, env) {
       const depuis = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
       const recents = (await sb(env, "GET",
         `pvs_messages?prof_public=eq.${encodeURIComponent(moi.code_public)}` +
-        `&cree_at=gte.${depuis}&select=id&limit=40`)) || [];
-      if (recents.length >= 30) {
+        `&cree_at=gte.${depuis}&select=id,eleve_public&limit=40`)) || [];
+      if (recents.length >= 20) {
         return json({ error: "Trop de messages envoyés aujourd'hui. Reprends demain." }, 429, cors);
       }
+      if (recents.filter(r => r.eleve_public === eleve).length >= 2) {
+        return json({ error: "Tu as déjà écrit à cet élève aujourd'hui. Pour le reste, ECLAT." }, 429, cors);
+      }
 
-      const [msg] = await sb(env, "POST", "pvs_messages",
-        { prof_public: moi.code_public, eleve_public: eleve, texte });
+      // La date de purge voyage avec la ligne : elle est lisible, vérifiable,
+      // et ne dépend d'aucune règle qu'il faudrait retrouver ailleurs.
+      const [msg] = await sb(env, "POST", "pvs_messages", {
+        prof_public: moi.code_public,
+        eleve_public: eleve,
+        motif: motif.code,
+        texte: motif.texte,                 // la formule telle qu'elle est lue
+        expediteur: moi.role === "admin" ? "viescolaire" : "professeur",
+        purge_apres: finAnneeSuivante(new Date()),
+      });
       return json({ ok: true, id: msg && msg.id }, 200, cors);
     }
 
@@ -756,7 +816,8 @@ async function handleIdentite(request, env) {
 
     // Le CPE lit tout. Portée complète exigée : le mot de passe protège le
     // contenu, le nom de page seul ne donne accès qu'au compteur.
-    if (action === "admin_messages" || action === "admin_messages_vu") {
+    if (action === "admin_messages" || action === "admin_messages_vu"
+        || action === "admin_messages_export") {
       const moi = await sessionValide(env, b.token, "complete");
       if (!moi || moi.role !== "admin") {
         return json({ error: "Session expirée ou absente. Rouvre la console." }, 401, cors);
@@ -766,9 +827,13 @@ async function handleIdentite(request, env) {
           { cpe_vu_at: new Date().toISOString() }, "return=minimal");
         return json({ ok: true }, 200, cors);
       }
+      const champs = "id,prof_public,eleve_public,motif,texte,expediteur," +
+                     "cree_at,lu_at,cpe_vu_at,purge_apres";
+      // L'export sort tout le journal : c'est lui qui fait vivre la trace en
+      // dehors de la plateforme, au-delà même de la purge automatique.
+      const limite = action === "admin_messages_export" ? 5000 : 200;
       const messages = (await sb(env, "GET",
-        "pvs_messages?select=id,prof_public,eleve_public,texte,cree_at,lu_at,cpe_vu_at" +
-        "&order=cree_at.desc&limit=200")) || [];
+        `pvs_messages?select=${champs}&order=cree_at.desc&limit=${limite}`)) || [];
       return json({ ok: true, messages }, 200, cors);
     }
 
@@ -1002,6 +1067,27 @@ async function handleIdentite(request, env) {
 //  - SUPABASE_URL  (optionnel, défaut = projet du Portail)
 //  - SUPABASE_ANON (clé publiable/anon — publique par nature ; requise pour un
 //                   ping fiable)
+/** Purge des messages arrivés au bout de leur conservation.
+ *  On ne garde pas indéfiniment : chaque ligne porte sa date de péremption,
+ *  fixée à l'écriture au 31 août de l'année scolaire suivante. Passé ce jour,
+ *  elle disparaît d'elle-même — c'est la seule façon de tenir à la fois la
+ *  mémoire d'un litige et la limite de conservation qu'exige le RGPD.
+ *  L'export du journal, lui, vit sur le poste du CPE et survit à la purge. */
+async function purgeMessages(env) {
+  if (!sbCfg(env)) return;
+  try {
+    const maintenant = new Date().toISOString();
+    const perimes = await sb(env, "GET",
+      `pvs_messages?purge_apres=lt.${maintenant}&select=id&limit=1000`);
+    if (!perimes || !perimes.length) return;
+    await sb(env, "DELETE",
+      `pvs_messages?purge_apres=lt.${maintenant}`, null, "return=minimal");
+    console.log("[purge] messages périmés supprimés :", perimes.length);
+  } catch (e) {
+    console.error("[purge] échec :", e && e.message);
+  }
+}
+
 async function keepAliveSupabase(env) {
   const url = (env.SUPABASE_URL || "https://zmeicqjkylxdaldiovxg.supabase.co").replace(/\/+$/, "");
   const key = env.SUPABASE_ANON;
@@ -1201,8 +1287,9 @@ export default {
     return new Response("Not found", { status: 404 });
   },
 
-  // Tâche planifiée (Cron) : réveille Supabase pour éviter la pause.
+  // Tâche planifiée (Cron) : réveille Supabase, et purge ce qui est périmé.
   async scheduled(event, env, ctx) {
     ctx.waitUntil(keepAliveSupabase(env));
+    ctx.waitUntil(purgeMessages(env));
   },
 };

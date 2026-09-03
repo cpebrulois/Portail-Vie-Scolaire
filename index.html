@@ -167,7 +167,7 @@
   <span style="flex:1;min-width:170px">
     <span style="display:block;font-family:Cinzel,serif;font-size:.64em;letter-spacing:2.5px;
       color:#9dbde8;text-transform:uppercase">Messages aux élèves</span>
-    <span style="display:block;color:#e8dfc8;font-size:.86em;opacity:.85">Écrire un mot aux élèves que tu suis</span>
+    <span style="display:block;color:#e8dfc8;font-size:.86em;opacity:.85">Envoyer un signal aux élèves que tu suis</span>
   </span>
   <span style="font-family:Cinzel,serif;font-size:.68em;letter-spacing:2px;color:#9dbde8;
     border:1px solid rgba(74,111,165,.6);border-radius:5px;padding:6px 13px;white-space:nowrap">Ouvrir</span>
@@ -1846,7 +1846,10 @@ function msgAffiche(){
   var m=document.getElementById('msgModal'); if(!m)return;
   if(!MESSAGES.length){ m.style.display='none'; return }
   var x=MESSAGES[0];
-  document.getElementById('msgDe').textContent='De '+(x.prof_public||'ton professeur');
+  // Jamais de code ni de nom : « RANCE-0002 » ne dit rien a un eleve, et un
+  // nom romprait la pseudonymisation. Le journal du CPE, lui, garde le code.
+  document.getElementById('msgDe').textContent=
+    (x.expediteur==='viescolaire')?'De la Vie scolaire':'De ton professeur principal';
   document.getElementById('msgTexte').textContent=String(x.texte||'');
   document.getElementById('msgReste').textContent=
     MESSAGES.length>1?('encore '+(MESSAGES.length-1)+' message'+(MESSAGES.length>2?'s':'')):'';
