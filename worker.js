@@ -776,7 +776,48 @@ async function avancementClasse(env, profPublic) {
   return { eleves, resume };
 }
 
+/* Catalogue des modules, tel qu'il existe vraiment.
+ *
+ * Sans lui, Agora invente : interrogée sur la suite d'un module « GROUPE 02 ·
+ * Le Pouvoir des Témoins », elle a répondu « GROUPE 04 · Le Pouvoir des
+ * Témoins », titre inexistant obtenu en incrémentant un numéro. On lui donne
+ * donc la liste réelle, et l'interdiction de nommer autre chose.
+ */
+const RANG_DE_NIVEAU = ["", "Page", "Page", "Page", "Écuyer", "Écuyer", "Écuyer",
+                        "Chevalier", "Chevalier", "Veilleur", "Veilleur"];
+
+async function catalogueModules(env, requestUrl) {
+  if (!env.ASSETS) return "";
+  let index = {};
+  try {
+    const r = await env.ASSETS.fetch(new Request(new URL("/viesco_index.json", requestUrl)));
+    if (r.ok) index = await r.json();
+  } catch { return ""; }
+
+  const phare = [], autres = [];
+  Object.keys(index).sort().forEach(f => {
+    const titre = String((index[f] || {}).t || "").split("·").pop().split(" - ").pop().trim();
+    if (!titre) return;
+    let m = f.match(/^PIX_pHARe_Module_([A-Z]+)_(\d\d)\.html$/);
+    if (m) {
+      const n = parseInt(m[2], 10);
+      phare.push(`${m[1]}_${m[2]} « ${titre} » — rang ${RANG_DE_NIVEAU[n] || "?"}`);
+      return;
+    }
+    m = f.match(/^PIX_EGALITE_([A-Z]+)_(\d\d)\.html$/);
+    if (m) autres.push(`Égalité ${m[1]}_${m[2]} « ${titre} »`);
+  });
+
+  if (!phare.length) return "";
+  return "<catalogue>\nModules pHARe (six piliers, dix niveaux) :\n" + phare.join("\n") +
+         (autres.length ? "\n\nModules PIX-Égalité :\n" + autres.join("\n") : "") +
+         "\n</catalogue>\n\n";
+}
+
 const SYSTEM_AGORA_PROF = `Tu es Agora, assistante du Portail Vie Scolaire du collège Château Rance. Tu réponds ici à un PROFESSEUR PRINCIPAL, pas à un élève.
+
+LE CATALOGUE FAIT FOI
+La liste complète des modules t'est donnée entre <catalogue></catalogue>, avec leur titre exact et le rang auquel ils correspondent. Tu ne nommes JAMAIS un module qui n'y figure pas, et tu ne modifies jamais un titre. N'invente pas un numéro en le déduisant d'un autre : « GROUPE 02 » ne t'autorise pas à parler d'un « GROUPE 04 » qui porterait le même titre. Si le module que tu cherches n'existe pas, dis-le.
 
 CE QUE TU SAIS
 - Des extraits de pages réelles du portail te sont fournis entre <documents></documents>. Appuie-toi dessus, cite le nom des modules et des rubriques tels qu'ils y figurent.
@@ -1040,9 +1081,24 @@ async function handleIdentite(request, env) {
       try { classe = await avancementClasse(env, moi.code_public); }
       catch (e) { console.error("[conseil] avancement indisponible :", e && e.message); }
 
-      const docs = await documentsPertinents(env, request.url, question, 4);
+      // Une relance du type « et un an plus tard ? » ne contient aucun mot de
+      // contenu : la recherche ne rendait rien, et Agora comblait le vide avec
+      // l'historique — c'est ainsi qu'elle a inventé un module. On cherche donc
+      // aussi sur la dernière question posée.
+      const precedente = (Array.isArray(b.historique) ? b.historique : [])
+        .filter(t => t && t.role !== "assistant")
+        .map(t => String(t.content || "")).pop() || "";
+      let docs = await documentsPertinents(env, request.url, question, 4);
+      if (docs.length < 2 && precedente) {
+        const rattrapage = await documentsPertinents(env, request.url,
+          precedente + " " + question, 4);
+        const vus = new Set(docs.map(d => d.fichier));
+        rattrapage.forEach(d => { if (!vus.has(d.fichier)) docs.push(d); });
+        docs = docs.slice(0, 4);
+      }
 
       const bloc =
+        (await catalogueModules(env, request.url)) +
         (docs.length
           ? "<documents>\n" + docs.map(d =>
               `[${d.titre} — ${d.fichier}]\n${d.texte}`).join("\n\n") + "\n</documents>\n\n"
