@@ -143,16 +143,49 @@
   <span style="font-family:Cinzel,serif;font-size:.68em;letter-spacing:2px;color:#9dbde8;
     border:1px solid rgba(74,111,165,.6);border-radius:5px;padding:6px 13px;white-space:nowrap">Ouvrir</span>
 </a>
+<!-- ══ MESSAGES EN ATTENTE (bandeau prioritaire du CPE) ═════════════ -->
+<a id="msgBand" href="messages.html" style="display:none;align-items:center;gap:12px;flex-wrap:wrap;
+   text-decoration:none;margin:0 0 12px;padding:9px 16px;border-radius:8px;
+   background:linear-gradient(120deg,rgba(201,168,76,.22),rgba(21,16,9,.9));
+   border:1px solid rgba(201,168,76,.6)">
+  <span style="font-size:1.1em">✉️</span>
+  <span style="flex:1;min-width:170px">
+    <span style="display:block;font-family:Cinzel,serif;font-size:.64em;letter-spacing:2.5px;
+      color:#e8c97a;text-transform:uppercase">Messages à relire</span>
+    <span style="display:block;color:#e8dfc8;font-size:.86em;opacity:.85" id="msgBandN"></span>
+  </span>
+  <span style="font-family:Cinzel,serif;font-size:.68em;letter-spacing:2px;color:#e8c97a;
+    border:1px solid rgba(201,168,76,.6);border-radius:5px;padding:6px 13px;white-space:nowrap">Ouvrir</span>
+</a>
+
+<!-- ══ ACCÈS PROFESSEUR PRINCIPAL ══════════════════════════════════ -->
+<a id="profBand" href="messages.html" style="display:none;align-items:center;gap:12px;flex-wrap:wrap;
+   text-decoration:none;margin:0 0 12px;padding:9px 16px;border-radius:8px;
+   background:linear-gradient(120deg,rgba(74,111,165,.22),rgba(21,16,9,.9));
+   border:1px solid rgba(74,111,165,.55)">
+  <span style="font-size:1.1em">✉️</span>
+  <span style="flex:1;min-width:170px">
+    <span style="display:block;font-family:Cinzel,serif;font-size:.64em;letter-spacing:2.5px;
+      color:#9dbde8;text-transform:uppercase">Messages aux élèves</span>
+    <span style="display:block;color:#e8dfc8;font-size:.86em;opacity:.85">Écrire un mot aux élèves que tu suis</span>
+  </span>
+  <span style="font-family:Cinzel,serif;font-size:.68em;letter-spacing:2px;color:#9dbde8;
+    border:1px solid rgba(74,111,165,.6);border-radius:5px;padding:6px 13px;white-space:nowrap">Ouvrir</span>
+</a>
 <script>
 (function(){
   function go(){
-    var b=document.getElementById('adminBand'); if(!b) return;
     var r=''; try{r=localStorage.getItem('pvs_role')||''}catch(e){}
     var j=''; try{j=(localStorage.getItem('pvs_current_player')||'').trim()}catch(e){}
-    b.style.display=(j && r==='admin')?'flex':'none';
+    var b=document.getElementById('adminBand');
+    if(b) b.style.display=(j && r==='admin')?'flex':'none';
+    var p=document.getElementById('profBand');
+    if(p) p.style.display=(j && r==='prof')?'flex':'none';
+    if(typeof bandeMessages==='function') bandeMessages();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
   window.addEventListener('storage',go);
+  window.majBandes=go;
   setTimeout(go,1200);   // après la connexion, qui écrit le rôle
 })();
 </script>
@@ -1034,6 +1067,25 @@ document.addEventListener('DOMContentLoaded',()=>{renderAcadGrid();});
     <audio id="bgAudio" preload="none" loop></audio>
   </div>
 </div>
+<!-- ══ MESSAGE D'UN PROFESSEUR ══════════════════════════════════════
+     L'eleve ne repond pas ici : il repond via ECLAT. La fenetre ne se ferme
+     qu'en accusant reception, et le message est alors marque lu cote serveur,
+     ce qui permet au professeur de savoir qu'il est arrive. -->
+<div id="msgModal" style="display:none;position:fixed;inset:0;z-index:1700;background:#000000cc;padding:16px;overflow:auto">
+  <div class="card" style="max-width:560px;margin:auto;border-color:rgba(74,111,165,.6)">
+    <div style="font-size:.7em;letter-spacing:3px;color:#9dbde8;text-transform:uppercase">Un mot de ton professeur</div>
+    <h2 style="color:#e8c97a" id="msgDe">Message</h2>
+    <p id="msgTexte" style="line-height:1.75;margin:14px 0;white-space:pre-wrap"></p>
+    <p class="hint" style="border-top:1px solid rgba(201,168,76,.2);padding-top:12px">
+      Tu ne peux pas repondre depuis le portail.
+      <strong style="color:#e8c97a">Si besoin, reponds a ton professeur via ECLAT.</strong></p>
+    <div style="margin-top:14px;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+      <button class="btn" onclick="msgSuivant()" id="msgBtn">J'ai lu</button>
+      <span class="hint" id="msgReste" style="opacity:.7"></span>
+    </div>
+  </div>
+</div>
+
 <div id="baremeModal" style="display:none;position:fixed;inset:0;z-index:1600;background:#000000cc;padding:16px;overflow:auto">
   <div class="card" style="max-width:660px;margin:auto;border-color:rgba(201,168,76,.5)">
     <div style="font-size:.7em;letter-spacing:3px;color:#c9a84c;text-transform:uppercase">Ce qui change cette annee</div>
@@ -1783,6 +1835,40 @@ function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
 /* Nom de page composé à la première connexion : la vérification est faite par
    le Worker (le référentiel local ne contient que les codes d'inscription). */
+var MESSAGES=[], MSG_NON_VUS=0, IDENT_FAITE=false;
+
+/* ---------------------------------------------------------------------------
+ * MESSAGES D'UN PROFESSEUR
+ * L'eleve les recoit a la connexion, un par un. Il ne repond pas ici : le
+ * portail n'est pas une messagerie, et la reponse passe par ECLAT.
+ * ------------------------------------------------------------------------- */
+function msgAffiche(){
+  var m=document.getElementById('msgModal'); if(!m)return;
+  if(!MESSAGES.length){ m.style.display='none'; return }
+  var x=MESSAGES[0];
+  document.getElementById('msgDe').textContent='De '+(x.prof_public||'ton professeur');
+  document.getElementById('msgTexte').textContent=String(x.texte||'');
+  document.getElementById('msgReste').textContent=
+    MESSAGES.length>1?('encore '+(MESSAGES.length-1)+' message'+(MESSAGES.length>2?'s':'')):'';
+  m.style.display='block';
+}
+function msgSuivant(){
+  var x=MESSAGES.shift(); if(!x){msgAffiche();return}
+  var t=''; try{t=sessionStorage.getItem('pvs_tok')||''}catch(e){}
+  // L'accuse de reception part sans bloquer : si le reseau tombe, l'eleve a
+  // quand meme lu son message, et il le reverra a la prochaine connexion.
+  if(t){ fetch('/api/identite',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'message_lu',token:t,id:x.id})}).catch(function(){}); }
+  msgAffiche();
+}
+function bandeMessages(){
+  var b=document.getElementById('msgBand'); if(!b)return;
+  b.style.display=MSG_NON_VUS>0?'flex':'none';
+  var n=document.getElementById('msgBandN');
+  if(n)n.textContent=MSG_NON_VUS+' message'+(MSG_NON_VUS>1?'s':'')+
+    ' de professeur'+(MSG_NON_VUS>1?'s':'')+' que tu n’as pas encore lu'+(MSG_NON_VUS>1?'s':'');
+}
+
 async function identiteServeur(code){
   try{
     const r=await fetch('/api/identite',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -1791,6 +1877,14 @@ async function identiteServeur(code){
     const j=await r.json();
     if(!(j&&j.ok&&j.public))return null;
     try{localStorage.setItem('pvs_role',String(j.role||'eleve'))}catch(e){}
+    // Jeton de portee legere : il sert uniquement a marquer un message lu.
+    // Il n'ouvre pas la console CPE, qui exige le mot de passe. On le garde en
+    // sessionStorage, jamais en localStorage : il meurt avec l'onglet.
+    try{ if(j.token)sessionStorage.setItem('pvs_tok',String(j.token));
+         else sessionStorage.removeItem('pvs_tok'); }catch(e){}
+    MESSAGES=Array.isArray(j.messages)?j.messages.slice():[];
+    MSG_NON_VUS=Number(j.msg_non_vus||0);
+    IDENT_FAITE=true;
     // On retient le joli nom pour l'affichage, et on renvoie le code public :
     // c'est lui qui sert d'identite interne (temoignages, classement).
     try{const mot=String(code).split('-')[0]||'';localStorage.setItem('pvs_nom_page',mot.charAt(0).toUpperCase()+mot.slice(1).toLowerCase())}catch(e){}
@@ -1801,7 +1895,9 @@ async function loginPlayer(){cm('loginMsg');/* Le role et le nom de page apparti
    AVANT toute chose. Sans ca, un eleve se connectant apres l'administrateur
    heriterait de l'affichage admin (le serveur le refuserait, mais l'ecran mentirait). */
 try{localStorage.removeItem('pvs_role');localStorage.removeItem('pvs_nom_page')}catch(e){}
+MESSAGES=[];MSG_NON_VUS=0;IDENT_FAITE=false;try{sessionStorage.removeItem('pvs_tok')}catch(e){}
 let c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
+const saisie=c;   // le nom de page tel qu'il a ete tape : « connecter » en a besoin
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save(false);refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle()}
 else{
@@ -1809,13 +1905,19 @@ else{
   gp(c);cur=c;isVisitor=false;localStorage.setItem(ACTIVE_PLAYER_KEY,c);sessionStorage.setItem(SESSION_AUTH_KEY,'1');closeAuthGate();await sbPullAllPlayers(false);await sbPullGlobal(false);await sbPullCurrent(false);logEv(c,'LOGIN','SUPERHUB',0);save(false);refresh();sm('loginMsg',`Connexion active: ${c}`,true)
 }
 syncPull(false);
+/* Le chemin ci-dessus n'interroge le serveur que si le code est inconnu du
+   referentiel local. Sans cet appel, un eleve deja connu ne recevrait jamais
+   ses messages, et le role d'un professeur ne serait pas etabli. */
+if(!isVisitor&&!IDENT_FAITE){ try{ await identiteServeur(saisie) }catch(e){} }
+if(typeof majBandes==='function')majBandes();
+msgAffiche();
 if(peutEtreAncien()){openBareme()}
 else if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
 else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
 }
 async function loginAdmin(){cm('loginMsg');const a=document.getElementById('authAdmin');const pass=String((a||{}).value||'');if(pass!==ADMIN_PASS){sm('authMsg','Identifiant admin invalide.',false);return}cur='';isVisitor=false;adminOn=true;localStorage.removeItem(ACTIVE_PLAYER_KEY);sessionStorage.setItem(SESSION_AUTH_KEY,'1');sessionStorage.setItem(ADMIN_SESSION_KEY,'1');if(a)a.value='';closeAuthGate();await sbPullGlobal(false);await sbPullAllPlayers(false);save(false);refresh();sm('loginMsg','Mode admin actif.',true);syncPull(false)}
-function logoutPlayer(){cur='';isVisitor=false;adminOn=false;localStorage.removeItem(ACTIVE_PLAYER_KEY);try{localStorage.removeItem('pvs_role');localStorage.removeItem('pvs_nom_page');sessionStorage.removeItem('pvs_admin_token')}catch(e){}sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);cm('loginMsg');closeVisitorArticle();closeTutorial();renderProfile();updateVisitorUi();openAuthGate('Session verrouillee. Identifie-toi pour continuer.')}
+function logoutPlayer(){cur='';isVisitor=false;adminOn=false;localStorage.removeItem(ACTIVE_PLAYER_KEY);MESSAGES=[];MSG_NON_VUS=0;IDENT_FAITE=false;var mm=document.getElementById('msgModal');if(mm)mm.style.display='none';try{localStorage.removeItem('pvs_role');localStorage.removeItem('pvs_nom_page');sessionStorage.removeItem('pvs_admin_token');sessionStorage.removeItem('pvs_tok')}catch(e){}if(typeof majBandes==='function')majBandes();sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);cm('loginMsg');closeVisitorArticle();closeTutorial();renderProfile();updateVisitorUi();openAuthGate('Session verrouillee. Identifie-toi pour continuer.')}
 function guardPlayerBackup(){if(!cur||!S.players[cur]||isVisitor){sm('pbMsg','Connexion joueur requise (mode visiteur exclu).',false);return false}cm('pbMsg');return true}
 function getPlayerRef(code){const c=nCode(code||'');if(!c)return null;return ((S.registry||[]).find(r=>nCode(r.code_joueur||'')===c)||(S.parents||[]).find(r=>nCode(r.code_joueur||'')===c)||(S.adults||[]).find(r=>nCode(r.code_joueur||r.code_temoin||'')===c)||null)}
 function downloadPlayerBackup(){if(!guardPlayerBackup())return;const p=S.players[cur]||gp(cur);if(!p){sm('pbMsg','Profil joueur introuvable.',false);return}const r=getPlayerRef(cur)||{nom:'',prenom:'',code_joueur:cur,code_temoin:p.witness||'',code_public:defaultPublicCode(cur)};const head=['Nom','Prenom','Code_Joueur','Code_Temoin','Code_Public','CP_PIXHARE','PIXHARE_XP','CP_PSC1','CP_SANCTUAIRE','CP_LOGE','CP_AUTRES','CP_LIBERTE','CP_FRATERNITE','SocialG','SocialW','WBonusG','WBonusW','VideoG','VideoW','MalusG','MalusW','WitnessGiven','RecognizedReceived','Obj_JSON','Saved_At'];const row=[esc(r.nom||''),esc(r.prenom||''),esc(cur),esc(r.code_temoin||p.witness||''),esc(r.code_public||defaultPublicCode(cur)),Math.floor(numOr(p.cp.pixhare,0)),Math.floor(numOr(p.pixhareXp,0)),Math.floor(numOr(p.cp.psc1,0)),Math.floor(numOr(p.cp.sanctuaire,0)),Math.floor(numOr(p.cp.loge,0)),Math.floor(numOr(p.cp.autres,0)),Math.floor(numOr(p.cp.liberte,0)),Math.floor(numOr(p.cp.fraternite,0)),numOr(p.socialG,0),numOr(p.socialW,0),numOr(p.wBonusG,0),numOr(p.wBonusW,0),numOr(p.videoG,0),numOr(p.videoW,0),numOr(p.malusG,0),numOr(p.malusW,0),Math.max(0,Math.floor(numOr(p.witnessGiven,0))),Math.max(0,Math.floor(numOr(p.recognizedReceived,0))),esc(JSON.stringify(p.obj||{})),esc(new Date().toISOString())];const csv='\uFEFF'+head.join(',')+'\n'+row.join(',');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date();a.download=`backup_${cur}_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.csv`;a.click();URL.revokeObjectURL(a.href);logEv(cur,'BACKUP_EXPORT','LOCAL',0);save();refresh();sm('pbMsg','Sauvegarde joueur telechargee.',true)}

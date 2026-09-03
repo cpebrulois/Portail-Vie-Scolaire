@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages aux élèves — Portail Vie Scolaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--or:#c9a84c;--or2:#e8c97a;--enc:#e8dfc8;--enc2:#c8bfa8;--p0:#0b0906;--p1:#151009;
+      --rouge:#8b2a2a;--vert:#5da35d;--bleu:#4a6fa5}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--p0);color:var(--enc);font-family:'Crimson Text',Georgia,serif;font-size:15px;line-height:1.6;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:26px 18px 70px}
+h1{font-family:'Cinzel',serif;font-size:1.25em;color:var(--or2);letter-spacing:2px;margin-bottom:4px}
+.sub{color:var(--enc2);font-style:italic;opacity:.75;font-size:.88em;margin-bottom:24px}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.18);border-radius:10px;padding:20px;margin-bottom:16px}
+.lbl{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.85;margin-bottom:10px}
+input,select,textarea{background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--enc);padding:9px 12px;outline:none;width:100%;margin-bottom:10px;font-family:'Cinzel',serif;font-size:.85em;letter-spacing:1px}
+textarea{font-family:'Crimson Text',Georgia,serif;font-size:1em;letter-spacing:0;line-height:1.65;min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--or)}
+select option{background:#151009}
+.btn{padding:9px 18px;background:rgba(201,168,76,.14);border:1px solid var(--or);border-radius:5px;color:var(--or2);font-family:'Cinzel',serif;font-size:.74em;letter-spacing:1.5px;cursor:pointer;transition:all .2s}
+.btn:hover{background:rgba(201,168,76,.28)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.ghost{background:transparent;border-color:rgba(201,168,76,.25);color:var(--enc2)}
+.msg{border-radius:5px;padding:11px 14px;font-size:.85em;margin:10px 0}
+.msg.err{background:rgba(139,42,42,.13);border:1px solid rgba(139,42,42,.5);color:#e0a48a}
+.msg.ok{background:rgba(93,163,93,.12);border:1px solid rgba(93,163,93,.45);color:#a8d8a8}
+.avert{background:rgba(74,111,165,.1);border:1px solid rgba(74,111,165,.4);border-radius:8px;padding:13px 16px;font-size:.87em;color:#bcd2ee;margin-bottom:16px;line-height:1.65}
+.compte{text-align:right;font-size:.76em;color:var(--enc2);opacity:.65;margin:-4px 0 10px}
+.envoi{border-left:2px solid rgba(201,168,76,.3);padding:11px 14px;margin-bottom:10px;background:rgba(255,255,255,.02);border-radius:0 6px 6px 0}
+.envoi .en-tete{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.code{font-family:'Cinzel',serif;letter-spacing:.5px;color:var(--or2);font-size:.85em}
+.quand{font-size:.75em;color:var(--enc2);opacity:.6}
+.envoi .txt{font-size:.93em;line-height:1.6}
+.pill{font-family:'Cinzel',serif;font-size:.6em;letter-spacing:1px;padding:2px 9px;border-radius:11px;text-transform:uppercase}
+.pill.lu{background:rgba(93,163,93,.15);color:#a8d8a8;border:1px solid rgba(93,163,93,.45)}
+.pill.attente{background:rgba(255,255,255,.05);color:var(--enc2);border:1px solid rgba(255,255,255,.14)}
+.pill.neuf{background:rgba(201,168,76,.2);color:var(--or2);border:1px solid var(--or)}
+.vide{color:var(--enc2);opacity:.6;font-style:italic;font-size:.88em;padding:8px 0}
+.bk{display:inline-block;margin:4px 8px 0 0;padding:8px 15px;border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--enc2);text-decoration:none;font-family:'Cinzel',serif;font-size:.68em;letter-spacing:1.5px}
+.bk:hover{border-color:var(--or);color:var(--or2)}
+.pied{text-align:center;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Messages aux élèves</h1>
+  <p class="sub">Un mot court, du professeur principal à un élève qu'il suit</p>
+
+  <!-- ═══ IDENTIFICATION ═══ -->
+  <div id="ecId">
+    <div class="card">
+      <div class="lbl">Identification</div>
+      <p style="font-size:.88em;color:var(--enc2);margin-bottom:12px">Entre ton nom de page,
+      celui que le CPE t'a remis en main propre.</p>
+      <input id="inpSec" placeholder="NOM DE PAGE" autocomplete="off" spellcheck="false">
+      <div id="idPass" style="display:none">
+        <p style="font-size:.85em;color:var(--enc2);margin-bottom:8px">Compte administrateur :
+        le mot de passe est nécessaire pour lire le contenu des messages.</p>
+        <input id="inpPass" type="password" placeholder="MOT DE PASSE" autocomplete="off">
+      </div>
+      <button class="btn" id="btnId" onclick="identifier()">Entrer</button>
+      <div id="idErr"></div>
+    </div>
+    <div class="pied"><a class="bk" href="index.html">← Le Portail</a></div>
+  </div>
+
+  <!-- ═══ PROFESSEUR ═══ -->
+  <div id="ecProf" style="display:none">
+    <div class="avert">
+      Ce que tu écris ici est <strong>lu par le CPE</strong>, comme tout ce qui s'écrit sur le
+      portail. L'élève ne peut pas te répondre depuis la plateforme : le message lui dira de
+      passer par ECLAT. Écris court, et n'y mets rien qui relève d'un entretien.
+    </div>
+    <div class="card">
+      <div class="lbl">Écrire à un élève</div>
+      <select id="selEleve"></select>
+      <textarea id="inpTexte" maxlength="600" placeholder="Ton message…"
+                oninput="majCompte()"></textarea>
+      <div class="compte" id="compte">0 / 600</div>
+      <button class="btn" id="btnEnvoi" onclick="envoyer()">Envoyer</button>
+      <div id="profErr"></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Ce que tu as envoyé</div>
+      <div id="listeEnvois"><div class="vide">Chargement…</div></div>
+    </div>
+    <div class="pied">
+      <a class="bk" href="index.html">← Le Portail</a>
+      <a class="bk" href="#" onclick="quitter(event)">Quitter</a>
+    </div>
+  </div>
+
+  <!-- ═══ CPE ═══ -->
+  <div id="ecCpe" style="display:none">
+    <div class="avert">
+      Tous les messages envoyés par les professeurs principaux, du plus récent au plus ancien.
+      Les élèves et les professeurs savent que tu les lis.
+    </div>
+    <div class="card">
+      <div class="lbl">Journal des messages</div>
+      <div style="margin-bottom:12px">
+        <button class="btn" onclick="chargerCpe()">Rafraîchir</button>
+        <button class="btn ghost" id="btnVu" onclick="marquerVus()">Marquer tout comme vu</button>
+      </div>
+      <div id="cpeErr"></div>
+      <div id="listeCpe"><div class="vide">Chargement…</div></div>
+    </div>
+    <div class="pied">
+      <a class="bk" href="admin.html">Console CPE</a>
+      <a class="bk" href="index.html">← Le Portail</a>
+      <a class="bk" href="#" onclick="quitter(event)">Quitter</a>
+    </div>
+  </div>
+</div>
+
+<script>
+var API='/api/identite';
+var sec='', role='', token='', mesEleves=[];
+
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function dire(cible,texte,type){var e=$(cible);if(!e)return;
+  e.innerHTML=texte?'<div class="msg '+(type||'err')+'">'+esc(texte)+'</div>':''}
+function ecran(id){['ecId','ecProf','ecCpe'].forEach(function(x){
+  var e=$(x);if(e)e.style.display=(x===id?'block':'none')})}
+function quand(d){ if(!d)return'';
+  var t=new Date(d), j=('0'+t.getDate()).slice(-2), m=('0'+(t.getMonth()+1)).slice(-2);
+  return j+'/'+m+' à '+('0'+t.getHours()).slice(-2)+'h'+('0'+t.getMinutes()).slice(-2)}
+
+async function api(action,charge){
+  var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(Object.assign({action:action},charge||{}))});
+  var j=null; try{j=await r.json()}catch(e){}
+  if(!r.ok||!j||j.error) throw new Error((j&&j.error)||('Erreur '+r.status));
+  return j;
+}
+
+/* --- Identification -------------------------------------------------------
+ * Le nom de page suffit à un professeur. Le CPE, lui, doit en plus donner son
+ * mot de passe : le contenu des messages ne s'ouvre pas sur un simple nom. */
+async function identifier(){
+  dire('idErr','');
+  var s=($('inpSec').value||'').trim();
+  if(!s){dire('idErr','Entre ton nom de page.');return}
+  $('btnId').disabled=true;
+  try{
+    var j=await api('connecter',{secret:s});
+    sec=s; role=j.role||'eleve';
+    if(role==='eleve'){
+      dire('idErr','Cette page est réservée aux professeurs. Tes messages t’attendent sur le Portail.');
+      $('btnId').disabled=false; return;
+    }
+    if(role==='admin'){
+      var mp=($('inpPass').value||'').trim();
+      if(!mp){
+        $('idPass').style.display='block';
+        dire('idErr','Compte administrateur : entre ton mot de passe.','ok');
+        $('btnId').disabled=false; $('inpPass').focus(); return;
+      }
+      var o=await api('admin_ouvrir',{secret:s,pass:mp});
+      token=o.token;
+      ecran('ecCpe'); chargerCpe();
+    }else{
+      ecran('ecProf'); await chargerProf();
+    }
+  }catch(e){ dire('idErr',e.message) }
+  $('btnId').disabled=false;
+}
+
+function quitter(ev){
+  if(ev)ev.preventDefault();
+  sec=''; role=''; token=''; mesEleves=[];
+  $('inpSec').value=''; $('inpPass').value=''; $('idPass').style.display='none';
+  dire('idErr',''); ecran('ecId');
+}
+
+/* --- Côté professeur ----------------------------------------------------- */
+function majCompte(){
+  var n=($('inpTexte').value||'').length;
+  $('compte').textContent=n+' / 600';
+}
+
+async function chargerProf(){
+  try{
+    var j=await api('prof_mes_eleves',{secret:sec});
+    mesEleves=j.eleves||[];
+  }catch(e){ mesEleves=[] }
+  var s=$('selEleve');
+  if(!mesEleves.length){
+    s.innerHTML='<option value="">Aucun élève ne t’est attribué</option>';
+    $('btnEnvoi').disabled=true;
+    dire('profErr','Le CPE ne t’a encore attribué aucun élève. Vois avec lui.');
+  }else{
+    s.innerHTML=mesEleves.map(function(e){
+      return '<option value="'+esc(e)+'">'+esc(e)+'</option>'}).join('');
+    $('btnEnvoi').disabled=false;
+  }
+  chargerEnvois();
+}
+
+async function chargerEnvois(){
+  var box=$('listeEnvois');
+  try{
+    var j=await api('prof_mes_envois',{secret:sec});
+    var l=j.envois||[];
+    if(!l.length){ box.innerHTML='<div class="vide">Tu n’as encore rien envoyé.</div>'; return }
+    box.innerHTML=l.map(function(m){
+      return '<div class="envoi"><div class="en-tete">'+
+        '<span class="code">'+esc(m.eleve_public)+'</span>'+
+        '<span class="pill '+(m.lu_at?'lu':'attente')+'">'+(m.lu_at?'lu':'pas encore lu')+'</span>'+
+        '<span class="quand">'+quand(m.cree_at)+'</span>'+
+      '</div><div class="txt">'+esc(m.texte)+'</div></div>';
+    }).join('');
+  }catch(e){ box.innerHTML='<div class="vide">Impossible de relire tes envois.</div>' }
+}
+
+async function envoyer(){
+  dire('profErr','');
+  var eleve=$('selEleve').value, texte=($('inpTexte').value||'').trim();
+  if(!eleve){dire('profErr','Choisis un élève.');return}
+  if(texte.length<3){dire('profErr','Le message est vide.');return}
+  $('btnEnvoi').disabled=true;
+  try{
+    await api('prof_envoyer',{secret:sec,eleve:eleve,texte:texte});
+    $('inpTexte').value=''; majCompte();
+    dire('profErr','Message envoyé. Il le verra à sa prochaine connexion.','ok');
+    chargerEnvois();
+  }catch(e){ dire('profErr',e.message) }
+  $('btnEnvoi').disabled=false;
+}
+
+/* --- Côté CPE ------------------------------------------------------------ */
+async function chargerCpe(){
+  var box=$('listeCpe'); dire('cpeErr','');
+  try{
+    var j=await api('admin_messages',{token:token});
+    var l=j.messages||[];
+    if(!l.length){ box.innerHTML='<div class="vide">Aucun message pour le moment.</div>'; return }
+    var neufs=l.filter(function(m){return !m.cpe_vu_at}).length;
+    $('btnVu').disabled=!neufs;
+    box.innerHTML=(neufs?'<p style="font-size:.85em;color:var(--or2);margin-bottom:12px">'+
+        neufs+' message'+(neufs>1?'s':'')+' que tu n’as pas encore vu'+(neufs>1?'s':'')+'.</p>':'')+
+      l.map(function(m){
+        return '<div class="envoi" style="border-left-color:'+(m.cpe_vu_at?'rgba(201,168,76,.3)':'var(--or)')+'">'+
+          '<div class="en-tete">'+
+            (m.cpe_vu_at?'':'<span class="pill neuf">nouveau</span>')+
+            '<span class="code">'+esc(m.prof_public)+'</span>'+
+            '<span class="quand">→</span>'+
+            '<span class="code">'+esc(m.eleve_public)+'</span>'+
+            '<span class="pill '+(m.lu_at?'lu':'attente')+'">'+(m.lu_at?'lu par l’élève':'pas encore lu')+'</span>'+
+            '<span class="quand">'+quand(m.cree_at)+'</span>'+
+          '</div><div class="txt">'+esc(m.texte)+'</div></div>';
+      }).join('');
+  }catch(e){ box.innerHTML=''; dire('cpeErr',e.message) }
+}
+
+async function marquerVus(){
+  try{ await api('admin_messages_vu',{token:token}); chargerCpe(); }
+  catch(e){ dire('cpeErr',e.message) }
+}
+
+/* Démarrage : si le Portail connaît déjà le rôle, on prépare le champ. */
+(function(){
+  try{
+    if((localStorage.getItem('pvs_role')||'')==='admin'){ $('idPass').style.display='block' }
+  }catch(e){}
+  $('inpSec').addEventListener('keydown',function(e){if(e.key==='Enter')identifier()});
+  $('inpPass').addEventListener('keydown',function(e){if(e.key==='Enter')identifier()});
+})();
+</script>
+</body>
+</html>

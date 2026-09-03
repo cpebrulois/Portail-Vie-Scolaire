@@ -540,14 +540,56 @@ function alea(n) {
 }
 
 /** Vérifie un jeton de session et renvoie le compte, ou null. */
-async function sessionValide(env, token) {
+/** Valide un jeton de session.
+ *  « portee » distingue deux niveaux, et l'écart est le mot de passe :
+ *   - legere  : délivrée à la simple connexion (nom de page). Lire SES propres
+ *               messages, les marquer lus, compter ceux que le CPE n'a pas vus.
+ *   - complete: exige en plus le mot de passe administrateur. Elle seule ouvre
+ *               la console CPE et le contenu des messages.
+ *  Sans cette distinction, un jeton obtenu avec le seul nom de page ouvrirait
+ *  la console : le mot de passe ne servirait plus à rien.
+ */
+async function sessionValide(env, token, porteeRequise) {
   const t = String(token || "");
   if (!t) return null;
-  const [row] = await sb(env, "GET",
-    `pvs_sessions?token=eq.${encodeURIComponent(t)}&select=code_public,role,expire_at`);
+  let row;
+  try {
+    [row] = await sb(env, "GET",
+      `pvs_sessions?token=eq.${encodeURIComponent(t)}&select=code_public,role,expire_at,portee`);
+  } catch {
+    // La migration n'est pas encore passée : la colonne « portee » n'existe
+    // pas. On retombe sur l'ancien schéma, où toute session vaut « complete »
+    // — c'était le comportement d'avant, et aucune session légère n'existe
+    // encore puisque leur création échoue elle aussi.
+    [row] = await sb(env, "GET",
+      `pvs_sessions?token=eq.${encodeURIComponent(t)}&select=code_public,role,expire_at`);
+    if (row) row.portee = "complete";
+  }
   if (!row) return null;
   if (new Date(row.expire_at).getTime() < Date.now()) return null;
+  if (porteeRequise === "complete" && row.portee !== "complete") return null;
   return row;
+}
+
+/** Ouvre une session et renvoie le jeton. */
+async function ouvreSession(env, codePublic, role, portee, heures) {
+  try {
+    await sb(env, "DELETE",
+      `pvs_sessions?expire_at=lt.${new Date().toISOString()}`, null, "return=minimal");
+  } catch { /* le ménage n'est pas critique */ }
+  const token = alea(32);
+  const expire = new Date(Date.now() + heures * 3600 * 1000).toISOString();
+  const base = { token, code_public: codePublic, role, expire_at: expire };
+  try {
+    await sb(env, "POST", "pvs_sessions", { ...base, portee });
+  } catch (e) {
+    // Colonne absente : on n'ouvre une session à l'ancienne QUE si elle devait
+    // être complète. Une session légère sans colonne « portee » serait lue
+    // comme complète et ouvrirait la console avec le seul nom de page.
+    if (portee !== "complete") throw e;
+    await sb(env, "POST", "pvs_sessions", base);
+  }
+  return { token, expire_at: expire };
 }
 
 async function handleIdentite(request, env) {
@@ -611,8 +653,123 @@ async function handleIdentite(request, env) {
       const [row] = await sb(env, "GET",
         `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,code_secret,role`);
       if (!row) return json({ error: "Nom de page inconnu." }, 404, cors);
+      const role = row.role || "eleve";
+
+      // Jeton de portée légère : il évite de garder le nom de page en clair
+      // dans le navigateur pour marquer un message lu. Il n'ouvre RIEN d'autre.
+      let jeton = null;
+      try {
+        const s = await ouvreSession(env, row.code_public, role, "legere", 12);
+        jeton = s.token;
+      } catch { /* la messagerie n'est pas encore installée : on connecte quand même */ }
+
+      // Ce que l'utilisateur doit voir dès l'entrée.
+      let messages = [], msgNonVus = 0;
+      try {
+        if (role === "eleve") {
+          messages = (await sb(env, "GET",
+            `pvs_messages?eleve_public=eq.${encodeURIComponent(row.code_public)}&lu_at=is.null` +
+            `&select=id,prof_public,texte,cree_at&order=cree_at.asc&limit=10`)) || [];
+        }
+        if (role === "admin") {
+          const q = (await sb(env, "GET",
+            "pvs_messages?cpe_vu_at=is.null&select=id&limit=200")) || [];
+          msgNonVus = q.length;
+        }
+      } catch { /* table absente : on ne casse pas la connexion */ }
+
       return json({ ok: true, public: row.code_public, secret: row.code_secret,
-                    role: row.role || "eleve" }, 200, cors);
+                    role, token: jeton, messages, msg_non_vus: msgNonVus }, 200, cors);
+    }
+
+    /* ═══════════════════ MESSAGERIE PROFESSEUR → ÉLÈVE ═══════════════════
+     * Un professeur écrit à un élève qui lui a été attribué nominativement.
+     * L'élève ne répond pas ici : il répond via ECLAT. Le CPE voit tout, et
+     * les deux parties le savent — c'est ce qui rend la chose acceptable.
+     * ═══════════════════════════════════════════════════════════════════ */
+
+    // Le professeur envoie. Le lien de suivi est revérifié EN BASE : le
+    // client n'est jamais cru sur parole sur la liste de ses élèves.
+    if (action === "prof_envoyer") {
+      if (!sec) return json({ error: "Identification requise." }, 401, cors);
+      const [moi] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || (moi.role !== "prof" && moi.role !== "admin")) {
+        return json({ error: "Réservé aux professeurs." }, 403, cors);
+      }
+      const eleve = normCode(b.eleve);
+      const texte = String(b.texte || "").replace(/\s+/g, " ").trim().slice(0, 600);
+      if (!eleve) return json({ error: "Élève manquant." }, 400, cors);
+      if (texte.length < 3) return json({ error: "Message vide." }, 400, cors);
+
+      const [e] = await sb(env, "GET",
+        `pvs_identites?code_public=eq.${encodeURIComponent(eleve)}&select=role`);
+      if (!e || e.role !== "eleve") return json({ error: "Ce compte n'est pas un élève." }, 400, cors);
+
+      // Un professeur n'écrit qu'à ses élèves. Le CPE écrit à tous.
+      if (moi.role === "prof") {
+        const [lien] = await sb(env, "GET",
+          `pvs_suivi?prof_public=eq.${encodeURIComponent(moi.code_public)}` +
+          `&eleve_public=eq.${encodeURIComponent(eleve)}&select=eleve_public`);
+        if (!lien) return json({ error: "Cet élève ne vous est pas attribué." }, 403, cors);
+      }
+
+      // Garde-fou de volume : pas de messagerie instantanée déguisée.
+      const depuis = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+      const recents = (await sb(env, "GET",
+        `pvs_messages?prof_public=eq.${encodeURIComponent(moi.code_public)}` +
+        `&cree_at=gte.${depuis}&select=id&limit=40`)) || [];
+      if (recents.length >= 30) {
+        return json({ error: "Trop de messages envoyés aujourd'hui. Reprends demain." }, 429, cors);
+      }
+
+      const [msg] = await sb(env, "POST", "pvs_messages",
+        { prof_public: moi.code_public, eleve_public: eleve, texte });
+      return json({ ok: true, id: msg && msg.id }, 200, cors);
+    }
+
+    // Le professeur relit ce qu'il a envoyé, et voit si c'est lu.
+    if (action === "prof_mes_envois") {
+      if (!sec) return json({ error: "Identification requise." }, 401, cors);
+      const [moi] = await sb(env, "GET",
+        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,role`);
+      if (!moi || (moi.role !== "prof" && moi.role !== "admin")) {
+        return json({ error: "Réservé aux professeurs." }, 403, cors);
+      }
+      const envois = (await sb(env, "GET",
+        `pvs_messages?prof_public=eq.${encodeURIComponent(moi.code_public)}` +
+        `&select=id,eleve_public,texte,cree_at,lu_at&order=cree_at.desc&limit=60`)) || [];
+      return json({ ok: true, envois }, 200, cors);
+    }
+
+    // L'élève marque un message lu. Jeton léger : le nom de page ne traîne pas.
+    if (action === "message_lu") {
+      const moi = await sessionValide(env, b.token);
+      if (!moi) return json({ error: "Session expirée." }, 401, cors);
+      const id = parseInt(b.id, 10);
+      if (!id) return json({ error: "Message manquant." }, 400, cors);
+      await sb(env, "PATCH",
+        `pvs_messages?id=eq.${id}&eleve_public=eq.${encodeURIComponent(moi.code_public)}&lu_at=is.null`,
+        { lu_at: new Date().toISOString() }, "return=minimal");
+      return json({ ok: true }, 200, cors);
+    }
+
+    // Le CPE lit tout. Portée complète exigée : le mot de passe protège le
+    // contenu, le nom de page seul ne donne accès qu'au compteur.
+    if (action === "admin_messages" || action === "admin_messages_vu") {
+      const moi = await sessionValide(env, b.token, "complete");
+      if (!moi || moi.role !== "admin") {
+        return json({ error: "Session expirée ou absente. Rouvre la console." }, 401, cors);
+      }
+      if (action === "admin_messages_vu") {
+        await sb(env, "PATCH", "pvs_messages?cpe_vu_at=is.null",
+          { cpe_vu_at: new Date().toISOString() }, "return=minimal");
+        return json({ ok: true }, 200, cors);
+      }
+      const messages = (await sb(env, "GET",
+        "pvs_messages?select=id,prof_public,eleve_public,texte,cree_at,lu_at,cpe_vu_at" +
+        "&order=cree_at.desc&limit=200")) || [];
+      return json({ ok: true, messages }, 200, cors);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -672,13 +829,8 @@ async function handleIdentite(request, env) {
       if (!memeSecret(test, a.pass_hash)) {
         return json({ error: "Mot de passe incorrect." }, 403, cors);
       }
-      try { await sb(env, "DELETE",
-        `pvs_sessions?expire_at=lt.${new Date().toISOString()}`, null, "return=minimal"); } catch {}
-      const token = alea(32);
-      const expire = new Date(Date.now() + 4 * 3600 * 1000).toISOString();
-      await sb(env, "POST", "pvs_sessions",
-        { token, code_public: moi.code_public, role: moi.role, expire_at: expire });
-      return json({ ok: true, token, expire_at: expire, public: moi.code_public }, 200, cors);
+      const s = await ouvreSession(env, moi.code_public, moi.role, "complete", 4);
+      return json({ ok: true, token: s.token, expire_at: s.expire_at, public: moi.code_public }, 200, cors);
     }
 
     if (action === "admin_fermer") {
@@ -693,7 +845,7 @@ async function handleIdentite(request, env) {
         || action === "admin_export") {
       // Ces actions n'acceptent QUE le jeton de session : le mot de passe ne
       // circule qu'une fois, à l'ouverture.
-      const moi = await sessionValide(env, b.token);
+      const moi = await sessionValide(env, b.token, "complete");
       if (!moi || moi.role !== "admin") {
         return json({ error: "Session expirée ou absente. Rouvre la console." }, 401, cors);
       }
