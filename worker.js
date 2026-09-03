@@ -15,7 +15,7 @@
  *  - modèle sur liste blanche + plafonds tokens/historique.
  */
 
-import { SYSTEM_KERN, getCampagne } from "./kern_campagnes.js";
+import { SYSTEM_KERN, getCampagne, CAMPAGNES } from "./kern_campagnes.js";
 
 const MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions";
 const ALLOWED_MODELS = new Set(["mistral-small-latest", "mistral-large-latest"]);
@@ -298,13 +298,32 @@ async function handleCampagne(request, env) {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
   if (request.method !== "POST") return json({ error: "Méthode non autorisée." }, 405, cors);
   if (!allowed) return json({ error: "Origine non autorisée." }, 403, cors);
-  if (!env.MISTRAL_API_KEY) return json({ error: "Clé serveur absente (MISTRAL_API_KEY)." }, 500, cors);
-  if (!sbCfg(env)) return json({ error: "Base non configurée (SUPABASE_SERVICE)." }, 500, cors);
-
   let b;
   try { b = await request.json(); } catch { return json({ error: "Corps JSON invalide." }, 400, cors); }
 
   const action = String(b.action || "");
+
+  // ------------------------------------------------------------ CATALOGUE
+  // Le navigateur ne connaît la liste que par ici : jamais de liste codée en
+  // dur dans une page, sinon elle dérive du dossier réel. On ne renvoie que le
+  // public — ni « faits », ni la pièce de chaque rôle, qui sont la solution de
+  // l'enquête et l'information exclusive des joueurs.
+  // Lire le catalogue ne demande ni Mistral ni la base : la liste s'affiche
+  // même si un service est en panne.
+  if (action === "catalogue") {
+    const liste = Object.values(CAMPAGNES)
+      .map(c => ({
+        code: c.code, titre: c.titre, rang: c.rang, rangLabel: c.rangLabel,
+        echo: c.echo, pitch: c.pitch, cps: c.cps,
+        roles: Object.keys(c.roles).map(k => ({ id: k, nom: c.roles[k].nom })),
+      }))
+      .sort((x, y) => (x.rang - y.rang) || x.code.localeCompare(y.code));
+    return json({ ok: true, campagnes: liste }, 200, cors);
+  }
+
+  if (!env.MISTRAL_API_KEY) return json({ error: "Clé serveur absente (MISTRAL_API_KEY)." }, 500, cors);
+  if (!sbCfg(env)) return json({ error: "Base non configurée (SUPABASE_SERVICE)." }, 500, cors);
+
   const codeJoueur = String(b.code_joueur || "").trim().toUpperCase().slice(0, 24);
   const codeTable = String(b.code || "").trim().toUpperCase().slice(0, 8);
 

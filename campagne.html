@@ -18,6 +18,11 @@ h1{font-family:'Cinzel Decorative',serif;font-size:clamp(1.5em,4vw,2.1em);color:
 .sub{text-align:center;color:var(--enc2);font-style:italic;opacity:.75;font-size:.92em;margin-bottom:26px}
 .card{background:rgba(255,255,255,.025);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:20px 22px;margin-bottom:16px}
 .lbl{font-family:'Cinzel',serif;font-size:.62em;letter-spacing:3px;color:var(--or);text-transform:uppercase;opacity:.8;margin-bottom:10px}
+.dossier{margin:10px 0 14px;padding:12px 14px;border-left:2px solid rgba(201,168,76,.35);background:rgba(201,168,76,.05);border-radius:0 6px 6px 0}
+.dossier:empty{display:none}
+.d-echo{font-family:'Cinzel',serif;font-size:.58em;letter-spacing:2px;color:var(--or);text-transform:uppercase;opacity:.75;margin-bottom:7px}
+.d-pitch{font-size:.9em;line-height:1.65;margin:0 0 9px;color:var(--enc)}
+.d-cps{font-size:.8em;font-style:italic;color:var(--enc2);opacity:.8}
 .btn{display:inline-block;padding:10px 20px;background:rgba(201,168,76,.12);border:1px solid var(--or);border-radius:5px;color:var(--or2);font-family:'Cinzel',serif;font-size:.78em;letter-spacing:1px;cursor:pointer;transition:all .2s}
 .btn:hover{background:rgba(201,168,76,.25)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
@@ -104,12 +109,13 @@ textarea:focus{border-color:var(--or)}
       <div class="lbl">Ouvrir une table</div>
       <p style="font-size:.9em;color:var(--enc2);margin-bottom:12px">Tu crées la partie et tu reçois un
       code à partager avec ton équipe (3 à 4 joueurs, chacun un rôle différent).</p>
-      <select id="selCampagne"><option value="ECU01">Le Moulin de Bré — rang Écuyer</option></select>
+      <select id="selCampagne"><option value="">Chargement des campagnes…</option></select>
+      <div class="dossier" id="dossierCampagne"></div>
       <select id="selRoleC">
         <option value="oeil">L'Œil — tu as vu quelque chose</option>
-        <option value="voix">La Voix — l'accusé te parlera</option>
-        <option value="memoire">La Mémoire — tu connais le passé du village</option>
-        <option value="main">La Main — tu as accès au moulin</option>
+        <option value="voix">La Voix — quelqu'un accepte de te parler</option>
+        <option value="memoire">La Mémoire — tu connais le passé</option>
+        <option value="main">La Main — tu as accès à un lieu ou à un écrit</option>
       </select>
       <button class="btn" onclick="creer()">Ouvrir la table</button>
     </div>
@@ -205,6 +211,51 @@ async function api(action,payload){
   var j=null;try{j=await r.json()}catch(e){}
   if(!r.ok||!j||j.error) throw new Error((j&&j.error)||('Erreur '+r.status));
   return j;
+}
+
+/* ---------------------------------------------------------------------------
+ * Le catalogue vient du serveur, jamais d'une liste écrite dans cette page :
+ * une liste en dur finit toujours par mentir sur ce que contient le dossier.
+ * On n'affiche que les campagnes du rang du joueur et des rangs inférieurs —
+ * les anciennes restent ouvertes, elles se rejouent bien.
+ * ------------------------------------------------------------------------- */
+var CATALOGUE=[];
+
+function afficheDossier(){
+  var sel=document.getElementById('selCampagne');
+  var box=document.getElementById('dossierCampagne');
+  if(!sel||!box)return;
+  var c=CATALOGUE.filter(function(x){return x.code===sel.value})[0];
+  if(!c){box.innerHTML='';return}
+  box.innerHTML='<div class="d-echo">'+esc(c.echo)+'</div>'+
+                '<p class="d-pitch">'+esc(c.pitch)+'</p>'+
+                '<div class="d-cps">'+esc(c.cps)+'</div>';
+}
+
+async function chargerCatalogue(rang){
+  var sel=document.getElementById('selCampagne');
+  try{
+    var j=await api('catalogue',{});
+    CATALOGUE=(j.campagnes||[]).filter(function(c){return Number(c.rang)<=Number(rang)});
+  }catch(e){ CATALOGUE=[]; }
+  if(!CATALOGUE.length){
+    sel.innerHTML='<option value="">Aucune campagne disponible</option>';
+    erreur('lobbyErr','Impossible de charger les campagnes. Réessaie dans un moment.');
+    return;
+  }
+  var rangCourant=null, html='';
+  CATALOGUE.forEach(function(c){
+    if(c.rangLabel!==rangCourant){
+      if(rangCourant!==null)html+='</optgroup>';
+      html+='<optgroup label="Rang '+esc(c.rangLabel)+'">';
+      rangCourant=c.rangLabel;
+    }
+    html+='<option value="'+esc(c.code)+'">'+esc(c.titre)+'</option>';
+  });
+  html+='</optgroup>';
+  sel.innerHTML=html;
+  sel.onchange=afficheDossier;
+  afficheDossier();
 }
 
 function accepterCharte(){localStorage.setItem(HKEY,'1');router()}
@@ -446,6 +497,7 @@ async function router(){
     document.getElementById('lockMsg').innerHTML='<p>Les campagnes s’ouvrent au rang <strong>Écuyer</strong>.<br>Complète des modules dans <em>toutes</em> les rubriques pour l’atteindre — la garde a besoin de gens qui ont touché à tout.</p>';
     return;
   }
+  chargerCatalogue(rangDe(p));
   router();
 })();
 </script>
