@@ -1728,7 +1728,17 @@ function isVisitorCode(code){return nCode(code)===VISITOR_CODE}
 function hasRefCodes(){return Object.keys(REG.j).length>0||Object.keys(ADP).length>0||Object.keys(ADW).length>0||Object.keys(PRW).length>0}
 function isAdultPlayerCode(code){const c=nCode(code);return !!ADP[c]}
 function isParentPlayerCode(code){const c=nCode(code);return !!PRW[c]}
-function isKnownPlayerCode(code){const c=nCode(code);return !!(c&&(REG.j[c]||ADP[c]||PRW[c]))}
+/* Codes confirmes par le serveur lors d'une connexion reussie.
+   Le referentiel local (students.csv) porte les comptes de l'an dernier, au
+   format « Cigogne-Bricoleur-101 ». Les identites de cette annee vivent dans
+   Supabase au format « Rance-xxxx » et n'y figurent pas : sans ce registre,
+   bridgeApply rejetait TOUS leurs evenements de module, et les marquait vus
+   au passage — un eleve de 6e terminait un module pHARe sans etre credite. */
+function codesServeur(){try{return JSON.parse(localStorage.getItem('pvs_codes_serveur')||'{}')}catch(e){return{}}}
+function noterCodeServeur(c){try{const m=codesServeur();if(!c||m[c])return;m[c]=1;
+  const k=Object.keys(m);if(k.length>1200)delete m[k[0]];
+  localStorage.setItem('pvs_codes_serveur',JSON.stringify(m))}catch(e){}}
+function isKnownPlayerCode(code){const c=nCode(code);return !!(c&&(REG.j[c]||ADP[c]||PRW[c]||codesServeur()[c]))}
 function showHub(show){const a=document.getElementById('authGate'),h=document.getElementById('hubScreen');if(a)a.style.display=show?'none':'flex';if(h)h.style.display=show?'block':'none';if(!show){closeAudioModal();closeBonusModal()}}
 function renderAdminMode(){const c=document.getElementById('adminConsole'),h=document.getElementById('adminHint');if(c)c.style.display=adminOn?'block':'none';if(h)h.textContent=adminOn?'Mode admin actif.':'Mode admin inactif.'}
 function openAuthGate(msg){adminOn=false;sessionStorage.removeItem(SESSION_AUTH_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);showHub(false);closeVisitorArticle();closeTutorial();resetRewardUi();resetNewsUi();renderAdminMode();if(msg)sm('authMsg',msg,false);else cm('authMsg')}
@@ -1888,6 +1898,7 @@ async function identiteServeur(code){
     MESSAGES=Array.isArray(j.messages)?j.messages.slice():[];
     MSG_NON_VUS=Number(j.msg_non_vus||0);
     IDENT_FAITE=true;
+    noterCodeServeur(nCode(j.public));   // le serveur atteste ce code : il compte
     // On retient le joli nom pour l'affichage, et on renvoie le code public :
     // c'est lui qui sert d'identite interne (temoignages, classement).
     try{const mot=String(code).split('-')[0]||'';localStorage.setItem('pvs_nom_page',mot.charAt(0).toUpperCase()+mot.slice(1).toLowerCase())}catch(e){}
