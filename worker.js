@@ -501,6 +501,28 @@ function normCode(x) {
   return String(x || "").trim().toUpperCase().replace(/\s+/g, "");
 }
 
+function cleNomDePage(x) {
+  return normCode(x).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+async function identiteConnexion(env, secret) {
+  const colonnes = "code_public,code_secret,role";
+  const [exacte] = await sb(env, "GET",
+    `pvs_identites?code_secret=eq.${encodeURIComponent(secret)}&select=${colonnes}`);
+  if (exacte) return { row: exacte };
+
+  const cle = cleNomDePage(secret);
+  if (cle.length > 120 || !/^[A-Z-]{3,}-[A-Z-]{3,}-\d{4}$/.test(cle)) return {};
+  const suffixe = cle.slice(-4);
+  // Le suffixe borne la recherche ; aucun identifiant voisin ne quitte le serveur.
+  const candidats = (await sb(env, "GET",
+    `pvs_identites?code_secret=like.*-${suffixe}&select=${colonnes}&limit=101`)) || [];
+  if (candidats.length >= 101) return { ambigu: true };
+  const correspondances = candidats.filter(row => cleNomDePage(row.code_secret) === cle);
+  if (correspondances.length > 1) return { ambigu: true };
+  return { row: correspondances[0] };
+}
+
 /** Limite les essais par IP (anti-force brute sur le code secret). */
 async function identQuota(request, env) {
   if (!env.RL) return true;
@@ -960,8 +982,10 @@ async function handleIdentite(request, env) {
     // --------------------------------------------------------- CONNECTER
     if (action === "connecter") {
       if (!sec) return json({ error: "Entre ton nom de page." }, 400, cors);
-      const [row] = await sb(env, "GET",
-        `pvs_identites?code_secret=eq.${encodeURIComponent(sec)}&select=code_public,code_secret,role`);
+      const { row, ambigu } = await identiteConnexion(env, sec);
+      if (ambigu) {
+        return json({ error: "Plusieurs noms correspondent. Recopie ton nom avec ses accents exacts ou demande à ton CPE." }, 409, cors);
+      }
       if (!row) return json({ error: "Nom de page inconnu." }, 404, cors);
       const role = row.role || "eleve";
 

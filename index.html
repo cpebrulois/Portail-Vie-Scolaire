@@ -1845,7 +1845,7 @@ function switchHall(m){mode=m;document.getElementById('tg').classList.toggle('on
 function withPlayer(url){if(!cur)return url;const s=url.includes('?')?'&':'?';return `${url}${s}player=${encodeURIComponent(cur)}`}
 /* Nom de page composé à la première connexion : la vérification est faite par
    le Worker (le référentiel local ne contient que les codes d'inscription). */
-var MESSAGES=[], MSG_NON_VUS=0, IDENT_FAITE=false;
+var MESSAGES=[], MSG_NON_VUS=0, IDENT_FAITE=false, IDENT_ERREUR='';
 
 /* ---------------------------------------------------------------------------
  * MESSAGES D'UN PROFESSEUR
@@ -1883,11 +1883,12 @@ function bandeMessages(){
 }
 
 async function identiteServeur(code){
+  IDENT_ERREUR='';
   try{
     const r=await fetch('/api/identite',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'connecter',secret:code})});
-    if(!r.ok)return null;
     const j=await r.json();
+    if(!r.ok){IDENT_ERREUR=typeof j.error==='string'?j.error:'Connexion impossible. Réessaie plus tard.';return null;}
     if(!(j&&j.ok&&j.public))return null;
     try{localStorage.setItem('pvs_role',String(j.role||'eleve'))}catch(e){}
     // Jeton de portee legere : il sert uniquement a marquer un message lu.
@@ -1903,19 +1904,20 @@ async function identiteServeur(code){
     // c'est lui qui sert d'identite interne (temoignages, classement).
     try{const mot=String(code).split('-')[0]||'';localStorage.setItem('pvs_nom_page',mot.charAt(0).toUpperCase()+mot.slice(1).toLowerCase())}catch(e){}
     return nCode(j.public);
-  }catch(e){return null}
+  }catch(e){IDENT_ERREUR='Le service de connexion est momentanément inaccessible. Réessaie plus tard.';return null}
 }
 async function loginPlayer(){cm('loginMsg');/* Le role et le nom de page appartiennent a la session precedente : on les efface
    AVANT toute chose. Sans ca, un eleve se connectant apres l'administrateur
    heriterait de l'affichage admin (le serveur le refuserait, mais l'ecran mentirait). */
 try{localStorage.removeItem('pvs_role');localStorage.removeItem('pvs_nom_page')}catch(e){}
 MESSAGES=[];MSG_NON_VUS=0;IDENT_FAITE=false;try{sessionStorage.removeItem('pvs_tok')}catch(e){}
-let c=nCode((document.getElementById('authCode')||{}).value);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
-const saisie=c;   // le nom de page tel qu'il a ete tape : « connecter » en a besoin
+// Le nom de connexion garde ses accents ; les anciens codes locaux utilisent nCode.
+const saisie=String((document.getElementById('authCode')||{}).value||'').normalize('NFC').trim().replace(/\s+/g,'').toUpperCase();
+let c=nCode(saisie);if(!c){sm('authMsg','Entrer un identifiant joueur valide.',false);return}
 adminOn=false;sessionStorage.removeItem(ADMIN_SESSION_KEY);const a=document.getElementById('authAdmin');if(a)a.value='';
 if(isVisitorCode(c)){cur=VISITOR_CODE;isVisitor=true;gp(cur);localStorage.setItem(ACTIVE_PLAYER_KEY,cur);sessionStorage.setItem(SESSION_AUTH_KEY,'1');logEv(cur,'LOGIN_VISITOR','SUPERHUB',0);closeAuthGate();save(false);refresh();sm('loginMsg','Mode visiteur active.',true);openVisitorArticle()}
 else{
-  if(hasRefCodes()&&!isKnownPlayerCode(c)){await sbPullGlobal(false);if(hasRefCodes()&&!isKnownPlayerCode(c)){const idPub=await identiteServeur(c);if(!idPub){sm('authMsg','Nom de page inconnu. Verifie ta saisie, ou fais ta premiere connexion.',false);return}c=idPub;}}
+  if(hasRefCodes()&&!isKnownPlayerCode(c)){await sbPullGlobal(false);if(hasRefCodes()&&!isKnownPlayerCode(c)){const idPub=await identiteServeur(saisie);if(!idPub){sm('authMsg',IDENT_ERREUR||'Nom de page inconnu. Verifie ta saisie, ou fais ta premiere connexion.',false);return}c=idPub;}}
   gp(c);cur=c;isVisitor=false;localStorage.setItem(ACTIVE_PLAYER_KEY,c);sessionStorage.setItem(SESSION_AUTH_KEY,'1');closeAuthGate();await sbPullAllPlayers(false);await sbPullGlobal(false);await sbPullCurrent(false);logEv(c,'LOGIN','SUPERHUB',0);save(false);refresh();sm('loginMsg',`Connexion active: ${c}`,true)
 }
 syncPull(false);
