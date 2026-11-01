@@ -741,6 +741,7 @@
         const e = React.createElement;
 
         const MODULE_ID = "NUMERIQUE_05";
+        const MODULE_HUB_XP = 200;
         const MODULE_VERSION = "1.0";
         const MODULE_TITLE = "Maître de ton Feed";
         const PREREQUISITE_MODULE = "NUMERIQUE_04";
@@ -971,7 +972,7 @@
                         var _pu=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||new URLSearchParams(window.location.search).get('player')||'';
                         localStorage.setItem('CERT_PHARE_NUMERIQUE_05',JSON.stringify({v:1,d:new Date().toISOString(),m:'NUMERIQUE_05',f:true}));
                         var _pb=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
-                        _pb.push({id:'PIXHARE-NUMERIQUE_05-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pu,module:'NUMERIQUE_05',xp:100,d:new Date().toISOString()});
+                        _pb.push({id:'PIXHARE-NUMERIQUE_05-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pu,module:'NUMERIQUE_05',xp:MODULE_HUB_XP,d:new Date().toISOString()});
                         if(_pb.length>500)_pb.splice(0,_pb.length-500);
                         localStorage.setItem('pvs_bridge_events',JSON.stringify(_pb));
                         window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
@@ -1047,7 +1048,7 @@
                         e("div", { className: "progress-node" }, "3")
                     ),
                     e("div", { className: "xp-display" },
-                        e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "XP"), e("div", { className: "xp-value" }, playerData.xp)),
+                        e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Entraînement"), e("div", { className: "xp-value" }, playerData.xp)),
                         e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Concept"), e("div", { className: "xp-value" }, `${currentFlashcard + 1}/${flashcardsData.length}`))
                     ),
                     e("div", { className: "content-panel" },
@@ -1091,7 +1092,7 @@
                         e("div", { className: "progress-node" }, "3")
                     ),
                     e("div", { className: "xp-display" },
-                        e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "XP"), e("div", { className: "xp-value" }, playerData.xp)),
+                        e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Entraînement"), e("div", { className: "xp-value" }, playerData.xp)),
                         e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Score"), e("div", { className: "xp-value" }, playerData.quizScore)),
                         e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Épreuve"), e("div", { className: "xp-value" }, `${currentQuiz + 1}/${quizData.length}`))
                     ),
@@ -1142,7 +1143,7 @@
                         e("div", { className: "progress-node active" }, "3")
                     ),
                     e("div", { className: "xp-display" },
-                        e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "XP Total"), e("div", { className: "xp-value" }, playerData.xp)),
+                        e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Points d’entraînement"), e("div", { className: "xp-value" }, playerData.xp)),
                         e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Score"), e("div", { className: "xp-value" }, playerData.score)),
                         e("div", { className: "xp-box" }, e("div", { className: "xp-label" }, "Défi"), e("div", { className: "xp-value" }, `${currentScenario + 1}/${scenarioData.length}`))
                     ),
@@ -1189,7 +1190,7 @@
                         ),
                         e("div", { className: "stats-grid" },
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.score), e("div", { className: "stat-label" }, "Score Final")),
-                            e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.xp), e("div", { className: "stat-label" }, "XP Total")),
+                            e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, MODULE_HUB_XP), e("div", { className: "stat-label" }, "XP crédités au hub")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.quizScore), e("div", { className: "stat-label" }, "Intégration")),
                             e("div", { className: "stat-card" }, e("div", { className: "stat-value" }, playerData.scenarioScore), e("div", { className: "stat-label" }, "Transmission"))
                         ),

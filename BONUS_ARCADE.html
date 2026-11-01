@@ -442,13 +442,11 @@
 
     // --- SYSTÈME DE BONUS (5 PILIERS) ---
     // Compatible avec le hub intégré (CERT_PHARE_*) ET l'ancien format (CERT_*_N)
-    const PILLAR_MAP = {
-        NUM:   ['NUMERIQUE_01','NUMERIQUE_02','NUMERIQUE_03','NUMERIQUE_04','NUMERIQUE_05'],
-        JUR:   ['JURIDIQUE_01','JURIDIQUE_02','JURIDIQUE_03','JURIDIQUE_04','JURIDIQUE_05'],
-        GRP:   ['GROUPE_01','GROUPE_02','GROUPE_03','GROUPE_04','GROUPE_05'],
-        HIS:   ['HISTOIRE_01','HISTOIRE_02','HISTOIRE_03','HISTOIRE_04','HISTOIRE_05'],
-        NEU:   ['NEURO_01','NEURO_02','NEURO_03','NEURO_04','NEURO_05']
-    };
+    const PILLAR_MAP = {};
+    Object.entries({NUM:'NUMERIQUE',JUR:'JURIDIQUE',GRP:'GROUPE',HIS:'HISTOIRE',NEU:'NEURO'})
+        .forEach(([key, name]) => {
+            PILLAR_MAP[key] = Array.from({length:10}, (_, i) => name + '_' + String(i+1).padStart(2,'0'));
+        });
 
     function getLvl(pillar) { 
         let lvl = 0;
@@ -456,7 +454,7 @@
         for(let i = 0; i < ids.length; i++) {
             // Check new format (CERT_PHARE_GROUPE_01) first, fallback to old (CERT_GRP_1)
             if(localStorage.getItem('CERT_PHARE_' + ids[i]) || localStorage.getItem(`CERT_${pillar}_${i+1}`)) {
-                lvl = i + 1;
+                lvl++;
             }
         }
         return lvl; 
@@ -480,15 +478,21 @@
         NEURO: '❤️ RÉGÉNÉRATION NEURONALE'
     };
     
-    Object.keys(pillarLabels).forEach(key => {
+    function refreshHangar() {
+      Object.entries({NUM:'NUM',JUR:'JUR',GRO:'GRP',HIS:'HIS',NEURO:'NEU'})
+        .forEach(([bonus, pillar]) => { BONUSES[bonus] = getLvl(pillar); });
+      hangar.replaceChildren();
+      Object.keys(pillarLabels).forEach(key => {
         const row = document.createElement('div');
         row.className = 'hangar-row';
         row.innerHTML = `
             <span class="hangar-label">${pillarLabels[key]}</span>
-            <span class="hangar-value">NIV ${BONUSES[key]}/5</span>
+            <span class="hangar-value">NIV ${BONUSES[key]}/10</span>
         `;
         hangar.appendChild(row);
-    });
+      });
+    }
+    refreshHangar();
 
     // --- DIFFICULTÉ ---
     let DIFFICULTY_CONFIG = {
@@ -1153,6 +1157,8 @@
     // ================= LOGIQUE JEU =================
 
     function startGame() {
+        refreshHangar();
+        Object.assign(player, new Player());
         document.getElementById('start-screen').classList.add('hidden');
         
         // Lancer musique
@@ -1333,6 +1339,10 @@
     }
 
     // ================= CONTRÔLES =================
+    window.addEventListener('focus', () => { if(!GAME.active) refreshHangar(); });
+    window.addEventListener('storage', event => {
+        if(!GAME.active && (!event.key || event.key.startsWith('CERT_'))) refreshHangar();
+    });
     window.addEventListener('keydown', e => {
         if(e.key === 'ArrowLeft' || e.key === 'q') INPUT.left = true;
         if(e.key === 'ArrowRight' || e.key === 'd') INPUT.right = true;

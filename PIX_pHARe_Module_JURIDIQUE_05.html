@@ -397,6 +397,7 @@
 
         function CertificationReport({ progress, onMenu }) {
             
+            const totalScore = progress.quizScore + progress.dojoScore;
             const getMasteryLevel = () => { if (totalScore >= 550) return { label: 'MAÎTRE', class: 'mastery-expert', emoji: '👑' }; if (totalScore >= 350) return { label: 'EXPERT', class: 'mastery-confirmed', emoji: '⭐' }; return { label: 'CERTIFIÉ', class: 'mastery-learning', emoji: '✓' }; };
             const mastery = getMasteryLevel();
             
@@ -423,7 +424,7 @@
                 ),
                 e('div', { className: 'save-code-section' },
                     e('h3', { style: { color: '#4ade80', marginBottom: '15px' } }, '✅ Validation automatique'),
-                    e('p', { style: { opacity: 0.85 } }, 'La progression de ce module est enregistrée automatiquement dans l\\'index PIXHARe et remontée au super-hub.')
+                    e('p', { style: { opacity: 0.85 } }, 'La progression de ce module est enregistrée automatiquement dans l\'index PIXHARe et remontée au super-hub.')
                 ),
                 e('div', { className: 'btn-group', style: { marginTop: '30px' } },
                     e('button', { className: 'btn btn-block', onClick: onMenu }, '🏠 RETOUR À L\'ACCUEIL')
@@ -460,7 +461,7 @@
                     !unlocked ? e('div', { className: 'unlock-section' },
                         e('h3', null, '🔒 MODULE VERROUILLÉ'),
                         e('p', null, `Le déverrouillage est automatique. Termine d'abord "${MODULE_DATA.prerequis}" depuis l'index PIXHARe.`),
-                        e('button', { className: 'btn btn-secondary btn-block', onClick: returnToHub }, '← RETOUR À L\\'INDEX')
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: returnToHub }, '← RETOUR À L\'INDEX')
                     ) : e('div', { className: 'btn-group' },
                         e('div', { style: { textAlign: 'center', color: '#ffd700', marginBottom: '15px', fontSize: '1.1em' } }, `👑 ${nom}, tu es prêt(e) pour l'épreuve finale !`),
                         e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, '⚔️ COMMENCER L\'ÉPREUVE')
@@ -481,13 +482,13 @@
                 }
                 if (currentLevel === 3) {
                     const scenarios = MODULE_DATA.niveau3.scenarios;
-                    const handleDojoAnswer = (impact) => { setDojoScore(dojoScore + Math.max(0, impact)); if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1); else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); try { localStorage.setItem('CERT_PHARE_JURIDIQUE_05',JSON.stringify({v:1,d:new Date().toISOString(),m:'JURIDIQUE_05',f:true})); var _pj=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]'); _pj.push({id:'PIXHARE-JURIDIQUE_05-'+Date.now(),type:'PIXHARE_PROGRESS',player:getHubPlayer()||'',module:'JURIDIQUE_05',xp:100,d:new Date().toISOString()}); if(_pj.length>500)_pj.splice(0,_pj.length-500); localStorage.setItem('pvs_bridge_events',JSON.stringify(_pj)); window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'})); } catch(_e) {} } };
+                    const handleDojoAnswer = (impact) => { setDojoScore(dojoScore + Math.max(0, impact)); if (scenarioIdx < scenarios.length - 1) setScenarioIdx(scenarioIdx + 1); else { setXp(xp + MODULE_DATA.niveau3.xp_reward); setMode('report'); try { localStorage.setItem('CERT_PHARE_JURIDIQUE_05',JSON.stringify({v:1,d:new Date().toISOString(),m:'JURIDIQUE_05',f:true})); var _pj=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]'); _pj.push({id:'PIXHARE-JURIDIQUE_05-'+Date.now(),type:'PIXHARE_PROGRESS',player:getHubPlayer()||'',module:'JURIDIQUE_05',xp:625,d:new Date().toISOString()}); if(_pj.length>500)_pj.splice(0,_pj.length-500); localStorage.setItem('pvs_bridge_events',JSON.stringify(_pj)); window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'})); } catch(_e) {} } };
                     return e('div', { className: 'app-container' }, e(Header, { showProgress: true, xp }), e(ProgressBar, { currentLevel, xp }), e(LevelIndicator, { current: currentLevel }), e('h2', { style: { textAlign: 'center' } }, '👑 ÉPREUVE 3 : SAGESSE'), e('div', { className: 'card-counter' }, `Épreuve finale ${scenarioIdx + 1} / ${scenarios.length}`), e(DojoScenario, { key: scenarioIdx, scenario: scenarios[scenarioIdx], onAnswer: handleDojoAnswer }));
                 }
             }
 
             if (mode === 'report') {
-                return e('div', { className: 'app-container' }, e(CertificationReport, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onMenu: () => { resetProgress(); setMode('menu'); } }));
+                return e('div', { className: 'app-container' }, e(CertificationReport, { progress: { ...progress, xp }, onMenu: () => { resetProgress(); setMode('menu'); } }));
             }
             return e('div', { className: 'app-container' }, 'Chargement...');
         }
@@ -497,7 +498,7 @@
         // === SUPERHUB BRIDGE ===
         function getHubPlayer() {
             try {
-                var code = localStorage.getItem('pvs_current_player') || '';
+                var code = new URLSearchParams(window.location.search).get('player') || localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || '';
                 if (code && code !== 'VISITEUR' && code !== 'ADMIN') return code;
             } catch(e) {}
             return null;

@@ -686,7 +686,7 @@
                 ),
                 e('div', { className: 'save-code-section' },
                     e('h3', { style: { color: '#4ade80', marginBottom: '15px' } }, '✅ Validation automatique'),
-                    e('p', { style: { opacity: 0.85 } }, 'La progression de ce module est enregistrée automatiquement dans l\\'index PIXHARe et remontée au super-hub.')
+                    e('p', { style: { opacity: 0.85 } }, 'La progression de ce module est enregistrée automatiquement dans l\'index PIXHARe et remontée au super-hub.')
                 ),
                 e('div', { className: 'btn-group' },
                     e('button', { className: 'btn btn-secondary', onClick: onMenu }, '🏠 RETOUR AU MENU'),
@@ -730,7 +730,7 @@
                     !unlocked ? e('div', { className: 'unlock-section' },
                         e('h3', null, '🔒 MODULE VERROUILLÉ'),
                         e('p', null, `Le déverrouillage est automatique. Termine d'abord "${MODULE_DATA.prerequis}" depuis l'index PIXHARe.`),
-                        e('button', { className: 'btn btn-secondary btn-block', onClick: returnToHub }, '← RETOUR À L\\'INDEX')
+                        e('button', { className: 'btn btn-secondary btn-block', onClick: returnToHub }, '← RETOUR À L\'INDEX')
                     ) : e('div', { className: 'btn-group' },
                         e('div', { style: { textAlign: 'center', color: '#27ae60', marginBottom: '10px' } }, `✓ Bienvenue ${nom} ! Module débloqué.`),
                         e('button', { className: 'btn btn-block', onClick: () => setMode('game') }, '▶️ COMMENCER')
@@ -789,7 +789,7 @@
                                 var _pvb = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
                                 _pvb.push({id:'PIXHARE-JURIDIQUE_02-'+Date.now(),
                                     type:'PIXHARE_PROGRESS',player:_pl,module:'JURIDIQUE_02',
-                                    xp:100,d:new Date().toISOString()});
+                                    xp:375,d:new Date().toISOString()});
                                 if(_pvb.length>500) _pvb.splice(0,_pvb.length-500);
                                 localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));
                                 window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
@@ -809,7 +809,7 @@
             if (mode === 'report') {
                 return e('div', { className: 'app-container' },
                     e(Report, {
-                        progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) },
+                        progress: { ...progress, xp },
                         onRestart: () => { resetProgress(); setMode('game'); },
                         onMenu: () => { resetProgress(); setMode('menu'); }
                     })
@@ -824,7 +824,7 @@
         // === SUPERHUB BRIDGE ===
         function getHubPlayer() {
             try {
-                var code = localStorage.getItem('pvs_current_player') || '';
+                var code = new URLSearchParams(window.location.search).get('player') || localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || '';
                 if (code && code !== 'VISITEUR' && code !== 'ADMIN') return code;
             } catch(e) {}
             return null;
