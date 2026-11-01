@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>GUARDIAN pHARe - CYBER DEFENSE PROTOCOL</title>
     <style>
+        #shop-disclosure {width:min(94%,700px);text-align:left;margin:20px auto;}
+        #shop-disclosure summary {cursor:pointer;color:#ffd700;font-size:1.2em;padding:14px;border:1px solid #00d4ff;}
+        #arcade-shop {width:100%;text-align:left;border:1px solid #00d4ff;padding:18px;box-sizing:border-box;}
+        #arcade-shop a {color:#6fe7ff;text-underline-offset:3px;}
+        #start-screen > * {flex-shrink:0;}
+        .shop-card {border-top:1px solid #345;padding:12px 0;}
+        .shop-card h3 {color:#ffd700;margin:6px 0;}
+        #pulse-button {pointer-events:auto;font-size:14px;padding:9px;}
+
         #start-screen { overflow-y:auto; justify-content:flex-start; padding:24px; box-sizing:border-box; }
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
 
@@ -332,7 +341,7 @@
                 SHIELD: <span id="shield-count">0</span>
             </div>
             <div style="color: #00d4ff; margin-top: 5px;">
-                DRONES: <span id="drone-count">0</span>
+                DRONES: <span id="drone-count">0</span><br><button id="pulse-button" onclick="releasePulse()" disabled>IMPULSION · B · 0</button>
             </div>
         </div>
     </div>
@@ -394,6 +403,7 @@
         <button class="difficulty-btn" onclick="setDifficulty('maitre', this)">MAÎTRE HD</button>
     </div>
 
+    <details id="shop-disclosure"><summary>🛒 MAGASIN — Pièces et améliorations</summary><section id="arcade-shop" aria-label="Magasin de pièces"></section></details>
     <div id="sector-picker" style="max-width:650px;color:#00d4ff" aria-label="Niveaux du jeu"></div>
     <button onclick="startGame()" style="font-size: 1.4em; margin-top: 30px;">
         INITIALISER PROTOCOLE
@@ -442,6 +452,145 @@
         document.getElementById('opacity-value').innerText = e.target.value + '%';
         document.getElementById('bg-image').style.opacity = e.target.value / 100;
     });
+
+    const SHOP_ITEMS = [
+      {id:'lateral',name:'Propulseur latéral',costs:[80,140,240,400,650],description:'Déplacements gauche/droite : +12 % par niveau. Haut/bas inchangés.'},
+      {id:'pulse',name:'Impulsion de signalement',costs:[150,250,400,650,1000],description:'B ou bouton IMPULSION : nettoie ennemis et tirs hostiles, blesse le boss. Une charge par niveau, renouvelée à chaque partie.'},
+      {id:'shield',name:'Pare-feu de protection',costs:[100,180,300,500,800],description:'Une charge de bouclier supplémentaire par niveau.'},
+      {id:'repair',name:'Réparateur de confiance',costs:[120,220,360,580,900],description:'Restaure 0,2 PV par seconde et par niveau, en plus du bonus Neuro.'},
+      {id:'wing',name:'Relais de soutien',costs:[180,320,500,750,1100],description:'Deux tirs obliques accompagnent tes lasers. Leurs dégâts augmentent à chaque niveau.'}
+    ];
+    function shopPlayer() {
+      const code=localStorage.getItem('pvs_current_player')||'';
+      return !code || /^(ADMIN|VISITEUR)/i.test(code)?'':code;
+    }
+    function hubArcadeXp(code) {
+      try {
+        const snapshot=JSON.parse(localStorage.getItem('pvs_arcade_xp_v1')||'{}');
+        const n=snapshot[code]?.earned;
+        return Number.isSafeInteger(n)&&n>=0?n:null;
+      } catch {return null;}
+    }
+    function walletKey(code) {return 'pvs_arcade_shop_v1:'+encodeURIComponent(code);}
+    function readWallet(code) {
+      if(!code) return null;
+      const raw=localStorage.getItem(walletKey(code));
+      let w;try{w=raw?JSON.parse(raw):{v:1,earned:0,spent:0,levels:{}};}catch{throw Error('Sauvegarde du magasin illisible. Achats suspendus pour la préserver.');}
+      if(w.v!==1||!Number.isSafeInteger(w.earned)||!Number.isSafeInteger(w.spent)||w.earned<0||w.spent<0||w.spent>w.earned||!w.levels||typeof w.levels!=='object'||Array.isArray(w.levels)) throw Error('Sauvegarde du magasin illisible. Achats suspendus pour la préserver.');
+      let paid=0;
+      for(const item of SHOP_ITEMS) {
+        const level=w.levels[item.id]??0;
+        if(!Number.isInteger(level)||level<0||level>5) throw Error('Niveau de pièce invalide. Achats suspendus.');
+        paid+=item.costs.slice(0,level).reduce((a,b)=>a+b,0);
+      }
+      if(paid!==w.spent) throw Error('Historique des achats incohérent. Achats suspendus.');
+      const xp=hubArcadeXp(code);
+      w.earned=Math.max(w.earned,xp??0);
+      return w;
+    }
+    function shipEquipment() {
+      try{return {...(readWallet(shopPlayer())?.levels||{})};}catch{return {};}
+    }
+    async function buyPart(id,expectedLevel=null) {
+      const code=shopPlayer(),item=SHOP_ITEMS.find(p=>p.id===id);
+      if(!code||!item||GAME.active) return false;
+      const button=document.querySelector(`button[data-part="${id}"]`);if(button)button.disabled=true;
+      const buy=()=>{
+        if(shopPlayer()!==code||GAME.active||hubArcadeXp(code)===null) return false;
+        const w=readWallet(code),level=w.levels[id]||0,cost=item.costs[level];
+        if(expectedLevel!==null&&level!==expectedLevel) return false;
+        if(level>=5||w.earned-w.spent<cost) return false;
+        w.levels[id]=level+1;w.spent+=cost;
+        localStorage.setItem(walletKey(code),JSON.stringify(w));
+        return true;
+      };
+      try {
+        if(!navigator.locks) throw Error('Les achats nécessitent un navigateur récent et une connexion HTTPS.');
+        const ok=await navigator.locks.request('pvs-arcade-shop:'+code,buy);
+        renderShop();return ok;
+      }catch(error){renderShop(error.message);return false;}
+    }
+    function renderShop(message='') {
+      const box=document.getElementById('arcade-shop');box.replaceChildren();
+      const title=document.createElement('h2');title.textContent='Atelier des Veilleurs';box.appendChild(title);
+      const note=document.createElement('p');
+      note.textContent='1 XP de parcours reconnu par le hub = 1 crédit arcade. Ton score scolaire ne diminue pas. Pièces équipées dès la prochaine partie. Achats conservés sur cet appareil.';
+      box.appendChild(note);
+      const sync=document.createElement('a');sync.href='index.html';sync.textContent='Ouvrir le hub pour actualiser les nouveaux XP';box.appendChild(sync);
+      const code=shopPlayer();let w;
+      try {w=readWallet(code);}catch(error){message=error.message;}
+      const ready=!!code&&!!w&&hubArcadeXp(code)!==null;
+      const balance=document.createElement('p');
+      balance.textContent=message||(!code?'Connecte-toi au hub avec ton code joueur.':!ready?'Ouvre le hub central pour actualiser tes crédits.':`Joueur : ${code} · Crédits disponibles : ${w.earned-w.spent} · Gagnés : ${w.earned} · Dépensés : ${w.spent}`);
+      balance.setAttribute('role','status');box.appendChild(balance);
+      for(const item of SHOP_ITEMS) {
+        const level=w?.levels[item.id]||0,card=document.createElement('article');card.className='shop-card';
+        const name=document.createElement('h3');name.textContent=item.name+' · Niveau '+level+'/5';card.appendChild(name);
+        const detail=document.createElement('p');detail.textContent=item.description;card.appendChild(detail);
+        const button=document.createElement('button');button.dataset.part=item.id;
+        button.textContent=level===5?'Niveau maximal':`Acheter le niveau ${level+1} · ${item.costs[level]} crédits`;
+        button.disabled=!ready||!!message||level===5||w.earned-w.spent<item.costs[level];
+        button.onclick=()=>buyPart(item.id,level);card.appendChild(button);box.appendChild(card);
+      }
+    }
+    function releasePulse() {
+      if(!GAME.active||document.hidden||player.pulses<=0) return false;
+      player.pulses--;
+      for(const enemy of enemies) if(enemy.active){enemy.active=false;GAME.score+=enemy.points;particles.push(new Explosion(enemy.x,enemy.y,'#00ffbb',1));}
+      bullets=bullets.filter(b=>b.source==='PLAYER');
+      if(boss) boss.takeDamage(100+40*(player.equipment.pulse||0));
+      GAME.pulseFlash=24;updateUI();return true;
+    }
+
+    const BOSS_PROFILES = [
+      {name:'LE COLPORTEUR',color:'#ff9944',pattern:'fan',hint:'Ses éventails laissent des passages entre les tirs.'},
+      {name:'LA MEUTE DES RELAIS',color:'#ff4477',pattern:'relay',hint:'Trois relais tirent ensemble : cherche les espaces entre les salves.'},
+      {name:'L’ŒIL INDISCRET',color:'#bb66ff',pattern:'aim',hint:'Il vise ta position : continue de te déplacer.'},
+      {name:'LE FAUX PROFIL',color:'#44ccff',pattern:'cross',hint:'Ses tirs se croisent en diagonale.'},
+      {name:'LE PIÈGE À CLICS',color:'#ffcc33',pattern:'wall',hint:'Repère la trouée dans chaque barrière.'},
+      {name:'LE RADAR DE TRAQUE',color:'#33ffbb',pattern:'orbit',hint:'Des couronnes de tirs alternent les vitesses.'},
+      {name:'L’ORAGE DE COMMENTAIRES',color:'#7799ff',pattern:'rain',hint:'Les salves descendent en zigzag.'},
+      {name:'LE MIROIR TRUQUÉ',color:'#ff66ee',pattern:'mirror',hint:'Deux spirales symétriques se déploient.'},
+      {name:'LA FORTERESSE DU SILENCE',color:'#ff6655',pattern:'pincer',hint:'Les pinces se rapprochent des deux côtés.'},
+      {name:'LE LÉVIATHAN SYSTÉMIQUE',color:'#ffd700',pattern:'leviathan',hint:'Trois phases : observe les changements de bouclier et de salves.'}
+    ];
+    function drawBossHull(c,sector,frame) {
+      const r=sector===10?74:52;
+      const circle=(x,y,size)=>{c.beginPath();c.arc(x,y,size,0,Math.PI*2);c.fill();};
+      const line=(x,y,a,b)=>{c.beginPath();c.moveTo(x,y);c.lineTo(a,b);c.stroke();};
+      c.lineWidth=4;c.strokeStyle=c.fillStyle;
+      switch(sector) {
+        case 1:
+          c.beginPath();c.ellipse(0,0,58,36,0,0,Math.PI*2);c.fill();
+          c.beginPath();c.moveTo(12,25);c.lineTo(44,57);c.lineTo(37,15);c.fill();break;
+        case 2:
+          for(let i=0;i<3;i++){const a=i*2*Math.PI/3+frame*.007;const x=Math.cos(a)*40,y=Math.sin(a)*40;line(0,0,x,y);circle(x,y,24);}break;
+        case 3:
+          c.beginPath();c.moveTo(-65,0);c.quadraticCurveTo(0,-70,65,0);c.quadraticCurveTo(0,70,-65,0);c.fill();
+          c.fillStyle='#111128';circle(0,0,24);c.fillStyle='#ffffff';circle(Math.sin(frame*.02)*10,0,10);break;
+        case 4:
+          c.fillRect(-44,-48,88,96);c.fillStyle='#12152d';circle(-16,-12,8);circle(16,-12,8);c.fillRect(-22,18,44,8);break;
+        case 5:
+          c.beginPath();c.moveTo(0,-65);c.lineTo(65,0);c.lineTo(0,65);c.lineTo(-65,0);c.closePath();c.fill();
+          c.fillStyle='#111128';c.fillRect(-6,-35,12,45);circle(0,30,7);break;
+        case 6:
+          c.beginPath();c.arc(0,0,50,0,Math.PI*2);c.stroke();
+          for(let i=0;i<4;i++){const a=frame*.02+i*Math.PI/2;line(0,0,Math.cos(a)*65,Math.sin(a)*65);}circle(0,0,20);break;
+        case 7:
+          circle(-30,0,30);circle(0,-15,37);circle(34,0,30);
+          c.beginPath();c.moveTo(0,10);c.lineTo(-20,48);c.lineTo(1,40);c.lineTo(-10,76);c.lineTo(30,22);c.closePath();c.fill();break;
+        case 8:
+          c.save();c.rotate(Math.sin(frame*.01)*.15);c.fillRect(-58,-42,34,84);c.fillRect(24,-42,34,84);
+          c.strokeStyle='#ffffff';line(-41,-32,-41,32);line(41,-32,41,32);line(-24,0,24,0);c.restore();break;
+        case 9:
+          c.fillRect(-52,-18,104,65);for(let i=0;i<4;i++)c.fillRect(-60+i*32,-54,22,48);
+          c.fillStyle='#191128';c.fillRect(-14,8,28,39);break;
+        case 10:
+          for(let i=0;i<8;i++){const a=i*Math.PI/4+frame*.007;line(Math.cos(a)*30,Math.sin(a)*30,Math.cos(a+.2)*95,Math.sin(a+.2)*95);}
+          c.save();c.rotate(-frame*.01);c.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?c.lineTo(x,y):c.moveTo(x,y);}c.closePath();c.fill();c.restore();break;
+      }
+      if(sector!==3&&sector!==4&&sector!==5){c.fillStyle='#ffffff';circle(0,0,12);}
+    }
 
     // --- SYSTÈME DE BONUS (5 PILIERS) ---
     // Compatible avec le hub intégré (CERT_PHARE_*) ET l'ancien format (CERT_*_N)
@@ -498,6 +647,7 @@
         const weapon=document.createElement('p');
         weapon.textContent=hasModule('NUM',5)?'⚡ Photon V : dégâts doublés et cadence renforcée.':'🔫 Photon standard — valide NUMERIQUE_05 pour le Photon V.';
         picker.appendChild(weapon);
+        const threat=document.createElement('p');threat.textContent=BOSS_PROFILES[selectedSector-1].name+' : '+BOSS_PROFILES[selectedSector-1].hint;picker.appendChild(threat);
     }
     function sectorDurationMs(level) {
         return DIFFICULTY_CONFIG.gameDuration*1000*Math.pow(1.5,Math.max(0,level-5));
@@ -543,6 +693,7 @@
       Object.entries({NUM:'NUM',JUR:'JUR',GRO:'GRP',HIS:'HIS',NEURO:'NEU'})
         .forEach(([bonus, pillar]) => { BONUSES[bonus] = getLvl(pillar); });
       renderSectors();
+      renderShop();
       hangar.replaceChildren();
       Object.keys(pillarLabels).forEach(key => {
         const row = document.createElement('div');
@@ -672,21 +823,24 @@
         constructor() {
             this.x = canvas.width / 2;
             this.y = canvas.height - 120;
+            this.equipment=shipEquipment();
+            this.pulses=this.equipment.pulse||0;
             this.hpMax = 100 + (BONUSES.HIS * 20);
             this.hp = this.hpMax;
-            this.shield = BONUSES.JUR;
+            this.shield = BONUSES.JUR+(this.equipment.shield||0);
             this.invincible = 0;
             this.fireDelay = 0;
             this.photonV = hasModule('NUM',5);
-            this.regenRate = BONUSES.NEURO * 0.5; // HP/s
+            this.regenRate = BONUSES.NEURO * 0.5+(this.equipment.repair||0)*0.2; // HP/s
             this.regenAccumulator = 0;
         }
         
         update() {
             // Mouvement
             const speed = 7;
-            if(INPUT.left && this.x > 70) this.x -= speed;
-            if(INPUT.right && this.x < canvas.width - 70) this.x += speed;
+            const lateral = speed*(1+0.12*(this.equipment.lateral||0));
+            if(INPUT.left && this.x > 70) this.x = Math.max(70,this.x-lateral);
+            if(INPUT.right && this.x < canvas.width - 70) this.x = Math.min(canvas.width-70,this.x+lateral);
             if(INPUT.up && this.y > 70) this.y -= speed;
             if(INPUT.down && this.y < canvas.height - 70) this.y += speed;  // CORRIGÉ : += au lieu de -=
 
@@ -718,6 +872,12 @@
             for(let i = 0; i < laserCount; i++) {
                 const offset = (i - (laserCount - 1) / 2) * 18;
                 bullets.push(new Bullet(this.x + offset, this.y - 20, 0, this.photonV ? -19 : -15, 'PLAYER', this.photonV));
+            }
+            const wing=this.equipment.wing||0;
+            if(wing) for(const direction of [-1,1]) {
+                const shot=new Bullet(this.x+direction*20,this.y-15,direction*2,-13,'PLAYER');
+                shot.enemyDamage=6+wing*4;shot.bossDamage=4+wing*2;shot.tint='#00ff99';
+                bullets.push(shot);
             }
         }
         
@@ -996,6 +1156,9 @@
     // --- BOSS ---
     class Boss {
         constructor() {
+            this.sector=GAME.sector;
+            this.profile=BOSS_PROFILES[this.sector-1];
+            this.name=this.profile.name;
             this.x = canvas.width / 2;
             this.y = -100;
             this.hp = 500 * DIFFICULTY_CONFIG.multiplier * sectorStrength();
@@ -1027,99 +1190,83 @@
                     break;
 
                 case 'FIGHT':
-                    // Pattern de mouvement
-                    this.x = canvas.width/2 + Math.sin(this.frame * 0.03) * 200;
-                    
-                    // Pattern de tir
-                    if(this.frame % 30 === 0) {
-                        this.shotPattern++;
-                        
-                        if(this.shotPattern % 3 === 0) {
-                            // Tir radial
-                            for(let i = 0; i < 8; i++) {
-                                const angle = (Math.PI * 2 / 8) * i;
-                                bullets.push(new Bullet(
-                                    this.x,
-                                    this.y,
-                                    Math.cos(angle) * 5,
-                                    Math.sin(angle) * 5,
-                                    'ENEMY'
-                                ));
-                            }
-                        } else {
-                            // Tir ciblé
-                            const angle = Math.atan2(player.y - this.y, player.x - this.x);
-                            for(let i = -1; i <= 1; i++) {
-                                bullets.push(new Bullet(
-                                    this.x,
-                                    this.y,
-                                    Math.cos(angle + i * 0.3) * 6,
-                                    Math.sin(angle + i * 0.3) * 6,
-                                    'ENEMY'
-                                ));
-                            }
-                        }
-                    }
+                    this.x=canvas.width/2+Math.sin(this.frame*(.012+this.sector*.002))*Math.min(200,Math.max(20,canvas.width/2-100));
+                    const interval=[40,36,48,40,55,44,35,32,45,30][this.sector-1];
+                    if(this.frame%interval===0) {this.shotPattern++;this.firePattern();}
                     break;
             }
         }
         
+        firePattern() {
+            const emit=(x,y,angle,speed=4)=>{
+                const shot=new Bullet(x,y,Math.cos(angle)*speed,Math.sin(angle)*speed,'ENEMY');
+                shot.tint=this.profile.color;bullets.push(shot);
+            };
+            const aimed=Math.atan2(player.y-this.y,player.x-this.x);
+            switch(this.profile.pattern) {
+                case 'fan':
+                    for(let i=-2;i<=2;i++) emit(this.x,this.y,Math.PI/2+i*.24+Math.sin(this.frame*.03)*.15);break;
+                case 'relay':
+                    for(let node=-1;node<=1;node++) for(let i=-1;i<=1;i++) emit(this.x+node*38,this.y+Math.abs(node)*18,Math.PI/2+i*.18+node*.12,3.6);break;
+                case 'aim':
+                    for(let i=-2;i<=2;i++) emit(this.x,this.y,aimed+i*.1,5.5);break;
+                case 'cross':
+                    for(let i=0;i<4;i++) for(let j=0;j<2;j++) emit(this.x+(j?35:-35),this.y,Math.PI/4+i*Math.PI/2,4+j);break;
+                case 'wall': {
+                    const columns=Math.max(5,Math.floor((canvas.width-140)/55));
+                    const gap=this.shotPattern%columns;
+                    for(let i=0;i<columns;i++) if(Math.abs(i-gap)>1) emit(70+i*(canvas.width-140)/(columns-1),this.y,Math.PI/2,3.5);
+                    break;
+                }
+                case 'orbit':
+                    for(let i=0;i<12;i++) emit(this.x,this.y,i*Math.PI/6+this.shotPattern*.18,3.2+(i%2));break;
+                case 'rain':
+                    for(let i=-3;i<=3;i++) emit(this.x+i*26,this.y,Math.PI/2+Math.sin(i+this.shotPattern)*.38,4.5);break;
+                case 'mirror':
+                    for(let side of [-1,1]) for(let i=0;i<5;i++) emit(this.x+side*42,this.y,Math.PI/2+side*(i*.3+this.shotPattern*.12),4);break;
+                case 'pincer':
+                    for(let side of [-1,1]) for(let i=0;i<4;i++) emit(this.x+side*65,this.y,Math.PI/2-side*(.18+i*.15),4.8);break;
+                case 'leviathan':
+                    for(let i=0;i<10;i++) emit(this.x,this.y,i*Math.PI/5+this.frame*.01,4.2);break;
+            }
+        }
+
         draw() {
             ctx.save();
             ctx.translate(this.x, this.y);
 
-            // Corps boss
-            ctx.shadowBlur = 30;
-            ctx.shadowColor = '#ff0044';
-            ctx.fillStyle = '#ff0044';
-            
-            // Forme hexagonale
-            ctx.beginPath();
-            for(let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i;
-                const px = Math.cos(angle) * 60;
-                const py = Math.sin(angle) * 60;
-                if(i === 0) ctx.moveTo(px, py);
-                else ctx.lineTo(px, py);
-            }
-            ctx.closePath();
-            ctx.fill();
-
-            // Noyau
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(0, 0, 20, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.shadowBlur = 0;
+            ctx.shadowBlur=24;ctx.shadowColor=this.profile.color;ctx.fillStyle=this.profile.color;
+            drawBossHull(ctx,this.sector,this.frame);
+            ctx.shadowBlur=0;
 
             // Barre HP
             if(this.phase === 'FIGHT') {
                 const barWidth = 200;
                 const barHeight = 8;
+                const barY = this.sector===10?115:80;
                 const hpPercent = this.hp / this.hpMax;
                 
                 ctx.fillStyle = '#333';
-                ctx.fillRect(-barWidth/2, 80, barWidth, barHeight);
+                ctx.fillRect(-barWidth/2, barY, barWidth, barHeight);
                 
-                ctx.fillStyle = '#ff0044';
+                ctx.fillStyle = this.profile.color;
                 ctx.shadowBlur = 10;
-                ctx.shadowColor = '#ff0044';
-                ctx.fillRect(-barWidth/2, 80, barWidth * hpPercent, barHeight);
+                ctx.shadowColor = this.profile.color;
+                ctx.fillRect(-barWidth/2, barY, barWidth * hpPercent, barHeight);
                 ctx.shadowBlur = 0;
 
                 // Label
                 ctx.fillStyle = '#fff';
                 ctx.font = '12px Orbitron';
                 ctx.textAlign = 'center';
-                ctx.fillText(this.name || 'HARCELEUR SYSTÉMIQUE', 0, -80);
+                ctx.fillText(this.name || 'HARCELEUR SYSTÉMIQUE', 0, this.sector===10?-120:-80);
             }
 
             // Dialogue
             if(this.phase === 'DIALOGUE') {
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
                 ctx.fillRect(-150, -120, 300, 60);
-                ctx.strokeStyle = '#ff0044';
+                ctx.strokeStyle = this.profile.color;
                 ctx.strokeRect(-150, -120, 300, 60);
                 
                 ctx.fillStyle = '#fff';
@@ -1143,7 +1290,7 @@
                 
                 // Explosion massive
                 for(let i = 0; i < 100; i++) {
-                    particles.push(new Explosion(this.x, this.y, '#ff0044', 1));
+                    particles.push(new Explosion(this.x, this.y, this.profile.color, 1));
                 }
                 
                 setTimeout(() => {
@@ -1222,7 +1369,7 @@
         }
         
         draw() {
-            ctx.fillStyle = this.source === 'PLAYER' ? (this.photonV ? '#ffd700' : '#00ffff') : '#ff00ff';
+            ctx.fillStyle = this.tint || (this.source === 'PLAYER' ? (this.photonV ? '#ffd700' : '#00ffff') : '#ff00ff');
             ctx.shadowBlur = 8;
             ctx.shadowColor = ctx.fillStyle;
             ctx.fillRect(this.x - 3, this.y - (this.photonV ? 12 : 6), 6, this.photonV ? 24 : 12);
@@ -1288,6 +1435,9 @@
         GAME.frame = 0;
         GAME.climat = 100;
         GAME.bossMode = false;
+        GAME.player=shopPlayer();
+        Object.keys(INPUT).forEach(key=>INPUT[key]=false);
+        GAME.pulseFlash=0;
         GAME.startTime = Date.now();
         GAME.elapsedMs=0; GAME.lastTick=performance.now();
 
@@ -1298,7 +1448,7 @@
         }
 
         // Afficher icône regen si NEURO > 0
-        if(BONUSES.NEURO > 0) {
+        if(player.regenRate > 0) {
             document.getElementById('regen-icon').style.display = 'inline';
             document.getElementById('regen-rate').innerText = player.regenRate.toFixed(1);
         }
@@ -1343,6 +1493,7 @@
         // Shield & Drones
         document.getElementById('shield-count').innerText = player.shield.toString().padStart(2, '0');
         document.getElementById('drone-count').innerText = BONUSES.GRO;
+        const pulse=document.getElementById('pulse-button');pulse.textContent='IMPULSION · B · '+player.pulses;pulse.disabled=!GAME.active||player.pulses===0;
         document.getElementById('sector-hud').textContent='Niveau '+GAME.sector+' · '+SECTORS[GAME.sector-1]+' · '+(GAME.bossMode?(GAME.sector===10?'MÉGABOSS':'BOSS'):formatDuration(sectorDurationMs(GAME.sector)-GAME.elapsedMs));
     }
 
@@ -1378,6 +1529,7 @@
         if(GAME.lastTick!==null) GAME.elapsedMs+=Math.max(0,now-GAME.lastTick);
         GAME.lastTick=now;
 
+        if(shopPlayer()!==GAME.player) {GAME.active=false;window.location.reload();return;}
         // Screen Shake
         let dx = 0, dy = 0;
         if(screenShake > 0) {
@@ -1450,6 +1602,7 @@
             return p.life > 0;
         });
 
+        if(GAME.pulseFlash>0) {ctx.fillStyle='rgba(0,255,187,'+(GAME.pulseFlash/60)+')';ctx.fillRect(0,0,canvas.width,canvas.height);GAME.pulseFlash--;}
         ctx.restore();
 
         updateUI();
@@ -1457,12 +1610,13 @@
     }
 
     // ================= CONTRÔLES =================
-    document.addEventListener('visibilitychange',()=>{GAME.lastTick=null;});
+    document.addEventListener('visibilitychange',()=>{GAME.lastTick=null;Object.keys(INPUT).forEach(k=>INPUT[k]=false);});
     window.addEventListener('focus', () => { if(!GAME.active) refreshHangar(); });
     window.addEventListener('storage', event => {
-        if(!GAME.active && (!event.key || event.key.startsWith('CERT_'))) refreshHangar();
+        if(!GAME.active && (!event.key || event.key.startsWith('CERT_') || event.key.startsWith('pvs_arcade_') || event.key==='pvs_current_player')) refreshHangar();
     });
     window.addEventListener('keydown', e => {
+        if(e.key.toLowerCase()==='b'&&!e.repeat) {releasePulse();e.preventDefault();}
         if(e.key === 'ArrowLeft' || e.key === 'q') INPUT.left = true;
         if(e.key === 'ArrowRight' || e.key === 'd') INPUT.right = true;
         if(e.key === 'ArrowUp' || e.key === 'z') INPUT.up = true;

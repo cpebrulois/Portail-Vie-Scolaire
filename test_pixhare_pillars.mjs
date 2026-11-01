@@ -146,6 +146,7 @@ try{
   await page.waitForFunction(p=>typeof S!=='undefined'&&S.players[p]?.cp.pixhare===20,player);
   let hub=await page.evaluate(p=>({count:S.players[p].cp.pixhare,xp:S.players[p].pixhareXp,done:Object.keys(S.players[p].pixhareDone)}),player);
   assert.equal(hub.count,20);assert.equal(hub.xp,expectedXP);
+  assert.equal(await page.evaluate(p=>JSON.parse(localStorage.getItem('pvs_arcade_xp_v1'))[p].earned,player),expectedXP);
   await page.evaluate(p=>{
     const events=Object.keys(S.players[p].pixhareDone).map((module,i)=>({id:'QA-REPLAY-'+i,type:'PIXHARE_PROGRESS',player:p,module,xp:999999,d:new Date().toISOString()}));
     localStorage.setItem('pvs_bridge_events',JSON.stringify(events));processBridge();
