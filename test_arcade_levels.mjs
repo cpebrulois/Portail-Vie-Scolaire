@@ -39,12 +39,12 @@ try {
    const shots=bullets.map(b=>({damage:b.enemyDamage,boss:b.bossDamage,up:b.photonV}));
    INPUT.fire=true;player.fireDelay=0;player.update();INPUT.fire=false;
    const cadence=player.fireDelay, enemy=new Enemy('RUMEUR'), bossHP=new Boss().hp;
-   enemies=[];boss=null;GAME.bossMode=false;GAME.score=0;GAME.frame=5760;spawnManager();
+   enemies=[];boss=null;GAME.bossMode=false;GAME.route=newRoute(GAME.sector);GAME.score=0;GAME.frame=5760;spawnManager();
    return {sector:GAME.sector,shots,cadence,hp:enemy.hp,bossHP,wave:enemies.length};
  });
  assert.equal(upgraded.sector,5);assert.ok(upgraded.shots.every(b=>b.damage===30&&b.boss===20&&b.up));
  assert.equal(upgraded.cadence,5); // update decrements the six-frame cooldown once.
- assert.equal(upgraded.hp,44);assert.equal(upgraded.bossHP,1100);assert.equal(upgraded.wave,3);
+ assert.equal(upgraded.hp,44);assert.equal(upgraded.bossHP,1100);assert.equal(upgraded.wave,1);
  const hitHP=await page.evaluate(()=>{
    const target=new Enemy('REVENGE PORN');target.x=200;target.y=200;target.speed=0;
    enemies=[target];boss=null;bullets=[new Bullet(200,200,0,0,'PLAYER',true)];

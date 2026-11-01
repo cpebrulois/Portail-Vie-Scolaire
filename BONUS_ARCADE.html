@@ -335,7 +335,7 @@
             <div style="font-size: 0.8em; letter-spacing: 2px; color: #aaa;">CLIMAT SCOLAIRE</div>
             <div class="bar-container"><div id="climat-bar" class="bar-fill"></div></div>
         </div>
-        <div><div id="sector-hud" style="text-align:center;color:#00d4ff"></div><div id="score-display">0000</div></div>
+        <div><div id="sector-hud" style="text-align:center;color:#00d4ff"></div><div style="max-width:300px;height:6px;background:#123;margin:6px auto"><div id="route-progress" role="progressbar" aria-label="Avancement du parcours" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="height:100%;width:0%;background:#00ddff"></div></div><div id="score-display">0000</div></div>
         <div class="hud-box" style="text-align:right">
             <div style="color:#ffd700; font-weight: bold; font-size: 1.1em;">
                 SHIELD: <span id="shield-count">0</span>
@@ -453,12 +453,13 @@
         document.getElementById('bg-image').style.opacity = e.target.value / 100;
     });
 
+    const SHOP_MAX_LEVEL = 10;
     const SHOP_ITEMS = [
-      {id:'lateral',name:'Propulseur latéral',costs:[80,140,240,400,650],description:'Déplacements gauche/droite : +12 % par niveau. Haut/bas inchangés.'},
-      {id:'pulse',name:'Impulsion de signalement',costs:[150,250,400,650,1000],description:'B ou bouton IMPULSION : nettoie ennemis et tirs hostiles, blesse le boss. Une charge par niveau, renouvelée à chaque partie.'},
-      {id:'shield',name:'Pare-feu de protection',costs:[100,180,300,500,800],description:'Une charge de bouclier supplémentaire par niveau.'},
-      {id:'repair',name:'Réparateur de confiance',costs:[120,220,360,580,900],description:'Restaure 0,2 PV par seconde et par niveau, en plus du bonus Neuro.'},
-      {id:'wing',name:'Relais de soutien',costs:[180,320,500,750,1100],description:'Deux tirs obliques accompagnent tes lasers. Leurs dégâts augmentent à chaque niveau.'}
+      {id:'lateral',name:'Propulseur latéral',costs:[80,140,240,400,650,850,1100,1400,1750,2150],description:'Déplacements gauche/droite : +12 % par niveau. Haut/bas inchangés.'},
+      {id:'pulse',name:'Impulsion de signalement',costs:[150,250,400,650,1000,1300,1650,2050,2500,3000],description:'B ou bouton IMPULSION : nettoie ennemis et tirs hostiles, blesse le boss. Une charge par niveau, renouvelée à chaque partie.'},
+      {id:'shield',name:'Pare-feu de protection',costs:[100,180,300,500,800,1050,1350,1700,2100,2550],description:'Une charge de bouclier supplémentaire par niveau.'},
+      {id:'repair',name:'Réparateur de confiance',costs:[120,220,360,580,900,1150,1450,1800,2200,2650],description:'Restaure 0,2 PV par seconde et par niveau, en plus du bonus Neuro.'},
+      {id:'wing',name:'Relais de soutien',costs:[180,320,500,750,1100,1400,1750,2150,2600,3100],description:'Deux tirs obliques accompagnent tes lasers. Leurs dégâts augmentent à chaque niveau.'}
     ];
     function shopPlayer() {
       const code=localStorage.getItem('pvs_current_player')||'';
@@ -480,7 +481,7 @@
       let paid=0;
       for(const item of SHOP_ITEMS) {
         const level=w.levels[item.id]??0;
-        if(!Number.isInteger(level)||level<0||level>5) throw Error('Niveau de pièce invalide. Achats suspendus.');
+        if(!Number.isInteger(level)||level<0||level>SHOP_MAX_LEVEL) throw Error('Niveau de pièce invalide. Achats suspendus.');
         paid+=item.costs.slice(0,level).reduce((a,b)=>a+b,0);
       }
       if(paid!==w.spent) throw Error('Historique des achats incohérent. Achats suspendus.');
@@ -499,7 +500,7 @@
         if(shopPlayer()!==code||GAME.active||hubArcadeXp(code)===null) return false;
         const w=readWallet(code),level=w.levels[id]||0,cost=item.costs[level];
         if(expectedLevel!==null&&level!==expectedLevel) return false;
-        if(level>=5||w.earned-w.spent<cost) return false;
+        if(level>=SHOP_MAX_LEVEL||w.earned-w.spent<cost) return false;
         w.levels[id]=level+1;w.spent+=cost;
         localStorage.setItem(walletKey(code),JSON.stringify(w));
         return true;
@@ -525,11 +526,11 @@
       balance.setAttribute('role','status');box.appendChild(balance);
       for(const item of SHOP_ITEMS) {
         const level=w?.levels[item.id]||0,card=document.createElement('article');card.className='shop-card';
-        const name=document.createElement('h3');name.textContent=item.name+' · Niveau '+level+'/5';card.appendChild(name);
+        const name=document.createElement('h3');name.textContent=item.name+' · Niveau '+level+'/'+SHOP_MAX_LEVEL;card.appendChild(name);
         const detail=document.createElement('p');detail.textContent=item.description;card.appendChild(detail);
         const button=document.createElement('button');button.dataset.part=item.id;
-        button.textContent=level===5?'Niveau maximal':`Acheter le niveau ${level+1} · ${item.costs[level]} crédits`;
-        button.disabled=!ready||!!message||level===5||w.earned-w.spent<item.costs[level];
+        button.textContent=level===SHOP_MAX_LEVEL?'Niveau maximal':`Acheter le niveau ${level+1} · ${item.costs[level]} crédits`;
+        button.disabled=!ready||!!message||level===SHOP_MAX_LEVEL||w.earned-w.spent<item.costs[level];
         button.onclick=()=>buyPart(item.id,level);card.appendChild(button);box.appendChild(card);
       }
     }
@@ -641,20 +642,31 @@
         const hint=document.createElement('p');
         hint.textContent='Niveaux 2 à 10 : valide les modules du palier dans les six piliers, dont Vivre ensemble actif. Les paliers précédents restent nécessaires.';
         picker.appendChild(hint);
-        const duration=document.createElement('p');
-        duration.textContent='Vagues du secteur choisi : '+formatDuration(sectorDurationMs(selectedSector))+' avant le boss. Niveaux 6 à 10 : ×1,5 par palier. Le chronomètre est suspendu dans un onglet masqué.';
-        picker.appendChild(duration);
+        const length=document.createElement('p'),plan=sectorRoutePlan(selectedSector);
+        length.textContent='Parcours : '+plan.waves+' vagues · '+plan.enemies+' ennemis avant le boss. La longueur augmente dès le niveau 2. Termine les vagues pour atteindre le boss ; aucune minuterie ne raccourcit le parcours.';
+        picker.appendChild(length);
         const weapon=document.createElement('p');
         weapon.textContent=hasModule('NUM',5)?'⚡ Photon V : dégâts doublés et cadence renforcée.':'🔫 Photon standard — valide NUMERIQUE_05 pour le Photon V.';
         picker.appendChild(weapon);
         const threat=document.createElement('p');threat.textContent=BOSS_PROFILES[selectedSector-1].name+' : '+BOSS_PROFILES[selectedSector-1].hint;picker.appendChild(threat);
     }
-    function sectorDurationMs(level) {
-        return DIFFICULTY_CONFIG.gameDuration*1000*Math.pow(1.5,Math.max(0,level-5));
+    function sectorRoutePlan(level) {
+        const waves=Math.ceil(6*Math.pow(1.5,level-1));
+        let enemies=0;for(let wave=0;wave<waves;wave++)enemies+=4+(level-1)+(wave%3);
+        return {waves,enemies};
     }
-    function formatDuration(ms) {
-        const seconds=Math.ceil(Math.max(0,ms)/1000);
-        return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
+    function waveSpecification(level,wave) {
+        const count=4+(level-1)+(wave%3);
+        const roster=['RUMEUR','TROLL','DOXXING','DEEPFAKE','STALKING','REVENGE PORN'];
+        const available=Math.min(roster.length,2+Math.floor(level/2));
+        return Array.from({length:count},(_,i)=>({
+            type:roster[(wave+i)%available],
+            lane:wave%3===0?(i%5)/4:wave%3===1?1-(i%5)/4:((i*2+wave)%7)/6,
+            depth:wave%3===2?(i%3)*32:0
+        }));
+    }
+    function newRoute(level) {
+        return {level,...sectorRoutePlan(level),wave:0,spawned:0,totalSpawned:0,current:null,cooldown:0,rest:0};
     }
     function sectorStrength() { return 1+(GAME.sector-1)*0.3; }
     function returnHangar() { window.location.reload(); }
@@ -711,8 +723,8 @@
         name: 'apprenti',
         multiplier: 1.0,
         spawnRate: 60,
-        bossThreshold: 2000,
-        gameDuration: 180 // secondes (× 3 par rapport à base 60s)
+
+
     };
 
     function setDifficulty(level, btn) {
@@ -725,8 +737,8 @@
                     name: 'apprenti',
                     multiplier: 1.0,
                     spawnRate: 60,
-                    bossThreshold: 2000,
-                    gameDuration: 180
+
+
                 };
                 break;
             case 'gardien':
@@ -734,8 +746,8 @@
                     name: 'gardien',
                     multiplier: 1.6,
                     spawnRate: 45,
-                    bossThreshold: 3000,
-                    gameDuration: 240
+
+
                 };
                 break;
             case 'maitre':
@@ -743,8 +755,8 @@
                     name: 'maitre',
                     multiplier: 2.5,
                     spawnRate: 35,
-                    bossThreshold: 4000,
-                    gameDuration: 300
+
+
                 };
                 break;
         }
@@ -754,14 +766,12 @@
     // ================= MOTEUR & ÉTATS =================
     const GAME = {
         sector: 1,
-        elapsedMs: 0,
-        lastTick: null,
+        route: null,
         active: false,
         score: 0,
         frame: 0,
         climat: 100,
         bossMode: false,
-        startTime: 0
     };
 
     const INPUT = { left: false, right: false, up: false, down: false, fire: false };
@@ -1438,8 +1448,7 @@
         GAME.player=shopPlayer();
         Object.keys(INPUT).forEach(key=>INPUT[key]=false);
         GAME.pulseFlash=0;
-        GAME.startTime = Date.now();
-        GAME.elapsedMs=0; GAME.lastTick=performance.now();
+        GAME.route=newRoute(GAME.sector);
 
         // Initialiser drones
         drones = [];
@@ -1494,40 +1503,44 @@
         document.getElementById('shield-count').innerText = player.shield.toString().padStart(2, '0');
         document.getElementById('drone-count').innerText = BONUSES.GRO;
         const pulse=document.getElementById('pulse-button');pulse.textContent='IMPULSION · B · '+player.pulses;pulse.disabled=!GAME.active||player.pulses===0;
-        document.getElementById('sector-hud').textContent='Niveau '+GAME.sector+' · '+SECTORS[GAME.sector-1]+' · '+(GAME.bossMode?(GAME.sector===10?'MÉGABOSS':'BOSS'):formatDuration(sectorDurationMs(GAME.sector)-GAME.elapsedMs));
+        const route=GAME.route;
+        const remaining=route?Math.max(0,route.enemies-route.totalSpawned)+enemies.filter(e=>e.active).length:0;
+        const progress=route?Math.round(100*(route.enemies-remaining)/route.enemies):0;
+        const routeBar=document.getElementById('route-progress');routeBar.style.width=progress+'%';routeBar.setAttribute('aria-valuenow',String(progress));
+        document.getElementById('sector-hud').textContent='Niveau '+GAME.sector+' · '+SECTORS[GAME.sector-1]+' · '+(GAME.bossMode?(GAME.sector===10?'MÉGABOSS':'BOSS'):(route?'Vague '+Math.min(route.wave+1,route.waves)+'/'+route.waves+' · '+remaining+' ennemis restants':'Parcours'));
+
     }
 
     function spawnManager() {
         if(boss || GAME.bossMode) return;
-        if(GAME.elapsedMs >= sectorDurationMs(GAME.sector)) {
-            GAME.bossMode=true;
-            enemies=[]; bullets=bullets.filter(b=>b.source==='PLAYER');
+        if(!GAME.route || GAME.route.level!==GAME.sector) GAME.route=newRoute(GAME.sector);
+        const route=GAME.route;
+        if(route.rest>0) {route.rest--;return;}
+        if(route.current && route.spawned>=route.current.length) {
+            if(enemies.some(enemy=>enemy.active)) return;
+            route.wave++;route.current=null;route.spawned=0;route.rest=45;
+            return;
+        }
+        if(route.wave>=route.waves) {
+            GAME.bossMode=true;bullets=bullets.filter(b=>b.source==='PLAYER');
             boss=GAME.sector===10?new MegaBoss():new Boss();
             return;
         }
-
-        // Spawn ennemis normaux
-        if(GAME.frame % Math.max(15,DIFFICULTY_CONFIG.spawnRate-(GAME.sector-1)*7) === 0) {
-            const rand = Math.random();
-            let type = 'RUMEUR';
-            
-            if(rand > 0.85) type = 'REVENGE PORN';
-            else if(rand > 0.7) type = 'DOXXING';
-            else if(rand > 0.55) type = 'STALKING';
-            else if(rand > 0.4) type = 'DEEPFAKE';
-            else if(rand > 0.25) type = 'TROLL';
-            
-            enemies.push(new Enemy(type));
-            if(GAME.sector>=3 && GAME.frame%180===0) enemies.push(new Enemy('DEEPFAKE'));
-            if(GAME.sector>=5 && GAME.frame%180===0) enemies.push(new Enemy('STALKING'));
-        }
+        if(!route.current) route.current=waveSpecification(GAME.sector,route.wave);
+        if(route.cooldown>0) {route.cooldown--;return;}
+        const maxActive=Math.min(16,6+GAME.sector);
+        if(enemies.filter(enemy=>enemy.active).length>=maxActive) return;
+        const descriptor=route.current[route.spawned];
+        const enemy=new Enemy(descriptor.type);
+        enemy.x=70+descriptor.lane*Math.max(0,canvas.width-140);
+        enemy.y=-50-descriptor.depth;
+        enemies.push(enemy);route.spawned++;route.totalSpawned++;
+        route.cooldown=Math.max(8,Math.round(DIFFICULTY_CONFIG.spawnRate/3)-Math.floor(GAME.sector/2));
     }
 
-    function loop(now=performance.now()) {
+    function loop() {
         if(!GAME.active) return;
-        if(document.hidden) { GAME.lastTick=null; requestAnimationFrame(loop); return; }
-        if(GAME.lastTick!==null) GAME.elapsedMs+=Math.max(0,now-GAME.lastTick);
-        GAME.lastTick=now;
+        if(document.hidden) { requestAnimationFrame(loop); return; }
 
         if(shopPlayer()!==GAME.player) {GAME.active=false;window.location.reload();return;}
         // Screen Shake
@@ -1610,7 +1623,7 @@
     }
 
     // ================= CONTRÔLES =================
-    document.addEventListener('visibilitychange',()=>{GAME.lastTick=null;Object.keys(INPUT).forEach(k=>INPUT[k]=false);});
+    document.addEventListener('visibilitychange',()=>{Object.keys(INPUT).forEach(k=>INPUT[k]=false);});
     window.addEventListener('focus', () => { if(!GAME.active) refreshHangar(); });
     window.addEventListener('storage', event => {
         if(!GAME.active && (!event.key || event.key.startsWith('CERT_') || event.key.startsWith('pvs_arcade_') || event.key==='pvs_current_player')) refreshHangar();
