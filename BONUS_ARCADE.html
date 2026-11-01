@@ -453,7 +453,7 @@
 
     // Les six piliers du portail participent aux paliers ; les cinq bonus historiques restent inchangés.
     const SECTOR_PILLARS = {...Object.fromEntries(Object.entries(PILLAR_MAP).map(([key, ids]) => [key, ids[0].slice(0,-3)])), VEA:'VEA'};
-    const SECTORS = ['Veille orbitale','Réseau des rumeurs','Zone de désinformation','Citadelle des ombres','Noyau de la vigilance'];
+    const SECTORS = ['Veille orbitale','Réseau des rumeurs','Zone de désinformation','Citadelle des ombres','Noyau de la vigilance','Frontière des signaux','Tempête des réseaux','Labyrinthe des miroirs','Siège du noyau','Le Léviathan systémique'];
     let selectedSector = 1;
     function hasModule(pillar, n) {
         const prefix = SECTOR_PILLARS[pillar];
@@ -468,7 +468,7 @@
         return missing;
     }
     function sectorUnlocked(level) {
-        return Number.isInteger(level) && level>=1 && level<=5 && missingSectorModules(level).length===0;
+        return Number.isInteger(level) && level>=1 && level<=10 && missingSectorModules(level).length===0;
     }
     function chooseSector(level) {
         if(!sectorUnlocked(level) || GAME.active) return;
@@ -490,11 +490,21 @@
             picker.appendChild(button);
         });
         const hint=document.createElement('p');
-        hint.textContent='Niveaux 2 à 5 : valide les modules du palier dans les six piliers, dont Vivre ensemble actif. Les paliers précédents restent nécessaires.';
+        hint.textContent='Niveaux 2 à 10 : valide les modules du palier dans les six piliers, dont Vivre ensemble actif. Les paliers précédents restent nécessaires.';
         picker.appendChild(hint);
+        const duration=document.createElement('p');
+        duration.textContent='Vagues du secteur choisi : '+formatDuration(sectorDurationMs(selectedSector))+' avant le boss. Niveaux 6 à 10 : ×1,5 par palier. Le chronomètre est suspendu dans un onglet masqué.';
+        picker.appendChild(duration);
         const weapon=document.createElement('p');
         weapon.textContent=hasModule('NUM',5)?'⚡ Photon V : dégâts doublés et cadence renforcée.':'🔫 Photon standard — valide NUMERIQUE_05 pour le Photon V.';
         picker.appendChild(weapon);
+    }
+    function sectorDurationMs(level) {
+        return DIFFICULTY_CONFIG.gameDuration*1000*Math.pow(1.5,Math.max(0,level-5));
+    }
+    function formatDuration(ms) {
+        const seconds=Math.ceil(Math.max(0,ms)/1000);
+        return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
     }
     function sectorStrength() { return 1+(GAME.sector-1)*0.3; }
     function returnHangar() { window.location.reload(); }
@@ -544,7 +554,6 @@
         hangar.appendChild(row);
       });
     }
-    refreshHangar();
 
     // --- DIFFICULTÉ ---
     let DIFFICULTY_CONFIG = {
@@ -588,11 +597,14 @@
                 };
                 break;
         }
+        refreshHangar();
     }
 
     // ================= MOTEUR & ÉTATS =================
     const GAME = {
         sector: 1,
+        elapsedMs: 0,
+        lastTick: null,
         active: false,
         score: 0,
         frame: 0,
@@ -652,6 +664,8 @@
             ctx.strokeRect(50, 0, canvas.width - 100, canvas.height);
         }
     }
+
+    refreshHangar();
 
     // --- JOUEUR ---
     class Player {
@@ -1098,7 +1112,7 @@
                 ctx.fillStyle = '#fff';
                 ctx.font = '12px Orbitron';
                 ctx.textAlign = 'center';
-                ctx.fillText('HARCELEUR SYSTÉMIQUE', 0, -80);
+                ctx.fillText(this.name || 'HARCELEUR SYSTÉMIQUE', 0, -80);
             }
 
             // Dialogue
@@ -1119,7 +1133,7 @@
         }
         
         takeDamage(dmg) {
-            if(this.phase !== 'FIGHT') return;
+            if(this.phase !== 'FIGHT' || this.hp<=0) return;
             
             this.hp -= dmg;
             screenShake = 3;
@@ -1137,6 +1151,49 @@
                     document.getElementById('victory-score').innerText = GAME.score + 5000;
                 }, 2000);
             }
+        }
+    }
+
+    // Final en trois phases : spirale, salves ciblées, puis combinaison des deux.
+    class MegaBoss extends Boss {
+        constructor() {
+            super();
+            this.hp*=4; this.hpMax=this.hp;
+            this.hitRadius=90; this.stage=1; this.shieldFrames=0;
+            this.name='LÉVIATHAN SYSTÉMIQUE · PHASE 1/3';
+        }
+        update() {
+            super.update();
+            if(this.shieldFrames>0) this.shieldFrames--;
+            if(this.phase!=='FIGHT') return;
+            if(this.frame%45===0) {
+                const count=8+this.stage*4;
+                for(let i=0;i<count;i++) {
+                    const a=2*Math.PI*i/count+this.frame*0.015;
+                    bullets.push(new Bullet(this.x,this.y,Math.cos(a)*3.5,Math.sin(a)*3.5,'ENEMY'));
+                }
+            }
+            if(this.stage>=2 && this.frame%60===0) {
+                const a=Math.atan2(player.y-this.y,player.x-this.x);
+                for(let i=-this.stage;i<=this.stage;i++) bullets.push(new Bullet(this.x,this.y,Math.cos(a+i*0.12)*7,Math.sin(a+i*0.12)*7,'ENEMY'));
+            }
+        }
+        takeDamage(damage) {
+            if(this.shieldFrames>0) return;
+            super.takeDamage(damage*0.45);
+            if(this.hp<=0) return;
+            const stage=this.hp<=this.hpMax/3?3:this.hp<=this.hpMax*2/3?2:1;
+            if(stage>this.stage) {this.stage=stage;this.shieldFrames=90;}
+            this.name='LÉVIATHAN SYSTÉMIQUE · PHASE '+this.stage+'/3';
+        }
+        draw() {
+            super.draw();
+            ctx.save(); ctx.translate(this.x,this.y);
+            ctx.strokeStyle=this.shieldFrames>0?'#ffffff':['#ffd700','#ff8800','#ff0055'][this.stage-1];
+            ctx.lineWidth=this.shieldFrames>0?7:3;
+            ctx.rotate(this.frame*0.01);
+            for(let i=0;i<3;i++) {ctx.rotate(Math.PI/3);ctx.strokeRect(-65,-65,130,130);}
+            ctx.restore();
         }
     }
 
@@ -1232,6 +1289,7 @@
         GAME.climat = 100;
         GAME.bossMode = false;
         GAME.startTime = Date.now();
+        GAME.elapsedMs=0; GAME.lastTick=performance.now();
 
         // Initialiser drones
         drones = [];
@@ -1285,21 +1343,15 @@
         // Shield & Drones
         document.getElementById('shield-count').innerText = player.shield.toString().padStart(2, '0');
         document.getElementById('drone-count').innerText = BONUSES.GRO;
+        document.getElementById('sector-hud').textContent='Niveau '+GAME.sector+' · '+SECTORS[GAME.sector-1]+' · '+(GAME.bossMode?(GAME.sector===10?'MÉGABOSS':'BOSS'):formatDuration(sectorDurationMs(GAME.sector)-GAME.elapsedMs));
     }
 
     function spawnManager() {
-        if(boss) return; // Pas d'ennemis pendant boss
-
-        // Déclenchement Boss
-        if(GAME.score >= (DIFFICULTY_CONFIG.bossThreshold+(GAME.sector-1)*500) && !GAME.bossMode) {
-            GAME.bossMode = true;
-            enemies = []; // Clear ennemis existants
-            
-            document.getElementById('boss-warning').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('boss-warning').style.display = 'none';
-                boss = new Boss();
-            }, 3000);
+        if(boss || GAME.bossMode) return;
+        if(GAME.elapsedMs >= sectorDurationMs(GAME.sector)) {
+            GAME.bossMode=true;
+            enemies=[]; bullets=bullets.filter(b=>b.source==='PLAYER');
+            boss=GAME.sector===10?new MegaBoss():new Boss();
             return;
         }
 
@@ -1320,8 +1372,11 @@
         }
     }
 
-    function loop() {
+    function loop(now=performance.now()) {
         if(!GAME.active) return;
+        if(document.hidden) { GAME.lastTick=null; requestAnimationFrame(loop); return; }
+        if(GAME.lastTick!==null) GAME.elapsedMs+=Math.max(0,now-GAME.lastTick);
+        GAME.lastTick=now;
 
         // Screen Shake
         let dx = 0, dy = 0;
@@ -1357,7 +1412,7 @@
 
             if(b.source === 'PLAYER') {
                 // Collisions avec boss
-                if(boss && Math.hypot(b.x - boss.x, b.y - boss.y) < 60) {
+                if(boss && Math.hypot(b.x - boss.x, b.y - boss.y) < (boss.hitRadius || 60)) {
                     boss.takeDamage(b.bossDamage);
                     b.active = false;
                     particles.push(new Explosion(b.x, b.y, '#fff', 0.5));
@@ -1365,7 +1420,7 @@
 
                 // Collisions avec ennemis
                 enemies.forEach(e => {
-                    if(e.active && Math.hypot(b.x - e.x, b.y - e.y) < e.size) {
+                    if(b.active && e.active && Math.hypot(b.x - e.x, b.y - e.y) < e.size) {
                         e.takeDamage(b.enemyDamage);
                         b.active = false;
                     }
@@ -1402,6 +1457,7 @@
     }
 
     // ================= CONTRÔLES =================
+    document.addEventListener('visibilitychange',()=>{GAME.lastTick=null;});
     window.addEventListener('focus', () => { if(!GAME.active) refreshHangar(); });
     window.addEventListener('storage', event => {
         if(!GAME.active && (!event.key || event.key.startsWith('CERT_'))) refreshHangar();
