@@ -60,7 +60,7 @@ try {
  await page.evaluate(()=>refreshHangar());
  for(const id of ['lateral','pulse','shield','repair','wing']){
   while(await page.evaluate(id=>(readWallet(shopPlayer()).levels[id]||0)<5,id))assert.equal(await page.evaluate(id=>buyPart(id),id),true);
-  assert.equal(await page.evaluate(id=>buyPart(id),id),false);
+  assert.equal(await page.evaluate(id=>buyPart(id,4),id),false);
  }
  const wallet=await page.evaluate(()=>readWallet(shopPlayer()));
  assert.equal(wallet.spent,10870);assert.equal(wallet.earned,11725);
