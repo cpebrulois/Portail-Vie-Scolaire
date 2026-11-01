@@ -460,7 +460,16 @@ function completeMod(){
     localStorage.setItem('phare_xp_total',total);
     localStorage.setItem(xpKey,XP_VALUE);
   }
-  localStorage.setItem(certKey,'true');
+  const when=new Date().toISOString();
+  localStorage.setItem(certKey,JSON.stringify({v:1,d:when,m:MODULE_ID,f:true}));
+  const player=new URLSearchParams(window.location.search).get('player')
+    ||localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||'';
+  const events=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
+  events.push({id:'PIXHARE-'+MODULE_ID+'-'+Date.now(),type:'PIXHARE_PROGRESS',
+    player:player,module:MODULE_ID,xp:XP_VALUE,d:when});
+  if(events.length>500)events.splice(0,events.length-500);
+  localStorage.setItem('pvs_bridge_events',JSON.stringify(events));
+  window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
   // pvs bridge
   if(window.parent&&window.parent!==window){
     window.parent.postMessage({type:'pvs_bridge_event',event:'MODULE_COMPLETE',data:{module:MODULE_ID,xp:XP_VALUE}},'*');

@@ -916,6 +916,7 @@
 
         // Module data
         const MODULE_ID = "NUMERIQUE_02";
+        const MODULE_HUB_XP = 100;
         const MODULE_VERSION = "1.0";
         const MODULE_TITLE = "Les Architectes de l'Ombre";
         const PREREQUISITE_MODULE = "NUMERIQUE_01";
@@ -1160,25 +1161,6 @@
                 window.location.href = player ? `${hub}?player=${encodeURIComponent(player)}` : hub;
             }
                 
-                if (decoded.m !== PREREQUISITE_MODULE) {
-                    setUnlockError(`Ce code provient du module ${decoded.m}. Tu as besoin du code de ${PREREQUISITE_MODULE}.`);
-                    return;
-                }
-                
-                if (!decoded.f) {
-                    setUnlockError("Tu n'as pas terminé le module précédent. Retourne le compléter !");
-                    return;
-                }
-                
-                // Success - transfer player data
-                setPlayerData(prev => ({
-                    ...prev,
-                    name: decoded.n || "",
-                    class: decoded.c || ""
-                }));
-                setGameState("intro");
-            }
-            // Start game
             function startGame() {
                 setGameState("flashcards");
             }
@@ -1284,7 +1266,7 @@
                     var _pl=localStorage.getItem('pvs_current_player')||localStorage.getItem('pvs_phare_player')||new URLSearchParams(window.location.search).get('player')||'';
                     localStorage.setItem('CERT_PHARE_NUMERIQUE_02',JSON.stringify({v:1,d:new Date().toISOString(),m:'NUMERIQUE_02',f:true}));
                     var _pvb=JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
-                    _pvb.push({id:'PIXHARE-NUMERIQUE_02-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pl,module:'NUMERIQUE_02',xp:100,d:new Date().toISOString()});
+                    _pvb.push({id:'PIXHARE-NUMERIQUE_02-'+Date.now(),type:'PIXHARE_PROGRESS',player:_pl,module:'NUMERIQUE_02',xp:MODULE_HUB_XP,d:new Date().toISOString()});
                     if(_pvb.length>500)_pvb.splice(0,_pvb.length-500);
                     localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));
                     window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
@@ -1384,7 +1366,7 @@
                     ),
                     e("div", { className: "xp-display" },
                         e("div", { className: "xp-box" },
-                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-label" }, "Entraînement"),
                             e("div", { className: "xp-value" }, playerData.xp)
                         ),
                         e("div", { className: "xp-box" },
@@ -1448,7 +1430,7 @@
                     ),
                     e("div", { className: "xp-display" },
                         e("div", { className: "xp-box" },
-                            e("div", { className: "xp-label" }, "XP"),
+                            e("div", { className: "xp-label" }, "Entraînement"),
                             e("div", { className: "xp-value" }, playerData.xp)
                         ),
                         e("div", { className: "xp-box" },
@@ -1527,7 +1509,7 @@
                     ),
                     e("div", { className: "xp-display" },
                         e("div", { className: "xp-box" },
-                            e("div", { className: "xp-label" }, "XP Total"),
+                            e("div", { className: "xp-label" }, "Points d’entraînement"),
                             e("div", { className: "xp-value" }, playerData.xp)
                         ),
                         e("div", { className: "xp-box" },
@@ -1596,8 +1578,8 @@
                                 e("div", { className: "stat-label" }, "Score Total")
                             ),
                             e("div", { className: "stat-card" },
-                                e("div", { className: "stat-value" }, playerData.xp),
-                                e("div", { className: "stat-label" }, "XP Gagnés")
+                                e("div", { className: "stat-value" }, MODULE_HUB_XP),
+                                e("div", { className: "stat-label" }, "XP crédités au hub")
                             ),
                             e("div", { className: "stat-card" },
                                 e("div", { className: "stat-value" }, playerData.quizScore),

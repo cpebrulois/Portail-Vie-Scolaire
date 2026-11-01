@@ -479,7 +479,7 @@
                                 var _pvb = JSON.parse(localStorage.getItem('pvs_bridge_events')||'[]');
                                 _pvb.push({id:'PIXHARE-JURIDIQUE_03-'+Date.now(),
                                     type:'PIXHARE_PROGRESS',player:_pl,module:'JURIDIQUE_03',
-                                    xp:100,d:new Date().toISOString()});
+                                    xp:450,d:new Date().toISOString()});
                                 if(_pvb.length>500) _pvb.splice(0,_pvb.length-500);
                                 localStorage.setItem('pvs_bridge_events',JSON.stringify(_pvb));
                                 window.dispatchEvent(new StorageEvent('storage',{key:'pvs_bridge_events'}));
@@ -497,7 +497,7 @@
 
             if (mode === 'report') {
                 return e('div', { className: 'app-container' },
-                    e(Report, { progress: { ...progress, xp: xp + (currentLevel > 3 ? 0 : MODULE_DATA.niveau3.xp_reward) }, onRestart: () => { resetProgress(); setMode('game'); }, onMenu: () => { resetProgress(); setMode('menu'); } })
+                    e(Report, { progress: { ...progress, xp }, onRestart: () => { resetProgress(); setMode('game'); }, onMenu: () => { resetProgress(); setMode('menu'); } })
                 );
             }
             return e('div', { className: 'app-container' }, 'Chargement...');
@@ -508,7 +508,7 @@
         // === SUPERHUB BRIDGE ===
         function getHubPlayer() {
             try {
-                var code = localStorage.getItem('pvs_current_player') || '';
+                var code = new URLSearchParams(window.location.search).get('player') || localStorage.getItem('pvs_current_player') || localStorage.getItem('pvs_phare_player') || '';
                 if (code && code !== 'VISITEUR' && code !== 'ADMIN') return code;
             } catch(e) {}
             return null;
