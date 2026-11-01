@@ -604,6 +604,26 @@
     // Les six piliers du portail participent aux paliers ; les cinq bonus historiques restent inchangés.
     const SECTOR_PILLARS = {...Object.fromEntries(Object.entries(PILLAR_MAP).map(([key, ids]) => [key, ids[0].slice(0,-3)])), VEA:'VEA'};
     const SECTORS = ['Veille orbitale','Réseau des rumeurs','Zone de désinformation','Citadelle des ombres','Noyau de la vigilance','Frontière des signaux','Tempête des réseaux','Labyrinthe des miroirs','Siège du noyau','Le Léviathan systémique'];
+    const SECTOR_BACKGROUNDS = Array.from({length:10},(_,i)=>'assets/arcade/cyberspace-'+String(i+1).padStart(2,'0')+'.png');
+    let backdropRequest=0;
+    function setSectorBackdrop(level) {
+        if(!Number.isInteger(level)||level<1||level>SECTOR_BACKGROUNDS.length) return;
+        const layer=document.getElementById('bg-image');
+        if(layer.dataset.requestedSector===String(level)) return;
+        layer.dataset.requestedSector=String(level);layer.dataset.backgroundState='loading';
+        const request=++backdropRequest,picture=new Image();
+        picture.onload=()=>{
+            if(request!==backdropRequest) return;
+            layer.style.backgroundImage='url("'+SECTOR_BACKGROUNDS[level-1]+'")';
+            layer.dataset.backgroundSector=String(level);layer.dataset.backgroundState='ready';
+        };
+        picture.onerror=()=>{
+            if(request!==backdropRequest) return;
+            layer.style.backgroundImage='url("background.jpg")';
+            layer.dataset.backgroundSector='fallback';layer.dataset.backgroundState='fallback';
+        };
+        picture.src=SECTOR_BACKGROUNDS[level-1];
+    }
     let selectedSector = 1;
     function hasModule(pillar, n) {
         const prefix = SECTOR_PILLARS[pillar];
@@ -627,6 +647,7 @@
     }
     function renderSectors() {
         if(!sectorUnlocked(selectedSector)) selectedSector=1;
+        setSectorBackdrop(selectedSector);
         const picker=document.getElementById('sector-picker');
         picker.replaceChildren();
         SECTORS.forEach((name,i)=>{
@@ -1432,7 +1453,7 @@
         if(GAME.active || !sectorUnlocked(selectedSector)) return;
         GAME.sector=selectedSector;
         document.getElementById('sector-hud').textContent='Niveau '+GAME.sector+' · '+SECTORS[GAME.sector-1];
-        document.getElementById('bg-image').style.filter='hue-rotate('+((GAME.sector-1)*45)+'deg)';
+        setSectorBackdrop(GAME.sector);
         Object.assign(player, new Player());
         document.getElementById('start-screen').classList.add('hidden');
         

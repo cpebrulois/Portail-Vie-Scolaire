@@ -175,5 +175,6 @@ try{
   await page.getByRole('button',{name:'INITIALISER PROTOCOLE'}).click();
   assert.deepEqual(await page.evaluate(()=>{GAME.active=false;bullets=[];player.shoot();return{lasers:bullets.length,shield:player.shield};}),{lasers:3,shield:1});
   console.log('PASS sparse/legacy certificates and upgrades received while hangar is open');
+  assert.deepEqual(errors,[],'no page errors during PIXHARe synchronization and hub integration');
   console.log('MODULES COMPLETE',JSON.stringify(results));
 }finally{await browser.close();}

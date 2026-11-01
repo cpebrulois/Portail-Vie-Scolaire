@@ -902,8 +902,7 @@ function validateModule(moduleId, silent) {
   });
   localStorage.setItem(ckey(moduleId), cert);
   if (!was) {
-    pushBridge(moduleId);
-    localStorage.setItem(syncBridgeKey(moduleId), cert);
+    syncModuleCompletion(moduleId);
   }
   render();
   if (!silent) toast('\u2705 ' + moduleId + ' validé !');
@@ -919,15 +918,20 @@ function pushBridge(moduleId) {
     if(evts.length > 500) evts.splice(0, evts.length-500);
     localStorage.setItem('pvs_bridge_events', JSON.stringify(evts));
     window.dispatchEvent(new StorageEvent('storage', {key:'pvs_bridge_events'}));
-  } catch(e) {}
+    return true;
+  } catch(e) { return false; }
 }
 
 function syncModuleCompletion(moduleId) {
   var cert = localStorage.getItem(ckey(moduleId));
   if(!cert) return false;
   if(localStorage.getItem(syncBridgeKey(moduleId)) === cert) return false;
-  pushBridge(moduleId);
+  // The synthetic storage event is synchronous: mark before publishing to avoid re-entry.
   localStorage.setItem(syncBridgeKey(moduleId), cert);
+  if(!pushBridge(moduleId)){
+    localStorage.removeItem(syncBridgeKey(moduleId));
+    return false;
+  }
   return true;
 }
 
