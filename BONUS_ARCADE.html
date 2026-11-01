@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>GUARDIAN pHARe - CYBER DEFENSE PROTOCOL</title>
     <style>
+        #start-screen { overflow-y:auto; justify-content:flex-start; padding:24px; box-sizing:border-box; }
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
 
         body { 
@@ -325,7 +326,7 @@
             <div style="font-size: 0.8em; letter-spacing: 2px; color: #aaa;">CLIMAT SCOLAIRE</div>
             <div class="bar-container"><div id="climat-bar" class="bar-fill"></div></div>
         </div>
-        <div id="score-display">0000</div>
+        <div><div id="sector-hud" style="text-align:center;color:#00d4ff"></div><div id="score-display">0000</div></div>
         <div class="hud-box" style="text-align:right">
             <div style="color:#ffd700; font-weight: bold; font-size: 1.1em;">
                 SHIELD: <span id="shield-count">0</span>
@@ -393,6 +394,7 @@
         <button class="difficulty-btn" onclick="setDifficulty('maitre', this)">MAÎTRE HD</button>
     </div>
 
+    <div id="sector-picker" style="max-width:650px;color:#00d4ff" aria-label="Niveaux du jeu"></div>
     <button onclick="startGame()" style="font-size: 1.4em; margin-top: 30px;">
         INITIALISER PROTOCOLE
     </button>
@@ -415,9 +417,10 @@
         SCORE FINAL : <span id="victory-score"></span>
     </p>
     <div class="victory-bonus">
-        <div style="font-size: 1.2em; color: #ffd700; margin-bottom: 10px;">✨ BONUS XP DÉBLOQUÉ ✨</div>
-        <div style="color: #aaa;">Progression enregistrée dans le système central</div>
+        <div style="font-size: 1.2em; color: #ffd700; margin-bottom: 10px;">✨ SECTEUR SÉCURISÉ ✨</div>
+        <div style="color: #aaa;">Tes améliorations restent liées aux modules PIXHARe validés.</div>
     </div>
+    <button onclick="returnHangar()">CHOISIR UN SECTEUR</button>
     <button onclick="window.close()" style="margin-top: 30px; background: linear-gradient(135deg, #ffd700, #ff8800);">
         RETOUR AU QG
     </button>
@@ -447,6 +450,54 @@
         .forEach(([key, name]) => {
             PILLAR_MAP[key] = Array.from({length:10}, (_, i) => name + '_' + String(i+1).padStart(2,'0'));
         });
+
+    // Les six piliers du portail participent aux paliers ; les cinq bonus historiques restent inchangés.
+    const SECTOR_PILLARS = {...Object.fromEntries(Object.entries(PILLAR_MAP).map(([key, ids]) => [key, ids[0].slice(0,-3)])), VEA:'VEA'};
+    const SECTORS = ['Veille orbitale','Réseau des rumeurs','Zone de désinformation','Citadelle des ombres','Noyau de la vigilance'];
+    let selectedSector = 1;
+    function hasModule(pillar, n) {
+        const prefix = SECTOR_PILLARS[pillar];
+        return !!(localStorage.getItem('CERT_PHARE_'+prefix+'_'+String(n).padStart(2,'0'))
+            || localStorage.getItem('CERT_'+pillar+'_'+n));
+    }
+    function missingSectorModules(level) {
+        const missing=[];
+        for(let tier=2;tier<=level;tier++) Object.keys(SECTOR_PILLARS).forEach(pillar=>{
+            if(!hasModule(pillar,tier)) missing.push(SECTOR_PILLARS[pillar]+'_'+String(tier).padStart(2,'0'));
+        });
+        return missing;
+    }
+    function sectorUnlocked(level) {
+        return Number.isInteger(level) && level>=1 && level<=5 && missingSectorModules(level).length===0;
+    }
+    function chooseSector(level) {
+        if(!sectorUnlocked(level) || GAME.active) return;
+        selectedSector=level;
+        refreshHangar();
+    }
+    function renderSectors() {
+        if(!sectorUnlocked(selectedSector)) selectedSector=1;
+        const picker=document.getElementById('sector-picker');
+        picker.replaceChildren();
+        SECTORS.forEach((name,i)=>{
+            const level=i+1, missing=missingSectorModules(level), button=document.createElement('button');
+            button.textContent=(missing.length?'🔒 ':'')+'Niveau '+level+' · '+name;
+            button.disabled=missing.length>0;
+            button.setAttribute('aria-pressed',String(selectedSector===level));
+            button.style.border=selectedSector===level?'2px solid #ffd700':'1px solid #00d4ff';
+            button.title=missing.length?'Modules à valider : '+missing.join(', '):'Secteur disponible';
+            button.onclick=()=>chooseSector(level);
+            picker.appendChild(button);
+        });
+        const hint=document.createElement('p');
+        hint.textContent='Niveaux 2 à 5 : valide les modules du palier dans les six piliers, dont Vivre ensemble actif. Les paliers précédents restent nécessaires.';
+        picker.appendChild(hint);
+        const weapon=document.createElement('p');
+        weapon.textContent=hasModule('NUM',5)?'⚡ Photon V : dégâts doublés et cadence renforcée.':'🔫 Photon standard — valide NUMERIQUE_05 pour le Photon V.';
+        picker.appendChild(weapon);
+    }
+    function sectorStrength() { return 1+(GAME.sector-1)*0.3; }
+    function returnHangar() { window.location.reload(); }
 
     function getLvl(pillar) { 
         let lvl = 0;
@@ -481,6 +532,7 @@
     function refreshHangar() {
       Object.entries({NUM:'NUM',JUR:'JUR',GRO:'GRP',HIS:'HIS',NEURO:'NEU'})
         .forEach(([bonus, pillar]) => { BONUSES[bonus] = getLvl(pillar); });
+      renderSectors();
       hangar.replaceChildren();
       Object.keys(pillarLabels).forEach(key => {
         const row = document.createElement('div');
@@ -540,6 +592,7 @@
 
     // ================= MOTEUR & ÉTATS =================
     const GAME = {
+        sector: 1,
         active: false,
         score: 0,
         frame: 0,
@@ -610,6 +663,7 @@
             this.shield = BONUSES.JUR;
             this.invincible = 0;
             this.fireDelay = 0;
+            this.photonV = hasModule('NUM',5);
             this.regenRate = BONUSES.NEURO * 0.5; // HP/s
             this.regenAccumulator = 0;
         }
@@ -625,7 +679,7 @@
             // Tir
             if(INPUT.fire && this.fireDelay <= 0) {
                 this.shoot();
-                this.fireDelay = 8;
+                this.fireDelay = this.photonV ? 6 : 8;
             }
             if(this.fireDelay > 0) this.fireDelay--;
 
@@ -649,7 +703,7 @@
             const laserCount = 1 + BONUSES.NUM;
             for(let i = 0; i < laserCount; i++) {
                 const offset = (i - (laserCount - 1) / 2) * 18;
-                bullets.push(new Bullet(this.x + offset, this.y - 20, 0, -15, 'PLAYER'));
+                bullets.push(new Bullet(this.x + offset, this.y - 20, 0, this.photonV ? -19 : -15, 'PLAYER', this.photonV));
             }
         }
         
@@ -836,8 +890,8 @@
             Object.assign(this, configs[type]);
             
             // Scaling difficulté
-            this.hp *= DIFFICULTY_CONFIG.multiplier;
-            this.speed *= DIFFICULTY_CONFIG.multiplier;
+            this.hp *= DIFFICULTY_CONFIG.multiplier * sectorStrength();
+            this.speed *= DIFFICULTY_CONFIG.multiplier * (1+(GAME.sector-1)*0.08);
             this.shotCooldown = 0;
         }
         
@@ -930,7 +984,7 @@
         constructor() {
             this.x = canvas.width / 2;
             this.y = -100;
-            this.hp = 500 * DIFFICULTY_CONFIG.multiplier;
+            this.hp = 500 * DIFFICULTY_CONFIG.multiplier * sectorStrength();
             this.hpMax = this.hp;
             this.phase = 'ENTRY';
             this.frame = 0;
@@ -1088,7 +1142,10 @@
 
     // --- PROJECTILES ---
     class Bullet {
-        constructor(x, y, dx, dy, source) {
+        constructor(x, y, dx, dy, source, photonV = false) {
+            this.photonV = photonV;
+            this.enemyDamage = photonV ? 30 : 15;
+            this.bossDamage = photonV ? 20 : 10;
             this.x = x;
             this.y = y;
             this.dx = dx;
@@ -1108,10 +1165,10 @@
         }
         
         draw() {
-            ctx.fillStyle = this.source === 'PLAYER' ? '#00ffff' : '#ff00ff';
+            ctx.fillStyle = this.source === 'PLAYER' ? (this.photonV ? '#ffd700' : '#00ffff') : '#ff00ff';
             ctx.shadowBlur = 8;
             ctx.shadowColor = ctx.fillStyle;
-            ctx.fillRect(this.x - 3, this.y - 6, 6, 12);
+            ctx.fillRect(this.x - 3, this.y - (this.photonV ? 12 : 6), 6, this.photonV ? 24 : 12);
             ctx.shadowBlur = 0;
         }
     }
@@ -1158,6 +1215,10 @@
 
     function startGame() {
         refreshHangar();
+        if(GAME.active || !sectorUnlocked(selectedSector)) return;
+        GAME.sector=selectedSector;
+        document.getElementById('sector-hud').textContent='Niveau '+GAME.sector+' · '+SECTORS[GAME.sector-1];
+        document.getElementById('bg-image').style.filter='hue-rotate('+((GAME.sector-1)*45)+'deg)';
         Object.assign(player, new Player());
         document.getElementById('start-screen').classList.add('hidden');
         
@@ -1230,7 +1291,7 @@
         if(boss) return; // Pas d'ennemis pendant boss
 
         // Déclenchement Boss
-        if(GAME.score >= DIFFICULTY_CONFIG.bossThreshold && !GAME.bossMode) {
+        if(GAME.score >= (DIFFICULTY_CONFIG.bossThreshold+(GAME.sector-1)*500) && !GAME.bossMode) {
             GAME.bossMode = true;
             enemies = []; // Clear ennemis existants
             
@@ -1243,7 +1304,7 @@
         }
 
         // Spawn ennemis normaux
-        if(GAME.frame % DIFFICULTY_CONFIG.spawnRate === 0) {
+        if(GAME.frame % Math.max(15,DIFFICULTY_CONFIG.spawnRate-(GAME.sector-1)*7) === 0) {
             const rand = Math.random();
             let type = 'RUMEUR';
             
@@ -1254,6 +1315,8 @@
             else if(rand > 0.25) type = 'TROLL';
             
             enemies.push(new Enemy(type));
+            if(GAME.sector>=3 && GAME.frame%180===0) enemies.push(new Enemy('DEEPFAKE'));
+            if(GAME.sector>=5 && GAME.frame%180===0) enemies.push(new Enemy('STALKING'));
         }
     }
 
@@ -1295,7 +1358,7 @@
             if(b.source === 'PLAYER') {
                 // Collisions avec boss
                 if(boss && Math.hypot(b.x - boss.x, b.y - boss.y) < 60) {
-                    boss.takeDamage(10);
+                    boss.takeDamage(b.bossDamage);
                     b.active = false;
                     particles.push(new Explosion(b.x, b.y, '#fff', 0.5));
                 }
@@ -1303,7 +1366,7 @@
                 // Collisions avec ennemis
                 enemies.forEach(e => {
                     if(e.active && Math.hypot(b.x - e.x, b.y - e.y) < e.size) {
-                        e.takeDamage(15);
+                        e.takeDamage(b.enemyDamage);
                         b.active = false;
                     }
                 });
