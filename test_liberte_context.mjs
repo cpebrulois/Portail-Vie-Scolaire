@@ -11,7 +11,7 @@ try {
  await page.route('**/*',async r=>{
   const u=new URL(r.request().url());
   if(u.hostname==='unpkg.com')return r.continue();
-  if(u.hostname==='liberte.test')return r.fulfill({contentType:'text/html',body:u.pathname==='/LIB_DR01.html'?await readFile(new URL('./LIB_DR01.html',import.meta.url),'utf8'):source});
+  if(u.hostname==='liberte.test')return r.fulfill({contentType:'text/html',body:/^\/LIB_[A-Z]{2}\d\d\.html$/.test(u.pathname)?await readFile(new URL('.'+u.pathname,import.meta.url),'utf8'):source});
   return r.abort();
  });
  await page.goto('http://liberte.test/?player=TEST-PUBLIC-0159');
@@ -20,9 +20,16 @@ try {
  assert.equal(await page.evaluate(()=>getPlayer()),'TEST-PUBLIC-0159');
  assert.equal(await page.locator('#libForgeBtn').isVisible(),false);
  assert.equal(await page.locator('input[type=password]').count(),0);
+ const files=await page.evaluate(()=>PILLARS.flatMap(p=>p.modules.map(m=>m.file)));
  await page.locator('.mod-card').first().click();
  await page.waitForURL('**/LIB_DR01.html');
  assert.equal(await page.evaluate(()=>getPlayer()),'TEST-PUBLIC-0159');
+ for(const file of files){
+  await page.goto('http://liberte.test/'+file);
+  await page.waitForFunction(()=>document.getElementById('root').children.length>0);
+  assert.equal(await page.evaluate(()=>getPlayer()),'TEST-PUBLIC-0159',file);
+  assert.equal(await page.locator('input[type=password]').count(),0,file);
+ }
  await page.evaluate(()=>sessionStorage.setItem('pvs_admin_session_v1','1'));
  await page.goto('http://liberte.test/');await page.locator('.mod-card').first().waitFor();
  assert.equal(await page.locator('#libForgeBtn').isVisible(),true);
