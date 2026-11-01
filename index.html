@@ -367,7 +367,7 @@
 <div class="stat"><div class="k">Academie</div><div class="v" id="pAca">0</div></div>
 <div class="stat"><div class="k">Videos</div><div class="v" id="pVid">0</div></div>
 <div class="stat"><div class="k">Social attente</div><div class="v" id="pPend">0</div></div>
-<div class="stat"><div class="k">CP Total</div><div class="v" id="pCp">0</div></div><div class="stat"><div class="k">Coeff Académie</div><div class="v" id="pAcadCoeff" style="color:#ffd700;font-size:0.85em">×1,00</div></div><div class="stat"><div class="k">XP Final ×coeff</div><div class="v" id="pXgFinal" style="color:#4fc3f7">0</div></div>
+<div class="stat"><div class="k">CP Total</div><div class="v" id="pCp">0</div></div><div class="stat"><div class="k">Coeff Académie</div><div class="v" id="pAcadCoeff" style="color:#ffd700;font-size:0.85em">×1,00</div></div><div class="stat"><div class="k">XP après coefficient</div><div class="v" id="pXgFinal" style="color:#4fc3f7">0</div></div>
 </div>
 </div>
 </article>
@@ -397,9 +397,10 @@
 <div class="tabs"><button class="tab on" id="tg" onclick="switchHall('global')">Global</button><button class="tab" id="tw" onclick="switchHall('week')">Hebdo</button><select id="selAnnee" onchange="switchHall(this.value?('an:'+this.value):'global')" style="margin-left:6px;padding:4px 8px;font-size:.8em"><option value="">Palmarès…</option></select></div>
 </div>
 <table>
-<thead><tr><th>#</th><th>Code</th><th>Statut</th><th>CP</th><th id="scoreHead">XP Global</th></tr></thead>
+<thead><tr><th>#</th><th>Code</th><th>Statut</th><th>CP</th><th id="scoreHead">Score de progression (%)</th></tr></thead>
 <tbody id="hall"></tbody>
 </table>
+<p class="hint" id="hallRule">Global : score de progression rapporté au potentiel du rang, plafonné par les chapitres du fil conducteur. Après 8 chapitres, tous les XP sont visibles et le score peut dépasser 100 %. Ce classement ne trie pas les XP bruts. Hebdo : points sociaux validés, vidéos et malus de la semaine, avec coefficient ; les modules pHARe n’y sont pas ajoutés.</p>
 <div id="noteAnnee" style="display:none;margin-top:8px;padding:9px 13px;border-radius:6px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);font-size:.82em;color:#c8bfa8">
   Palmares archive, en lecture seule. Pour les annees anterieures a la mise en place du
   nouveau bareme, seule la progression pHARe a pu etre reconstituee : le classement est
@@ -486,7 +487,7 @@
   <span style="font-size:0.7em;color:#aaa">Français · Mathématiques · 6e → 3e</span>
 </div>
 <p class="hint" style="margin:0 0 10px">Ces modules renforcent les axes prioritaires du projet d'établissement.<br>
-Ils ne donnent <b>pas de points directs</b>, mais chaque module accompli augmente ton <b>coefficient multiplicatif</b> XP de +2 % (plafonné à ×2,00).</p>
+Ils ne donnent <b>pas de points directs</b>. Les exercices ordinaires ajoutent +2 % au coefficient XP, jusqu’à +40 %. Les bonus d’orientation et de sécurité routière s’y ajoutent. Le coefficient est appliqué une seule fois.</p>
 
 <div class="acad-coeff-bar">
   <span>🔬 Coefficient académique :</span>
@@ -1587,7 +1588,8 @@ function rankInfo(p){const i=rankIndex(p),nxt=RANKS[i+1]||null,d={i,key:RANKS[i]
 
 // ── Fonctions Académiques ──────────────────────────
 function acadDoneCount(p){return acadDoneKeys(p).length}
-function xgFinal(p){return Math.round(xg(p)*acadCoeff(p))}
+// xg() applique deja le coefficient academique.
+function xgFinal(p){return xg(p)}
 
 /* ═══════════════════════════════════════════════════════════════════════
    SCORE DU HALL DES HÉROS — normalisé par niveau, borné par le filage
@@ -1800,7 +1802,7 @@ function majSelecteurAnnees(){
     ans.map(function(a){return '<option value="'+a+'">'+a+'</option>'}).join('');
   sel.value=av; sel.style.display=ans.length?'inline-block':'none';
 }
-function renderHall(){majSelecteurAnnees();const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='global'?'XP Global':'XP Hebdo';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;const hallSource=sbClient?(sbOnline?'cloud':'local'):(syncOnline?'relais local':'local');document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount} | Source: ${hallSource}`}
+function renderHall(){majSelecteurAnnees();const b=document.getElementById('hall');const rows=rank(mode).slice(0,10);b.innerHTML='';if(!rows.length){b.innerHTML='<tr><td colspan=\"5\">Aucun joueur enregistre.</td></tr>'}else{rows.forEach((r,i)=>{const cl=i===0?'style=\"color:#ffd700;font-weight:800\"':(i===1?'style=\"color:#d9d9d9;font-weight:800\"':(i===2?'style=\"color:#da9a57;font-weight:800\"':''));const tr=document.createElement('tr');tr.innerHTML=`<td ${cl}>${i+1}</td><td>${r.c}</td><td>${r.rl}</td><td>${r.cp}</td><td>${r.s}</td>`;b.appendChild(tr)})}document.getElementById('scoreHead').textContent=mode==='week'?'XP hebdomadaires après coefficient':'Score de progression (%)';const realCount=Object.keys(S.players).filter(c=>!isVisitorCode(c)).length;const hallSource=sbClient?(sbOnline?'cloud':'local'):(syncOnline?'relais local':'local');document.getElementById('hallMeta').textContent=`Semaine: ${S.week} | Joueurs: ${realCount} | Source: ${hallSource}`}
 
 function renderAcademie(){renderAcadGrid()}
 
@@ -2179,7 +2181,7 @@ async function sbPullGlobal(showMsg){
   }catch(e){sbOnline=false;updateSyncInfo(showMsg?'Cloud pull config impossible: '+e.message:'');return false}
   finally{sbBusyGlobalPull=false}
 }
-function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const before=JSON.stringify(local);const merged=Object.assign(mkP(code),local,remote,{code});merged.cp=Object.assign({},local.cp||{},remote.cp||{});Object.keys(W).forEach(k=>{merged.cp[k]=Math.max(Number((local.cp||{})[k]||0),Number((remote.cp||{})[k]||0))});const localDone=local.pixhareDone&&typeof local.pixhareDone==='object'?local.pixhareDone:{};const remoteDone=remote.pixhareDone&&typeof remote.pixhareDone==='object'?remote.pixhareDone:{};merged.pixhareDone=Object.assign({},localDone,remoteDone);const localAcad=local.acadDone&&typeof local.acadDone==='object'?local.acadDone:{};const remoteAcad=remote.acadDone&&typeof remote.acadDone==='object'?remote.acadDone:{};merged.acadDone=Object.assign({},localAcad,remoteAcad);const localIds=Array.isArray(local.acadIds)?local.acadIds:[];const remoteIds=Array.isArray(remote.acadIds)?remote.acadIds:[];merged.acadIds=[...new Set([...localIds,...remoteIds])];const objKeys=new Set([...Object.keys(local.obj||{}),...Object.keys(remote.obj||{})]);merged.obj={};objKeys.forEach(k=>{const lo=(local.obj||{})[k]||{},ro=(remote.obj||{})[k]||{};merged.obj[k]=Object.assign({},lo,ro,{open:Boolean(lo.open||ro.open),valid:Boolean(lo.valid||ro.valid)})});['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived','pixhareXp'].forEach(k=>{merged[k]=Math.max(Number(local[k]||0),Number(remote[k]||0))});['malusG','malusW'].forEach(k=>{merged[k]=Math.min(Number(local[k]||0),Number(remote[k]||0))});merged.witness=String(local.witness||remote.witness||'');const upTs=Math.max(Date.parse(local.up||0)||0,Date.parse(remote.up||0)||0);merged.up=new Date(upTs||Date.now()).toISOString();syncPixharePlayerProgress(merged);S.players[code]=merged;return before!==JSON.stringify(merged)}
+function mergeCloudPlayer(code,remote){if(!remote||typeof remote!=='object')return false;const local=gp(code);if(!local)return false;const before=JSON.stringify(local);const merged=Object.assign(mkP(code),local,remote,{code});merged.cp=Object.assign({},local.cp||{},remote.cp||{});Object.keys(W).forEach(k=>{merged.cp[k]=Math.max(Number((local.cp||{})[k]||0),Number((remote.cp||{})[k]||0))});const localDone=local.pixhareDone&&typeof local.pixhareDone==='object'?local.pixhareDone:{};const remoteDone=remote.pixhareDone&&typeof remote.pixhareDone==='object'?remote.pixhareDone:{};merged.pixhareDone=Object.assign({},localDone,remoteDone);const localAcad=local.acadDone&&typeof local.acadDone==='object'?local.acadDone:{};const remoteAcad=remote.acadDone&&typeof remote.acadDone==='object'?remote.acadDone:{};merged.acadDone=Object.assign({},localAcad,remoteAcad);merged.filageDone=Object.assign({},local.filageDone||{},remote.filageDone||{});const localIds=Array.isArray(local.acadIds)?local.acadIds:[];const remoteIds=Array.isArray(remote.acadIds)?remote.acadIds:[];merged.acadIds=[...new Set([...localIds,...remoteIds])];const objKeys=new Set([...Object.keys(local.obj||{}),...Object.keys(remote.obj||{})]);merged.obj={};objKeys.forEach(k=>{const lo=(local.obj||{})[k]||{},ro=(remote.obj||{})[k]||{};merged.obj[k]=Object.assign({},lo,ro,{open:Boolean(lo.open||ro.open),valid:Boolean(lo.valid||ro.valid)})});['socialG','socialW','wBonusG','wBonusW','videoG','videoW','witnessGiven','recognizedReceived','pixhareXp'].forEach(k=>{merged[k]=Math.max(Number(local[k]||0),Number(remote[k]||0))});['malusG','malusW'].forEach(k=>{merged[k]=Math.min(Number(local[k]||0),Number(remote[k]||0))});merged.witness=String(local.witness||remote.witness||'');const upTs=Math.max(Date.parse(local.up||0)||0,Date.parse(remote.up||0)||0);merged.up=new Date(upTs||Date.now()).toISOString();syncPixharePlayerProgress(merged);S.players[code]=merged;return before!==JSON.stringify(merged)}
 async function sbPullPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPull)return false;sbBusyPull=true;try{const {data,error}=await sbClient.from('pvs_sync').select('player_id,full_state,updated_at').eq('player_id',code).maybeSingle();if(error)throw error;sbPlayerDataReady=true;let changed=false;if(data&&data.full_state&&typeof data.full_state==='object'){changed=mergeCloudPlayer(code,data.full_state)}if(changed){norm();localStorage.setItem(KEY,JSON.stringify(S));refresh()}sbOnline=true;updateSyncInfo(showMsg?`Supabase pull OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase pull impossible.':'');return false}finally{sbBusyPull=false}}
 async function sbPushPlayer(code,showMsg){if(!sbClient||!isCloudPlayer(code)||sbBusyPush)return false;const p=S.players[code];if(!p)return false;sbBusyPush=true;try{const payload={player_id:code,full_state:p,updated_at:new Date().toISOString()};const {error}=await sbClient.from('pvs_sync').upsert(payload,{onConflict:'player_id'});if(error)throw error;sbOnline=true;updateSyncInfo(showMsg?`Supabase push OK | ${code}`:'');return true}catch(e){sbOnline=false;updateSyncInfo(showMsg?'Supabase push impossible.':'');return false}finally{sbBusyPush=false}}
 function sbPullCurrent(showMsg){const code=nCode(cur||'');if(!isCloudPlayer(code))return Promise.resolve(false);return sbPullPlayer(code,showMsg)}
