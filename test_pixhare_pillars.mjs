@@ -160,6 +160,9 @@ try{
 
   // Sparse progress must award one upgrade per certificate, including modules 06–10.
   await page.evaluate(()=>{
+    // Start a genuinely sparse fixture: the saved central profile otherwise
+    // correctly restores all twenty certificates removed below.
+    localStorage.removeItem('pvs_hof_v2');
     for(const key of Object.keys(localStorage))if(key.startsWith('CERT_'))localStorage.removeItem(key);
     localStorage.setItem('CERT_PHARE_NUMERIQUE_10','true');
     localStorage.setItem('CERT_PHARE_JURIDIQUE_06','true');

@@ -71,14 +71,16 @@ try {
   bullets=[];player.shoot();
   return {dx:player.x-x,dy:player.y-y,pulses:player.pulses,shield:player.shield,regen:player.regenRate,shots:bullets.length,wing:bullets.filter(b=>b.tint==='#00ff99').map(b=>b.enemyDamage)};
  });
- assert.ok(Math.abs(stats.dx-11.2)<1e-8);assert.equal(stats.dy,0);assert.equal(stats.pulses,5);assert.equal(stats.shield,5);assert.equal(stats.regen,1);
- assert.equal(stats.shots,3);assert.deepEqual(stats.wing,[26,26]);
+ // The hub's saved Juridique/Numérique 01 certificates are restored too:
+ // one school shield/laser upgrade plus the purchased equipment.
+ assert.ok(Math.abs(stats.dx-11.2)<1e-8);assert.equal(stats.dy,0);assert.equal(stats.pulses,5);assert.equal(stats.shield,6);assert.equal(stats.regen,1);
+ assert.equal(stats.shots,4);assert.deepEqual(stats.wing,[26,26]);
  const defence=await page.evaluate(()=>{
   const before=player.hp;player.hit();const protectedHP=player.hp===before;
   player.hp=95;for(let i=0;i<60;i++)player.update();
   return {shield:player.shield,protectedHP,hp:player.hp};
  });
- assert.deepEqual(defence,{shield:4,protectedHP:true,hp:96});
+ assert.deepEqual(defence,{shield:5,protectedHP:true,hp:96});
  await page.evaluate(()=>{
   GAME.active=true;enemies=[new Enemy('RUMEUR')];bullets=[new Bullet(0,0,0,0,'ENEMY'),new Bullet(0,0,0,0,'PLAYER')];
   boss=new Boss();boss.phase='FIGHT';boss.hp=500;boss.hpMax=500;

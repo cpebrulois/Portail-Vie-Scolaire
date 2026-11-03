@@ -319,6 +319,7 @@
         }
 
     </style>
+<script src="phare_progress.js"></script>
 </head>
 <body>
 
@@ -723,6 +724,7 @@
     };
     
     function refreshHangar() {
+        if(window.PVSPhareProgress)window.PVSPhareProgress.restoreLocal();
       Object.entries({NUM:'NUM',JUR:'JUR',GRO:'GRP',HIS:'HIS',NEURO:'NEU'})
         .forEach(([bonus, pillar]) => { BONUSES[bonus] = getLvl(pillar); });
       renderSectors();

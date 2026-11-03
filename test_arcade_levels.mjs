@@ -8,7 +8,7 @@ const browser=await chromium.launch({channel:'msedge',headless:true});
 try {
  const page=await browser.newPage({viewport:{width:900,height:700}}), errors=[];
  page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/*',r=>r.request().url().startsWith('http://arcade.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
+ await page.route('**/*',async r=>new URL(r.request().url()).pathname==='/phare_progress.js'?r.fulfill({contentType:'text/javascript',body:await readFile(new URL('./phare_progress.js',import.meta.url),'utf8')}):r.request().url().startsWith('http://arcade.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
  await page.goto('http://arcade.test/');
  assert.deepEqual(await page.evaluate(()=>[1,2,3,4,5].map(sectorUnlocked)),[true,false,false,false,false]);
  await page.evaluate(()=>{chooseSector(5);});

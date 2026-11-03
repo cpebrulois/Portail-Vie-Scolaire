@@ -10,7 +10,7 @@ try {
  const page=await browser.newPage({viewport:{width:1520,height:1000}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
- await page.route('**/*',r=>r.request().url().startsWith('http://boss.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
+ await page.route('**/*',async r=>new URL(r.request().url()).pathname==='/phare_progress.js'?r.fulfill({contentType:'text/javascript',body:await readFile(new URL('./phare_progress.js',import.meta.url),'utf8')}):r.request().url().startsWith('http://boss.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
  await page.goto('http://boss.test/');
  const previews=await page.evaluate(()=>{
   player.x=canvas.width/2-100;player.y=canvas.height-150;

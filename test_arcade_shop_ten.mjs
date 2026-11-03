@@ -12,7 +12,7 @@ try{
   localStorage.setItem('pvs_current_player','TEN-LEGACY');
   localStorage.setItem('pvs_arcade_xp_v1',JSON.stringify({'TEN-LEGACY':{earned:200000}}));
  });
- await page.route('**/*',r=>r.request().url().startsWith('https://ten.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
+ await page.route('**/*',async r=>new URL(r.request().url()).pathname==='/phare_progress.js'?r.fulfill({contentType:'text/javascript',body:await readFile(new URL('./phare_progress.js',import.meta.url),'utf8')}):r.request().url().startsWith('https://ten.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
  await page.goto('https://ten.test/');
  const oldCosts=[[80,140,240,400,650],[150,250,400,650,1000],[100,180,300,500,800],[120,220,360,580,900],[180,320,500,750,1100]];
  assert.deepEqual(await page.evaluate(()=>SHOP_ITEMS.map(p=>p.costs.slice(0,5))),oldCosts);
