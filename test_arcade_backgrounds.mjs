@@ -18,7 +18,7 @@ function seed(){
 async function serve(route){
  const u=new URL(route.request().url());if(u.hostname!=='background.test')return route.abort();
  const file=path.resolve(root,'.'+u.pathname);if(!file.startsWith(root+path.sep))return route.abort();
- try{return await route.fulfill({contentType:file.endsWith('.png')?'image/png':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.html')?'text/html; charset=utf-8':'text/plain',body:await readFile(file)});}catch{return route.fulfill({status:404,body:''});}
+ try{return await route.fulfill({contentType:file.endsWith('.js')?'text/javascript':file.endsWith('.png')?'image/png':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.html')?'text/html; charset=utf-8':'text/plain',body:await readFile(file)});}catch{return route.fulfill({status:404,body:''});}
 }
 try{
  const page=await browser.newPage({viewport:{width:1520,height:1000}}),errors=[],requests=[];

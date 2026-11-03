@@ -608,6 +608,7 @@ h1 span{color:#fff;}
 }
 
 </style>
+<script src="phare_progress.js"></script>
 </head>
 <body>
 
@@ -641,6 +642,7 @@ h1 span{color:#fff;}
 <div id="player-bar">
   <span id="pb-status"></span>
   <span id="pb-xp"></span>
+  <span id="pb-sync" role="status" aria-live="polite"></span>
 </div>
 
 <!-- BOUTON ARCADE -->
@@ -973,6 +975,7 @@ function pvBestFin() {
 }
 
 function checkReturn() {
+  if (window.PVSPhareProgress && !window.PVSPhareProgress.ready(getPlayer())) return;
   var changed = false;
   PILLARS.forEach(function(p){
     p.modules.forEach(function(m){
@@ -984,6 +987,7 @@ function checkReturn() {
   try {
     var evts = JSON.parse(localStorage.getItem('pvs_bridge_events') || '[]');
     evts.forEach(function(ev){
+      if (getPlayer() && ev.player !== getPlayer()) return;
       if((ev.type === 'PIXHARE_PROGRESS' || ev.type === 'PHARE_PROGRESS') && ev.module && hasPhareModule(ev.module) && !isDone(ev.module)){
         validateModule(ev.module, true); changed = true;
       }
@@ -1318,9 +1322,10 @@ function toast(msg, ms) {
 }
 
 // ── Événements ──────────────────────────────────────────────────
-window.addEventListener('focus', function(){ checkReturn(); render(); });
+window.addEventListener('focus', function(){ if(window.PVSPhareProgress)window.PVSPhareProgress.restoreLocal(getPlayer()); checkReturn(); render(); });
 window.addEventListener('storage', function(e){
-  if(!e.key || e.key.startsWith('CERT_PHARE_') || e.key === 'pvs_bridge_events'){
+  if(e.key === 'pvs_hof_v2' && window.PVSPhareProgress && window.PVSPhareProgress.ready(getPlayer())) window.PVSPhareProgress.restoreLocal(getPlayer());
+  if(!e.key || e.key.startsWith('CERT_PHARE_') || e.key === 'pvs_bridge_events' || e.key === 'pvs_hof_v2' || e.key === 'pvs_phare_projection_busy_v1'){
     checkReturn(); render();
   }
 });
@@ -1686,6 +1691,13 @@ checkReturn();
 checkJdrReturn();
 render();
 renderValdurne();
+if (window.PVSPhareProgress && getPlayer()) {
+  document.getElementById('pb-sync').textContent = 'Récupération des validations…';
+  window.PVSPhareProgress.pull(getPlayer()).then(function(ok) {
+    document.getElementById('pb-sync').textContent = ok ? '✓ Validations synchronisées' : 'Sauvegarde locale affichée — connexion cloud indisponible';
+    render(); renderValdurne();
+  });
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="local_llm.js"></script>

@@ -9,7 +9,7 @@ try {
  const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  // Drive complete authored wave sequences without waiting for real-time flight animations.
  await page.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
- await page.route('**/*',r=>r.request().url().startsWith('http://endgame.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
+ await page.route('**/*',async r=>new URL(r.request().url()).pathname==='/phare_progress.js'?r.fulfill({contentType:'text/javascript',body:await readFile(new URL('./phare_progress.js',import.meta.url),'utf8')}):r.request().url().startsWith('http://endgame.test/')?r.fulfill({contentType:'text/html; charset=utf-8',body:source}):r.abort());
  await page.goto('http://endgame.test/');
  await page.getByRole('button',{name:'GARDIEN',exact:true}).click();
  assert.equal(await page.evaluate(()=>sectorRoutePlan(10).waves),231);

@@ -8,7 +8,7 @@ try {
  const page=await browser.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  const source=await readFile(new URL('./index.html',import.meta.url),'utf8');
- await page.route('**/*',r=>r.request().url()==='http://audit.test/'?r.fulfill({contentType:'text/html',body:source}):r.abort());
+ await page.route('**/*',async r=>new URL(r.request().url()).pathname==='/phare_progress.js'?r.fulfill({contentType:'text/javascript',body:await readFile(new URL('./phare_progress.js',import.meta.url),'utf8')}):r.request().url()==='http://audit.test/'?r.fulfill({contentType:'text/html',body:source}):r.abort());
  await page.goto('http://audit.test/');
  const result=await page.evaluate(()=>{
   const p=mkP('TEST-NEW');p.cp.pixhare=1;p.pixhareDone={HISTOIRE_10:new Date().toISOString()};
