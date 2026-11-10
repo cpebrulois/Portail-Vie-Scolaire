@@ -52,6 +52,7 @@ a.bk{color:var(--enc2);font-size:.76em;text-decoration:none;border:1px solid rgb
 a.bk:hover{color:var(--or);border-color:var(--or)}
 @media(max-width:600px){body{font-size:1.05em}.illus{height:160px}.scene{padding:0 16px 70px}}
 </style>
+<link rel="stylesheet" href="valdurne_illustrations.css">
 </head>
 <body>
 
@@ -139,10 +140,10 @@ function ouvrir(i){
   $('chap').textContent='Chapitre '+ch.n+' sur '+TOTAL;
   $('titre').textContent=ch.titre;
   var il=$('illus'); il.innerHTML='<span class="rune">✦</span>';
-  var im=new Image();
-  im.onload=function(){il.innerHTML='';il.appendChild(im)};
-  im.onerror=function(){};
-  im.src=ch.img; im.alt='';
+  var im=new Image(),imageChapter=ch;
+  im.onload=function(){if(ch!==imageChapter)return;il.innerHTML='';il.appendChild(im)};
+  im.onerror=function(){if(im.dataset.portrait)return;im.dataset.portrait='1';im.alt='Kern, le guide du parcours de Valdurne';im.src='valdurne_art/kern_reference_17ans.webp';};
+  im.src=ch.img; im.alt='Illustration du chapitre '+ch.titre;
   $('fill').style.width=Math.round((ch.n-1)/TOTAL*100)+'%';
   flux=$('flux'); flux.innerHTML='';
   majSelect();
@@ -188,7 +189,7 @@ function suivant(){
     var f=document.createElement('button'); f.textContent="J'ai terminé";
     var s=document.createElement('button'); s.className='ghost'; s.textContent='Plus tard';
     var m=document.createElement('div'); m.className='note';
-    o.onclick=function(){window.open(b.href,'_blank','noopener')};
+    o.onclick=function(){if(b.href==='index.html'&&window.valdurneCloseWelcome){window.valdurneCloseWelcome();return;}var url=new URL(b.href,location.href);url.searchParams.set('player',cur);window.open(url.href,'_blank','noopener')};
     f.onclick=function(){
       if(moduleFait(b.mod)){d.remove();suivant()}
       else m.textContent="Je ne vois pas encore ta réponse arriver. Termine le module jusqu’au bout, puis reviens — ou passe, on y reviendra.";
@@ -337,5 +338,6 @@ function demarrer(p){
   demarrer(p);
 })();
 </script>
+<script src="valdurne_frame.js"></script>
 </body>
 </html>

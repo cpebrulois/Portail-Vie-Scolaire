@@ -106,10 +106,13 @@ try{
   await newPupil.reload();await newPupil.locator('#account [data-action=login]').waitFor();steps.push('teacher recovery keeps pupil work and revokes the old session');
   const pc=await context(),pupil=await pc.newPage();await login(pupil,'QA-PUPIL-1');await pupil.locator('[data-action=class]').click();
   await pupil.locator('#joinForm input').fill(invite);await pupil.locator('#joinForm button').click();
+  await pupil.getByText('Demande transmise : ton professeur confirmera le rattachement.',{exact:true}).waitFor();
   await teacher.locator('[data-action=refresh]').click();await teacher.locator('[data-action=approve][data-student="PUPIL-1"]').click();
+  await teacher.locator('tr').filter({hasText:'PUPIL-1'}).filter({hasText:'Confirmé'}).first().waitFor();
   await teacher.locator('#assignForm input[name=title]').fill('La mission du voyage');
   await teacher.locator('#assignForm input[value=lecture]').check();await teacher.locator('#assignForm input[value=ecriture]').check();
   await teacher.locator('#assignForm select[name=level]').selectOption('2');await teacher.locator('#assignForm button[type=submit]').click();
+  await teacher.getByRole('heading',{name:'La mission du voyage',exact:true}).waitFor();
   await pupil.locator('#account').getByText('PUPIL-1',{exact:true}).waitFor();await pupil.locator('[data-action=notebook]').click();await pupil.locator('[data-action=refresh]').click();await pupil.locator('[data-action=class]').click();
   await pupil.locator('[data-action=assigned][data-id=lecture]').click();
   for(let i=0;i<6;i++)await answer(pupil,'PUPIL-1');

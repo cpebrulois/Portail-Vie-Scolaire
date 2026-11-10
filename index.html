@@ -214,7 +214,7 @@
     var b=document.getElementById('seuilBand'); if(!b) return;
     var joueur=(localStorage.getItem('pvs_current_player')||'').trim();
     if(!joueur){b.style.display='none';return}
-    var e=null; try{e=JSON.parse(localStorage.getItem('pvs_seuil')||'null')}catch(ex){}
+    var e=null; try{e=JSON.parse(localStorage.getItem('pvs_seuil:'+joueur.toUpperCase())||'null');if(!e){var old=JSON.parse(localStorage.getItem('pvs_seuil')||'null');if(old&&old.player===joueur.toUpperCase())e=old;}}catch(ex){}
     var etat=document.getElementById('seuilEtat'), cta=document.getElementById('seuilCta');
     // Chapitres du fil deja valides pour le niveau courant.
     var TITRES_FIL=['','Le Seuil de Valdurne','Celui qui ne dit rien','Ce que dit la loi',
@@ -1787,7 +1787,7 @@ function showRewardGameModal(){closeBonusModal();const m=document.getElementById
 function closeRewardGameModal(openNow){const m=document.getElementById('rewardGameModal');if(m)m.classList.remove('on');rewardCurrentKey='';rewardAutoMode=false;rewardBusy=false;if(openNow)openBonusGame();processRewardQueue()}
 function openBonusGame(){if(!cur||!S.players[cur]||isVisitor){sm('vMsg','Connecte un joueur pour acceder au jeu bonus.',false);return}closeBonusModal();openTracked('bonus','CHEVALIERS_JUSTICE',BONUS_GAME_FILE)}
 function queuePendingRewards(){if(!cur||!S.players[cur]||isVisitor||adminOn)return;const p=S.players[cur],xpNow=bonusXp(p);BONUS_REWARDS.forEach(r=>{if(xpNow>=r.xp&&!isRewardSeen(r.id))enqueueReward('video',r.id)});if(xpNow>=BONUS_GAME_XP&&!isRewardSeen('bonus_game'))enqueueReward('game','bonus_game');if(!rewardBusy)processRewardQueue()}
-function processRewardQueue(){if(rewardBusy)return;const next=rewardQueue.shift();if(!next)return;rewardBusy=true;rewardCurrentKey=next.key;if(next.type==='video'){markRewardSeen(next.id);renderRewardsDock();playRewardVideo(next.id,true);return}markRewardSeen(next.id);renderRewardsDock();showRewardGameModal()}
+function processRewardQueue(){if(rewardBusy||window.PVSValdurneWelcome&&window.PVSValdurneWelcome.blocksRewards())return;const next=rewardQueue.shift();if(!next)return;rewardBusy=true;rewardCurrentKey=next.key;if(next.type==='video'){markRewardSeen(next.id);renderRewardsDock();playRewardVideo(next.id,true);return}markRewardSeen(next.id);renderRewardsDock();showRewardGameModal()}
 function renderRewardsDock(){const launcher=document.getElementById('bonusLauncher'),state=document.getElementById('bonusLauncherState'),list=document.getElementById('rewardList'),meta=document.getElementById('rewardsMeta'),gameCard=document.getElementById('rewardGameCard'),modal=document.getElementById('bonusModal');if(!list||!meta||!gameCard)return;if(!cur||!S.players[cur]||isVisitor||adminOn){if(launcher)launcher.style.display='none';if(modal)modal.classList.remove('on');return}const p=S.players[cur],xpNow=bonusXp(p),next=BONUS_REWARDS.find(r=>xpNow<r.xp)||null,gameUnlocked=xpNow>=BONUS_GAME_XP;if(launcher){launcher.style.display='inline-flex';launcher.classList.toggle('active',gameUnlocked||BONUS_REWARDS.some(r=>xpNow>=r.xp))}if(state)state.textContent=next?`${xpNow} XP`:'MAX';meta.textContent=next?`XP bonus: ${xpNow}. Prochain palier a ${next.xp} XP.`:`XP bonus: ${xpNow}. Toutes les recompenses sont debloquees.`;gameCard.className=`rewardGameCard${gameUnlocked?'':' locked'}`;gameCard.innerHTML=gameUnlocked?`<div class="rewardInfo"><div class="rewardPill">Jeu bonus debloque</div><div class="rewardName">Chevaliers de la Justice</div><div class="rewardSub">Le heros gagne en puissance au rythme de ton XP du portail.</div></div><div class="rewardActions"><button onclick="openBonusGame()">Ouvrir le jeu bonus</button></div>`:`<div class="rewardInfo"><div class="rewardPill">Jeu bonus a ${BONUS_GAME_XP} XP</div><div class="rewardName">Chevaliers de la Justice</div><div class="rewardSub">${Math.max(0,BONUS_GAME_XP-xpNow)} XP restants avant l'ouverture.</div></div><div class="rewardActions"><button class="btn2" disabled>Verrouille</button></div>`;list.innerHTML='';BONUS_REWARDS.forEach(r=>{const unlocked=xpNow>=r.xp,box=document.createElement('div');box.className=`rewardRow${unlocked?'':' locked'}`;box.innerHTML=`<div class="rewardIcon">${unlocked?'FILM':'LOCK'}</div><div class="rewardInfo"><div class="rewardName">${r.label}</div><div class="rewardSub">${r.sub}</div></div><div class="rewardActions">${unlocked?`<button class="btn2" onclick="replayReward('${r.id}')">Revoir</button>`:`<span class="rewardPill">A ${r.xp} XP</span>`}</div>`;list.appendChild(box)})}
 function resetRewardUi(){rewardQueue=[];rewardBusy=false;rewardCurrentKey='';rewardAutoMode=false;const ov=document.getElementById('rewardOverlay'),vid=document.getElementById('rewardVideo'),src=document.getElementById('rewardVideoSrc'),modal=document.getElementById('rewardGameModal'),bonusModal=document.getElementById('bonusModal');if(vid){try{vid.pause()}catch(e){}vid.currentTime=0;vid.onended=null;vid.onerror=null;vid.onloadedmetadata=null}if(src)src.src='';if(vid)vid.load();if(ov)ov.classList.remove('active');if(modal)modal.classList.remove('on');if(bonusModal)bonusModal.classList.remove('on');exitRewardFullscreen()}
 function newsActorKey(){return(!cur||isVisitor||adminOn)?'':nCode(cur)}
@@ -1937,7 +1937,8 @@ syncPull(false);
 if(!isVisitor&&!IDENT_FAITE){ try{ await identiteServeur(saisie) }catch(e){} }
 if(typeof majBandes==='function')majBandes();
 msgAffiche();
-if(peutEtreAncien()){openBareme()}
+if(window.PVSValdurneWelcome&&window.PVSValdurneWelcome.maybeOpen()){}
+else if(peutEtreAncien()){openBareme()}
 else if(!localStorage.getItem(TUTORIAL_SEEN_KEY)){openTutorial(0);localStorage.setItem(TUTORIAL_SEEN_KEY,'1')}
 else if(!localStorage.getItem(RULES_SEEN_KEY)){openRules();localStorage.setItem(RULES_SEEN_KEY,'1')}
 if(isVisitor&&!localStorage.getItem(VISITOR_ARTICLE_SEEN_KEY))localStorage.setItem(VISITOR_ARTICLE_SEEN_KEY,'1')
@@ -2116,6 +2117,7 @@ else if(hasSession&&remembered){
   cur='';isVisitor=false;adminOn=false;refresh();openAuthGate()
 }
 processBridge();
+if(window.PVSValdurneWelcome)window.PVSValdurneWelcome.maybeOpen();
 if(authInput)authInput.addEventListener('keypress',e=>{if(e.key==='Enter')loginPlayer()});
 if(authAdmin)authAdmin.addEventListener('keypress',e=>{if(e.key==='Enter')loginAdmin()});
 window.addEventListener('resize',()=>renderTutorial());
@@ -2227,6 +2229,8 @@ window.VIESCO_AI_CONFIG={
   welcome:'Je suis Agora. Je peux t aider a comprendre le portail, trouver le bon hub et repondre a partir des contenus locaux publies.'
 };
 </script>
+<link rel="stylesheet" href="valdurne_accueil.css">
+<script src="valdurne_accueil.js"></script>
 <script src="agora_viesco.js"></script>
 <script src="tts_vits.js"></script>
 <script src="tts_accessibility.js?v=2026-03-11c" data-pvs-tts="1"></script>
