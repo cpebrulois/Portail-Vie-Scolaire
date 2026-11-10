@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mon Aventure 6e — Histoire-Géographie CM2</title>
+<title>Mon Aventure 6e — Repères d'histoire et de géographie</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -146,8 +146,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 <header class="hero">
   <div class="hero-badge">🌍 Révision Histoire-Géo</div>
   <h1 class="hero-title"><span class="eh">Histoire</span> &amp; <span class="eg">Géographie</span></h1>
-  <p class="hero-sub">Consolide les repères essentiels du CM2 avant d'entrer en 6e.</p>
-  <div class="cm2-tag">🏫 Niveau CM2 — raccord cycle 3 → 6e</div>
+  <p class="hero-sub">Explore des repères historiques et géographiques de plusieurs niveaux.</p>
+  <div class="cm2-tag">🏫 Rappels et découvertes — cycle 3</div>
+  <p><a href="cm2.html" style="color:inherit">Ateliers CM2 : République, âge industriel, guerres mondiales et Europe</a></p>
 </header>
 <div class="section-toggle">
   <button class="stog on-h" id="btn-h" onclick="setSection('h')">📜 Histoire</button>
@@ -162,6 +163,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 <div id="main"></div>
 </div>
 <div class="toast" id="toast"></div>
+<script src="cm2_legacy_progress.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════════
    DONNÉES COMPLÈTES — HISTOIRE-GÉO CM2
@@ -215,7 +217,7 @@ Quatre civilisations majeures à connaître :<br>
     {q:'Qu\'est-ce que la Mésopotamie ?',a:'La région entre le Tigre et l\'Euphrate (actuel Irak), berceau de la première écriture et des premières villes.',hint:'Méso = entre / potamos = fleuve.',ah:'Les Sumériens y inventent l\'écriture cunéiforme vers -3300 pour comptabiliser les richesses.'},
     {q:'Qu\'est-ce qu\'un pharaon ?',a:'Le roi-dieu de l\'Égypte ancienne. Il est à la fois chef politique, militaire et religieux.',hint:'Pharaon vient de "per-aâ" = grande maison.',ah:'Les pharaons les plus célèbres : Ramsès II, Toutankhamon, Cléopâtre.'},
     {q:'Qu\'est-ce que la démocratie athénienne ?',a:'Un système politique inventé à Athènes (Grèce) où les citoyens participent aux décisions. Mais attention : femmes, esclaves et étrangers en sont exclus.',hint:'Démo = peuple / cratos = pouvoir.',ah:'C\'est une démocratie directe : les citoyens votent eux-mêmes les lois, sans représentants.'},
-    {q:'Quand tombe l\'Empire romain d\'Occident ?',a:'En 476 après J.-C., sous les coups des invasions barbares (prise de Rome par Odoacre).',hint:'476 = date de fin de l\'Antiquité par convention.',ah:'L\'Empire romain d\'Orient (Byzance) survivra jusqu\'en 1453 — mais ça, c\'est le Moyen Âge.'},
+    {q:'Quel événement est associé à 476 ?',a:'La déposition de l\'empereur Romulus Augustule par Odoacre, qui marque conventionnellement la fin de l\'Empire romain d\'Occident.',hint:'476 = un repère conventionnel de fin de l\'Antiquité.',ah:'L\'Empire romain d\'Orient continue d\'exister jusqu\'en 1453. Les transformations ne se produisent pas toutes en un jour.'},
   ],
   ex:[
     {type:'qcm',ctx:'',q:'L\'écriture cunéiforme est liée à quelle civilisation ?',
@@ -236,12 +238,12 @@ Quatre civilisations majeures à connaître :<br>
     txt:`Le Moyen Âge va de la <strong>chute de Rome (476)</strong> à la <strong>découverte des Amériques (1492)</strong>.<br><br>
 Société organisée en <strong>trois ordres</strong> : ceux qui prient (le clergé), ceux qui combattent (les seigneurs et chevaliers), ceux qui travaillent (les paysans — la grande majorité).<br><br>
 Moments clés : le règne de <strong>Charlemagne</strong> (800, sacré empereur), les <strong>Croisades</strong> (XIe-XIIIe s.), la <strong>Peste Noire</strong> (1347-1351, tue ⅓ de l'Europe), la <strong>Guerre de Cent Ans</strong> (1337-1453) et <strong>Jeanne d'Arc</strong>.`,
-    ex:'En 800, Charlemagne est sacré <strong>Empereur d\'Occident</strong> par le pape Léon III à Rome. C\'est la première tentative de réunifier l\'Europe depuis la chute de Rome.',
+    ex:'En 800, Charlemagne est sacré <strong>empereur</strong> par le pape Léon III à Rome. Son empire s\'étend sur une grande partie de l\'Europe occidentale.',
     astuce:'476 → 1492 : "Pour mémoriser les dates, pense aux 4 saisons de 476 siècles..." ou plus simplement : 476 (chute de Rome) + 1492 (Colomb en Amérique).',
     regle:'Le Moyen Âge = environ 1 000 ans. C\'est très long et très varié. En 6e, on commence par les débuts du Moyen Âge. En 5e, on poursuit.'
   },
   fc:[
-    {q:'Qui est Charlemagne ?',a:'Roi des Francs sacré Empereur d\'Occident en 800. Il unifie une grande partie de l\'Europe et développe l\'éducation.',hint:'Charles le Grand = Charlemagne.',ah:'Charlemagne ne savait pas lire. Il a pourtant lancé une grande réforme de l\'éducation — ce qui prouve qu\'on peut soutenir l\'éducation sans être lui-même lettré.'},
+    {q:'Qui est Charlemagne ?',a:'Roi des Francs sacré empereur en 800. Son pouvoir s\'étend sur une grande partie de l\'Europe occidentale et il encourage le développement des écoles.',hint:'Charles le Grand = Charlemagne.',ah:'Il n\'a pas inventé l\'école : il soutient notamment les écoles liées aux monastères et aux cathédrales.'},
     {q:'Qu\'est-ce que le système féodal ?',a:'Une organisation de la société médiévale basée sur des liens de loyauté entre seigneurs et vassaux, en échange de terres (fiefs).',hint:'Le seigneur protège, le vassal sert.',ah:'En bas de la pyramide : les serfs, paysans liés à la terre du seigneur et quasi privés de liberté.'},
     {q:'Qu\'est-ce que la Peste Noire ?',a:'Une épidémie de peste bubonique (1347-1351) qui tue entre 1/3 et la moitié de la population européenne.',hint:'Noire = taches noires sur la peau, signe de la maladie.',ah:'La Peste Noire transforme l\'Europe : elle affaiblit le système féodal et pousse à des remises en question religieuses.'},
     {q:'Quel est le rôle de Jeanne d\'Arc ?',a:'Jeune paysanne lorraine qui, se réclamant d\'une mission divine, aide le roi Charles VII à reconquérir la France pendant la Guerre de Cent Ans.',hint:'Orléans, 1429.',ah:'Jeanne d\'Arc est capturée par les Anglais, brûlée en 1431 à Rouen, puis réhabilitée et canonisée en 1920.'},
@@ -389,7 +391,7 @@ Grands types de paysages :<br>
 • <strong>Paysages méditerranéens</strong> : été chaud et sec, hiver doux et humide (pourtour méditerranéen)<br>
 • <strong>Paysages polaires</strong> : froid extrême, glace permanente<br>
 • <strong>Paysages tempérés</strong> : 4 saisons marquées (Europe de l\'Ouest, dont la France)`,
-    ex:'La forêt amazonienne couvre 5,5 millions de km² au Brésil — c\'est la plus grande forêt tropicale du monde. Elle produit environ 20% de l\'oxygène de la planète et abrite 10% des espèces vivantes connues.',
+    ex:'La forêt amazonienne s\'étend sur plusieurs pays d\'Amérique du Sud, dont le Brésil. Cette vaste forêt tropicale abrite une grande biodiversité et joue un rôle important dans le cycle de l\'eau et du carbone. Le bilan en oxygène ne se résume pas à un pourcentage produit pour toute la planète.',
     astuce:'Un paysage = relief + climat + végétation + traces humaines. Ces quatre éléments s\'influencent mutuellement.',
     regle:'En CM2/6e, l\'objectif n\'est pas d\'apprendre par cœur tous les types de paysages, mais d\'apprendre à "lire" un paysage : reconnaître ses éléments et comprendre leur logique.'
   },
@@ -660,7 +662,7 @@ function renderQ(parent, ch, cs, col){
     valBtn.onclick=()=>{
       if(cs.qSel===null){toast('Choisis une réponse !');return;}
       cs.qDone=true;
-      if(cs.qSel===q.ok){ addXP(q.xp); }
+      if(cs.qSel===q.ok){cs.xp+=q.xp;addXP(q.xp);}
       renderQ(parent,ch,cs,col);
     };
     if(cs.qSel!==null) valBtn.disabled=false;
@@ -699,7 +701,15 @@ function renderBilan(parent, ch, cs, col){
 $('chapTot') && ($('chapTot').textContent=DATA.h.length+DATA.g.length);
 document.getElementById('chapH') && (document.getElementById('chapH').textContent='0');
 document.getElementById('chapG') && (document.getElementById('chapG').textContent='0');
-renderTabs(); renderChap();
+const restored=LiamRevisionProgress.load('HUB_HG');
+if(restored){
+  section=restored.section==='g'?'g':'h';chapIdx=restored.chapIdx||chapIdx;
+  xpTotal=Number(restored.xpTotal)||0;chapState=restored.chapState||{};
+  chapDone={h:new Set(restored.chapDone?.h||[]),g:new Set(restored.chapDone?.g||[])};
+}
+LiamRevisionProgress.bind('HUB_HG',()=>({section,chapIdx,xpTotal,chapState,chapDone:{h:[...chapDone.h],g:[...chapDone.g]}}),()=>({xp:xpTotal,done:chapDone.h.size+chapDone.g.size,total:DATA.h.length+DATA.g.length}));
+$('xpTot').textContent=xpTotal;$('chapH').textContent=chapDone.h.size;$('chapG').textContent=chapDone.g.size;
+setSection(section);
 </script>
 </body>
 </html>

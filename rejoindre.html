@@ -98,7 +98,7 @@ a.bk:hover{color:var(--or)}
     <button class="btn ghost" onclick="copier()" id="btnCopie">📋 Copier mon nom</button>
     <p class="hint">Note-le quelque part avant de continuer.<br>
     Kern t'attend de l'autre côté de la porte.</p>
-    <button class="btn" style="margin-top:16px" onclick="entrer()">Entrer au château →</button>
+    <button class="btn" id="btnEntrer" style="margin-top:16px" onclick="entrer()">Entrer au château →</button>
     <div id="m3"></div>
   </div>
 </div>
@@ -108,6 +108,11 @@ import { ANIMAUX, QUALITES, accorde, suffixe } from './identite_listes.js';
 
 var API='/api/identite';
 var pub='', nombre=suffixe(), secret='';
+const retourCM2=new URLSearchParams(location.search).get('retour')==='cm2';
+const paramsCM2=new URLSearchParams(location.search),invitationCM2=paramsCM2.get('invitation')||'';
+if(/^(RANCE-PRIM-\d{4}|CM2-[A-F0-9]{16})$/.test(paramsCM2.get('public')||'')){$('inPub').value=paramsCM2.get('public');$('inPub').readOnly=true;}
+if(invitationCM2){const clean=new URL(location.href);clean.searchParams.delete('invitation');history.replaceState(null,'',clean);}
+if(retourCM2)$('btnEntrer').textContent='Entrer dans les ateliers →';
 
 function $(id){return document.getElementById(id)}
 function msg(cible,texte,type){
@@ -170,7 +175,7 @@ window.creer=async function(){
   var b=$('btnCreer'); b.disabled=true; b.textContent='Enregistrement…';
   try{
     var joli=nomActuel();                 // « Cigogne-Vaillante-4712 »
-    await api('creer',{public:pub,secret:joli});
+    await api('creer',{public:pub,secret:joli,invitation:invitationCM2||undefined});
     secret=joli;                          // on affiche la belle casse, pas les majuscules serveur
     $('codeFinal').textContent=secret;
     etape(3);
@@ -189,7 +194,14 @@ window.copier=function(){
     setTimeout(function(){$('btnCopie').textContent='📋 Copier mon nom'},2000);
   }catch(e){ msg('m3',"Copie impossible — recopie-le à la main, c'est plus sûr de toute façon.",'ok'); }
 };
-window.entrer=function(){
+window.entrer=async function(){
+  if(retourCM2){
+    try{
+      const r=await api('connecter',{secret:secret});
+      if(!r.token)throw new Error('La connexion sécurisée doit être réessayée.');
+      sessionStorage.setItem('liam_cm2_session',JSON.stringify({token:r.token,public:r.public,role:r.role,expire_at:new Date(Date.now()+11*3600*1000).toISOString()}));
+    }catch(e){msg('m3',e.message);return;}
+  }
   try{
     // L'identité interne est le CODE PUBLIC : c'est lui qui circule (témoignages,
     // Hall des Héros). Le code secret ne sert qu'à ouvrir la porte, il n'est
@@ -198,7 +210,7 @@ window.entrer=function(){
     localStorage.setItem('pvs_nom_page',secret.split('-')[0]);
     sessionStorage.setItem('pvs_session_auth_v1','1');
   }catch(e){}
-  window.location.href='seuil.html';
+  window.location.href=retourCM2?'cm2.html':'seuil.html';
 };
 
 $('inPub').addEventListener('keydown',function(e){if(e.key==='Enter')window.verifier()});

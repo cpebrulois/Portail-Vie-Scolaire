@@ -1,0 +1,102 @@
+LES ATELIERS DE LIAM — CM2 — 10 NOVEMBRE 2026
+
+Acces prevus
+  /cm2 : ateliers, carnet personnel et missions de classe.
+  /cm2/professeur : console des classes du professeur.
+  Le portail existant et la page de liaison CM2-6e contiennent aussi ces liens.
+
+Comptes
+  Les identifiants personnels existants continuent de fonctionner, avec ou sans accents.
+  Le code public du compte reste stable : changer l'identifiant de connexion
+  d'un compte CM2 ne supprime ni ses seances ni ses reponses.
+  Un professeur ne voit que les classes dont il est proprietaire.
+  Un professeur peut confirmer ou suspendre les rattachements de ses eleves,
+  attribuer des ateliers a une selection d'eleves et exporter le suivi filtre.
+  Il peut reinitialiser uniquement les comptes emis par sa propre classe.
+  Il ne peut pas reinitialiser les comptes RANCE du college.
+
+Professeurs des ecoles
+  Le responsable du portail, connecte avec une session administrateur complete,
+  peut preparer des invitations RANCE-PRIM-0001, RANCE-PRIM-0002, etc.
+  L'invitation est aleatoire, valable sept jours et utilisable une seule fois.
+  Le code public previsible RANCE-PRIM ne permet pas a lui seul de revendiquer un compte.
+  Le professeur choisit son identifiant personnel via le parcours existant.
+  Ces comptes ont le role professeur, jamais le role administrateur global.
+  Aucun compte reel ni aucune invitation n'est cree automatiquement au deploiement.
+
+Eleves
+  Le professeur prepare les premiers acces CM2 dans sa classe et peut les imprimer.
+  L'eleve choisit son animal et son adjectif ; le numero est tire au sort.
+  Le professeur confirme ensuite le rattachement.
+  L'eleve peut revenir seul, y compris de chez lui : le professeur n'a pas besoin
+  de maintenir une session ouverte. Une mission n'est pas obligatoire pour s'entrainer.
+  Le carnet de travail peut etre personnel, ou associe a une classe confirmee.
+  Les seances associees a la classe sont visibles par son professeur.
+
+Sauvegardes : distinguer les perimetres
+  Les reponses validees des nouveaux ateliers CM2 sont enregistrees dans Supabase,
+  derriere l'API du Worker Cloudflare. Un telechargement JSON n'est pas necessaire
+  pour les retrouver depuis un autre poste.
+  Une reponse interrompue peut etre mise en attente localement puis synchronisee.
+  Un brouillon non valide reste dans le navigateur : il n'est pas encore centralise.
+  Les anciens parcours de decouverte et de revision conservent leurs sauvegardes
+  locales. Ne pas confondre leur restauration locale avec la synchronisation CM2.
+  Une ancienne validation sans detail n'est pas transformee artificiellement en
+  validation de chaque chapitre ni en preuve de maitrise.
+  L'offre Supabase observee est gratuite. Aucune option payante n'a ete activee.
+  Le stockage central n'est pas une copie de secours independante : prevoir des
+  exports reguliers hors de la base ou une politique de sauvegardes adaptee.
+
+Cloudflare Access : etape externe restante
+  Le Worker controle deja la session, le role et la propriete de la classe.
+  Le filtre supplementaire Cloudflare Access n'est PAS configure par ce code.
+  Pour l'ajouter, il faut definir les enseignants autorises et configurer Access
+  dans le bon compte Cloudflare. Proteger uniquement la page HTML ne suffit pas :
+  les routes d'API professeur doivent elles aussi etre protegees et les JWT verifies
+  cote Worker (signature, emetteur, audience et expiration).
+  Ne pas bloquer tout le domaine college : les acces eleves et visiteurs existants
+  doivent rester compatibles avec leur fonctionnement actuel.
+
+Confidentialite et cadre scolaire
+  Les pseudonymes sont une reduction des donnees, pas une anonymisation garantie.
+  Un pseudonyme relie a des resultats ou a un enseignant reste une donnee personnelle.
+  Ce travail technique n'est pas une attestation de conformite RGPD.
+  Avant generalisation : valider avec le responsable institutionnel et le DPO
+  l'information des familles, les finalites, les droits, la conservation,
+  les conditions des hebergeurs et la suppression des donnees.
+  Ne pas demander aux eleves de deposer des renseignements personnels sensibles
+  dans les exercices d'ecriture : les situations proposees sont fictives.
+
+Contenus et resultats
+  16 ateliers courts, six etapes par seance : revisions ciblees et non couverture
+  integrale du programme. Le parcours accompagne affiche les aides ; le parcours
+  approfondi varie notamment les nombres et certaines conversions.
+  Les productions ecrites sont a relire par un adulte, sans note automatique.
+  Les premieres reponses enregistrees ne sont pas ecrasees par une seconde validation.
+  Une seance terminee n'est pas assimilee a une competence certifiee.
+
+Migrations (la base initiale est deja installee)
+  sql_cm2.sql
+  sql_cm2_accounts.sql
+  sql_cm2_initial_codes.sql
+  sql_cm2_verification.sql : controle de lecture des six tables de travail.
+  La table des invitations et les fonctions privees sont a verifier aussi.
+  Ne pas executer de migration de suppression : les comptes existants sont conserves.
+
+Ancienne synchronisation college
+  Le defaut preexistant de public.pvs_sync n'est pas corrige par l'espace CM2.
+  Ne pas simplement activer RLS sans adapter les anciennes sauvegardes et politiques.
+  Les anciennes vues et fonctions signalees par Supabase demandent egalement un audit.
+
+Illustrations et licences
+  Deux images originales produites avec l'outil integre image_gen ; prompts et
+  provenance dans cm2_assets_sources.json. PNG sources conserves, WebP optimises servis.
+  Icones Lucide : cm2_icons.js et cm2_icons_LICENSE.txt.
+
+References
+  https://eduscol.education.gouv.fr/4356/enseigner-au-cycle-3
+  https://eduscol.education.gouv.fr/5208/l-organisation-des-enseignements-au-college
+  https://supabase.com/docs/guides/api/securing-your-api
+  https://supabase.com/docs/guides/platform/backups
+  https://www.cnil.fr/fr/identifier-les-donnees-personnelles
+  https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/application-token/

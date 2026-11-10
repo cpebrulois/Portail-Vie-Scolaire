@@ -198,6 +198,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="cm2_legacy_progress.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════
    DONNÉES — FRANÇAIS CM2 PUR
@@ -209,9 +210,9 @@ const DATA = [
 { id:'gr', ico:'📐', label:'Grammaire',
   cours:{
     titre:'La phrase : sujet, verbe, compléments',
-    txt:`Une phrase correcte contient toujours un <strong>sujet</strong> et un <strong>verbe conjugué</strong>.
-    Le sujet indique <em>qui fait l'action</em>. Le verbe dit <em>ce qui se passe</em>.
-    Les compléments ajoutent des informations utiles mais souvent facultatives.`,
+    txt:`Une phrase verbale s'organise autour d'un <strong>verbe conjugué</strong>, généralement accompagné d'un <strong>sujet</strong>.
+    À l'impératif, le sujet n'est pas exprimé : <em>« Viens ! »</em>. Une phrase peut aussi être non verbale : <em>« Quel beau voyage ! »</em>.
+    Certains compléments sont liés au verbe ; d'autres apportent des circonstances.`,
     ex:'<em>« Le chat roux attrape une souris dans le jardin. »</em><br>Sujet : <strong>Le chat roux</strong> — Verbe : <strong>attrape</strong> — COD : <strong>une souris</strong> — CC lieu : <strong>dans le jardin</strong>',
     astuce:'Pour trouver le sujet : pose « Qui est-ce qui… ? » avant le verbe. Qui est-ce qui attrape ? → Le chat roux.',
     regle:'Le complément circonstanciel (CC) peut être supprimé ou déplacé sans casser la phrase. Le COD, lui, ne peut pas être déplacé en début de phrase facilement.'
@@ -224,7 +225,7 @@ const DATA = [
     { q:'Qu\'est-ce qu\'un COD ?',
       a:'Complément d\'Objet Direct. Il répond à la question « Verbe + quoi ? ou qui ? » sans préposition.',
       hint:'Il mange quoi ? → une pomme. Il appelle qui ? → son ami.',
-      ah:'Le COD ne peut pas être supprimé sans changer le sens. Il est directement lié au verbe.' },
+      ah:'Le COD est directement lié au verbe. On combine plusieurs manipulations pour le reconnaître : une seule question ou la suppression ne suffit pas toujours.' },
     { q:'Comment reconnaître un complément circonstanciel (CC) ?',
       a:'Un CC peut être supprimé ou déplacé en début de phrase sans que la phrase devienne incorrecte.',
       hint:'« Le soir, je lis dans ma chambre. » → « Je lis le soir dans ma chambre. » → Ça marche.',
@@ -255,11 +256,11 @@ const DATA = [
 // ─────────────── 2. CONJUGAISON ───────────────
 { id:'conj', ico:'⏱️', label:'Conjugaison',
   cours:{
-    titre:'Les 5 temps essentiels du CM2',
-    txt:`À la fin du CM2, tu dois maîtriser <strong>5 temps</strong> : présent, imparfait,
-    passé composé, futur simple et passé simple. Chaque temps a sa propre utilité dans un texte.`,
+    titre:'Les temps de conjugaison au CM2',
+    txt:`En CM2, tu travailles notamment le présent, l'imparfait, le futur simple,
+    le passé composé, le plus-que-parfait et le passé simple aux personnes étudiées. Les emplois et les formes sont travaillés progressivement.`,
     ex:'<em>Je mange</em> (présent) · <em>Je mangeais</em> (imparfait) · <em>J\'ai mangé</em> (passé composé)<br><em>Je mangerai</em> (futur) · <em>Je mangeai</em> (passé simple)',
-    astuce:'Passé composé = auxiliaire AVOIR ou ÊTRE + participe passé. Teste : « j\'ai couru » / « je suis parti(e) ». Avec ÊTRE, le participe s\'accorde avec le sujet !',
+    astuce:'Passé composé : auxiliaire au présent + participe passé. Plus-que-parfait : auxiliaire à l\'imparfait + participe passé, comme « j\'avais couru ». Avec être, hors verbes pronominaux, le participe s\'accorde avec le sujet.',
     regle:'Pour les verbes en -er du 1er groupe au présent : -e, -es, -e, -ons, -ez, -ent. Je chante, tu chantes, il chante, nous chantons, vous chantez, ils chantent.'
   },
   fc:[
@@ -278,7 +279,7 @@ const DATA = [
     { q:'Avec quels verbes utilise-t-on « être » au passé composé ?',
       a:'Les verbes de mouvement et changement d\'état : aller, venir, partir, arriver, naître, mourir, rester, tomber, monter, descendre… + tous les verbes pronominaux.',
       hint:'Je suis allé(e), elle est partie, ils sont nés, il s\'est levé.',
-      ah:'Avec être, le participe passé s\'accorde avec le sujet : Elle est arrivée (e) · Ils sont partis (s).' },
+      ah:'Hors verbes pronominaux, avec être, le participe passé s\'accorde avec le sujet : elle est arrivée, ils sont partis. Certains verbes comme monter ou descendre peuvent aussi se construire avec avoir : il a descendu les sacs.' },
   ],
   ex:[
     { type:'trou',
@@ -286,15 +287,15 @@ const DATA = [
       apres:'', input_id:'ti_conj', reponses:['irons'],
       aide:'Aller est irrégulier au futur. Radical : ir-' },
     { type:'qcm', ctx:'« Hier, je ___ mes devoirs puis je ___ dehors jouer. »',
-      q:'Quelle combinaison de temps est correcte pour deux actions successives du passé ?',
+      q:'Quelle combinaison est entièrement au passé composé ?',
       opts:['ai fait / suis sorti(e)','faisais / sortais','ferai / sortirai','fis / sortis'],
       ok:0, xp:30,
-      fb:'Deux actions ponctuelles et terminées qui se suivent → passé composé dans les deux cas. « J\'ai fait puis je suis sorti(e). » L\'imparfait décrirait une habitude, pas une suite d\'actions précises.' },
+      fb:'« J\'ai fait puis je suis sorti(e) » est au passé composé. « Je fis puis je sortis » serait aussi possible dans un récit au passé simple, mais ce n\'est pas le temps demandé ici.' },
     { type:'qcm', ctx:'',
-      q:'Quelle terminaison prend TOUJOURS « vous » au présent de l\'indicatif ?',
+      q:'Au présent, quelle terminaison prend « vous » avec un verbe du premier groupe comme chanter ?',
       opts:['-ez','-es','-ons','-ent'],
       ok:0, xp:20,
-      fb:'Vous prend toujours -ez au présent : chantEZ, finissEZ, prenEZ… sauf deux exceptions à connaître : vous ÊTES et vous FAITES.' },
+      fb:'On écrit « vous chantez ». Cette terminaison n\'est pas universelle : on écrit aussi « vous êtes », « vous faites » et « vous dites ».' },
   ]
 },
 
@@ -450,17 +451,17 @@ const DATA = [
 const LS = 'ave6e_progress';
 const HID = 'HUB_FR';
 let S = { ci:0, ph:'cours', fi:0, ff:false, ei:0, esel:null, efb:false, xp:0, done:{} };
+const restored=LiamRevisionProgress.load(HID);
+if(restored){Object.assign(S,restored);S.ci=Math.max(0,Math.min(DATA.length-1,Number(S.ci)||0));if(!['cours','fc','ex','bilan'].includes(S.ph))S.ph='cours';}
+S.credited=S.credited||{};
+LiamRevisionProgress.bind(HID,()=>S,()=>({xp:S.xp,done:Object.keys(S.done).length,total:DATA.length}));
 
 const $= id => document.getElementById(id);
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600) }
 function saveP(){
-  try{
-    const p=JSON.parse(localStorage.getItem(LS)||'{}');
-    if(!p.hubs_done) p.hubs_done={};
-    p.hubs_done[HID]={xp:S.xp, done:Object.keys(S.done).length, total:DATA.length, ts:Date.now()};
-    localStorage.setItem(LS,JSON.stringify(p));
-  }catch(e){}
+  LiamRevisionProgress.save(HID,S,{xp:S.xp,done:Object.keys(S.done).length,total:DATA.length});
 }
+function credit(key,xp){if(S.credited[key])return;S.credited[key]=true;S.xp+=xp;saveP();}
 function render(){ buildTabs(); buildXP(); buildMain(); }
 
 /* ── ONGLETS ── */
@@ -562,7 +563,7 @@ function buildEx(r,ch){
     const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
     if(!S.efb){
       const v=mkB('Valider','bsun',()=>{
-        if(S.esel===ex.ok){ S.xp+=ex.xp; toast(`⭐ +${ex.xp} XP`); }
+        if(S.esel===ex.ok){ credit(ch.id+':'+S.ei,ex.xp); toast(`⭐ +${ex.xp} XP`); }
         S.efb=true; render();
       }); v.disabled=S.esel===null; br.appendChild(v);
     } else {
@@ -586,7 +587,7 @@ function buildEx(r,ch){
       inp.className='ti '+(ok?'ok':'ko');
       const res=$('tres_'+ex.input_id);
       if(ok){
-        S.xp+=20; toast('⭐ +20 XP');
+        credit(ch.id+':'+S.ei,20); toast('⭐ +20 XP');
         res.innerHTML='<span style="color:var(--ok-d);font-weight:700">✅ Bravo !</span>';
         inp.disabled=true; br.innerHTML='';
         br.appendChild(mkB(S.ei<ch.ex.length-1?'Exercice suivant →':'🏁 Bilan →','bfr',nextEx));
@@ -600,7 +601,7 @@ function buildEx(r,ch){
     S.esel=null; S.efb=false;
     if(S.ei<ch.ex.length-1){ S.ei++; render(); }
     else{
-      S.done[ch.id]=true; S.xp+=15; toast('✅ Chapitre terminé +15 XP !');
+      if(!S.done[ch.id]){S.done[ch.id]=true;S.xp+=15;}toast('✅ Chapitre parcouru !');
       saveP(); S.ph='bilan'; render();
     }
   }
@@ -612,7 +613,7 @@ function buildEx(r,ch){
 function buildBilan(r,ch){
   const cnt=Object.keys(S.done).length;
   let badge={lbl:'📗 En route !',cls:'bbr'};
-  if(cnt>=DATA.length) badge={lbl:'🏆 Français maîtrisé !',cls:'bor'};
+  if(cnt>=DATA.length) badge={lbl:'🏆 Parcours de français terminé !',cls:'bor'};
   else if(cnt>=3)      badge={lbl:'🎓 Bonne base',cls:'barg'};
   const c=mkC('c-ok','🎉','Chapitre terminé !',ch.label+' · +15 XP bonus complétion');
   const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
@@ -622,7 +623,7 @@ function buildBilan(r,ch){
     <div class="bbadge ${badge.cls}">${badge.lbl}</div>
     <p style="font-size:.88rem;color:var(--ink3);margin-bottom:16px">
       ${cnt===DATA.length
-        ? '🎉 Tu as terminé tous les chapitres ! Tu es paré(e) pour le Français en 6e.'
+        ? '🎉 Tu as parcouru tous les chapitres. Reprends les erreurs et continue à lire et à écrire pour consolider ces compétences.'
         : `Il reste <strong>${DATA.length-cnt} chapitre(s)</strong> à explorer. Continue !`}
     </p>
   </div>`;

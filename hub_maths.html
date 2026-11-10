@@ -207,6 +207,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="cm2_legacy_progress.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════
    DONNÉES — MATHS CM2 PUR
@@ -252,7 +253,7 @@ const DATA = [
       q:'Quel nombre est le plus grand ?',
       opts:['985 746','1 002 300','999 999','1 000 000'],
       ok:1, xp:25,
-      fb:'1 002 300 a 7 chiffres, les autres en ont 6. Un nombre à 7 chiffres est toujours plus grand qu\'un nombre à 6 chiffres, même si certains 6-chiffres semblent "presque aussi grands".' },
+      fb:'1 002 300 et 1 000 000 ont sept chiffres. On compare ensuite les chiffres de gauche à droite : 1 002 300 est le plus grand. Les deux autres nombres sont inférieurs à un million.' },
     { type:'qcm', ctx:'4 836 arrondi à la centaine la plus proche :',
       q:'',
       opts:['4 800','4 840','4 900','5 000'],
@@ -351,38 +352,38 @@ const DATA = [
       q:'Quelle est la fraction simplifiée ?',
       opts:['3/5','2/3','6/5','1/2'],
       ok:0, xp:25,
-      fb:'6 et 10 sont tous les deux divisibles par 2 : 6÷2=3 et 10÷2=5 → 3/5. Vérifie : 3/5 = 6/10 ✓ (en multipliant par 2). La fraction 3/5 est irréductible car PGCD(3,5)=1.' },
+      fb:'6 et 10 sont tous les deux divisibles par 2 : 6÷2=3 et 10÷2=5 → 3/5. On a changé le partage sans changer la quantité représentée : 3/5 = 6/10.' },
   ]
 },
 
 // ─────────────── 4. GÉOMÉTRIE ───────────────
 { id:'geo', ico:'📐', label:'Géométrie',
   cours:{
-    titre:'Figures, périmètre, aire et volumes simples',
+    titre:'Figures, périmètre, aire et solides',
     txt:`En CM2, on connaît les <strong>figures planes</strong> et on sait calculer leur
     <strong>périmètre</strong> (tour de la figure) et leur <strong>aire</strong> (surface).
     On commence aussi les solides (cube, pavé droit).`,
-    ex:'Carré côté 5 cm : Périmètre = 4 × 5 = 20 cm\nRectangle 6×4 cm : Aire = 6 × 4 = 24 cm²\nTriangle base 8, hauteur 5 : Aire = (8 × 5) ÷ 2 = 20 cm²',
+    ex:'Carré côté 5 cm : Périmètre = 4 × 5 = 20 cm\nRectangle 6×4 cm : Aire = 6 × 4 = 24 cm². On peut aussi compter les carrés unités qui le recouvrent.',
     astuce:'Périmètre = en cm (longueur du contour). Aire = en cm² (surface). Volume = en cm³. Ne jamais mélanger les unités !',
-    regle:'Formules clés : Périmètre carré = 4×c · Périmètre rectangle = 2×(L+l) · Aire rectangle = L×l · Aire triangle = (base×hauteur)÷2'
+    regle:'Périmètre du carré = 4×c · Périmètre du rectangle = 2×(L+l) · Aire du rectangle = L×l, avec des longueurs exprimées dans la même unité.'
   },
   fc:[
     { q:'Quelle est la différence entre périmètre et aire ?',
       a:'Périmètre = longueur du contour (en cm, m…). Aire = mesure de la surface (en cm², m²…). Ce ne sont pas les mêmes unités.',
       hint:'Périmètre : si tu marches autour de la figure. Aire : si tu peins l\'intérieur.',
       ah:'Un périmètre peut être grand avec une petite aire et inversement. Ce sont deux mesures indépendantes.' },
-    { q:'Formule de l\'aire d\'un triangle ?',
-      a:'Aire = (base × hauteur) ÷ 2. La hauteur est perpendiculaire à la base.',
-      hint:'Triangle base 6 cm, hauteur 4 cm → Aire = (6 × 4) ÷ 2 = 24 ÷ 2 = 12 cm²',
-      ah:'La hauteur n\'est pas forcément un côté du triangle. Elle est toujours perpendiculaire (angle droit) à la base choisie.' },
+    { q:'Comment calculer l\'aire d\'un rectangle ?',
+      a:'On peut multiplier sa longueur par sa largeur, exprimées dans la même unité.',
+      hint:'Un rectangle de 6 cm sur 4 cm contient 6 × 4 = 24 carrés de 1 cm².',
+      ah:'L\'unité est une unité d\'aire, par exemple cm², et non une simple longueur en cm.' },
     { q:'Quelles sont les propriétés d\'un losange ?',
       a:'4 côtés égaux. Diagonales perpendiculaires qui se coupent en leur milieu. Les angles opposés sont égaux.',
       hint:'Le losange ressemble à un carré « penché ». Le carré est un losange particulier (avec des angles droits).',
       ah:'Périmètre du losange = 4 × côté. L\'aire = (d1 × d2) ÷ 2 (avec d1 et d2 = longueurs des diagonales).' },
-    { q:'Comment calculer le volume d\'un pavé droit (boîte) ?',
-      a:'Volume = Longueur × Largeur × Hauteur (en cm³ ou m³).',
-      hint:'Une boîte de 5 cm × 3 cm × 2 cm → Volume = 5 × 3 × 2 = 30 cm³',
-      ah:'Un cube est un pavé droit particulier avec toutes les arêtes égales : Volume = côté³.' },
+    { q:'Comment reconnaître un cube et un pavé droit ?',
+      a:'Un pavé droit possède six faces rectangulaires. Un cube possède six faces carrées identiques.',
+      hint:'Observe une boîte : ses faces, ses arêtes et ses sommets.',
+      ah:'Un cube est un pavé droit particulier. Une représentation en perspective peut déformer visuellement les longueurs.' },
   ],
   ex:[
     { type:'qcm', ctx:'Un rectangle mesure 7 cm de long et 4 cm de large.',
@@ -391,9 +392,9 @@ const DATA = [
       ok:2, xp:25,
       fb:'Périmètre rectangle = 2 × (Longueur + Largeur) = 2 × (7 + 4) = 2 × 11 = 22 cm. Erreur courante : 7 + 4 = 11 cm (oubli du ×2) ou 7 × 4 = 28 cm (confusion périmètre/aire).' },
     { type:'trou',
-      phrase:'Un triangle a une base de 10 cm et une hauteur de 6 cm.\nSon aire = (10 × 6) ÷ 2 = ___ cm²',
-      input_id:'ti_geo', reponses:['30'],
-      aide:'(10 × 6) = 60. Puis ÷ 2.' },
+      phrase:'Un rectangle mesure 10 cm sur 6 cm.\nSon aire = 10 × 6 = ___ cm²',
+      input_id:'ti_geo', reponses:['60'],
+      aide:'Compte les carrés unités sur une ligne, puis le nombre de lignes.' },
     { type:'qcm', ctx:'',
       q:'Laquelle de ces figures a forcément 4 côtés égaux ?',
       opts:['Rectangle','Trapèze','Losange','Parallélogramme'],
@@ -411,13 +412,13 @@ const DATA = [
     et de bien lire ce qu'on demande.`,
     ex:'Problème : « 3 boîtes de 24 crayons. On en enlève 15. Combien reste-t-il ? »\n1. Comprendre : total puis soustraction.\n2. Calculer : 3 × 24 = 72. Puis 72 − 15 = 57.\n3. Répondre : Il reste 57 crayons.',
     astuce:'Relis la question à la fin : est-ce que ta réponse répond bien à CE qu\'on demande ? Et vérifie l\'ordre de grandeur : si une baguette coûte 347 €, c\'est louche.',
-    regle:'Mots-clés : « au total / en tout » → + ou ×. « reste / de moins / en moins » → −. « fois plus / autant de fois » → ×. « partager / répartir » → ÷.'
+    regle:'Ne choisis pas une opération à partir d\'un seul mot. Représente les quantités, ce qui est connu et ce qui est cherché avec un schéma ou une phrase, puis justifie le calcul.'
   },
   fc:[
-    { q:'Quels mots indiquent une multiplication dans un problème ?',
-      a:'« fois », « le double de », « le triple de », « autant de fois », « fois plus ».',
-      hint:'« Il a 3 fois plus de billes que moi. » → multiplication. « Le double de 8 » → 2 × 8.',
-      ah:'Attention : « autant que » = même quantité (pas de ×). C\'est « autant de FOIS que » qui donne ×.' },
+    { q:'Comment choisir le calcul d\'un problème ?',
+      a:'Comprendre la relation entre les quantités et identifier celle qui manque, plutôt que chercher un mot-clé.',
+      hint:'« Léa a 3 fois autant de billes que Tom » : pour trouver Léa, on multiplie ; pour retrouver Tom à partir de Léa, on divise.',
+      ah:'Un même mot peut apparaître dans des problèmes qui demandent des opérations différentes. Un schéma aide à décider.' },
     { q:'Comment savoir si un problème demande une division ?',
       a:'Quand on partage en parts égales, quand on cherche combien de fois un nombre tient dans un autre, ou le prix unitaire.',
       hint:'« Répartir 36 bonbons en 4 parts égales » → 36 ÷ 4. « Combien de sacs de 5 peut-on faire avec 37 ? » → 37 ÷ 5.',
@@ -435,9 +436,9 @@ const DATA = [
     { type:'qcm',
       ctx:'Une boulangère a cuit 8 fournées de 24 pains. Elle en a vendu 156 dans la journée.',
       q:'Combien lui reste-t-il de pains ?',
-      opts:['36 pains','38 pains','36 pains','36 pains'],
+      opts:['36 pains','38 pains','48 pains','192 pains'],
       ok:0, xp:30,
-      fb:'Étape 1 : 8 × 24 = 192 pains au total. Étape 2 : 192 − 156 = 36 pains restants. Toutes les réponses semblent identiques ici — c\'est pour vérifier que tu calcules vraiment ! 8 × 24 = 192, et 192 − 156 = 36.' },
+      fb:'Étape 1 : 8 × 24 = 192 pains au total. Étape 2 : 192 − 156 = 36 pains restants. On distingue la quantité cuite de celle qui reste.' },
     { type:'trou',
       phrase:'Un livre coûte 12 €. Marie achète 3 livres et paie avec un billet de 50 €.\nLa monnaie rendue = 50 − (3 × 12) = ___  €',
       input_id:'ti_pb', reponses:['14'],
@@ -459,17 +460,17 @@ const DATA = [
 const LS  = 'ave6e_progress';
 const HID = 'HUB_MA';
 let S = { ci:0, ph:'cours', fi:0, ff:false, ei:0, esel:null, efb:false, xp:0, done:{} };
+const restored=LiamRevisionProgress.load(HID);
+if(restored){Object.assign(S,restored);S.ci=Math.max(0,Math.min(DATA.length-1,Number(S.ci)||0));if(!['cours','fc','ex','bilan'].includes(S.ph))S.ph='cours';}
+S.credited=S.credited||{};
+LiamRevisionProgress.bind(HID,()=>S,()=>({xp:S.xp,done:Object.keys(S.done).length,total:DATA.length}));
 
 const $= id => document.getElementById(id);
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
 function saveP(){
-  try{
-    const p=JSON.parse(localStorage.getItem(LS)||'{}');
-    if(!p.hubs_done) p.hubs_done={};
-    p.hubs_done[HID]={xp:S.xp,done:Object.keys(S.done).length,total:DATA.length,ts:Date.now()};
-    localStorage.setItem(LS,JSON.stringify(p));
-  }catch(e){}
+  LiamRevisionProgress.save(HID,S,{xp:S.xp,done:Object.keys(S.done).length,total:DATA.length});
 }
+function credit(key,xp){if(S.credited[key])return;S.credited[key]=true;S.xp+=xp;saveP();}
 function render(){ buildTabs(); buildXP(); buildMain(); }
 
 function buildTabs(){
@@ -565,7 +566,7 @@ function buildEx(r,ch){
     const br=document.createElement('div'); br.className='brow'; body.appendChild(br);
     if(!S.efb){
       const v=mkB('Valider','bsun',()=>{
-        if(S.esel===ex.ok){ S.xp+=ex.xp; toast(`⭐ +${ex.xp} XP`); }
+        if(S.esel===ex.ok){ credit(ch.id+':'+S.ei,ex.xp); toast(`⭐ +${ex.xp} XP`); }
         S.efb=true; render();
       }); v.disabled=S.esel===null; br.appendChild(v);
     } else {
@@ -589,7 +590,7 @@ function buildEx(r,ch){
       inp.className='ti '+(ok?'ok':'ko');
       const res=$('tres_'+ex.input_id);
       if(ok){
-        S.xp+=20; toast('⭐ +20 XP');
+        credit(ch.id+':'+S.ei,20); toast('⭐ +20 XP');
         res.innerHTML='<span style="color:var(--ok-d);font-weight:700">✅ Bravo !</span>';
         inp.disabled=true; br.innerHTML='';
         br.appendChild(mkB(S.ei<ch.ex.length-1?'Exercice suivant →':'🏁 Bilan →','bma',nextEx));
@@ -603,7 +604,7 @@ function buildEx(r,ch){
     S.esel=null; S.efb=false;
     if(S.ei<ch.ex.length-1){ S.ei++; render(); }
     else{
-      S.done[ch.id]=true; S.xp+=15; toast('✅ Chapitre terminé +15 XP !');
+      if(!S.done[ch.id]){S.done[ch.id]=true;S.xp+=15;}toast('✅ Chapitre parcouru !');
       saveP(); S.ph='bilan'; render();
     }
   }
@@ -614,7 +615,7 @@ function buildEx(r,ch){
 function buildBilan(r,ch){
   const cnt=Object.keys(S.done).length;
   let badge={lbl:'📗 En route !',cls:'bbr'};
-  if(cnt>=DATA.length) badge={lbl:'🏆 Maths maîtrisées !',cls:'bor'};
+  if(cnt>=DATA.length) badge={lbl:'🏆 Parcours de maths terminé !',cls:'bor'};
   else if(cnt>=3)      badge={lbl:'🎓 Bonne base',cls:'barg'};
   const c=mkC('c-ok','🎉','Chapitre terminé !',ch.label+' · +15 XP bonus');
   const body=document.createElement('div'); body.className='cbody'; c.appendChild(body);
@@ -624,7 +625,7 @@ function buildBilan(r,ch){
     <div class="bbadge ${badge.cls}">${badge.lbl}</div>
     <p style="font-size:.88rem;color:var(--ink3);margin-bottom:16px">
       ${cnt===DATA.length
-        ? '🎉 Bravo ! Tu as terminé tous les chapitres de Maths. Tu es paré(e) pour la 6e !'
+        ? '🎉 Tu as parcouru tous les chapitres. Reprends les erreurs et explique tes raisonnements pour consolider tes compétences.'
         : `Il reste <strong>${DATA.length-cnt} chapitre(s)</strong> à explorer. Continue !`}
     </p>
   </div>`;

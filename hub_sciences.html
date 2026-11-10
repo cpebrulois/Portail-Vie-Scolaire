@@ -156,6 +156,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 <div id="main"></div>
 </div>
 <div class="toast" id="toast"></div>
+<script src="cm2_legacy_progress.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════
    DONNÉES — 6 DOMAINES SCIENCES CM2
@@ -531,7 +532,7 @@ function buildSolaire(){
     {n:'Vénus',col:'#FDE68A',sz:20,info:'Planète 2 — La plus chaude (462°C) grâce à son effet de serre. Visible à l\'œil nu.'},
     {n:'Terre',col:'#3B82F6',sz:22,info:'Planète 3 — Notre maison. 1 satellite (la Lune). Seule planète connue avec de la vie.'},
     {n:'Mars',col:'#EF4444',sz:17,info:'Planète 4 — La planète rouge. 2 lunes (Phobos, Deimos). Cible des missions Mars.'},
-    {n:'Jupiter',col:'#92400E',sz:38,info:'Planète 5 — La plus grande. 95 lunes dont Ganymède (plus grande que Mercure).'},
+    {n:'Jupiter',col:'#92400E',sz:38,info:'Planète 5 — La plus grande. De nombreuses lunes, dont Ganymède, plus grande que Mercure.'},
     {n:'Saturne',col:'#D97706',sz:34,info:'Planète 6 — Célèbre pour ses anneaux de glace. Moins dense que l\'eau — il flotterait !'},
     {n:'Uranus',col:'#67E8F9',sz:28,info:'Planète 7 — Tourne "couchée" (axe incliné à 98°). Apparaît bleu-vert.'},
     {n:'Neptune',col:'#1D4ED8',sz:26,info:'Planète 8 — La plus éloignée. Vents jusqu\'à 2 100 km/h. Tour du Soleil en 165 ans !'},
@@ -763,6 +764,10 @@ function renderBilan(parent,ch,cs){
 }
 
 /* ═══ INIT ═══ */
+const restored=LiamRevisionProgress.load('HUB_SC');
+if(restored){chapIdx=Math.max(0,Math.min(DATA.length-1,Number(restored.chapIdx)||0));xpTotal=Number(restored.xpTotal)||0;chapState=restored.chapState||{};chapDoneSet=new Set(restored.done||[]);}
+LiamRevisionProgress.bind('HUB_SC',()=>({chapIdx,xpTotal,chapState,done:[...chapDoneSet]}),()=>({xp:xpTotal,done:chapDoneSet.size,total:DATA.length}));
+$('xpTot').textContent=xpTotal;$('chapDone').textContent=chapDoneSet.size;
 renderTabs(); renderChap();
 </script>
 </body>

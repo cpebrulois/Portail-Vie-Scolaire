@@ -149,6 +149,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 <div id="main"></div>
 </div>
 <div class="toast" id="toast"></div>
+<script src="cm2_legacy_progress.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════
    DONNÉES — 7 THÈMES MÉTHODES
@@ -528,15 +529,17 @@ function renderChap(){
   const clci=mk('ci c-ok'); clci.textContent='✅'; clhd.appendChild(clci);
   clhd.innerHTML+=`<div><div class="ctitle">${ch.checklist.titre}</div><div class="csub">Coche au fur et à mesure</div></div>`;
   const clb=mk('cbody'); clcard.appendChild(clb);
-  let clChecked=new Set();
+  let clChecked=new Set(cs.checks||[]);
   const clList=mk('checklist'); clb.appendChild(clList);
   ch.checklist.items.forEach((item,i)=>{
     const li=mk('cl-item'); clList.appendChild(li);
     const box=mk('cl-box'); box.textContent=''; li.appendChild(box);
+    if(clChecked.has(i)){li.classList.add('checked');box.textContent='✓';}
     const txt=mk('cl-txt'); txt.textContent=item; li.appendChild(txt);
     li.onclick=()=>{
       if(clChecked.has(i)){ clChecked.delete(i); li.classList.remove('checked'); box.textContent=''; }
       else { clChecked.add(i); li.classList.add('checked'); box.textContent='✓'; }
+      cs.checks=[...clChecked];
       if(clChecked.size===ch.checklist.items.length) toast('✅ Checklist complète ! Bien joué.');
     };
   });
@@ -638,6 +641,10 @@ function renderBilan(parent,ch,cs){
 }
 
 /* INIT */
+const restored=LiamRevisionProgress.load('HUB_MT');
+if(restored){chapIdx=Math.max(0,Math.min(DATA.length-1,Number(restored.chapIdx)||0));xpTotal=Number(restored.xpTotal)||0;chapState=restored.chapState||{};scState=restored.scState||{};chapDoneSet=new Set(restored.done||[]);}
+LiamRevisionProgress.bind('HUB_MT',()=>({chapIdx,xpTotal,chapState,scState,done:[...chapDoneSet]}),()=>({xp:xpTotal,done:chapDoneSet.size,total:DATA.length}));
+$('xpTot').textContent=xpTotal;$('chapDone').textContent=chapDoneSet.size;
 renderTabs(); renderChap();
 </script>
 </body>

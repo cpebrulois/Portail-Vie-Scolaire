@@ -16,6 +16,7 @@
  */
 
 import { SYSTEM_KERN, getCampagne, CAMPAGNES } from "./kern_campagnes.js";
+import { handleCM2, digest as cm2InvitationHash } from "./cm2_server.js";
 
 const MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions";
 const ALLOWED_MODELS = new Set(["mistral-small-latest", "mistral-large-latest"]);
@@ -958,6 +959,8 @@ async function handleIdentite(request, env) {
     // ------------------------------------------------------------- CRÉER
     if (action === "creer") {
       if (!pub || !sec) return json({ error: "Code public ou nom de page manquant." }, 400, cors);
+      const primaire=/^RANCE-PRIM-\d{4}$/.test(pub);
+      if(primaire&&!/^[a-f0-9]{48}$/.test(String(b.invitation||'')))return json({error:"Une invitation personnelle du responsable est nécessaire pour activer ce compte professeur."},403,cors);
       if (!/^[A-ZÀ-Ÿ-]{3,}-[A-ZÀ-Ÿ-]{3,}-\d{4}$/.test(sec)) {
         return json({ error: "Nom de page invalide." }, 400, cors);
       }
@@ -973,9 +976,15 @@ async function handleIdentite(request, env) {
       if (pris && pris.length) {
         return json({ error: "Ce nom est déjà pris — retire un chiffre au sort." }, 409, cors);
       }
-      await sb(env, "PATCH",
-        `pvs_identites?code_public=eq.${encodeURIComponent(pub)}`,
-        { code_secret: sec, cree_at: new Date().toISOString() });
+      if(primaire){
+        try{await sb(env,'POST','rpc/pvs_cm2_activate_teacher',{p_code:pub,p_invite_hash:await cm2InvitationHash(b.invitation),p_secret:sec});}
+        catch{return json({error:"Invitation invalide, expirée ou déjà utilisée. Demandez une nouvelle invitation au responsable."},403,cors);}
+      }else{
+        const updated=await sb(env, "PATCH",
+          `pvs_identites?code_public=eq.${encodeURIComponent(pub)}&code_secret=is.null`,
+          { code_secret: sec, cree_at: new Date().toISOString() });
+        if(!updated?.length)return json({error:"Ce compte a déjà été activé. Connectez-vous avec son identifiant personnel."},409,cors);
+      }
       return json({ ok: true, secret: sec, public: pub }, 200, cors);
     }
 
@@ -1824,6 +1833,14 @@ async function handleFilage(request, env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/cm2") {
+      return handleCM2(request, env, { sb, sessionValide, originAllowed, corsHeaders });
+    }
+    if (["/cm2", "/cm2/", "/cm2/professeur"].includes(url.pathname)) {
+      const target = new URL("/cm2.html", url);
+      if (url.pathname.endsWith("professeur")) target.searchParams.set("espace", "prof");
+      return Response.redirect(target.toString(), 302);
+    }
     if (url.pathname === "/api/agora" || url.pathname === "/api/chat") {
       return handleAgora(request, env);
     }
