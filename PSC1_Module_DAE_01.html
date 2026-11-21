@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC1 - Module P4.04 : DAE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary: #0066ff; --accent: #00a8ff; --dark: #0a0d1a; --darker: #050712; --glow: rgba(0, 102, 255, 0.4); }
+        body { font-family: 'Rajdhani', sans-serif; background: linear-gradient(135deg, var(--darker) 0%, #1a1a2e 100%); color: #fff; min-height: 100vh; padding: 20px; position: relative; overflow-x: hidden; }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.3; }
+        .particle { position: absolute; width: 3px; height: 3px; background: var(--primary); border-radius: 50%; animation: float 8s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0) translateX(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100vh) translateX(50px); opacity: 0; } }
+        .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .music-controls { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 10px 15px; border-radius: 50px; backdrop-filter: blur(10px); border: 1px solid rgba(0, 102, 255, 0.3); z-index: 1000; }
+        .music-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: transform 0.2s ease; }
+        .music-btn:hover { transform: scale(1.2); }
+        .volume-slider { width: 80px; height: 5px; background: rgba(255, 255, 255, 0.2); border-radius: 5px; outline: none; -webkit-appearance: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: var(--primary); border-radius: 50%; cursor: pointer; }
+        header { text-align: center; margin-bottom: 40px; padding: 30px; background: rgba(255, 255, 255, 0.02); border-radius: 15px; border: 1px solid rgba(0, 102, 255, 0.3); }
+        .module-badge { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 700; margin-bottom: 15px; }
+        h1 { font-family: 'Orbitron', monospace; font-size: 2.8em; font-weight: 900; margin-bottom: 15px; text-shadow: 0 0 20px var(--glow); }
+        .subtitle { font-size: 1.3em; color: #aabbcc; margin-bottom: 20px; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: hidden; margin-top: 20px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: width 0.5s ease; }
+        .section { background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 30px; margin-bottom: 30px; border-left: 4px solid var(--primary); display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .section-title { font-family: 'Orbitron', monospace; font-size: 2em; margin-bottom: 20px; color: var(--primary); display: flex; align-items: center; gap: 15px; }
+        .theory-content { line-height: 1.8; font-size: 1.1em; }
+        .theory-content h3 { color: var(--accent); margin: 25px 0 15px 0; font-size: 1.4em; }
+        .theory-content p { margin-bottom: 15px; text-align: justify; }
+        .highlight-box { background: rgba(0, 102, 255, 0.1); border-left: 3px solid var(--primary); padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .important-list { list-style: none; padding: 0; }
+        .important-list li { padding: 10px 0 10px 30px; position: relative; }
+        .important-list li::before { content: '⚡'; position: absolute; left: 0; }
+        .technique-box { background: rgba(0, 0, 0, 0.4); border-radius: 10px; padding: 20px; margin: 25px 0; border: 2px solid var(--accent); }
+        .danger-box { background: rgba(220, 20, 60, 0.15); border-left: 3px solid #dc143c; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .question-card { background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(0, 102, 255, 0.3); }
+        .question-text { font-size: 1.3em; margin-bottom: 20px; font-weight: 600; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+        .option:hover { background: rgba(0, 102, 255, 0.1); border-color: var(--primary); transform: translateX(5px); }
+        .option.selected { background: rgba(0, 102, 255, 0.2); border-color: var(--accent); }
+        .option.correct { background: rgba(50, 205, 50, 0.2); border-color: #32cd32; }
+        .option.incorrect { background: rgba(220, 20, 60, 0.2); border-color: #dc143c; }
+        .scenario-card { background: rgba(0, 0, 0, 0.4); border-radius: 10px; padding: 25px; margin-bottom: 25px; border: 1px solid var(--primary); }
+        .scenario-title { font-size: 1.5em; color: var(--accent); margin-bottom: 15px; font-weight: 700; }
+        .scenario-text { font-size: 1.1em; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+        .btn { padding: 15px 30px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Orbitron', monospace; }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--glow); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .results-panel { background: rgba(0, 0, 0, 0.4); border-radius: 15px; padding: 30px; text-align: center; border: 2px solid var(--primary); }
+        .score-display { font-size: 4em; font-family: 'Orbitron', monospace; font-weight: 900; color: var(--accent); margin: 20px 0; }
+        .code-display { background: rgba(0, 212, 255, 0.1); border: 2px solid #00d4ff; border-radius: 10px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace; word-break: break-all; font-size: 0.9em; }
+        .nav-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+        .nav-btn { background: rgba(0, 102, 255, 0.8); padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: 700; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .nav-btn:hover { background: var(--primary); transform: scale(1.05); }
+        @media (max-width: 768px) { h1 { font-size: 2em; } .section-title { font-size: 1.5em; } .btn-group { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <audio id="bgMusic" loop><source src="music_cardiac.mp3" type="audio/mpeg"></audio>
+    <div class="particles" id="particles"></div>
+    <div class="music-controls">
+        <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔇</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" oninput="changeVolume(this.value)">
+    </div>
+    <div class="container">
+        <header>
+            <div class="module-badge">MODULE P4.04</div>
+            <h1>⚡ DÉFIBRILLATEUR (DAE)</h1>
+            <div class="subtitle">Défibrillateur Automatisé Externe - Utilisation & Sécurité</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </header>
+
+        <div class="section active" id="section-theory">
+            <div class="section-title"><span>📚</span><span>THÉORIE</span></div>
+            <div class="theory-content">
+                <div class="highlight-box"><strong>🎯 OBJECTIF :</strong> Utiliser un DAE en sécurité pour augmenter chances de survie.</div>
+
+                <h3>⚡ Qu'est-ce qu'un DAE ?</h3>
+                <p>Le <strong>Défibrillateur Automatisé Externe</strong> (DAE) est un appareil qui analyse le rythme cardiaque et délivre un <strong>choc électrique</strong> si nécessaire pour relancer le cœur.</p>
+
+                <div class="highlight-box">
+                    <strong>AUGMENTATION DES CHANCES :</strong><br>
+                    ✅ RCP seule = 5-10% survie<br>
+                    ✅ RCP + DAE < 3 min = 50-70% survie !<br>
+                    <strong>→ Le DAE sauve des vies !</strong>
+                </div>
+
+                <h3>📍 Où trouver un DAE ?</h3>
+                <ul class="important-list">
+                    <li>Lieux publics (gares, centres commerciaux, aéroports)</li>
+                    <li>Entreprises, écoles, gymnases</li>
+                    <li>Boîtiers verts avec cœur + éclair</li>
+                    <li>Application mobile "Staying Alive" (géolocalisation DAE)</li>
+                </ul>
+
+                <h3>🔧 Utilisation du DAE</h3>
+                <div class="technique-box">
+                    <h4 style="color: var(--accent);">ÉTAPE 1 : MISE EN ROUTE</h4>
+                    <ul class="important-list">
+                        <li>Ouvrir le DAE (certains s'allument automatiquement)</li>
+                        <li>Appuyer sur le bouton ON/OFF si nécessaire</li>
+                        <li><strong>SUIVRE LES INSTRUCTIONS VOCALES</strong> (le DAE guide étape par étape)</li>
+                    </ul>
+
+                    <h4 style="color: var(--accent); margin-top: 15px;">ÉTAPE 2 : PLACEMENT ÉLECTRODES</h4>
+                    <ul class="important-list">
+                        <li>Dénuder le thorax (couper vêtements si nécessaire)</li>
+                        <li>Sécher si mouillé</li>
+                        <li>Raser si très poilu (rasoir dans DAE)</li>
+                        <li><strong>Coller électrode 1 :</strong> Haut droite (sous clavicule)</li>
+                        <li><strong>Coller électrode 2 :</strong> Bas gauche (sous sein, côté)</li>
+                        <li>Appuyer fermement pour bien coller</li>
+                    </ul>
+
+                    <div style="margin: 15px 0; padding: 15px; background: rgba(0,168,255,0.1); border-radius: 5px;">
+                        <strong>ÉLECTRODES ENFANT (<8 ans ou <25 kg) :</strong><br>
+                        Si disponibles : Utiliser électrodes pédiatriques (plus petites)<br>
+                        Position : 1 devant (sternum), 1 derrière (entre omoplates)<br>
+                        Si pas d'électrodes enfant : Utiliser adulte (position normale)
+                    </div>
+
+                    <h4 style="color: var(--accent); margin-top: 15px;">ÉTAPE 3 : ANALYSE</h4>
+                    <ul class="important-list">
+                        <li>Le DAE annonce "ANALYSE EN COURS"</li>
+                        <li><strong>⚠️ NE PAS TOUCHER LA VICTIME</strong></li>
+                        <li>S'écarter, faire écarter tout le monde</li>
+                        <li>Le DAE analyse automatiquement</li>
+                    </ul>
+
+                    <h4 style="color: var(--accent); margin-top: 15px;">ÉTAPE 4 : CHOC</h4>
+                    <p><strong>SI CHOC CONSEILLÉ :</strong></p>
+                    <ul class="important-list">
+                        <li>Le DAE annonce "CHOC CONSEILLÉ, ÉCARTEZ-VOUS"</li>
+                        <li><strong>⚠️ VÉRIFIER QUE PERSONNE NE TOUCHE</strong></li>
+                        <li>Appuyer sur bouton CHOC (si pas automatique)</li>
+                        <li>Le choc est délivré</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>SI CHOC NON CONSEILLÉ :</strong></p>
+                    <ul class="important-list">
+                        <li>Le DAE annonce "CHOC NON CONSEILLÉ"</li>
+                        <li>Reprendre RCP immédiatement</li>
+                    </ul>
+
+                    <h4 style="color: var(--accent); margin-top: 15px;">ÉTAPE 5 : REPRENDRE RCP</h4>
+                    <ul class="important-list">
+                        <li><strong>IMMÉDIATEMENT</strong> après le choc, reprendre RCP 30:2</li>
+                        <li>Le DAE réanalysera après 2 minutes</li>
+                        <li>Continuer ce cycle jusqu'aux secours</li>
+                    </ul>
+                </div>
+
+                <h3>⚠️ Règles de sécurité ABSOLUES</h3>
+                <div class="danger-box">
+                    <strong>🚨 INTERDICTIONS :</strong><br>
+                    <ul class="important-list">
+                        <li><strong>JAMAIS toucher la victime</strong> pendant analyse ou choc</li>
+                        <li><strong>JAMAIS utiliser</strong> dans l'eau (sortir victime de l'eau d'abord)</li>
+                        <li><strong>JAMAIS utiliser</strong> près essence/gaz (risque explosion)</li>
+                        <li>Retirer patchs médicamenteux (nicotine, etc.) avant électrodes</li>
+                        <li>Éviter de poser électrodes sur pacemaker (déplacer légèrement)</li>
+                    </ul>
+                </div>
+
+                <h3>🔄 Algorithme DAE + RCP</h3>
+                <div class="highlight-box">
+                    <strong>PROTOCOLE COMPLET :</strong><br><br>
+                    <strong>1.</strong> Arrêt cardiaque constaté<br>
+                    <strong>2.</strong> DÉBUTER RCP immédiatement<br>
+                    <strong>3.</strong> Dès que DAE arrive → Allumer, suivre instructions<br>
+                    <strong>4.</strong> Coller électrodes (continuer RCP si 2 sauveteurs)<br>
+                    <strong>5.</strong> Écarter pour ANALYSE<br>
+                    <strong>6.</strong> Si CHOC → Écarter, choquer<br>
+                    <strong>7.</strong> REPRENDRE RCP 30:2 immédiatement<br>
+                    <strong>8.</strong> DAE réanalyse toutes les 2 min → Recommencer cycle<br>
+                    <strong>9.</strong> Continuer jusqu'aux secours
+                </div>
+
+                <h3>💡 Points importants</h3>
+                <ul class="important-list">
+                    <li>Le DAE ne se trompe PAS (analyse fiable)</li>
+                    <li>Impossible de choquer par erreur (sécurisé)</li>
+                    <li>Laisser DAE branché même si victime bouge</li>
+                    <li>Ne jamais débrancher DAE jusqu'à arrivée secours</li>
+                    <li>Tout le monde peut utiliser un DAE (aucun diplôme requis)</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>🔑 POINTS CLÉS :</strong><br>
+                    ✅ DAE = Choc électrique pour relancer cœur<br>
+                    ✅ Augmente survie de 5% à 50-70%<br>
+                    ✅ Suivre instructions vocales<br>
+                    ✅ JAMAIS toucher pendant analyse/choc<br>
+                    ✅ Reprendre RCP IMMÉDIATEMENT après choc<br>
+                    ✅ Électrodes enfant : devant/derrière si <8ans<br>
+                    ✅ Laisser branché jusqu'aux secours
+                </div>
+            </div>
+            <div class="btn-group"><button class="btn" onclick="nextSection()">QUIZ ➡️</button></div>
+        </div>
+
+        <div class="section" id="section-quiz">
+            <div class="section-title"><span>❓</span><span>QUIZ</span></div>
+            <div id="quizContainer"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️</button>
+                <button class="btn" id="btnValidateQuiz" onclick="validateQuiz()" disabled>VALIDER</button>
+            </div>
+        </div>
+
+        <div class="section" id="section-scenarios">
+            <div class="section-title"><span>🎬</span><span>SCÉNARIOS</span></div>
+            <div id="scenariosContainer"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="previousSection()">⬅️</button>
+                <button class="btn" id="btnValidateScenarios" onclick="validateScenarios()" disabled>VALIDER</button>
+            </div>
+        </div>
+
+        <div class="section" id="section-results">
+            <div class="section-title"><span>🏆</span><span>RÉSULTATS</span></div>
+            <div class="results-panel">
+                <h2>📊 SCORE</h2>
+                <div class="score-display" id="finalScore">0/200</div>
+                <div style="margin: 30px 0;">
+                    <p style="font-size: 1.2em; margin-bottom: 10px;">Quiz : <span id="quizScoreDisplay">0/100</span></p>
+                    <p style="font-size: 1.2em;">Scénarios : <span id="scenariosScoreDisplay">0/100</span></p>
+                </div>
+                <div id="certificationMessage"></div>
+                <div class="code-display" id="codeDisplay" style="display: none;">
+                    <strong>🔑 CODE :</strong><br>
+                    <span id="certificationCode" style="font-size: 1.1em; color: #00d4ff;"></span><br><br>
+                    <button class="btn" onclick="copyCode()">📋 COPIER</button>
+                </div>
+                <div class="btn-group" style="margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="restartModule()">🔄</button>
+                    <button class="btn" onclick="returnToHub()">🏠 HUB</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav-buttons"><div class="nav-btn" onclick="returnToHub()">🏠 HUB</div></div>
+
+    <script>
+        let currentSection=0,quizAnswers=[],scenarioAnswers=[],quizScore=0,scenariosScore=0;
+        const music=document.getElementById('bgMusic'),musicToggle=document.getElementById('musicToggle');
+        let isMusicPlaying=false;
+        function toggleMusic(){if(isMusicPlaying){music.pause();musicToggle.textContent='🔇';isMusicPlaying=false}else{music.play();musicToggle.textContent='🔊';isMusicPlaying=true}}
+        function changeVolume(v){music.volume=v/100}
+        document.body.addEventListener('click',()=>{if(!isMusicPlaying&&music.paused){music.play();musicToggle.textContent='🔊';isMusicPlaying=true}},{once:true});
+
+        const quizQuestions=[
+            {q:"Le DAE augmente les chances de survie de 5% à 50-70% si utilisé rapidement.",options:["Vrai","Faux"],correct:0,explanation:"VRAI ! DAE < 3 min après arrêt = 50-70% survie vs 5-10% sans."},
+            {q:"Pendant l'ANALYSE du DAE, je dois :",options:["Continuer RCP","NE PAS toucher la victime","Toucher pour vérifier","Secouer"],correct:1,explanation:"NE PAS TOUCHER ! S'écarter, faire écarter tout le monde."},
+            {q:"Après le choc, je dois :",options:["Attendre","Reprendre RCP IMMÉDIATEMENT","Vérifier pouls","Éteindre DAE"],correct:1,explanation:"Reprendre RCP 30:2 IMMÉDIATEMENT après choc !"},
+            {q:"Les électrodes adulte se placent :",options:["Devant/derrière","Haut droite + bas gauche","Sur le ventre","N'importe"],correct:1,explanation:"Haut droite (sous clavicule) + Bas gauche (sous sein, côté)."},
+            {q:"Pour un enfant <8 ans avec électrodes pédiatriques, je place :",options:["Comme adulte","1 devant (sternum) + 1 derrière (omoplates)","Sur les bras","Uniquement devant"],correct:1,explanation:"Électrodes enfant : 1 DEVANT (sternum) + 1 DERRIÈRE (entre omoplates)."},
+            {q:"Le DAE peut se tromper et choquer par erreur.",options:["Vrai","Faux"],correct:1,explanation:"FAUX ! Le DAE ne se trompe PAS. Analyse fiable, impossible choc erroné."},
+            {q:"Si le DAE annonce 'CHOC NON CONSEILLÉ', je dois :",options:["Éteindre le DAE","Reprendre RCP immédiatement","Attendre","Débrancher"],correct:1,explanation:"Reprendre RCP IMMÉDIATEMENT si choc non conseillé."},
+            {q:"Je peux utiliser le DAE dans l'eau.",options:["Vrai","Faux"],correct:1,explanation:"FAUX ! JAMAIS dans l'eau (risque électrocution). Sortir victime PUIS DAE."},
+            {q:"Je dois débrancher le DAE quand la victime bouge.",options:["Vrai","Faux"],correct:1,explanation:"FAUX ! Laisser DAE branché jusqu'à arrivée secours, même si bouge."},
+            {q:"Tout le monde peut utiliser un DAE, sans formation.",options:["Vrai","Faux"],correct:0,explanation:"VRAI ! Aucun diplôme requis. DAE guide vocalement étape par étape."}
+        ];
+
+        const scenarios=[
+            {title:"Scénario 1 : DAE arrive",text:"Vous faites la RCP. Un DAE arrive. Que faites-vous ?",options:["J'arrête RCP et allume DAE","Je continue RCP pendant que quelqu'un allume DAE et colle électrodes","Je finis mon cycle","J'attends"],correct:1,explanation:"Continuer RCP pendant qu'un autre met en route DAE et colle électrodes !"},
+            {title:"Scénario 2 : Analyse",text:"Le DAE annonce 'ANALYSE EN COURS'. Vous devez :",options:["Continuer RCP","S'écarter, NE PAS toucher","Vérifier pouls","Secouer"],correct:1,explanation:"S'ÉCARTER ! Ne PAS toucher pendant analyse."},
+            {title:"Scénario 3 : Après choc",text:"Le DAE a délivré un choc. Immédiatement après, vous :",options:["Vérifiez si le cœur bat","Reprenez RCP 30:2 IMMÉDIATEMENT","Attendez 1 minute","Débranchez DAE"],correct:1,explanation:"Reprendre RCP 30:2 IMMÉDIATEMENT après choc !"}
+        ];
+
+        document.addEventListener('DOMContentLoaded',()=>{createParticles();generateQuiz();generateScenarios();updateProgress()});
+        function createParticles(){const c=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*8+'s';p.style.animationDuration=(Math.random()*5+5)+'s';c.appendChild(p)}}
+        function generateQuiz(){const c=document.getElementById('quizContainer');quizQuestions.forEach((item,i)=>{const card=document.createElement('div');card.className='question-card';card.innerHTML=`<div class="question-text">${i+1}. ${item.q}</div><div class="options" id="options-${i}">${item.options.map((opt,j)=>`<div class="option" onclick="selectOption(${i},${j})">${opt}</div>`).join('')}</div><div id="explanation-${i}" style="display:none;margin-top:15px;padding:15px;background:rgba(0,212,255,0.1);border-radius:5px;"></div>`;c.appendChild(card)})}
+        function selectOption(qi,oi){const opts=document.getElementById(`options-${qi}`).querySelectorAll('.option');opts.forEach(o=>o.classList.remove('selected'));opts[oi].classList.add('selected');quizAnswers[qi]=oi;if(quizAnswers.filter(a=>a!==undefined).length===quizQuestions.length)document.getElementById('btnValidateQuiz').disabled=false}
+        function validateQuiz(){let score=0;quizQuestions.forEach((item,i)=>{const opts=document.getElementById(`options-${i}`).querySelectorAll('.option');const exp=document.getElementById(`explanation-${i}`);if(quizAnswers[i]===item.correct){score+=10;opts[quizAnswers[i]].classList.add('correct')}else{opts[quizAnswers[i]].classList.add('incorrect');opts[item.correct].classList.add('correct')}exp.innerHTML=`<strong>Explication :</strong> ${item.explanation}`;exp.style.display='block';opts.forEach(o=>o.style.pointerEvents='none')});quizScore=score;document.getElementById('btnValidateQuiz').disabled=true;setTimeout(()=>nextSection(),3000)}
+        function generateScenarios(){const c=document.getElementById('scenariosContainer');scenarios.forEach((item,i)=>{const card=document.createElement('div');card.className='scenario-card';card.innerHTML=`<div class="scenario-title">${item.title}</div><div class="scenario-text">"${item.text}"</div><div class="options" id="scenario-options-${i}">${item.options.map((opt,j)=>`<div class="option" onclick="selectScenario(${i},${j})">${opt}</div>`).join('')}</div><div id="scenario-explanation-${i}" style="display:none;margin-top:15px;padding:15px;background:rgba(0,212,255,0.1);border-radius:5px;"></div>`;c.appendChild(card)})}
+        function selectScenario(si,oi){const opts=document.getElementById(`scenario-options-${si}`).querySelectorAll('.option');opts.forEach(o=>o.classList.remove('selected'));opts[oi].classList.add('selected');scenarioAnswers[si]=oi;if(scenarioAnswers.filter(a=>a!==undefined).length===scenarios.length)document.getElementById('btnValidateScenarios').disabled=false}
+        function validateScenarios(){let score=0;scenarios.forEach((item,i)=>{const opts=document.getElementById(`scenario-options-${i}`).querySelectorAll('.option');const exp=document.getElementById(`scenario-explanation-${i}`);if(scenarioAnswers[i]===item.correct){score+=33.33;opts[scenarioAnswers[i]].classList.add('correct')}else{opts[scenarioAnswers[i]].classList.add('incorrect');opts[item.correct].classList.add('correct')}exp.innerHTML=`<strong>✅ Bonne réponse :</strong> ${item.explanation}`;exp.style.display='block';opts.forEach(o=>o.style.pointerEvents='none')});scenariosScore=Math.round(score);document.getElementById('btnValidateScenarios').disabled=true;setTimeout(()=>showResults(),3000)}
+        function showResults(){nextSection();const total=quizScore+scenariosScore;document.getElementById('finalScore').textContent=total+'/200';document.getElementById('quizScoreDisplay').textContent=quizScore+'/100';document.getElementById('scenariosScoreDisplay').textContent=scenariosScore+'/100';const msg=document.getElementById('certificationMessage');const codeDiv=document.getElementById('codeDisplay');if(total>=140){msg.innerHTML=`<h3 style="color:#32cd32;">🎉 FÉLICITATIONS !</h3><p style="font-size:1.2em;margin:15px 0;">Module validé !</p>`;const code=btoa(JSON.stringify({v:1,d:new Date().toISOString().split('T')[0],m:'DAE_01',n:'Apprenant',s:total,q:Math.round((quizScore/100)*100),sc:Math.round((scenariosScore/100)*100),f:true}));document.getElementById('certificationCode').textContent=code;codeDiv.style.display='block'}else{msg.innerHTML=`<h3 style="color:#ffa500;">⚠️ INSUFFISANT</h3><p style="font-size:1.1em;margin:15px 0;">Requis : 140/200<br>Score : ${total}/200</p>`}}
+        function copyCode(){navigator.clipboard.writeText(document.getElementById('certificationCode').textContent);alert('✅ Copié !')}
+        function nextSection(){const s=document.querySelectorAll('.section');s[currentSection].classList.remove('active');currentSection++;s[currentSection].classList.add('active');updateProgress();window.scrollTo(0,0)}
+        function previousSection(){const s=document.querySelectorAll('.section');s[currentSection].classList.remove('active');currentSection--;s[currentSection].classList.add('active');updateProgress();window.scrollTo(0,0)}
+        function updateProgress(){document.getElementById('progressFill').style.width=((currentSection+1)/4)*100+'%'}
+        function restartModule(){location.reload()}
+        function returnToHub(){window.location.href='index_PSC1.html'}
+    </script>
+</body>
+</html>

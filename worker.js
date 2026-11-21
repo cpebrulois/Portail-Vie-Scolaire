@@ -17,6 +17,8 @@
 
 import { SYSTEM_KERN, getCampagne, CAMPAGNES } from "./kern_campagnes.js";
 import { handleCM2, digest as cm2InvitationHash } from "./cm2_server.js";
+// Cours interactif (dossier cours/) : son compagnon d'étude « Marge ».
+import { marge as handleMarge } from "./cours/site/worker.js";
 
 const MISTRAL_URL = "https://api.mistral.ai/v1/chat/completions";
 const ALLOWED_MODELS = new Set(["mistral-small-latest", "mistral-large-latest"]);
@@ -1852,6 +1854,10 @@ export default {
     }
     if (url.pathname === "/api/identite") {
       return handleIdentite(request, env);
+    }
+    if (url.pathname === "/api/marge") {
+      // Le cours est servi sous /cours/site : Marge y cherche ses modules.
+      return handleMarge(request, { ...env, COURS_BASE: "/cours/site" });
     }
     // Filet de sécurité : si le routage envoie autre chose ici, on sert l'asset.
     if (env.ASSETS) return env.ASSETS.fetch(request);

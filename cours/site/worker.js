@@ -82,7 +82,10 @@ async function contexteModule(env, url, id) {
   if (!/^[A-Z]\d-\d{2}$/.test(id)) return null;          // forme stricte : H6-04
   let m;
   try {
-    const r = await env.ASSETS.fetch(new Request(new URL("/modules/" + id + ".json", url)));
+    // COURS_BASE : préfixe du site quand le cours est servi dans un sous-dossier
+    // (« /cours/site » dans le Portail Vie Scolaire). Vide quand il tourne seul.
+    const base = (env.COURS_BASE || "").replace(/\/+$/, "");
+    const r = await env.ASSETS.fetch(new Request(new URL(base + "/modules/" + id + ".json", url)));
     if (!r.ok) return null;
     m = await r.json();
   } catch { return null; }
@@ -116,7 +119,7 @@ function nettoie(v, max) {
     .trim().slice(0, max);
 }
 
-async function marge(request, env) {
+export async function marge(request, env) {
   const origine = request.headers.get("Origin") || "";
   const autorise = origineAutorisee(request, env);
   const entetes = cors(origine, autorise);
