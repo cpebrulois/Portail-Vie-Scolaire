@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Niveau — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Accueil</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1 id="titre">Niveau</h1>
+  <p class="chapeau" id="chapeau"></p>
+
+  <div id="rappels"></div>
+  <div id="contenu"></div>
+
+</div>
+
+<script type="module">
+import { pourNiveau, avancementExercices } from './exercices.js';
+import { charger, esc, poserRappels, avancement, avancementNiveau,
+         niveauxDeclares, proposerAuDelaNiveau,
+         choisirNiveau, poserContraste, poserVoie, appliqueCycle } from './socle.js';
+
+/* Le hub de niveau. Il montre les disciplines telles qu'elles se presentent
+ * POUR CE NIVEAU, l'avancement reel, et — quand les faits le justifient — la
+ * porte vers l'annee suivante.
+ *
+ * Cette porte n'est jamais un verrou : la section « Aller plus loin » est
+ * toujours la, ouverte a tous. Ce que le calcul change, c'est seulement ce
+ * qu'on met en avant. */
+
+const params = new URLSearchParams(location.search);
+const niveau = params.get('n') || '6e';
+const { programme, ecrits } = await charger();
+
+const tousNiveaux = niveauxDeclares(programme);
+
+if (!tousNiveaux.includes(niveau)) {
+  document.getElementById('contenu').innerHTML =
+    `<div class="avis"><h2>Niveau inconnu</h2><p class="fine">Aucun niveau « ${esc(niveau)} »
+     dans la carte. <a href="index.html">Revenir à l'accueil</a>.</p></div>`;
+} else {
+  choisirNiveau(niveau);
+  document.title = niveau + ' — Cours interactif';
+  document.getElementById('titre').textContent = 'Votre année de ' + niveau;
+  dessine();
+}
+
+function dessine(){
+  poserRappels(document.getElementById('rappels'), ecrits, dessine);
+  const a = avancementNiveau(programme, niveau, ecrits);
+  const zone = document.getElementById('contenu');
+
+  document.getElementById('chapeau').textContent =
+    `${a.disponibles} module${a.disponibles > 1 ? 's' : ''} ouvert${a.disponibles > 1 ? 's' : ''} `
+    + `sur ${a.declares} prévus au programme` + (a.acheves ? `, ${a.acheves} achevé${a.acheves > 1 ? 's' : ''}.` : '.');
+
+  let html = '<h2>Vos disciplines</h2>';
+
+  (programme.disciplines || []).forEach(d => {
+    const n = (d.niveaux || []).find(x => x.niveau === niveau);
+    if (!n) {
+      html += `<div class="carte attente"><div class="titre-c">${esc(d.nom)}</div>
+        <div class="cible">À venir pour ce niveau.</div></div>`;
+      return;
+    }
+    const av = avancement(d, niveau, ecrits);
+    html += `<a class="carte" href="discipline.html?d=${encodeURIComponent(d.id)}&n=${encodeURIComponent(niveau)}">
+      <div class="titre-c">${esc(d.nom)}</div>
+      <div class="cible">${n.themes.length} thèmes · ${av.disponibles} module${av.disponibles > 1 ? 's' : ''}
+        ouvert${av.disponibles > 1 ? 's' : ''} sur ${av.declares}</div>
+      ${av.acheves ? `<div class="etat">${av.acheves} achevé${av.acheves > 1 ? 's' : ''}${av.rappelsFaits ? ` · ${av.rappelsFaits} rappel${av.rappelsFaits > 1 ? 's' : ''} fait${av.rappelsFaits > 1 ? 's' : ''}` : ''}</div>` : ''}
+    </a>`;
+  });
+
+  /* --- Aller plus loin ---------------------------------------------------- */
+  const i = tousNiveaux.indexOf(niveau);
+  const suivant = tousNiveaux[i + 1];
+  const propose = proposerAuDelaNiveau(programme, niveau, ecrits);
+
+  if (propose && suivant) {
+    html += `<div class="avis" style="margin-top:2rem">
+      <h2>Vous avez fait le tour de ce qui est ouvert en ${esc(niveau)}</h2>
+      <p class="fine">Tous les modules disponibles de votre année sont achevés, et vous avez
+      repris au moins un rappel. Le programme de ${esc(suivant)} est ouvert si le sujet vous
+      tente — ce n'est pas une obligation, et vous pouvez revenir quand vous voulez.</p>
+      <a class="bouton" href="niveau.html?n=${encodeURIComponent(suivant)}"
+         style="display:inline-block;text-decoration:none;margin-top:.5rem">Voir la ${esc(suivant)}</a>
+    </div>`;
+  }
+
+  /* L'entrainement : la ou il existe des exercices generes pour ce niveau.
+   * Aucune liste codee en dur — on interroge le registre des generateurs. */
+  const NOMS_EX = { mathematiques: 'Mathématiques', francais: 'Français' };
+  const avecExos = Object.keys(NOMS_EX).filter(d => pourNiveau(d, niveau).length);
+  if (avecExos.length) {
+    html += `<h2 style="margin-top:2.4rem">S'entraîner</h2>
+      <p class="fine">Des exercices qui se renouvellent à chaque fois, et une progression
+      par paliers : cinq réussites d'affilée, puis une reprise le lendemain. Ni score,
+      ni classement, ni chronomètre.</p><div class="grille">`;
+    avecExos.forEach(d => {
+      const a = avancementExercices(d, niveau);
+      html += `<a class="carte" href="entrainement.html?d=${encodeURIComponent(d)}&n=${encodeURIComponent(niveau)}">
+        <div class="titre-c">${esc(NOMS_EX[d])}</div>
+        <div class="cible">${a.confirmes} palier${a.confirmes > 1 ? 's' : ''} confirmé${a.confirmes > 1 ? 's' : ''} sur ${a.total}</div>
+        <div class="etat">S'entraîner</div></a>`;
+    });
+    html += `</div><p class="fine" style="margin-top:.8rem">Vous ne savez pas par où commencer ?
+      ${avecExos.map(d => `<a href="positionnement.html?d=${encodeURIComponent(d)}&n=${encodeURIComponent(niveau)}">Se positionner en ${esc(NOMS_EX[d].toLowerCase())}</a>`).join(' · ')}.
+      Six questions, et un point de départ que vous pourrez déplacer.</p>`;
+  }
+
+  html += `<details class="plus-loin"${propose ? ' open' : ''}>
+    <summary>Aller voir les autres années</summary>
+    <p class="fine">Rien n'est verrouillé. Un module d'une autre année s'ouvre exactement
+    comme les vôtres — il sera simplement adossé à des repères que vous n'avez pas
+    forcément encore.</p>
+    <div class="grille">`;
+  tousNiveaux.forEach(nv => {
+    if (nv === niveau) return;
+    const av = avancementNiveau(programme, nv, ecrits);
+    html += `<a class="carte tuile" href="niveau.html?n=${encodeURIComponent(nv)}">
+      <div class="tuile-niveau">${esc(nv)}</div>
+      <div class="cible">${av.disponibles} ouvert${av.disponibles > 1 ? 's' : ''} sur ${av.declares}</div></a>`;
+  });
+  html += '</div></details>';
+
+  zone.innerHTML = html;
+}
+
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'));
+// La page d'un niveau se lit dans la typographie de ce niveau. CLM-TYP-001.
+appliqueCycle(niveau);
+</script>
+</body>
+</html>

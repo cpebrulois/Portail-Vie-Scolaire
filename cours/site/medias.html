@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Médias à trouver — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Accueil</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1>Médias à trouver</h1>
+  <p class="chapeau">Le tableau de bord de production. Chaque emplacement déclare son étiquette,
+  l'opération d'apprentissage qu'il rend possible, ce qu'il faut chercher, et pourquoi il est
+  placé là.</p>
+
+  <div class="avis">
+    <h2>Les trois règles avant de coller une adresse</h2>
+    <p class="fine"><strong>Un média sans opération d'apprentissage est décoratif, et il saute.</strong>
+    L'opération est déjà nommée dans chaque emplacement ci-dessous : si le média trouvé ne la
+    rend pas possible, il ne convient pas, même s'il est beau.</p>
+    <p class="fine"><strong>Le placement n'est pas négociable.</strong> Une vidéo qui explique la
+    réponse ne peut pas précéder la Collision : elle donnerait le verdict avant que l'élève ait
+    parié, et le module ne servirait plus à rien.</p>
+    <p class="fine"><strong>Sur les droits</strong> — n'intégrer que depuis la <em>chaîne officielle
+    du producteur</em>, jamais une reprise. Une vidéo présente sur une chaîne officielle avec
+    l'intégration autorisée peut être intégrée ; elle n'est pas pour autant « libre de droits »,
+    et elle ne peut être ni téléchargée, ni ré-hébergée, ni remontée. Pour les images, préférer
+    Wikimedia Commons ou une institution, et remplir la licence. Une image générée ne prend
+    jamais l'étiquette <code>PIÈCE</code>.</p>
+  </div>
+
+  <div id="tableau"><p class="chapeau">Chargement…</p></div>
+
+  <hr class="filet">
+  <p class="fine">Pour remplir un emplacement : ouvrir <code>site/modules/&lt;ID&gt;.json</code>,
+  section <code>medias</code>, et renseigner <code>url</code>, <code>alt</code>,
+  <code>source</code>, <code>licence</code> et <code>auteur</code>. Pour une vidéo, renseigner
+  aussi <code>transcription</code>. Puis relancer <code>python site/construire.py</code>.</p>
+
+  <p class="fine"><strong>Vidéos produites en interne :</strong> déposer le fichier dans
+  <code>production-video/vidéo/</code>, puis lancer <code>python site/videos.py</code> — le script
+  propose une association fichier → module et n'écrit rien tant qu'on ne le relance pas avec
+  <code>--ecrire</code>. En cas d'hésitation, préfixer le nom du fichier par l'identifiant du
+  module (<code>ST6-04 — …&nbsp;.mp4</code>) tranche définitivement. Le site sert le dossier
+  tel quel : aucune copie n'est faite.</p>
+
+</div>
+
+<script type="module">
+import { charger, esc, poserContraste, poserVoie } from './socle.js';
+
+/* Le tableau de bord des médias.
+ *
+ * Il lit les modules eux-mêmes, donc il n'a rien à maintenir : un module
+ * ajouté apparaît ici avec ses emplacements, remplis ou non. */
+
+const { ecrits } = await charger();
+const zone = document.getElementById('tableau');
+
+const ETAPES = { porte: 'Porte', anticipation: 'Anticipation', collision: 'Collision',
+                 transformation: 'Transformation', extraction: 'Extraction' };
+
+const modules = [];
+for (const m of ecrits.values()) {
+  try {
+    const r = await fetch(m.fichier);
+    if (r.ok) modules.push(await r.json());
+  } catch (e) { /* module illisible : on continue */ }
+}
+
+let total = 0, remplis = 0;
+let html = '';
+
+modules.forEach(m => {
+  const blocs = m.medias || {};
+  const n = Object.values(blocs).reduce((s, v) => s + v.length, 0);
+  if (!n) return;
+  html += `<h2 style="margin-top:2.4rem">${esc(m.id)} — ${esc(m.titre)}</h2>
+           <p class="fine">${esc(m.niveau)} · ${esc(m.theme)}</p>`;
+
+  Object.keys(ETAPES).forEach(etape => {
+    (blocs[etape] || []).forEach((s, i) => {
+      total++;
+      const fait = !!s.url;
+      if (fait) remplis++;
+      html += `<div class="carte ${fait ? '' : 'attente'}" style="cursor:default">
+        <span class="code">${esc(ETAPES[etape])} · ${esc(s.type)} ·
+          <span class="etiquette">${esc(s.etiquette)}</span></span>
+        <div class="titre-c" style="font-size:1.05rem">${esc(s.operation)}</div>
+        <div class="cible">${esc(s.brief)}</div>
+        <div class="cible" style="margin-top:.5rem;font-style:italic">
+          Placement : ${esc(s.placement || '—')}</div>
+        ${fait
+          ? `<div class="etat">Rempli — ${esc(s.source || 'source non renseignée')}
+             ${s.licence ? '· ' + esc(s.licence) : '<strong>· licence manquante</strong>'}</div>`
+          : `<div class="etat" style="color:var(--accent)">À trouver —
+             <code>modules/${esc(m.id)}.json</code> → medias.${esc(etape)}[${i}]</div>`}
+      </div>`;
+    });
+  });
+});
+
+document.getElementById('tableau').innerHTML =
+  `<p class="fine"><strong>${remplis} emplacement${remplis > 1 ? 's' : ''} rempli${remplis > 1 ? 's' : ''}
+   sur ${total}</strong> — ${total - remplis} à chercher.</p>` + html;
+
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'));
+</script>
+</body>
+</html>

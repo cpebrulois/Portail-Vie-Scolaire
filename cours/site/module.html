@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Les modules</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Un pas à la fois, texte plus aéré, mots difficiles donnés avant. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <main id="module" aria-live="polite">
+    <p class="chapeau">Chargement…</p>
+  </main>
+
+  <div class="rappel-consigne" id="rappelConsigne" hidden></div>
+
+</div>
+
+<script type="module">
+import { poserLecture, poserMarge } from './lecture.js';
+import { entreeProposee, charger, poserVoie, appliqueCycle } from './socle.js';
+
+// Marge attend : le site doit d'abord fonctionner sans elle. Passer a true
+// une fois le Worker deploye et MISTRAL_API_KEY posee en Secret chiffre.
+const MARGE_ACTIVE = false;
+
+/* ---------------------------------------------------------------------------
+ * Rendu d'un module PACTE.
+ *
+ * Trois exigences de la charte commandent tout ce qui suit :
+ *
+ *  1. l'Anticipation doit être ENGAGÉE avant que la pièce apparaisse. Le
+ *     mécanisme n'opère que si l'élève a réellement pris parti (Brod et al.
+ *     2022) ; on verrouille donc la suite tant qu'il n'a pas choisi.
+ *  2. le statut probatoire reste visible PENDANT la lecture de la pièce, pas
+ *     en note de bas de page — d'où le bandeau collant.
+ *  3. l'Extraction vient APRÈS le verdict, et sa réponse n'apparaît qu'une
+ *     fois la sienne écrite. Sinon ce n'est pas une récupération, c'est une
+ *     lecture.
+ *
+ * Ce qui est conservé dans le navigateur : la réponse d'anticipation, les
+ * réponses d'extraction, la date d'achèvement. Rien d'autre. Aucun profil,
+ * aucune étiquette, aucune mesure de vitesse.
+ * ------------------------------------------------------------------------- */
+
+const CLE = 'ci_progres';
+
+function progres(){ try { return JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { return {}; } }
+function ecrire(p){ try { localStorage.setItem(CLE, JSON.stringify(p)); } catch (e) {} }
+function etat(id){ const p = progres(); return p[id] || {}; }
+function majEtat(id, champs){ const p = progres(); p[id] = Object.assign({}, p[id], champs); ecrire(p); }
+
+function el(html){ const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstElementChild; }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* Le nom d'une étape peut être redit dans la langue du niveau : « Porte » ne
+ * parle pas à un élève de CE2, « Ce qu'on croit » si. La structure ne change
+ * pas — c'est le même dispositif, sous un nom que l'élève peut lire.
+ * Sans le champ « etiquettes », le module garde les noms d'origine. */
+let MOD = null;
+function nomEtape(cle, defaut){
+  return ((MOD && MOD.etiquettes) || {})[cle] || defaut;
+}
+
+/* « Porte », « Collision » sont des mots du métier. On ne les remplace pas :
+ * c'est le vocabulaire commun de la méthode, et il sert d'un module à
+ * l'autre. On dit une fois ce qu'ils désignent, sous le nom. La glose ne
+ * s'affiche donc QUE là où le jargon est employé — un module qui a déjà
+ * traduit ses jalons en langage clair n'en a pas besoin. */
+const GLOSES = {
+  rappel:         "ce qu'on doit retrouver sans rouvrir le cahier",
+  porte:          "une affirmation ordinaire, qui a l'air juste",
+  anticipation:   "votre pari, pris avant de savoir",
+  collision:      "la pièce authentique, et le travail dessus",
+  transformation: "ce qu'elle établit, et ce qu'elle n'établit pas",
+  extraction:     "de mémoire, une fois le verdict rendu",
+};
+
+function jalon(lettre, cle, defaut, duree){
+  const nom = nomEtape(cle, defaut);
+  const traduit = !!((MOD && MOD.etiquettes) || {})[cle];
+  const glose = traduit ? '' : ((MOD && MOD.gloses) || GLOSES)[cle];
+  return `<div class="jalon"><span class="lettre">${lettre}</span>
+          <span class="nom">${esc(nom)}
+            ${glose ? `<span class="glose">${esc(glose)}</span>` : ''}</span>
+          ${duree ? `<span class="duree">${esc(duree)}</span>` : ''}</div>`;
+}
+
+/* Le fil des jalons : où j'en suis. Une position, pas un score. */
+const ORDRE_ETAPES = [
+  ['e-rappel', 'rappel', 'Rappel'], ['e-porte', 'porte', 'Porte'],
+  ['e-anticipation', 'anticipation', 'Anticipation'], ['e-collision', 'collision', 'Collision'],
+  ['e-transformation', 'transformation', 'Transformation'], ['e-extraction', 'extraction', 'Extraction'],
+];
+
+function etapesDuModule(m){
+  return ORDRE_ETAPES.filter(([id]) => id !== 'e-rappel' || m.rappelEntrant);
+}
+
+function filJalons(m){
+  return `<ol class="fil-jalons" aria-label="Où j'en suis dans ce module">
+    ${etapesDuModule(m).map(([id, cle, def]) =>
+      `<li data-fil="${id}"><span class="pastille" aria-hidden="true"></span>${esc(nomEtape(cle, def))}</li>`
+    ).join('')}</ol>`;
+}
+
+/* --- Schémas ------------------------------------------------------------- *
+ * Un schéma rend visible une RELATION que le texte énonce. S'il n'en porte
+ * aucune, c'est un ornement, et l'ornement se paie : ajouter du matériel
+ * intéressant mais hors sujet dégrade les performances (CLM-TYP-003).
+ *
+ * Chaque schéma déclare ce qu'il montre ET ce qu'il ne montre pas. Un schéma
+ * qui quantifierait ce que la source ne quantifie pas trahirait la méthode
+ * tout en ayant l'air pédagogique.                                          */
+function unSchema(s){
+  if (!s || !s.svg) return '';
+  return `<figure class="schema">
+    ${s.titre ? `<div class="titre-s">${esc(s.titre)}</div>` : ''}
+    ${s.svg}
+    <figcaption>
+      <span class="montre">${esc(s.montre)}</span>
+      ${s.neMontrePas
+        ? `<span class="ne-montre-pas"><strong>Ce que ce schéma ne montre pas.</strong>
+             ${esc(s.neMontrePas)}</span>` : ''}
+    </figcaption>
+  </figure>`;
+}
+
+function schemas(m, etape){
+  const l = (m.schemas && m.schemas[etape]) || [];
+  return l.map(unSchema).join('');
+}
+
+/* Le registre partage des objets-memoire.
+ *
+ * La charte demande qu'un objet-memoire « revienne a l'identique ». Tant que
+ * le dessin vivait dans le module qui l'introduit, il ne pouvait pas revenir :
+ * il n'existait qu'a un endroit. Sorti dans schemas-outils.json, il se
+ * reaffiche tel quel dans le module qui le reactive — le meme dessin, au pixel
+ * pres. C'est la promesse tenue, pas illustree. */
+let OUTILS = {};
+
+function schemaOutil(idModule, rappel){
+  const o = OUTILS[idModule];
+  if (!o) return '';
+  return unSchema(rappel
+    ? Object.assign({}, o, { titre: o.nom + " — le même dessin que la dernière fois" })
+    : o);
+}
+
+/* --- Voie « Pas à pas » : les trois pièces propres au module -------------- *
+ * Voir knowledge-base/pedagogie/voie-adaptee-tdah-dyslexie.md.
+ * Ces blocs sont toujours dans le document et masqués par la feuille de
+ * style hors de la voie : aucune page n'est reconstruite en basculant, donc
+ * on ne perd jamais ce qui a déjà été fait.                                 */
+
+function motsAvant(m){
+  const l = ((m.adapte || {}).mots) || [];
+  if (!l.length) return '';
+  const a = m.adapte || {};
+  return `<section class="mots-avant" aria-label="Les mots difficiles, avant de lire">
+    <h3>${esc(a.titre || 'Les mots à lire avant')}</h3>
+    <p class="fine">${esc(a.intro || "Lis-les à voix haute, morceau par morceau. Ils reviendront dans le texte, et tu les auras déjà rencontrés.")}</p>
+    <ul>${l.map(x => `<li>
+      <span class="mot">${esc(x.mot)}</span>
+      <span class="syl">${esc(x.syllabes)}</span>
+      ${x.sens ? `<span class="sens">${esc(x.sens)}</span>` : ''}
+    </li>`).join('')}</ul>
+  </section>`;
+}
+
+function suivi(m){
+  const etapes = [
+    m.rappelEntrant ? ['e-rappel', nomEtape('rappel', 'Rappel')] : null,
+    ['e-porte', nomEtape('porte', 'Porte')],
+    ['e-anticipation', nomEtape('anticipation', 'Anticipation')],
+    ['e-collision', nomEtape('collision', 'Collision')],
+    ['e-transformation', nomEtape('transformation', 'Transformation')],
+    ['e-extraction', nomEtape('extraction', 'Extraction')],
+  ].filter(Boolean);
+  return `<section class="suivi" aria-label="Ma progression">
+    <h3>Où j'en suis</h3>
+    <p class="fine">Tu coches toi-même. Personne d'autre ne le voit, et rien n'est envoyé nulle part.</p>
+    <ol>${etapes.map(([id, nom]) => `<li data-pour="${id}" hidden>
+      <label><input type="checkbox" data-suivi="${id}"><span>${esc(nom)}</span></label>
+    </li>`).join('')}</ol>
+    <span class="compte" id="suiviCompte"></span>
+  </section>`;
+}
+
+
+/* --- Médias -------------------------------------------------------------- *
+ * Un média rempli porte son étiquette, sa source et sa licence, au moment où
+ * il sert. Un emplacement vide n'existe qu'en mode auteur : l'élève ne voit
+ * pas les trous de production.
+ * Aucune lecture automatique, jamais.                                        */
+const MODE_AUTEUR = (() => {
+  try {
+    if (new URLSearchParams(location.search).has('auteur')) {
+      localStorage.setItem('ci_auteur', '1');
+    }
+    return localStorage.getItem('ci_auteur') === '1';
+  } catch (e) { return false; }
+})();
+
+/* --- Vidéos hébergées ailleurs ------------------------------------------- *
+ *
+ * Deux exigences, et elles ne sont pas décoratives quand le public est
+ * mineur.
+ *
+ * 1. AUCUNE REQUÊTE AVANT LE CLIC. Une iframe YouTube posée dans la page
+ *    contacte Google dès l'ouverture du module, avant que l'élève ait
+ *    demandé quoi que ce soit. On affiche donc une façade locale : rien ne
+ *    part tant que personne n'a cliqué. C'est le seul moyen honnête de dire
+ *    qu'on ne dépose rien à l'insu de l'élève.
+ *
+ * 2. LE DOMAINE SANS COOKIE. youtube-nocookie.com au lieu de youtube.com, et
+ *    rel=0 pour que la fin de la vidéo ne propose pas la moitié d'internet.
+ *    Cela réduit le pistage ; cela ne l'annule pas. Ne pas prétendre le
+ *    contraire dans une notice RGPD.
+ *
+ * On accepte le lien tel que la plateforme le donne — watch?v=, youtu.be,
+ * /embed/ — et on le normalise. Personne n'a à retenir une forme d'URL.    */
+function normaliseVideo(url){
+  if (!url) return null;
+  let m = /^https?:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|live\/|shorts\/)([\w-]{6,})/.exec(url)
+       || /^https?:\/\/youtu\.be\/([\w-]{6,})/.exec(url);
+  if (m) return { hote: 'YouTube',
+                  src: 'https://www.youtube-nocookie.com/embed/' + m[1] + '?rel=0&modestbranding=1' };
+  m = /^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?(\d+)/.exec(url);
+  if (m) return { hote: 'Vimeo', src: 'https://player.vimeo.com/video/' + m[1] + '?dnt=1' };
+  m = /^https?:\/\/(?:www\.)?dailymotion\.com\/(?:video|embed\/video)\/([\w]+)/.exec(url);
+  if (m) return { hote: 'Dailymotion', src: 'https://www.dailymotion.com/embed/video/' + m[1] };
+  return null;
+}
+
+function facadeVideo(cadre, s){
+  const titre = s.alt || s.operation || 'Vidéo du module';
+  return `<div class="cadre-video facade" data-src="${esc(cadre.src)}" data-titre="${esc(titre)}">
+    <button type="button" class="lance-video">
+      <span class="triangle" aria-hidden="true"></span>
+      <span class="quoi">Lancer la vidéo</span>
+      <span class="ou">hébergée sur ${esc(cadre.hote)} — rien n'est envoyé avant ce clic</span>
+    </button>
+  </div>`;
+}
+
+function unMedia(s){
+  if (!s.url) {
+    if (!MODE_AUTEUR) return '';
+    return `<div class="media vide">
+      <span class="etiquette">${esc(s.etiquette)}</span>
+      <span class="etiquette">${esc(s.type)}</span>
+      <div class="op">${esc(s.operation)}</div>
+      <p class="fine">${esc(s.brief)}</p>
+      <p class="fine" style="font-style:italic">Placement : ${esc(s.placement || '—')}</p>
+    </div>`;
+  }
+  const credit = `<div class="credit"><span class="etiquette">${esc(s.etiquette)}</span>
+    ${esc(s.source || '')}${s.auteur ? ' · ' + esc(s.auteur) : ''}${s.licence ? ' · ' + esc(s.licence) : ''}</div>`;
+
+  if (s.type === 'video') {
+    /* Trois cas, du plus souhaitable au moins bon :
+       un fichier que nous servons nous-mêmes, une plateforme intégrable,
+       et le lien nu quand nous ne savons pas lire l'adresse. */
+    const local = /\.(mp4|webm|ogv|ogg|m4v)(\?|#|$)/i.test(s.url) && !/^https?:\/\//i.test(s.url);
+    const cadre = normaliseVideo(s.url);
+    return `<figure class="media">
+      ${local
+        ? `<div class="cadre-video"><video src="${esc(s.url)}" controls preload="metadata"
+             playsinline title="${esc(s.alt || s.operation)}"${s.poster ? ` poster="${esc(s.poster)}"` : ''}></video></div>`
+        : cadre
+        ? facadeVideo(cadre, s)
+        : `<p><a href="${esc(s.url)}" target="_blank" rel="noopener">Ouvrir la vidéo</a></p>`}
+      <figcaption>${esc(s.alt || s.operation)}
+        ${s.transcription
+          ? `<details><summary>Transcription</summary><p>${esc(s.transcription)}</p></details>`
+          : `<span class="fine" style="color:var(--accent)"> — transcription manquante</span>`}
+      </figcaption>
+      ${credit}
+    </figure>`;
+  }
+  return `<figure class="media">
+    <img src="${esc(s.url)}" alt="${esc(s.alt)}" loading="lazy">
+    ${s.alt ? `<figcaption>${esc(s.alt)}</figcaption>`
+            : `<figcaption class="fine" style="color:var(--accent)">Alternative textuelle manquante</figcaption>`}
+    ${credit}
+  </figure>`;
+}
+
+function medias(m, etape){
+  const l = (m.medias && m.medias[etape]) || [];
+  return l.map(unMedia).join('');
+}
+
+/* --- Construction des étapes --------------------------------------------- */
+
+function etapeCible(m){
+  return `<section class="etape">
+    <h1>${esc(m.titre)}</h1>
+    <p class="chapeau">${esc(m.niveau)} · ${esc(m.theme)} · ${esc(m.duree)}</p>
+    <div class="mission">
+      <strong>Demain, vous devez pouvoir vous rappeler que…</strong>
+      <p style="margin:.5rem 0 0">${m.cible.enonce}.</p>
+    </div>
+    <table>
+      <tr><th>La pièce</th><td>${m.cible.piece}</td></tr>
+      <tr><th>Ce qu'elle permet de conclure</th><td>${m.cible.permet}</td></tr>
+      <tr><th>Ce qu'elle ne permet pas</th><td>${m.cible.nePermetPas}</td></tr>
+    </table>
+  </section>`;
+}
+
+function etapeRappel(m){
+  const r = m.rappelEntrant;
+  if (!r) return '';
+  return `<section class="etape" id="e-rappel">
+    ${jalon('↺', 'rappel', 'Rappel', 'avant tout')}
+    <p class="fine">Sans rouvrir le cahier. Ce rappel porte sur le module ${esc(r.module)}.</p>
+    <p class="scene">${r.question}</p>
+    <div class="question">
+      <textarea id="txtRappel" aria-label="Votre réponse au rappel"></textarea>
+      <button class="bouton" id="btnRappel">J'ai répondu</button>
+      <div id="apresRappel" hidden>
+        <div class="attendu"><div class="titre-a">Ce qu'on attendait</div>${esc(r.attendu)}</div>
+        ${schemaOutil(r.module, true)}
+        <p style="margin-top:1rem">${r.puis}</p>
+      </div>
+    </div>
+  </section>`;
+}
+
+function etapePorte(m){
+  const p = m.porte;
+  return `<section class="etape" id="e-porte" hidden>
+    ${jalon('P', 'porte', 'Porte', p.duree)}
+    ${medias(m, 'porte')}
+    ${schemas(m, 'porte')}
+    ${p.scene.map(s => `<p class="scene"><em>${esc(s)}</em></p>`).join('')}
+    <div class="cartel">${esc(p.cartel)}</div>
+    ${p.suite.map(s => `<p>${esc(s)}</p>`).join('')}
+    ${m.rappelEntrant ? `
+      <div class="rappel-de-soi">
+        <strong>${esc(m.rappelEntrant.echec)}</strong>
+        <p style="margin:.6rem 0 0">${esc(m.rappelEntrant.lecon)}</p>
+      </div>` : ''}
+    <div class="mission"><strong>Votre mission.</strong> ${p.mission}</div>
+    <p class="fine"><span class="etiquette">${esc(p.image.etiquette)}</span> ${esc(p.image.note)}</p>
+    <button class="bouton" data-va="e-anticipation">Continuer</button>
+  </section>`;
+}
+
+function etapeAnticipation(m){
+  const a = m.anticipation;
+  return `<section class="etape" id="e-anticipation" hidden>
+    ${jalon('A', 'anticipation', 'Anticipation', a.duree)}
+    <p class="fine">${esc(a.consigne)}</p>
+    <p class="scene">${a.question}</p>
+    <div class="choix" id="choixAnticipation" role="group" aria-label="Votre réponse">
+      ${a.options.map(o => `<button type="button" data-cle="${esc(o.cle)}" aria-pressed="false">
+          <strong>${esc(o.cle)}.</strong> ${esc(o.texte)}</button>`).join('')}
+    </div>
+    <p>${a.relance}</p>
+    <div id="apresAnticipation" hidden>
+      <p class="fine" style="border-top:1px solid var(--filet);padding-top:.9rem">${esc(a.note)}</p>
+      <button class="bouton" data-va="e-collision">Voir la pièce</button>
+    </div>
+  </section>`;
+}
+
+function blocDifferenciation(m, proposee){
+  const d = m.differenciation;
+  if (!d) return '';
+  return `<div class="etayage">
+    <div class="titre-e">Par où entrer</div>
+    <p class="fine">${esc(d.intro)}</p>
+    <div class="choix-etayage" role="group" aria-label="Entree dans la piece">
+      ${d.entrees.map(e => `<button type="button" data-entree="${esc(e.cle)}"
+        aria-pressed="${String(e.cle === proposee)}">${esc(e.nom)}</button>`).join('')}
+    </div>
+    ${d.entrees.map(e => `<p class="texte-entree" data-pour="${esc(e.cle)}"
+      ${e.cle === proposee ? '' : 'hidden'}>${esc(e.texte)}</p>`).join('')}
+  </div>`;
+}
+
+function etapeCollision(m, proposee){
+  const c = m.collision, p = c.piece;
+  return `<section class="etape" id="e-collision" hidden>
+    ${jalon('C', 'collision', 'Collision', c.duree)}
+    ${blocDifferenciation(m, proposee)}
+    ${medias(m, 'collision')}
+    ${schemas(m, 'collision')}
+    <div class="piece">
+      <div class="bandeau-statut">
+        <span class="etiquette">${esc(p.etiquette)}</span>
+        <span class="statut">statut : ${esc(p.statut)}</span>
+      </div>
+      <dl>
+        <dt>Nom</dt><dd>${esc(p.nom)}</dd>
+        <dt>Attribution</dt><dd>${esc(p.attribution)}</dd>
+        <dt>Où on la lit</dt><dd><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.ou)}</a> · <span class="fine">${esc(p.src)}</span></dd>
+      </dl>
+      <p style="margin-bottom:.6rem">${esc(p.contenu)}</p>
+      <p class="fine">${esc(p.note)}</p>
+    </div>
+    <p>${esc(c.taches.intro)}</p>
+    <div class="tableau-large"><table>
+      <tr><th>À faire</th><th>Consigne</th><th>Ce qu'on cherche</th></tr>
+      ${c.taches.lignes.map(l => `<tr><td><strong>${esc(l.titre)}</strong></td>
+          <td>${l.consigne}</td><td>${l.cherche}</td></tr>`).join('')}
+    </table></div>
+    <p>${esc(c.taches.apres)}</p>
+    <div class="outil">
+      <div class="nom">${esc(c.outil.nom)}</div>
+      <p style="margin:0">${c.outil.texte}</p>
+    </div>
+    ${schemaOutil(m.id)}
+    ${c.garde ? `<p class="garde">${esc(c.garde)}</p>` : ''}
+    <button class="bouton" data-va="e-transformation">Le verdict</button>
+  </section>`;
+}
+
+function etapeTransformation(m){
+  const t = m.transformation;
+  return `<section class="etape" id="e-transformation" hidden>
+    ${jalon('T', 'transformation', 'Transformation', t.duree)}
+    <div id="votreParieRappel"></div>
+    <div class="verdict">
+      <div class="etablit"><div class="titre-v">Ce que la pièce établit</div>${t.etablit}</div>
+      <div class="netablit-pas"><div class="titre-v">Ce qu'elle n'établit pas</div>${t.netablitPas}</div>
+    </div>
+    <p>${t.bascule}</p>
+    <div class="residu">
+      <span class="categorie">résidu ${esc(t.residu.categorie)}</span>
+      <p style="margin:0">${t.residu.texte}</p>
+    </div>
+    <p class="garde">${esc(t.garde)}</p>
+    ${medias(m, 'transformation')}
+    ${schemas(m, 'transformation')}
+    ${t.outils ? `
+      <p>${esc(t.outils.intro)}</p>
+      <div class="tableau-large"><table>
+        <tr><th>Outil</th><th>Quand il sert</th><th>Ce qu'il repère</th></tr>
+        ${t.outils.lignes.map(l => `<tr><td><strong>${esc(l.outil)}</strong></td>
+            <td>${esc(l.quand)}</td><td>${l.repere}</td></tr>`).join('')}
+      </table></div>
+      <p>${esc(t.outils.apres)}</p>` : ''}
+    <button class="bouton" data-va="e-extraction">Ce que j'en retiens</button>
+  </section>`;
+}
+
+function etapeExtraction(m){
+  const x = m.extraction;
+  return `<section class="etape" id="e-extraction" hidden>
+    ${jalon('E', 'extraction', 'Extraction', x.duree)}
+    <p class="fine">${esc(x.consigne)}</p>
+    ${x.questions.map((q, i) => `
+      <div class="question">
+        <div class="enonce"><strong>${i + 1}.</strong> ${esc(q.enonce)}</div>
+        <textarea id="rep${i}" aria-label="Votre réponse à la question ${i + 1}"></textarea>
+        <button class="bouton discret" data-repond="${i}">Comparer</button>
+        <div class="attendu" id="att${i}" hidden>
+          <div class="titre-a">Ce qu'on attendait</div>${esc(q.attendu)}</div>
+      </div>`).join('')}
+    <p class="garde" id="laVraie" hidden>${esc(x.laVraie)}</p>
+    <div id="finModule" hidden>
+      <hr class="filet">
+      <h3>À retenir</h3>
+      <p>${m.trace}</p>
+      <h3>Je réussis si…</h3>
+      <p>${esc(m.reussite)}</p>
+      <h3>Ce qui reviendra</h3>
+      <div class="tableau-large"><table>
+        <tr><th>Quand</th><th>Forme</th><th>L'indice</th></tr>
+        ${m.rappels.map(r => `<tr><td><strong>${esc(r.quand)}</strong></td>
+            <td>${esc(r.forme)}</td><td>${esc(r.indice)}</td></tr>`).join('')}
+      </table></div>
+      <p class="fine">Le rappel de demain vous attendra sur la page des modules. Il donnera un indice
+      et vous laissera reconstruire la réponse : il ne la redira pas.</p>
+      <div id="apresSequence"></div>
+      <a class="bouton" href="index.html">Terminer</a>
+    </div>
+  </section>`;
+}
+
+/* --- Assemblage ---------------------------------------------------------- */
+
+const id = new URLSearchParams(location.search).get('m') || 'H6-04';
+const cible = document.getElementById('module');
+
+// Le module est un fichier de donnees : en ajouter un ne demande de modifier
+// aucune page. Voir construire.py.
+let m = null;
+try {
+  const r = await fetch('modules/' + encodeURIComponent(id) + '.json');
+  if (r.ok) m = await r.json();
+} catch (e) { m = null; }
+
+if (!m) {
+  cible.innerHTML = `<h1>Module introuvable</h1>
+    <p class="chapeau">Aucun module ne porte l'identifiant « ${esc(id)} ».</p>
+    <p><a href="index.html">Revenir à la liste</a></p>`;
+} else {
+  MOD = m;
+  document.title = m.id + ' — ' + m.titre;
+  // Un enfant de huit ans et un de douze ne lisent pas la meme page :
+  // corps, interligne et longueur de ligne suivent le cycle. CLM-TYP-001.
+  appliqueCycle(m.niveau);
+  // L'entree proposee est RECALCULEE a partir des modules deja acheves : rien
+  // n'est enregistre, aucune etiquette n'existe, et les trois restent ouvertes.
+  const { ecrits } = await charger();
+  const proposee = entreeProposee(ecrits);
+  try {
+    const ro = await fetch('schemas-outils.json');
+    if (ro.ok) OUTILS = await ro.json();
+  } catch (e) { OUTILS = {}; }   // sans registre, le module reste entier
+
+  cible.innerHTML = etapeCible(m) + filJalons(m) + motsAvant(m) + suivi(m)
+                  + etapeRappel(m) + etapePorte(m) + etapeAnticipation(m)
+                  + etapeCollision(m, proposee) + etapeTransformation(m) + etapeExtraction(m);
+
+  /* La sortie de séquence.
+   *
+   * Un module se termine sur une trace et des rappels ; il ne dit pas
+   * encore si l'outil tient sur autre chose que sur sa propre pièce.
+   * C'est le rôle de l'épreuve, qui prend plusieurs modules ensemble et
+   * mélange leurs questions. On l'annonce ici même quand la séquence
+   * n'est pas finie : savoir qu'un rendez-vous existe change la façon
+   * dont on lit, et la promesse n'a pas besoin d'être tenue tout de
+   * suite pour être utile. */
+  try {
+    const rb = await fetch('epreuves.json');
+    if (rb.ok) {
+      const banque = await rb.json();
+      const ep = banque.epreuves.find(e => e.modules.includes(m.id));
+      const zone = document.getElementById('apresSequence');
+      if (ep && zone) {
+        const p = progres();
+        const reste = ep.modules.filter(x => x !== m.id && !(p[x] && p[x].fait));
+        zone.innerHTML = `<h3>Au bout de la séquence</h3>
+          <p>Ce module appartient à la séquence <em>${esc(ep.titre)}</em>, qui se termine
+          par une épreuve commune à ${ep.modules.length} modules. Les questions y sont
+          mélangées : reconnaître de quel cours vient une question est déjà la moitié
+          du travail, et l'épreuve vous prive de cette moitié-là.</p>
+          ${ep.jdr ? `<p>Avant l'épreuve, une situation vous attend : une scène courte
+            où la question posée est aussi ce que vous faites. Elle ne compte pas,
+            et elle ne barre rien.</p>` : ''}
+          ${reste.length === 0
+            ? `<p>${ep.jdr ? `<a class="bouton" href="microjdr.html?e=${encodeURIComponent(ep.id)}">Entrer dans la situation</a>
+                 <a class="bouton discret" href="epreuve.html?e=${encodeURIComponent(ep.id)}">Aller droit à l'épreuve</a>`
+                : `<a class="bouton" href="epreuve.html?e=${encodeURIComponent(ep.id)}">Passer l'épreuve</a>`}</p>`
+            : `<p class="fine">Il reste ${reste.length === 1 ? 'un module' : reste.length + ' modules'}
+               avant la fin de la séquence : ${reste.map(esc).join(', ')}.
+               ${ep.jdr ? `<a href="microjdr.html?e=${encodeURIComponent(ep.id)}">Voir la situation</a> ·` : ''}
+               <a href="epreuve.html?e=${encodeURIComponent(ep.id)}">Voir l'épreuve</a>.</p>`}`;
+      }
+    }
+  } catch (e) { /* sans épreuves, le module reste entier */ }
+
+  /* Le fil des jalons suit l'élève. Il dit une position, jamais une valeur :
+   * pas de pourcentage, pas de série, pas de compte à rebours. */
+  function majFil(idEtape){
+    const ordre = etapesDuModule(m).map(([id]) => id);
+    const rang = ordre.indexOf(idEtape);
+    cible.querySelectorAll('.fil-jalons li').forEach(li => {
+      const r = ordre.indexOf(li.dataset.fil);
+      li.classList.toggle('atteinte', r < rang);
+      li.classList.toggle('courante', r === rang);
+      if (r === rang) li.setAttribute('aria-current', 'step');
+      else li.removeAttribute('aria-current');
+    });
+  }
+
+  /* --- Voie « Pas à pas » : câblage ------------------------------------- *
+   * La bascule ne reconstruit rien : les blocs sont déjà là, la feuille de
+   * style les montre ou les cache. Basculer en cours de module ne fait donc
+   * perdre aucune réponse.                                                  */
+
+  function sansBalises(h){
+    const d = document.createElement('div'); d.innerHTML = String(h || '');
+    return d.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  // Ce que la barre du bas redit, étape par étape. Un module peut la
+  // remplacer par « adapte.consignes »; sinon on reprend ce qui est déjà écrit.
+  const CONSIGNES = Object.assign({
+    'e-rappel':         m.rappelEntrant ? sansBalises(m.rappelEntrant.question) : '',
+    'e-porte':          sansBalises(m.porte.mission),
+    'e-anticipation':   sansBalises(m.anticipation.question),
+    'e-collision':      sansBalises((m.collision.taches || {}).intro || m.collision.outil.nom),
+    'e-transformation': 'Compare avec ce que tu avais répondu tout à l’heure.',
+    'e-extraction':     sansBalises(m.extraction.consigne),
+  }, (m.adapte || {}).consignes || {});
+
+  const zoneConsigne = document.getElementById('rappelConsigne');
+
+  function poserRappelConsigne(idEtape){
+    const texte = CONSIGNES[idEtape];
+    if (!texte) { zoneConsigne.hidden = true; return; }
+    zoneConsigne.innerHTML = `<span class="quoi">Ce qu'il faut faire</span>${esc(texte)}`;
+    zoneConsigne.hidden = false;
+  }
+
+  // Le compteur que l'élève tient lui-même. Local, jamais transmis, et ce
+  // n'est ni un score ni une série : il n'y a rien à perdre en décochant.
+  function majCompte(){
+    const cases = [...cible.querySelectorAll('[data-suivi]')];
+    const vues = cases.filter(c => !c.closest('li').hidden);
+    const faites = vues.filter(c => c.checked).length;
+    const z = document.getElementById('suiviCompte');
+    if (z) z.textContent = vues.length
+      ? `${faites} sur ${vues.length} ${faites > 1 ? 'étapes cochées' : 'étape cochée'}`
+      : '';
+  }
+
+  function revelerSuivi(idEtape){
+    const li = cible.querySelector(`.suivi li[data-pour="${idEtape}"]`);
+    if (li) li.hidden = false;
+    majCompte();
+  }
+
+  // On restitue les cases déjà cochées : revenir sur un module ne les efface pas.
+  (function relireSuivi(){
+    const dejaFait = etat(m.id).suivi || {};
+    cible.querySelectorAll('[data-suivi]').forEach(c => {
+      if (dejaFait[c.dataset.suivi]) { c.checked = true; c.closest('li').classList.add('faite'); }
+    });
+  })();
+
+  cible.addEventListener('change', ev => {
+    const c = ev.target.closest('[data-suivi]');
+    if (!c) return;
+    c.closest('li').classList.toggle('faite', c.checked);
+    const d = Object.assign({}, etat(m.id).suivi || {});
+    if (c.checked) d[c.dataset.suivi] = true; else delete d[c.dataset.suivi];
+    majEtat(m.id, { suivi: d });
+    majCompte();
+  });
+
+  // Chaque mot difficile peut être entendu. Jamais automatiquement.
+  cible.querySelectorAll('.mots-avant li').forEach(li => {
+    const mot = li.querySelector('.mot');
+    if (mot) poserLecture(mot, li);   // on lit le mot, pas la fiche entiere
+  });
+
+  // La façade ne se lève qu'au clic de l'élève. Avant, aucune requête.
+  cible.addEventListener('click', ev => {
+    const b = ev.target.closest('.lance-video');
+    if (!b) return;
+    const c = b.closest('.facade');
+    const f = document.createElement('iframe');
+    f.src = c.dataset.src;
+    f.title = c.dataset.titre;
+    f.allow = 'fullscreen; picture-in-picture';
+    f.setAttribute('allowfullscreen', '');
+    f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+    c.classList.remove('facade');
+    c.innerHTML = '';
+    c.appendChild(f);
+  });
+
+  poserVoie(document.getElementById('btnVoie'));
+
+  // Bascule d'etayage : libre, a tout moment, sans consequence enregistree.
+  cible.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-entree]');
+    if (!b) return;
+    const boite = b.closest('.etayage');
+    boite.querySelectorAll('[data-entree]').forEach(x =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    boite.querySelectorAll('.texte-entree').forEach(t =>
+      { t.hidden = t.dataset.pour !== b.dataset.entree; });
+  });
+
+  // Commandes de lecture sur chaque etape. Jamais de lecture automatique.
+  cible.querySelectorAll('.etape').forEach(sec => {
+    const j = sec.querySelector('.jalon');
+    if (j) poserLecture(sec, j);
+  });
+
+  // Marge suit l'eleve : elle sait a quelle etape il en est.
+  if (MARGE_ACTIVE) poserMarge(document.querySelector('.page'), m.id, () => {
+    const ordre = ['e-extraction','e-transformation','e-collision','e-anticipation','e-porte'];
+    const ouverte = ordre.find(i => { const e = document.getElementById(i); return e && !e.hidden; });
+    return (ouverte || 'e-porte').replace('e-', '');
+  });
+
+  // Sans rappel entrant, la Porte s'ouvre tout de suite.
+  if (m.rappelEntrant) { revelerSuivi('e-rappel'); poserRappelConsigne('e-rappel'); majFil('e-rappel'); }
+  else montrer('e-porte');
+
+  function montrer(idEtape){
+    const s = document.getElementById(idEtape);
+    if (!s) return;
+    s.hidden = false;
+    s.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    revelerSuivi(idEtape);
+    poserRappelConsigne(idEtape);
+    majFil(idEtape);
+  }
+
+  // Boutons « continuer » d'une étape à l'autre.
+  cible.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-va]');
+    if (b) { b.disabled = true; montrer(b.dataset.va); }
+  });
+
+  // Rappel entrant : on répond avant de voir l'attendu.
+  const btnRappel = document.getElementById('btnRappel');
+  if (btnRappel) btnRappel.addEventListener('click', () => {
+    const t = document.getElementById('txtRappel');
+    if (!t.value.trim()) { t.focus(); return; }
+    majEtat(m.id, { rappelEntrantFait: new Date().toISOString() });
+    // Le rappel entrant vaut aussi pour le module d'origine : il a été réactivé.
+    if (m.rappelEntrant) majEtat(m.rappelEntrant.module, { reactive: new Date().toISOString() });
+    document.getElementById('apresRappel').hidden = false;
+    btnRappel.disabled = true;
+    montrer('e-porte');
+  });
+
+  // Anticipation : le choix engage, et il est rendu à l'élève au verdict.
+  const choix = document.getElementById('choixAnticipation');
+  choix.addEventListener('click', ev => {
+    const b = ev.target.closest('button[data-cle]');
+    if (!b || b.disabled) return;
+    [...choix.querySelectorAll('button')].forEach(x => {
+      x.setAttribute('aria-pressed', String(x === b));
+      x.disabled = true;
+    });
+    majEtat(m.id, { anticipation: b.dataset.cle });
+    document.getElementById('apresAnticipation').hidden = false;
+  });
+
+  // Au verdict : on rend à l'élève le pari qu'il a pris, pour qu'il constate
+  // lui-même la confirmation ou la correction. C'est là qu'agit la prédiction.
+  const zoneParie = document.getElementById('votreParieRappel');
+  new MutationObserver(() => {
+    const s = document.getElementById('e-transformation');
+    if (s.hidden || zoneParie.dataset.fait) return;
+    const cle = etat(m.id).anticipation;
+    if (!cle) return;
+    const opt = m.anticipation.options.find(o => o.cle === cle);
+    zoneParie.dataset.fait = '1';
+    zoneParie.appendChild(el(`<div class="rappel-de-soi">
+      <strong>Vous aviez répondu ${esc(cle)} :</strong> « ${esc(opt.texte)} ».
+      Lisez la suite en gardant votre réponse en tête.</div>`));
+  }).observe(document.getElementById('e-transformation'), { attributes: true, attributeFilter: ['hidden'] });
+
+  // Extraction : l'attendu n'apparaît qu'après avoir écrit le sien.
+  cible.addEventListener('click', ev => {
+    const b = ev.target.closest('[data-repond]');
+    if (!b) return;
+    const i = b.dataset.repond;
+    const t = document.getElementById('rep' + i);
+    if (!t.value.trim()) { t.focus(); return; }
+    document.getElementById('att' + i).hidden = false;
+    b.disabled = true;
+    t.readOnly = true;
+
+    const reps = {};
+    m.extraction.questions.forEach((q, k) => {
+      const v = document.getElementById('rep' + k);
+      if (v && v.value.trim()) reps[k] = v.value.trim().slice(0, 600);
+    });
+    majEtat(m.id, { extraction: reps });
+
+    if (Object.keys(reps).length === m.extraction.questions.length) {
+      document.getElementById('laVraie').hidden = false;
+      document.getElementById('finModule').hidden = false;
+      majEtat(m.id, { fait: new Date().toISOString() });
+    }
+  });
+}
+
+/* --- Contraste ----------------------------------------------------------- */
+const btnTheme = document.getElementById('btnTheme');
+function appliqueTheme(){
+  const t = localStorage.getItem('ci_theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+  btnTheme.setAttribute('aria-pressed', String(t === 'sombre'));
+}
+btnTheme.addEventListener('click', () => {
+  const actuel = document.documentElement.getAttribute('data-theme');
+  const neuf = actuel === 'sombre' ? 'clair' : 'sombre';
+  try { localStorage.setItem('ci_theme', neuf); } catch (e) {}
+  appliqueTheme();
+});
+try { appliqueTheme(); } catch (e) {}
+</script>
+</body>
+</html>

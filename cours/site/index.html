@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cours interactif — accueil</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <span>Cours interactif</span>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1>Cours interactif</h1>
+  <p class="chapeau">Un chemin par module : une porte, un pari, une pièce, un verdict,
+  et ce qu'on en retient. Ni score, ni classement, ni compteur de série.</p>
+
+  <div id="rappels"></div>
+  <div id="reprendre"></div>
+
+  <h2 style="margin-top:2rem">Votre année</h2>
+  <p class="fine">Choisissez votre niveau. Vous pourrez en changer à tout moment, et rien
+  ne vous empêchera d'aller voir ailleurs.</p>
+  <div id="niveaux" class="grille"></div>
+
+  <h2 style="margin-top:2.4rem">Les disciplines</h2>
+  <div id="disciplines"></div>
+
+  <hr class="filet">
+  <p class="fine" id="compte"></p>
+  <p class="fine"><a href="medias.html">Tableau de bord des médias</a> — les emplacements
+  d'images et de vidéos à chercher, avec leur brief. Réservé à la préparation.</p>
+  <p class="fine">Votre avancement est conservé dans ce navigateur seulement. Rien n'est envoyé
+  nulle part, aucun profil n'est constitué. <button type="button" id="btnOubli"
+  style="font:inherit;background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-decoration:underline">Tout effacer</button></p>
+
+</div>
+
+<script type="module">
+import { charger, progres, esc, poserRappels, niveauChoisi, choisirNiveau,
+         avancementNiveau, niveauxDeclares, poserContraste, poserVoie } from './socle.js';
+
+/* Le super hub. Il ne liste pas les modules : il oriente vers un niveau, et
+ * ramène ce qui est dû — les rappels d'abord, la reprise ensuite. */
+
+const { programme, ecrits } = await charger();
+
+function dessine(){
+  poserRappels(document.getElementById('rappels'), ecrits, dessine);
+
+  const p = progres();
+  const choisi = niveauChoisi();
+
+  /* --- Reprendre où l'on en était ---------------------------------------- */
+  const zoneR = document.getElementById('reprendre');
+  const encours = [...ecrits.values()]
+    .filter(m => { const e = p[m.id] || {}; return e.anticipation && !e.fait; });
+  zoneR.innerHTML = encours.length ? `
+    <div class="avis">
+      <h2>Vous étiez ici</h2>
+      <p class="fine">${esc(encours[0].id)} — ${esc(encours[0].titre)}, commencé et non terminé.</p>
+      <a class="bouton" href="module.html?m=${encodeURIComponent(encours[0].id)}"
+         style="display:inline-block;text-decoration:none;margin-top:.5rem">Reprendre</a>
+    </div>` : '';
+
+  /* --- Les quatre niveaux ------------------------------------------------- */
+  const zoneN = document.getElementById('niveaux');
+  zoneN.innerHTML = '';
+  niveauxDeclares(programme).forEach(nv => {
+    const n = { niveau: nv };
+    const a = avancementNiveau(programme, nv, ecrits);
+    const lien = document.createElement('a');
+    lien.className = 'carte tuile' + (choisi === n.niveau ? ' choisi' : '');
+    lien.href = 'niveau.html?n=' + encodeURIComponent(n.niveau);
+    lien.innerHTML = `
+      <div class="tuile-niveau">${esc(n.niveau)}</div>
+      <div class="cible">${a.disponibles} module${a.disponibles > 1 ? 's' : ''} ouvert${a.disponibles > 1 ? 's' : ''}
+        sur ${a.declares} prévus${a.acheves ? ` · ${a.acheves} achevé${a.acheves > 1 ? 's' : ''}` : ''}</div>`;
+    lien.addEventListener('click', () => choisirNiveau(n.niveau));
+    zoneN.appendChild(lien);
+  });
+
+  /* --- Les disciplines ---------------------------------------------------- */
+  const zoneD = document.getElementById('disciplines');
+  zoneD.innerHTML = '';
+  (programme.disciplines || []).forEach(d => {
+    const prevus = d.niveaux.reduce((s, n) =>
+      s + n.themes.reduce((t, th) => t + th.modules.length, 0), 0);
+    const ouverts = [...ecrits.values()].filter(m => m.discipline === d.id).length;
+    if (!prevus) {
+      const div = document.createElement('div');
+      div.className = 'carte attente';
+      div.innerHTML = `<div class="titre-c">${esc(d.nom)}</div>
+        <div class="cible">Discipline à venir. Sa carte n'est pas encore construite.</div>`;
+      zoneD.appendChild(div);
+      return;
+    }
+    const cible = choisi || (d.niveaux[0] && d.niveaux[0].niveau);
+    const a = document.createElement('a');
+    a.className = 'carte';
+    a.href = `discipline.html?d=${encodeURIComponent(d.id)}&n=${encodeURIComponent(cible)}`;
+    a.innerHTML = `
+      <div class="titre-c">${esc(d.nom)}</div>
+      <div class="cible">${ouverts} module${ouverts > 1 ? 's' : ''} écrit${ouverts > 1 ? 's' : ''}
+        sur ${prevus} prévus, de la 6e à la 3e. ${esc(d.reference)}</div>`;
+    zoneD.appendChild(a);
+  });
+
+  const totalPrevus = (programme.disciplines || []).reduce((s, d) =>
+    s + d.niveaux.reduce((x, n) => x + n.themes.reduce((t, th) => t + th.modules.length, 0), 0), 0);
+  document.getElementById('compte').textContent =
+    `${ecrits.size} module${ecrits.size > 1 ? 's' : ''} disponible${ecrits.size > 1 ? 's' : ''} sur ${totalPrevus} prévus.`;
+}
+
+document.getElementById('btnOubli').addEventListener('click', () => {
+  if (!confirm("Effacer votre avancement dans ce navigateur ? Cette action ne peut pas être annulée.")) return;
+  try { localStorage.removeItem('ci_progres'); } catch (e) {}
+  dessine();
+});
+
+dessine();
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'));
+</script>
+</body>
+</html>

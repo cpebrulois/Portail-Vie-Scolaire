@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Une situation — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .propositions { list-style:none; padding:0; margin:1.2rem 0 }
+  .propositions li { margin:.5rem 0 }
+  .propositions label { display:flex; gap:.7rem; align-items:baseline; cursor:pointer;
+                        padding:.7rem .9rem; border:1px solid var(--filet); border-radius:2px }
+  .propositions label:hover { border-color:var(--doux) }
+  .propositions label.retenue { border-color:var(--encre) }
+  .propositions input { margin:0; flex:0 0 auto }
+
+  .consequence { border-left:3px solid var(--encre); padding:.4rem 0 .4rem 1.1rem; margin:1.4rem 0 }
+  .consequence p { margin:0 }
+  .aurait { margin-top:1rem; padding-top:.8rem; border-top:1px solid var(--filet) }
+  .aurait .titre-a { font-size:.8em; letter-spacing:.05em; text-transform:uppercase;
+                     color:var(--doux); margin-bottom:.25rem }
+
+  .moments { list-style:none; padding:0; margin:1rem 0 }
+  .moments li { padding:.35rem 0 .35rem 1.1rem; border-left:2px solid var(--accent) }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Accueil</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1 id="titre">Une situation</h1>
+  <p class="chapeau" id="chapeau">Chargement…</p>
+
+  <div id="zone"></div>
+
+</div>
+
+<script type="module">
+import { poserContraste, poserVoie, appliqueCycle, esc } from './socle.js';
+
+/* Le micro-jeu de rôle.
+ *
+ * Court — quatre décisions, huit minutes. Le format long accumule du décor,
+ * et le décor est précisément ce qui coûte : un ornement intéressant mais
+ * hors sujet dégrade la rétention. Le micro-format n'en a pas les moyens.
+ *
+ * DEUX RÈGLES TENUES PAR LA STRUCTURE, PAS PAR LA BONNE VOLONTÉ :
+ *
+ * 1. La question EST l'action. Chaque scène se joue sur une question de
+ *    l'index des épreuves ; répondre, c'est agir, et la fiction bifurque
+ *    sur la réponse. Une histoire qui pourrait continuer sans la réponse
+ *    serait un décor.
+ *
+ * 2. Aucune question et aucune réponse n'est écrite dans le fichier de
+ *    scénario. Il ne contient que des identifiants d'items et les suites
+ *    narratives. Un scénario ne PEUT donc pas contenir une réponse fausse :
+ *    il n'en contient aucune. C'est ce qui rendra sûr, le jour venu, un
+ *    scénario composé par une IA — elle écrit le tissu, jamais la réponse.
+ *
+ * Et une règle de parcours : ceci ne barre jamais la route. Aucun score,
+ * aucun passage conditionné. Si échouer dans la fiction bloquait quoi que
+ * ce soit, la fiction deviendrait un examen déguisé, et perdrait tout ce
+ * pour quoi on l'avait faite.
+ */
+
+const params = new URLSearchParams(location.search);
+const cible = document.getElementById('zone');
+
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'), () => {});
+
+/* --- Chargement ----------------------------------------------------------- */
+
+const banque = await fetch('epreuves.json').then(r => r.json());
+
+let ep = banque.epreuves.find(e => e.id === params.get('e'));
+if (!ep && params.get('m')) ep = banque.epreuves.find(e => e.modules.includes(params.get('m')));
+if (!ep && (params.get('e') || params.get('m'))) {
+  // Un identifiant qui n'existe pas se dit ; on ne joue pas une autre scène à sa place.
+  cible.innerHTML = `<p class="chapeau">Aucune séquence ne porte l'identifiant
+      « ${esc(params.get('e') || params.get('m'))} ».</p>
+    <p><a href="index.html">Revenir à l'accueil</a></p>`;
+  throw new Error('séquence introuvable');
+}
+if (!ep) ep = banque.epreuves.find(e => e.jdr);
+if (!ep || !ep.jdr) {
+  cible.innerHTML = `<p class="chapeau">Aucune situation n'est écrite pour cette séquence.</p>
+    <p><a href="index.html">Revenir à l'accueil</a></p>`;
+  throw new Error('pas de jdr');
+}
+
+const jdr = await fetch(ep.jdr).then(r => r.json());
+const parItem = Object.fromEntries(ep.items.map(i => [i.id, i]));
+
+appliqueCycle(ep.niveau);
+document.title = jdr.titre + ' — Cours interactif';
+document.getElementById('titre').textContent = jdr.titre;
+document.getElementById('chapeau').innerHTML =
+  `${esc(jdr.cadre)} <span class="fine">${jdr.scenes.length} décisions · ${esc(jdr.duree)}.</span>`;
+
+/* --- Déroulé -------------------------------------------------------------- */
+
+let k = 0;
+const choix = [];   // { scene, item, choisi, tenu }
+
+function scene() {
+  if (k >= jdr.scenes.length) return fin();
+  const s = jdr.scenes[k];
+  const it = parItem[s.item];
+
+  cible.innerHTML = `
+    <section class="etape">
+      <p class="fine">${k === 0 ? esc(jdr.role) : `Décision ${k + 1} sur ${jdr.scenes.length}`}</p>
+      <div class="scene"><p>${esc(s.texte)}</p></div>
+      <div class="question"><p class="enonce">${esc(it.enonce)}</p></div>
+      <ul class="propositions" id="props">
+        ${it.options.map((o, n) => `
+          <li><label for="o${n}" id="l${n}">
+            <input type="radio" name="prop" id="o${n}" value="${n}">
+            <span>${esc(o)}</span>
+          </label></li>`).join('')}
+      </ul>
+      <button class="bouton" id="agir" disabled>Prendre la parole</button>
+    </section>`;
+
+  const bouton = document.getElementById('agir');
+  document.getElementById('props').addEventListener('change', e => {
+    bouton.disabled = false;
+    document.querySelectorAll('#props label').forEach(l => l.classList.remove('retenue'));
+    e.target.closest('label').classList.add('retenue');
+  });
+  bouton.addEventListener('click', () => jouer(s, it), { once: true });
+}
+
+/* Ce qui suit une réponse n'est pas une croix ni une coche : c'est ce qui
+   arrive dans la scène. La raison est donnée ensuite, et elle est donnée
+   dans tous les cas — le retour immédiat est ce qui fait l'essentiel du
+   bénéfice, et une fiction ne l'exempte de rien. */
+function jouer(s, it) {
+  const n = Number(document.querySelector('#props input:checked').value);
+  const tenu = n === it.juste;
+  choix.push({ moment: s.moment, module: it.module, tenu });
+
+  cible.innerHTML = `
+    <section class="etape">
+      <div class="scene"><p>${esc(s.texte)}</p></div>
+      <p class="fine">Vous avez dit : « ${esc(it.options[n])} »</p>
+      <div class="consequence"><p>${esc(s.suites[String(n)])}</p></div>
+      <div class="aurait">
+        <div class="titre-a">Pourquoi</div>
+        <p>${esc(it.pourquoi)}</p>
+        ${tenu ? '' : `<p class="fine">Ce qui aurait tenu : « ${esc(it.options[it.juste])} »</p>`}
+      </div>
+      <button class="bouton" id="suite">${k + 1 < jdr.scenes.length ? 'La suite' : 'La fin de la séance'}</button>
+    </section>`;
+
+  document.getElementById('suite').addEventListener('click', () => { k++; scene(); }, { once: true });
+}
+
+function fin() {
+  const rates = choix.filter(c => !c.tenu);
+
+  cible.innerHTML = `
+    <section class="etape">
+      <h2>Ce qui est sorti d'ici</h2>
+      ${rates.length === 0
+        ? `<p class="garde">${esc(jdr.issue.tenu)}</p>`
+        : `<p>${esc(jdr.issue.ecarts)}</p>
+           <ul class="moments">
+             ${rates.map(c => `<li>${esc(c.moment)} <span class="fine">— ${esc(c.module)}</span></li>`).join('')}
+           </ul>`}
+
+      <hr class="filet">
+      <p class="fine">${esc(jdr.issue.apres)}</p>
+      <p>
+        <a class="bouton" href="epreuve.html?e=${encodeURIComponent(ep.id)}">Passer l'épreuve</a>
+        <a class="bouton discret" href="microjdr.html?e=${encodeURIComponent(ep.id)}">Rejouer la scène</a>
+      </p>
+    </section>`;
+}
+
+scene();
+</script>
+</body>
+</html>

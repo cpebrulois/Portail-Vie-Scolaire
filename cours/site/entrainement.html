@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entraînement — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Accueil</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1 id="titre">Entraînement</h1>
+  <p class="chapeau" id="chapeau">Chargement…</p>
+
+  <div id="zone"></div>
+
+  <hr class="filet">
+  <h2>Où j'en suis</h2>
+  <p class="fine">Trois états, et un seul chemin : <strong>à travailler</strong>,
+  puis <strong>acquis</strong> après cinq réussites d'affilée, puis
+  <strong>confirmé</strong> après une reprise le lendemain. Rien ne redescend
+  tout seul : une erreur ne fait rien perdre.</p>
+  <div id="tableau"></div>
+
+  <p class="fine" style="margin-top:2rem">Tout ce qui est ici vit dans ce navigateur
+  et n'est envoyé nulle part.
+  <button type="button" class="mini" id="btnEffacer">Tout effacer</button></p>
+
+</div>
+
+<script type="module">
+import { poserContraste, poserVoie, appliqueCycle } from './socle.js';
+import { GENERATEURS, pourNiveau, prochain, statut, noter, juste,
+         suiteEnCours, SEUIL, graine, toutEffacer } from './exercices.js';
+
+/* La page d'entraînement.
+ *
+ * Une question à la fois, une réponse, un retour immédiat. Le retour
+ * immédiat est ce qui fait l'essentiel du bénéfice (SRC-PED-005) ; sans
+ * lui, répéter un exercice répète surtout l'erreur.
+ *
+ * Ce que cette page N'AFFICHE PAS, et c'est délibéré : aucun score, aucun
+ * pourcentage, aucune série à ne pas rompre, aucun temps. On montre une
+ * position dans une progression — cinq réussites d'affilée, puis une
+ * reprise le lendemain — et rien d'autre.
+ */
+
+const params = new URLSearchParams(location.search);
+const discipline = params.get('d') || 'mathematiques';
+const niveau = params.get('n') || '6e';
+appliqueCycle(niveau);
+
+const NOMS = { mathematiques: 'Mathématiques', francais: 'Français', histoire: 'Histoire',
+               geographie: 'Géographie', emc: 'EMC', sciences: 'Sciences et technologie' };
+document.getElementById('titre').textContent =
+  (NOMS[discipline] || discipline) + ' — entraînement ' + niveau;
+
+const zone = document.getElementById('zone');
+let courant = null, exo = null, repondu = false;
+
+function servir() {
+  courant = prochain(discipline, niveau);
+  if (!courant) {
+    zone.innerHTML = `<div class="avis"><h2>Rien à travailler ici</h2>
+      <p class="fine">Aucun exercice n'est encore disponible pour cette discipline à ce niveau.</p></div>`;
+    return;
+  }
+  exo = courant.faire(graine(Date.now() ^ Math.floor(Math.random() * 1e9)));
+  repondu = false;
+  const st = statut(courant.id);
+  const n = suiteEnCours(courant.id);
+  const cible = st === 'a-confirmer' || st === 'acquis' ? SEUIL.confirmation : SEUIL.suite;
+
+  zone.innerHTML = `
+    <section class="etape">
+      <div class="jalon"><span class="lettre">?</span>
+        <span class="nom">${esc(courant.nom)}
+          <span class="glose">${esc(courant.quoi)}</span></span></div>
+
+      ${st === 'a-confirmer'
+        ? `<div class="rappel-de-soi"><strong>Reprise.</strong> Vous aviez réussi cinq fois
+             d'affilée. On revient dessus un jour plus tard : c'est ce qui distingue
+             un automatisme d'un souvenir de la minute.</div>` : ''}
+
+      <p class="scene" style="font-size:1.25rem">${exo.enonce}</p>
+
+      <div class="question">
+        ${exo.choix
+          ? `<div class="choix" id="choix" role="group" aria-label="Votre réponse">
+               ${exo.choix.map(c => `<button type="button" data-c="${esc(c)}"
+                 style="text-align:center;font-size:1.3rem">${esc(c)}</button>`).join('')}
+             </div>`
+          : `<label class="fine" for="rep">Votre réponse</label>
+             <div style="display:flex;align-items:center;gap:.5rem">
+               <input id="rep" inputmode="${courant.saisie === 'texte' ? 'text' : 'decimal'}"
+                 autocomplete="off" autocapitalize="off" spellcheck="false"
+                 style="flex:1;font-family:var(--serif);font-size:1.2rem;padding:.6rem .8rem;
+                        border:1px solid var(--filet);border-radius:4px;
+                        background:var(--papier-2);color:var(--encre)">
+               ${exo.suffixe ? `<span style="font-size:1.2rem">${esc(exo.suffixe)}</span>` : ''}
+             </div>
+             <button class="bouton" id="btnValider" style="margin-top:.8rem">Valider</button>`}
+        <button type="button" class="mini" id="btnAide" style="margin-left:.5rem">Un indice</button>
+        <p class="fine" id="aide" hidden></p>
+      </div>
+
+      <div id="retour"></div>
+
+      <p class="compte" style="font-family:var(--mono);font-size:.78rem;color:var(--encre-2);
+         letter-spacing:.04em;margin-top:1.2rem">
+        ${n} réussite${n > 1 ? 's' : ''} d'affilée sur ${cible}</p>
+    </section>`;
+
+  const champ = document.getElementById('rep');
+  if (champ) { champ.focus(); champ.addEventListener('keydown', e => { if (e.key === 'Enter') valider(champ.value); }); }
+  const bv = document.getElementById('btnValider');
+  if (bv) bv.addEventListener('click', () => valider(champ.value));
+  const ch = document.getElementById('choix');
+  if (ch) ch.addEventListener('click', ev => {
+    const b = ev.target.closest('button[data-c]');
+    if (b && !repondu) valider(b.dataset.c);
+  });
+  document.getElementById('btnAide').addEventListener('click', () => {
+    const a = document.getElementById('aide');
+    a.textContent = exo.aide || '';
+    a.hidden = false;
+  });
+}
+
+function valider(saisie) {
+  if (repondu) return;
+  if (!exo.choix && !String(saisie || '').trim()) return;
+  repondu = true;
+  const avant = statut(courant.id);          // lu AVANT de noter
+  // « reponses » liste les écritures également justes — « le chat » et
+  // « chat » pour un sujet. À défaut, la réponse canonique fait seule foi.
+  const ok = exo.choix ? String(saisie).trim() === exo.reponse
+                       : juste(saisie, exo.reponses || exo.reponse);
+  const st = noter(courant.id, ok);
+
+  document.querySelectorAll('#choix button, #btnValider, #rep').forEach(e => {
+    if (e.tagName === 'INPUT') e.readOnly = true; else e.disabled = true;
+  });
+
+  const r = document.getElementById('retour');
+  r.innerHTML = `
+    <div class="verdict">
+      <div class="${ok ? 'etablit' : 'netablit-pas'}">
+        <div class="titre-v">${ok ? 'Juste' : 'Pas encore'}</div>
+        ${ok ? 'C’est la bonne réponse.'
+             : `La réponse attendue était <strong>${esc(exo.reponse)}${esc(exo.suffixe || '')}</strong>.`}
+        ${!ok && exo.aide ? `<p class="fine" style="margin:.6rem 0 0">${esc(exo.aide)}</p>` : ''}
+      </div>
+    </div>
+    ${st === 'acquis' && avant === 'a-travailler'
+      ? `<div class="avis"><h2>Acquis</h2><p class="fine">Cinq réussites d'affilée.
+           On y revient demain pour confirmer — c'est le moment où ça devient un automatisme.</p></div>` : ''}
+    ${st === 'confirme'
+      ? `<div class="avis"><h2>Confirmé</h2><p class="fine">Réussi, puis réussi encore un jour plus tard.
+           Celui-ci est à vous.</p></div>` : ''}
+    <button class="bouton" id="btnSuite" style="margin-top:1rem">Question suivante</button>`;
+  document.getElementById('btnSuite').addEventListener('click', () => { servir(); dessineTableau(); });
+  document.getElementById('btnSuite').focus();
+  dessineTableau();
+}
+
+const ETIQ = { 'a-travailler': 'à travailler', 'acquis': 'acquis, reprise demain',
+               'a-confirmer': 'à reprendre maintenant', 'confirme': 'confirmé' };
+
+function dessineTableau() {
+  const l = pourNiveau(discipline, niveau);
+  document.getElementById('tableau').innerHTML = l.length
+    ? `<div class="tableau-large"><table>
+        <tr><th>Ce qu'on travaille</th><th>Domaine</th><th>Où j'en suis</th></tr>
+        ${l.map(g => { const s = statut(g.id); return `<tr>
+          <td><strong>${esc(g.nom)}</strong><br><span class="fine">${esc(g.quoi)}</span></td>
+          <td>${esc(g.domaine)}</td>
+          <td><span class="statut" style="${s === 'confirme'
+              ? 'background:var(--appui-doux);color:var(--appui)' : ''}">${ETIQ[s]}</span></td>
+        </tr>`; }).join('')}
+      </table></div>`
+    : '<p class="fine">Aucun exercice pour cette discipline à ce niveau.</p>';
+}
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+document.getElementById('chapeau').textContent =
+  'Une question à la fois, une réponse, un retour immédiat. Ni score, ni classement, ni chronomètre.';
+
+document.getElementById('btnEffacer').addEventListener('click', () => {
+  if (confirm("Effacer tout l'avancement des exercices de ce navigateur ?")) {
+    toutEffacer(); servir(); dessineTableau();
+  }
+});
+
+servir();
+dessineTableau();
+
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'));
+</script>
+</body>
+</html>
