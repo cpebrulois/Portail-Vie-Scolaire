@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Épreuve de fin de séquence — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Les trois marches. Une couleur ne porte jamais seule l'information :
+     le nom du palier est toujours écrit à côté. */
+  .marche { display:flex; gap:.6rem; flex-wrap:wrap; margin:.4rem 0 1.4rem;
+            padding:0; list-style:none; font-size:.86em }
+  .marche li { padding:.18rem .7rem; border:1px solid var(--filet); border-radius:2px;
+               color:var(--doux) }
+  .marche li[aria-current="step"] { border-color:var(--encre); color:var(--encre); font-weight:600 }
+  .marche li.faite { border-style:dashed }
+
+  .propositions { list-style:none; padding:0; margin:1.2rem 0 }
+  .propositions li { margin:.5rem 0 }
+  .propositions label { display:flex; gap:.7rem; align-items:baseline; cursor:pointer;
+                        padding:.7rem .9rem; border:1px solid var(--filet); border-radius:2px }
+  .propositions label:hover { border-color:var(--doux) }
+  .propositions input { margin:0; flex:0 0 auto }
+  .propositions label.retenue { border-color:var(--encre) }
+  .propositions label.juste { border-color:#1c6b45; border-width:2px }
+  .propositions label.fausse { border-color:var(--accent); border-width:2px }
+  .propositions label .marque { margin-left:auto; font-size:.82em; letter-spacing:.04em;
+                                text-transform:uppercase; white-space:nowrap }
+
+  .retour { border-left:3px solid var(--filet); padding:.2rem 0 .2rem 1rem; margin:1.4rem 0 }
+  .retour .verdict-mot { font-family:'Cormorant Garamond',serif; font-size:1.25em; display:block;
+                         margin-bottom:.35rem }
+
+  .carnet-item { break-inside:avoid; margin:1.4rem 0; padding-bottom:1rem;
+                 border-bottom:1px solid var(--filet) }
+  .carnet-item dl { margin:.5rem 0 0 }
+  .carnet-item dt { font-size:.8em; letter-spacing:.05em; text-transform:uppercase;
+                    color:var(--doux); margin-top:.5rem }
+  .carnet-item dd { margin:.1rem 0 0 }
+
+  @media print {
+    nav.service, #zone, #btnCarnet, .filet, .fine.pas-imprimer { display:none !important }
+    .page { max-width:none }
+    #carnet { display:block !important }
+    a[href]::after { content:"" }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Accueil</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1 id="titre">Épreuve de fin de séquence</h1>
+  <p class="chapeau" id="chapeau">Chargement…</p>
+
+  <ul class="marche" id="marche" hidden>
+    <li data-p="rappel">1. Rappel</li>
+    <li data-p="discrimination">2. Discrimination</li>
+    <li data-p="transfert">3. Transfert</li>
+  </ul>
+
+  <div id="zone"></div>
+  <div id="carnet" hidden></div>
+
+</div>
+
+<script type="module">
+import { poserContraste, poserVoie, appliqueCycle, esc } from './socle.js';
+import { graine } from './exercices.js';
+
+/* L'épreuve de fin de séquence.
+ *
+ * Ce n'est ni le module ni l'entraînement, et c'est délibéré :
+ *   — le module fait rencontrer une pièce et fabrique un outil ;
+ *   — l'entraînement automatise un geste par la répétition ;
+ *   — l'épreuve demande si l'outil tient encore, et s'il voyage.
+ *
+ * Trois marches, jouées dans l'ordre. Elles ne mesurent pas la même chose,
+ * et c'est pour cela qu'on ne les additionne pas :
+ *   RAPPEL         — la notion revient-elle sans le cahier ?
+ *   DISCRIMINATION — sait-on ce que la pièce permet, et ce qu'elle interdit ?
+ *   TRANSFERT      — l'outil fonctionne-t-il sur une situation jamais vue ?
+ *
+ * D'où la règle qui fait tout l'intérêt de cette page : ON N'AFFICHE AUCUN
+ * SCORE. Un pourcentage mélangerait les trois marches, et sept sur dix ne
+ * dirait pas quoi faire. Un renvoi nommé, si : rater le rappel renvoie au
+ * module entier ; rater le transfert ne renvoie à aucune relecture, mais à
+ * une autre situation. Le total ne sait pas distinguer ces deux élèves.
+ *
+ * Le passage à l'étape suivante se fait sur ce qui reste à revoir, jamais
+ * sur une moyenne. Et l'épreuve ne sert pas à noter : elle n'en a pas les
+ * moyens, et le dire fait partie du dispositif.
+ */
+
+const params = new URLSearchParams(location.search);
+const cible = document.getElementById('zone');
+const CLE = 'ci_epreuves';
+
+const ORDRE = ['rappel', 'discrimination', 'transfert'];
+const NOM_PALIER = { rappel: 'Rappel', discrimination: 'Discrimination', transfert: 'Transfert' };
+
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'), () => {});
+
+/* --- Mémoire locale ------------------------------------------------------ */
+
+function tout() { try { return JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { return {}; } }
+function ecrire(o) { try { localStorage.setItem(CLE, JSON.stringify(o)); } catch (e) {} }
+function etatDe(id) { return tout()[id] || { essais: 0 }; }
+function enregistrer(id, champs) {
+  const o = tout();
+  o[id] = Object.assign({}, o[id], champs);
+  ecrire(o);
+}
+
+/* --- Ordre des propositions ----------------------------------------------
+ * Les propositions sont permutées à chaque passage, avec une graine tirée
+ * du numéro d'essai : une reprise ne se joue pas de mémoire de position,
+ * et deux passages restent reproductibles à l'identique si l'on veut les
+ * comparer. */
+function permuter(n, semence) {
+  const r = graine(semence);
+  const ordre = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(r() * (i + 1));
+    [ordre[i], ordre[j]] = [ordre[j], ordre[i]];
+  }
+  return ordre;
+}
+
+/* --- Chargement ----------------------------------------------------------- */
+
+const banque = await fetch('epreuves.json').then(r => r.json());
+const idDemande = params.get('e');
+const parModule = params.get('m');
+
+let ep = banque.epreuves.find(e => e.id === idDemande);
+if (!ep && parModule) ep = banque.epreuves.find(e => e.modules.includes(parModule));
+if (!ep && (idDemande || parModule)) {
+  // Un identifiant demandé qui n'existe pas se dit : servir une autre
+  // épreuve à sa place ferait passer l'épreuve d'une autre séquence pour la sienne.
+  cible.innerHTML = `<h1>Épreuve introuvable</h1>
+    <p class="chapeau">Aucune épreuve ne porte l'identifiant « ${esc(idDemande || parModule)} ».</p>
+    <p><a href="index.html">Revenir à l'accueil</a></p>`;
+  throw new Error('épreuve introuvable');
+}
+if (!ep) ep = banque.epreuves[0];
+
+appliqueCycle(ep.niveau);
+
+/* Les titres des modules, pour que les renvois nomment ce qu'ils désignent
+   au lieu d'afficher un identifiant. */
+const titres = {};
+await Promise.all(ep.modules.map(id =>
+  fetch(`modules/${id}.json`).then(r => r.ok ? r.json() : null)
+    .then(m => { if (m) titres[id] = m.titre; })
+    .catch(() => {})
+));
+const nomModule = id => titres[id] ? `${id} — ${titres[id]}` : id;
+
+const essai = etatDe(ep.id).essais + 1;
+
+/* Une reprise doit poser une AUTRE situation, pas la même.
+ *
+ * Sinon le second passage ne mesure plus le transfert : il mesure le
+ * souvenir d'avoir vu la réponse. Les questions qui partagent un
+ * « groupe » sont donc des variantes de la même question, et l'épreuve
+ * n'en tire qu'une — celle du numéro de passage, qui tourne. Une question
+ * sans groupe n'a pas de variante et se repose telle quelle : c'est
+ * acceptable au palier du rappel, où répéter est justement l'objet. */
+const items = ORDRE.flatMap(p => {
+  const groupes = new Map();
+  ep.items.filter(i => i.palier === p)
+          .forEach(i => {
+            const g = i.groupe || i.id;
+            if (!groupes.has(g)) groupes.set(g, []);
+            groupes.get(g).push(i);
+          });
+  return [...groupes.values()].map(v => v[(essai - 1) % v.length]);
+});
+
+document.title = `${ep.titre} — Cours interactif`;
+document.getElementById('titre').textContent = ep.titre;
+document.getElementById('chapeau').innerHTML =
+  `${esc(ep.sequence)} · ${items.length} questions · ${esc(ep.duree)}. ` +
+  `Cette épreuve porte sur ${ep.modules.length} modules à la fois : ` +
+  `<strong>les questions ne sont pas rangées par module</strong>, et c'est voulu — ` +
+  `savoir de quel cours vient une question est déjà la moitié de la réponse.`;
+document.getElementById('marche').hidden = false;
+
+/* --- Déroulé -------------------------------------------------------------- */
+
+let k = 0;
+const reponses = {};   // itemId -> index d'origine choisi
+
+function majMarche() {
+  const courant = items[k] ? items[k].palier : null;
+  document.querySelectorAll('#marche li').forEach(li => {
+    const p = li.dataset.p;
+    li.classList.toggle('faite', ORDRE.indexOf(p) < ORDRE.indexOf(courant));
+    if (p === courant) li.setAttribute('aria-current', 'step');
+    else li.removeAttribute('aria-current');
+  });
+}
+
+function poser() {
+  if (k >= items.length) return conclure();
+  majMarche();
+
+  const it = items[k];
+  const ordre = permuter(it.options.length, hash(it.id) + essai);
+
+  cible.innerHTML = `
+    <section class="etape">
+      <p class="fine">Question ${k + 1} sur ${items.length} · marche ${NOM_PALIER[it.palier].toLowerCase()}</p>
+      <div class="question"><p class="enonce">${esc(it.enonce)}</p></div>
+      <ul class="propositions" id="props">
+        ${ordre.map((orig, rang) => `
+          <li><label for="o${rang}" id="l${rang}">
+            <input type="radio" name="prop" id="o${rang}" value="${orig}">
+            <span>${esc(it.options[orig])}</span>
+          </label></li>`).join('')}
+      </ul>
+      <button class="bouton" id="valider" disabled>Valider</button>
+      <div id="retour"></div>
+    </section>`;
+
+  const bouton = document.getElementById('valider');
+  document.getElementById('props').addEventListener('change', e => {
+    bouton.disabled = false;
+    document.querySelectorAll('#props label').forEach(l => l.classList.remove('retenue'));
+    e.target.closest('label').classList.add('retenue');
+  });
+  bouton.addEventListener('click', () => corriger(it, ordre), { once: true });
+}
+
+/* La réponse attendue n'apparaît qu'après que l'élève a tranché. C'est le
+   même verrou que l'Extraction du module : voir la bonne réponse avant
+   d'avoir cherché supprime très exactement ce qu'on venait chercher. */
+function corriger(it, ordre) {
+  const choisi = Number(document.querySelector('#props input:checked').value);
+  reponses[it.id] = choisi;
+  const bon = choisi === it.juste;
+
+  ordre.forEach((orig, rang) => {
+    const l = document.getElementById('l' + rang);
+    l.classList.remove('retenue');
+    if (orig === it.juste) {
+      l.classList.add('juste');
+      l.insertAdjacentHTML('beforeend', '<span class="marque">attendu</span>');
+    } else if (orig === choisi) {
+      l.classList.add('fausse');
+      l.insertAdjacentHTML('beforeend', '<span class="marque">votre réponse</span>');
+    }
+    l.querySelector('input').disabled = true;
+  });
+
+  document.getElementById('valider').remove();
+  document.getElementById('retour').innerHTML = `
+    <div class="retour">
+      <span class="verdict-mot">${bon ? 'Oui.' : 'Pas celle-là.'}</span>
+      <p>${esc(it.pourquoi)}</p>
+      <p class="fine">Module ${esc(nomModule(it.module))} · référence ${esc(it.ref)}</p>
+    </div>
+    <button class="bouton" id="suite">${k + 1 < items.length ? 'Question suivante' : 'Voir ce qui reste à revoir'}</button>`;
+
+  document.getElementById('suite').addEventListener('click', () => { k++; poser(); }, { once: true });
+}
+
+/* --- Le verdict, et les renvois ------------------------------------------- */
+
+function conclure() {
+  document.querySelectorAll('#marche li').forEach(li => {
+    li.classList.add('faite'); li.removeAttribute('aria-current');
+  });
+
+  const rates = items.filter(i => reponses[i.id] !== i.juste);
+
+  /* On renvoie au palier le plus bas qui a échoué pour un module donné :
+     si le rappel n'est pas là, réparer le rappel peut suffire à réparer
+     le reste, et il serait absurde d'envoyer l'élève travailler le
+     transfert d'une notion qu'il n'a pas encore. */
+  const parMod = {};
+  rates.forEach(i => {
+    const rang = ORDRE.indexOf(i.palier);
+    if (!parMod[i.module] || rang < parMod[i.module].rang) {
+      parMod[i.module] = { rang, palier: i.palier, items: [] };
+    }
+  });
+  rates.forEach(i => parMod[i.module].items.push(i));
+
+  const acquis = rates.length === 0;
+  enregistrer(ep.id, {
+    essais: essai,
+    date: new Date().toISOString(),
+    acquis,
+    aRevoir: Object.keys(parMod),
+  });
+
+  /* Le tableau dit sur quelles marches chaque module a été réellement
+     interrogé. Sans cette colonne, « acquis » laisserait croire que les
+     trois ont été passées, alors qu'une épreuve mélange les modules et
+     n'en interroge pas chacun partout. Un verdict qui promet plus que ce
+     qu'il a mesuré est la seule faute qu'on ne puisse pas rattraper. */
+  const lignes = ep.modules.map(id => {
+    const p = parMod[id];
+    const vus = ORDRE.filter(x => items.some(i => i.module === id && i.palier === x));
+    return `<tr>
+      <td><a href="module.html?m=${encodeURIComponent(id)}">${esc(nomModule(id))}</a></td>
+      <td>${p ? '<strong>à revoir</strong>' : 'acquis'}</td>
+      <td>${p ? esc(NOM_PALIER[p.palier].toLowerCase()) : '—'}</td>
+      <td class="fine">${vus.map(x => NOM_PALIER[x].toLowerCase()).join(', ')}</td>
+    </tr>`;
+  }).join('');
+
+  cible.innerHTML = `
+    <section class="etape">
+      <h2>Ce que cette épreuve a montré</h2>
+      ${acquis
+        ? `<p class="garde">Les trois marches tiennent, sur les ${ep.modules.length} modules
+           de la séquence. La suivante peut s'ouvrir.</p>`
+        : `<p>Rien n'est perdu et rien n'est noté. Il reste
+           ${rates.length === 1 ? 'un point' : `${rates.length} points`} à reprendre,
+           et le tableau dit lequel, et où.</p>`}
+
+      <div class="tableau-large"><table>
+        <tr><th>Module</th><th>État</th><th>Marche à reprendre</th><th>Interrogé sur</th></tr>
+        ${lignes}
+      </table></div>
+
+      ${Object.entries(parMod).map(([id, p]) => `
+        <div class="retour">
+          <span class="verdict-mot">${esc(nomModule(id))}</span>
+          <p>${esc(banque.renvois[p.palier])}</p>
+          <p class="fine">En cause : ${p.items.map(i => esc(i.enonce)).join(' · ')}</p>
+          ${p.palier === 'transfert'
+            ? `<a class="bouton discret" href="epreuve.html?e=${encodeURIComponent(ep.id)}">Reprendre : la situation changera</a>`
+            : `<a class="bouton discret" href="module.html?m=${encodeURIComponent(id)}">Rouvrir ce module</a>`}
+        </div>`).join('')}
+
+      <hr class="filet">
+      <p class="fine">${esc(banque.limite)}</p>
+      <p class="fine pas-imprimer">Ce résultat vit dans ce navigateur et n'est envoyé nulle part.
+      Passage n° ${essai} — une reprise change les propositions de place, et pose
+      d'autres situations de transfert.</p>
+
+      <button class="bouton" id="btnCarnet">Le carnet de l'épreuve</button>
+      <a class="bouton discret" href="epreuve.html?e=${encodeURIComponent(ep.id)}">Reprendre l'épreuve</a>
+    </section>`;
+
+  document.getElementById('btnCarnet').addEventListener('click', carnet);
+}
+
+/* --- Le carnet ------------------------------------------------------------
+ * La trace complète : chaque question, ce qui a été répondu, ce qui était
+ * attendu, et pourquoi. Elle s'imprime — « Enregistrer au format PDF »
+ * dans la boîte d'impression suffit à en faire un fichier. Aucune
+ * bibliothèque, aucun serveur : la page est déjà le document. */
+function carnet() {
+  const z = document.getElementById('carnet');
+  const d = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  z.innerHTML = `
+    <hr class="filet">
+    <h2>Carnet de l'épreuve</h2>
+    <p class="fine">${esc(ep.titre)} — ${esc(ep.sequence)} · ${d} · passage n° ${essai}</p>
+    ${items.map((it, n) => {
+      const rep = reponses[it.id];
+      const bon = rep === it.juste;
+      return `<div class="carnet-item">
+        <p><strong>${n + 1}.</strong> ${esc(it.enonce)}
+           <span class="fine">— ${esc(NOM_PALIER[it.palier].toLowerCase())}, module ${esc(it.module)}</span></p>
+        <dl>
+          <dt>Votre réponse</dt><dd>${esc(it.options[rep])} ${bon ? '' : '(pas celle-là)'}</dd>
+          ${bon ? '' : `<dt>Ce qu'on attendait</dt><dd>${esc(it.options[it.juste])}</dd>`}
+          <dt>Pourquoi</dt><dd>${esc(it.pourquoi)}</dd>
+        </dl>
+      </div>`;
+    }).join('')}
+    <p class="fine">${esc(banque.limite)}</p>
+    <button class="bouton pas-imprimer" id="btnImprimer">Imprimer ou enregistrer en PDF</button>`;
+  z.hidden = false;
+  document.getElementById('btnImprimer').addEventListener('click', () => window.print());
+  z.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* Petit brassage stable de l'identifiant, pour que chaque question ait sa
+   propre permutation et non celle de sa voisine. */
+function hash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+poser();
+</script>
+</body>
+</html>

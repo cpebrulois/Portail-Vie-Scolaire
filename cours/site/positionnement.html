@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Se positionner — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">&larr; Accueil</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1 id="titre">Se positionner</h1>
+  <p class="chapeau">Six questions pour trouver <strong>par où commencer</strong>. Ce n'est pas une note,
+  ce n'est pas un niveau qu'on vous attribue, et vous pourrez en changer d'un clic.</p>
+
+  <div class="avis">
+    <h2>Ce que ce test fait, et ce qu'il ne fait pas</h2>
+    <p class="fine"><strong>Il cherche le premier endroit où ça devient difficile</strong>, et il vous y
+    dépose. Rien de plus. Vous commencez peut-être les mathématiques à un endroit et le français à un
+    autre : c'est normal et c'est le but.</p>
+    <p class="fine"><strong>Il ne mesure aucune aptitude</strong>, et le site ne vous demandera jamais
+    quel « type d'apprenant » vous seriez : l'idée est répandue et elle est fausse. Ce qui est
+    recalculé, c'est ce avec quoi vous réussissez réellement.</p>
+    <p class="fine"><strong>Rien n'est envoyé nulle part.</strong> Le point de départ vit dans ce
+    navigateur, il se recalcule à chaque exercice, et il s'efface d'un bouton.</p>
+  </div>
+
+  <div id="zone"></div>
+
+</div>
+
+<script type="module">
+import { poserContraste, poserVoie, appliqueCycle } from './socle.js';
+import { pourNiveau, juste, graine, poserDepart, depart, oublierDepart } from './exercices.js';
+
+/* Le test de positionnement.
+ *
+ * Une recherche par dichotomie sur l'échelle de difficulté : on commence au
+ * milieu, deux questions par palier, et l'on resserre. Six questions
+ * suffisent pour huit paliers, là où les poser toutes en prendrait seize.
+ *
+ * POURQUOI CE N'EST PAS UN PROFIL (CLM-PED-026). Le résultat est une
+ * POSITION dans une progression, pas une propriété de l'élève : il se
+ * recalcule à chaque exercice réussi, il n'est jamais transmis, et l'élève
+ * peut le déplacer ou l'effacer lui-même. Un profil enregistré décide pour
+ * vous après que vous avez changé ; une position suit.
+ *
+ * Et ce que le test NE FAIT PAS : il ne mesure aucune aptitude et n'oriente
+ * vers aucun « format qui vous conviendrait ». Apparier un enseignement à un
+ * style déclaré n'améliore pas les résultats (SRC-PED-020).
+ */
+
+const params = new URLSearchParams(location.search);
+const discipline = params.get('d') || 'mathematiques';
+const niveau = params.get('n') || '6e';
+appliqueCycle(niveau);
+
+const NOMS = { mathematiques: 'mathématiques', francais: 'français', histoire: 'histoire',
+               geographie: 'géographie', emc: 'EMC', sciences: 'sciences et technologie' };
+document.getElementById('titre').textContent =
+  'Se positionner en ' + (NOMS[discipline] || discipline) + ' — ' + niveau;
+
+const zone = document.getElementById('zone');
+const liste = pourNiveau(discipline, niveau);
+
+let bas = 1, haut = liste.length, palier = 0, justes = 0, poses = 0, exo = null, repondu = false;
+const MAX = 6;
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function demarrer() {
+  if (!liste.length) {
+    zone.innerHTML = `<div class="avis"><h2>Pas encore d'exercices ici</h2>
+      <p class="fine">Cette discipline n'a pas encore d'exercices à ce niveau.</p></div>`;
+    return;
+  }
+  const d = depart(discipline);
+  zone.innerHTML = `
+    ${d ? `<div class="rappel-de-soi"><strong>Vous avez déjà un point de départ</strong> en
+        ${esc(NOMS[discipline] || discipline)} : palier ${d.rang} sur ${liste.length}.
+        Refaire le test le remplacera.</div>` : ''}
+    <button class="bouton" id="go">Commencer les six questions</button>`;
+  document.getElementById('go').addEventListener('click', () => { palier = Math.ceil(liste.length / 2); tour(); });
+}
+
+function tour() {
+  if (poses >= MAX || bas > haut) return conclure();
+  const g = liste[Math.min(Math.max(palier, 1), liste.length) - 1];
+  exo = g.faire(graine(Date.now() ^ Math.floor(Math.random() * 1e9)));
+  repondu = false;
+  zone.innerHTML = `
+    <section class="etape">
+      <p class="fine">Question ${poses + 1} sur ${MAX} au plus · ${esc(g.domaine)}</p>
+      <p class="scene" style="font-size:1.25rem">${exo.enonce}</p>
+      <div class="question">
+        ${exo.choix
+          ? `<div class="choix" id="choix" role="group" aria-label="Votre réponse">
+              ${exo.choix.map(c => `<button type="button" data-c="${esc(c)}"
+                style="text-align:center;font-size:1.3rem">${esc(c)}</button>`).join('')}</div>`
+          : `<label class="fine" for="rep">Votre réponse</label>
+             <div style="display:flex;align-items:center;gap:.5rem">
+               <input id="rep" inputmode="decimal" autocomplete="off"
+                 style="flex:1;font-family:var(--serif);font-size:1.2rem;padding:.6rem .8rem;
+                        border:1px solid var(--filet);border-radius:4px;
+                        background:var(--papier-2);color:var(--encre)">
+               ${exo.suffixe ? `<span style="font-size:1.2rem">${esc(exo.suffixe)}</span>` : ''}
+             </div>
+             <button class="bouton" id="ok" style="margin-top:.8rem">Valider</button>`}
+        <button type="button" class="mini" id="passer" style="margin-left:.5rem">Je ne sais pas</button>
+      </div>
+      <p class="fine" style="margin-top:1rem">Aucune de ces réponses n'est conservée.
+      Seul le point de départ le sera, et vous pourrez le changer.</p>
+    </section>`;
+  const champ = document.getElementById('rep');
+  if (champ) { champ.focus(); champ.addEventListener('keydown', e => { if (e.key === 'Enter') repondre(champ.value); }); }
+  const ok = document.getElementById('ok');
+  if (ok) ok.addEventListener('click', () => repondre(champ.value));
+  const ch = document.getElementById('choix');
+  if (ch) ch.addEventListener('click', ev => { const b = ev.target.closest('button[data-c]'); if (b) repondre(b.dataset.c); });
+  document.getElementById('passer').addEventListener('click', () => repondre(null));
+}
+
+function repondre(saisie) {
+  if (repondu) return;
+  repondu = true;
+  poses++;
+  const bon = saisie !== null &&
+    (exo.choix ? String(saisie).trim() === exo.reponse : juste(saisie, exo.reponse));
+  justes += bon ? 1 : 0;
+
+  // Deux questions par palier, puis on resserre l'intervalle.
+  if (poses % 2 === 0 || !bon) {
+    if (bon && justes >= 1) { bas = palier + 1; palier = Math.min(haut, palier + 1); }
+    else { haut = palier - 1; palier = Math.max(bas, palier - 1); }
+    justes = 0;
+  }
+  tour();
+}
+
+function conclure() {
+  const rang = Math.min(Math.max(bas, 1), liste.length);
+  const g = liste[rang - 1];
+  poserDepart(discipline, rang);
+  zone.innerHTML = `
+    <div class="avis">
+      <h2>Vous commencez ici</h2>
+      <p><strong>Palier ${rang} sur ${liste.length}</strong> — ${esc(g.nom)}.</p>
+      <p class="fine">${esc(g.quoi)}</p>
+    </div>
+    <p>Ce point de départ n'est pas un jugement : c'est le premier endroit où il y a quelque chose
+    à travailler. Il bougera tout seul à mesure que vous confirmerez des paliers.</p>
+    <p class="fine">Vous le trouvez trop haut ou trop bas ? Déplacez-le, c'est fait pour.</p>
+    <div class="choix-etayage" id="regler">
+      <button type="button" data-r="-1">Un palier plus bas</button>
+      <button type="button" data-r="1">Un palier plus haut</button>
+      <button type="button" data-r="0">Oublier ce point de départ</button>
+    </div>
+    <p id="dit" class="fine"></p>
+    <a class="bouton" href="entrainement.html?d=${encodeURIComponent(discipline)}&n=${encodeURIComponent(niveau)}"
+       style="display:inline-block;text-decoration:none;margin-top:1rem">Commencer l'entraînement</a>`;
+
+  document.getElementById('regler').addEventListener('click', ev => {
+    const b = ev.target.closest('button[data-r]');
+    if (!b) return;
+    const d = Number(b.dataset.r);
+    const dit = document.getElementById('dit');
+    if (d === 0) { oublierDepart(discipline); dit.textContent = "Point de départ oublié. Rien n'en est conservé."; return; }
+    const actuel = (depart(discipline) || { rang }).rang;
+    const neuf = Math.min(Math.max(actuel + d, 1), liste.length);
+    poserDepart(discipline, neuf);
+    dit.textContent = `Point de départ déplacé au palier ${neuf} : ${liste[neuf - 1].nom}.`;
+  });
+}
+
+demarrer();
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'));
+</script>
+</body>
+</html>

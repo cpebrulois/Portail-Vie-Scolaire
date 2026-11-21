@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discipline — Cours interactif</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <nav class="service">
+    <a href="index.html">Accueil</a>
+    <a id="lienNiveau" href="#">&larr; Mon année</a>
+    <span class="pousse"></span>
+    <button type="button" id="btnVoie" aria-pressed="false"
+            title="Texte plus aéré, lignes plus courtes. Réversible à tout moment.">Pas à pas</button>
+    <button type="button" id="btnTheme" aria-pressed="false">Contraste</button>
+  </nav>
+
+  <h1 id="titre">Discipline</h1>
+  <p class="chapeau" id="chapeau"></p>
+
+  <div id="rappels"></div>
+  <div id="contenu"></div>
+
+</div>
+
+<script type="module">
+import { charger, progres, esc, poserRappels, avancement, proposerAuDela,
+         poserContraste, poserVoie, appliqueCycle } from './socle.js';
+
+/* Le hub disciplinaire, filtre par niveau.
+ *
+ * Il affiche les themes officiels du niveau, avec leurs modules — ecrits ou a
+ * venir. Puis, en fin de page, une section qui ouvre les AUTRES annees de la
+ * meme discipline : toujours presente, jamais verrouillee, mise en avant
+ * seulement quand l'eleve a fait le tour de la sienne. */
+
+const params = new URLSearchParams(location.search);
+const idDisc = params.get('d') || 'histoire';
+const niveau = params.get('n') || '6e';
+const { programme, ecrits } = await charger();
+
+const disc = (programme.disciplines || []).find(d => d.id === idDisc);
+// « de histoire » ne se dit pas : on élide devant une voyelle ou un h muet.
+const elide = nom => (/^[aeiouyéèêh]/i.test(nom) ? "d'" : 'de ') + nom.toLowerCase();
+const zone = document.getElementById('contenu');
+document.getElementById('lienNiveau').href = 'niveau.html?n=' + encodeURIComponent(niveau);
+
+if (!disc || !disc.niveaux.length) {
+  document.getElementById('titre').textContent = disc ? disc.nom : 'Discipline inconnue';
+  zone.innerHTML = `<div class="avis"><h2>Carte à venir</h2>
+    <p class="fine">Cette discipline est déclarée, mais sa carte n'est pas encore construite.
+    <a href="index.html">Revenir à l'accueil</a>.</p></div>`;
+} else {
+  document.title = disc.nom + ' ' + niveau + ' — Cours interactif';
+  document.getElementById('titre').textContent = disc.nom + ' — ' + niveau;
+  dessine();
+}
+
+function blocModule(mo, p){
+  const dispo = ecrits.get(mo.id);
+  if (!dispo) {
+    return `<div class="carte attente">
+      <span class="code">${esc(mo.id)}</span>
+      <div class="titre-c">${esc(mo.sous_theme)}</div>
+      <div class="cible">Module à venir. Le sous-thème est au programme ;
+      le cours n'est pas encore écrit.</div></div>`;
+  }
+  const e = p[mo.id] || {};
+  let etat = '';
+  if (e.fait) etat = 'Achevé' + (e.rappelJ1 ? ' · rappel fait' : ' · rappel à venir');
+  else if (e.anticipation) etat = 'Commencé';
+  return `<a class="carte" href="module.html?m=${encodeURIComponent(mo.id)}">
+    <span class="code">${esc(mo.id)} · ${esc(mo.sous_theme)}</span>
+    <div class="titre-c">${esc(dispo.titre)}</div>
+    <div class="cible">Ce qu'on doit pouvoir se rappeler demain : ${dispo.cible}.</div>
+    ${etat ? `<div class="etat">${esc(etat)}</div>` : ''}</a>`;
+}
+
+function dessine(){
+  poserRappels(document.getElementById('rappels'), ecrits, dessine);
+  const p = progres();
+  const n = disc.niveaux.find(x => x.niveau === niveau);
+
+  if (!n) {
+    zone.innerHTML = `<div class="avis"><h2>Niveau non couvert</h2>
+      <p class="fine">${esc(disc.nom)} n'a pas encore de carte pour la ${esc(niveau)}.</p></div>`;
+    return;
+  }
+
+  const a = avancement(disc, niveau, ecrits);
+  document.getElementById('chapeau').textContent =
+    `${a.disponibles} module${a.disponibles > 1 ? 's' : ''} ouvert${a.disponibles > 1 ? 's' : ''} sur `
+    + `${a.declares} prévus. ${disc.reference}`;
+
+  let html = '';
+  n.themes.forEach(t => {
+    html += `<h2 style="margin-top:2.2rem"><span class="fine"
+      style="font-family:var(--mono);font-size:.7rem;display:block">THÈME ${t.rang}</span>${esc(t.intitule)}</h2>`;
+    t.modules.forEach(mo => { html += blocModule(mo, p); });
+  });
+
+  /* --- Au-delà de son année ---------------------------------------------- */
+  const autres = disc.niveaux.filter(x => x.niveau !== niveau);
+  const ouvertsAilleurs = autres.reduce((s, x) =>
+    s + x.themes.reduce((t, th) => t + th.modules.filter(m => ecrits.has(m.id)).length, 0), 0);
+  const propose = proposerAuDela(disc, niveau, ecrits);
+
+  html += `<details class="plus-loin"${propose ? ' open' : ''}>
+    <summary>Aller plus loin — les autres années ${elide(disc.nom)}</summary>`;
+  if (propose) {
+    html += `<p class="fine"><strong>Vous avez achevé tout ce qui est ouvert en ${esc(niveau)},
+      et repris au moins un rappel.</strong> La suite est là si elle vous tente.</p>`;
+  } else {
+    html += `<p class="fine">Rien n'est verrouillé : ces modules s'ouvrent comme les autres.
+      Ils s'appuient simplement sur des repères d'une autre année.</p>`;
+  }
+  if (!ouvertsAilleurs) {
+    html += `<p class="fine">Aucun module n'est encore écrit pour les autres années.</p>`;
+  } else {
+    autres.forEach(x => {
+      const dedans = x.themes.flatMap(th => th.modules).filter(m => ecrits.has(m.id));
+      if (!dedans.length) return;
+      html += `<h3>${esc(x.niveau)}</h3>`;
+      dedans.forEach(mo => { html += blocModule(mo, p); });
+    });
+  }
+  html += '</details>';
+
+  zone.innerHTML = html;
+}
+
+poserContraste(document.getElementById('btnTheme'));
+poserVoie(document.getElementById('btnVoie'));
+// La page d'un niveau se lit dans la typographie de ce niveau. CLM-TYP-001.
+appliqueCycle(niveau);
+</script>
+</body>
+</html>
